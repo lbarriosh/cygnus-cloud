@@ -1,0 +1,433 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass memoir
+\begin_preamble
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Plantilla maestra para toda la documentación.
+%% Codificación: UTF-8, saltos de línea UNIX en código LaTeX.
+%% Autor: Luis Barrios
+%% Versión 3.1
+%% AVISO: NO toquéis el preámbulo si no es imprescindible. Cualquier error en la 
+%% modificación puede hacer que TODO deje de compilar.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\getProyecto}{Cygnus Cloud: provisión de puestos de laboratorio virtuales bajo demanda}
+\newcommand{\getProyectoCorto}{Cygnus Cloud}
+
+%% Configurar multirow a mi gusto
+
+\usepackage{multirow}
+\renewcommand{\multirowsetup}{\centering} %%  Las cosas saldrán centradas
+
+%% Necesario para incluir la imagen de la portada
+\usepackage{graphicx}
+
+%% Quitar el número de capítulo del número de sección
+%% Lo dejo desactivado por ahora (da lugar a ambigüedades, que no me interesan para nada)
+%\renewcommand*\thesection{\arabic{section}}
+
+%% Personalizar encabezados y pies de página
+\makepagestyle{estilo}
+%% Usar reglas visibles
+\makeheadrule {estilo}{\textwidth}{\normalrulethickness}
+\makefootrule {estilo}{\textwidth}{\normalrulethickness}{\footruleskip}
+%% Fijar el contenido de encabezados y pies de página
+\makeevenhead {estilo}{\bfseries\leftmark}{} {}
+\makeoddhead {estilo}{}{}{\bfseries\rightmark}
+\makeevenfoot {estilo}{\thepage{}}{SI - Curso 2012/2013}{\bfseries\getProyectoCorto}
+\makeoddfoot {estilo}{\bfseries\getProyectoCorto}{SI - Curso 2012/2013}{\thepage{}}
+\makeatletter % Necesario para \@chapapp
+\makepsmarks {estilo}{
+%% No quiero cosas en mayúsculas
+\nouppercaseheads
+
+%% Crear marcas
+\createmark{chapter}{both}{shownumber}{\@chapapp\ }{. \ }
+\createmark{section}{right}{shownumber}{}{. \ }
+\createmark{subsection}{right}{shownumber}{}{. \ }
+\createmark{subsubsection}{right}{shownumber}{}{. \ }
+\createplainmark {toc}{both}{\contentsname} %% toc = table of contents = índice
+\createplainmark {lof}{both}{\listfigurename} %% lof = list of figures = índice de figuras
+\createplainmark {lot}{both}{\listtablename} %% lot = list of tables = índice de cuadros
+\createplainmark {bib}{both}{\bibname} %% bibilografía
+\createplainmark{index}{both}{\indexname} %% índice alfabético. La dejo lista por si acaso
+\createplainmark {glossary}{both} {\glossaryname} %% glosario. La dejo lista por si acaso
+}
+\makeatother
+
+%% Desactivar la numeración de párrafos y subpárrafos (por seguridad)
+\setsecnumdepth{subsubsection}
+
+%% Personalizar etiquetas de las figuras, cuadros y algoritmos
+\captionnamefont{\sc}
+\end_preamble
+\options a4paper
+\use_default_options true
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format pdf2
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement h
+\paperfontsize 10
+\spacing single
+\use_hyperref true
+\pdf_title "Cygnus Cloud: memoria"
+\pdf_author "Luis Barrios, Adrián Fernández, Samuel Guayerbas"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%% Incluir la portada 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+include{Portada}
+\end_layout
+
+\begin_layout Plain Layout
+
+%% Desactivar la generación de encabezados y pies de página
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pagestyle{empty}
+\end_layout
+
+\begin_layout Plain Layout
+
+%% Incluir página en blanco
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mbox{}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "Licencia.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "Agradecimientos.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "Resumen.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%% Preparar contadores para las páginas del índice
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+thepage}{
+\backslash
+roman{page}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+setcounter{page}{1}
+\end_layout
+
+\begin_layout Plain Layout
+
+%% Cambiar estilo de encabezados y pies de página
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pagestyle{plain}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FloatList figure
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FloatList table
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%% Numerar el resto de páginas de forma normal
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+renewcommand{
+\backslash
+thepage}{
+\backslash
+arabic{page}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+setcounter{page}{1}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pagestyle{estilo}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "DescripcionProblema.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "CloudComputing.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "Arquitectura.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "Resultados.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "ManualUsuario.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintAll"
+bibfiles "ch01"
+options "alpha"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
