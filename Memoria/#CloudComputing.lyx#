@@ -65,22 +65,6 @@
 Cloud Computing
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Las secciones ya rellenas a continuación son solo aproximaciones a las que
- finalmente formarán parte de la memoria .
- Todas ellas por lo tanto deben ser revisadas , corregidas y ampliadas en
- la medida de lo posible.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Introducción
 \end_layout
@@ -527,8 +511,8 @@ Así el modelo de servicio basado en infraestructuras no hace referencia
 
 \begin_layout Standard
 Algunos ejemplos de infraestruturas como servicio son Amazon CloudFormation
- , Rackspace Cloud, Terremark, Windows Azure Virtual Machines y Google Compute
- Engine.
+ , Rackspace Cloud, Terremark, Windows Azure Virtual Machines and Google
+ Compute Engine.
 \end_layout
 
 \begin_layout Standard
@@ -579,7 +563,7 @@ Este modelo resulta ventajoso tanto para el cliente como para el proovedor
 \begin_layout Standard
 Algunos ejemplos de plataforma como servicio son Amazon Elastic Beanstalk,
  Cloud Foundry, Heroku, Force.com, EngineYard, Mendix, Google App Engine,
- Windows Azure Compute y OrangeScape.
+ Windows Azure Compute and OrangeScape.
 \end_layout
 
 \begin_layout Standard
@@ -654,35 +638,7 @@ No estoy seguro de que este sea el acronimo
 \end_layout
 
 \begin_layout Itemize
-Comunicación como servicio (Caas) : Facilita la comunicación entre clientes
- y entre usuarios de una misma empresa a partir de aplicaciones especialmente
- diseñadas para este fin.
-\end_layout
-
-\begin_layout Standard
-El coste de alquiler de las aplicaciones en un modelo de software como servicio
- suele estar ligado a una tarifa plana anual o mensual por usuario.
- el precio puede reajustarse si se añaden o quitan usuarios.
-\end_layout
-
-\begin_layout Standard
-Algunos ejemplos de software como servicio son Google Apps, innkeypos, Quickbook
-s Online, Successfactors Bizx, Limelight Video Platform, Salesforce.com y
- Microsoft Office 365.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Añadir más información .
- Explicar mejor el modo de funcionamiento.
-\end_layout
-
-\end_inset
-
-
+Comunicación como servicio (Caas) : El cliente p
 \end_layout
 
 \begin_layout Section
