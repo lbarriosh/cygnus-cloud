@@ -65,5 +65,406 @@
 Cloud Computing
 \end_layout
 
+\begin_layout Section
+Introducción
+\end_layout
+
+\begin_layout Standard
+En el presente capítulo se abordará el estudio de cloud computing al ser
+ este el tema principal en el que se basa nuestro proyecto.
+ Para ello comenzaremos dando una detallada definión sobre cloud computing
+ , después explicaremos su funcionamiento y para terminar describiremos
+ las caracteristicas y los diferentes tipos de sistemas en la nube.
+\end_layout
+
+\begin_layout Standard
+El cloud computing permite al cliente abstraerse del hardware con el cual
+ va a trabajar y centrarse en los servicios que necesita para desarrollar
+ dicho trabajo .
+ De esta forma el usuario puede centrarse en su trabajo y despreocuparse
+ por como obtener el entorno necesario.
+ 
+\end_layout
+
+\begin_layout Section
+Definición
+\end_layout
+
+\begin_layout Standard
+Para poder establecer un estandar acerca del significado más correcto de
+ la expresión 
+\begin_inset Quotes eld
+\end_inset
+
+comutación en la nube
+\begin_inset Quotes erd
+\end_inset
+
+ el Instituto Nacional de Estandares y Tecnologías (NIST) ha dado una definición
+ universal y una arquitectura de referencia .
+ De esta forma para el NIST la computación en la nube consiste en :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+
+\family sans
+Un modelo para permitir un acceso de red conveniente, desde cualquier sitio
+ y bajo demanda a un conjunto compartido de recursos informáticos configurables
+ (por ejemplo, redes, servidores, almacenamiento, aplicaciones y servicios)
+ que se pueden proporcionar rápidamente y lanzar con un mínimo esfuerzo
+ de gestión o interacción con el proveedor de servicios
+\family default
+.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family sans
+De esta definición podemos extraer las cuatro caracteristicas esenciales
+ de la computación en la nube .
+ Estas características son las de autoservicio , accesibilidad desde multiples
+ plataformas , recursos compartidos por varios usuarios y servicios flexibles
+ .
+ Hablaremos en profundidad sobre estas características más adelante.
+\end_layout
+
+\begin_layout Standard
+Con la finalidad de acercar al lector más a todo lo que abarca la computación
+ en la nube expondremos a continuación un ejemplo que permita representar
+ el funcionamiento de este servicio por medio de un sistema más conocido
+ y extendido en la sociedad.
+\end_layout
+
+\begin_layout Standard
+Imaginemos el sistema de distribución de agua de una ciudad .
+ La evolución del ser humanos ha estado fuertemente ligada al agua por ser
+ esta necesaria para la subsistencia de la especie .
+ Así la primeras civilizaciones buscaban lugares donde hubiese agua dulce
+ disponible , en territorios cercanos a lagos y rios .
+ Estas sociedades reducidas eran capaz de abastecerse con estos lagos y
+ rios , sin embargo , cuando la sociedad fue evolucionando y extendiendose
+ se convirtio en algo primordial encontrar otras fuentes de agua dulce .
+ De esta forma comenzó a construirse pozos que permitiese extraer el agua
+ subterranea .
+ las construcciones de los primeros pozos se produjeron en jericó (Israel)
+ hace aproximadamente 7.000 años.
+ Para que este agua pudiera se accesible para todos los ciudadanos fue necesario
+ desarrollar trasportes capaces de trasladar y mantener este liquido .
+ Sin embargo , estos trasportes eran bastante lentos y no siempre resultaban
+ facilmente accesible para todos los usuarios.
+ Además los tratamientos de purificación del agua tales como el calentamiento
+ al fuego o el filtrado a traves de arena dejaban bastante que desear y
+ provocaban un gran número de infecciones que desembocaban en grandes epidemias
+ haciendo fracasar en parte la principal finalidad de estos mecanismos.
+\end_layout
+
+\begin_layout Standard
+No fue hasta la antigua Grecia cuando aparecieron los primeros sistemas
+ eficientes de almacenamiento y trasporte del agua potable obtenido a partir
+ de pozos , lluvia , ríos y lagos .
+ De esta época datan las primeras redes de distribución a gran escala.
+ Otra novedad importante que fue introducida en esta época fue un interes
+ claro por la calidad del agua que consimían.Para ello el agua utilizada
+ se retiraba mediante sistemas de agua residual además se utilizaban embalses
+ de aireación para purificar el agua antes de su distribución.
+\end_layout
+
+\begin_layout Standard
+Así llegamos a la época del imperio Romano.
+ Los romanos fueron los mayores arquitectos en construcciones de redes de
+ distribución de agua que ha existido a lo largo de la historia.La verdadera
+ revolución llegó con los acueductos, ya que por primera vez se podía transporta
+r agua entre puntos separados por una gran distancia.
+ Gracias a ellos, los romanos podían distribuir agua entre distintos puntos
+ de su amplio imperio.
+ Con la caida del imperio romano los acueductos dejaron de utilizarse provocando
+ un paso atras en la evolución de los sistemas de distribución de agua .
+ En la edad media el agua de las ciudades estaba demasiado contaminada para
+ poder ser consumida y era necesario traerla del exterior , tarea llevada
+ a cabo por medio de los portadores.
+\end_layout
+
+\begin_layout Standard
+Así llegamos hasta los inicios del S XIX en el que encontramos el primer
+ sistema de suministro de agua potable para toda una ciudad completa.
+ Fue construido en Paisley, Escocia, alrededor del año 1804 por John Gibb.
+ A lo largo de la ciudad se extendían multiples fuentes donde los ciudadanos
+ podían recoger el agua suficiente para abastecer a su familia .
+ Este sistema produjo una importante aproximación del agua a toda la sociedad
+ pero los ciudadanos tenían una cantidad de agua bastante limitada y debían
+ molestarse en desplazarse todos los días para recogerla.
+\end_layout
+
+\begin_layout Standard
+Finalmente en la actualidad podemos tener acceso a agua potable totalmente
+ purificada simplemente acercandonos al grifo de nuestra cocina .
+ De esta forma existen plantas de almacenamiento y purificación capaces
+ de avastecer a un elevado número de personas las cuales solo tienen que
+ preocuparse por pagar cierto dinero por estos servicios para poder disfrutar
+ del liquido elemento en sus propias casas.
+\end_layout
+
+\begin_layout Standard
+De igual forma que el agua, los servicios utilizados en la sociedad para
+ el desarrollo de aplicaciones y en general para la realización de cualquier
+ tarea ligada a un computador han evolucionado desde unos sitemas prehistoricos
+ que limitaban hasta donde se podía llegar e incrementaba el tiempo de trabajo
+ hasta servicios otorgados por una empresa y gestionados en su integridad
+ por la misma en los que el usuario tan solo debe preocuparse del trabajo
+ al cual debe hacer frente y no de si dispone de todos los servicios para
+ llevarlo acabo .
+ Así de igual forma que hoy en día resulta casí impensable no poder disfrutar
+ de agua potable en nuestras propias casas también debe resultar impensable
+ que cualquier usuario no pueda hacer frente a un trabajo por las limitaciones
+ de su entorno.
+\end_layout
+
+\begin_layout Section
+Historia
+\end_layout
+
+\begin_layout Standard
+El origen del termino 
+\begin_inset Quotes eld
+\end_inset
+
+Cloud computing
+\begin_inset Quotes erd
+\end_inset
+
+ es bastante misterioso .
+ Se cree que este deriva de la práctica de dibujar nubes para representar
+ las redes en los diagramas de sistemas de computación y comunicación.Esta
+ representación de internet con el simbolo de la nube lleva realizandose
+ desde 1994 .
+\end_layout
+
+\begin_layout Standard
+La idea de una 
+\begin_inset Quotes eld
+\end_inset
+
+red de ordenadores intergaláctica
+\begin_inset Quotes erd
+\end_inset
+
+ fue dada por J.C.R Licklider en los años 60 .
+ Segun Licklider era necesario conseguir que todo el mundo , a lo largo
+ y ancho del planeta estuviera interconectado y pudiera compartir información
+ , datos y programas.
+ Algunos expertos tales como Margaret Lewis (product marketing director
+ de AMD) piensan que esta idea es la precursora del origen del cloud.
+\end_layout
+
+\begin_layout Standard
+Por otra parte un gran número de expertos mantienen que la primera idea
+ acerca de la computación en la nube fue dada por John McCarthy , el cual
+ también en los años 60 dijo que el mundo de la informática debía ser de
+ uso público.
+\end_layout
+
+\begin_layout Standard
+Independientemente de quien fuera el verdadero precursor parece claro que
+ los primeros hitos sobre el cloud computing fueron dados en los 90 por
+ las empresas que primero habían comenzado ofreciendo circuitos de comunicación
+ punto a punto y que en esa década comienzan a crear redes virtuales privadas
+ (VPN) las cuales ofrecen unos servicios muy similares a los de los sistemas
+ anteriores pero con un coste muy inferior a estos.
+\end_layout
+
+\begin_layout Standard
+Una de estas empresas fue Salesforce.com la cual en 1999 se dedico a la venta
+ de aplicaciones para empresas vía web.
+ También cabe destacar Amazon Web Services que en 2002 ofrecían un paquete
+ de servicios basados en la idea Cloud que incluía almacenamiento , computación
+ e incluso inteligencia humana a través de Amazon Mechanical Turk.
+\end_layout
+
+\begin_layout Standard
+En 2006, Amazon lanzó Elastic Compute cloud (EC2) como un servicio vía web
+ que daba la oportunidad a pequeñas empresas y a individuos de alquilar
+ maquinas donde hospedar sus propias aplicaciones.
+ Segun Jeremy Allaire (CEO de Brightcove) este era el primer sistema que
+ podía ser considerado como una infraestructura de computación en la nube
+ completa y accesible.
+\end_layout
+
+\begin_layout Standard
+ya en el 2009 , la web 2.0 dió el gran salto de la mano de Google al ofrecer
+ browser-based enterprise applications, a través de servicios tales como
+ Google Apps.
+ Dan Germain (jefe de la oficina tecnológica de Cobweb Solutions) se referenció
+ a esta tecnología y dijo que “la contribución más importante al Cloud Computing
+ ha sido la aparición de las “killer apps” creadas por gigantes tecnológicos
+ como Microsoft y Google.
+ Cuando estas compañías ofrecieron este servicio de manera fiable y fácil
+ de consumir, el efecto en cadena de la industria en su conjunto ha sido
+ una mayor aceptación general de los servicios en línea”.
+\end_layout
+
+\begin_layout Standard
+Ya en esta época parecía dislumbrarse que la computación en la nube iba
+ a revolucionar la idea de informática que se tenía hasta el momento.
+ De hecho , el especialista en tecnologías emergentes , Julian Friedman
+ , dijo que en cuanto el modelo en la nube este disponible y generalzado
+ a traves de la web y se convierta en un sistem multiplataforma , todas
+ las aplicaciones avanzarán naturalmente a dicho modelo.
+\end_layout
+
+\begin_layout Standard
+Además una vez mejorada la seguridad , los servicios basados en cloud computing
+ "pueden permitir a una empresa ampliar su infraestructura, aumentar la
+ capacidad de la demanda, o externalizar toda la infraestructura, lo que
+ da como resultado una mayor flexibilidad, una mayor variedad de recursos
+ y un importante ahorro de costes" tal y como dijo Andreas Asander ( subdirector
+ de gestión de productos de Clavister especialista en seguridad de entornos
+ virtualizados).
+\end_layout
+
+\begin_layout Standard
+Con todo esto parece claro que la computación en la nube se ha convertido
+ en una realidad palpable y una prioridad para un gran número de empresas
+ actuales de este sector , tal y como demuestran las últimas encuestas realizada
+s.
+\end_layout
+
+\begin_layout Section
+Características
+\end_layout
+
+\begin_layout Standard
+En este apartado detallaremos las principales características que hacen
+ de la computación en la nube un servicio actualmente en auge :
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+\series bold
+Agilidad
+\family default
+\series default
+ .
+ El usuario puede gestionar de manera sencillas que aplicaciones necesita
+ en su entorno de desarrollo .
+ De esta forma el usuario puede adquirir o borrar sus aplicaciones segun
+ las requiera o no en cada momento de manera facil y rapida.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+\series bold
+Coste
+\family default
+\series default
+ .
+ Gracias a las empresas encargadas en ofertar su hardware a los usuarios
+ interesados en ejecutar sus aplicaciones en la nube , estos no necesitarán
+ hacer frente a los gastos iniciales de compra de recursos así como a los
+ gastos de mantenimiento.
+ Esto reduce el coste de desarrollo ya que aunque bien es cierto que es
+ necesario pagar un alquiler por los servidores comunitarios este es menor
+ a los posibles gastos a corto y largo plazo a los que habría que hacer
+ frente.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+\series bold
+Accesibilidad
+\family default
+\series default
+ .
+ La independencia entre la interfaz de desarrollo y la localización del
+ entorno que ejecuta el servicio permite al usuario acceder a sus herramientas
+ de trabajo desde cualquier dispositivo con acceso a la web.
+ De esta forma los cliente pueden trabajar desde su sobremesa , su portatil
+ o incluso desde su dispositivo movil.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+\series bold
+Elasticidad y escalabilidad
+\family default
+\series default
+.
+ Las aplicaciones en cloud son totalmente elásticas en cuanto a su rapidez
+ de implementación y adaptabilidad.
+ Además, son totalmente escalables, es decir, hoy podemos estar utilizando
+ solo un 10% del total de la aplicación y mañana podemos acceder al 80%
+ de la misma con total normalidad y rapidez.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+\series bold
+Recuperación
+\family default
+\series default
+ .
+ Los servicios en la nube proporcionan a los usuarios sistemas de almacenamiento
+ secundario de forma que en caso de perdida de información se pueda recuperar
+ de manera inmediata sufriendo así las menores perdidas posible .
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+\series bold
+Estabilidad
+\family default
+\series default
+ .
+ Las empresas de gestión de las aplicaciones en la nube aseguran al usuario
+ una fuerte estabilidad en su entorno de desarrollo y permiten un relevantamient
+o inmediato de los servicios en los que hayan surgido algun problema.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+\series bold
+Seguridad
+\family default
+\series default
+.
+ Quizas esta es la característica más dificil de entender de la computación
+ en la nube .
+ Los clientes de estos servicios pueden pensar que al almacenar su información
+ en un lugar externo a su propio dispositivo , esta se encuentra más en
+ peligro de ser abordado por terceras personas .
+ Sin embargo esto no es así .
+ Las empresas encargadas de ofertar servicios en la nube mantienen extrictos
+ controles de seguridad para evitar que la información de sus clientes pueda
+ ser filtrada al exterior .
+ Para almacenar esta información suelen utilizar empresas secundarias de
+ Data Center encargadas exclusivamente en la protección y vigilancia de
+ datos.
+\end_layout
+
+\begin_layout Section
+Modelos de servicios
+\end_layout
+
+\begin_layout Section
+Tipos
+\end_layout
+
+\begin_layout Section
+Ventajas y desventajas
+\end_layout
+
 \end_body
 \end_document
