@@ -458,6 +458,41 @@ Seguridad
 Modelos de servicios
 \end_layout
 
+\begin_layout Standard
+La computación en la nube ofrece sus servicios de acuerdo a 3 modelos fundamenta
+les.
+ Estos modelos se refieren a la forma en que las diferentes empresas clientes
+ gestionan sus servicios contratados en la nube.
+ Estos modelos no son siempre excluyentes entre sí .
+ En ocasiones una misma empresa puede tener un modelo resultante de mezclar
+ algunos de los modelos fundamentales.
+ Por ejemplo, un proveedor de software como servicio (SaaS) podría optar
+ por ofrecer distintos servicios de infraestructura (IaaS) a los clientes.
+\end_layout
+
+\begin_layout Subsection
+Infraestructura como servicio (IaaS)
+\end_layout
+
+\begin_layout Standard
+Es el modelo más básico .
+ En este modelo el cliente estará contratando únicamente la infraestructura
+ tecnológica .
+ Esta infraestructura tendrá la capacidad de procesamiento , de almacenamiento
+ o de comunicación .
+ Una vez establecida el cliente alojará sus aplicaciones y plataformas.
+\end_layout
+
+\begin_layout Standard
+De esta forma el proovedor oferta al usuario un conjunto de maquinas virtuales
+ sobre las que trabajar.
+ Estas maquinas virtuales serán manejadas por hipervisores , tales como
+ Xen o Kvn.
+ Gracias a la habilidad de gestión de las maquinas virtuales por parte de
+ los proovedores el cliente puede contratar tantas maquinas virtuales como
+ necesite.
+\end_layout
+
 \begin_layout Section
 Tipos
 \end_layout
