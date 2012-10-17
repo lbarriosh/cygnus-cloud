@@ -150,6 +150,10 @@ De esta definición podemos extraer las cuatro caracteristicas esenciales
  Hablaremos en profundidad sobre estas características más adelante.
 \end_layout
 
+\begin_layout Section
+Antecedentes
+\end_layout
+
 \begin_layout Standard
 Con la finalidad de acercar al lector más a todo lo que abarca la computación
  en la nube expondremos a continuación un ejemplo que permita representar
@@ -724,6 +728,14 @@ Este modelo es el mejor para aquellos negocios donde es necesario controlar
 \end_layout
 
 \begin_layout Standard
+Las principales ventajas que ofrece este tipos son flexibilidad, seguridad
+ y ahorro en su infraestructura.
+ Además no requiere de inversiones, es escalable y no tiene límite de recursos
+ ni disponibilidad.
+ 
+\end_layout
+
+\begin_layout Standard
 Algunos ejemplos de cloud públicos son Facebook , Tuenti , Google yLinkedIn.
 \end_layout
 
@@ -746,20 +758,233 @@ Es el segundo tipo de computación en la nube más utilizado.
  de tipos.
 \end_layout
 
-\begin_layout Subsection
-Cloud virtualmente privado
+\begin_layout Standard
+Las principales ventajas que ofrece el cloud privado son aislamiento y exclusivi
+dad de su propia infraestructura, así como máximas garantías de seguridad
+ y confidencialidad en sus sistemas de información.
 \end_layout
 
 \begin_layout Subsection
 Cloud híbrido
 \end_layout
 
+\begin_layout Standard
+En este tipos se mezclan las características más importantes del cloud privado
+ y público .
+ En él el cliente gestiona y explota en exclusividad su infraestructura
+ pero dispone de acceso al cloud público que mantiene el proovedor en sus
+ instalaciones .
+ El cloud híbrido combina los beneficios del cloud público junto con los
+ del cloud privado.Así por un lado dispone de la esclusividad de tener un
+ servidor propio mientra que por el otro puede aumentar sus recursos obteniendol
+os de la nube pública a modo de ampliación y adaptación de su arquitectura.
+\end_layout
+
+\begin_layout Standard
+Dentro del cloud híbrido existen dos submodelos :
+\end_layout
+
+\begin_layout Itemize
+Cloud Privado "inHouse" : Este modelo requiere una importante inversión
+ por parte del cliente, tanto económica como de recursos, y la seguridad
+ de la información es relativa a la experiencia y capacidad técnica disponible.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/cloud-hosting-hibrido-inhouse.jpg
+	scale 70
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Esquema de un modelo privado 
+\begin_inset Quotes eld
+\end_inset
+
+inHouse
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Tanto Cloud Privado como Cloud Público, en Datacenter del proovedor : Este
+ modelo puede contener su infraestructura en el centro de datos del proovedor
+ , o bien subcontratarla lo que hace desaparecer la necesidad de una inversión
+ inicial .
+ Así permite reducir costes al modelo de pago por uso, y escalar de forma
+ rápida y flexible y sin inversión extra.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/cloud-hosting-hibrido-subcontratado.jpg
+	scale 70
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Esquema del modelo de cloud híbrido en DataCenter del servidor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Cloud comunitario
 \end_layout
 
+\begin_layout Standard
+Un cloud comunitario se da cuando dos o más empresas forman una alianza
+ y comparten una infraestructura con un marco de seguridad y privacidad
+ común .
+ Esto es posible ya que todas las empresas aliadas tienen unos objetivos
+ comunes y requieren de los mismos recursos y herramientas .
+ De esta forma las empresas participantes pueden beneficiarse de una esclusivida
+d casi total reduciendo el coste de compra y mantenimiento de servidores.
+ Como desventaja de este modelo perdemos el nivel de seguridad característico
+ de los clouds privados y este pasa a ser dependiente del anfitrión de la
+ infraestructura.
+\end_layout
+
 \begin_layout Section
 Ventajas y desventajas
+\end_layout
+
+\begin_layout Standard
+Tal y como parece la computación en la nube ofrece a los usuarios una nueva
+ forma de entender 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+la forma de trabajar (me suena muy feo pensare otra forma de decirlo )
+\end_layout
+
+\end_inset
+
+.Queda claro que las ventajas que ofrece esta computación hará posible que
+ en un futuro no muy lejano la idea de utilizar un conjunto de servicios
+ no residentes en nuestros ordenadores personales será aceptado como algo
+ común entre los usuarios .
+ Sin embargo , aunque las ventajas que ofrece este sistema con respecto
+ a los anteriores lo convierta en actualmente la mejor opción no hay que
+ olvidar que la computación en la nube cuenta con un reducido conjunto de
+ desventajas .
+ A continuación detallaremos las ventajas y desventajas más relevantes de
+ la computaión en la nube:
+\end_layout
+
+\begin_layout Subsection
+Ventajas
+\end_layout
+
+\begin_layout Standard
+Entre las ventajas más importantes del Cloud Computing podemos mencionar:
+\end_layout
+
+\begin_layout Itemize
+Accesibilidad, que suele ser uno de los principales alicientes por el cual
+ se acaba eligiendo este sistema frente al resto.
+ La accesibilidad permite que todos los empleados puedan acceder a los datos
+ de la empresa no importando el lugar en el que se encuentren de forma fácil
+ y rápida.
+\end_layout
+
+\begin_layout Itemize
+Reducción de gastos en infraestructura, mantenimiento y servicios, ya que
+ mediante este tipo de tecnología se reduce los gastos de adquirir y mantener
+ los servidores sobre los que corren las aplicaciones , así como los posibles
+ gastos de seguridad.
+\end_layout
+
+\begin_layout Itemize
+Escalabilidad, la posibilidad de adquirir más servicios o más capacidad
+ es relativamente fácil.
+ 
+\end_layout
+
+\begin_layout Itemize
+Seguridad a la hora de mantener nuestros datos intactos pero esto es más
+ dependiente del tipo de cloud que se utilice.
+\end_layout
+
+\begin_layout Subsection
+Desventajas
+\end_layout
+
+\begin_layout Standard
+Las desventajas , aunque reducidas , también están presentes en la nube.
+ Las principales desventajas a destacar son :
+\end_layout
+
+\begin_layout Itemize
+Privacidad de los datos.
+ Esta desventaja es más una cuestión de confianza de los usuarios que de
+ un problema de la computación en la nube en sí.
+ Al estar todo almacenado en lugares externos al propio ordenador del usuario
+ este duda acerca la complejidad con la que el resto de usuarios puedan
+ obtener su información .
+\end_layout
+
+\begin_layout Itemize
+Dependencia.
+ Esta desventaja reside en que el caso de optar por un sistema en la nube
+ no privado el usuario pasa a depender de su proovedor , el cual mantiene
+ toda su infraestructura.
 \end_layout
 
 \end_body
