@@ -135,6 +135,10 @@ De esta definición podemos extraer las cuatro caracteristicas esenciales
  Hablaremos en profundidad sobre estas características más adelante.
 \end_layout
 
+\begin_layout Section
+Antecedentes
+\end_layout
+
 \begin_layout Standard
 Con la finalidad de acercar al lector más a todo lo que abarca la computación
  en la nube expondremos a continuación un ejemplo que permita representar
@@ -231,43 +235,23 @@ Historia
 \end_layout
 
 \begin_layout Standard
-El origen del termino 
-\begin_inset Quotes eld
-\end_inset
-
-Cloud computing
-\begin_inset Quotes erd
-\end_inset
-
- es bastante misterioso .
+El origen del termino “Cloud computing” es bastante misterioso.
  Se cree que este deriva de la práctica de dibujar nubes para representar
  las redes en los diagramas de sistemas de computación y comunicación.Esta
  representación de internet con el simbolo de la nube lleva realizandose
- desde 1994 .
-\end_layout
-
-\begin_layout Standard
-La idea de una 
-\begin_inset Quotes eld
-\end_inset
-
-red de ordenadores intergaláctica
-\begin_inset Quotes erd
-\end_inset
-
- fue dada por J.C.R Licklider en los años 60 .
- Segun Licklider era necesario conseguir que todo el mundo , a lo largo
- y ancho del planeta estuviera interconectado y pudiera compartir información
- , datos y programas.
+ desde 1994.
+ La idea de una “red de ordenadores intergaláctica” fue dada por J.C.R Licklider
+ en los años 60.
+ Segun Licklider era necesario conseguir que todo el mundo, a lo largo y
+ ancho del planeta estuviera interconectado y pudiera compartir información,
+ datos y programas.
  Algunos expertos tales como Margaret Lewis (product marketing director
  de AMD) piensan que esta idea es la precursora del origen del cloud.
-\end_layout
-
-\begin_layout Standard
-Por otra parte un gran número de expertos mantienen que la primera idea
- acerca de la computación en la nube fue dada por John McCarthy , el cual
+ Por otra parte un gran número de expertos mantienen que la primera idea
+ acerca de la computación en la nube fue dada por John McCarthy, el cual
  también en los años 60 dijo que el mundo de la informática debía ser de
  uso público.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -277,28 +261,19 @@ Independientemente de quien fuera el verdadero precursor parece claro que
  punto a punto y que en esa década comienzan a crear redes virtuales privadas
  (VPN) las cuales ofrecen unos servicios muy similares a los de los sistemas
  anteriores pero con un coste muy inferior a estos.
-\end_layout
-
-\begin_layout Standard
-Una de estas empresas fue Salesforce.com la cual en 1999 se dedico a la venta
- de aplicaciones para empresas vía web.
+ Una de estas empresas fue Salesforce.com la cual en 1999 se dedico a la
+ venta de aplicaciones para empresas vía web.
  También cabe destacar Amazon Web Services que en 2002 ofrecían un paquete
- de servicios basados en la idea Cloud que incluía almacenamiento , computación
+ de servicios basados en la idea Cloud que incluía almacenamiento, computación
  e incluso inteligencia humana a través de Amazon Mechanical Turk.
-\end_layout
-
-\begin_layout Standard
-En 2006, Amazon lanzó Elastic Compute cloud (EC2) como un servicio vía web
- que daba la oportunidad a pequeñas empresas y a individuos de alquilar
+ En 2006, Amazon lanzó Elastic Compute cloud (EC2) como un servicio vía
+ web que daba la oportunidad a pequeñas empresas y a individuos de alquilar
  maquinas donde hospedar sus propias aplicaciones.
  Segun Jeremy Allaire (CEO de Brightcove) este era el primer sistema que
  podía ser considerado como una infraestructura de computación en la nube
  completa y accesible.
-\end_layout
-
-\begin_layout Standard
-ya en el 2009 , la web 2.0 dió el gran salto de la mano de Google al ofrecer
- browser-based enterprise applications, a través de servicios tales como
+ ya en el 2009, la web 2.0 dió el gran salto de la mano de Google al ofrecer
+ browser-based enter- prise applications, a través de servicios tales como
  Google Apps.
  Dan Germain (jefe de la oficina tecnológica de Cobweb Solutions) se referenció
  a esta tecnología y dijo que “la contribución más importante al Cloud Computing
@@ -307,32 +282,23 @@ ya en el 2009 , la web 2.0 dió el gran salto de la mano de Google al ofrecer
  Cuando estas compañías ofrecieron este servicio de manera fiable y fácil
  de consumir, el efecto en cadena de la industria en su conjunto ha sido
  una mayor aceptación general de los servicios en línea”.
-\end_layout
-
-\begin_layout Standard
-Ya en esta época parecía dislumbrarse que la computación en la nube iba
+ Ya en esta época parecía dislumbrarse que la computación en la nube iba
  a revolucionar la idea de informática que se tenía hasta el momento.
- De hecho , el especialista en tecnologías emergentes , Julian Friedman
- , dijo que en cuanto el modelo en la nube este disponible y generalzado
- a traves de la web y se convierta en un sistem multiplataforma , todas
- las aplicaciones avanzarán naturalmente a dicho modelo.
-\end_layout
-
-\begin_layout Standard
-Además una vez mejorada la seguridad , los servicios basados en cloud computing
+ De hecho, el especialista en tecnologías emergentes, Julian Friedman, dijo
+ que en cuanto el modelo en la nube este disponible y generalzado a traves
+ de la web y se convierta en un sistem multiplataforma, todas las aplicaciones
+ avanzarán naturalmente a dicho modelo.
+ Además una vez mejorada la seguridad, los servicios basados en cloud computing
  "pueden permitir a una empresa ampliar su infraestructura, aumentar la
  capacidad de la demanda, o externalizar toda la infraestructura, lo que
  da como resultado una mayor flexibilidad, una mayor variedad de recursos
  y un importante ahorro de costes" tal y como dijo Andreas Asander ( subdirector
  de gestión de productos de Clavister especialista en seguridad de entornos
  virtualizados).
-\end_layout
-
-\begin_layout Standard
-Con todo esto parece claro que la computación en la nube se ha convertido
+ Con todo esto parece claro que la computación en la nube se ha convertido
  en una realidad palpable y una prioridad para un gran número de empresas
- actuales de este sector , tal y como demuestran las últimas encuestas realizada
-s.
+ actuales de este sector, tal y como demuestran las últimas encuestas realizadas.
+ 
 \end_layout
 
 \begin_layout Section
@@ -345,7 +311,11 @@ En este apartado detallaremos las principales características que hacen
 \end_layout
 
 \begin_layout Itemize
-Agilidad.
+
+\series bold
+Agilidad
+\series default
+.
  El usuario puede gestionar de manera sencillas que aplicaciones necesita
  en su entorno de desarrollo.
  De esta forma el usuario puede adquirir o borrar sus aplicaciones segun
@@ -353,7 +323,11 @@ Agilidad.
 \end_layout
 
 \begin_layout Itemize
-Coste.
+
+\series bold
+Coste
+\series default
+.
  Gracias a las empresas encargadas en ofertar su hardware a los usuarios
  interesados en ejecutar sus aplicaciones en la nube, estos no necesitarán
  hacer frente a los gastos iniciales de compra de recursos así como a los
@@ -366,7 +340,11 @@ Coste.
 \end_layout
 
 \begin_layout Itemize
-Accesibilidad.
+
+\series bold
+Accesibilidad
+\series default
+.
  La independencia entre la interfaz de desarrollo y la localización del
  en- torno que ejecuta el servicio permite al usuario acceder a sus herramientas
  de trabajo desde cualquier dispositivo con acceso a la web.
@@ -376,7 +354,15 @@ Accesibilidad.
 \end_layout
 
 \begin_layout Itemize
-Elasticidad y escalabilidad.
+
+\series bold
+Elasticidad
+\series default
+ y 
+\series bold
+escalabilidad
+\series default
+.
  Las aplicaciones en cloud son totalmente elásticas en cuanto a su rapidez
  de implementación y adaptabilidad.
  Además, son totalmente escalables, es decir, hoy podemos estar utilizando
@@ -386,7 +372,11 @@ Elasticidad y escalabilidad.
 \end_layout
 
 \begin_layout Itemize
-Recuperación.
+
+\series bold
+Recuperación
+\series default
+.
  Los servicios en la nube proporcionan a los usuarios sistemas de almace-
  namiento secundario de forma que en caso de perdida de información se pueda
  recuperar de manera inmediata sufriendo así las menores perdidas posible.
@@ -394,7 +384,11 @@ Recuperación.
 \end_layout
 
 \begin_layout Itemize
-Estabilidad.
+
+\series bold
+Estabilidad
+\series default
+.
  Las empresas de gestión de las aplicaciones en la nube aseguran al usuario
  una fuerte estabilidad en su entorno de desarrollo y permiten un relevantamient
 o inmediato de los servicios en los que hayan surgido algun problema.
@@ -402,7 +396,11 @@ o inmediato de los servicios en los que hayan surgido algun problema.
 \end_layout
 
 \begin_layout Itemize
-Seguridad.
+
+\series bold
+Seguridad
+\series default
+.
  Quizas esta es la característica más dificil de entender de la computación
  en la nube.
  Los clientes de estos servicios pueden pensar que al almacenar su información
