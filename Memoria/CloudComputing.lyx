@@ -150,6 +150,11 @@ De esta definición podemos extraer las cuatro caracteristicas esenciales
  Hablaremos en profundidad sobre estas características más adelante.
 \end_layout
 
+\begin_layout Section
+Antecedentes .
+ Una visión práctica del cloud computing
+\end_layout
+
 \begin_layout Standard
 Con la finalidad de acercar al lector más a todo lo que abarca la computación
  en la nube expondremos a continuación un ejemplo que permita representar
@@ -507,8 +512,6 @@ De esta forma el proovedor oferta al usuario un conjunto de maquinas virtuales
  necesite.
 \end_layout
 
-<<<<<<< HEAD
-=======
 \begin_layout Standard
 Una vez obtenidas las maquinas virtuales el cliente instalará el sistema
  operativo que más le interese y las aplicaciones.
@@ -685,7 +688,6 @@ Añadir más información.
 
 \end_layout
 
->>>>>>> temporalMemoria
 \begin_layout Section
 Tipos
 \end_layout
