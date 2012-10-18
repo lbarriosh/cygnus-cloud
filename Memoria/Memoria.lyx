@@ -421,7 +421,7 @@ filename "ManualUsuario.lyx"
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 btprint "btPrintAll"
-bibfiles "ch01"
+bibfiles "ch01,ch02,ch03,ch04,ch05"
 options "alpha"
 
 \end_inset
