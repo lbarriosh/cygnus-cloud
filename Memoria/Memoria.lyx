@@ -422,7 +422,7 @@ filename "ManualUsuario.lyx"
 LatexCommand bibtex
 btprint "btPrintAll"
 bibfiles "ch01,ch02,ch03,ch04,ch05"
-options "alpha"
+options "acm"
 
 \end_inset
 

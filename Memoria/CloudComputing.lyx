@@ -2,7 +2,7 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass book
+\textclass memoir
 \use_default_options true
 \maintain_unincluded_children false
 \language spanish
@@ -121,10 +121,7 @@ comutación en la nube
  De esta forma para el NIST la computación en la nube consiste en :
 \end_layout
 
-\begin_layout Standard
-\begin_inset Quotes eld
-\end_inset
-
+\begin_layout Quotation
 
 \family sans
 \shape italic
@@ -135,12 +132,6 @@ Un modelo para permitir un acceso de red conveniente, desde cualquier sitio
  de gestión o interacción con el proveedor de servicios
 \family default
 .
-\shape default
-
-\begin_inset Quotes erd
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
