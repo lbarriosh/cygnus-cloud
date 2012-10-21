@@ -132,7 +132,6 @@ Un modelo para permitir un acceso de red conveniente, desde cualquier sitio
  de gestión o interacción con el proveedor de servicios
 \family default
 .
-<<<<<<< HEAD
 \shape default
 
 \begin_inset Quotes erd
@@ -146,8 +145,6 @@ key "NIST2011"
 \end_inset
 
 
-=======
->>>>>>> d88ab43fe4979c53ba9066b272a05480b363b548
 \end_layout
 
 \begin_layout Standard
