@@ -141,6 +141,13 @@ Un modelo para permitir un acceso de red conveniente, desde cualquier sitio
 \end_inset
 
 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIST2011"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -284,7 +291,14 @@ cloud
  Por otra parte un gran número de expertos mantienen que la primera idea
  acerca de la computación en la nube fue dada por John McCarthy, el cual
  también en los años 60 dijo que el mundo de la informática debía ser de
- uso público.
+ uso público
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PSR2011"
+
+\end_inset
+
+.
  
 \end_layout
 
@@ -298,7 +312,14 @@ cloud computing
  circuitos de comunicación punto a punto y que en esa década comienzan a
  crear redes virtuales privadas (VPN) las cuales ofrecen unos servicios
  muy similares a los de los sistemas anteriores pero con un coste muy inferior
- a estos.
+ a estos
+\begin_inset CommandInset citation
+LatexCommand cite
+key "IETF1993"
+
+\end_inset
+
+.
  Una de estas empresas fue Salesforce.com la cual en 1999 se dedico a la
  venta de aplicaciones para empresas vía 
 \shape italic
@@ -486,6 +507,12 @@ Seguridad
  Los clientes de estos servicios pueden pensar que al almacenar su información
  en un lugar externo a su propio dispositivo, esta se encuentra más en peligro
  de ser abordado por terceras personas.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "CRY2010,EM2009"
+
+\end_inset
+
  Sin embargo esto no es así.
  Las empresas encargadas de ofertar servicios en la nube mantienen extrictos
  controles de seguridad para evitar que la información de sus clientes pueda
@@ -497,6 +524,13 @@ Data Center
 \shape default
  encargadas exclusivamente en la protección y vigilancia de datos.
  
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIST2011"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -659,7 +693,21 @@ Comunicación como servicio (Caas) : Facilita la comunicación entre clientes
 
 \begin_layout Standard
 El coste de alquiler de las aplicaciones en un modelo de software como servicio
- suele estar ligado a una tarifa plana anual o mensual por usuario.
+ suele estar ligado a una tarifa plana anual
+\begin_inset CommandInset citation
+LatexCommand cite
+key "IT2012"
+
+\end_inset
+
+ o mensual por usuario
+\begin_inset CommandInset citation
+LatexCommand cite
+key "TC2011"
+
+\end_inset
+
+.
  el precio puede reajustarse si se añaden o quitan usuarios.
  Algunos ejemplos de software como servicio son 
 \shape italic
@@ -707,6 +755,12 @@ Es el tipo más común y el que mejor representa la idea de computación en
 Facebook, Tuenti, Google yLinkedIn
 \shape default
 .
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIST2011,IDC2008"
+
+\end_inset
+
  
 \end_layout
 
@@ -731,6 +785,13 @@ Es el segundo tipo de computación en la nube más utilizado.
  exclusividad de su propia infraestructura, así como máximas garantías de
  seguridad y confidencialidad en sus sistemas de información.
  
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIST2011,IDC2008,IW2010,GH2009"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -822,13 +883,20 @@ Datacenter
  Así permite reducir costes al modelo de pago por uso, y escalar de forma
  rápida y flexible y sin inversión extra.
  
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIST2011,AS2012,IDC2008"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -856,6 +924,30 @@ Esquema de cloud híbrido en el DataCenter del proovedor
 \begin_layout Plain Layout
 
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Cloud comunitario
+\end_layout
+
+\begin_layout Standard
+Un cloud comunitario se da cuando dos o más empresas forman una alianza
+ y comparten una infraestructura con un marco de seguridad y privacidad
+ común .
+ Esto es posible ya que todas las empresas aliadas tienen unos objetivos
+ comunes y requieren de los mismos recursos y herramientas .
+ De esta forma las empresas participantes pueden beneﬁciarse de una esclusividad
+ casi total reduciendo el coste de compra y mantenimiento de servidores.
+ Como desventaja de este modelo perdemos el nivel de seguridad característico
+ de los clouds privados y este pasa a ser dependiente del anﬁtrión de la
+ infraestructura.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIST2011,IDC2008"
 
 \end_inset
 
