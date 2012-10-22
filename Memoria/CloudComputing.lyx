@@ -1117,6 +1117,13 @@ Su compañia sigue una organización privada pero delega ciertas funcionalidades
 Tiene una empresa que usa un modelo de software como servicio pero necesita
  cierta infraestructura privada para almacenar información que necesita
  unos requisitos de seguridad muy elevados.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "JH2009"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
