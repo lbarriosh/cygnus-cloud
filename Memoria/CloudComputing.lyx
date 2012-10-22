@@ -271,7 +271,10 @@ Cloud computing
  las redes en los diagramas de sistemas de computación y comunicación.Esta
  representación de internet con el simbolo de la nube lleva realizandose
  desde 1994.
- La idea de una “red de ordenadores intergaláctica” fue dada por J.C.R Licklider
+\end_layout
+
+\begin_layout Standard
+La idea de una “red de ordenadores intergaláctica” fue dada por J.C.R Licklider
  en los años 60.
  Segun Licklider era necesario conseguir que todo el mundo, a lo largo y
  ancho del planeta estuviera interconectado y pudiera compartir información,
@@ -300,8 +303,75 @@ key "PSR2011"
 \end_layout
 
 \begin_layout Standard
-Independientemente de quien fuera el verdadero precursor parece claro que
- los primeros hitos sobre el 
+En los primeros años de la computación (1980's) todo operaba con un modelo
+ cliente/servidor.
+ Todas las aplicaciones , toda la información y todo el control se encontraba
+ almacenado en enormes computadores conocidos como servidores.Si un usuario
+ quería acceder a una determinada información o ejecutar un determinado
+ programa tenía que conectarse al ordenador central y acceder de manera
+ apropiada.
+ Estos usuarios se conectaban al ordenador central por medio de terminales
+ , también conocidos como estaciones de servicio o clientes.
+ 
+\end_layout
+
+\begin_layout Standard
+Los ordenadores centrales tenían unos recursos limitados .
+ El acceso no era inmediato y dos usuarios no podían acceder a la misma
+ información a la vez.
+ Por ello para poder trabajar con uno de estos ordenadores centrales era
+ necesario esperar a que este pudiera atender tus consultas lo cual provocaba
+ un importante retardo.
+\end_layout
+
+\begin_layout Standard
+Este cuello de botella provocó que se comenzara a estudiar nuevos modelos.
+ Basandose en la idea de no tener que utilizar el servidor como intermediario
+ a la hora de establecer una comunicación entre dos ordenadores surgió el
+ modelo de persona a persona (p2p).
+ Con este modelo todos los ordenadores tenían las mismas posibilidades y
+ responsabilidades.
+ Es decir, todos los ordenadores son a su vez clientes y servidores.
+ La principal finalidad con las que se desarrollo el P2P fue la de su uso
+ en internet.
+ Segun esta idea los mensaje se propagaban a cualquier ordenador personal
+ permitiendo que cada usuario conectado puediese acceder a casí toda la
+ información .
+ Esto ya presagiaba la idea de computación en la nube.
+ En realidad la red no usaba la idea más estricta de P2P .
+ Cada dirección estaba organizada por un conjunto de servidores a los cuales
+ se conectaban los usuarios .
+ Así , los usuarios tenían una mayor libertad con respecto a el modelo cliente/s
+ervidor sin llegar a tener un control total.
+\end_layout
+
+\begin_layout Standard
+La idea de restringir la gestión de datos y el control a un conjunto de
+ servidores centralizados (en mayor número que los ordenadores centrales
+ del modelo cliente/servidor) y no a todos los usuarios se basaba en que
+ el procesamiento de información requería de tiempo y energía y no todos
+ los ordenadores estaban conectados las 24 horas del día .
+ Así el conjunto de servidores centrados en una determinada página se encargaban
+ de procesar un conjunto de peticiones en paralelo a nivel local y subir
+ la nueva información extraida cada cierto tiempo.
+ De la misma forma esto podría ser aplicado a un conjunto de usuarios interesado
+s en un mismo proyecto .
+ Por medio de un conjunto de servidores destinados en exclusiva a la gestión
+ y actualización de un proyecto , un gran número de usuarios podrían trabajar
+ sobre dicho proyecto y permitir a los servidores informar de sus avances
+ a cualquier otro usuario que se conecte a los mismos .
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "MM2008"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los primeros hitos sobre el 
 \shape italic
 cloud computing
 \shape default
@@ -761,6 +831,58 @@ key "NIST2011,IDC2008"
  
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Tengo que mezclar esto con lo anterior de forma que no parezca demasiado
+ forzado.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Un cliente suele usar un cloud público cuando:
+\end_layout
+
+\begin_layout Itemize
+Quiere usar un servicio compartido por un número elevado de usuarios.
+\end_layout
+
+\begin_layout Itemize
+Necesita herramientas para el testeo y desarrollo de una aplicación.
+\end_layout
+
+\begin_layout Itemize
+Utiliza un modelo de software como servicio (SaaS) con una buena estrategia
+ de seguridad.
+\end_layout
+
+\begin_layout Itemize
+Necesita una capacidad incremental .
+ La capacidad que va a necesitar no se puede aproximar desde el principio.
+\end_layout
+
+\begin_layout Itemize
+Está trabajando en un proyecto colaborativo.
+\end_layout
+
+\begin_layout Itemize
+Está desarrollando una aplicación utilizando un modelo de plataforma como
+ servicio (PaaS).
+\begin_inset CommandInset citation
+LatexCommand cite
+key "JH2009"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Cloud privado
 \end_layout
@@ -785,6 +907,45 @@ Es el segundo tipo de computación en la nube más utilizado.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "NIST2011,IDC2008,IW2010,GH2009"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Tengo que mezclar esto con lo anterior de forma que no parezca demasiado
+ forzado.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Un cliente suele usar un cloud privado cuando :
+\end_layout
+
+\begin_layout Itemize
+Su negocio se basa en su información y sus aplicaciones .
+ Por lo tanto, el control y la seguridad son primordiales.
+\end_layout
+
+\begin_layout Itemize
+Su negocio está relacionado con la gestión de la información de otras empresas.
+\end_layout
+
+\begin_layout Itemize
+Su empresa es lo suficientemente grande como para poder mantener un sistema
+ en la nube propio eficiente.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "JH2009"
 
 \end_inset
 
@@ -925,6 +1086,37 @@ Esquema de cloud híbrido en el DataCenter del proovedor
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Tengo que mezclar esto con lo anterior de forma que no parezca demasiado
+ forzado.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Un cliente suele usar un cloud híbrido cuando:
+\end_layout
+
+\begin_layout Itemize
+Su compañia sigue una organización privada pero delega ciertas funcionalidades
+ en servicios públicos .
+ Por ejemplo una empresa mantiene una infraestructura privada para el desarrollo
+ de sus aplicaciones pero utiliza servicios públicos para almacenar información.
+\end_layout
+
+\begin_layout Itemize
+Tiene una empresa que usa un modelo de software como servicio pero necesita
+ cierta infraestructura privada para almacenar información que necesita
+ unos requisitos de seguridad muy elevados.
 \end_layout
 
 \begin_layout Subsection
