@@ -70,147 +70,258 @@ Introducción
 \end_layout
 
 \begin_layout Standard
-La Universidad Complutense de Madrid es la universidad presencial con mayor
- número de alumnos en España.
- En ella, se imparte docencia en un ingente número de asignaturas correspondient
-es a planes de estudio en extinción y del Espacio Europeo de Educación Superior.
+El uso de las tecnologías de la información y la comunicación (TIC) en el
+ sector educativo no es algo nuevo.
+ Ya en la década de los 60, Plattner y Herron reconocieron que el uso de
+ computadores era extremadamente útil para enseñar a tomar decisiones en
+ situaciones reales y a desempeñar distintos cargos, y también para fomentar
+ la participación.
+ Por ello, no es de extrañar que las TIC hayan adquirido un papel protagonista
+ en el panorama educativo actual.
 \end_layout
 
 \begin_layout Standard
-A medida que las Tecnologías de la Información y la Comunicación han ido
- implantándose en la sociedad, el peso de las sesiones prácticas en los
- planes de estudio ha ido aumentando paulatinamente.
- Además, este proceso se ha acelerado brutalmente con la implantación del
- llamado Espacio Europeo de Educación Superior.
- De esta manera, los estudiantes pasarán una cantidad de tiempo considerable
+De esta manera, a medida que las TIC han ido implantándose en la sociedad,
+ su uso en la universidad no ha hecho más que crecer.
+ Además, la puesta en funcionamiento del llamado Espacio Europeo de Educación
+ Superior ha hecho que las sesiones prácticas tengan un importante peso
+ en todos los planes de estudio universitarios.
+ Y dado que en estas sesiones prácticas se hace uso de las TIC, podemos
+ afirmar que los estudiantes pasarán una cantidad de tiempo considerable
  delante de un ordenador personal durante su estancia en la universidad.
 \end_layout
 
 \begin_layout Standard
-Naturalmente, no todos los estudiantes utilizan los equipos de la Universidad
- con los mismos fines: resulta evidente que las necesidades de los estudiantes
- de Ingeniería Informática no son las mismas que las de los futuros Licenciados
- en Derecho.
- Por ello, tanto las características técnicas como el 
-\emph on
-software
-\emph default
- instalado en los equipos de las aulas de informática y laboratorios de
- los diversos centros de la Universidad Complutense son diferentes.
-\end_layout
-
-\begin_layout Standard
-La administración de todas estas máquinas no es responsabilidad del profesorado,
- sino del personal de administración y servicios dependiente, en última
- instancia, de los Servicios Informáticos de la Universidad.
- De esta manera, los profesores sólo deben especificar qué 
-\emph on
-software
-\emph default
- necesitan en sus clases y validar que la instalación es correcta.
-\end_layout
-
-\begin_layout Standard
-Este modelo presenta serios inconvenientes, que describiremos a lo largo
- de la siguiente sección.
-\end_layout
-
-\begin_layout Section
-Problemas del modelo actual
-\end_layout
-
-\begin_layout Subsection
-Desaprovechamiento de los recursos
-\end_layout
-
-\begin_layout Standard
-Cuando muchos alumnos deben utilizar cierto 
-\emph on
-software
-\emph default
-, las aulas de informática y los laboratorios en los que está instalado
- se saturan, siendo necesario establecer políticas de arbitraje para proporciona
-r un tratamiento equitativo a los alumnos.
+La Universidad Complutense de Madrid (UCM) es la universidad presencial
+ española con mayor número de alumnos.
+ Para que todos ellos puedan realizar sus trabajos académicos, existe un
+ gran número de aulas de informática y laboratorios repartidos entre sus
+ diversos centros.
  
 \end_layout
 
 \begin_layout Standard
-Por ejemplo, si un alumno de Ingeniería Informática debe completar una práctica
- de programación y los laboratorios de su facultad están llenos, no podrá
- aprovechar las aulas de informática vacías de la Facultad de Filología
- por no estar instalado el 
+Naturalmente, la gestión y el mantenimiento de estos espacios es responsabilidad
+ de personal de administración y servicios, dependiente, en última instancia,
+ de los Servicios Informáticos de la universidad.
+ 
+\end_layout
+
+\begin_layout Standard
+A lo largo de este capítulo, presentaremos el modelo de gestión de los laborator
+ios de la Facultad de Informática de la UCM centrándonos en la configuración
+ y en el uso del 
 \emph on
 software
 \emph default
- necesario.
- Esta situación es bastante cuestionable por diversos motivos:
+.
+ Por ello, aquí no se hará referencia a ciertas características de la red
+ de laboratorios de la Facultad de Informática como las altas y bajas de
+ usuarios, el mantenimiento del equipamiento 
+\emph on
+hardware
+\emph default
+ y el alojamiento de material docente en la web de la Facultad de Informática.
+ Posteriormente, discutiremos los inconvenientes de este modelo y presentaremos
+ las principales características del sistema 
+\emph on
+Cygnus Cloud
+\emph default
+.
 \end_layout
 
-\begin_layout Itemize
-en el caso mejor, los estudiantes podrán utilizar sus propios equipos, y
- en el caso peor, tendrán que esperar aunque haya puestos libres.
-\end_layout
-
-\begin_layout Itemize
-puede aumentar innecesariamente la crispación de los alumnos: habiendo suficient
-es puestos, no tiene sentido expulsar a los alumnos de las aulas de informática
- en base a restricciones temporales.
-\end_layout
-
-\begin_layout Itemize
-se desaprovecharán máquinas con potencia suficiente para realizar la práctica
- en cuestión.
-\end_layout
-
-\begin_layout Itemize
-se desaprovechará la energía consumida por los equipos, el sistema de climatizac
-ión y el alumbrado de las aulas de informática infrautilizadas.
-\end_layout
-
-\begin_layout Itemize
-la carga de trabajo del personal encargado del mantenimiento de las aulas
- se distribuirá de forma muy irregular, estando unos empleados saturados
- y otros sin apenas trabajo.
+\begin_layout Section
+El modelo de gestión de los laboratorios de la Facultad de Informática de
+ la UCM
 \end_layout
 
 \begin_layout Subsection
-Dificultades para modificar la configuración de los equipos
+Introducción
 \end_layout
 
 \begin_layout Standard
-El hecho de que la gestión de las aulas de informática no dependa del profesorad
-o impide que la configuración de los equipos pueda modificarse en función
- de las necesidades del curso.
+Los planes de estudio de la Facultad de Informática de la UCM siempre se
+ han caracterizado por el importante peso asociado a las sesiones prácticas.
+ En el caso de los planes de estudio en extinción, los estudiantes deben
+ pasar más de la mitad de su tiempo de estudio ante un ordenador personal.
+ Además, esta situación se ha mantenido en el caso de los nuevos planes
+ de estudio, implantados en el curso académico 2011/2012.
 \end_layout
 
 \begin_layout Standard
-Así, las versiones del 
+Así pues, es necesario disponer de espacios en los que los alumnos puedan
+ realizar todas estas actividades prácticas: los 
 \emph on
-software
+laboratorios
 \emph default
- a utilizar deben solicitarse al principio del cuatrimestre o, en el caso
- peor, al principio del curso.
- Si por alguna razón se debe utilizar 
+.
+ Para ello, la Facultad de Informática cuenta con 300 ordenadores personales
+ conectados a Internet y repartidos entre 12 laboratorios.
+ En términos generales, podríamos considerar un laboratorio como un aula
+ de informática, si bien algunos disponen de equipamiento específico (como
+ FPGAs, osciloscopios, entrenadores, polímetros,\SpecialChar \ldots{}
+).
+\end_layout
+
+\begin_layout Standard
+Estos laboratorios son gestionados por el propio centro, y compartidos entre
+ múltiples asignaturas.
+\end_layout
+
+\begin_layout Subsection
+Requisitos docentes de los laboratorios
+\end_layout
+
+\begin_layout Standard
+En la actualidad, en la Facultad de Informática de la UCM se imparte docencia
+ correspondiente a tres planes de estudio de grado (Grado en Ingeniería
+ de Computadores, Grado en Ingeniería del Software y Grado en Ingeniería
+ Informática), uno de doble grado (Doble Grado en Ingeniería en Informática
+ y Matemáticas), dos ingenierías técnicas (en Informática de Gestión y en
+ Informática de Sistemas) y una ingeniería superior (Ingeniería Informática),
+ junto con múltiples programas de postgrado y doctorado.
+ 
+\end_layout
+
+\begin_layout Standard
+Es cierto que la informática es fundamental en todos estos estudios, pero
+ las diferentes asignaturas que se imparten en los laboratorios tienen necesidad
+es muy diferentes.
+ Por ejemplo, una asignatura de introducción a la programación en C++ requerirá
+ un editor y un compilador, mientras que una asignatura de electrónica requerirá
+ osciloscopios, polímetros, resistencias, transistores,\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Standard
+Además, en las asignaturas pueden utilizarse herramientas de pago, como
+ MATLAB y 
+\emph on
+Rational Software Architect
+\emph default
+.
+ Por ello, la Facultad debe permitir trabajar a los alumnos en los laboratorios
+ de la Facultad fuera del horario de clases no sólo para que utilicen dichas
+ herramientas o el equipamiento específico del laboratorio, sino también
+ para que puedan elaborar los distintos trabajos de clase que se les asignen.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en los laboratorios también pueden realizarse exámenes de carácter
+ práctico.
+\end_layout
+
+\begin_layout Subsection
+Servicios prestados a los alumnos
+\end_layout
+
+\begin_layout Standard
+Cada alumno matriculado en la Facultad de Informática de la UCM dispone
+ de una cuenta personal que le permite utilizar cualquier puesto de la red
+ de laboratorios.
+ Cada cuenta tiene asociado un espacio de almacenamiento en disco (100 MB)
+ junto con una cuota de impresión (de 200 hojas por curso académico).
+ Desde el punto de vista del alumno, el sistema permite:
+\end_layout
+
+\begin_layout Itemize
+Controlar el uso de los puestos de laboratorio.
+ Todos los alumnos deben autenticarse antes de utilizar cualquier puesto.
+ Esto permite detectar y sancionar las actividades indebidas que se realicen
+ en los laboratorios.
+\end_layout
+
+\begin_layout Itemize
+El envío de avisos y notificaciones a los alumnos que utilizan el laboratorio.
+\end_layout
+
+\begin_layout Itemize
+Distribuir equitativamente el tiempo de uso de los puestos de laboratorio
+ en periodos de alta ocupación.
+ Así, el sistema permite que los alumnos que más tiempo llevan utilizando
+ los puestos de laboratorio se vean obligados a cederlos a sus compañeros.
+\end_layout
+
+\begin_layout Itemize
+Consultar la ocupación de todos los puestos de laboratorio.
+\end_layout
+
+\begin_layout Itemize
+Consultar la documentación del material experimental (como las 
+\emph on
+datasheets
+\emph default
+ de los circuitos integrados que se utilizan en las prácticas).
+\end_layout
+
+\begin_layout Subsection
+Servicios prestados a los profesores
+\end_layout
+
+\begin_layout Standard
+La Facultad de Informática de la UCM también ofrece a cada uno de sus profesores
+ una cuenta personal.
+ Esta también les permite utilizar cualquier puesto de laboratorio y dispone
+ de mayores cuotas de almacenamiento y de impresión.
+\end_layout
+
+\begin_layout Standard
+A diferencia de los alumnos, los profesores también pueden hacer uso de
+ servicios adicionales de apoyo a la docencia.
+ Los más relevantes son:
+\end_layout
+
+\begin_layout Itemize
+La restricción del acceso a Internet en horario de clase.
+\end_layout
+
+\begin_layout Itemize
+La recolección de prácticas, exámenes y trabajos realizados por los alumnos.
+ El acceso a los mismos estará limitado al profesor y a su propietario.
+\end_layout
+
+\begin_layout Itemize
+La adquisición, instalación y configuración de todo el 
 \emph on
 software 
 \emph default
-distinto, este tardará bastante en estar instalado en los equipos del aula
- a causa de toda la burocracia necesaria.
-\end_layout
-
-\begin_layout Standard
-Es más, si la configuración de los equipos es incorrecta entonces el retraso
- sólo podrá aumentar.
- Concluimos que esta situación sólo contribuye a empeorar la calidad de
- la docencia.
+a utilizar a lo largo del curso académico.
 \end_layout
 
 \begin_layout Subsection
-Sobrecoste de las aulas de informática
+Otros servicios
 \end_layout
 
 \begin_layout Standard
+Los servicios que hemos descrito en las secciones anteriores están orientados
+ a los usuarios de los laboratorios.
+ Junto con estos, existen otros especialmetne orientados a facilitar el
+ trabajo del personal técnico, como la monitorización de toda la actividad
+ de los laboratorios en tiempo real y la replicación de configuraciones
+ (basada en el hecho de que todos los puestos de un mismo laboratorio tienen
+ la misma configuración 
+\emph on
+hardware
+\emph default
+ y 
+\emph on
+software
+\emph default
+).
+\end_layout
 
+\begin_layout Section
+Inconvenientes del modelo presentado
+\end_layout
+
+\begin_layout Standard
+En esta sección recogeremos los incovenientes que presenta el modelo de
+ gestión de los laboratorios de la Facultad de Informática de la UCM.
+ Estos afectan tanto a los alumnos como a los profesores.
+\end_layout
+
+\begin_layout Subsection
+Desaprovechamiento de recursos
 \end_layout
 
 \end_body
