@@ -1,0 +1,481 @@
+
+\chapter{Cloud Computing}
+
+
+
+
+\section{Introducción}
+
+En el presente capítulo se abordará el estudio de cloud computing
+al ser este el tema principal en el que se basa nuestro proyecto.
+Para ello comenzaremos dando una detallada definión sobre cloud computing,
+después explicaremos su funcionamiento y para terminar describiremos
+las caracteristicas y los diferentes tipos de sistemas en la nube.
+
+El cloud computing permite al cliente abstraerse del hardware con
+el cual va a trabajar y centrarse en los servicios que necesita para
+desarrollar dicho trabajo . De esta forma el usuario puede centrarse
+en su trabajo y despreocuparse por como obtener el entorno necesario. 
+
+
+\section{Definición}
+
+Para poder establecer un estandar acerca del significado más correcto
+de la expresión ``comutación en la nube'' el Instituto Nacional
+de Estandares y Tecnologías (NIST) ha dado una definición universal
+y una arquitectura de referencia . De esta forma para el NIST la computación
+en la nube consiste en :
+\begin{quotation}
+\textsf{\textit{Un modelo para permitir un acceso de red conveniente,
+desde cualquier sitio y bajo demanda a un conjunto compartido de recursos
+informáticos configurables (por ejemplo, redes, servidores, almacenamiento,
+aplicaciones y servicios) que se pueden proporcionar rápidamente y
+lanzar con un mínimo esfuerzo de gestión o interacción con el proveedor
+de servicios}}\textit{.}''\cite{NIST2011}
+\end{quotation}
+\textsf{De esta definición podemos extraer las cuatro caracteristicas
+esenciales de la computación en la nube . Estas características son
+las de autoservicio, accesibilidad desde multiples plataformas, recursos
+compartidos por varios usuarios y servicios flexibles . Hablaremos
+en profundidad sobre estas características más adelante.}
+
+
+\section{Antecedentes}
+
+Con la finalidad de acercar al lector más a todo lo que abarca la
+computación en la nube expondremos a continuación un ejemplo que permita
+representar el funcionamiento de este servicio por medio de un sistema
+más conocido y extendido en la sociedad.
+
+Imaginemos el sistema de distribución de agua de una ciudad . La evolución
+del ser humanos ha estado fuertemente ligada al agua por ser esta
+necesaria para la subsistencia de la especie . Así la primeras civilizaciones
+buscaban lugares donde hubiese agua dulce disponible, en territorios
+cercanos a lagos y rios . Estas sociedades reducidas eran capaz de
+abastecerse con estos lagos y rios, sin embargo, cuando la sociedad
+fue evolucionando y extendiendose se convirtio en algo primordial
+encontrar otras fuentes de agua dulce . De esta forma comenzó a construirse
+pozos que permitiese extraer el agua subterranea . las construcciones
+de los primeros pozos se produjeron en jericó (Israel) hace aproximadamente
+7.000 años. Para que este agua pudiera se accesible para todos los
+ciudadanos fue necesario desarrollar trasportes capaces de trasladar
+y mantener este liquido . Sin embargo, estos trasportes eran bastante
+lentos y no siempre resultaban facilmente accesible para todos los
+usuarios. Además los tratamientos de purificación del agua tales como
+el calentamiento al fuego o el filtrado a traves de arena dejaban
+bastante que desear y provocaban un gran número de infecciones que
+desembocaban en grandes epidemias haciendo fracasar en parte la principal
+finalidad de estos mecanismos.
+
+No fue hasta la antigua Grecia cuando aparecieron los primeros sistemas
+eficientes de almacenamiento y trasporte del agua potable obtenido
+a partir de pozos, lluvia, ríos y lagos . De esta época datan las
+primeras redes de distribución a gran escala. Otra novedad importante
+que fue introducida en esta época fue un interes claro por la calidad
+del agua que consimían.Para ello el agua utilizada se retiraba mediante
+sistemas de agua residual además se utilizaban embalses de aireación
+para purificar el agua antes de su distribución.
+
+Así llegamos a la época del imperio Romano. Los romanos fueron los
+mayores arquitectos en construcciones de redes de distribución de
+agua que ha existido a lo largo de la historia.La verdadera revolución
+llegó con los acueductos, ya que por primera vez se podía transportar
+agua entre puntos separados por una gran distancia. Gracias a ellos,
+los romanos podían distribuir agua entre distintos puntos de su amplio
+imperio. Con la caida del imperio romano los acueductos dejaron de
+utilizarse provocando un paso atras en la evolución de los sistemas
+de distribución de agua . En la edad media el agua de las ciudades
+estaba demasiado contaminada para poder ser consumida y era necesario
+traerla del exterior, tarea llevada a cabo por medio de los portadores.
+
+Así llegamos hasta los inicios del siglo \textit{XIX} en el que encontramos
+el primer sistema de suministro de agua potable para toda una ciudad
+completa. Fue construido en Paisley, Escocia, alrededor del año 1804
+por John Gibb. A lo largo de la ciudad se extendían multiples fuentes
+donde los ciudadanos podían recoger el agua suficiente para abastecer
+a su familia . Este sistema produjo una importante aproximación del
+agua a toda la sociedad pero los ciudadanos tenían una cantidad de
+agua bastante limitada y debían molestarse en desplazarse todos los
+días para recogerla.
+
+Finalmente en la actualidad podemos tener acceso a agua potable totalmente
+purificada simplemente acercandonos al grifo de nuestra cocina . De
+esta forma existen plantas de almacenamiento y purificación capaces
+de avastecer a un elevado número de personas las cuales solo tienen
+que preocuparse por pagar cierto dinero por estos servicios para poder
+disfrutar del liquido elemento en sus propias casas.
+
+De igual forma que el agua, los servicios utilizados en la sociedad
+para el desarrollo de aplicaciones y en general para la realización
+de cualquier tarea ligada a un computador han evolucionado desde unos
+sitemas prehistoricos que limitaban hasta donde se podía llegar e
+incrementaba el tiempo de trabajo hasta servicios otorgados por una
+empresa y gestionados en su integridad por la misma en los que el
+usuario tan solo debe preocuparse del trabajo al cual debe hacer frente
+y no de si dispone de todos los servicios para llevarlo acabo . Así
+de igual forma que hoy en día resulta casí impensable no poder disfrutar
+de agua potable en nuestras propias casas también debe resultar impensable
+que cualquier usuario no pueda hacer frente a un trabajo por las limitaciones
+de su entorno.
+
+
+\section{Historia}
+
+El origen del termino \textquotedblleft{}\textit{Cloud computing}\textquotedblright{}
+es bastante misterioso. Se cree que este deriva de la práctica de
+dibujar nubes para representar las redes en los diagramas de sistemas
+de computación y comunicación.Esta representación de internet con
+el simbolo de la nube lleva realizandose desde 1994. La idea de una
+\textquotedblleft{}red de ordenadores intergaláctica\textquotedblright{}
+fue dada por J.C.R Licklider en los años 60. Segun Licklider era necesario
+conseguir que todo el mundo, a lo largo y ancho del planeta estuviera
+interconectado y pudiera compartir información, datos y programas.
+Algunos expertos tales como Margaret Lewis (directora de \textit{marketing}
+de AMD) piensan que esta idea es la precursora del origen del \textit{cloud}.
+Por otra parte un gran número de expertos mantienen que la primera
+idea acerca de la computación en la nube fue dada por John McCarthy,
+el cual también en los años 60 dijo que el mundo de la informática
+debía ser de uso público\cite{PSR2011}. 
+
+Independientemente de quien fuera el verdadero precursor parece claro
+que los primeros hitos sobre el \textit{cloud computing} fueron dados
+en los 90 por las empresas que primero habían comenzado ofreciendo
+circuitos de comunicación punto a punto y que en esa década comienzan
+a crear redes virtuales privadas (VPN) las cuales ofrecen unos servicios
+muy similares a los de los sistemas anteriores pero con un coste muy
+inferior a estos\cite{IETF1993}. Una de estas empresas fue Salesforce.com
+la cual en 1999 se dedico a la venta de aplicaciones para empresas
+vía \textit{web}. También cabe destacar \textit{Amazon Web Services}
+que en 2002 ofrecían un paquete de servicios basados en la idea \textit{cloud}
+que incluía almacenamiento, computación e incluso inteligencia humana
+a través de \textit{Amazon Mechanical Turk}. En 2006, Amazon lanzó
+\textit{Elastic Compute cloud} (EC2) como un servicio vía \textit{web}
+que daba la oportunidad a pequeñas empresas y a individuos de alquilar
+maquinas donde hospedar sus propias aplicaciones. Segun Jeremy Allaire
+(CEO de Brightcove) este era el primer sistema que podía ser considerado
+como una infraestructura de computación en la nube completa y accesible.
+ya en el 2009, la \textit{web} 2.0 dió el gran salto de la mano de
+Google al ofrecer sus aplicaciones empresariales que se utilizaban
+a través de un navegador web, a través de servicios tales como Google
+Apps. Dan Germain (jefe de la oficina tecnológica de Cobweb Solutions)
+se referenció a esta tecnología y dijo que \textquotedblleft{}la contribución
+más importante al \textit{Cloud Computing} ha sido la aparición de
+las \textquotedblleft{}\textit{killer apps}\textquotedblright{} creadas
+por gigantes tecnológicos como Microsoft y Google. Cuando estas compañías
+ofrecieron este servicio de manera fiable y fácil de consumir, el
+efecto en cadena de la industria en su conjunto ha sido una mayor
+aceptación general de los servicios en línea\textquotedblright{}.
+Ya en esta época parecía dislumbrarse que la computación en la nube
+iba a revolucionar la idea de informática que se tenía hasta el momento.
+De hecho, el especialista en tecnologías emergentes, Julian Friedman,
+dijo que en cuanto el modelo en la nube este disponible y generalzado
+a traves de la \textit{web} y se convierta en un sistem multiplataforma,
+todas las aplicaciones avanzarán naturalmente a dicho modelo. Además
+una vez mejorada la seguridad, los servicios basados en \textit{cloud
+computing} \textquotedbl{}pueden permitir a una empresa ampliar su
+infraestructura, aumentar la capacidad de la demanda, o externalizar
+toda la infraestructura, lo que da como resultado una mayor flexibilidad,
+una mayor variedad de recursos y un importante ahorro de costes\textquotedbl{}
+tal y como dijo Andreas Asander ( subdirector de gestión de productos
+de Clavister especialista en seguridad de entornos virtualizados).
+Con todo esto parece claro que la computación en la nube se ha convertido
+en una realidad palpable y una prioridad para un gran número de empresas
+actuales de este sector, tal y como demuestran las últimas encuestas
+realizadas. 
+
+
+\section{Características}
+
+En este apartado detallaremos las principales características que
+hacen de la computación en la nube un servicio actualmente en auge
+: 
+\begin{itemize}
+\item \textbf{Agilidad}. El usuario puede gestionar de manera sencillas
+que aplicaciones necesita en su entorno de desarrollo. De esta forma
+el usuario puede adquirir o borrar sus aplicaciones segun las requiera
+o no en cada momento de manera facil y rapida.
+\item \textbf{Coste}. Gracias a las empresas encargadas en ofertar su \textit{hardware}
+a los usuarios interesados en ejecutar sus aplicaciones en la nube,
+estos no necesitarán hacer frente a los gastos iniciales de compra
+de recursos así como a los gastos de mantenimiento. Esto reduce el
+coste de desarrollo ya que aunque bien es cierto que es necesario
+pagar un alquiler por los servidores comunitarios este es menor a
+los posibles gastos a corto y largo plazo a los que habría que hacer
+frente. 
+\item \textbf{Accesibilidad}. La independencia entre la interfaz de desarrollo
+y la localización del entorno que ejecuta el servicio permite al usuario
+acceder a sus herramientas de trabajo desde cualquier dispositivo
+con acceso a la web. De esta forma los cliente pueden trabajar desde
+su sobremesa, su portatil o incluso desde su dispositivo movil. 
+\item \textbf{Elasticidad} y \textbf{escalabilidad}. Las aplicaciones en
+cloud son totalmente elásticas en cuanto a su rapidez de implementación
+y adaptabilidad. Además, son totalmente escalables, es decir, hoy
+podemos estar utilizando solo un 10 \% del total de la aplicación
+y mañana podemos acceder al 80 \% de la misma con total normalidad
+y rapidez. 
+\item \textbf{Recuperación}. Los servicios en la nube proporcionan a los
+usuarios sistemas de almacenamiento secundario de forma que en caso
+de perdida de información se pueda recuperar de manera inmediata sufriendo
+así las menores perdidas posible. 
+\item \textbf{Estabilidad}. Las empresas de gestión de las aplicaciones
+en la nube aseguran al usuario una fuerte estabilidad en su entorno
+de desarrollo y permiten un relevantamiento inmediato de los servicios
+en los que hayan surgido algun problema. 
+\item \textbf{Seguridad}. Quizas esta es la característica más dificil de
+entender de la computación en la nube. Los clientes de estos servicios
+pueden pensar que al almacenar su información en un lugar externo
+a su propio dispositivo, esta se encuentra más en peligro de ser abordado
+por terceras personas.\cite{CRY2010,EM2009} Sin embargo esto no es
+así. Las empresas encargadas de ofertar servicios en la nube mantienen
+extrictos controles de seguridad para evitar que la información de
+sus clientes pueda ser filtrada al exterior. Para almacenar esta información
+suelen utilizar empresas secundarias de \textit{Data Center} encargadas
+exclusivamente en la protección y vigilancia de datos. \cite{NIST2011}
+\end{itemize}
+
+\section{Modelos de servicios }
+
+La computación en la nube ofrece sus servicios de acuerdo a 3 modelos
+fundamentales. Estos modelos se refieren a la forma en que las diferentes
+empresas clientes gestionan sus servicios contratados en la nube.
+Estos modelos no son siempre excluyentes entre sí. En ocasiones una
+misma empresa puede tener un modelo resultante de mezclar algunos
+de los modelos fundamentales. Por ejemplo, un proveedor de software
+como servicio (SaaS) podría optar por ofrecer distintos servicios
+de infraestructura (IaaS) a los clientes. 
+
+
+\subsection{Infraestructura como servicio (IaaS) }
+
+Es el modelo más básico. En este modelo el cliente estará contratando
+únicamente la infraestructura tecnológica. Esta infraestructura tendrá
+la capacidad de procesamiento, de almacenamiento o de comunicación.
+Una vez establecida el cliente alojará sus aplicaciones y plataformas.
+De esta forma el proovedor oferta al usuario un conjunto de maquinas
+virtuales sobre las que trabajar. Estas maquinas virtuales serán manejadas
+por hipervisores, tales como Xen o Kvn. Gracias a la habilidad de
+gestión de las maquinas virtuales por parte de los proovedores el
+cliente puede contratar tantas maquinas virtuales como necesite. Una
+vez obtenidas las maquinas virtuales el cliente instalará el sistema
+operativo que más le interese y las aplicaciones. Por ello en este
+modelo el cliente es el responsable del mantenimiento y configuración
+del sistema operativo y de todas las aplicaciones instaladas en él.
+Ya que los proovedores no deben preocuparse por aspectos como la seguridad
+únicamente cobran por la cantidad de recursos asignados y consumidos.
+Así el modelo de servicio basado en infraestructuras no hace referencia
+a una maquina que hace todo el trabajo, sino simplemente simplifica
+el trabajo ofreciendo espacio de almacenamiento en servidores y \textit{data
+centers}. Algunos ejemplos de infraestruturas como servicio son \textit{Amazon
+CloudFormation}, \textit{Rackspace Cloud}, \textit{Terremark}, \textit{Windows
+Azure Virtual Machines} y \textit{Google Compute Engine}.
+
+
+\subsection{Plataforma como servicio (PaaS) }
+
+En este caso los proovedores de los servicios ofrecen una plataforma
+completa al cliente la cual incluye tanto el sistema operativo como
+el conjunto de todas las aplicaciones de desarrollo, las bases de
+datos y el conjunto de servicios \textit{web} que este necesite. Además
+esta plataforma se instala sobre una infraestructura también proporcionada
+por el proovedor. De esta forma el cliente puede dedicarse a desarrollar
+su aplicación (desarrollos propios o licencias adquiridas) sin preocuparse
+de los costes de compra y mantenimiento de \textit{hardware y software}.
+La plataforma como servicio el equipo base y escala los recursos de
+almacenamiento automaticamente para que el cliente no tenga que asignar
+dichos recursos manualmente. Este modelo resulta ventajoso tanto para
+el cliente como para el proovedor ya que el primero no necesita costear
+el precio completo de las licencias de todas las herramientas de desarrollo
+(algunas de las cuales serán usadas tan poco que costear una licencia
+completa por ella resultaría contraproducente) y el segundo puede
+ofertar una misma herramienta a un gran número de clientes cuyas necesidades
+sean similares. Algunos ejemplos de plataforma como servicio son \textit{Amazon
+Elastic Beanstalk, Cloud Foundry, Heroku, Force.com, EngineYard, Mendix,
+Google App Engine, Windows Azure Compute y OrangeScape}. 
+
+
+\subsection{Software como servicio(Saas) }
+
+Por último este modelo es el que otorga menos libertades a la par
+que menos preocupaciones al cliente. En este modelo el proovedor no
+solo oferta la infraestructura y las herramientas como en los servicios
+anteriores, sino que sobre ellas instala el conjunto de aplicaciones
+que será usadas por el cliente. Esto no solo libera al cliente de
+instalar y correr las aplicaciones en sus propia computadora sino
+que también se encarga del mantenimiento, la recuperación y el soporte
+de las mismas. Lo que hace diferente a una aplicación ejecutada en
+la nube del resto de aplicaciones es su elasticidad.Esta elasticidad
+puede entenderse como el reparto de las tareas en multiples maquinas
+virtuales en tiempo de ejecución para acelerar la ejecución de las
+tareas más demandadas.Unos gestores de carga son los encargados de
+balancear el trabajo entre multiples maquinas virtuales. Este proceso
+es invisible al cliente ya que el solo tiene un punto de acceso por
+el que interactuar con las aplicaciones. Para poder dar cabida a tantos
+usuarios en la nube las aplicaciones pueden ser multiusuario, es decir,
+una maquina puede atender tareas de más de un usuario a la vez. Basados
+en esta idea aparecen un conjunto de modelos especiales tales como: 
+\begin{itemize}
+\item Escritorio como servicio (DaaS) : Se ofrece al cliente un escritorio
+con todas las aplicaciones pertinentemente instaladas para ser ejecutadas
+a su gusto.
+\item Entorno de prueba como servicio (TEaaS) : El cliente dispone de un
+entorno en el que poder realizar sus pruebas sobre un determinado
+software.
+\item Comunicación como servicio (Caas) : Facilita la comunicación entre
+clientes y entre usuarios de una misma empresa a partir de aplicaciones
+especialmente diseñadas para este fin. 
+\end{itemize}
+El coste de alquiler de las aplicaciones en un modelo de software
+como servicio suele estar ligado a una tarifa plana anual\cite{IT2012}
+o mensual por usuario\cite{TC2011}. el precio puede reajustarse si
+se añaden o quitan usuarios. Algunos ejemplos de software como servicio
+son \textit{Google Apps, innkeypos, Quickbooks Online, Successfactors
+Bizx, Limelight Video Platform, Salesforce.com y Microsoft Office
+365}. 
+
+
+\section{Tipos}
+
+De cara a que grupo de clientes se encuentre destinados los servicios
+y donde se encuentren los servidores podemos distinguir tres tipo
+de computación en la nube. 
+
+
+\subsection{Cloud público }
+
+Es el tipo más común y el que mejor representa la idea de computación
+en la nube. En él las aplicaciones residentes en la nube pública,
+su almacenamiento y todos sus recursos están destinados al público
+en general . Este tipo de computación en la nube puede suele ser gratuita
+o bien ligada a un modelo de \textquotedblleft{}pago por uso\textquotedblright{}.
+Este modelo es el mejor para aquellos negocios donde es necesario
+controlar los picos de carga, dirigir las aplicaciones del modelo
+de software como servicio, utilizar una infraestructura provisional
+para desarrollar y testear el software y dirigir las aplicaciones
+que sin utilizadas por muchos usuarios que de otra manera necesitarian
+una gran inversión en infraestructuras para sus negocios. Las principales
+ventajas que ofrece este tipos son flexibilidad, seguridad y ahorro
+en su infraestructura. Además no requiere de inversiones, es escalable
+y no tiene límite de recursos ni disponibilidad. Algunos ejemplos
+de cloud públicos son \textit{Facebook, Tuenti, Google yLinkedIn}.\cite{NIST2011,IDC2008} 
+
+
+\subsection{Cloud privado}
+
+Es el segundo tipo de computación en la nube más utilizado. Hay un
+gran número de dircusiones acerca de cual es la forma idonea para
+definir a los clouds privados. En general cualquier centro de datos
+interno y exclusivo para una empresa es considerado cloud privado.
+Este cloud debe tener cierto nivel de virtualización y autonomía.
+En general los proovedores de clouds privados suelen ofrecer entornos
+hardware a grandes empresas para que pueda residir en ellos sus centros
+de datos. Por ello los clouds privados son el tipo que debe prestar
+una mayor atención a la seguridad y mantenimiento de los datos que
+manejan. Esto hace que los clouds privados resulten algo más costosos
+que el resto de tipos. Las principales ventajas que ofrece el cloud
+privado son aislamiento y exclusividad de su propia infraestructura,
+así como máximas garantías de seguridad y confidencialidad en sus
+sistemas de información. \cite{NIST2011,IDC2008,IW2010,GH2009}
+
+
+\subsection{Cloud híbrido}
+
+En este tipos se mezclan las características más importantes del cloud
+privado y público . En él el cliente gestiona y explota en exclusividad
+su infraestructura pero dispone de acceso al cloud público que mantiene
+el proovedor en sus instalaciones . El cloud híbrido combina los beneficios
+del cloud público junto con los del cloud privado.Así por un lado
+dispone de la esclusividad de tener un servidor propio mientra que
+por el otro puede aumentar sus recursos obteniendolos de la nube pública
+a modo de ampliación y adaptación de su arquitectura. Dentro del cloud
+híbrido existen dos submodelos :
+\begin{itemize}
+\item Cloud Privado \textquotedbl{}\textit{inHouse}\textquotedbl{} : Este
+modelo requiere una importante inversión por parte del cliente, tanto
+económica como de recursos, y la seguridad de la información es relativa
+a la experiencia y capacidad técnica disponible. 
+\end{itemize}
+\begin{figure}[H]
+\includegraphics[scale=0.7]{\string"graficos/Cloud computing/cloud-hosting-hibrido-inhouse\string".jpg}
+
+\caption{Esquema del cloud privado ``\textit{inHouse}''}
+
+
+\end{figure}
+
+\begin{itemize}
+\item Tanto Cloud Privado como Cloud Público, en \textit{Datacenter} del
+proovedor : Este modelo puede contener su infraestructura en el centro
+de datos del proovedor, o bien subcontratarla lo que hace desaparecer
+la necesidad de una inversión inicial . Así permite reducir costes
+al modelo de pago por uso, y escalar de forma rápida y flexible y
+sin inversión extra. \cite{NIST2011,AS2012,IDC2008}
+\end{itemize}
+\begin{figure}[H]
+\includegraphics[scale=0.7]{\string"graficos/Cloud computing/cloud-hosting-hibrido-subcontratado\string".jpg}
+
+\caption{Esquema de cloud híbrido en el DataCenter del proovedor}
+
+
+\end{figure}
+
+
+
+\subsection{Cloud comunitario}
+
+Un cloud comunitario se da cuando dos o más empresas forman una alianza
+y comparten una infraestructura con un marco de seguridad y privacidad
+común . Esto es posible ya que todas las empresas aliadas tienen unos
+objetivos comunes y requieren de los mismos recursos y herramientas
+. De esta forma las empresas participantes pueden benefi{}ciarse de
+una esclusividad casi total reduciendo el coste de compra y mantenimiento
+de servidores. Como desventaja de este modelo perdemos el nivel de
+seguridad característico de los clouds privados y este pasa a ser
+dependiente del anfi{}trión de la infraestructura.\cite{NIST2011,IDC2008}
+
+
+\section{Ventajas y desventajas}
+
+Tal y como parece la computación en la nube ofrece a los usuarios
+una nueva forma de entender .Queda claro que las ventajas que ofrece
+esta computación hará posible que en un futuro no muy lejano la idea
+de utilizar un conjunto de servicios no residentes en nuestros ordenadores
+personales será aceptado como algo común entre los usuarios . Sin
+embargo, aunque las ventajas que ofrece este sistema con respecto
+a los anteriores lo convierta en actualmente la mejor opción no hay
+que olvidar que la computación en la nube cuenta con un reducido conjunto
+de desventajas . A continuación detallaremos las ventajas y desventajas
+más relevantes de la computaión en la nube: 
+
+
+\subsection{Ventajas }
+
+Entre las ventajas más importantes del Cloud Computing podemos mencionar: 
+\begin{itemize}
+\item Accesibilidad, que suele ser uno de los principales alicientes por
+el cual se acaba eligiendo este sistema frente al resto. La accesibilidad
+permite que todos los empleados puedan acceder a los datos de la empresa
+no importando el lugar en el que se encuentren de forma fácil y rápida. 
+\item Reducción de gastos en infraestructura, mantenimiento y servicios,
+ya que mediante este tipo de tecnología se reduce los gastos de adquirir
+y mantener los servidores sobre los que corren las aplicaciones, así
+como los posibles gastos de seguridad. 
+\item Escalabilidad, la posibilidad de adquirir más servicios o más capacidad
+es relativamente fácil. 
+\item Seguridad a la hora de mantener nuestros datos intactos pero esto
+es más dependiente del tipo de cloud que se utilice. 
+\end{itemize}
+
+\subsection{Desventajas}
+
+Las desventajas, aunque reducidas, también están presentes en la nube.
+Las principales desventajas a destacar son : 
+\begin{itemize}
+\item Privacidad de los datos. Esta desventaja es más una cuestión de confianza
+de los usuarios que de un problema de la computación en la nube en
+sí. Al estar todo almacenado en lugares externos al propio ordenador
+del usuario este duda acerca la complejidad con la que el resto de
+usuarios puedan obtener su información . 
+\item Dependencia. Esta desventaja reside en que el caso de optar por un
+sistema en la nube no privado el usuario pasa a depender de su proovedor,
+el cual mantiene toda su infraestructura. \end{itemize}
+

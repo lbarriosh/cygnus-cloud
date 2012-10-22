@@ -67,10 +67,10 @@
 \use_default_options true
 \maintain_unincluded_children false
 \language spanish
-\language_package default
+\language_package babel
 \inputencoding auto
 \fontencoding global
-\font_roman lmodern
+\font_roman charter
 \font_sans lmss
 \font_typewriter lmtt
 \font_default_family default
