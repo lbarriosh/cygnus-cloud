@@ -240,6 +240,13 @@ Finalmente en la actualidad podemos tener acceso a agua potable totalmente
  de avastecer a un elevado número de personas las cuales solo tienen que
  preocuparse por pagar cierto dinero por estos servicios para poder disfrutar
  del liquido elemento en sus propias casas.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "CE2010"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -420,7 +427,30 @@ web
  Segun Jeremy Allaire (CEO de Brightcove) este era el primer sistema que
  podía ser considerado como una infraestructura de computación en la nube
  completa y accesible.
- ya en el 2009, la 
+ Este mismo año , George Gilder , en su artículo de octubre 2006 en la revista
+ Wired titulado «Las fábricas de información», daba una definición del modelo
+ de commputación en la nube bastante acertado .
+ Las granjas de servidores, sobre las que escribió Gilder, eran similares
+ en su arquitectura al procesamiento “
+\shape italic
+grid
+\shape default
+” (red, parrilla), pero mientras que las redes se utilizan para aplicaciones
+ de procesamiento técnico débilmente acoplados (
+\shape italic
+loosely coupled
+\shape default
+), un conjunto de sistemas organizados por niveles con un cierto nivel de
+ autonomía e interelación, este nuevo modelo de nube se estaba aplicando
+ a los servicios de Internet
+\begin_inset CommandInset citation
+LatexCommand cite
+key "GG2006"
+
+\end_inset
+
+.
+ Ya en el 2009, la 
 \shape italic
 web
 \shape default
@@ -649,7 +679,10 @@ Es el modelo más básico.
 data centers
 \shape default
 .
- Algunos ejemplos de infraestruturas como servicio son 
+\end_layout
+
+\begin_layout Standard
+Algunos ejemplos de infraestruturas como servicio son 
 \shape italic
 Amazon CloudFormation
 \shape default
@@ -670,6 +703,17 @@ Windows Azure Virtual Machines
 Google Compute Engine
 \shape default
 .
+ También cabe destacar Joyent cuyo producto principal es una línea de servidores
+ virtualizados, que proveen una infraestructura en-demanda altamente escalable
+ para manejar sitios Web, incluyendo aplicaciones Web complejas escritas
+ en Ruby on Rails, PHP, Python, y Java.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PMC2008"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -703,12 +747,22 @@ nto automaticamente para que el cliente no tenga que asignar dichos recursos
  tan poco que costear una licencia completa por ella resultaría contraproducente
 ) y el segundo puede ofertar una misma herramienta a un gran número de clientes
  cuyas necesidades sean similares.
- Algunos ejemplos de plataforma como servicio son 
+\end_layout
+
+\begin_layout Standard
+Algunos ejemplos de plataforma como servicio son 
 \shape italic
 Amazon Elastic Beanstalk, Cloud Foundry, Heroku, Force.com, EngineYard, Mendix,
  Google App Engine, Windows Azure Compute y OrangeScape
 \shape default
 .
+ Entre todos ellos cabe destacar 
+\shape italic
+Windows Azure
+\shape default
+ , de Microsoft, una plataforma en la nube que permite el desarrollo y ejecución
+ de aplicaciones codificadas en varios lenguajes y tecnologías como .NET,
+ Java y PHP.
  
 \end_layout
 
@@ -957,7 +1011,7 @@ Cloud híbrido
 \end_layout
 
 \begin_layout Standard
-En este tipos se mezclan las características más importantes del cloud privado
+En este tipo se mezclan las características más importantes del cloud privado
  y público .
  En él el cliente gestiona y explota en exclusividad su infraestructura
  pero dispone de acceso al cloud público que mantiene el proovedor en sus
@@ -1018,10 +1072,6 @@ inHouse
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -1206,6 +1256,35 @@ Seguridad a la hora de mantener nuestros datos intactos pero esto es más
  
 \end_layout
 
+\begin_layout Itemize
+Integración probada de servicios Red.
+ La computación en la nube puede ser integrar con gran rapidez y facilidad
+ con el resto de aplicaciones empresariales.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SF2011"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Prestación de servicios a nivel mundial.
+ Independientemente donde se encuentre la infraestructura , los servicios
+ ofertados por una empresa en la nube pueden ser utilizados en cualquier
+ parte del mundo de manera rapida y sencilla.
+\end_layout
+
+\begin_layout Itemize
+Actualizaciones automáticas que no afectan negativamente a los recursos
+ de TI.En sistemas ajenos a la computación en la nube el usuario debe dedicar
+ tiempo y esfuerzo en volver a personalizar e integrar la aplicación cada
+ vez que se realice una actualización de la misma .
+ Con la computación en la nube estas actualizaciones se realizan de manera
+ automatica y sin afectar al cliente.
+\end_layout
+
 \begin_layout Subsection
 Desventajas
 \end_layout
@@ -1230,6 +1309,32 @@ Dependencia.
  Esta desventaja reside en que el caso de optar por un sistema en la nube
  no privado el usuario pasa a depender de su proovedor, el cual mantiene
  toda su infraestructura.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "BJ2008"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+La disponibilidad de las aplicaciones está estrechamente ligada a la disponibili
+dad de una red de internet.
+\end_layout
+
+\begin_layout Itemize
+La disponibilidad de herramientas especializadas podría tardar un largo
+ periodo de tiempo hasta que sea factible su utilización en la nube.
+\end_layout
+
+\begin_layout Itemize
+Escalabilidad a largo plazo.
+ A medida que más usuarios empiecen a compartir la infraestructura de la
+ nube,los servidores se encontrarán más sobrecargados lo cual puede provocar
+ importantes degradaciones del servicio en el caso de que la empresa no
+ mantenga un esquema de crecimiento optimo.
  
 \end_layout
 
