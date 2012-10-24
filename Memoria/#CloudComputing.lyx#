@@ -102,6 +102,27 @@ El cloud computing permite al cliente abstraerse del hardware con el cual
  
 \end_layout
 
+\begin_layout Standard
+Además la computación en la nube elimina los costos de adquisición de hardaware,
+ las licencias del software , el mantenimiento de las instalaciones ...
+ El usuario solo debe hacer frente a una tarifa medida por uso o una cuota
+ fija de subscripción.
+ El usuario usa solo lo que quiere , paga sólo lo que usa.
+\end_layout
+
+\begin_layout Standard
+La computación en la nube toma el modelo de cómputo utility al siguiente
+ nivel.
+ Es una forma nueva y evolucionada de cómputo en el cual muchos tipos diferentes
+ de recursos (hardware, software, almacenamiento, comunicaciones, etc.) pueden
+ ser combinados y recombinados sobre la marcha dentro de las capacidades
+ específicas o de los servicios que los clientes requieren.
+ Desde ciclos CPU para proyectos HPC hasta la capacidad de almacenamiento
+ para respaldos de grado empresarial para completar los IDEs para el desarrollo
+ del software, la computación en la nube puede entregar virtualmente cualquier
+ capacidad de IT, en tiempo real.
+\end_layout
+
 \begin_layout Section
 Definición
 \end_layout
@@ -707,6 +728,13 @@ Google Compute Engine
  virtualizados, que proveen una infraestructura en-demanda altamente escalable
  para manejar sitios Web, incluyendo aplicaciones Web complejas escritas
  en Ruby on Rails, PHP, Python, y Java.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "PMC2008"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -740,12 +768,22 @@ nto automaticamente para que el cliente no tenga que asignar dichos recursos
  tan poco que costear una licencia completa por ella resultaría contraproducente
 ) y el segundo puede ofertar una misma herramienta a un gran número de clientes
  cuyas necesidades sean similares.
- Algunos ejemplos de plataforma como servicio son 
+\end_layout
+
+\begin_layout Standard
+Algunos ejemplos de plataforma como servicio son 
 \shape italic
 Amazon Elastic Beanstalk, Cloud Foundry, Heroku, Force.com, EngineYard, Mendix,
  Google App Engine, Windows Azure Compute y OrangeScape
 \shape default
 .
+ Entre todos ellos cabe destacar 
+\shape italic
+Windows Azure
+\shape default
+ , de Microsoft, una plataforma en la nube que permite el desarrollo y ejecución
+ de aplicaciones codificadas en varios lenguajes y tecnologías como .NET,
+ Java y PHP.
  
 \end_layout
 

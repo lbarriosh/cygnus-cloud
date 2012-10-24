@@ -102,6 +102,36 @@ El cloud computing permite al cliente abstraerse del hardware con el cual
  
 \end_layout
 
+\begin_layout Standard
+Además la computación en la nube elimina los costos de adquisición de hardaware,
+ las licencias del software , el mantenimiento de las instalaciones , etc.
+ El usuario solo debe hacer frente a una tarifa medida por uso o una cuota
+ fija de subscripción.
+ El usuario usa solo lo que quiere , paga sólo lo que usa.
+\end_layout
+
+\begin_layout Standard
+La computación en la nube toma el modelo de cómputo utility al siguiente
+ nivel.
+ Es una forma nueva y evolucionada de cómputo en el cual muchos tipos diferentes
+ de recursos (hardware, software, almacenamiento, comunicaciones, etc.) pueden
+ ser combinados y recombinados sobre la marcha dentro de las capacidades
+ específicas o de los servicios que los clientes requieren.
+ Desde ciclos CPU para proyectos HPC hasta la capacidad de almacenamiento
+ para respaldos de grado empresarial para completar los IDEs para el desarrollo
+ del software, la computación en la nube puede entregar virtualmente cualquier
+ capacidad de IT (tecnología de la información entendida como el estudio,diseño,
+desarrollo , aplicación , implementación, soporte o cualquier sistema de
+ información basado en la computación
+\begin_inset CommandInset citation
+LatexCommand cite
+key "IT2012"
+
+\end_inset
+
+) , en tiempo real.
+\end_layout
+
 \begin_layout Section
 Definición
 \end_layout
