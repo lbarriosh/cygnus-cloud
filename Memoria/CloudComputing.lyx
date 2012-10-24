@@ -111,6 +111,45 @@ Además la computación en la nube elimina los costos de adquisición de hardawa
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/generales-foto05.jpg
+	scale 50
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Computación en la nube.
+ Un servicio global
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 La computación en la nube toma el modelo de cómputo utility al siguiente
  nivel.
  Es una forma nueva y evolucionada de cómputo en el cual muchos tipos diferentes
@@ -526,6 +565,44 @@ cloud computing
  
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/sparkindark_cloudcomputing-660x495.png
+	scale 50
+	rotateOrigin centerTop
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Empresas precursoras de la computación en la nube
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Características
 \end_layout
@@ -675,6 +752,44 @@ les.
  Por ejemplo, un proveedor de software como servicio (SaaS) podría optar
  por ofrecer distintos servicios de infraestructura (IaaS) a los clientes.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/microsoft-cloud-featured.gif
+	scale 50
+	rotateOrigin centerTop
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Modelos de servicios de la computación en la nube
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -878,6 +993,44 @@ De cara a que grupo de clientes se encuentre destinados los servicios y
  donde se encuentren los servidores podemos distinguir tres tipo de computación
  en la nube.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/500px-Cloud-Types-Model_copy.png
+	scale 50
+	rotateOrigin centerTop
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Tipos de computación en la nube
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1366,6 +1519,44 @@ Escalabilidad a largo plazo.
  importantes degradaciones del servicio en el caso de que la empresa no
  mantenga un esquema de crecimiento optimo.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/fin.jpg
+	scale 50
+	rotateOrigin rightTop
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Cloud computing
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
