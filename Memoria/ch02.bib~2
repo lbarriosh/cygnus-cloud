@@ -12,7 +12,7 @@
 	author = "Technology, National Institute of Science",
 	journal = "Special Publication 800- 145, National Institute of Standards and Technology",
 	month = jul,
-	note = "Also available at \url{http://csrc.nist.gov/publications/nistpubs/800-145/SP800-145.pdf}",
+	note = {"available at \url{<http://csrc.nist.gov/publications/nistpubs/800-145/SP800-145.pdf>}"},
 	title = "{The NIST definition of Cloud Computing}",
 	year = "2011"
 }
@@ -36,7 +36,7 @@
 	author = "Mills, Elinor",
 	journal = "CNET News",
 	month = jan,
-	note = "Also available at \url{http://news.cnet.com/8301-1009\_3-10150569-83.html}",
+	note = {"available at \url{<http://news.cnet.com/8301-1009\_3-10150569-83.html>}"},
 	title = "{Cloud computing security forecast: Clear skies}",
 	year = "2009"
 }
@@ -53,7 +53,7 @@
 	author = "Technology, Intrinsic",
 	journal = "A white paper",
 	month = aug,
-	note = "Also available at \url{http://www.intrinsictechnology.co.uk/FileUploads/HVD\_Whitepaper.pdf}",
+	note = {"available at \url{<http://www.intrinsictechnology.co.uk/FileUploads/HVD\_Whitepaper.pdf>}"},
 	title = "{HVD: the cloud's silver lining}",
 	year = "2012"
 }
@@ -62,7 +62,7 @@
 	author = "Gens, Frank",
 	journal = "IDC",
 	month = sep,
-	note = "Also available at \url{http://blogs.idc.com/ie/?p=190}",
+	note = {"available at \url{<http://blogs.idc.com/ie/?p=190>}"},
 	title = "{Defining ``Cloud services'' and ``Cloud computing''}",
 	url = "http://blogs.idc.com/ie/?p=190",
 	year = "2008"
@@ -72,7 +72,7 @@
 	author = "Stevens, Alan",
 	journal = "The Register",
 	month = aug,
-	note = "Also available at \url{http://www.theregister.co.uk/2011/06/29/hybrid\_cloud}",
+	note = {"available at \url{<http://www.theregister.co.uk/2011/06/29/hybrid\_cloud>}"},
 	title = "{When hybrid clouds are a mixed blessing}",
 	url = "http://www.theregister.co.uk/2011/06/29/hybrid_cloud",
 	year = "2012"
@@ -82,7 +82,7 @@
 	author = "Haff, Gordon",
 	journal = "CNET News",
 	month = jan,
-	note = "Also available at \url{http://news.cnet.com/8301-13556\_3-10150841-61.html}",
+	note = {"available at \url{<http://news.cnet.com/8301-13556\_3-10150841-61.html>}"},
 	title = "{Just don't call them private clouds}",
 	url = "http://news.cnet.com/8301-13556_3-10150841-61.html",
 	year = "2009"
@@ -116,7 +116,7 @@
 	author = "evitech, Condorchem",
 	journal = "Blog de ingenier{\'i}a aplicada al medio ambiente",
 	month = jan,
-	note = "Also available at \url{http://blog.condorchem.com/historia-antigua-del-tratamiento-del-agua-potable/}",
+	note = {"available at \url{<http://blog.condorchem.com/historia-antigua-del-tratamiento-del-agua-potable/>}"},
 	title = "{Historia antigua del tratamiento del agua potable}",
 	year = "2010"
 }
@@ -125,7 +125,7 @@
 	author = "Johnson, Bobbie",
 	journal = "The Guardian",
 	month = sep,
-	note = "Also available at \url{http://www.guardian.co.uk/technology/2008/sep/29/cloud.computing.richard.stallman}",
+	note = {"available at \url{<http://www.guardian.co.uk/technology/2008/sep/29/cloud.computing.richard.stallman>}"},
 	title = "{Cloud computing is a trap, warns GNU founder Richard Stallman}",
 	year = "2008"
 }
@@ -134,7 +134,7 @@
 	author = "Salesforce",
 	journal = "ITNews",
 	month = jan,
-	note = "Also available at \url{http://www.itnews.ec/marco/000035.aspx}",
+	note = {"available at \url{<http://www.itnews.ec/marco/000035.aspx>}"},
 	title = "{?`Qu{\'e} es Cloud Computing?}",
 	year = "2011"
 }
@@ -145,14 +145,5 @@
 	month = oct,
 	title = "{Las f{\'a}bricas de informaci{\'o}n}",
 	year = "2006"
-}
-
-@article{PMC2008,
-	author = "MCFEDRIES, PAUL",
-	journal = "IEEE SPECTRUM",
-	month = aug,
-	note = "Also available at \url{http://spectrum.ieee.org/computing/hardware/the-cloud-is-the-computer}",
-	title = "{The Cloud Is The Computer}",
-	year = "2008"
 }
 
