@@ -97,37 +97,42 @@ La Universidad Complutense de Madrid (UCM) es la universidad presencial
  Para que todos ellos puedan realizar sus trabajos académicos, existe un
  gran número de aulas de informática y laboratorios repartidos entre sus
  diversos centros.
- 
-\end_layout
-
-\begin_layout Standard
-Naturalmente, la gestión y el mantenimiento de estos espacios es responsabilidad
- de personal de administración y servicios, dependiente, en última instancia,
+ Naturalmente, la gestión y el mantenimiento de estos espacios es responsabilida
+d de personal de administración y servicios, dependiente, en última instancia,
  de los Servicios Informáticos de la universidad.
  
 \end_layout
 
 \begin_layout Standard
-A lo largo de este capítulo, presentaremos el modelo de gestión de los laborator
-ios de la Facultad de Informática de la UCM centrándonos en la configuración
- y en el uso del 
-\emph on
-software
-\emph default
-.
- Por ello, aquí no se hará referencia a ciertas características de la red
- de laboratorios de la Facultad de Informática como las altas y bajas de
- usuarios, el mantenimiento del equipamiento 
-\emph on
-hardware
-\emph default
- y el alojamiento de material docente en la web de la Facultad de Informática.
- Posteriormente, discutiremos los inconvenientes de este modelo y presentaremos
- las principales características del sistema 
+Existen varias alternativas para llevar a cabo la gestión de las aulas de
+ informática.
+ A lo largo de este capítulo, presentaremos la que nos es más conocida y
+ también la que, a causa de sus inconvenientes, ha motivado el desarrollo
+ de 
 \emph on
 Cygnus Cloud
 \emph default
-.
+: el modelo de gestión de los laboratorios de la Facultad de Informática
+ de la UCM.
+ 
+\end_layout
+
+\begin_layout Standard
+A la hora de presentar dicho modelo de gestión, nos centraremos en el 
+\emph on
+software
+\emph default
+, es decir, en la forma en que se instala, configura y se permite utilizar
+ a los estudiantes un conjunto distinto de programas en cada aula de informática.
+ Por ello, en este capítulo no haremos referencia a algunas características
+ también relevantes del modelo como la gestión de altas y bajas de usuarios,
+ el mantenimiento del equipamiento 
+\emph on
+hardware
+\emph default
+ del aula y el alojamiento de material docente en la web de la Facultad
+ de Informática.
+ 
 \end_layout
 
 \begin_layout Section
@@ -171,8 +176,13 @@ laboratorios
 \end_layout
 
 \begin_layout Standard
-Estos laboratorios son gestionados por el propio centro, y compartidos entre
- múltiples asignaturas.
+Con independencia de su equipamiento, del 
+\emph on
+software
+\emph default
+ instalado y de las asignaturas que se imparten en los mismos, todos los
+ laboratorios son gestionados por el propio centro y compartidos entre múltiples
+ asignaturas.
 \end_layout
 
 \begin_layout Subsection
@@ -221,8 +231,10 @@ Rational Software Architect
 \end_layout
 
 \begin_layout Standard
-Finalmente, en los laboratorios también pueden realizarse exámenes de carácter
- práctico.
+Por último, también es necesario que en los laboratorios puedan tener lugar
+ exámenes de caracter práctico a lo largo de todo el curso académico.
+ En las siguientes secciones, mostraremos cómo la red de laboratorios satisface
+ todos estos requisitos.
 \end_layout
 
 \begin_layout Subsection
@@ -233,35 +245,42 @@ Servicios prestados a los alumnos
 Cada alumno matriculado en la Facultad de Informática de la UCM dispone
  de una cuenta personal que le permite utilizar cualquier puesto de la red
  de laboratorios.
- Cada cuenta tiene asociado un espacio de almacenamiento en disco (100 MB)
- junto con una cuota de impresión (de 200 hojas por curso académico).
- Desde el punto de vista del alumno, el sistema permite:
+ Dicha cuenta tiene asociado un espacio de almacenamiento en disco (100
+ MB) junto con una cuota de impresión (de 200 hojas por curso académico).
+ 
+\end_layout
+
+\begin_layout Standard
+Desde el punto de vista del alumno, el sistema permite:
 \end_layout
 
 \begin_layout Itemize
-Controlar el uso de los puestos de laboratorio.
- Todos los alumnos deben autenticarse antes de utilizar cualquier puesto.
+controlar el uso de los puestos de laboratorio, ya que todos los alumnos
+ deben autenticarse antes de utilizar cualquier puesto.
  Esto permite detectar y sancionar las actividades indebidas que se realicen
  en los laboratorios.
 \end_layout
 
 \begin_layout Itemize
-El envío de avisos y notificaciones a los alumnos que utilizan el laboratorio.
+enviar de avisos y notificaciones a los alumnos que utilizan el laboratorio.
 \end_layout
 
 \begin_layout Itemize
-Distribuir equitativamente el tiempo de uso de los puestos de laboratorio
+distribuir equitativamente el tiempo de uso de los puestos de laboratorio
  en periodos de alta ocupación.
- Así, el sistema permite que los alumnos que más tiempo llevan utilizando
- los puestos de laboratorio se vean obligados a cederlos a sus compañeros.
+ En estos casos, el sistema obliga a los alumnos que más tiempo llevan utilizand
+o los puestos de laboratorio a cedérselos a otros estudiantes que están
+ esperando para utilizarlos.
 \end_layout
 
 \begin_layout Itemize
-Consultar la ocupación de todos los puestos de laboratorio.
+Consultar en todo momento la ocupación de todos los puestos de la red de
+ laboratorios.
 \end_layout
 
 \begin_layout Itemize
-Consultar la documentación del material experimental (como las 
+Consultar la documentación del material experimental de los laboratorios
+ (como las 
 \emph on
 datasheets
 \emph default
@@ -275,31 +294,33 @@ Servicios prestados a los profesores
 \begin_layout Standard
 La Facultad de Informática de la UCM también ofrece a cada uno de sus profesores
  una cuenta personal.
- Esta también les permite utilizar cualquier puesto de laboratorio y dispone
- de mayores cuotas de almacenamiento y de impresión.
+ Esta también les permite utilizar cualquier puesto de la red de laboratorios
+ y dispone de mayores cuotas de almacenamiento y de impresión.
 \end_layout
 
 \begin_layout Standard
 A diferencia de los alumnos, los profesores también pueden hacer uso de
  servicios adicionales de apoyo a la docencia.
- Los más relevantes son:
+ Los más relevantes son los siguientes:
 \end_layout
 
 \begin_layout Itemize
-La restricción del acceso a Internet en horario de clase.
+la restricción de las comunicaciones entre los puestos de laboratorio.
+ Esto permite, entre otras cosas, restringir el acceso a internet durante
+ las clases.
 \end_layout
 
 \begin_layout Itemize
-La recolección de prácticas, exámenes y trabajos realizados por los alumnos.
- El acceso a los mismos estará limitado al profesor y a su propietario.
+la recolección de prácticas, exámenes y trabajos realizados por los alumnos.
+ El acceso a los mismos siempre estará limitado al profesor y a su propietario.
 \end_layout
 
 \begin_layout Itemize
-La adquisición, instalación y configuración de todo el 
+la adquisición, instalación y configuración de todo el 
 \emph on
 software 
 \emph default
-a utilizar a lo largo del curso académico.
+que se vaya a utilizar a lo largo del curso académico.
 \end_layout
 
 \begin_layout Subsection
@@ -307,13 +328,12 @@ Otros servicios
 \end_layout
 
 \begin_layout Standard
-Los servicios que hemos descrito en las secciones anteriores están orientados
- a los usuarios de los laboratorios.
- Junto con estos, existen otros especialmetne orientados a facilitar el
- trabajo del personal técnico, como la monitorización de toda la actividad
- de los laboratorios en tiempo real y la replicación de configuraciones
- (basada en el hecho de que todos los puestos de un mismo laboratorio tienen
- la misma configuración 
+Junto con los servicios que hemos descrito hasta ahora, que están orientados
+ a los usuarios, existen otros especialmente orientados a facilitar el trabajo
+ del personal técnico, como la monitorización de toda la actividad de los
+ laboratorios en tiempo real y la replicación de configuraciones (que es
+ posible al compartir todos los puestos de un mismo laboratorio la misma
+ configuración 
 \emph on
 hardware
 \emph default
@@ -326,12 +346,6 @@ software
 
 \begin_layout Section
 Inconvenientes del modelo presentado
-\end_layout
-
-\begin_layout Standard
-En esta sección recogeremos los incovenientes que presenta el modelo de
- gestión de los laboratorios de la Facultad de Informática de la UCM.
- Estos afectan tanto a los alumnos como a los profesores.
 \end_layout
 
 \begin_layout Subsection
@@ -347,27 +361,23 @@ reference "sec:Modelo-laboratorios-FdI UCM"
 
 \end_inset
 
- es el desaprovechamiento de los recursos.
+ es el desaprovechamiento de recursos.
  
 \end_layout
 
 \begin_layout Standard
 Los recursos desaprovechados son de naturaleza muy dispar: aulas de informática
- infrautilizadas, equipos demasiado potentes para realizar ciertas tareas,
- energía eléctrica, personal, etcétera.
- 
-\end_layout
-
-\begin_layout Standard
-Para mostrar cómo se desperdician estos recursos, presentaremos algunos
+ de otros centros, PCs de la red de laboratorios, energía, personal\SpecialChar \ldots{}
+ Para
+ mostrar cómo se desperdician todos estos recursos, presentaremos algunos
  ejemplos.
 \end_layout
 
 \begin_layout Subsubsection
-Espacios infrautilizados
+Aulas de informática de otros centros
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Espacios-infrautilizados"
+name "sub:Aulas-Informática-Otros-Centros"
 
 \end_inset
 
@@ -375,9 +385,8 @@ name "sub:Espacios-infrautilizados"
 \end_layout
 
 \begin_layout Standard
-En los periodos de mayor uso de los laboratorios, que casi siempre tienen
- lugar antes de las convocatorias de exámenes y de los periodos vacacionales,
- la mayoría de los puestos de laboratorio están ocupados a causa de la 
+Justo antes de las convocatorias de exámenes y de los periodos vacacionales,
+ los estudiantes deben lidiar con una auténtica 
 \begin_inset Quotes eld
 \end_inset
 
@@ -386,15 +395,29 @@ avalancha
 \end_inset
 
  de prácticas.
- Por tanto, los alumnos deberán competir por los distintos puestos de laboratori
-o.
+ Muchos alumnos utilizan la red de laboratorios para realizar todas estas
+ prácticas, lo que justifica que este sea uno de los periodos de mayor uso
+ de los laboratorios.
+\end_layout
+
+\begin_layout Standard
+Puesto que la red de laboratorios cuenta con sólo 300 puestos y un número
+ mucho mayor de alumnos (según la memoria de la Facultad del curso 2009/2010
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "MemoriaFdI0910"
+
+\end_inset
+
+, más de 2000), los alumnos deberán competir por los distintos puestos.
 \end_layout
 
 \begin_layout Standard
 Ahora bien, no todos los alumnos que utilizan los puestos del mismo laboratorio
- fuera del horario de clase (es decir, en turnos de práctica libre) tienen
- por qué estar matriculados en las mismas asignaturas, por lo que necesitarán
- utilizar 
+ fuera del horario de clase (horario de práctica libre) tienen por qué estar
+ matriculados en las mismas asignaturas, por lo que necesitarán utilizar
+ 
 \emph on
 hardware 
 \emph default
@@ -403,18 +426,18 @@ y
 software
 \emph default
  distinto.
+ Para mostrar cómo se agrava la situación, haremos uso de un ejemplo.
 \end_layout
 
 \begin_layout Standard
-Centrémonos en uno de esos periodos de elevadísima actividad y en los laboratori
-os que disponen de equipamiento específico: la semana anterior a las vacaciones
- de Navidad, alumnos de asignaturas de electrónica estarán implementando
+Consideremos la semana anterior a las vacaciones de Navidad.
+ En ella, los alumnos de las asignaturas de electrónica estarán implementando
  en los laboratorios equipados con osciloscopios y polímetros (7, 8, 9 y
  10) una fuente de alimentación en horario de práctica libre.
  Supongamos también que se está impartiendo docencia en los laboratorios
  9 y 10, por lo que estos estarán ocupados.
- Debido al elevado número de estudios que se imparten en la Facultad de
- Informática, esta situación no es poco habitual.
+ Puesto que hay un gran número de alumnos matriculados en la Facultad de
+ Informática, esta situación es bastante habitual.
 \end_layout
 
 \begin_layout Standard
@@ -432,24 +455,23 @@ Si no existen puestos libres en los laboratorios 7 y 8 y un alumno desea
 
 \begin_layout Itemize
 echar de esos laboratorios a los alumnos que no deban utilizar el equipamiento
- específico.
- 
+ específico, es decir, a los que están programando.
 \end_layout
 
 \begin_layout Itemize
 imponer restricciones de tiempo, de modo que los distintos alumnos que utilizan
- el laboratorio compartan sus puestos.
- Así, los alumnos que deseen realizar la práctica en el laboratorio deberán
- esperar a que haya puestos libres.
+ el laboratorio estarán obligados a compartir sus puestos.
+ De esta manera, los alumnos que deseen realizar la práctica en el laboratorio
+ deberán esperar a que haya puestos libres.
 \end_layout
 
 \begin_layout Standard
 Incluso dejando de lado el aumento de la crispación entre los alumnos al
- que dan lugar ambas alternativas y el hacinamiento en los laboratorios
- de la Facultad de Informática, esta situación sigue siendo poco deseable:
- si en un aula de informática de la Facultad de Filología hay puestos libres,
- estos no podrán utilizarse para completar las prácticas de programación
- por el mero hecho de no tener instalado el 
+ que dan lugar ambas alternativas y el hacinamiento en los laboratorios,
+ esta situación sigue siendo poco deseable: si en un aula de informática
+ de la Facultad de Filología hay puestos libres, estos no podrán utilizarse
+ para completar las prácticas de programación por el mero hecho de no tener
+ instalado el 
 \emph on
 software
 \emph default
@@ -459,6 +481,7 @@ software
 software
 \emph default
 ).
+ En otras palabras: esta situación se puede evitar.
 \end_layout
 
 \begin_layout Subsubsection
@@ -466,62 +489,57 @@ Personal encargado de las aulas de informática
 \end_layout
 
 \begin_layout Standard
-El ejemplo que hemos utilizado en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Espacios-infrautilizados"
-
-\end_inset
-
- permite mostrar que, en periodos de intensa actividad en un centro, la
- carga de trabajo del personal de administración y servicios asignado a
- las aulas de informática de los diversos centros de la UCM puede ser muy
- dispar.
+Los laboratorios de la Facultad de Informática de la UCM tienen asignado
+ su propio personal de administración y servicios.
+ En periodos de intensa actividad en la Facultad, los técnicos de los laboratori
+os estarán saturados, mientras que sus compañeros de otros centros pueden
+ tener mucho menos trabajo o incluso estar ociosos.
 \end_layout
 
 \begin_layout Standard
-Así, mientras que los técnicos de los laboratorios de la Facultad de Informática
- estarán saturados, lo cual dará lugar a mayores tiempos de espera y a un
- incremento del tiempo de resolución de las incidencias, sus compañeros
- de otras facultades apenas tengan trabajo que hacer.
+Esta situación da lugar a mayores tiempos de espera y a un incremento considerab
+le del tiempo de resolución de las incidencias, y mejoraría si los alumnos
+ pudiesen distribuirse de forma más homogénea entre las aulas de informática
+ de todos los centros de la UCM.
+ Nuevamente, dicha distribución no es posible al no permitirlo las característic
+as técnicas de los PCs y el 
+\emph on
+software
+\emph default
+ instalado en las distintas aulas de informática.
 \end_layout
 
 \begin_layout Subsubsection
-Elevado consumo energético
+Energía consumida
 \end_layout
 
 \begin_layout Standard
 Hoy en día, el coste de la energía no es despreciable en absoluto.
  Prueba de ello es que los centros de proceso de datos de más reciente construcc
 ión se caracterizan por la búsqueda de la mayor eficiencia energética posible
- para así reducir costes.
+ para reducir al máximo los costes de explotación.
 \end_layout
 
 \begin_layout Standard
 Ante la actual situación de crisis económica, la Universidad Complutense
  no puede quedarse atrás en la mejora de la eficiencia energética: el ahorro
  energético permite reducir el efecto que las sucesivas reducciones del
- presupuesto tienen sobre la docencia y la investigación.
- Por ello, es fundamental reducir el consumo energético de las aulas de
- informática.
+ presupuesto tienen sobre otras partidas (como las dedicadas a becas y a
+ investigación).
+ Por ello, es fundamental reducir cuanto sea posible el consumo energético
+ de las aulas de informática.
 \end_layout
 
 \begin_layout Standard
 La primera fuente de consumo innecesario es el sistema de climatización
- y alumbrado de las aulas de informática infrautilizadas.
- Como ya hemos visto en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Espacios-infrautilizados"
-
-\end_inset
-
-, el actual modelo propicia la aparición de estas situaciones.
+ y alumbrado de las aulas de informática infrautilizadas, que deberán utilizarse
+ con independencia del número de alumnos que estén trabajando en el aula.
+ 
 \end_layout
 
 \begin_layout Standard
-La segunda fuente es el propio equipamiento informático asignado al aula:
- los PCs, servidores y también el equipamiento de red.
+La segunda fuente es el propio equipamiento informático asignado a las aulas
+ infrautilizadas: los PCs, servidores y también el equipamiento de red.
  Aún apagando los equipos en desuso, se sigue desperdiciando energía, ya
  que 
 \end_layout
@@ -539,11 +557,93 @@ los equipos en uso están inactivos durante buena parte de su vida útil,
  y el consumo energético en periodos de inactividad no es despreciable.
 \end_layout
 
+\begin_layout Standard
+Estos consumos pueden reducirse si los alumnos que utilizan estas aulas
+ se agrupan en un único aula de informática, cosa que no permite el modelo
+ actual por motivos que ya hemos expuesto:
+\end_layout
+
+\begin_layout Itemize
+los PCs del aula de informática pueden no ser lo suficientemente potentes
+ como para cubrir las necesidades de todos los estudiantes.
+\end_layout
+
+\begin_layout Itemize
+los alumnos de distintas titulaciones no tienen por qué utilizar el mismo
+ 
+\emph on
+software
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Licencias de pago
+\end_layout
+
+\begin_layout Standard
+En las aulas de informática de la UCM se encuentran instaladas aplicaciones
+ de pago.
+ Puesto que las licencias de dichas aplicaciones son muy costosas, la UCM
+ garantiza que todos sus alumnos puedan utilizarlas en las aulas de informática.
+\end_layout
+
+\begin_layout Standard
+Ahora bien, tal y como hemos expuesto en las secciones anteriores, no todos
+ los alumnos utilizan las aulas de informática para lo mismo.
+ Así, a causa de la mera ocupación del espacio, no es posible utilizar todas
+ las licencias de pago adquiridas por la UCM aún cuando es necesario.
+\end_layout
+
+\begin_layout Standard
+También podemos aprovechar el ejemplo que presentamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Aulas-Informática-Otros-Centros"
+
+\end_inset
+
+ para mostrar cómo esto puede ocurrir.
+\end_layout
+
+\begin_layout Standard
+Supongamos que la práctica de electrónica se compone de dos partes:
+\end_layout
+
+\begin_layout Itemize
+una primera parte en la que se debe simular el comportamiento de la fuente
+ de alimentación.
+\end_layout
+
+\begin_layout Itemize
+una segunda parte en la que se debe implementar la fuente de alimentación.
+\end_layout
+
+\begin_layout Standard
+El simulador estará instalado en todos los puestos de los laboratorios 7
+ y 8, pero no se utilizará en los que los alumnos completen la práctica
+ de programación.
+ Así, un alumno que desee completar la primera parte de la práctica de electróni
+ca no podrá hacerlo al no estar instalado el simulador en otras aulas de
+ informática.
+\end_layout
+
+\begin_layout Standard
+Considerando el desorbitado precio de algunas aplicaciones propietarias
+ y la imposibilidad de encontrar en el mercado versiones de prueba de algunas
+ de las aplicaciones instaladas (principalmente, por ser demasiado antiguas),
+ esta situación resulta inadmisible.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
 \begin_layout Subsection
 Sobrecoste de las aulas de informática
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 En la Facultad de Informática de la UCM los laboratorios no están asociados
  a ningún departamento ni reservados en exclusiva para impartir docencia
  de una asignatura.
@@ -551,7 +651,7 @@ En la Facultad de Informática de la UCM los laboratorios no están asociados
  mismo laboratorio.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Ahora bien, estas asignaturas no tienen por qué utilizar el mismo 
 \emph on
 software
@@ -562,7 +662,7 @@ software
  de videojuegos.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Para cuantificar el sobrecoste de los equipos, mostraremos el coste de dos
  configuraciones en el inicio del curso académico 2012/2013.
  En ellas, excluiremos:
@@ -602,7 +702,7 @@ impuesto revolucionario
 .
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Los precios aquí reflejados se han extraído de la web 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -626,313 +726,6 @@ hardware
 \emph default
  de gama media lo suficientemente potente como para cubrir las necesidades
  de cada asignatura.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Tabular
-<lyxtabular version="3" rows="8" columns="3">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Componente
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Precio (IVA incluido)
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-CPU Intel Core i3-2130
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-122,90€
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Placa base Intel DH61HO
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-56,90€
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Ventilador Cooler Master Silent Fan SL1
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-4,39 €
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Módulo de memoria RAM de 4 GB (DDR3 1600 Mhz)
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multirow="3" alignment="left" valignment="middle" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-22,79€
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell multirow="4" alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Fuente de alimentación Antev VP 350 (400W)
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-43,99€
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Total
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-250,97€
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Máquina requerida por las asignaturas de programación de primer curso
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Configuraciones-hardware-sobrecoste"
-
-\end_inset
-
-Configuraciones 
-\emph on
-hardware
-\emph default
- requeridas por dos asignaturas con distintas necesidades
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
