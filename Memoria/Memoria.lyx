@@ -62,6 +62,9 @@
 
 %% Personalizar etiquetas de las figuras, cuadros y algoritmos
 \captionnamefont{\sc}
+
+%% Hacer que el símbolo del euro salga bien
+\usepackage{eurosym}
 \end_preamble
 \options a4paper
 \use_default_options true

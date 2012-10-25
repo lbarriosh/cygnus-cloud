@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass memoir
+\begin_preamble
+\usepackage{eurosym}
+\end_preamble
 \use_default_options false
 \maintain_unincluded_children false
 \language spanish
@@ -635,153 +638,283 @@ Considerando el desorbitado precio de algunas aplicaciones propietarias
  esta situación resulta inadmisible.
 \end_layout
 
+\begin_layout Subsection
+Limitaciones del sistema de almacenamiento
+\end_layout
+
 \begin_layout Standard
-\begin_inset Note Note
-status collapsed
+Toda cuenta de la red de laboratorios de la Facultad de Informática tiene
+ asignado un espacio de almacenamiento en disco accesible desde cualquier
+ puesto.
+\end_layout
+
+\begin_layout Standard
+Ahora bien, la cuota actual asignada a los alumnos (
+\begin_inset Formula $100\,\text{\textrm{MB}}$
+\end_inset
+
+) es insignificante, y en no pocos casos es sólo suficiente para almacenar
+ el material docente de las distintas asignaturas.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, sólo es posible acceder a ese espacio de almacenamiento
+ desde la propia red de laboratorios, siendo necesario utilizar dispositivos
+ de almacenamiento extraíble o servicios de alojamiento de archivos en la
+ nube (como Dropbox, Microsoft SkyDrive y Google Drive) para transferir
+ datos desde los equipos particulares de los estudiantes a los PCs de la
+ red de laboratorios.
+\end_layout
 
 \begin_layout Subsection
-Sobrecoste de las aulas de informática
+Sobrecoste de los PCs de las aulas de informática
 \end_layout
 
-\begin_layout Plain Layout
-En la Facultad de Informática de la UCM los laboratorios no están asociados
- a ningún departamento ni reservados en exclusiva para impartir docencia
- de una asignatura.
- Por ello, alumnos matriculados en asignaturas distintas harán uso de un
- mismo laboratorio.
+\begin_layout Standard
+En el modelo de gestión de los laboratorios de la Facultad de Informática
+ de la UCM no existen laboratorios asignados en exclusiva a una asignatura
+ o departamento.
+ Por ello, en un mismo laboratorio se imparte docencia de asignaturas distintas.
 \end_layout
 
-\begin_layout Plain Layout
-Ahora bien, estas asignaturas no tienen por qué utilizar el mismo 
+\begin_layout Standard
+Ahora bien, no todas las asignaturas asignadas al mismo laboratorio tienen
+ las mismas necesidades.
+ Por ello, los PCs de cada laboratorio deben ser lo suficientemente potentes
+ para así cumplir los requisitos del 
 \emph on
 software
 \emph default
-, por lo que pueden necesitar PCs con distinta potencia.
- Por ejemplo, las asignaturas de programación de un primero curso necesitarán
- máquinas mucho menos potente que las asociadas al máster de desarrollo
- de videojuegos.
-\end_layout
-
-\begin_layout Plain Layout
-Para cuantificar el sobrecoste de los equipos, mostraremos el coste de dos
- configuraciones en el inicio del curso académico 2012/2013.
- En ellas, excluiremos:
-\end_layout
-
-\begin_layout Itemize
-el coste de los dispositivos de almacenamiento, del chasis, de los periféricos
- de entrada (teclado, ratón) y del monitor.
- Estos costes serán muy similares en ambos casos.
-\end_layout
-
-\begin_layout Itemize
-el coste del ensamblado del equipo.
-\end_layout
-
-\begin_layout Itemize
-los gastos de envíos
-\end_layout
-
-\begin_layout Itemize
-el coste del programa de garantía exigido por la UCM en todos los equipos
- de nueva adquisición y el sobrecoste asociado al aplazamiento del pago
- a los proveedores.
-\end_layout
-
-\begin_layout Itemize
-el coste de la licencia no utilizada del sistema operativo Microsoft Windows®.
- Más adelante, mostraremos el considerable sobrecoste que tiene esta suerte
- de 
-\begin_inset Quotes eld
-\end_inset
-
-impuesto revolucionario
-\begin_inset Quotes erd
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Plain Layout
-Los precios aquí reflejados se han extraído de la web 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Alternate"
-
-\end_inset
-
- a finales de octubre de 2012.
- Las características técnicas y los costes de las dos configuraciones se
- recogen en el cuadro 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Configuraciones-hardware-sobrecoste"
-
-\end_inset
-
-.
- En ambos casos, hemos escogido 
-\emph on
-hardware
-\emph default
- de gama media lo suficientemente potente como para cubrir las necesidades
- de cada asignatura.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Rigidez de la configuración de los equipos
-\end_layout
-
-\begin_layout Subsection
-Espacio de almacenamiento insuficiente
+ que utilizan dichas asignaturas.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status collapsed
+Para cuantificar el sobrecoste de los equipos, consideraremos tres asignaturas
+ típicas: una asignatura de programación, una asignatura optativa relacionada
+ con la informática gráfica y una asignatura de diseño de circuitos.
+ Actualmente, estos tipos de asignatura se imparten en los laboratorios
+ de la Facultad de Informática.
+\end_layout
+
+\begin_layout Itemize
+La asignatura de programación requiere un PC con una CPU de gama media-baja,
+ al menos 4 GB de memoria RAM, una tarjeta gráfica integrada y un disco
+ duro de capacidad estándar.
+\end_layout
+
+\begin_layout Itemize
+La asignatura de informática gráfica requiere un PC con una CPU de gama
+ media-alta, al menos 4 GB de memoria RAM, una tarjeta gráfica dedicada
+ de gama media-baja y un disco duro de capacidad estándar.
+\end_layout
+
+\begin_layout Itemize
+La asignatura de diseño de circuitos requiere un PC con una CPU de gama
+ media-alta, 4 GB o más de memoria RAM, una tarjeta gráfica integrada y
+ un disco duro de capacidad estándar.
+\end_layout
+
+\begin_layout Standard
+Para realizar la comparación, fijaremos un proveedor.
+ En nuestro caso, el proveedor será Clevisa Informática, que ha suministrado
+ un gran número de equipos a la UCM.
+ 
+\end_layout
+
+\begin_layout Standard
+Los precios y características de los equipos requeridos por las tres asignaturas
+, a los que llamaremos equipos 1, 2 y 3, a fecha de 25 de octubre de 2012,
+ son los siguientes:
+\end_layout
+
+\begin_layout Itemize
+Equipo 1 (programación): Asustek CM6431, con CPU Intel Core i3 3220, 4 GB
+ de memoria RAM, tarjeta gráfica integrada Intel HD Graphics 3000, grabadora
+ de DVDs y disco duro de 1 TB.
+ Su coste es de 
+\begin_inset ERT
+status open
 
 \begin_layout Plain Layout
-Por tanto, tenemos puestos libres que no pueden ser utilizados.
- Esto supone que se está desaprovechando
-\end_layout
 
-\begin_layout Itemize
-la energía que consumen los equipos inactivos
-\end_layout
 
-\begin_layout Itemize
-la energía que consumen los servidores y el equipamiento de red que dan
- servicio a dicho aula de informática
-\end_layout
-
-\begin_layout Itemize
-la energía que consumen los sistemas de climatización y alumbrado del aula
-\end_layout
-
-\begin_layout Itemize
-el propio 
-\emph on
-hardware
-\emph default
- de esos equipos, que es lo suficientemente potente para realizar una práctica
- de programación.
-\end_layout
-
-\begin_layout Itemize
-el personal asignado a dicho aula de informática.
- Así, mientras los técnicos de la Facultad de Informática estarán saturados,
- los de otro aula de informática de la UCM pueden tener bastante menos trabajo,
- lo cual da lugar a esperas innecesarias.
+\backslash
+EUR{784,30}
 \end_layout
 
 \end_inset
 
+, con IVA incluido.
+\end_layout
 
+\begin_layout Itemize
+Equipo 2 (informática gráfica): HP P6-2206ES, con CPU Intel Core i5 2320,
+ 8 GB de memoria RAM, tarjeta gráfica Nvidia Geforce GT 620, grabadora de
+ DVDs y disco duro de 1 TB.
+ Su coste es de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+EUR{960,16}
+\end_layout
+
+\end_inset
+
+, con IVA incluido.
+ 
+\end_layout
+
+\begin_layout Itemize
+Equipo 3 (diseño de circuitos): Asustek CM6431, con CPU Intel Core i5 3450,
+ 6 GB de memoria RAM, tarjeta gráfica integrada Intel HD Graphics 3000,
+ grabadora de DVDs y disco duro de 1 TB.
+ Su coste es de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+EUR{941,48}
+\end_layout
+
+\end_inset
+
+, con IVA incluido.
+\end_layout
+
+\begin_layout Standard
+Para impartir las tres asignaturas en el mismo laboratorio, sería necesario
+ adquirir el Equipo 2.
+ Dado que el laboratorio tiene 20 puestos,
+\end_layout
+
+\begin_layout Itemize
+si solamente se impartiera la asignatura de programación, el ahorro sería
+ de
+\begin_inset Formula 
+\[
+20\cdot(960,16-784,30)=20\cdot175,86=3517,2\,\textrm{euros}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+si solamente se impartieran las asignaturas de programación y diseño de
+ circuitos, el ahorro sería de
+\begin_inset Formula 
+\[
+20\cdot(960,16-941,48)=20\cdot18,64=373,6\,\textrm{euros}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En realidad, el sobrecoste es aún mayor por dos motivos:
+\end_layout
+
+\begin_layout Itemize
+cuanto más potente es el 
+\emph on
+hardware
+\emph default
+ de un PC, mayor es su consumo energético.
+ De esta manera, cuando se imparte la asignatura de programación la CPU
+ y la tarjeta gráfica del Equipo 2 consumen más energía de la requerida.
+ Análogamente, cuando se imparte la asignatura de diseño de circuitos, será
+ la tarjeta gráfica la que eleve el consumo innecesariamente.
+\end_layout
+
+\begin_layout Itemize
+las licencias del sistema operativo Windows incluidas con el equipo no se
+ utilizan (la UCM utiliza sus propias licencias).
+ El coste estas licencias, llamadas licencias OEM (
+\emph on
+Original Equipment Manufacturer
+\emph default
+, fabricante de equipamiento original) es de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+EUR{102,90}
+\end_layout
+
+\end_inset
+
+ (IVA incluido) para las versiones 
+\emph on
+Home Premium
+\emph default
+ y de 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+EUR{142,90}
+\end_layout
+
+\end_inset
+
+ (IVA incluido) para las versiones 
+\emph on
+Professional
+\emph default
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+De esta manera, en el caso mejor, en el que todos los equipos incorporan
+ la versión más barata 
+\emph on
+Home Premium
+\emph default
+, el sobrecoste aumenta en 
+\begin_inset Formula 
+\[
+20\cdot102,90=2058\textrm{ euros}
+\]
+
+\end_inset
+
+y en el caso peor, en el que todos los equipos incorporan la versión más
+ cara (
+\emph on
+Professional
+\emph default
+), el sobrecoste aumenta en
+\begin_inset Formula 
+\[
+20\cdot142,90=2858\textrm{ euros}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Rigidez de la configuración de los equipos
 \end_layout
 
 \end_body
