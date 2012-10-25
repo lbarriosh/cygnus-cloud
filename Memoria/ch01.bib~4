@@ -40,29 +40,3 @@
 	year = "2009"
 }
 
-@book{MemoriaFdI0910,
-	author = "UCM, Facultad de Inform{\'a}tica",
-	note = "Also available at \url{http://www.fdi.ucm.es/Futuros\_Alumnos/memoria\_curso\_2009-2010.pdf}",
-	publisher = "Universidad Complutense de Madrid",
-	title = "{Memoria de la Facultad de Inform{\'a}tica, Curso 2009/2010}",
-	year = "2011"
-}
-
-@misc{Clevisa,
-	author = "Inform{\'a}tica, Clevisa",
-	note = "Consulted at \url{http://www.clevisa.com}",
-	title = "{Lista de precios a 25/10/2012}"
-}
-
-@misc{Alternate,
-	author = "GmbH, Alternate",
-	note = "Consulted at \url{http://www.alternate.es}",
-	title = "{Lista de precios a 25/10/2012}"
-}
-
-@unpublished{WikipediaOEM,
-	author = "Wikipedia",
-	note = "Consulted on 2012/10/25 at \url{http://en.wikipedia.org/wiki/Original\_equipment\_manufacturer}",
-	title = "{Original equipment manufacturer}"
-}
-
