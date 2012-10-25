@@ -114,7 +114,7 @@ Además la computación en la nube elimina los costos de adquisición de hardawa
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -569,7 +569,7 @@ cloud computing
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -738,6 +738,71 @@ key "NIST2011"
 \end_layout
 
 \begin_layout Section
+Virtualización 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+No tengo claro si finalmente dejare esta sección ya que no se si se va a
+ explicar en otro capitulo.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La virtualización consiste en asignar un nombre lógico a un recurso físico,
+ el cual será gestionado de manera fácil y dinámica.
+ Para ello se realiza un mapeo entre los recursos físicos y lógicos.Estos
+ mapeos pueden ser cambiados dinámicamente de una forma muy eficiente, siempre
+ a través de las herramientas y productos que nos ofrecen los proveedores
+ expertos como VMWARE.
+\end_layout
+
+\begin_layout Standard
+La idea de la virtualización es poder crear servidores virtuales, almacenamiento
+ virtual, redes virtuales y quizás algún día aplicaciones virtuales.
+ Para crear sistemas de hardware virtual, en ocasiones se usan lo que se
+ denomina como hipervisores.
+\end_layout
+
+\begin_layout Standard
+Un hipervisor o monitor de máquina virtual (virtual machine monitor) es
+ una plataforma que permite aplicar diversas técnicas de control de virtualizaci
+ón para utilizar, al mismo tiempo, diferentes sistemas operativos en una
+ misma computadora.
+ 
+\end_layout
+
+\begin_layout Standard
+Algunas de las características de la virtualización son:
+\end_layout
+
+\begin_layout Itemize
+Acceso : El cliente puede acceder al servicio desde cualquier lugar.
+\end_layout
+
+\begin_layout Itemize
+Aplicación: La computación en la nube debe ofrecer varias instancias de
+ una misma aplicación y asociar cada instancia a la plataforma sobre la
+ que se ejecuta.
+\end_layout
+
+\begin_layout Itemize
+CPU: Gracias a la virtualización podemos crear diversas maquinas virtuales
+ sobre un mismo entorno hardware.
+\end_layout
+
+\begin_layout Itemize
+Almacenamiento: Se pueden realizar replicaciones para conseguir redundancias.
+\end_layout
+
+\begin_layout Section
 Modelos de servicios 
 \end_layout
 
@@ -758,7 +823,7 @@ les.
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -999,7 +1064,7 @@ De cara a que grupo de clientes se encuentre destinados los servicios y
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -1221,7 +1286,7 @@ inHouse
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -1525,7 +1590,7 @@ Escalabilidad a largo plazo.
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics

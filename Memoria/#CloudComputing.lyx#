@@ -104,10 +104,49 @@ El cloud computing permite al cliente abstraerse del hardware con el cual
 
 \begin_layout Standard
 Además la computación en la nube elimina los costos de adquisición de hardaware,
- las licencias del software , el mantenimiento de las instalaciones ...
+ las licencias del software , el mantenimiento de las instalaciones , etc.
  El usuario solo debe hacer frente a una tarifa medida por uso o una cuota
  fija de subscripción.
  El usuario usa solo lo que quiere , paga sólo lo que usa.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/generales-foto05.jpg
+	scale 50
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Computación en la nube.
+ Un servicio global
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -120,7 +159,16 @@ La computación en la nube toma el modelo de cómputo utility al siguiente
  Desde ciclos CPU para proyectos HPC hasta la capacidad de almacenamiento
  para respaldos de grado empresarial para completar los IDEs para el desarrollo
  del software, la computación en la nube puede entregar virtualmente cualquier
- capacidad de IT, en tiempo real.
+ capacidad de IT (tecnología de la información entendida como el estudio,diseño,
+desarrollo , aplicación , implementación, soporte o cualquier sistema de
+ información basado en la computación
+\begin_inset CommandInset citation
+LatexCommand cite
+key "IT2012"
+
+\end_inset
+
+) , en tiempo real.
 \end_layout
 
 \begin_layout Section
@@ -517,6 +565,44 @@ cloud computing
  
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/sparkindark_cloudcomputing-660x495.png
+	scale 50
+	rotateOrigin centerTop
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Empresas precursoras de la computación en la nube
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Características
 \end_layout
@@ -652,6 +738,66 @@ key "NIST2011"
 \end_layout
 
 \begin_layout Section
+Virtualización 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+No tengo claro si finalmente dejare esta sección.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La virtualización consiste en asignar un nombre lógico a un recurso físico,
+ el cual será gestionado de manera fácil y dinámica.
+ Para ello se realiza un mapeo entre los recursos físicos y lógicos.Estos
+ mapeos pueden ser cambiados dinámicamente de una forma muy eficiente, siempre
+ a través de las herramientas y productos que nos ofrecen los proveedores
+ expertos como VMWARE.
+\end_layout
+
+\begin_layout Standard
+La idea de la virtualización es poder crear servidores virtuales, almacenamiento
+ virtual, redes virtuales y quizás algún día aplicaciones virtuales.
+ Para crear sistemas de hardware virtual, en ocasiones se usan lo que se
+ denomina como hipervisores.
+\end_layout
+
+\begin_layout Standard
+Un hipervisor o monitor de máquina virtual (virtual machine monitor) es
+ una plataforma que permite aplicar diversas técnicas de control de virtualizaci
+ón para utilizar, al mismo tiempo, diferentes sistemas operativos en una
+ misma computadora.
+ 
+\end_layout
+
+\begin_layout Standard
+Algunas de las características de la virtualización son:
+\end_layout
+
+\begin_layout Itemize
+Acceso : El cliente puede acceder al servicio desde cualquier lugar.
+\end_layout
+
+\begin_layout Itemize
+Aplicación: La computación en la nube debe ofrecer varias instancias de
+ una misma aplicación y asociar• CPU: Se pueden crear particiones dentro
+ de los ordenadores como un conjunto de máquinas virtuales que se ejecutan
+ dentro de ese ordenador.
+ Alternativamente se puede introducir un balanceador para repartir cargas.
+ Cloud Computing: Fundamentos, diseño y arquitectura aplicados a un caso
+ de estudio 27 • Almacenamiento: A menudo se realiza una replicación para
+ conseguir redundancia.
+\end_layout
+
+\begin_layout Section
 Modelos de servicios 
 \end_layout
 
@@ -666,6 +812,44 @@ les.
  Por ejemplo, un proveedor de software como servicio (SaaS) podría optar
  por ofrecer distintos servicios de infraestructura (IaaS) a los clientes.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/microsoft-cloud-featured.gif
+	scale 50
+	rotateOrigin centerTop
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Modelos de servicios de la computación en la nube
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -871,6 +1055,44 @@ De cara a que grupo de clientes se encuentre destinados los servicios y
  
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/500px-Cloud-Types-Model_copy.png
+	scale 50
+	rotateOrigin centerTop
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Tipos de computación en la nube
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Cloud público 
 \end_layout
@@ -1059,7 +1281,7 @@ inHouse
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -1357,6 +1579,44 @@ Escalabilidad a largo plazo.
  importantes degradaciones del servicio en el caso de que la empresa no
  mantenga un esquema de crecimiento optimo.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Cloud computing/fin.jpg
+	scale 50
+	rotateOrigin rightTop
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Cloud computing
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
