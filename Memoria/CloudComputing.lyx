@@ -984,6 +984,54 @@ Google Apps, innkeypos, Quickbooks Online, Successfactors Bizx, Limelight
  
 \end_layout
 
+\begin_layout Subsection
+Identidad como servicio (IDaaS)
+\end_layout
+
+\begin_layout Standard
+El establecimiento y la prueba de la identidad es una función de red central.
+ Un servicio de identidad almacena la información asociada con una entidad
+ digital de forma que pueda ser consultado y gestionado para uso en las
+ transacciones electrónicas.
+ los servicios de identidad tiene como funciones principales las de almacenamien
+to de datos , motor de busqueda y control de la integridad de dichos datos.
+\end_layout
+
+\begin_layout Standard
+Ya se trate de la protección del tráfico de red, acceso a recursos privilegiados
+, o algún otro derecho o privilegio definido, la autorización valida de
+ un objeto en función de su identidad es el elemento central del diseño
+ de una red segura.
+ 
+\end_layout
+
+\begin_layout Standard
+De esta forma la identidad como servicio permite gestionar como y en que
+ medida debe ser gestionada los datos enviados y recibidos por un determinado
+ usuario.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "BS2011"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+No me acaba de quedar claro como funciona la identidad como servicio pero
+ bueno.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Tipos
 \end_layout
@@ -1521,11 +1569,130 @@ Escalabilidad a largo plazo.
  
 \end_layout
 
+\begin_layout Section
+La computación en la nube como un estandar abierto
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+tengo dudas acerca de la relevancia de esta sección.
+ Habla de cloud computing como código abierto (a parte de incluir algunos
+ estandares básicos de cloud computing) así que no sé hasta que nivel nos
+ puede interesar meterlo.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Si tenemos en cuenta el desarrollo de la computación en nube hasta la fecha,
+ es evidente que esta tecnología es el resultado de la convergencia de muchas
+ normas diferentes.
+ la idea de escalabilidad cambia completamente la manera en que los servicios
+ y aplicaciones se despliegan.
+ Sin estandares , la industria crea sistemas en la nube propietario comunmente
+ llamados como 
+\begin_inset Quotes eld
+\end_inset
+
+chimeneas de nubes
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+No se me ocurre una forma mejor de traducir esto : Without standards, the
+ industry creates proprietary systems with vendor lock-in, sometimes referred
+ to as "stovepipe" clouds.
+ 
+\end_layout
+
+\end_inset
+
+.
+ Dado que los clientes no quieren estar encerrados en un solo sistema, hay
+ un impulso fuerte por parte de la industria para crear estándares basados
+ ​​en las nubes.
+ 
+\end_layout
+
+\begin_layout Standard
+Así la computación en la nube se rige por los siguientes estandares tecnológicos
+:
+\end_layout
+
+\begin_layout Itemize
+Virtualización de la plataforma de recursos.
+\end_layout
+
+\begin_layout Itemize
+Arquitectura orientada a servicios.
+\end_layout
+
+\begin_layout Itemize
+
+\shape italic
+FrameWork
+\shape default
+ orientado a aplicaciones web.
+\end_layout
+
+\begin_layout Itemize
+Despliegue de software de código abierto.
+\end_layout
+
+\begin_layout Itemize
+Servicios de web estandarizados.
+\end_layout
+
+\begin_layout Itemize
+Sistemas autonomos.
+\end_layout
+
+\begin_layout Itemize
+Grid computing.
+\end_layout
+
+\begin_layout Standard
+Estos estandares permiten ajustar los diferentes modelos de negocio que
+ los proovedores de servicios en la nube pueden ofertar.
+ Estas empresas requieren que los estandares sean abiertos para que los
+ datos puedan ser portables y accesibles universalmente.
+\end_layout
+
+\begin_layout Standard
+La carrera para crear la primera generación de tecnologías abiertas en la
+ nube que competirán con tecnologías patentadas que ofrecen las empresas
+ como Microsoft (Azure Platform) y VMware (vSphere) ya está en marcha.
+ Rackspace.com, uno de los grandes proveedores de servicios cloud IaaS, anunció
+ en julio de 2010 que está iniciando un proyecto de código abierto llamada
+ OpenStack.
+ Este software desarrollado se distribuye bajo la licencia Apache 2.0.
+ La NASA también ha donado parte de la tecnología Nebula Cloud Platform
+ que desarrolló.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "BS2011"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
