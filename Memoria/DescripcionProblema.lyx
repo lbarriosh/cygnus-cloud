@@ -101,7 +101,7 @@ La Universidad Complutense de Madrid (UCM) es la universidad presencial
  gran número de aulas de informática y laboratorios repartidos entre sus
  diversos centros.
  Naturalmente, la gestión y el mantenimiento de estos espacios es responsabilida
-d de personal de administración y servicios, dependiente, en última instancia,
+d del personal de administración y servicios, dependiente, en última instancia,
  de los Servicios Informáticos de la universidad.
  
 \end_layout
@@ -184,8 +184,7 @@ Con independencia de su equipamiento, del
 software
 \emph default
  instalado y de las asignaturas que se imparten en los mismos, todos los
- laboratorios son gestionados por el propio centro y compartidos entre múltiples
- asignaturas.
+ laboratorios son gestionados por el propio centro.
 \end_layout
 
 \begin_layout Subsection
@@ -217,7 +216,11 @@ es muy diferentes.
  Por ejemplo, una asignatura de introducción a la programación en C++ requerirá
  un editor y un compilador, mientras que una asignatura de electrónica requerirá
  osciloscopios, polímetros, resistencias, transistores,\SpecialChar \ldots{}
-
+ junto con 
+\emph on
+software
+\emph default
+ de simulación de circuitos electrónicos (como PSpice).
 \end_layout
 
 \begin_layout Standard
@@ -227,9 +230,16 @@ Además, en las asignaturas pueden utilizarse herramientas de pago, como
 Rational Software Architect
 \emph default
 .
- Por ello, la Facultad debe permitir trabajar a los alumnos en los laboratorios
- de la Facultad fuera del horario de clases no sólo para que utilicen dichas
- herramientas o el equipamiento específico del laboratorio, sino también
+ En la mayoría de casos, los estudiantes no pueden instalar estas aplicaciones
+ en sus equipos por diversos motivos, como el elevadísimo coste de las licencias
+ o la imposibilidad de encontrar la versión instalada en los laboratorios.
+ 
+\end_layout
+
+\begin_layout Standard
+De esta manera, la Facultad debe permitir trabajar a los alumnos en los
+ laboratorios fuera del horario de clases no sólo para que utilicen dichas
+ herramientas o el equipamiento específico de estos espacios, sino también
  para que puedan elaborar los distintos trabajos de clase que se les asignen.
 \end_layout
 
@@ -254,40 +264,42 @@ Cada alumno matriculado en la Facultad de Informática de la UCM dispone
 \end_layout
 
 \begin_layout Standard
-Desde el punto de vista del alumno, el sistema permite:
+Los servicios de la red de laboratorios que son visibles para los alumnos
+ son los siguientes:
 \end_layout
 
 \begin_layout Itemize
-controlar el uso de los puestos de laboratorio, ya que todos los alumnos
- deben autenticarse antes de utilizar cualquier puesto.
- Esto permite detectar y sancionar las actividades indebidas que se realicen
+el control de uso de los puestos de laboratorio.
+ Todos los alumnos deben autenticarse antes de utilizar cualquier puesto,
+ lo que permite detectar y sancionar las actividades indebidas que se realicen
  en los laboratorios.
 \end_layout
 
 \begin_layout Itemize
-enviar de avisos y notificaciones a los alumnos que utilizan el laboratorio.
-\end_layout
-
-\begin_layout Itemize
-distribuir equitativamente el tiempo de uso de los puestos de laboratorio
- en periodos de alta ocupación.
- En estos casos, el sistema obliga a los alumnos que más tiempo llevan utilizand
-o los puestos de laboratorio a cedérselos a otros estudiantes que están
- esperando para utilizarlos.
-\end_layout
-
-\begin_layout Itemize
-Consultar en todo momento la ocupación de todos los puestos de la red de
+el envío de avisos y notificaciones a los alumnos que utilizan la red de
  laboratorios.
 \end_layout
 
 \begin_layout Itemize
-Consultar la documentación del material experimental de los laboratorios
- (como las 
+el reparto equitativo del tiempo de uso de los puestos de laboratorio en
+ periodos de alta ocupación (restringiendo la duración de las sesiones).
+ Esto garantiza que todos los alumnos puedan utilizar los laboratorios en
+ igualdad de condiciones durante los turnos de práctica libre.
+\end_layout
+
+\begin_layout Itemize
+la consulta de la ocupación en cualquier momento de todos los puestos de
+ la red de laboratorios.
+\end_layout
+
+\begin_layout Itemize
+el almacenamiento de la documentación del material experimental de los laborator
+ios (como las 
 \emph on
 datasheets
 \emph default
- de los circuitos integrados que se utilizan en las prácticas).
+ en las que se recogen las especificaciones de los circuitos integrados
+ que se utilizan en las prácticas).
 \end_layout
 
 \begin_layout Subsection
@@ -302,8 +314,8 @@ La Facultad de Informática de la UCM también ofrece a cada uno de sus profesor
 \end_layout
 
 \begin_layout Standard
-A diferencia de los alumnos, los profesores también pueden hacer uso de
- servicios adicionales de apoyo a la docencia.
+Los profesores también pueden hacer uso de servicios adicionales de apoyo
+ a la docencia.
  Los más relevantes son los siguientes:
 \end_layout
 
@@ -370,10 +382,10 @@ reference "sec:Modelo-laboratorios-FdI UCM"
 
 \begin_layout Standard
 Los recursos desaprovechados son de naturaleza muy dispar: aulas de informática
- de otros centros, PCs de la red de laboratorios, energía, personal\SpecialChar \ldots{}
- Para
- mostrar cómo se desperdician todos estos recursos, presentaremos algunos
- ejemplos.
+ infrautilizadas que se encuentran en otros centros, PCs de la red de laboratori
+os, energía, personal\SpecialChar \ldots{}
+ Para mostrar cómo se desperdician todos estos recursos,
+ presentaremos algunos ejemplos.
 \end_layout
 
 \begin_layout Subsubsection
@@ -397,10 +409,11 @@ avalancha
 \begin_inset Quotes erd
 \end_inset
 
- de prácticas.
- Muchos alumnos utilizan la red de laboratorios para realizar todas estas
- prácticas, lo que justifica que este sea uno de los periodos de mayor uso
- de los laboratorios.
+ de prácticas a entregar en un corto periodo de tiempo.
+ Además, es bastante habitual que los alumnos deban revisar las prácticas
+ ya entregadas antes de la realización de los exámenes.
+ Por todo esto, a nadie debe extrañar el elevadísimo uso de los laboratorios
+ en estas épocas del año.
 \end_layout
 
 \begin_layout Standard
@@ -414,67 +427,81 @@ key "MemoriaFdI0910"
 \end_inset
 
 , más de 2000), los alumnos deberán competir por los distintos puestos.
-\end_layout
-
-\begin_layout Standard
-Ahora bien, no todos los alumnos que utilizan los puestos del mismo laboratorio
+ Ahora bien, no todos los alumnos que utilizan los puestos del mismo laboratorio
  fuera del horario de clase (horario de práctica libre) tienen por qué estar
  matriculados en las mismas asignaturas, por lo que necesitarán utilizar
  
 \emph on
-hardware 
-\emph default
-y 
-\emph on
 software
 \emph default
- distinto.
- Para mostrar cómo se agrava la situación, haremos uso de un ejemplo.
+ (y también posiblemente 
+\emph on
+hardware
+\emph default
+)
+\emph on
+ 
+\emph default
+distinto.
+ Para mostrar cómo se agrava aún más la situación, haremos uso de un ejemplo.
 \end_layout
 
 \begin_layout Standard
 Consideremos la semana anterior a las vacaciones de Navidad.
- En ella, los alumnos de las asignaturas de electrónica estarán implementando
- en los laboratorios equipados con osciloscopios y polímetros (7, 8, 9 y
- 10) una fuente de alimentación en horario de práctica libre.
- Supongamos también que se está impartiendo docencia en los laboratorios
- 9 y 10, por lo que estos estarán ocupados.
- Puesto que hay un gran número de alumnos matriculados en la Facultad de
- Informática, esta situación es bastante habitual.
+ En ella, los alumnos de una asignatura de diseño de circuitos estarán trabajand
+o en una práctica de VHDL de cierta envergadura, mientras que los alumnos
+ de primer curso deberán entregar una práctica de programación en C++.
+ 
 \end_layout
 
 \begin_layout Standard
-Así pues, la práctica de electrónica sólo podrá realizarse en los laboratorios
- 7 y 8.
- Pero cualquier alumno puede acceder a estos laboratorios en horario de
- práctica libre, por lo que en ellos también será posible trabajar en otro
- tipo de prácticas (como, por ejemplo, prácticas de programación).
+Supongamos que el simulador y el entorno de desarrollo en VHDL sólo están
+ instalados en los laboratorios 7, 8, 9 y 10.
+ Supongamos también que, en un momento dado, se está impartiendo docencia
+ en los laboratorios 9 y 10.
+ A causa del gran número de alumnos matriculados en la Facultad de Informática,
+ esta situación se da con bastante frecuencia.
+\end_layout
+
+\begin_layout Standard
+Si un alumno desea trabajar en su práctica de VHDL en los laboratorios de
+ la Facultad y fuera del horario de clase (en los denominados turnos de
+ práctica libre), deberá utilizar obligatoriamente los laboratorios 7 y
+ 8.
+ Pero en los turnos de práctica libre estos laboratorios no están reservados
+ en exclusiva para los alumnos de la asignatura de diseño de circuitos,
+ por lo que los estudiantes de primero también podrán realizar en ellos
+ su práctica de programación.
 \end_layout
 
 \begin_layout Standard
 Si no existen puestos libres en los laboratorios 7 y 8 y un alumno desea
- continuar con su práctica de electrónica, existen varias alternativas:
+ continuar con su práctica de diseño de circuitos, existen varias alternativas:
 \end_layout
 
 \begin_layout Itemize
-echar de esos laboratorios a los alumnos que no deban utilizar el equipamiento
- específico, es decir, a los que están programando.
+echar de esos laboratorios a los alumnos que no deban utilizar el software
+ específico, es decir, a los alumnos de primero.
 \end_layout
 
 \begin_layout Itemize
 imponer restricciones de tiempo, de modo que los distintos alumnos que utilizan
  el laboratorio estarán obligados a compartir sus puestos.
  De esta manera, los alumnos que deseen realizar la práctica en el laboratorio
- deberán esperar a que haya puestos libres.
+ deberán esperar a que haya puestos libres; y los que estén utilizando el
+ laboratorio deberán abandonarlo tras cierto intervalo de tiempo.
 \end_layout
 
 \begin_layout Standard
 Incluso dejando de lado el aumento de la crispación entre los alumnos al
- que dan lugar ambas alternativas y el hacinamiento en los laboratorios,
- esta situación sigue siendo poco deseable: si en un aula de informática
- de la Facultad de Filología hay puestos libres, estos no podrán utilizarse
- para completar las prácticas de programación por el mero hecho de no tener
- instalado el 
+ que dan lugar ambas alternativas y la situación de auténtico hacinamiento
+ en los laboratorios, esta situación sigue siendo poco deseable: si en un
+ aula de informática de la Facultad de Filología hay puestos libres, estos
+ no podrán utilizarse para completar 
+\emph on
+cualquiera
+\emph default
+ de las dos prácticas por el mero hecho de no tener instalado el 
 \emph on
 software
 \emph default
@@ -535,8 +562,9 @@ Ante la actual situación de crisis económica, la Universidad Complutense
 
 \begin_layout Standard
 La primera fuente de consumo innecesario es el sistema de climatización
- y alumbrado de las aulas de informática infrautilizadas, que deberán utilizarse
- con independencia del número de alumnos que estén trabajando en el aula.
+ y alumbrado de las aulas de informática infrautilizadas, cuyo uso resulta
+ imprescindible (al margen del número de alumnos que estén trabajando en
+ el aula).
  
 \end_layout
 
@@ -610,32 +638,50 @@ reference "sub:Aulas-Informática-Otros-Centros"
 \end_layout
 
 \begin_layout Standard
-Supongamos que la práctica de electrónica se compone de dos partes:
-\end_layout
-
-\begin_layout Itemize
-una primera parte en la que se debe simular el comportamiento de la fuente
- de alimentación.
-\end_layout
-
-\begin_layout Itemize
-una segunda parte en la que se debe implementar la fuente de alimentación.
-\end_layout
-
-\begin_layout Standard
-El simulador estará instalado en todos los puestos de los laboratorios 7
- y 8, pero no se utilizará en los que los alumnos completen la práctica
- de programación.
- Así, un alumno que desee completar la primera parte de la práctica de electróni
-ca no podrá hacerlo al no estar instalado el simulador en otras aulas de
- informática.
+Los alumnos que deseen avanzar con su práctica de VHDL necesitan utilizar
+ un entorno de desarrollo de VHDL y un simulador.
+ Este 
+\emph on
+software 
+\emph default
+estará instalado en todos los puestos de los laboratorios 7 y 8, pero no
+ se utilizará en los puestos ocupados por los alumnos de primero.
+ De esta manera, aunque las licencias de estos puestos no se utilizan, no
+ será posible utilizarlas al no estar instalado el 
+\emph on
+software
+\emph default
+ en otras aulas de informática.
 \end_layout
 
 \begin_layout Standard
-Considerando el desorbitado precio de algunas aplicaciones propietarias
- y la imposibilidad de encontrar en el mercado versiones de prueba de algunas
- de las aplicaciones instaladas (principalmente, por ser demasiado antiguas),
- esta situación resulta inadmisible.
+Además, puesto que también la adquisición de 
+\emph on
+software 
+\emph default
+se realiza a través de la red de laboratorios, resulta imposible compartir
+ las licencias sin utilizar con otros centros, lo que incrementa considerablemen
+te el gasto en 
+\emph on
+software
+\emph default
+.
+ Por ejemplo, si tanto en la Facultad de Ciencias Físicas como en la Facultad
+ de Informática se utiliza el 
+\emph on
+software
+\emph default
+ MATLAB, en la Facultad de Ciencias Físicas no se podrán aprovechar las
+ licencias sin utilizar de la Facultad de Informática y viceversa.
+ 
+\end_layout
+
+\begin_layout Standard
+Considerando el desorbitado precio de las aplicaciones propietarias en general,
+ las limitaciones de las versiones de prueba de muchas de ellas y la imposibilid
+ad de encontrar en el mercado las versiones instaladas de algunas de las
+ que se utilizan para realizar prácticas (frecuentemente, por ser demasiado
+ antiguas), esta situación resulta inadmisible.
 \end_layout
 
 \begin_layout Subsection
@@ -839,7 +885,7 @@ hardware
 \begin_layout Itemize
 las licencias del sistema operativo Windows incluidas con el equipo no se
  utilizan (la UCM utiliza sus propias licencias).
- El coste estas licencias, llamadas licencias OEM (
+ El coste de estas licencias, llamadas licencias OEM (
 \emph on
 Original Equipment Manufacturer
 \emph default
