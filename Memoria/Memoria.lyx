@@ -384,7 +384,7 @@ filename "CloudComputing.lyx"
 \begin_inset CommandInset include
 LatexCommand input
 preview true
-filename "Xen.lyx"
+filename "Virtualizacion.lyx"
 
 \end_inset
 
