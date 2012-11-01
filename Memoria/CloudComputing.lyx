@@ -86,41 +86,45 @@ Introducción
 \end_layout
 
 \begin_layout Standard
-En el presente capítulo se abordará el estudio de cloud computing al ser
- este el tema principal en el que se basa nuestro proyecto.
- Para ello comenzaremos dando una detallada definión sobre cloud computing,
- después explicaremos su funcionamiento y para terminar describiremos las
- caracteristicas y los diferentes tipos de sistemas en la nube.
-\end_layout
-
-\begin_layout Standard
-El cloud computing permite al cliente abstraerse del hardware con el cual
- va a trabajar y centrarse en los servicios que necesita para desarrollar
- dicho trabajo .
- De esta forma el usuario puede centrarse en su trabajo y despreocuparse
- por como obtener el entorno necesario.
+El 
+\shape italic
+cloud computing
+\shape default
+ o computación en la nube permite al cliente abstraerse del 
+\shape italic
+hardware
+\shape default
+ con el cual va a trabajar y centrarse en los servicios que necesita para
+ realizar dicho trabajo.
+ De esta forma el usuario solo debe preocuparse por lo que quieres hacer
+ y no por cómo configurar todo el entorno que necesita.
  
 \end_layout
 
 \begin_layout Standard
-Además la computación en la nube elimina los costos de adquisición de hardaware,
- las licencias del software , el mantenimiento de las instalaciones , etc.
- El usuario solo debe hacer frente a una tarifa medida por uso o una cuota
- fija de subscripción.
- El usuario usa solo lo que quiere , paga sólo lo que usa.
+Además el 
+\shape italic
+cloud computing
+\shape default
+ elimina los costos de adquisición de 
+\shape italic
+hardware
+\shape default
+, las licencias del software, el mantenimiento de las instalaciones, etc.
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
 	filename graficos/Cloud computing/generales-foto05.jpg
-	scale 50
-	rotateOrigin center
+	scale 40
+	rotateOrigin rightTop
 
 \end_inset
 
@@ -150,25 +154,44 @@ Computación en la nube.
 \end_layout
 
 \begin_layout Standard
-La computación en la nube toma el modelo de cómputo utility al siguiente
- nivel.
- Es una forma nueva y evolucionada de cómputo en el cual muchos tipos diferentes
+el 
+\shape italic
+cloud computing
+\shape default
+ es una forma nueva y evolucionada de cómputo en el cual muchos tipos diferentes
  de recursos (hardware, software, almacenamiento, comunicaciones, etc.) pueden
  ser combinados y recombinados sobre la marcha dentro de las capacidades
  específicas o de los servicios que los clientes requieren.
  Desde ciclos CPU para proyectos HPC hasta la capacidad de almacenamiento
  para respaldos de grado empresarial para completar los IDEs para el desarrollo
- del software, la computación en la nube puede entregar virtualmente cualquier
- capacidad de IT (tecnología de la información entendida como el estudio,diseño,
-desarrollo , aplicación , implementación, soporte o cualquier sistema de
- información basado en la computación
+ del software, el 
+\shape italic
+cloud computing
+\shape default
+ puede entregar virtualmente cualquier capacidad de IT (tecnología de la
+ información entendida como el estudio,diseño,desarrollo, aplicación, implementa
+ción, soporte o cualquier sistema de información basado en la computación
 \begin_inset CommandInset citation
 LatexCommand cite
 key "IT2012"
 
 \end_inset
 
-) , en tiempo real.
+), en tiempo real.
+\end_layout
+
+\begin_layout Standard
+En el presente capítulo se abordará el estudio de 
+\shape italic
+cloud computing
+\shape default
+ al ser este el tema principal en el que se basa nuestro proyecto.
+ Para ello comenzaremos dando una detallada definión sobre 
+\shape italic
+cloud computing
+\shape default
+, después explicaremos su funcionamiento y para terminar describiremos las
+ caracteristicas y los diferentes tipos de sistemas en la nube.
 \end_layout
 
 \begin_layout Section
@@ -181,20 +204,31 @@ Para poder establecer un estandar acerca del significado más correcto de
 \begin_inset Quotes eld
 \end_inset
 
-comutación en la nube
+cloud computing
 \begin_inset Quotes erd
 \end_inset
 
- el Instituto Nacional de Estandares y Tecnologías (NIST) ha dado una definición
- universal y una arquitectura de referencia .
- De esta forma para el NIST la computación en la nube consiste en :
+ el Instituto Nacional de Estandares y Tecnologías (NIST) de Estados Unidos
+ ha dado una definición universal y una arquitectura de referencia.
+ 
+\end_layout
+
+\begin_layout Standard
+Según el NIST el 
+\shape italic
+cloud computing
+\shape default
+ consiste en :
 \end_layout
 
 \begin_layout Quotation
 
 \family sans
 \shape italic
-Un modelo para permitir un acceso de red conveniente, desde cualquier sitio
+\begin_inset Quotes eld
+\end_inset
+
+Un modelo para permitir un acceso de red adecuado, desde cualquier sitio
  y bajo demanda a un conjunto compartido de recursos informáticos configurables
  (por ejemplo, redes, servidores, almacenamiento, aplicaciones y servicios)
  que se pueden proporcionar rápidamente y lanzar con un mínimo esfuerzo
@@ -217,98 +251,142 @@ key "NIST2011"
 \end_layout
 
 \begin_layout Standard
-
-\family sans
 De esta definición podemos extraer las cuatro caracteristicas esenciales
- de la computación en la nube .
- Estas características son las de autoservicio, accesibilidad desde multiples
- plataformas, recursos compartidos por varios usuarios y servicios flexibles
- .
- Hablaremos en profundidad sobre estas características más adelante.
+ de el cloud computing:
+\end_layout
+
+\begin_layout Itemize
+autoservicio o administración propia de los servicios ofertados.
+\end_layout
+
+\begin_layout Itemize
+accesibilidad desde multiples plataformas.
+\end_layout
+
+\begin_layout Itemize
+recursos compartidos por varios usuarios.
+\end_layout
+
+\begin_layout Itemize
+servicios flexibles y perfectamente ajustables al entorno de trabajo.
+\end_layout
+
+\begin_layout Standard
+Hablaremos más en profundidad sobre estas características en su correspondiente
+ sección.
 \end_layout
 
 \begin_layout Section
-Antecedentes
+Prededentes del 
+\shape italic
+cloud computing
 \end_layout
 
 \begin_layout Standard
-Con la finalidad de acercar al lector más a todo lo que abarca la computación
- en la nube expondremos a continuación un ejemplo que permita representar
- el funcionamiento de este servicio por medio de un sistema más conocido
- y extendido en la sociedad.
+El cloud computing sigue un servicio basado en ideas bastante antiguas que
+ han sido utilizadas y mejoradas por la sociedad a lo largo de la historia.
+ A continuación introduciremos una ejemplo fundamentado en estas ideas que
+ permita representar el funcionamiento del cloud computing por medio de
+ un sistema más conocido y extendido en la sociedad.
 \end_layout
 
 \begin_layout Standard
-Imaginemos el sistema de distribución de agua de una ciudad .
+Imaginemos el sistema de distribución de agua de una ciudad.
  La evolución del ser humanos ha estado fuertemente ligada al agua por ser
- esta necesaria para la subsistencia de la especie .
+ esta necesaria para la subsistencia de la especie.
  Así la primeras civilizaciones buscaban lugares donde hubiese agua dulce
- disponible, en territorios cercanos a lagos y rios .
- Estas sociedades reducidas eran capaz de abastecerse con estos lagos y
- rios, sin embargo, cuando la sociedad fue evolucionando y extendiendose
- se convirtio en algo primordial encontrar otras fuentes de agua dulce .
- De esta forma comenzó a construirse pozos que permitiese extraer el agua
- subterranea .
+ disponible, en territorios cercanos a lagos y rios.
+ Estas sociedades reducidas eran capaces de abastecerse con estos lagos
+ y rios, sin embargo, cuando la sociedad fue evolucionando y extendiendose
+ se convirtio en algo primordial encontrar otras fuentes de agua dulce.
+ De igual forma la creciente evolución de los requisitos en los servicios
+ software han provocado una continua e importante evolución desde los modelos
+ primitivos de computadores hasta los actualmente utilizados.
+\end_layout
+
+\begin_layout Standard
+Con el fin de abastecer a la creciente población se comenzó a construirse
+ pozos que permitiese extraer el agua subterranea.
  las construcciones de los primeros pozos se produjeron en jericó (Israel)
  hace aproximadamente 7.000 años.
  Para que este agua pudiera se accesible para todos los ciudadanos fue necesario
- desarrollar trasportes capaces de trasladar y mantener este liquido .
+ desarrollar trasportes capaces de trasladar y mantener este liquido.
  Sin embargo, estos trasportes eran bastante lentos y no siempre resultaban
  facilmente accesible para todos los usuarios.
  Además los tratamientos de purificación del agua tales como el calentamiento
  al fuego o el filtrado a traves de arena dejaban bastante que desear y
  provocaban un gran número de infecciones que desembocaban en grandes epidemias
  haciendo fracasar en parte la principal finalidad de estos mecanismos.
+ Similarmente en el caso de la computación los primitivos sistemas de cloud
+ computing pueden presentarse como estos pozos y las primitivas redes de
+ comunicación como llos medios de transporte por los cuales podía ser ofrecidos
+ estos servicios (de forma muy reducida al principio).
 \end_layout
 
 \begin_layout Standard
 No fue hasta la antigua Grecia cuando aparecieron los primeros sistemas
  eficientes de almacenamiento y trasporte del agua potable obtenido a partir
- de pozos, lluvia, ríos y lagos .
+ de pozos, lluvia, ríos y lagos.
  De esta época datan las primeras redes de distribución a gran escala.
- Otra novedad importante que fue introducida en esta época fue un interes
- claro por la calidad del agua que consimían.Para ello el agua utilizada
- se retiraba mediante sistemas de agua residual además se utilizaban embalses
- de aireación para purificar el agua antes de su distribución.
+ Otra novedad importante que fue introducida en esta época fue el interés
+ por la calidad del agua que consumían.Para ello el agua utilizada se retiraba
+ mediante sistemas de agua residual.
+ Además se utilizaban embalses de aireación para purificar el agua antes
+ de su distribución.
+ Semejantemente el creciente número de usuarios interesados en los servicios
+ en la nube hizó que fuese necesario una mejora en la redes de comunicación
+ ampliandolas y mejorando su velocidad.
 \end_layout
 
 \begin_layout Standard
-Así llegamos a la época del imperio Romano.
- Los romanos fueron los mayores arquitectos en construcciones de redes de
- distribución de agua que ha existido a lo largo de la historia.La verdadera
- revolución llegó con los acueductos, ya que por primera vez se podía transporta
-r agua entre puntos separados por una gran distancia.
+La verdadera revolución llegó con los acueductos, ya que por primera vez
+ se podía transportar agua entre puntos separados por una gran distancia.
  Gracias a ellos, los romanos podían distribuir agua entre distintos puntos
  de su amplio imperio.
- Con la caida del imperio romano los acueductos dejaron de utilizarse provocando
- un paso atras en la evolución de los sistemas de distribución de agua .
- En la edad media el agua de las ciudades estaba demasiado contaminada para
- poder ser consumida y era necesario traerla del exterior, tarea llevada
- a cabo por medio de los portadores.
+ 
 \end_layout
 
 \begin_layout Standard
-Así llegamos hasta los inicios del siglo 
-\shape italic
-XIX
-\shape default
- en el que encontramos el primer sistema de suministro de agua potable para
- toda una ciudad completa.
- Fue construido en Paisley, Escocia, alrededor del año 1804 por John Gibb.
+Con la caida del imperio romano los acueductos dejaron de utilizarse provocando
+ un paso atras en la evolución de los sistemas de distribución de agua que
+ se extendería a lo largo de toda la Edad Media.
+ 
+\end_layout
+
+\begin_layout Standard
+A principios del siglo XIX, John Gibb proyectó el primer sistema de suministro
+ de agua capaz de abastecer a toda la ciudad de Paisley, en Escocia.
  A lo largo de la ciudad se extendían multiples fuentes donde los ciudadanos
- podían recoger el agua suficiente para abastecer a su familia .
+ podían recoger el agua suficiente para abastecer a su familia.
  Este sistema produjo una importante aproximación del agua a toda la sociedad
  pero los ciudadanos tenían una cantidad de agua bastante limitada y debían
  molestarse en desplazarse todos los días para recogerla.
+ 
 \end_layout
 
 \begin_layout Standard
-Finalmente en la actualidad podemos tener acceso a agua potable totalmente
- purificada simplemente acercandonos al grifo de nuestra cocina .
+Por ende el creciente interes de los usuarios por los servicios en la nube
+ con unas mejores prestaciones hicieron que los proovedores se centrasen
+ en mejorar las características que hasta la época había ofrecido la nube.
+ Para ello se centrarón en ampliar el número de servicios a los cuales eran
+ capaces de hacer frente por usuario , la seguridad en dichos servicios
+ y la accesibilidad a los mismo.
+\end_layout
+
+\begin_layout Standard
+Hoy en día, podemos acceder al agua potable totalmente purificada abriendo
+ cualquier grifo de nuestra casa.
  De esta forma existen plantas de almacenamiento y purificación capaces
  de avastecer a un elevado número de personas las cuales solo tienen que
  preocuparse por pagar cierto dinero por estos servicios para poder disfrutar
- del liquido elemento en sus propias casas.
+ del liquido elemento en sus propias casas sin tener que preocuparse como
+ y de donde llega.
+ de igual forma cualquier usuario que utiliza el 
+\shape italic
+cloud computing
+\shape default
+ puede usar sus servicios contratados sin tener que preguntarse de como
+ y de donde le llegan los mismos.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "CE2010"
@@ -319,14 +397,14 @@ key "CE2010"
 \end_layout
 
 \begin_layout Standard
-De igual forma que el agua, los servicios utilizados en la sociedad para
- el desarrollo de aplicaciones y en general para la realización de cualquier
- tarea ligada a un computador han evolucionado desde unos sitemas prehistoricos
- que limitaban hasta donde se podía llegar e incrementaba el tiempo de trabajo
- hasta servicios otorgados por una empresa y gestionados en su integridad
- por la misma en los que el usuario tan solo debe preocuparse del trabajo
- al cual debe hacer frente y no de si dispone de todos los servicios para
- llevarlo acabo .
+De igual forma que los sitemas de distribución de agua, los servicios utilizados
+ en la sociedad para el desarrollo de aplicaciones y en general para la
+ realización de cualquier tarea ligada a un computador han evolucionado
+ desde unos sitemas rudimentarios que limitaban hasta donde se podía llegar
+ e incrementaban el tiempo de trabajo hasta servicios ofrecidos por una
+ empresa y gestionados en su integridad por la misma en los que el usuario
+ tan solo debe preocuparse del trabajo al cual debe hacer frente y no de
+ si dispone de todo el entorno necesario para llevarlo acabo.
  Así de igual forma que hoy en día resulta casí impensable no poder disfrutar
  de agua potable en nuestras propias casas también debe resultar impensable
  que cualquier usuario no pueda hacer frente a un trabajo por las limitaciones
@@ -365,9 +443,12 @@ cloud
 \shape default
 .
  Por otra parte un gran número de expertos mantienen que la primera idea
- acerca de la computación en la nube fue dada por John McCarthy, el cual
- también en los años 60 dijo que el mundo de la informática debía ser de
- uso público
+ acerca de el 
+\shape italic
+cloud computing
+\shape default
+ fue dada por John McCarthy, el cual también en los años 60 dijo que el
+ mundo de la informática debía ser de uso público
 \begin_inset CommandInset citation
 LatexCommand cite
 key "PSR2011"
@@ -381,18 +462,18 @@ key "PSR2011"
 \begin_layout Standard
 En los primeros años de la computación (1980's) todo operaba con un modelo
  cliente/servidor.
- Todas las aplicaciones , toda la información y todo el control se encontraba
+ Todas las aplicaciones, toda la información y todo el control se encontraba
  almacenado en enormes computadores conocidos como servidores.Si un usuario
  quería acceder a una determinada información o ejecutar un determinado
  programa tenía que conectarse al ordenador central y acceder de manera
  apropiada.
- Estos usuarios se conectaban al ordenador central por medio de terminales
- , también conocidos como estaciones de servicio o clientes.
+ Estos usuarios se conectaban al ordenador central por medio de terminales,
+ también conocidos como estaciones de servicio o clientes.
  
 \end_layout
 
 \begin_layout Standard
-Los ordenadores centrales tenían unos recursos limitados .
+Los ordenadores centrales tenían unos recursos limitados.
  El acceso no era inmediato y dos usuarios no podían acceder a la misma
  información a la vez.
  Por ello para poder trabajar con uno de estos ordenadores centrales era
@@ -412,13 +493,13 @@ Este cuello de botella provocó que se comenzara a estudiar nuevos modelos.
  en internet.
  Segun esta idea los mensaje se propagaban a cualquier ordenador personal
  permitiendo que cada usuario conectado puediese acceder a casí toda la
- información .
+ información.
  Esto ya presagiaba la idea de computación en la nube.
- En realidad la red no usaba la idea más estricta de P2P .
+ En realidad la red no usaba la idea más estricta de P2P.
  Cada dirección estaba organizada por un conjunto de servidores a los cuales
- se conectaban los usuarios .
- Así , los usuarios tenían una mayor libertad con respecto a el modelo cliente/s
-ervidor sin llegar a tener un control total.
+ se conectaban los usuarios.
+ Así, los usuarios tenían una mayor libertad con respecto a el modelo cliente/se
+rvidor sin llegar a tener un control total.
 \end_layout
 
 \begin_layout Standard
@@ -426,16 +507,16 @@ La idea de restringir la gestión de datos y el control a un conjunto de
  servidores centralizados (en mayor número que los ordenadores centrales
  del modelo cliente/servidor) y no a todos los usuarios se basaba en que
  el procesamiento de información requería de tiempo y energía y no todos
- los ordenadores estaban conectados las 24 horas del día .
+ los ordenadores estaban conectados las 24 horas del día.
  Así el conjunto de servidores centrados en una determinada página se encargaban
  de procesar un conjunto de peticiones en paralelo a nivel local y subir
  la nueva información extraida cada cierto tiempo.
  De la misma forma esto podría ser aplicado a un conjunto de usuarios interesado
-s en un mismo proyecto .
+s en un mismo proyecto.
  Por medio de un conjunto de servidores destinados en exclusiva a la gestión
- y actualización de un proyecto , un gran número de usuarios podrían trabajar
+ y actualización de un proyecto, un gran número de usuarios podrían trabajar
  sobre dicho proyecto y permitir a los servidores informar de sus avances
- a cualquier otro usuario que se conecte a los mismos .
+ a cualquier otro usuario que se conecte a los mismos.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -496,9 +577,9 @@ web
  Segun Jeremy Allaire (CEO de Brightcove) este era el primer sistema que
  podía ser considerado como una infraestructura de computación en la nube
  completa y accesible.
- Este mismo año , George Gilder , en su artículo de octubre 2006 en la revista
+ Este mismo año, George Gilder, en su artículo de octubre 2006 en la revista
  Wired titulado «Las fábricas de información», daba una definición del modelo
- de commputación en la nube bastante acertado .
+ de commputación en la nube bastante acertado.
  Las granjas de servidores, sobre las que escribió Gilder, eran similares
  en su arquitectura al procesamiento “
 \shape italic
@@ -539,8 +620,11 @@ killer apps
  Cuando estas compañías ofrecieron este servicio de manera fiable y fácil
  de consumir, el efecto en cadena de la industria en su conjunto ha sido
  una mayor aceptación general de los servicios en línea”.
- Ya en esta época parecía dislumbrarse que la computación en la nube iba
- a revolucionar la idea de informática que se tenía hasta el momento.
+ Ya en esta época parecía dislumbrarse que el 
+\shape italic
+cloud computing
+\shape default
+ iba a revolucionar la idea de informática que se tenía hasta el momento.
  De hecho, el especialista en tecnologías emergentes, Julian Friedman, dijo
  que en cuanto el modelo en la nube este disponible y generalzado a traves
  de la 
@@ -559,9 +643,13 @@ cloud computing
  y un importante ahorro de costes" tal y como dijo Andreas Asander ( subdirector
  de gestión de productos de Clavister especialista en seguridad de entornos
  virtualizados).
- Con todo esto parece claro que la computación en la nube se ha convertido
- en una realidad palpable y una prioridad para un gran número de empresas
- actuales de este sector, tal y como demuestran las últimas encuestas realizadas.
+ Con todo esto parece claro que el 
+\shape italic
+cloud computing
+\shape default
+ se ha convertido en una realidad palpable y una prioridad para un gran
+ número de empresas actuales de este sector, tal y como demuestran las últimas
+ encuestas realizadas.
  
 \end_layout
 
@@ -586,7 +674,9 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Empresas precursoras de la computación en la nube
+Empresas precursoras de el 
+\shape italic
+cloud computing
 \end_layout
 
 \end_inset
@@ -609,7 +699,11 @@ Características
 
 \begin_layout Standard
 En este apartado detallaremos las principales características que hacen
- de la computación en la nube un servicio actualmente en auge : 
+ de el 
+\shape italic
+cloud computing
+\shape default
+ un servicio actualmente en auge : 
 \end_layout
 
 \begin_layout Itemize
@@ -706,8 +800,11 @@ o inmediato de los servicios en los que hayan surgido algun problema.
 Seguridad
 \series default
 .
- Quizas esta es la característica más dificil de entender de la computación
- en la nube.
+ Quizas esta es la característica más dificil de entender de el 
+\shape italic
+cloud computing
+\shape default
+.
  Los clientes de estos servicios pueden pensar que al almacenar su información
  en un lugar externo a su propio dispositivo, esta se encuentra más en peligro
  de ser abordado por terceras personas.
@@ -742,8 +839,11 @@ Modelos de servicios
 \end_layout
 
 \begin_layout Standard
-La computación en la nube ofrece sus servicios de acuerdo a 3 modelos fundamenta
-les.
+el 
+\shape italic
+cloud computing
+\shape default
+ ofrece sus servicios de acuerdo a 3 modelos fundamentales.
  Estos modelos se refieren a la forma en que las diferentes empresas clientes
  gestionan sus servicios contratados en la nube.
  Estos modelos no son siempre excluyentes entre sí.
@@ -775,7 +875,9 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Modelos de servicios de la computación en la nube
+Modelos de servicios de el 
+\shape italic
+cloud computing
 \end_layout
 
 \end_inset
@@ -905,8 +1007,8 @@ Amazon Elastic Beanstalk, Cloud Foundry, Heroku, Force.com, EngineYard, Mendix,
 \shape italic
 Windows Azure
 \shape default
- , de Microsoft, una plataforma en la nube que permite el desarrollo y ejecución
- de aplicaciones codificadas en varios lenguajes y tecnologías como .NET,
+, de Microsoft, una plataforma en la nube que permite el desarrollo y ejecución
+ de aplicaciones codificadas en varios lenguajes y tecnologías como.NET,
  Java y PHP.
  
 \end_layout
@@ -994,7 +1096,7 @@ El establecimiento y la prueba de la identidad es una función de red central.
  digital de forma que pueda ser consultado y gestionado para uso en las
  transacciones electrónicas.
  los servicios de identidad tiene como funciones principales las de almacenamien
-to de datos , motor de busqueda y control de la integridad de dichos datos.
+to de datos, motor de busqueda y control de la integridad de dichos datos.
 \end_layout
 
 \begin_layout Standard
@@ -1089,7 +1191,7 @@ Cloud público
 Es el tipo más común y el que mejor representa la idea de computación en
  la nube.
  En él las aplicaciones residentes en la nube pública, su almacenamiento
- y todos sus recursos están destinados al público en general .
+ y todos sus recursos están destinados al público en general.
  Este tipo de computación en la nube puede suele ser gratuita o bien ligada
  a un modelo de “pago por uso”.
  Este modelo es el mejor para aquellos negocios donde es necesario controlar
@@ -1148,7 +1250,7 @@ Utiliza un modelo de software como servicio (SaaS) con una buena estrategia
 \end_layout
 
 \begin_layout Itemize
-Necesita una capacidad incremental .
+Necesita una capacidad incremental.
  La capacidad que va a necesitar no se puede aproximar desde el principio.
 \end_layout
 
@@ -1217,7 +1319,7 @@ Un cliente suele usar un cloud privado cuando :
 \end_layout
 
 \begin_layout Itemize
-Su negocio se basa en su información y sus aplicaciones .
+Su negocio se basa en su información y sus aplicaciones.
  Por lo tanto, el control y la seguridad son primordiales.
 \end_layout
 
@@ -1243,10 +1345,10 @@ Cloud híbrido
 
 \begin_layout Standard
 En este tipo se mezclan las características más importantes del cloud privado
- y público .
+ y público.
  En él el cliente gestiona y explota en exclusividad su infraestructura
  pero dispone de acceso al cloud público que mantiene el proovedor en sus
- instalaciones .
+ instalaciones.
  El cloud híbrido combina los beneficios del cloud público junto con los
  del cloud privado.Así por un lado dispone de la esclusividad de tener un
  servidor propio mientra que por el otro puede aumentar sus recursos obteniendol
@@ -1318,7 +1420,7 @@ Datacenter
 \shape default
  del proovedor : Este modelo puede contener su infraestructura en el centro
  de datos del proovedor, o bien subcontratarla lo que hace desaparecer la
- necesidad de una inversión inicial .
+ necesidad de una inversión inicial.
  Así permite reducir costes al modelo de pago por uso, y escalar de forma
  rápida y flexible y sin inversión extra.
  
@@ -1389,7 +1491,7 @@ Un cliente suele usar un cloud híbrido cuando:
 
 \begin_layout Itemize
 Su compañia sigue una organización privada pero delega ciertas funcionalidades
- en servicios públicos .
+ en servicios públicos.
  Por ejemplo una empresa mantiene una infraestructura privada para el desarrollo
  de sus aplicaciones pero utiliza servicios públicos para almacenar información.
 \end_layout
@@ -1414,9 +1516,9 @@ Cloud comunitario
 \begin_layout Standard
 Un cloud comunitario se da cuando dos o más empresas forman una alianza
  y comparten una infraestructura con un marco de seguridad y privacidad
- común .
+ común.
  Esto es posible ya que todas las empresas aliadas tienen unos objetivos
- comunes y requieren de los mismos recursos y herramientas .
+ comunes y requieren de los mismos recursos y herramientas.
  De esta forma las empresas participantes pueden beneﬁciarse de una esclusividad
  casi total reduciendo el coste de compra y mantenimiento de servidores.
  Como desventaja de este modelo perdemos el nivel de seguridad característico
@@ -1436,15 +1538,21 @@ Ventajas y desventajas
 \end_layout
 
 \begin_layout Standard
-Tal y como parece la computación en la nube ofrece a los usuarios una nueva
- forma de entender .Queda claro que las ventajas que ofrece esta computación
- hará posible que en un futuro no muy lejano la idea de utilizar un conjunto
- de servicios no residentes en nuestros ordenadores personales será aceptado
- como algo común entre los usuarios .
+Tal y como parece el 
+\shape italic
+cloud computing
+\shape default
+ ofrece a los usuarios una nueva forma de entender.Queda claro que las ventajas
+ que ofrece esta computación hará posible que en un futuro no muy lejano
+ la idea de utilizar un conjunto de servicios no residentes en nuestros
+ ordenadores personales será aceptado como algo común entre los usuarios.
  Sin embargo, aunque las ventajas que ofrece este sistema con respecto a
  los anteriores lo convierta en actualmente la mejor opción no hay que olvidar
- que la computación en la nube cuenta con un reducido conjunto de desventajas
- .
+ que el 
+\shape italic
+cloud computing
+\shape default
+ cuenta con un reducido conjunto de desventajas.
  A continuación detallaremos las ventajas y desventajas más relevantes de
  la computaión en la nube: 
 \end_layout
@@ -1454,8 +1562,11 @@ Ventajas
 \end_layout
 
 \begin_layout Standard
-Entre las ventajas más importantes del Cloud Computing podemos mencionar:
- 
+Entre las ventajas más importantes del 
+\shape italic
+Cloud Computing
+\shape default
+ podemos mencionar: 
 \end_layout
 
 \begin_layout Itemize
@@ -1489,8 +1600,12 @@ Seguridad a la hora de mantener nuestros datos intactos pero esto es más
 
 \begin_layout Itemize
 Integración probada de servicios Red.
- La computación en la nube puede ser integrar con gran rapidez y facilidad
- con el resto de aplicaciones empresariales.
+ el 
+\shape italic
+cloud computing
+\shape default
+ puede ser integrar con gran rapidez y facilidad con el resto de aplicaciones
+ empresariales.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SF2011"
@@ -1502,16 +1617,19 @@ key "SF2011"
 
 \begin_layout Itemize
 Prestación de servicios a nivel mundial.
- Independientemente donde se encuentre la infraestructura , los servicios
+ Independientemente donde se encuentre la infraestructura, los servicios
  ofertados por una empresa en la nube pueden ser utilizados en cualquier
  parte del mundo de manera rapida y sencilla.
 \end_layout
 
 \begin_layout Itemize
 Actualizaciones automáticas que no afectan negativamente a los recursos
- de TI.En sistemas ajenos a la computación en la nube el usuario debe dedicar
- tiempo y esfuerzo en volver a personalizar e integrar la aplicación cada
- vez que se realice una actualización de la misma .
+ de TI.En sistemas ajenos al 
+\shape italic
+cloud computing
+\shape default
+ el usuario debe dedicar tiempo y esfuerzo en volver a personalizar e integrar
+ la aplicación cada vez que se realice una actualización de la misma.
  Con la computación en la nube estas actualizaciones se realizan de manera
  automatica y sin afectar al cliente.
 \end_layout
@@ -1531,7 +1649,7 @@ Privacidad de los datos.
  un problema de la computación en la nube en sí.
  Al estar todo almacenado en lugares externos al propio ordenador del usuario
  este duda acerca la complejidad con la que el resto de usuarios puedan
- obtener su información .
+ obtener su información.
  
 \end_layout
 
@@ -1570,7 +1688,11 @@ Escalabilidad a largo plazo.
 \end_layout
 
 \begin_layout Section
-La computación en la nube como un estandar abierto
+El 
+\shape italic
+cloud computing
+\shape default
+ como un estandar abierto
 \end_layout
 
 \begin_layout Standard
@@ -1579,9 +1701,15 @@ status open
 
 \begin_layout Plain Layout
 tengo dudas acerca de la relevancia de esta sección.
- Habla de cloud computing como código abierto (a parte de incluir algunos
- estandares básicos de cloud computing) así que no sé hasta que nivel nos
- puede interesar meterlo.
+ Habla de 
+\shape italic
+cloud computing
+\shape default
+ como código abierto (a parte de incluir algunos estandares básicos de 
+\shape italic
+cloud computing
+\shape default
+) así que no sé hasta que nivel nos puede interesar meterlo.
 \end_layout
 
 \end_inset
@@ -1624,8 +1752,11 @@ No se me ocurre una forma mejor de traducir esto : Without standards, the
 \end_layout
 
 \begin_layout Standard
-Así la computación en la nube se rige por los siguientes estandares tecnológicos
-:
+Así el 
+\shape italic
+cloud computing
+\shape default
+ se rige por los siguientes estandares tecnológicos:
 \end_layout
 
 \begin_layout Itemize
@@ -1657,7 +1788,11 @@ Sistemas autonomos.
 \end_layout
 
 \begin_layout Itemize
-Grid computing.
+
+\shape italic
+Grid computing
+\shape default
+.
 \end_layout
 
 \begin_layout Standard
@@ -1708,6 +1843,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+
+\shape italic
 Cloud computing
 \end_layout
 
