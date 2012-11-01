@@ -72,7 +72,7 @@ Introducción
 \begin_layout Standard
 En este capítulo veremos como puede ser virtualizado un sistema, que alternativa
 s hay y cuales han sido las seleccionadas para el proyecto.
- Empezaremos cuales son los distintos tipos de virtualizacion que podemos
+ Empezaremos cuales son los distintos tipos de virtualización que podemos
  encontrarnos, como funcionan cada uno de ellos.
 \end_layout
 
@@ -90,20 +90,64 @@ Historia
 
 \begin_layout Standard
 La virtualización, aunque pueda parecerlo, no es nueva, ya se usaba en la
- decada de 1960.
- IBM implementó unas particiones lógicas sobre los recursos de los mainframes
- para poder usar su gran capacidad de cálculo.
- Con se podían tener terminales independientes corriendo en la misma máquina.
+ década de los 1960, antes incluso de los ordenadores personal.
  
 \end_layout
 
 \begin_layout Standard
-A raíz de que se popularizaron la arquitectura x86, se popularizo el uso
- de computadoras personales, con lo que la virtualización quedo relegada.
- A partir de que el hardware estuviese mas desaprovechado en las maquinas
- personales, se volvió al uso de la virtualización, sobre todo en empresa,
- ya que les resultaba mas rentable tener un solo ordenador dedicado, con
- terminales de baje coste.
+IBM, en 1964, desarrolló un sistema operativo que gestionaba los recursos
+ de
+\emph on
+ 
+\emph default
+la máquina, llamado 
+\emph on
+VM
+\emph default
+ (
+\emph on
+Virtual Machine
+\emph default
+, Máquina Virtual), que permitía a varios usuarios usar una misma máquina
+ a la vez, dando la apariencia de que eran ordenadores personales.
+ Este desarrolló continuó en los dando soporte a los sistemas operativos
+ que ya tenía IBM para que pudiesen ejecutarse sobre 
+\emph on
+VM
+\emph default
+, como son 
+\emph on
+PC/DOS
+\emph default
+, 
+\emph on
+MVS
+\emph default
+ y 
+\emph on
+DOS/VSE
+\emph default
+ e incluso el sistema 
+\emph on
+Unix.
+\end_layout
+
+\begin_layout Standard
+A raíz de que se popularizó el uso de computadoras personales, en los años
+ 80s, la virtualización quedo relegada.
+ Hasta que en 1999 VMware sacó el primer producto que permitía la virtualización
+ sobre la arquitectura x86, la mas extendida en el mercado de los ordenadores
+ personales.
+ Luego, en 2003 se inició el proyecto de software libre Xen, en la universidad
+ de Cambridge y en 2007 KVM, basado en el kernel de Linux para usarlo como
+ hipervisor.
+\end_layout
+
+\begin_layout Standard
+En 2005, la industria de los procesadores, sobre todo Intel y AMD, empezaron
+ a desarrollar, independientemente, tecnologías en sus procesador que permitían
+ una virtualización más sencilla y eficiente para los programas de virtualizació
+n.
 \end_layout
 
 \begin_layout Section
@@ -116,14 +160,14 @@ El tipo de virtualización depende de como quién gestiona los recursos de
 \end_layout
 
 \begin_layout Subsection
-Virtualizacion de hardware
+Virtualización de hardware
 \end_layout
 
 \begin_layout Standard
-En lo que se basa es en que sobre el hardware de la maquina se simula el
- hardware mediante maquinas virtuales, para luego poder ejecutar el sistema.
- El gran inconveniente de este esquema es que las instrucciones de la maquina
- virtualizada debe traducirse a instrucciones de la maquina 
+En lo que se basa es en que sobre el hardware de la máquina se simula el
+ hardware mediante máquinas virtuales, para luego poder ejecutar el sistema.
+ El gran inconveniente de este esquema es que las instrucciones de la máquina
+ virtualizada debe traducirse a instrucciones de la máquina 
 \emph on
 host
 \emph default
@@ -141,6 +185,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename graficos/Virtualizacion/hardware.png
+	scale 50
 
 \end_inset
 
@@ -166,7 +211,7 @@ Virtualización de software
 \end_layout
 
 \begin_layout Standard
-En este esquema se utiliza un software para simular el ordenador, una maquina
+En este esquema se utiliza un software para simular el ordenador, una máquina
  virtual, este debe ejecutarse sobre un sistema operativo concreto, que
  es el que tiene acceso al hardware y hace de intermediario entre este y
  la máquina virtual.
@@ -183,6 +228,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename graficos/Virtualizacion/software.png
+	scale 50
 
 \end_inset
 
@@ -204,8 +250,32 @@ Virtualización software
 \end_layout
 
 \begin_layout Standard
+En este caso en el sistema guest, el hardware de almacenamiento, como puede
+ ser el disco duro o las unidades ópticas, pueden ser virtuales o reales.
+ Si son virtuales, es la máquina virtual la que se encarga de gestionarlo
+ mediante archivos en el sistema 
+\emph on
+host
+\emph default
+, en el caso de que sean reales, la máquina virtual, en colaboración con
+ el sistema host, le proporcionana al sistema virtualizado acceso a los
+ mismos.
+ El hardware que no sea posible virtualizar, como pueden ser una cámara
+ o un micrófono, debe usar el hardware real, para ello la maquina virtual,
+ transforma las llamadas del sistema 
+\emph on
+guest
+\emph default
+, en llamadas al sistema 
+\emph on
+host
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
 El mayor inconveniente de este esquema es que, como debe haber un sistema
- operativo ejecutandose, consume algunos de los recursos de la máquina.
+ operativo ejecutándose, consumedo recursos de la máquina.
 \end_layout
 
 \begin_layout Subsection
@@ -214,11 +284,18 @@ Paravirtualización
 
 \begin_layout Standard
 En este esquema, al contrario que en el anterior, no es necesario de un
- sistema host para gestionar los recursos, sino que lo que se usa es una
- capa de virtualización, tambien llamada hipervisor, que es la que gestiona
- los recursos.
+ sistema 
+\emph on
+host
+\emph default
+ para gestionar los recursos, sino que lo que se usa es una capa de virtualizaci
+ón, también llamada hipervisor, que es la que gestiona los recursos.
  Pero no basta con eso, sino que debe haber una comunicación entre el sistema
- guest y el hipervisor.
+ 
+\emph on
+guest
+\emph default
+ y el hipervisor.
 \end_layout
 
 \begin_layout Standard
@@ -232,6 +309,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename graficos/Virtualizacion/paravirtualizacion.png
+	scale 50
 
 \end_inset
 
@@ -253,7 +331,7 @@ Paravirtualización
 \end_layout
 
 \begin_layout Standard
-Esa comunicación de debe a que en los procesadores hay varios niveles de
+Esa comunicación se debe a que en los procesadores hay varios niveles de
  privilegios, llamados 
 \emph on
 ring
@@ -279,6 +357,16 @@ Microsoft Windows
 Mac OSX
 \emph default
 , no es posible hacer este cambio.
+ 
+\end_layout
+
+\begin_layout Standard
+Aunque algunos programas de virtualización que esando esta técnica han conseguid
+o ejecutar sistemas operativos sin modificar, para ello lo que hacen es,
+ en tiempo de ejecución, detectar las instrucciones problemáticas, las que
+ requieren de privilegios de nivel 0, y parchearlas, para que no haya problemas
+ en el funcionamiento del sistema operativo, ni que el procesador se queje
+ al intentar ejecutar una instrucción en un nivel inadecuado.
 \end_layout
 
 \begin_layout Subsection
@@ -286,7 +374,7 @@ Virtualización completa
 \end_layout
 
 \begin_layout Standard
-Este esquema es parecido al anterior, tambien existe el hipervisor, pero
+Este esquema es parecido al anterior, también existe el hipervisor, pero
  al contrario que en la paravirtualización, no es necesaria una comunicación.
  Esto es porque en los procesadores que mayor cuota de mercado tiene (Intel
  y AMD) se ha añadido dos modos de ejecución, uno de ellos reservado para
@@ -336,6 +424,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename graficos/Virtualizacion/completa.png
+	scale 50
 
 \end_inset
 
@@ -365,16 +454,23 @@ Existen muchos programas de virtualización para todos los tipos como pueden
  ser VMware en sus distintas versiones, Xen, KVM, VirtualBox\SpecialChar \ldots{}
  Lo que buscamos
  en este proyecto es poder tener sistemas bajo demanda a bajo coste, por
- lo que nos centraremos en evaluar el software libre, open source, freeware,
- con lo queda descartado como opcion VMware y aunque VirtualBox tiene una
- version como software libre, algunas funciones como el soporte USB, está
+ lo que nos centraremos en evaluar el software libre, 
+\emph on
+open source
+\emph default
+, 
+\emph on
+freeware
+\emph default
+, con lo queda descartado como opción VMware y aunque VirtualBox tiene una
+ versión como software libre, algunas funciones como el soporte USB, está
  bajo una licencia propietario, por lo que también lo descartamos.
  
 \end_layout
 
 \begin_layout Standard
 Aunque siguen existiendo muchas alternativas bajo las condiciones que queremos,
- nos centramos principalmente en Xen y KVM, por ser los que mayor trayectoría
+ nos centramos principalmente en Xen y KVM, por ser los que mayor trayectoria
  tienen.
  Debido a que Xen lleva mas años que KVM y estar apoyado por la comunidad,
  a parte de grandes empresas que apoyan el desarrollo como IBM, Intel, Red
