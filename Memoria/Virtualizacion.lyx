@@ -72,16 +72,26 @@ Introducción
 \begin_layout Standard
 En este capítulo veremos como puede ser virtualizado un sistema, que alternativa
 s hay y cuales han sido las seleccionadas para el proyecto.
- Empezaremos cuales son los distintos tipos de virtualización que podemos
- encontrarnos, como funcionan cada uno de ellos.
+ 
 \end_layout
 
 \begin_layout Standard
-La virtualización permite tener varios sistemas en la misma máquina, aislados
- unos de otros, y gracias a que esos sistemas pueden estar en un único archivo,
- podríamos cambiar alguno de ellos a otra máquina o hacer una copia de seguridad
- de forma rápida y sencilla, solo habría que copiar ese archivo al nuevo
- servidor o a un dispositivo de almacenamiento.
+La virtualización nos permite tener varios sistemas en la misma máquina,
+ aislados unos de otros, y gracias a que esos sistemas pueden estar en un
+ único archivo, podríamos cambiar alguno de ellos a otra máquina o hacer
+ una copia de seguridad de forma rápida y sencilla, solo habría que copiar
+ ese archivo al nuevo servidor o a un dispositivo de almacenamiento.
+ Para conseguir esto, lo que tenemos es un hipervisor que nos permite gestionar
+ esos recursos y asignarselos a las máquinas según los van necesitando.
+ Este termino es un evolución de otro que se usa para referirse al 
+\emph on
+kernel
+\emph default
+ de los sistemas operativos, el supervisor.
+ Esta gestión puede ser, en el caso de dispositivos de almacenamiento, la
+ división de ese espacio según sea asignado por el usuario o, en el caso
+ de dispositivos de tratamiento de dato como puede ser el procesador, asignadole
+ un tiempo determinado de ejecución a cada sistema virtualizado.
 \end_layout
 
 \begin_layout Section
@@ -483,7 +493,109 @@ Xen
 
 \begin_layout Standard
 Xen permite una virtualización de paravirtualización y virtualización completa
- en los procesadores que lo soporten
+ en los procesadores que lo soporten.
+\end_layout
+
+\begin_layout Standard
+Pero no todo en Xen son ventajas, ya que en el caso de que solo se pueda
+ usar paravirtualización en una máquina solo podrán virtualizar los sistemas
+ operativos que soporten el hipervisor de Xen.
+ Además para que el usuario pueda interactuar con Xen debe ejecutar, sobre
+ el hipervisor, un sistema operativo 
+\emph on
+guest
+\emph default
+ que tiene más privilegios que los demás sistemas que puedan ejecutarse
+ sobre Xen.
+\end_layout
+
+\begin_layout Standard
+Para saber como funciona Xen hay que como gestiona cada uno de los recursos.
+ Eso es lo que vamos a ver a continuación:
+\end_layout
+
+\begin_layout Subsection
+
+\series bold
+Dom0, DomU.
+\end_layout
+
+\begin_layout Standard
+El nombre con el que se denominan los sistemas guest en Xen es dominio (
+\emph on
+domain
+\emph default
+, en inglés).
+ Existen dos tipos de dominios diferenciados, un es el 
+\family typewriter
+dom0
+\family default
+, que es el sistema privilegiado con el que se adminstra Xen y puede controlar
+ los distintos dominios que se estén ejecutando, solo puede haber uno.
+ El otro es el 
+\family typewriter
+domU
+\family default
+ es como se denomina a un sistema 
+\emph on
+guest
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+El nombre de un dominio es como identifica Xen a cada uno de los sistemas,
+ por lo que debe ser único.
+ Puede modificarse en el archivo de configuración con el que se arranca
+ el 
+\emph on
+guest.
+\end_layout
+
+\begin_layout Subsection
+Interrupciones
+\end_layout
+
+\begin_layout Standard
+Una interrupción se puede ver como una llama de atención del hardware e
+ indica que ha ocurrido algo, un timer ha finalizado su cuenta, se ha pulsado
+ un botón del raton\SpecialChar \ldots{}
+ Aunque una interrupción requiere de una acción inmediata,
+ lo que hace Xen es interceptarla y planificarla, asi cuando el 
+\emph on
+guest
+\emph default
+ vuelva a tener acceso al procesador la podrá tratar con el manejador correspond
+iente.
+ Este permite que cuando llega una interrupción, no haya que espera a que
+ todos los 
+\emph on
+guest
+\emph default
+ la procesen, lo que sería muy costoso, por los cambios de dominios necesarios.
+\end_layout
+
+\begin_layout Subsection
+CPU
+\end_layout
+
+\begin_layout Standard
+La CPU es el recursos mas utilizado, ya que es el que ejecuta los programas.
+ Xen trata a los distintos dominios como un sistema operativo trataría a
+ los programas, es decir, tiene un planificador en el que a cada dominio
+ les deja cierto tiempo para que puedan hacer sus calculos, también debe
+ garantizar que a todos los dominios les deje usar la CPU.
+\end_layout
+
+\begin_layout Subsection
+Memoria
+\end_layout
+
+\begin_layout Standard
+El hipervisor, como gestor de los recursos de la máquina, tiene acceso a
+ toda la memoria, la cual debe alojar toda la memoria usada por los distintos
+ dominios.
 \end_layout
 
 \end_body
