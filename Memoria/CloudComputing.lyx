@@ -412,27 +412,40 @@ De igual forma que los sitemas de distribución de agua, los servicios utilizado
 \end_layout
 
 \begin_layout Section
-Historia
-\end_layout
-
-\begin_layout Standard
-El origen del termino “
+Historia del 
 \shape italic
-Cloud computing
+cloud computing
 \shape default
-” es bastante misterioso.
- Se cree que este deriva de la práctica de dibujar nubes para representar
- las redes en los diagramas de sistemas de computación y comunicación.Esta
- representación de internet con el simbolo de la nube lleva realizandose
- desde 1994.
+ 
 \end_layout
 
 \begin_layout Standard
-La idea de una “red de ordenadores intergaláctica” fue dada por J.C.R Licklider
- en los años 60.
- Segun Licklider era necesario conseguir que todo el mundo, a lo largo y
- ancho del planeta estuviera interconectado y pudiera compartir información,
- datos y programas.
+Hoy en día, se acepta que el origen del término Cloud Computing está asociado
+ a la práctica de dibujar nubes para representar redes de computadores en
+ los diagramas de los sistemas de comunicación y computación.
+\end_layout
+
+\begin_layout Subsection
+Precursores de la idea de cloud computing
+\end_layout
+
+\begin_layout Standard
+El origen de las ideas principales en las que se fundamenta el cloud computing
+ se remonta a la decada de los 60.
+\end_layout
+
+\begin_layout Standard
+En 1962 J.C.R Licklider introdujo la idea de una 
+\begin_inset Quotes eld
+\end_inset
+
+red de ordenadores intergaláctica
+\begin_inset Quotes erd
+\end_inset
+
+ en la cual era necesario conseguir que todo el mundo, a lo largo y ancho
+ del planeta estuviera interconectado y pudiera compartir información, datos
+ y programas.
  Algunos expertos tales como Margaret Lewis (directora de 
 \shape italic
 marketing
@@ -442,13 +455,11 @@ marketing
 cloud
 \shape default
 .
- Por otra parte un gran número de expertos mantienen que la primera idea
- acerca de el 
-\shape italic
-cloud computing
-\shape default
- fue dada por John McCarthy, el cual también en los años 60 dijo que el
- mundo de la informática debía ser de uso público
+\end_layout
+
+\begin_layout Standard
+Por otra parte John McCarthy, en 1961 dio una gran importancia al hecho
+ de que el mundo de la informática debía ser de uso público
 \begin_inset CommandInset citation
 LatexCommand cite
 key "PSR2011"
@@ -459,60 +470,96 @@ key "PSR2011"
  
 \end_layout
 
+\begin_layout Subsection
+Los primeros modelos de computación en el mundo empresarial.
+\end_layout
+
 \begin_layout Standard
-En los primeros años de la computación (1980's) todo operaba con un modelo
- cliente/servidor.
- Todas las aplicaciones, toda la información y todo el control se encontraba
- almacenado en enormes computadores conocidos como servidores.Si un usuario
- quería acceder a una determinada información o ejecutar un determinado
- programa tenía que conectarse al ordenador central y acceder de manera
- apropiada.
- Estos usuarios se conectaban al ordenador central por medio de terminales,
- también conocidos como estaciones de servicio o clientes.
+En los primeros años del uso de la computación en el mundo empresarial (decada
+ de los 80) todo operaba con un modelo cliente/servidor.
+ Todas las aplicaciones y toda la información se encontraba almacenado en
+ enormes computadores conocidos como servidores.Si un usuario quería acceder
+ a una determinada información o ejecutar un determinado programa tenía
+ que conectarse al ordenador central por medio de terminales o estaciones
+ de servicio.
  
 \end_layout
 
 \begin_layout Standard
 Los ordenadores centrales tenían unos recursos limitados.
- El acceso no era inmediato y dos usuarios no podían acceder a la misma
+ Su acceso no era inmediato y dos usuarios no podían acceder a la misma
  información a la vez.
  Por ello para poder trabajar con uno de estos ordenadores centrales era
  necesario esperar a que este pudiera atender tus consultas lo cual provocaba
  un importante retardo.
 \end_layout
 
-\begin_layout Standard
-Este cuello de botella provocó que se comenzara a estudiar nuevos modelos.
- Basandose en la idea de no tener que utilizar el servidor como intermediario
- a la hora de establecer una comunicación entre dos ordenadores surgió el
- modelo de persona a persona (p2p).
- Con este modelo todos los ordenadores tenían las mismas posibilidades y
- responsabilidades.
- Es decir, todos los ordenadores son a su vez clientes y servidores.
- La principal finalidad con las que se desarrollo el P2P fue la de su uso
- en internet.
- Segun esta idea los mensaje se propagaban a cualquier ordenador personal
- permitiendo que cada usuario conectado puediese acceder a casí toda la
- información.
- Esto ya presagiaba la idea de computación en la nube.
- En realidad la red no usaba la idea más estricta de P2P.
- Cada dirección estaba organizada por un conjunto de servidores a los cuales
- se conectaban los usuarios.
- Así, los usuarios tenían una mayor libertad con respecto a el modelo cliente/se
-rvidor sin llegar a tener un control total.
+\begin_layout Subsection
+Un salto hacia el modelo peer to peer
 \end_layout
 
 \begin_layout Standard
-La idea de restringir la gestión de datos y el control a un conjunto de
- servidores centralizados (en mayor número que los ordenadores centrales
- del modelo cliente/servidor) y no a todos los usuarios se basaba en que
- el procesamiento de información requería de tiempo y energía y no todos
- los ordenadores estaban conectados las 24 horas del día.
- Así el conjunto de servidores centrados en una determinada página se encargaban
+El inconveniente del modelo cliente/servidor es que el servidor se convierte
+ en un cuello de botella, ya que todos los usuarios necesitan acceder al
+ servidor para trabajar.
+ Basandose en la idea de no tener que utilizar el servidor como intermediario
+ a la hora de establecer una comunicación entre dos ordenadores surgió el
+ modelo 
+\begin_inset Quotes eld
+\end_inset
+
+
+\shape italic
+peer to peer
+\shape default
+
+\begin_inset Quotes erd
+\end_inset
+
+ (p2p).
+ 
+\end_layout
+
+\begin_layout Standard
+Con este modelo todos los ordenadores tenían las mismas posibilidades y
+ responsabilidades, es decir, todos los ordenadores son a su vez clientes
+ y servidores.
+ 
+\end_layout
+
+\begin_layout Standard
+La principal finalidad con las que se desarrollo el P2P fue la de su uso
+ en internet.
+ Segun esta idea, los mensaje se propagaban a cualquier ordenador personal
+ permitiendo que cada usuario conectado puediese acceder a casí toda la
+ información.
+ De esta forma la velocidad de trasnferencia se incrementaba ya que la informaci
+ón no era trasmitida desde un único punto .
+ En la práctica, la red no usaba la idea más estricta de P2P.
+ Cada dirección estaba organizada por un conjunto de servidores a los cuales
+ se conectaban los usuarios.
+ Así, los usuarios tenían una mayor libertad con respecto al modelo cliente/serv
+idor pero la gestión de los datos y el control se restringia a un conjunto
+ de servidores centralizados.
+ Esto ya presagiaba la idea de computación en la nube.
+\end_layout
+
+\begin_layout Standard
+Esta idea usada por la red se basaba en que el procesamiento de información
+ requería de tiempo y energía y no todos los ordenadores estaban conectados
+ las 24 horas del día.
+ 
+\end_layout
+
+\begin_layout Standard
+Así el conjunto de servidores centrados en una determinada página se encargaban
  de procesar un conjunto de peticiones en paralelo a nivel local y subir
  la nueva información extraida cada cierto tiempo.
- De la misma forma esto podría ser aplicado a un conjunto de usuarios interesado
-s en un mismo proyecto.
+\end_layout
+
+\begin_layout Standard
+De la misma forma esto podría ser aplicado a un conjunto de usuarios interesados
+ en un mismo proyecto.
  Por medio de un conjunto de servidores destinados en exclusiva a la gestión
  y actualización de un proyecto, un gran número de usuarios podrían trabajar
  sobre dicho proyecto y permitir a los servidores informar de sus avances
@@ -527,14 +574,16 @@ key "MM2008"
 
 \end_layout
 
+\begin_layout Subsection
+Los comienzos del cloud computing
+\end_layout
+
 \begin_layout Standard
-Los primeros hitos sobre el 
+Los primeras ideas sobre el 
 \shape italic
 cloud computing
 \shape default
- fueron dados en los 90 por las empresas que primero habían comenzado ofreciendo
- circuitos de comunicación punto a punto y que en esa década comienzan a
- crear redes virtuales privadas (VPN) las cuales ofrecen unos servicios
+ fueron dadas en los 90 por empresas que comenzarón a ofrecer unos servicios
  muy similares a los de los sistemas anteriores pero con un coste muy inferior
  a estos
 \begin_inset CommandInset citation
@@ -544,19 +593,19 @@ key "IETF1993"
 \end_inset
 
 .
- Una de estas empresas fue Salesforce.com la cual en 1999 se dedico a la
- venta de aplicaciones para empresas vía 
+ Una de estas empresas fue Salesforce.com que ya en 1999 empezó a vender
+ aplicaciones para empresas vía 
 \shape italic
 web
 \shape default
 .
- También cabe destacar 
+ 
+\end_layout
+
+\begin_layout Standard
+En 2002, 
 \shape italic
-Amazon Web Services
-\shape default
- que en 2002 ofrecían un paquete de servicios basados en la idea 
-\shape italic
-cloud
+Amazon lanzó el paquete Web Services,
 \shape default
  que incluía almacenamiento, computación e incluso inteligencia humana a
  través de 
@@ -564,28 +613,51 @@ cloud
 Amazon Mechanical Turk
 \shape default
 .
- En 2006, Amazon lanzó 
+\end_layout
+
+\begin_layout Standard
+El primer sistema que constituye una infraestructura completa y accesible
+ de Cloud Computing,
 \shape italic
-Elastic Compute cloud
+ Amazon Elastic Compute CLoud
 \shape default
- (EC2) como un servicio vía 
-\shape italic
-web
-\shape default
- que daba la oportunidad a pequeñas empresas y a individuos de alquilar
+, apareció en 2006.
+ Este daba la oportunidad a pequeñas empresas y a individuos de alquilar
  maquinas donde hospedar sus propias aplicaciones.
- Segun Jeremy Allaire (CEO de Brightcove) este era el primer sistema que
- podía ser considerado como una infraestructura de computación en la nube
- completa y accesible.
- Este mismo año, George Gilder, en su artículo de octubre 2006 en la revista
- Wired titulado «Las fábricas de información», daba una definición del modelo
- de commputación en la nube bastante acertado.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Llevo media hora leyendo y releyendo el parrafo y no se me ocurre otra forma
+ de decir lo mismo de manera menos espesa.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Este mismo año, George Gilder, en su artículo de octubre 2006 en la revista
+ Wired titulado 
+\begin_inset Quotes eld
+\end_inset
+
+Las fábricas de información
+\begin_inset Quotes erd
+\end_inset
+
+, daba una definición del modelo de computación en la nube bastante acertado.
  Las granjas de servidores, sobre las que escribió Gilder, eran similares
- en su arquitectura al procesamiento “
+ en su arquitectura al procesamiento 
 \shape italic
 grid
 \shape default
-” (red, parrilla), pero mientras que las redes se utilizan para aplicaciones
+ (red, rejilla), pero mientras que las redes se utilizan para aplicaciones
  de procesamiento técnico débilmente acoplados (
 \shape italic
 loosely coupled
@@ -600,49 +672,59 @@ key "GG2006"
 \end_inset
 
 .
- Ya en el 2009, la 
-\shape italic
-web
-\shape default
- 2.0 dió el gran salto de la mano de Google al ofrecer sus aplicaciones empresari
-ales que se utilizaban a través de un navegador web, a través de servicios
- tales como Google Apps.
- Dan Germain (jefe de la oficina tecnológica de Cobweb Solutions) se referenció
- a esta tecnología y dijo que “la contribución más importante al 
+ 
+\end_layout
+
+\begin_layout Standard
+Ya en el 2009, Google dió el gran salto al ofrecer sus aplicaciones como
+ Google Apps para ser utilizadas a través de un navegador web.
+\end_layout
+
+\begin_layout Standard
+Una importante contribución al 
 \shape italic
 Cloud Computing
 \shape default
- ha sido la aparición de las “
+ fue la aparición de las 
 \shape italic
 killer apps
 \shape default
-” creadas por gigantes tecnológicos como Microsoft y Google.
+ creadas por gigantes tecnológicos como Microsoft y Google.
+ Una 
+\shape italic
+killer app
+\shape default
+ es una aplicación determinante , es decir, que su implantación supone la
+ definitiva asimilación por los usuarios.
  Cuando estas compañías ofrecieron este servicio de manera fiable y fácil
- de consumir, el efecto en cadena de la industria en su conjunto ha sido
- una mayor aceptación general de los servicios en línea”.
- Ya en esta época parecía dislumbrarse que el 
+ de consumir, provocaron un efecto en cadena en la industria ya que la principal
+ finalidad de estas aplicaciones era la de sustituir total o parcialmente
+ los servicios tradicionales provocando que el resto de empresas tuvieran
+ que ajustarse a ellas.
+ 
+\end_layout
+
+\begin_layout Standard
+Ya en esta época parecía dislumbrarse que el 
 \shape italic
 cloud computing
 \shape default
  iba a revolucionar la idea de informática que se tenía hasta el momento.
- De hecho, el especialista en tecnologías emergentes, Julian Friedman, dijo
- que en cuanto el modelo en la nube este disponible y generalzado a traves
- de la 
+ Una vez que el modelo en la nube estuviera disponible y generalizado a
+ traves de la 
 \shape italic
 web
 \shape default
- y se convierta en un sistem multiplataforma, todas las aplicaciones avanzarán
- naturalmente a dicho modelo.
+ y se convirtiera en un sistema multiplataforma, todas las aplicaciones
+ terminarían por adaptarse al mismo.
  Además una vez mejorada la seguridad, los servicios basados en 
 \shape italic
 cloud computing
 \shape default
- "pueden permitir a una empresa ampliar su infraestructura, aumentar la
- capacidad de la demanda, o externalizar toda la infraestructura, lo que
- da como resultado una mayor flexibilidad, una mayor variedad de recursos
- y un importante ahorro de costes" tal y como dijo Andreas Asander ( subdirector
- de gestión de productos de Clavister especialista en seguridad de entornos
- virtualizados).
+ permitirían a una empresa ampliar su infraestructura, aumentar la capacidad
+ de la demanda, o externalizar toda la infraestructura, lo que daría como
+ resultado una mayor flexibilidad, una mayor variedad de recursos y un important
+e ahorro de costes.
  Con todo esto parece claro que el 
 \shape italic
 cloud computing
@@ -698,12 +780,11 @@ Características
 \end_layout
 
 \begin_layout Standard
-En este apartado detallaremos las principales características que hacen
- de el 
+Las características que han permitido que el 
 \shape italic
 cloud computing
 \shape default
- un servicio actualmente en auge : 
+ en la actualidad sea un servicio en auge son las siguientes:
 \end_layout
 
 \begin_layout Itemize
@@ -716,15 +797,23 @@ Agilidad
  en su entorno de desarrollo.
  De esta forma el usuario puede adquirir o borrar sus aplicaciones segun
  las requiera o no en cada momento de manera facil y rapida.
+ Para explicar mejor este aspecto introduciremos un ejemplo.
+ Imaginemos una determinada empresa que usa una determinada aplicación durante
+ un mes .
+ Una vez finalizado el mes , la empresa decide centrarse en otro aspecto
+ del desarrollo que no requieren de la aplicación y por lo tanto no quieren
+ pagar por ella durante este mes así que decide eliminarla .
+ Si al tercer mes la empresa requiere de nuevo la aplicación puede volver
+ a adquirirla de manera rapida y sencilla.
 \end_layout
 
 \begin_layout Itemize
 
 \series bold
-Coste
+Reducción de coste
 \series default
-.
- Gracias a las empresas encargadas en ofertar su 
+s.
+ Gracias a las empresas encargadas en alquilar su 
 \shape italic
 hardware
 \shape default
@@ -732,9 +821,9 @@ hardware
  no necesitarán hacer frente a los gastos iniciales de compra de recursos
  así como a los gastos de mantenimiento.
  Esto reduce el coste de desarrollo ya que aunque bien es cierto que es
- necesario pagar un alquiler por los servidores comunitarios este es menor
- a los posibles gastos a corto y largo plazo a los que habría que hacer
- frente.
+ necesario pagar un alquiler por los servidores sobre los que se ejecuta
+ el entorno de la empresa, este es menor a los posibles gastos a corto y
+ largo plazo a los que habría que hacer frente.
  
 \end_layout
 
@@ -744,9 +833,9 @@ hardware
 Accesibilidad
 \series default
 .
- La independencia entre la interfaz de desarrollo y la localización del
- entorno que ejecuta el servicio permite al usuario acceder a sus herramientas
- de trabajo desde cualquier dispositivo con acceso a la web.
+ La independencia entre la entorno de trabajo y la localización del servidor
+ que ejecuta el servicio permite al usuario acceder a sus herramientas de
+ trabajo desde cualquier dispositivo con acceso a la web.
  De esta forma los cliente pueden trabajar desde su sobremesa, su portatil
  o incluso desde su dispositivo movil.
  
@@ -762,11 +851,11 @@ Elasticidad
 escalabilidad
 \series default
 .
- Las aplicaciones en cloud son totalmente elásticas en cuanto a su rapidez
+ Las aplicaciones en la nube son totalmente elásticas en cuanto a su sencillez
  de implementación y adaptabilidad.
- Además, son totalmente escalables, es decir, hoy podemos estar utilizando
- solo un 10 % del total de la aplicación y mañana podemos acceder al 80
- % de la misma con total normalidad y rapidez.
+ Además, son totalmente escalables, es decir, una empresa puede estar utilizando
+ un día solo un 10 % del total de sus recursos y al siguiente poder acceder
+ al 80 % de los mismos con total normalidad y rapidez.
  
 \end_layout
 
@@ -776,9 +865,9 @@ escalabilidad
 Recuperación
 \series default
 .
- Los servicios en la nube proporcionan a los usuarios sistemas de almacenamiento
- secundario de forma que en caso de perdida de información se pueda recuperar
- de manera inmediata sufriendo así las menores perdidas posible.
+ Los proovedores de servicios en la nube proporcionan a los usuarios sistemas
+ de almacenamiento secundario en servidores de forma que en caso de perdida
+ de información se pueda recuperar de manera inmediata .
  
 \end_layout
 
@@ -789,8 +878,8 @@ Estabilidad
 \series default
 .
  Las empresas de gestión de las aplicaciones en la nube aseguran al usuario
- una fuerte estabilidad en su entorno de desarrollo y permiten un relevantamient
-o inmediato de los servicios en los que hayan surgido algun problema.
+ una fuerte estabilidad en su entorno y permiten un rapido reestablecimiento
+ de los servicios que experimenten algun problema.
  
 \end_layout
 
@@ -800,30 +889,31 @@ o inmediato de los servicios en los que hayan surgido algun problema.
 Seguridad
 \series default
 .
- Quizas esta es la característica más dificil de entender de el 
+ Quizas esta es la característica que suscita una mayor controversia el
+ 
 \shape italic
 cloud computing
 \shape default
 .
- Los clientes de estos servicios pueden pensar que al almacenar su información
- en un lugar externo a su propio dispositivo, esta se encuentra más en peligro
- de ser abordado por terceras personas.
+ Los clientes de estos servicios pueden tener la sensación de que al almacenar
+ su información en un lugar externo a su propio dispositivo ,esto facilite
+ que terceras personas puedan acceder a la msma.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "CRY2010,EM2009"
 
 \end_inset
 
- Sin embargo esto no es así.
+ Sin embargo, esto no es así en realidad.
  Las empresas encargadas de ofertar servicios en la nube mantienen extrictos
  controles de seguridad para evitar que la información de sus clientes pueda
  ser filtrada al exterior.
- Para almacenar esta información suelen utilizar empresas secundarias de
  
-\shape italic
-Data Center
-\shape default
- encargadas exclusivamente en la protección y vigilancia de datos.
+\begin_inset Newline newline
+\end_inset
+
+Para almacenar esta información suelen utilizar centros de datos secundarios
+ especializados en la protección y vigilancia de datos.
  
 \begin_inset CommandInset citation
 LatexCommand cite
