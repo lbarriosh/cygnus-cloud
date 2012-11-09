@@ -86,41 +86,45 @@ Introducción
 \end_layout
 
 \begin_layout Standard
-En el presente capítulo se abordará el estudio de cloud computing al ser
- este el tema principal en el que se basa nuestro proyecto.
- Para ello comenzaremos dando una detallada definión sobre cloud computing,
- después explicaremos su funcionamiento y para terminar describiremos las
- caracteristicas y los diferentes tipos de sistemas en la nube.
-\end_layout
-
-\begin_layout Standard
-El cloud computing permite al cliente abstraerse del hardware con el cual
- va a trabajar y centrarse en los servicios que necesita para desarrollar
- dicho trabajo .
- De esta forma el usuario puede centrarse en su trabajo y despreocuparse
- por como obtener el entorno necesario.
+El 
+\shape italic
+cloud computing
+\shape default
+ o computación en la nube permite al cliente abstraerse del 
+\shape italic
+hardware
+\shape default
+ con el cual va a trabajar y centrarse en los servicios que necesita para
+ realizar dicho trabajo.
+ De esta forma el usuario solo debe preocuparse por lo que quieres hacer
+ y no por cómo configurar todo el entorno que necesita.
  
 \end_layout
 
 \begin_layout Standard
-Además la computación en la nube elimina los costos de adquisición de hardaware,
- las licencias del software , el mantenimiento de las instalaciones , etc.
- El usuario solo debe hacer frente a una tarifa medida por uso o una cuota
- fija de subscripción.
- El usuario usa solo lo que quiere , paga sólo lo que usa.
+Además el 
+\shape italic
+cloud computing
+\shape default
+ elimina los costos de adquisición de 
+\shape italic
+hardware
+\shape default
+, las licencias del software, el mantenimiento de las instalaciones, etc.
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
 	filename graficos/Cloud computing/generales-foto05.jpg
-	scale 50
-	rotateOrigin center
+	scale 40
+	rotateOrigin rightTop
 
 \end_inset
 
@@ -150,25 +154,44 @@ Computación en la nube.
 \end_layout
 
 \begin_layout Standard
-La computación en la nube toma el modelo de cómputo utility al siguiente
- nivel.
- Es una forma nueva y evolucionada de cómputo en el cual muchos tipos diferentes
+el 
+\shape italic
+cloud computing
+\shape default
+ es una forma nueva y evolucionada de cómputo en el cual muchos tipos diferentes
  de recursos (hardware, software, almacenamiento, comunicaciones, etc.) pueden
  ser combinados y recombinados sobre la marcha dentro de las capacidades
  específicas o de los servicios que los clientes requieren.
  Desde ciclos CPU para proyectos HPC hasta la capacidad de almacenamiento
  para respaldos de grado empresarial para completar los IDEs para el desarrollo
- del software, la computación en la nube puede entregar virtualmente cualquier
- capacidad de IT (tecnología de la información entendida como el estudio,diseño,
-desarrollo , aplicación , implementación, soporte o cualquier sistema de
- información basado en la computación
+ del software, el 
+\shape italic
+cloud computing
+\shape default
+ puede entregar virtualmente cualquier capacidad de IT (tecnología de la
+ información entendida como el estudio,diseño,desarrollo, aplicación, implementa
+ción, soporte o cualquier sistema de información basado en la computación
 \begin_inset CommandInset citation
 LatexCommand cite
 key "IT2012"
 
 \end_inset
 
-) , en tiempo real.
+), en tiempo real.
+\end_layout
+
+\begin_layout Standard
+En el presente capítulo se abordará el estudio de 
+\shape italic
+cloud computing
+\shape default
+ al ser este el tema principal en el que se basa nuestro proyecto.
+ Para ello comenzaremos dando una detallada definición sobre 
+\shape italic
+cloud computing
+\shape default
+, después explicaremos su funcionamiento y para terminar describiremos las
+ características y los diferentes tipos de sistemas en la nube.
 \end_layout
 
 \begin_layout Section
@@ -176,25 +199,36 @@ Definición
 \end_layout
 
 \begin_layout Standard
-Para poder establecer un estandar acerca del significado más correcto de
+Para poder establecer un estándar acerca del significado más correcto de
  la expresión 
 \begin_inset Quotes eld
 \end_inset
 
-comutación en la nube
+cloud computing
 \begin_inset Quotes erd
 \end_inset
 
- el Instituto Nacional de Estandares y Tecnologías (NIST) ha dado una definición
- universal y una arquitectura de referencia .
- De esta forma para el NIST la computación en la nube consiste en :
+ el Instituto Nacional de Estándares y Tecnologías (NIST) de Estados Unidos
+ ha dado una definición universal y una arquitectura de referencia.
+ 
+\end_layout
+
+\begin_layout Standard
+Según el NIST el 
+\shape italic
+cloud computing
+\shape default
+ consiste en :
 \end_layout
 
 \begin_layout Quotation
 
 \family sans
 \shape italic
-Un modelo para permitir un acceso de red conveniente, desde cualquier sitio
+\begin_inset Quotes eld
+\end_inset
+
+Un modelo para permitir un acceso de red adecuado, desde cualquier sitio
  y bajo demanda a un conjunto compartido de recursos informáticos configurables
  (por ejemplo, redes, servidores, almacenamiento, aplicaciones y servicios)
  que se pueden proporcionar rápidamente y lanzar con un mínimo esfuerzo
@@ -217,98 +251,142 @@ key "NIST2011"
 \end_layout
 
 \begin_layout Standard
+De esta definición podemos extraer las cuatro características esenciales
+ de el cloud computing:
+\end_layout
 
-\family sans
-De esta definición podemos extraer las cuatro caracteristicas esenciales
- de la computación en la nube .
- Estas características son las de autoservicio, accesibilidad desde multiples
- plataformas, recursos compartidos por varios usuarios y servicios flexibles
- .
- Hablaremos en profundidad sobre estas características más adelante.
+\begin_layout Itemize
+autoservicio o administración propia de los servicios ofertados.
+\end_layout
+
+\begin_layout Itemize
+accesibilidad desde múltiples plataformas.
+\end_layout
+
+\begin_layout Itemize
+recursos compartidos por varios usuarios.
+\end_layout
+
+\begin_layout Itemize
+servicios flexibles y perfectamente ajustables al entorno de trabajo.
+\end_layout
+
+\begin_layout Standard
+Hablaremos más en profundidad sobre estas características en su correspondiente
+ sección.
 \end_layout
 
 \begin_layout Section
-Antecedentes
+Precedentes del 
+\shape italic
+cloud computing
 \end_layout
 
 \begin_layout Standard
-Con la finalidad de acercar al lector más a todo lo que abarca la computación
- en la nube expondremos a continuación un ejemplo que permita representar
- el funcionamiento de este servicio por medio de un sistema más conocido
- y extendido en la sociedad.
+El cloud computing sigue un servicio basado en ideas bastante antiguas que
+ han sido utilizadas y mejoradas por la sociedad a lo largo de la historia.
+ A continuación introduciremos una ejemplo fundamentado en estas ideas que
+ permita representar el funcionamiento del cloud computing por medio de
+ un sistema más conocido y extendido en la sociedad.
 \end_layout
 
 \begin_layout Standard
-Imaginemos el sistema de distribución de agua de una ciudad .
+Imaginemos el sistema de distribución de agua de una ciudad.
  La evolución del ser humanos ha estado fuertemente ligada al agua por ser
- esta necesaria para la subsistencia de la especie .
+ esta necesaria para la subsistencia de la especie.
  Así la primeras civilizaciones buscaban lugares donde hubiese agua dulce
- disponible, en territorios cercanos a lagos y rios .
- Estas sociedades reducidas eran capaz de abastecerse con estos lagos y
- rios, sin embargo, cuando la sociedad fue evolucionando y extendiendose
- se convirtio en algo primordial encontrar otras fuentes de agua dulce .
- De esta forma comenzó a construirse pozos que permitiese extraer el agua
- subterranea .
- las construcciones de los primeros pozos se produjeron en jericó (Israel)
+ disponible, en territorios cercanos a lagos y ríos.
+ Estas sociedades reducidas eran capaces de abastecerse con estos lagos
+ y ríos, sin embargo, cuando la sociedad fue evolucionando y extendiéndose
+ se convirtió en algo primordial encontrar otras fuentes de agua dulce.
+ De igual forma la creciente evolución de los requisitos en los servicios
+ software han provocado una continua e importante evolución desde los modelos
+ primitivos de computadores hasta los actualmente utilizados.
+\end_layout
+
+\begin_layout Standard
+Con el fin de abastecer a la creciente población se comenzó a construirse
+ pozos que permitiese extraer el agua subterránea.
+ las construcciones de los primeros pozos se produjeron en Jericó (Israel)
  hace aproximadamente 7.000 años.
  Para que este agua pudiera se accesible para todos los ciudadanos fue necesario
- desarrollar trasportes capaces de trasladar y mantener este liquido .
+ desarrollar trasportes capaces de trasladar y mantener este liquido.
  Sin embargo, estos trasportes eran bastante lentos y no siempre resultaban
- facilmente accesible para todos los usuarios.
+ fácilmente accesible para todos los usuarios.
  Además los tratamientos de purificación del agua tales como el calentamiento
- al fuego o el filtrado a traves de arena dejaban bastante que desear y
+ al fuego o el filtrado a través de arena dejaban bastante que desear y
  provocaban un gran número de infecciones que desembocaban en grandes epidemias
  haciendo fracasar en parte la principal finalidad de estos mecanismos.
+ Similarmente en el caso de la computación los primitivos sistemas de cloud
+ computing pueden presentarse como estos pozos y las primitivas redes de
+ comunicación como los medios de transporte por los cuales podía ser ofrecidos
+ estos servicios (de forma muy reducida al principio).
 \end_layout
 
 \begin_layout Standard
 No fue hasta la antigua Grecia cuando aparecieron los primeros sistemas
  eficientes de almacenamiento y trasporte del agua potable obtenido a partir
- de pozos, lluvia, ríos y lagos .
+ de pozos, lluvia, ríos y lagos.
  De esta época datan las primeras redes de distribución a gran escala.
- Otra novedad importante que fue introducida en esta época fue un interes
- claro por la calidad del agua que consimían.Para ello el agua utilizada
- se retiraba mediante sistemas de agua residual además se utilizaban embalses
- de aireación para purificar el agua antes de su distribución.
+ Otra novedad importante que fue introducida en esta época fue el interés
+ por la calidad del agua que consumían.Para ello el agua utilizada se retiraba
+ mediante sistemas de agua residual.
+ Además se utilizaban embalses de aireación para purificar el agua antes
+ de su distribución.
+ Semejantemente el creciente número de usuarios interesados en los servicios
+ en la nube hizo que fuese necesario una mejora en la redes de comunicación
+ ampliándolas y mejorando su velocidad.
 \end_layout
 
 \begin_layout Standard
-Así llegamos a la época del imperio Romano.
- Los romanos fueron los mayores arquitectos en construcciones de redes de
- distribución de agua que ha existido a lo largo de la historia.La verdadera
- revolución llegó con los acueductos, ya que por primera vez se podía transporta
-r agua entre puntos separados por una gran distancia.
+La verdadera revolución llegó con los acueductos, ya que por primera vez
+ se podía transportar agua entre puntos separados por una gran distancia.
  Gracias a ellos, los romanos podían distribuir agua entre distintos puntos
  de su amplio imperio.
- Con la caida del imperio romano los acueductos dejaron de utilizarse provocando
- un paso atras en la evolución de los sistemas de distribución de agua .
- En la edad media el agua de las ciudades estaba demasiado contaminada para
- poder ser consumida y era necesario traerla del exterior, tarea llevada
- a cabo por medio de los portadores.
+ 
 \end_layout
 
 \begin_layout Standard
-Así llegamos hasta los inicios del siglo 
-\shape italic
-XIX
-\shape default
- en el que encontramos el primer sistema de suministro de agua potable para
- toda una ciudad completa.
- Fue construido en Paisley, Escocia, alrededor del año 1804 por John Gibb.
- A lo largo de la ciudad se extendían multiples fuentes donde los ciudadanos
- podían recoger el agua suficiente para abastecer a su familia .
+Con la caída del imperio romano los acueductos dejaron de utilizarse provocando
+ un paso atrás en la evolución de los sistemas de distribución de agua que
+ se extendería a lo largo de toda la Edad Media.
+ 
+\end_layout
+
+\begin_layout Standard
+A principios del siglo XIX, John Gibb proyectó el primer sistema de suministro
+ de agua capaz de abastecer a toda la ciudad de Paisley, en Escocia.
+ A lo largo de la ciudad se extendían múltiples fuentes donde los ciudadanos
+ podían recoger el agua suficiente para abastecer a su familia.
  Este sistema produjo una importante aproximación del agua a toda la sociedad
  pero los ciudadanos tenían una cantidad de agua bastante limitada y debían
  molestarse en desplazarse todos los días para recogerla.
+ 
 \end_layout
 
 \begin_layout Standard
-Finalmente en la actualidad podemos tener acceso a agua potable totalmente
- purificada simplemente acercandonos al grifo de nuestra cocina .
+Por ende el creciente interés de los usuarios por los servicios en la nube
+ con unas mejores prestaciones hicieron que los proveedores se centrasen
+ en mejorar las características que hasta la época había ofrecido la nube.
+ Para ello se centraron en ampliar el número de servicios a los cuales eran
+ capaces de hacer frente por usuario , la seguridad en dichos servicios
+ y la accesibilidad a los mismo.
+\end_layout
+
+\begin_layout Standard
+Hoy en día, podemos acceder al agua potable totalmente purificada abriendo
+ cualquier grifo de nuestra casa.
  De esta forma existen plantas de almacenamiento y purificación capaces
- de avastecer a un elevado número de personas las cuales solo tienen que
+ de abastecer a un elevado número de personas las cuales solo tienen que
  preocuparse por pagar cierto dinero por estos servicios para poder disfrutar
- del liquido elemento en sus propias casas.
+ del liquido elemento en sus propias casas sin tener que preocuparse como
+ y de donde llega.
+ de igual forma cualquier usuario que utiliza el 
+\shape italic
+cloud computing
+\shape default
+ puede usar sus servicios contratados sin tener que preguntarse de como
+ y de donde le llegan los mismos.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "CE2010"
@@ -319,42 +397,55 @@ key "CE2010"
 \end_layout
 
 \begin_layout Standard
-De igual forma que el agua, los servicios utilizados en la sociedad para
- el desarrollo de aplicaciones y en general para la realización de cualquier
- tarea ligada a un computador han evolucionado desde unos sitemas prehistoricos
- que limitaban hasta donde se podía llegar e incrementaba el tiempo de trabajo
- hasta servicios otorgados por una empresa y gestionados en su integridad
- por la misma en los que el usuario tan solo debe preocuparse del trabajo
- al cual debe hacer frente y no de si dispone de todos los servicios para
- llevarlo acabo .
- Así de igual forma que hoy en día resulta casí impensable no poder disfrutar
+De igual forma que los sistemas de distribución de agua, los servicios utilizado
+s en la sociedad para el desarrollo de aplicaciones y en general para la
+ realización de cualquier tarea ligada a un computador han evolucionado
+ desde unos sistemas rudimentarios que limitaban hasta donde se podía llegar
+ e incrementaban el tiempo de trabajo hasta servicios ofrecidos por una
+ empresa y gestionados en su integridad por la misma en los que el usuario
+ tan solo debe preocuparse del trabajo al cual debe hacer frente y no de
+ si dispone de todo el entorno necesario para llevarlo acabo.
+ Así de igual forma que hoy en día resulta casi impensable no poder disfrutar
  de agua potable en nuestras propias casas también debe resultar impensable
  que cualquier usuario no pueda hacer frente a un trabajo por las limitaciones
  de su entorno.
 \end_layout
 
 \begin_layout Section
-Historia
-\end_layout
-
-\begin_layout Standard
-El origen del termino “
+Historia del 
 \shape italic
-Cloud computing
+cloud computing
 \shape default
-” es bastante misterioso.
- Se cree que este deriva de la práctica de dibujar nubes para representar
- las redes en los diagramas de sistemas de computación y comunicación.Esta
- representación de internet con el simbolo de la nube lleva realizandose
- desde 1994.
+ 
 \end_layout
 
 \begin_layout Standard
-La idea de una “red de ordenadores intergaláctica” fue dada por J.C.R Licklider
- en los años 60.
- Segun Licklider era necesario conseguir que todo el mundo, a lo largo y
- ancho del planeta estuviera interconectado y pudiera compartir información,
- datos y programas.
+Hoy en día, se acepta que el origen del término Cloud Computing está asociado
+ a la práctica de dibujar nubes para representar redes de computadores en
+ los diagramas de los sistemas de comunicación y computación.
+\end_layout
+
+\begin_layout Subsection
+Precursores de la idea de cloud computing
+\end_layout
+
+\begin_layout Standard
+El origen de las ideas principales en las que se fundamenta el cloud computing
+ se remonta a la década de los 60.
+\end_layout
+
+\begin_layout Standard
+En 1962 J.C.R Licklider introdujo la idea de una 
+\begin_inset Quotes eld
+\end_inset
+
+red de ordenadores intergaláctica
+\begin_inset Quotes erd
+\end_inset
+
+ en la cual era necesario conseguir que todo el mundo, a lo largo y ancho
+ del planeta estuviera interconectado y pudiera compartir información, datos
+ y programas.
  Algunos expertos tales como Margaret Lewis (directora de 
 \shape italic
 marketing
@@ -364,10 +455,11 @@ marketing
 cloud
 \shape default
 .
- Por otra parte un gran número de expertos mantienen que la primera idea
- acerca de la computación en la nube fue dada por John McCarthy, el cual
- también en los años 60 dijo que el mundo de la informática debía ser de
- uso público
+\end_layout
+
+\begin_layout Standard
+Por otra parte John McCarthy, en 1961 dio una gran importancia al hecho
+ de que el mundo de la informática debía ser de uso público
 \begin_inset CommandInset citation
 LatexCommand cite
 key "PSR2011"
@@ -378,64 +470,100 @@ key "PSR2011"
  
 \end_layout
 
+\begin_layout Subsection
+Los primeros modelos de computación en el mundo empresarial.
+\end_layout
+
 \begin_layout Standard
-En los primeros años de la computación (1980's) todo operaba con un modelo
- cliente/servidor.
- Todas las aplicaciones , toda la información y todo el control se encontraba
- almacenado en enormes computadores conocidos como servidores.Si un usuario
- quería acceder a una determinada información o ejecutar un determinado
- programa tenía que conectarse al ordenador central y acceder de manera
- apropiada.
- Estos usuarios se conectaban al ordenador central por medio de terminales
- , también conocidos como estaciones de servicio o clientes.
+En los primeros años del uso de la computación en el mundo empresarial (década
+ de los 80) todo operaba con un modelo cliente/servidor.
+ Todas las aplicaciones y toda la información se encontraba almacenado en
+ enormes computadores conocidos como servidores.Si un usuario quería acceder
+ a una determinada información o ejecutar un determinado programa tenía
+ que conectarse al ordenador central por medio de terminales o estaciones
+ de servicio.
  
 \end_layout
 
 \begin_layout Standard
-Los ordenadores centrales tenían unos recursos limitados .
- El acceso no era inmediato y dos usuarios no podían acceder a la misma
+Los ordenadores centrales tenían unos recursos limitados.
+ Su acceso no era inmediato y dos usuarios no podían acceder a la misma
  información a la vez.
  Por ello para poder trabajar con uno de estos ordenadores centrales era
  necesario esperar a que este pudiera atender tus consultas lo cual provocaba
  un importante retardo.
 \end_layout
 
-\begin_layout Standard
-Este cuello de botella provocó que se comenzara a estudiar nuevos modelos.
- Basandose en la idea de no tener que utilizar el servidor como intermediario
- a la hora de establecer una comunicación entre dos ordenadores surgió el
- modelo de persona a persona (p2p).
- Con este modelo todos los ordenadores tenían las mismas posibilidades y
- responsabilidades.
- Es decir, todos los ordenadores son a su vez clientes y servidores.
- La principal finalidad con las que se desarrollo el P2P fue la de su uso
- en internet.
- Segun esta idea los mensaje se propagaban a cualquier ordenador personal
- permitiendo que cada usuario conectado puediese acceder a casí toda la
- información .
- Esto ya presagiaba la idea de computación en la nube.
- En realidad la red no usaba la idea más estricta de P2P .
- Cada dirección estaba organizada por un conjunto de servidores a los cuales
- se conectaban los usuarios .
- Así , los usuarios tenían una mayor libertad con respecto a el modelo cliente/s
-ervidor sin llegar a tener un control total.
+\begin_layout Subsection
+Un salto hacia el modelo peer to peer
 \end_layout
 
 \begin_layout Standard
-La idea de restringir la gestión de datos y el control a un conjunto de
- servidores centralizados (en mayor número que los ordenadores centrales
- del modelo cliente/servidor) y no a todos los usuarios se basaba en que
- el procesamiento de información requería de tiempo y energía y no todos
- los ordenadores estaban conectados las 24 horas del día .
- Así el conjunto de servidores centrados en una determinada página se encargaban
+El inconveniente del modelo cliente/servidor es que el servidor se convierte
+ en un cuello de botella, ya que todos los usuarios necesitan acceder al
+ servidor para trabajar.
+ Basándose en la idea de no tener que utilizar el servidor como intermediario
+ a la hora de establecer una comunicación entre dos ordenadores surgió el
+ modelo 
+\begin_inset Quotes eld
+\end_inset
+
+
+\shape italic
+peer to peer
+\shape default
+
+\begin_inset Quotes erd
+\end_inset
+
+ (p2p).
+ 
+\end_layout
+
+\begin_layout Standard
+Con este modelo todos los ordenadores tenían las mismas posibilidades y
+ responsabilidades, es decir, todos los ordenadores son a su vez clientes
+ y servidores.
+ 
+\end_layout
+
+\begin_layout Standard
+La principal finalidad con las que se desarrollo el P2P fue la de su uso
+ en internet.
+ Según esta idea, los mensaje se propagaban a cualquier ordenador personal
+ permitiendo que cada usuario conectado pudiese acceder a casi toda la informaci
+ón.
+ De esta forma la velocidad de transferencia se incrementaba ya que la informaci
+ón no era trasmitida desde un único punto .
+ En la práctica, la red no usaba la idea más estricta de P2P.
+ Cada dirección estaba organizada por un conjunto de servidores a los cuales
+ se conectaban los usuarios.
+ Así, los usuarios tenían una mayor libertad con respecto al modelo cliente/serv
+idor pero la gestión de los datos y el control se restringía a un conjunto
+ de servidores centralizados.
+ Esto ya presagiaba la idea de computación en la nube.
+\end_layout
+
+\begin_layout Standard
+Esta idea usada por la red se basaba en que el procesamiento de información
+ requería de tiempo y energía y no todos los ordenadores estaban conectados
+ las 24 horas del día.
+ 
+\end_layout
+
+\begin_layout Standard
+Así el conjunto de servidores centrados en una determinada página se encargaban
  de procesar un conjunto de peticiones en paralelo a nivel local y subir
- la nueva información extraida cada cierto tiempo.
- De la misma forma esto podría ser aplicado a un conjunto de usuarios interesado
-s en un mismo proyecto .
+ la nueva información extraída cada cierto tiempo.
+\end_layout
+
+\begin_layout Standard
+De la misma forma esto podría ser aplicado a un conjunto de usuarios interesados
+ en un mismo proyecto.
  Por medio de un conjunto de servidores destinados en exclusiva a la gestión
- y actualización de un proyecto , un gran número de usuarios podrían trabajar
+ y actualización de un proyecto, un gran número de usuarios podrían trabajar
  sobre dicho proyecto y permitir a los servidores informar de sus avances
- a cualquier otro usuario que se conecte a los mismos .
+ a cualquier otro usuario que se conecte a los mismos.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -446,14 +574,16 @@ key "MM2008"
 
 \end_layout
 
+\begin_layout Subsection
+Los comienzos del cloud computing
+\end_layout
+
 \begin_layout Standard
-Los primeros hitos sobre el 
+Los primeras ideas sobre el 
 \shape italic
 cloud computing
 \shape default
- fueron dados en los 90 por las empresas que primero habían comenzado ofreciendo
- circuitos de comunicación punto a punto y que en esa década comienzan a
- crear redes virtuales privadas (VPN) las cuales ofrecen unos servicios
+ fueron dadas en los 90 por empresas que comenzaron a ofrecer unos servicios
  muy similares a los de los sistemas anteriores pero con un coste muy inferior
  a estos
 \begin_inset CommandInset citation
@@ -463,19 +593,19 @@ key "IETF1993"
 \end_inset
 
 .
- Una de estas empresas fue Salesforce.com la cual en 1999 se dedico a la
- venta de aplicaciones para empresas vía 
+ Una de estas empresas fue Salesforce.com que ya en 1999 empezó a vender
+ aplicaciones para empresas vía 
 \shape italic
 web
 \shape default
 .
- También cabe destacar 
+ 
+\end_layout
+
+\begin_layout Standard
+En 2002, 
 \shape italic
-Amazon Web Services
-\shape default
- que en 2002 ofrecían un paquete de servicios basados en la idea 
-\shape italic
-cloud
+Amazon lanzó el paquete Web Services,
 \shape default
  que incluía almacenamiento, computación e incluso inteligencia humana a
  través de 
@@ -483,34 +613,57 @@ cloud
 Amazon Mechanical Turk
 \shape default
 .
- En 2006, Amazon lanzó 
+\end_layout
+
+\begin_layout Standard
+El primer sistema que constituye una infraestructura completa y accesible
+ de Cloud Computing,
 \shape italic
-Elastic Compute cloud
+ Amazon Elastic Compute CLoud
 \shape default
- (EC2) como un servicio vía 
-\shape italic
-web
-\shape default
- que daba la oportunidad a pequeñas empresas y a individuos de alquilar
+, apareció en 2006.
+ Este daba la oportunidad a pequeñas empresas y a individuos de alquilar
  maquinas donde hospedar sus propias aplicaciones.
- Segun Jeremy Allaire (CEO de Brightcove) este era el primer sistema que
- podía ser considerado como una infraestructura de computación en la nube
- completa y accesible.
- Este mismo año , George Gilder , en su artículo de octubre 2006 en la revista
- Wired titulado «Las fábricas de información», daba una definición del modelo
- de commputación en la nube bastante acertado .
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Llevo media hora leyendo y releyendo el párrafo y no se me ocurre otra forma
+ de decir lo mismo de manera menos espesa.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Este mismo año, George Gilder, en su artículo de octubre 2006 en la revista
+ Wired titulado 
+\begin_inset Quotes eld
+\end_inset
+
+Las fábricas de información
+\begin_inset Quotes erd
+\end_inset
+
+, daba una definición del modelo de computación en la nube bastante acertado.
  Las granjas de servidores, sobre las que escribió Gilder, eran similares
- en su arquitectura al procesamiento “
+ en su arquitectura al procesamiento 
 \shape italic
 grid
 \shape default
-” (red, parrilla), pero mientras que las redes se utilizan para aplicaciones
+ (red, rejilla), pero mientras que las redes se utilizan para aplicaciones
  de procesamiento técnico débilmente acoplados (
 \shape italic
 loosely coupled
 \shape default
 ), un conjunto de sistemas organizados por niveles con un cierto nivel de
- autonomía e interelación, este nuevo modelo de nube se estaba aplicando
+ autonomía e interrelación, este nuevo modelo de nube se estaba aplicando
  a los servicios de Internet
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -519,49 +672,66 @@ key "GG2006"
 \end_inset
 
 .
- Ya en el 2009, la 
-\shape italic
-web
-\shape default
- 2.0 dió el gran salto de la mano de Google al ofrecer sus aplicaciones empresari
-ales que se utilizaban a través de un navegador web, a través de servicios
- tales como Google Apps.
- Dan Germain (jefe de la oficina tecnológica de Cobweb Solutions) se referenció
- a esta tecnología y dijo que “la contribución más importante al 
+ 
+\end_layout
+
+\begin_layout Standard
+Ya en el 2009, Google dio el gran salto al ofrecer sus aplicaciones como
+ Google Apps para ser utilizadas a través de un navegador web.
+\end_layout
+
+\begin_layout Standard
+Una importante contribución al 
 \shape italic
 Cloud Computing
 \shape default
- ha sido la aparición de las “
+ fue la aparición de las 
 \shape italic
 killer apps
 \shape default
-” creadas por gigantes tecnológicos como Microsoft y Google.
+ creadas por gigantes tecnológicos como Microsoft y Google.
+ Una 
+\shape italic
+killer app
+\shape default
+ es una aplicación determinante , es decir, que su implantación supone la
+ definitiva asimilación por los usuarios.
  Cuando estas compañías ofrecieron este servicio de manera fiable y fácil
- de consumir, el efecto en cadena de la industria en su conjunto ha sido
- una mayor aceptación general de los servicios en línea”.
- Ya en esta época parecía dislumbrarse que la computación en la nube iba
- a revolucionar la idea de informática que se tenía hasta el momento.
- De hecho, el especialista en tecnologías emergentes, Julian Friedman, dijo
- que en cuanto el modelo en la nube este disponible y generalzado a traves
- de la 
+ de consumir, provocaron un efecto en cadena en la industria ya que la principal
+ finalidad de estas aplicaciones era la de sustituir total o parcialmente
+ los servicios tradicionales provocando que el resto de empresas tuvieran
+ que ajustarse a ellas.
+ 
+\end_layout
+
+\begin_layout Standard
+Ya en esta época parecía deslumbrarse que el 
+\shape italic
+cloud computing
+\shape default
+ iba a revolucionar la idea de informática que se tenía hasta el momento.
+ Una vez que el modelo en la nube estuviera disponible y generalizado a
+ través de la 
 \shape italic
 web
 \shape default
- y se convierta en un sistem multiplataforma, todas las aplicaciones avanzarán
- naturalmente a dicho modelo.
+ y se convirtiera en un sistema multiplataforma, todas las aplicaciones
+ terminarían por adaptarse al mismo.
  Además una vez mejorada la seguridad, los servicios basados en 
 \shape italic
 cloud computing
 \shape default
- "pueden permitir a una empresa ampliar su infraestructura, aumentar la
- capacidad de la demanda, o externalizar toda la infraestructura, lo que
- da como resultado una mayor flexibilidad, una mayor variedad de recursos
- y un importante ahorro de costes" tal y como dijo Andreas Asander ( subdirector
- de gestión de productos de Clavister especialista en seguridad de entornos
- virtualizados).
- Con todo esto parece claro que la computación en la nube se ha convertido
- en una realidad palpable y una prioridad para un gran número de empresas
- actuales de este sector, tal y como demuestran las últimas encuestas realizadas.
+ permitirían a una empresa ampliar su infraestructura, aumentar la capacidad
+ de la demanda, o exteriorizar toda la infraestructura, lo que daría como
+ resultado una mayor flexibilidad, una mayor variedad de recursos y un important
+e ahorro de costes.
+ Con todo esto parece claro que el 
+\shape italic
+cloud computing
+\shape default
+ se ha convertido en una realidad palpable y una prioridad para un gran
+ número de empresas actuales de este sector, tal y como demuestran las últimas
+ encuestas realizadas.
  
 \end_layout
 
@@ -569,13 +739,13 @@ cloud computing
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename graficos/Cloud computing/sparkindark_cloudcomputing-660x495.png
-	scale 50
-	rotateOrigin centerTop
+	filename graficos/Cloud computing/cloud .jpg
+	scale 30
+	rotateOrigin center
 
 \end_inset
 
@@ -586,7 +756,9 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Empresas precursoras de la computación en la nube
+Empresas precursoras de el 
+\shape italic
+cloud computing
 \end_layout
 
 \end_inset
@@ -608,8 +780,11 @@ Características
 \end_layout
 
 \begin_layout Standard
-En este apartado detallaremos las principales características que hacen
- de la computación en la nube un servicio actualmente en auge : 
+Las características que han permitido que el 
+\shape italic
+cloud computing
+\shape default
+ en la actualidad sea un servicio en auge son las siguientes:
 \end_layout
 
 \begin_layout Itemize
@@ -620,17 +795,25 @@ Agilidad
 .
  El usuario puede gestionar de manera sencillas que aplicaciones necesita
  en su entorno de desarrollo.
- De esta forma el usuario puede adquirir o borrar sus aplicaciones segun
- las requiera o no en cada momento de manera facil y rapida.
+ De esta forma el usuario puede adquirir o borrar sus aplicaciones según
+ las requiera o no en cada momento de manera fácil y rápida.
+ Para explicar mejor este aspecto introduciremos un ejemplo.
+ Imaginemos una determinada empresa que usa una determinada aplicación durante
+ un mes .
+ Una vez finalizado el mes , la empresa decide centrarse en otro aspecto
+ del desarrollo que no requieren de la aplicación y por lo tanto no quieren
+ pagar por ella durante este mes así que decide eliminarla .
+ Si al tercer mes la empresa requiere de nuevo la aplicación puede volver
+ a adquirirla de manera rápida y sencilla.
 \end_layout
 
 \begin_layout Itemize
 
 \series bold
-Coste
+Reducción de coste
 \series default
-.
- Gracias a las empresas encargadas en ofertar su 
+s.
+ Gracias a las empresas encargadas en alquilar su 
 \shape italic
 hardware
 \shape default
@@ -638,9 +821,9 @@ hardware
  no necesitarán hacer frente a los gastos iniciales de compra de recursos
  así como a los gastos de mantenimiento.
  Esto reduce el coste de desarrollo ya que aunque bien es cierto que es
- necesario pagar un alquiler por los servidores comunitarios este es menor
- a los posibles gastos a corto y largo plazo a los que habría que hacer
- frente.
+ necesario pagar un alquiler por los servidores sobre los que se ejecuta
+ el entorno de la empresa, este es menor a los posibles gastos a corto y
+ largo plazo a los que habría que hacer frente.
  
 \end_layout
 
@@ -650,11 +833,11 @@ hardware
 Accesibilidad
 \series default
 .
- La independencia entre la interfaz de desarrollo y la localización del
- entorno que ejecuta el servicio permite al usuario acceder a sus herramientas
- de trabajo desde cualquier dispositivo con acceso a la web.
- De esta forma los cliente pueden trabajar desde su sobremesa, su portatil
- o incluso desde su dispositivo movil.
+ La independencia entre la entorno de trabajo y la localización del servidor
+ que ejecuta el servicio permite al usuario acceder a sus herramientas de
+ trabajo desde cualquier dispositivo con acceso a la web.
+ De esta forma los cliente pueden trabajar desde su sobremesa, su portátil
+ o incluso desde su dispositivo móvil.
  
 \end_layout
 
@@ -668,11 +851,11 @@ Elasticidad
 escalabilidad
 \series default
 .
- Las aplicaciones en cloud son totalmente elásticas en cuanto a su rapidez
+ Las aplicaciones en la nube son totalmente elásticas en cuanto a su sencillez
  de implementación y adaptabilidad.
- Además, son totalmente escalables, es decir, hoy podemos estar utilizando
- solo un 10 % del total de la aplicación y mañana podemos acceder al 80
- % de la misma con total normalidad y rapidez.
+ Además, son totalmente escalables, es decir, una empresa puede estar utilizando
+ un día solo un 10 % del total de sus recursos y al siguiente poder acceder
+ al 80 % de los mismos con total normalidad y rapidez.
  
 \end_layout
 
@@ -682,9 +865,9 @@ escalabilidad
 Recuperación
 \series default
 .
- Los servicios en la nube proporcionan a los usuarios sistemas de almacenamiento
- secundario de forma que en caso de perdida de información se pueda recuperar
- de manera inmediata sufriendo así las menores perdidas posible.
+ Los proveedores de servicios en la nube proporcionan a los usuarios sistemas
+ de almacenamiento secundario en servidores de forma que en caso de perdida
+ de información se pueda recuperar de manera inmediata .
  
 \end_layout
 
@@ -695,8 +878,8 @@ Estabilidad
 \series default
 .
  Las empresas de gestión de las aplicaciones en la nube aseguran al usuario
- una fuerte estabilidad en su entorno de desarrollo y permiten un relevantamient
-o inmediato de los servicios en los que hayan surgido algun problema.
+ una fuerte estabilidad en su entorno y permiten un rápido restablecimiento
+ de los servicios que experimenten algún problema.
  
 \end_layout
 
@@ -706,27 +889,31 @@ o inmediato de los servicios en los que hayan surgido algun problema.
 Seguridad
 \series default
 .
- Quizas esta es la característica más dificil de entender de la computación
- en la nube.
- Los clientes de estos servicios pueden pensar que al almacenar su información
- en un lugar externo a su propio dispositivo, esta se encuentra más en peligro
- de ser abordado por terceras personas.
+ Quizás esta es la característica que suscita una mayor controversia el
+ 
+\shape italic
+cloud computing
+\shape default
+.
+ Los clientes de estos servicios pueden tener la sensación de que al almacenar
+ su información en un lugar externo a su propio dispositivo ,esto facilite
+ que terceras personas puedan acceder a la misma.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "CRY2010,EM2009"
 
 \end_inset
 
- Sin embargo esto no es así.
- Las empresas encargadas de ofertar servicios en la nube mantienen extrictos
+ Sin embargo, esto no es así en realidad.
+ Las empresas encargadas de ofertar servicios en la nube mantienen estrictos
  controles de seguridad para evitar que la información de sus clientes pueda
  ser filtrada al exterior.
- Para almacenar esta información suelen utilizar empresas secundarias de
  
-\shape italic
-Data Center
-\shape default
- encargadas exclusivamente en la protección y vigilancia de datos.
+\begin_inset Newline newline
+\end_inset
+
+Para almacenar esta información suelen utilizar centros de datos secundarios
+ especializados en la protección y vigilancia de datos.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -738,32 +925,48 @@ key "NIST2011"
 \end_layout
 
 \begin_layout Section
-Modelos de servicios 
+Modelos de servicio 
 \end_layout
 
 \begin_layout Standard
-La computación en la nube ofrece sus servicios de acuerdo a 3 modelos fundamenta
-les.
- Estos modelos se refieren a la forma en que las diferentes empresas clientes
- gestionan sus servicios contratados en la nube.
- Estos modelos no son siempre excluyentes entre sí.
- En ocasiones una misma empresa puede tener un modelo resultante de mezclar
- algunos de los modelos fundamentales.
- Por ejemplo, un proveedor de software como servicio (SaaS) podría optar
- por ofrecer distintos servicios de infraestructura (IaaS) a los clientes.
- 
+el 
+\shape italic
+cloud computing
+\shape default
+ ofrece sus servicios de acuerdo a tres modelos fundamentales, que se refieren
+ a la forma en que las diferentes empresas clientes gestionan sus servicios
+ contratados en la nube.
+\end_layout
+
+\begin_layout Standard
+Estos modelos no son siempre excluyentes entre sí : existen empresas que
+ mezclan los modelos fundamentales.
+ Por ejemplo, Google App Engine permite al cliente ejecutar aplicaciones
+ web en la infraestructura de Google , convirtiéndose de esta forma en una
+ plataforma como servicio .
+ Además estas aplicaciones web pueden ser utilizadas por otros usuarios
+ prestando se esta forma además un modelo de software como servicio.
+ En la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Modelos-de-servicios"
+
+\end_inset
+
+ podemos ver más ejemplos de empresas que combinan varios de los modelos
+ de servicio.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename graficos/Cloud computing/microsoft-cloud-featured.gif
-	scale 50
+	filename graficos/Cloud computing/sparkindark_cloudcomputing-660x495.png
+	scale 30
 	rotateOrigin centerTop
 
 \end_inset
@@ -775,7 +978,16 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Modelos de servicios de la computación en la nube
+Modelos de servicios de el 
+\shape italic
+cloud computing.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Modelos-de-servicios"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -793,41 +1005,60 @@ Modelos de servicios de la computación en la nube
 \end_layout
 
 \begin_layout Subsection
-Infraestructura como servicio (IaaS) 
+Infraestructura como servicio 
 \end_layout
 
 \begin_layout Standard
-Es el modelo más básico.
- En este modelo el cliente estará contratando únicamente la infraestructura
- tecnológica.
- Esta infraestructura tendrá la capacidad de procesamiento, de almacenamiento
- o de comunicación.
- Una vez establecida el cliente alojará sus aplicaciones y plataformas.
- De esta forma el proovedor oferta al usuario un conjunto de maquinas virtuales
- sobre las que trabajar.
- Estas maquinas virtuales serán manejadas por hipervisores, tales como Xen
- o Kvn.
- Gracias a la habilidad de gestión de las maquinas virtuales por parte de
- los proovedores el cliente puede contratar tantas maquinas virtuales como
- necesite.
- Una vez obtenidas las maquinas virtuales el cliente instalará el sistema
- operativo que más le interese y las aplicaciones.
- Por ello en este modelo el cliente es el responsable del mantenimiento
- y configuración del sistema operativo y de todas las aplicaciones instaladas
- en él.
- Ya que los proovedores no deben preocuparse por aspectos como la seguridad
- únicamente cobran por la cantidad de recursos asignados y consumidos.
- Así el modelo de servicio basado en infraestructuras no hace referencia
- a una maquina que hace todo el trabajo, sino simplemente simplifica el
- trabajo ofreciendo espacio de almacenamiento en servidores y 
+Del termino inglés 
 \shape italic
-data centers
+infraestructura as a service
 \shape default
-.
+ (IaaS), es el modelo más básico.
+ En este modelo el proveedor oferta al usuario un conjunto de maquinas virtuales
+ sobre las que trabajar.
+ Por su parte , el cliente estará contratando únicamente la infraestructura
+ tecnológica.
+ Esta dispone de cierta capacidad de procesamiento, de almacenamiento y
+ de comunicación.
+ 
 \end_layout
 
 \begin_layout Standard
-Algunos ejemplos de infraestruturas como servicio son 
+Una vez que el cliente la ha contratado y el servidor la ha configurado,
+ el cliente la utilizará para alojar sus aplicaciones.
+ Estas maquinas virtuales pueden ser manejadas por hiper-visores, tales
+ como Xen o KVN, o bien por sistemas como VirtualBox o VMWare.
+ 
+\end_layout
+
+\begin_layout Standard
+Gracias a la habilidad de gestión de las maquinas virtuales por parte de
+ los proveedores el cliente puede contratar tantas maquinas virtuales como
+ necesite.
+ 
+\end_layout
+
+\begin_layout Standard
+En cualquier caso una vez obtenidas las maquinas virtuales el cliente instalará
+ el sistema operativo que más le interese y las aplicaciones.
+ Por ello, en este modelo el cliente es el responsable del mantenimiento
+ y configuración del entorno.
+\end_layout
+
+\begin_layout Standard
+Puesto que los proveedores no deben preocuparse por otros aspectos como
+ la seguridad o el pago de licencias, únicamente cobran por la cantidad
+ de recursos asignados y consumidos.
+ 
+\end_layout
+
+\begin_layout Standard
+Así, el modelo de infraestructura como servicio se limitan a aportar maquinas
+ virtuales que los clientes utilizarán cuando las necesiten.
+\end_layout
+
+\begin_layout Standard
+Algunos servicios de este tipo son 
 \shape italic
 Amazon CloudFormation
 \shape default
@@ -848,10 +1079,6 @@ Windows Azure Virtual Machines
 Google Compute Engine
 \shape default
 .
- También cabe destacar Joyent cuyo producto principal es una línea de servidores
- virtualizados, que proveen una infraestructura en-demanda altamente escalable
- para manejar sitios Web, incluyendo aplicaciones Web complejas escritas
- en Ruby on Rails, PHP, Python, y Java.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "PMC2008"
@@ -862,36 +1089,51 @@ key "PMC2008"
 \end_layout
 
 \begin_layout Subsection
-Plataforma como servicio (PaaS) 
+Plataforma como servicio
 \end_layout
 
 \begin_layout Standard
-En este caso los proovedores de los servicios ofrecen una plataforma completa
- al cliente la cual incluye tanto el sistema operativo como el conjunto
- de todas las aplicaciones de desarrollo, las bases de datos y el conjunto
- de servicios 
+Del termino inglés 
+\shape italic
+Platform as a service
+\shape default
+ (PaaS), los proveedores de este tipo de servicios ofrecen a sus clientes
+ una plataforma completa, la cual incluye tanto el sistema operativo como
+ el conjunto de todas las aplicaciones,la gestión de las bases de datos
+ y el conjunto de servicios 
 \shape italic
 web
 \shape default
- que este necesite.
- Además esta plataforma se instala sobre una infraestructura también proporciona
-da por el proovedor.
- De esta forma el cliente puede dedicarse a desarrollar su aplicación (desarroll
-os propios o licencias adquiridas) sin preocuparse de los costes de compra
- y mantenimiento de 
+ que este necesite.Esta plataforma se instala sobre una infraestructura también
+ proporcionada por el proveedor.
+ 
+\end_layout
+
+\begin_layout Standard
+De esta forma, el cliente despliega las aplicaciones que necesite (desarrollos
+ propios o licencias adquiridas) sin preocuparse por los costes de compra
+ y de mantenimiento del 
 \shape italic
-hardware y software
+hardware y del software
 \shape default
 .
- La plataforma como servicio el equipo base y escala los recursos de almacenamie
-nto automaticamente para que el cliente no tenga que asignar dichos recursos
+ 
+\end_layout
+
+\begin_layout Standard
+La plataforma como servicio ofrece el equipo base y escala los recursos
+ automáticamente para que el cliente no tenga que asignar dichos recursos
  manualmente.
- Este modelo resulta ventajoso tanto para el cliente como para el proovedor
+ 
+\end_layout
+
+\begin_layout Standard
+Este modelo resulta ventajoso tanto para el cliente como para el proveedor,
  ya que el primero no necesita costear el precio completo de las licencias
- de todas las herramientas de desarrollo (algunas de las cuales serán usadas
- tan poco que costear una licencia completa por ella resultaría contraproducente
-) y el segundo puede ofertar una misma herramienta a un gran número de clientes
- cuyas necesidades sean similares.
+ de todas las herramientas de desarrollo(algunas de las cuales serán usadas
+ tan poco que costear una licencia completa por ella resultaría un despilfarro)
+ y el segundo puede ofrecer un mismo entorno a un gran número de clientes
+ con necesidades similares.
 \end_layout
 
 \begin_layout Standard
@@ -901,60 +1143,64 @@ Amazon Elastic Beanstalk, Cloud Foundry, Heroku, Force.com, EngineYard, Mendix,
  Google App Engine, Windows Azure Compute y OrangeScape
 \shape default
 .
- Entre todos ellos cabe destacar 
-\shape italic
-Windows Azure
-\shape default
- , de Microsoft, una plataforma en la nube que permite el desarrollo y ejecución
- de aplicaciones codificadas en varios lenguajes y tecnologías como .NET,
- Java y PHP.
  
 \end_layout
 
 \begin_layout Subsection
-Software como servicio(Saas) 
+Software como servicio 
 \end_layout
 
 \begin_layout Standard
-Por último este modelo es el que otorga menos libertades a la par que menos
+Del termino inglés Software
+\shape italic
+ as a service
+\shape default
+ (Saas), este modelo es el que proporciona menos libertad y también menos
  preocupaciones al cliente.
- En este modelo el proovedor no solo oferta la infraestructura y las herramienta
-s como en los servicios anteriores, sino que sobre ellas instala el conjunto
- de aplicaciones que será usadas por el cliente.
- Esto no solo libera al cliente de instalar y correr las aplicaciones en
- sus propia computadora sino que también se encarga del mantenimiento, la
- recuperación y el soporte de las mismas.
- Lo que hace diferente a una aplicación ejecutada en la nube del resto de
+ En este caso, el proveedor no solo ofrece la infraestructura y las herramientas
+, sino que sobre ellas instala el conjunto de aplicaciones que será usadas
+ por el cliente.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Esto debe pertenecer a otra parte del documento y se ha movido aquí ,pero
+ no recuerdo a cual :
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Lo que hace diferente a una aplicación ejecutada en la nube del resto de
  aplicaciones es su elasticidad.Esta elasticidad puede entenderse como el
- reparto de las tareas en multiples maquinas virtuales en tiempo de ejecución
+ reparto de las tareas en múltiples maquinas virtuales en tiempo de ejecución
  para acelerar la ejecución de las tareas más demandadas.Unos gestores de
- carga son los encargados de balancear el trabajo entre multiples maquinas
+ carga son los encargados de balancear el trabajo entre múltiples maquinas
  virtuales.
  Este proceso es invisible al cliente ya que el solo tiene un punto de acceso
  por el que interactuar con las aplicaciones.
  Para poder dar cabida a tantos usuarios en la nube las aplicaciones pueden
  ser multiusuario, es decir, una maquina puede atender tareas de más de
- un usuario a la vez.
- Basados en esta idea aparecen un conjunto de modelos especiales tales como:
- 
+ un usuario a la vez
+\begin_inset Quotes erd
+\end_inset
+
+.
 \end_layout
 
-\begin_layout Itemize
-Escritorio como servicio (DaaS) : Se ofrece al cliente un escritorio con
- todas las aplicaciones pertinentemente instaladas para ser ejecutadas a
- su gusto.
+\end_inset
+
+
 \end_layout
 
-\begin_layout Itemize
-Entorno de prueba como servicio (TEaaS) : El cliente dispone de un entorno
- en el que poder realizar sus pruebas sobre un determinado software.
-\end_layout
-
-\begin_layout Itemize
-Comunicación como servicio (Caas) : Facilita la comunicación entre clientes
- y entre usuarios de una misma empresa a partir de aplicaciones especialmente
- diseñadas para este fin.
- 
+\begin_layout Standard
+Esto no solo libera al cliente de instalar y ejecutar las aplicaciones en
+ sus propia computadora sino que también se encarga del mantenimiento, la
+ recuperación y el soporte de las mismas.
 \end_layout
 
 \begin_layout Standard
@@ -974,14 +1220,66 @@ key "TC2011"
 \end_inset
 
 .
- el precio puede reajustarse si se añaden o quitan usuarios.
- Algunos ejemplos de software como servicio son 
+ Este precio dependerá del número de usuarios que vayan a usar la aplicación
+ y puede reajustarse si se añaden o quitan usuarios.
+\end_layout
+
+\begin_layout Standard
+Algunos ejemplos de software como servicio son 
 \shape italic
 Google Apps, innkeypos, Quickbooks Online, Successfactors Bizx, Limelight
  Video Platform, Salesforce.com y Microsoft Office 365
 \shape default
 .
  
+\end_layout
+
+\begin_layout Section
+Otros modelos de servicio especiales
+\end_layout
+
+\begin_layout Standard
+A parte de los tres modelos de servicio fundamentales , existen otro modelos
+ menos relevantes que han surgido con el fin de resolver problemas muy puntuales
+ .
+ En general , estos modelos secundarios han sido creados al mezclar dos
+ de los modelos fundamentales.
+\end_layout
+
+\begin_layout Subsection
+Escritorio como servicio
+\end_layout
+
+\begin_layout Standard
+Del inglés Desktop as a Service (DaaS) , también conocido como escritorio
+ virtual , en el se ofrece al cliente un escritorio con todas las aplicaciones
+ pertinentemente instaladas para ser ejecutadas a su gusto.
+ 
+\end_layout
+
+\begin_layout Standard
+Este escritorio puede ser usado en paralelo por múltiples usuarios sin que
+ las acciones de uno afecte sobre el resto.
+ Así cuando el usuario inicia la sesión su configuración personal se carga
+ en el escritorio , así como toda la información previa que el usuario había
+ dejado guardada en él .
+ De igual forma , cuando el usuario se da de baja en la sesión se almacena
+ la información y la configuración que el usuario hubiera dejado antes de
+ cerrar su sesión.
+\end_layout
+
+\begin_layout Subsection
+Entorno de pruebas como servicio 
+\end_layout
+
+\begin_layout Standard
+Del inglés Test environment as a service(TEaaS) , este modelo ofrece al
+ cliente un entorno en el que poder realizar sus pruebas sobre un determinado
+ software.
+\end_layout
+
+\begin_layout Standard
+Un ejemplo de entorno de pruebas como servicio viene dado por testersdesk.com.
 \end_layout
 
 \begin_layout Subsection
@@ -994,7 +1292,7 @@ El establecimiento y la prueba de la identidad es una función de red central.
  digital de forma que pueda ser consultado y gestionado para uso en las
  transacciones electrónicas.
  los servicios de identidad tiene como funciones principales las de almacenamien
-to de datos , motor de busqueda y control de la integridad de dichos datos.
+to de datos, motor de búsqueda y control de la integridad de dichos datos.
 \end_layout
 
 \begin_layout Standard
@@ -1043,44 +1341,6 @@ De cara a que grupo de clientes se encuentre destinados los servicios y
  
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename graficos/Cloud computing/500px-Cloud-Types-Model_copy.png
-	scale 50
-	rotateOrigin centerTop
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Tipos de computación en la nube
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Cloud público 
 \end_layout
@@ -1088,32 +1348,77 @@ Cloud público
 \begin_layout Standard
 Es el tipo más común y el que mejor representa la idea de computación en
  la nube.
- En él las aplicaciones residentes en la nube pública, su almacenamiento
- y todos sus recursos están destinados al público en general .
- Este tipo de computación en la nube puede suele ser gratuita o bien ligada
- a un modelo de “pago por uso”.
- Este modelo es el mejor para aquellos negocios donde es necesario controlar
- los picos de carga, dirigir las aplicaciones del modelo de software como
- servicio, utilizar una infraestructura provisional para desarrollar y testear
- el software y dirigir las aplicaciones que sin utilizadas por muchos usuarios
- que de otra manera necesitarian una gran inversión en infraestructuras
- para sus negocios.
- Las principales ventajas que ofrece este tipos son flexibilidad, seguridad
- y ahorro en su infraestructura.
- Además no requiere de inversiones, es escalable y no tiene límite de recursos
- ni disponibilidad.
- Algunos ejemplos de cloud públicos son 
-\shape italic
-Facebook, Tuenti, Google yLinkedIn
-\shape default
-.
+ En este tipo, los servicios están destinados al público en general y suelen
+ ser gratuitos o bien ligados a un modelo de “pago por uso”.
+ 
+\end_layout
+
+\begin_layout Standard
+Este modelo es el mejor para aquellos negocios donde es necesario:
+\end_layout
+
+\begin_layout Itemize
+controlar los picos de carga.
+\end_layout
+
+\begin_layout Itemize
+dirigir las aplicaciones del modelo de software como servicio.
+\end_layout
+
+\begin_layout Itemize
+dirigir las aplicaciones que son utilizadas por muchos usuarios que de otra
+ manera necesitarían una gran inversión en infraestructuras para sus negocios.
+ 
+\end_layout
+
+\begin_layout Itemize
+usar un servicio compartido por un número elevado de usuarios.
+\end_layout
+
+\begin_layout Itemize
+utilizar herramientas para el testeo y desarrollo de una aplicación.
+\end_layout
+
+\begin_layout Itemize
+utilizar un modelo de software como servicio (SaaS) con una buena estrategia
+ de seguridad.
+\end_layout
+
+\begin_layout Itemize
+una capacidad de almacenamiento incremental.
+ La capacidad que va a necesitar no se puede aproximar desde el principio.
+\end_layout
+
+\begin_layout Itemize
+trabajar en un proyecto colaborativo.
+\end_layout
+
+\begin_layout Itemize
+desarrollar una aplicación utilizando un modelo de plataforma como servicio
+ (PaaS).
+\begin_inset CommandInset citation
+LatexCommand cite
+key "JH2009"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Las principales ventajas que ofrece este tipo son la gran flexibilidad,
+ la seguridad y el ahorro en su infraestructura.
+ Además no requiere grandes inversiones, es escalable y no tiene límite
+ de recursos ni de disponibilidad.
+ Algunos ejemplos de cloud públicos son el de Amazon, el de Microsoft o
+ el de Yahoo.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "NIST2011,IDC2008"
 
 \end_inset
 
- 
+ .
 \end_layout
 
 \begin_layout Standard
@@ -1121,47 +1426,11 @@ key "NIST2011,IDC2008"
 status open
 
 \begin_layout Plain Layout
-Tengo que mezclar esto con lo anterior de forma que no parezca demasiado
- forzado.
+
+\shape italic
+Facebook, Tuenti, Google yLinkedIn , no me convencen que no sean clouds
+ publicos
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Un cliente suele usar un cloud público cuando:
-\end_layout
-
-\begin_layout Itemize
-Quiere usar un servicio compartido por un número elevado de usuarios.
-\end_layout
-
-\begin_layout Itemize
-Necesita herramientas para el testeo y desarrollo de una aplicación.
-\end_layout
-
-\begin_layout Itemize
-Utiliza un modelo de software como servicio (SaaS) con una buena estrategia
- de seguridad.
-\end_layout
-
-\begin_layout Itemize
-Necesita una capacidad incremental .
- La capacidad que va a necesitar no se puede aproximar desde el principio.
-\end_layout
-
-\begin_layout Itemize
-Está trabajando en un proyecto colaborativo.
-\end_layout
-
-\begin_layout Itemize
-Está desarrollando una aplicación utilizando un modelo de plataforma como
- servicio (PaaS).
-\begin_inset CommandInset citation
-LatexCommand cite
-key "JH2009"
 
 \end_inset
 
@@ -1174,20 +1443,28 @@ Cloud privado
 
 \begin_layout Standard
 Es el segundo tipo de computación en la nube más utilizado.
- Hay un gran número de dircusiones acerca de cual es la forma idonea para
- definir a los clouds privados.
- En general cualquier centro de datos interno y exclusivo para una empresa
- es considerado cloud privado.
+ En general se acepta que cualquier centro de datos propiedad de una organizació
+n y destinado a su uso exclusivo es considerado cloud privado.
  Este cloud debe tener cierto nivel de virtualización y autonomía.
- En general los proovedores de clouds privados suelen ofrecer entornos hardware
- a grandes empresas para que pueda residir en ellos sus centros de datos.
- Por ello los clouds privados son el tipo que debe prestar una mayor atención
- a la seguridad y mantenimiento de los datos que manejan.
- Esto hace que los clouds privados resulten algo más costosos que el resto
- de tipos.
- Las principales ventajas que ofrece el cloud privado son aislamiento y
- exclusividad de su propia infraestructura, así como máximas garantías de
- seguridad y confidencialidad en sus sistemas de información.
+ 
+\end_layout
+
+\begin_layout Standard
+En general los proveedores de clouds privados suelen ofrecer infraestructuras
+ a grandes empresas para que pueda residir en ellas sus centros de datos.
+ Por ello los 
+\emph on
+clouds
+\emph default
+ privados son el tipo que debe prestar una mayor atención a la seguridad
+ y mantenimiento de los datos que manejan, lo que hace que los clouds privados
+ resulten algo más costosos que el resto de tipos.
+\end_layout
+
+\begin_layout Standard
+Las principales ventajas que ofrece el cloud privado son aislamiento y exclusivi
+dad de su propia infraestructura, así como máximas garantías de seguridad
+ y privacidad en sus sistemas de información.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1217,16 +1494,16 @@ Un cliente suele usar un cloud privado cuando :
 \end_layout
 
 \begin_layout Itemize
-Su negocio se basa en su información y sus aplicaciones .
+su negocio se basa en su información y sus aplicaciones.
  Por lo tanto, el control y la seguridad son primordiales.
 \end_layout
 
 \begin_layout Itemize
-Su negocio está relacionado con la gestión de la información de otras empresas.
+su negocio está relacionado con la gestión de la información de otras empresas.
 \end_layout
 
 \begin_layout Itemize
-Su empresa es lo suficientemente grande como para poder mantener un sistema
+su empresa es lo suficientemente grande como para poder mantener un sistema
  en la nube propio eficiente.
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1243,15 +1520,20 @@ Cloud híbrido
 
 \begin_layout Standard
 En este tipo se mezclan las características más importantes del cloud privado
- y público .
- En él el cliente gestiona y explota en exclusividad su infraestructura
- pero dispone de acceso al cloud público que mantiene el proovedor en sus
- instalaciones .
+ y público, de manera que el cliente gestiona y explota en exclusividad
+ su infraestructura pero dispone de acceso al cloud público que mantiene
+ el proveedor en sus instalaciones.
  El cloud híbrido combina los beneficios del cloud público junto con los
- del cloud privado.Así por un lado dispone de la esclusividad de tener un
- servidor propio mientra que por el otro puede aumentar sus recursos obteniendol
-os de la nube pública a modo de ampliación y adaptación de su arquitectura.
- Dentro del cloud híbrido existen dos submodelos :
+ del cloud privado .
+ Así por un lado extrae del cloud privado la exclusividad de tener un servidor
+ propio mientras que por el otro extrae del cloud público la posibilidad
+ de aumentar sus recursos obteniéndolos de la nube a modo de ampliación
+ y adaptación de su arquitectura.
+ 
+\end_layout
+
+\begin_layout Standard
+Dentro del cloud híbrido existen dos submodelos :
 \end_layout
 
 \begin_layout Itemize
@@ -1259,8 +1541,11 @@ Cloud Privado "
 \shape italic
 inHouse
 \shape default
-" : Este modelo requiere una importante inversión por parte del cliente,
- tanto económica como de recursos, y la seguridad de la información es relativa
+" : El cliente pone las máquinas y las instalaciones donde situarlas para
+ montar su cloud, es decir, la infraestructura se encuentra físicamente
+ en las instalaciones del cliente.
+ Este modelo requiere una importante inversión por parte del cliente, tanto
+ económica como de recursos, y la seguridad de la información es relativa
  a la experiencia y capacidad técnica disponible.
  
 \end_layout
@@ -1269,12 +1554,12 @@ inHouse
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
 	filename graficos/Cloud computing/cloud-hosting-hibrido-inhouse.jpg
-	scale 70
+	scale 50
 	rotateOrigin center
 
 \end_inset
@@ -1286,7 +1571,7 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Esquema del cloud privado 
+Cloud privado 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1316,10 +1601,10 @@ Tanto Cloud Privado como Cloud Público, en
 \shape italic
 Datacenter
 \shape default
- del proovedor : Este modelo puede contener su infraestructura en el centro
- de datos del proovedor, o bien subcontratarla lo que hace desaparecer la
- necesidad de una inversión inicial .
- Así permite reducir costes al modelo de pago por uso, y escalar de forma
+ del proveedor : La infraestructura del cliente puede residir en el centro
+ de datos del proveedor o bien puede subcontratarse, lo que hace desaparecer
+ la necesidad de una inversión inicial.
+ Esto permite reducir costes al modelo de pago por uso, y escalar de forma
  rápida y flexible y sin inversión extra.
  
 \begin_inset CommandInset citation
@@ -1335,12 +1620,12 @@ key "NIST2011,AS2012,IDC2008"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
 	filename graficos/Cloud computing/cloud-hosting-hibrido-subcontratado.jpg
-	scale 70
+	scale 50
 	rotateOrigin center
 
 \end_inset
@@ -1352,7 +1637,7 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Esquema de cloud híbrido en el DataCenter del proovedor
+Cloud híbrido en el centro de proceso de datos del proveedor
 \end_layout
 
 \end_inset
@@ -1388,14 +1673,14 @@ Un cliente suele usar un cloud híbrido cuando:
 \end_layout
 
 \begin_layout Itemize
-Su compañia sigue una organización privada pero delega ciertas funcionalidades
- en servicios públicos .
+su compañía sigue una organización privada pero delega ciertas funcionalidades
+ en servicios públicos.
  Por ejemplo una empresa mantiene una infraestructura privada para el desarrollo
  de sus aplicaciones pero utiliza servicios públicos para almacenar información.
 \end_layout
 
 \begin_layout Itemize
-Tiene una empresa que usa un modelo de software como servicio pero necesita
+tiene una empresa que usa un modelo de software como servicio pero necesita
  cierta infraestructura privada para almacenar información que necesita
  unos requisitos de seguridad muy elevados.
 \begin_inset CommandInset citation
@@ -1412,16 +1697,24 @@ Cloud comunitario
 \end_layout
 
 \begin_layout Standard
-Un cloud comunitario se da cuando dos o más empresas forman una alianza
+En el caso de este tipo de cloud, dos o más organizaciones forman una alianza
  y comparten una infraestructura con un marco de seguridad y privacidad
- común .
+ común.
  Esto es posible ya que todas las empresas aliadas tienen unos objetivos
- comunes y requieren de los mismos recursos y herramientas .
- De esta forma las empresas participantes pueden beneﬁciarse de una esclusividad
- casi total reduciendo el coste de compra y mantenimiento de servidores.
- Como desventaja de este modelo perdemos el nivel de seguridad característico
- de los clouds privados y este pasa a ser dependiente del anﬁtrión de la
- infraestructura.
+ comunes y requieren de los mismos recursos y herramientas.
+ 
+\end_layout
+
+\begin_layout Standard
+De esta forma, las empresas participantes pueden beneﬁciarse de una exclusividad
+ casi total reduciendo el coste de compra y de mantenimiento de servidores.
+ 
+\end_layout
+
+\begin_layout Standard
+El principal inconveniente de este modelo es la pérdida del nivel de seguridad
+ característico de los clouds privados, ya que este pasa a ser dependiente
+ del anﬁtrión de la infraestructura.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "NIST2011,IDC2008"
@@ -1432,21 +1725,27 @@ key "NIST2011,IDC2008"
 \end_layout
 
 \begin_layout Section
-Ventajas y desventajas
+Ventajas e inconvenientes
 \end_layout
 
 \begin_layout Standard
-Tal y como parece la computación en la nube ofrece a los usuarios una nueva
- forma de entender .Queda claro que las ventajas que ofrece esta computación
- hará posible que en un futuro no muy lejano la idea de utilizar un conjunto
- de servicios no residentes en nuestros ordenadores personales será aceptado
- como algo común entre los usuarios .
+Tal y como parece el 
+\shape italic
+cloud computing
+\shape default
+ ofrece a los usuarios una nueva forma de entender.Queda claro que las ventajas
+ que ofrece esta computación hará posible que en un futuro no muy lejano
+ la idea de utilizar un conjunto de servicios no residentes en nuestros
+ ordenadores personales será aceptado como algo común entre los usuarios.
  Sin embargo, aunque las ventajas que ofrece este sistema con respecto a
  los anteriores lo convierta en actualmente la mejor opción no hay que olvidar
- que la computación en la nube cuenta con un reducido conjunto de desventajas
- .
+ que el 
+\shape italic
+cloud computing
+\shape default
+ cuenta con un reducido conjunto de desventajas.
  A continuación detallaremos las ventajas y desventajas más relevantes de
- la computaión en la nube: 
+ la computación en la nube: 
 \end_layout
 
 \begin_layout Subsection
@@ -1454,43 +1753,70 @@ Ventajas
 \end_layout
 
 \begin_layout Standard
-Entre las ventajas más importantes del Cloud Computing podemos mencionar:
+Entre las ventajas más importantes del 
+\shape italic
+Cloud Computing
+\shape default
+ podemos mencionar: 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Accesibilidad
+\series default
+, que suele ser uno de los principales motivos por el cual se acaba eligiendo
+ este sistema frente al resto.
+ El uso del 
+\emph on
+cloud computing
+\emph default
+ permite que todos los empleados puedan acceder a los datos de la organización
+ no importando el lugar en el que se encuentren de forma fácil y rápida.
  
 \end_layout
 
 \begin_layout Itemize
-Accesibilidad, que suele ser uno de los principales alicientes por el cual
- se acaba eligiendo este sistema frente al resto.
- La accesibilidad permite que todos los empleados puedan acceder a los datos
- de la empresa no importando el lugar en el que se encuentren de forma fácil
- y rápida.
+
+\series bold
+Reducción de gastos en infraestructura
+\series default
+,
+\series bold
+ mantenimiento y servicios
+\series default
+, mediante este tipo de tecnología se reduce los gastos de adquisición y
+ mantenimiento de los servidores sobre los que se ejecutan las aplicaciones.
  
 \end_layout
 
 \begin_layout Itemize
-Reducción de gastos en infraestructura, mantenimiento y servicios, ya que
- mediante este tipo de tecnología se reduce los gastos de adquirir y mantener
- los servidores sobre los que corren las aplicaciones, así como los posibles
- gastos de seguridad.
- 
+
+\series bold
+Escalabilidad
+\series default
+, los servidores son capaces de proveer recursos, software y/o datos en
+ función de la demanda necesaria en cada momento, sin que el usuario tenga
+ conocimiento acerca de los servicios que le son proporcionados.
 \end_layout
 
 \begin_layout Itemize
-Escalabilidad, la posibilidad de adquirir más servicios o más capacidad
- es relativamente fácil.
- 
+
+\series bold
+Seguridad
+\series default
+ a la hora de mantener la integridad de los datos, si bien la cosa depende
+ del cloud que se utilice.
 \end_layout
 
 \begin_layout Itemize
-Seguridad a la hora de mantener nuestros datos intactos pero esto es más
- dependiente del tipo de cloud que se utilice.
- 
-\end_layout
-
-\begin_layout Itemize
-Integración probada de servicios Red.
- La computación en la nube puede ser integrar con gran rapidez y facilidad
- con el resto de aplicaciones empresariales.
+I
+\series bold
+ntegración probada de servicios
+\series default
+.
+ Las aplicaciones en la nube pueden ser adaptadas con gran rapidez y facilidad
+ al resto de aplicaciones empresariales.
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SF2011"
@@ -1501,19 +1827,30 @@ key "SF2011"
 \end_layout
 
 \begin_layout Itemize
-Prestación de servicios a nivel mundial.
- Independientemente donde se encuentre la infraestructura , los servicios
- ofertados por una empresa en la nube pueden ser utilizados en cualquier
- parte del mundo de manera rapida y sencilla.
+
+\series bold
+Prestación de servicios a nivel mundial
+\series default
+.
+ Independientemente donde se encuentre la infraestructura, los servicios
+ que presta cierta organización pueden utilizarse en cualquier parte del
+ mundo de manera rápida y sencilla.
 \end_layout
 
 \begin_layout Itemize
-Actualizaciones automáticas que no afectan negativamente a los recursos
- de TI.En sistemas ajenos a la computación en la nube el usuario debe dedicar
- tiempo y esfuerzo en volver a personalizar e integrar la aplicación cada
- vez que se realice una actualización de la misma .
+
+\series bold
+Actualizaciones automáticas
+\series default
+ .
+ En sistemas ajenos al 
+\shape italic
+cloud computing
+\shape default
+ el usuario debe dedicar tiempo y esfuerzo en volver a personalizar e integrar
+ la aplicación cada vez que se realice una actualización de la misma.
  Con la computación en la nube estas actualizaciones se realizan de manera
- automatica y sin afectar al cliente.
+ automática y sin afectar al cliente.
 \end_layout
 
 \begin_layout Subsection
@@ -1521,25 +1858,28 @@ Desventajas
 \end_layout
 
 \begin_layout Standard
-Las desventajas, aunque reducidas, también están presentes en la nube.
+El 
+\shape italic
+cloud computing
+\shape default
+ también tiene sus inconvenientes.
  Las principales desventajas a destacar son : 
 \end_layout
 
 \begin_layout Itemize
-Privacidad de los datos.
- Esta desventaja es más una cuestión de confianza de los usuarios que de
- un problema de la computación en la nube en sí.
- Al estar todo almacenado en lugares externos al propio ordenador del usuario
- este duda acerca la complejidad con la que el resto de usuarios puedan
- obtener su información .
+Privacidad.
+ Es más una cuestión de confianza de los usuarios que un problema de la
+ computación en la nube en sí.
+ Al estar almacenados los datos de los usuarios en equipos externos, este
+ teme que otros puedan acceder fácilmente a su información.
  
 \end_layout
 
 \begin_layout Itemize
-Dependencia.
+La gran dependencia del proveedor de servicios en la nube.
  Esta desventaja reside en que el caso de optar por un sistema en la nube
- no privado el usuario pasa a depender de su proovedor, el cual mantiene
- toda su infraestructura.
+ no privado el usuario pasa a depender de su proveedor para desarrollar
+ total o parcialmente su actividad.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1551,132 +1891,170 @@ key "BJ2008"
 \end_layout
 
 \begin_layout Itemize
-La disponibilidad de las aplicaciones está estrechamente ligada a la disponibili
-dad de una red de internet.
+La disponibilidad de los servicios está estrechamente ligada al correcto
+ funcionamiento de la red.
 \end_layout
 
 \begin_layout Itemize
 La disponibilidad de herramientas especializadas podría tardar un largo
  periodo de tiempo hasta que sea factible su utilización en la nube.
+ Es decir, existen ciertas necesidades que , a día de hoy , la nube no puede
+ cubrir.
 \end_layout
 
 \begin_layout Itemize
-Escalabilidad a largo plazo.
+La escalabilidad debe planificarse con cuidado.
  A medida que más usuarios empiecen a compartir la infraestructura de la
  nube,los servidores se encontrarán más sobrecargados lo cual puede provocar
- importantes degradaciones del servicio en el caso de que la empresa no
- mantenga un esquema de crecimiento optimo.
+ importantes degradaciones del servicio en el caso de que la organización
+ no haya realizado las previsiones oportunas.
  
 \end_layout
 
 \begin_layout Section
-La computación en la nube como un estandar abierto
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-tengo dudas acerca de la relevancia de esta sección.
- Habla de cloud computing como código abierto (a parte de incluir algunos
- estandares básicos de cloud computing) así que no sé hasta que nivel nos
- puede interesar meterlo.
-\end_layout
-
-\end_inset
-
-
+El 
+\shape italic
+cloud computing
+\shape default
+ como un estándar abierto
 \end_layout
 
 \begin_layout Standard
 Si tenemos en cuenta el desarrollo de la computación en nube hasta la fecha,
  es evidente que esta tecnología es el resultado de la convergencia de muchas
  normas diferentes.
- la idea de escalabilidad cambia completamente la manera en que los servicios
- y aplicaciones se despliegan.
- Sin estandares, la industria crea sistemas en la nube propietario comunmente
- llamados como 
-\begin_inset Quotes eld
-\end_inset
-
-chimeneas de nubes
-\begin_inset Quotes erd
-\end_inset
-
- 
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-No se me ocurre una forma mejor de traducir esto : Without standards, the
- industry creates proprietary systems with vendor lock-in, sometimes referred
- to as "stovepipe" clouds.
- 
-\end_layout
-
-\end_inset
-
-.
- Dado que los clientes no quieren estar encerrados en un solo sistema, hay
- un impulso fuerte por parte de la industria para crear estándares basados
- en la nube.
+ El crecimiento del Cloud Computing ha dado lugar a un importante impulso
+ por parte de la industria para crear estándares abiertos basados en la
+ nube.
 \end_layout
 
 \begin_layout Standard
-Así la computación en la nube se rige por los siguientes estandares tecnológicos
-:
-\end_layout
-
-\begin_layout Itemize
-Virtualización de la plataforma de recursos.
-\end_layout
-
-\begin_layout Itemize
-Arquitectura orientada a servicios.
+En la actualidad, el 
+\shape italic
+cloud computing
+\shape default
+ se rige por los siguientes estandares tecnológicos:
 \end_layout
 
 \begin_layout Itemize
 
+\series bold
+Virtualización de la plataforma de recursos
+\series default
+.
+ Consiste fundamentalmente en la abstracción de un sistema hardware completo
+ permitiendo que diversas instancias de sistemas operativos corran sobre
+ él.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Arquitectura orientada a servicios
+\series default
+.
+ Permite la creación de sistemas de información altamente escalables que
+ reflejan el negocio de una organización y a su vez brinda una forma bien
+ definida de exposición e invocación de servicios, lo cual facilita la interacci
+ón entre diferentes sistemas propios o de terceros.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
 \shape italic
 FrameWork
 \shape default
- orientado a aplicaciones web.
+ orientado a aplicaciones web
+\series default
+.
+ Consiste en un conjunto de conceptos, prácticas y criterios para enfocar
+ un tipo de problemática en las aplicaciones web que sirva como referencia,
+ para enfrentar y resolver nuevos problemas de índole similar.
 \end_layout
 
 \begin_layout Itemize
-Despliegue de software de código abierto.
+
+\series bold
+Despliegue de software de código abierto
+\series default
+.
+ Basado en la idea del desarrollo de aplicaciones de código abierto que
+ puedan ser utilizadas y ampliadas por una comunidad de usuarios.
 \end_layout
 
 \begin_layout Itemize
-Servicios de web estandarizados.
+
+\series bold
+Servicios de web estandarizados
+\series default
+.
+ Consiste en el uso de servicios web que sigan los estandares establecidos
+ con la finalidad de facilitar la incorporación de dichos servicios en aplicacio
+nes.
 \end_layout
 
 \begin_layout Itemize
-Sistemas autonomos.
+
+\series bold
+Sistemas autónomos
+\series default
+.
+ Se define como un grupo de redes IP que poseen una política de rutas propia
+ e independiente.
+ Un sistema autónomo realiza su propia gestión del tráfico que fluye entre
+ él y los restantes Sistemas Autónomos que forman Internet.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+No me convence demasiado la definición.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
-Grid computing.
+
+\series bold
+\shape italic
+Computación Grid 
+\series default
+\shape default
+.
+ Permite utilizar de forma coordinada todo tipo de recursos (entre ellos
+ cómputo, almacenamiento y aplicaciones específicas) que no están sujetos
+ a un control centralizado.
+ 
 \end_layout
 
 \begin_layout Standard
 Estos estandares permiten ajustar los diferentes modelos de negocio que
- los proovedores de servicios en la nube pueden ofertar.
- Estas empresas requieren que los estandares sean abiertos para que los
- datos puedan ser portables y accesibles universalmente.
+ los proveedores de servicios en la nube pueden ofertar.
+ Para conseguir que los datos puedan ser portables y accesibles universalmente
+ es necesario que estos estandares sean abiertos.
+ 
 \end_layout
 
 \begin_layout Standard
 La carrera para crear la primera generación de tecnologías abiertas en la
  nube que competirán con tecnologías patentadas que ofrecen las empresas
  como Microsoft (Azure Platform) y VMware (vSphere) ya está en marcha.
- Rackspace.com, uno de los grandes proveedores de servicios cloud IaaS, anunció
+ Algunos ejemplos de ello son:
+\end_layout
+
+\begin_layout Itemize
+Rackspace.com, uno de los grandes proveedores de servicios cloud IaaS, anunció
  en julio de 2010 que está iniciando un proyecto de código abierto llamada
  OpenStack.
  Este software desarrollado se distribuye bajo la licencia Apache 2.0.
- La NASA también ha donado parte de la tecnología Nebula Cloud Platform
- que desarrolló.
+\end_layout
+
+\begin_layout Itemize
+La NASA también ha donado parte de la tecnología Nebula Cloud Platform que
+ desarrolló.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1688,10 +2066,14 @@ key "BS2011"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -1708,6 +2090,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+
+\shape italic
 Cloud computing
 \end_layout
 
@@ -1716,7 +2100,8 @@ Cloud computing
 
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
+
 
 \end_layout
 
