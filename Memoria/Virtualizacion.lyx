@@ -595,7 +595,69 @@ Memoria
 \begin_layout Standard
 El hipervisor, como gestor de los recursos de la máquina, tiene acceso a
  toda la memoria, la cual debe alojar toda la memoria usada por los distintos
- dominios.
+ dominios, pero solo la memoria física y la tabla de página, ya que del
+ resto, como la memoria virtual, se encarga cada domU.
+ La memoria virtual permite que los procesos accedan a la memoria como si
+ no hubiese nadie mas, es decir, acceso relativo, y luego se le suma la
+ dirección donde empieza su espacio de memoria.
+\end_layout
+
+\begin_layout Standard
+Como la asociación entre memoría física y virtual se hace atraves de las
+ tablas de página, que son gestionadas por Xen, le permite tener un control
+ de que dominio accede a que partes de la memoria, ya que puede denegar
+ el acceso a una pagina si no le pertenece al dominio que se la ha pedido.
+ Este permite aislamiento en la memoria, es decir, un dominio solo puede
+ acceder a la memoría que le ha asignado Xen y le protege de que otro dominio
+ modifique la memoria del primero.
+\end_layout
+
+\begin_layout Subsection
+Dispositivos de entrada/salida
+\end_layout
+
+\begin_layout Standard
+Ningún domU tiene gestión sobre los dispositivos, de esto se encarga el
+ hipervisor con ayuda de dom0.
+ Xen maneja los disposivos de E/S mediante dispositivos virtuales, que son
+ enlaces entre las interfaces de los domUs y el dispositivo en el dom0.
+ 
+\end_layout
+
+\begin_layout Standard
+El acceso a los dispositivos se hace mediante un buffer en anillo, así los
+ dominios pueden acceder al dispositivo directamente sin intervención del
+ hipervisor.
+\end_layout
+
+\begin_layout Subsection
+Red
+\end_layout
+
+\begin_layout Standard
+Como cualquier otro dispositivo, Xen proporciona una interfaz de red virtual
+ a los dominios, además de algunas funciones para mover paquetes de la interfaz
+ virtual del dominio a una interfaz virtual del dom0.
+ El hipervisor en este caso solo mueve los datos de la interfaz física a
+ la virtual, y de la virtual a la física cuando el dominio lo pida, pero
+ no valida paquetes, eso lo manejan reglas en el dom0.
+\end_layout
+
+\begin_layout Subsection
+Dispositivos de bloque
+\end_layout
+
+\begin_layout Standard
+Son dispositivos de almacenamiento en los que solo se puede leer y escribir
+ en bloques de bytes, el tamaño del bloque depende del dispositivo y su
+ configuración, estos pueden discos duros, CD-ROMs o memorias USB.
+\end_layout
+
+\begin_layout Standard
+Xen gestiona los dispositivos de bloque casi como los dispotivos de red.
+ El hipervisor exporta el dispositivo virtual de bloques al domU y proporciona
+ al dom0 la capacidad de mapear la funcionalidad del dispositivo real en
+ el virtual.
 \end_layout
 
 \end_body
