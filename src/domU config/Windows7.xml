@@ -1,0 +1,129 @@
+<!--
+    Fichero de configuración de un dominio Windows
+    Versión: 1.0
+    
+    Importante: No drivers VirtIO => BSOD.
+    Configurad el disco duro como IDE, instalad los drivers VirtIO
+    y dejad las cosas como están.
+-->
+
+<domain type='kvm'>
+    <!-- 
+        Nombre del dominio y UUID 
+        Importante: Si hay dos dominios con el mismo UUID, casca.
+    -->
+    <name>Windows7</name>
+    <uuid>8a6ac150-d00b-6aef-ef91-9054bbc5fa36</uuid>
+    <!--
+        RAM. 3 GB, reservo 3 GB desde el principio.
+    -->
+    <memory>3145728</memory>
+    <currentMemory>3145728</currentMemory>
+    <!--
+        4 VCPUs
+            -->
+    <vcpu>4</vcpu>
+    <!--
+        SO de 64 bits (si no, arch = i686), arrancar de disco duro
+    -->
+    <os>
+        <type arch='x86_64' machine='pc-1.0'>hvm</type>
+        <boot dev='hd'/>
+    </os>
+    <!--
+        Habilitamos ACPI, APIC y PAE
+            -->
+    <features>
+        <acpi/>
+        <apic/>
+        <pae/>
+    </features>
+    <!--
+        Windows espera tener el reloj configurado así
+            -->
+    <clock offset='localtime'/>
+    <!--
+        Tratamiento de eventos
+     -->
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>restart</on_crash>
+    <!--
+        Definir la configuración de TODO el subsistema de E/S
+        ¡Atención! Si pincháis más dispositivos PCI al bus, aseguraos de que utilizáis una dirección
+        distinta
+     -->
+  <devices>
+    <emulator>/usr/bin/kvm</emulator>
+    <!-- 
+        Disco duro principal
+        Dispositivo de bloques virtio, imagen en formato qcow2.
+        Formatos: RAW mejor que QCow2, QCow2 mejor que VMDK.
+     -->
+    
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2' cache='writeback' io='native'/>
+      <source file='/home/luis/kvm-images/Windows7/Windows7.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </disk>
+    <!-- Unidades de CD-ROM -->
+    <!-- Primera unidad: disco con los drivers virtio para metérselos al instalador de Windows -->
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw' cache='writeback'/>
+      <source file='/home/luis/Downloads/virtio-win-0.1-30.iso'/>
+      <target dev='hda' bus='ide'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='0' unit='0'/>
+    </disk>
+    <!-- Segunda unidad: unidad de CD-ROM física -->
+    <disk type='block' device='cdrom'>
+      <driver name='qemu' type='raw' cache='writeback' io='native'/>
+      <source dev='/dev/sr0'/>
+      <target dev='hdc' bus='ide'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='1' unit='0'/>
+    </disk>
+    <!-- Controlador IDE -->
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <!-- 
+        Nuestro querido bridge. En vez de xenbr0, ahora me ha dado por llamarlo kvmbr0 
+        Importante: usad UN bridge único por cada dominio. Si no, petará (con razón).
+     -->
+    <interface type='bridge'>
+        <mac address='52:54:00:8a:56:41'/>
+        <source bridge='kvmbr0'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
+    <!-- Terminales, serial consoles -->
+    <serial type='pty'>
+        <target port='0'/>
+    </serial>
+    <console type='pty'>
+        <target type='serial' port='0'/>
+    </console>
+    <!-- Dispositivos de entrada. El tablet permite que, dentro de la ventana de VNC, no haya dos cursores -->
+    <input type='tablet' bus='usb'/>
+    <input type='mouse' bus='ps2'/>
+    <!-- VNC escuchando en dirección loopback y sin contraseña -->
+    <graphics type='vnc' port='-1' autoport='yes' keymap='es'/>
+    <!-- Tarjeta de sonido. ¿De veras hace falta? La dejo por si peta -->
+    <sound model='ich6'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </sound>
+    <!-- Tarjeta gráfica -->
+    <video>
+      <model type='vga' vram='9216' heads='1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+    <!-- 
+        memballoon de virtio. En principio, esto debería añadirse automáticamente, pero lo
+        meto a mano para asegurarme de que se crea.
+     -->
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>
