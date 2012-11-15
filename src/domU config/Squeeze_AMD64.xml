@@ -1,0 +1,95 @@
+<!--
+    Fichero de configuración de un host GNU/Linux
+    Versión Legacy
+    Las nuevas distros soportan más cosas
+-->
+
+<domain type='kvm'>
+  <name>Squeeze_AMD64</name>
+  <uuid>34ed2109-cd6d-6048-d47c-55bea73e39fd</uuid>
+  <!-- 
+    RAM. 1 GB, se reserva 1 GB desde el principio.
+    1 CPU virtual
+  -->
+  <memory>1048576</memory>
+  <currentMemory>1048576</currentMemory>
+  <vcpu>1</vcpu>
+  <!--
+    Arquitectura EMT64T/AMD64. Arrancar desde disco duro.
+    -->
+  <os>
+    <type arch='x86_64' machine='pc-1.0'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <!--
+    Habilitar ACPI, APIC y PAE
+    -->
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <!-- 
+    Reloj configurado en UTC. ¡¡Marcar en el instalador!!
+    -->
+  <clock offset='utc'/>
+  <!-- 
+    Tratamiento habitual de eventos
+    -->
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <!-- 
+    Descripción del susbsistema de E/S
+    -->
+  <devices>
+    <emulator>/usr/bin/kvm</emulator>
+    <!--
+        Disco duro
+        VirtIO, con imagen VMDK (puede usarse con VirtualBox)
+     -->
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='vmdk' cache='writeback' io='native'/>
+      <source file='/home/luis/kvm-images/DebianSqueezeAMD64/SqueezeAMD64.vmdk'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
+    <!--
+        Interfaz de red.
+        No es un bridge: está configurada en modo auto.
+     -->
+    <interface type='network'>
+      <mac address='52:54:00:3c:61:a1'/>
+      <source network='default'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
+    <!--
+        Serial consoles
+     -->
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <!-- Dispositivos de entrada -->
+    <input type='tablet' bus='usb'/>
+    <input type='mouse' bus='ps2'/>
+    <!-- Habilitar VNC -->
+    <graphics type='vnc' port='-1' autoport='yes'/>
+    <!-- Tarjeta de sonido. La pongo para evitar problemas -->
+    <sound model='ich6'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </sound>
+    <!-- Tarjeta gráfica -->
+    <video>
+      <model type='cirrus' vram='9216' heads='1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+    <!-- Memballoon de VirtIO. Debería crearse automáticamente, pero lo pongo para asegurarme -->
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>
