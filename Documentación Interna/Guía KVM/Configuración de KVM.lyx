@@ -1,0 +1,573 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Instalación y configuración de KVM en Ubuntu GNU/Linux 12.04
+\end_layout
+
+\begin_layout Standard
+Los pasos a seguir son estos:
+\end_layout
+
+\begin_layout Enumerate
+Nos aseguraremos de que tenemos una CPU con extensiones de virtualización.
+ Si no es el caso, KVM no funcionará.
+ Para ello, usad la orden 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+egrep '(vmx|svm)' --color=always /proc/cpuinfo flags
+\end_layout
+
+\begin_layout Standard
+En mi máquina, la salida es esta:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "80col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+
+\family typewriter
+luis@luis-desktop:~$ egrep '(vmx|svm)' --color=always /proc/cpuinfo
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+flags
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36
+ clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constant_tsc
+ arch_perfmon pebs bts rep_good nopl aperfmperf pni dtes64 monitor ds_cpl
+ 
+\series bold
+\color red
+vmx
+\series default
+\color inherit
+ smx est tm2 ssse3 cx16 xtpr pdcm sse4_1 xsave lahf_lm dtherm tpr_shadow
+ vnmi flexpriority 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Saldrán tantos bloques como 
+\emph on
+cores 
+\emph default
+tenga integrados vuestra CPU.
+ En el caso de CPUs Intel, el flag es 
+\family typewriter
+vmx
+\family default
+; en el caso de CPUs AMD, el flag es 
+\family typewriter
+svm
+\family default
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Instalamos los paquetes básicos
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo apt-get install ubuntu-virt-server python-vm-builder kvm-ipxe
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Añadimos a 
+\emph on
+root
+\emph default
+ (y para no estar usando sudo todo el rato, también a nuestro usuario) a
+ los grupos 
+\family typewriter
+libvirt
+\family default
+ y 
+\family typewriter
+kvm
+\family default
+.
+ Para ello, utilizaremos el comando
+\family typewriter
+ adduser
+\family default
+, que tiene esta sintaxis básica:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+adduser <nombre de usuario> <grupo>
+\end_layout
+
+\begin_layout Standard
+En mi caso, tendría que ejecutar estas órdenes:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "40col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo adduser root libvirtd
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo adduser luis libvirtd
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo adduser root kvm
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo adduser luis kvm
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Reiniciad sesión para que los cambios tengan efecto.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Comprobamos que KVM funciona, mediante el comando
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+virsh -c qemu:///system list
+\end_layout
+
+\begin_layout Standard
+La salida será de la forma:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "60col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+luis@luis-desktop:~$ virsh -c qemu:///system list 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+Id Name State 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+---------------------------------- 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Lógicamente, todavía no hemos creado ninguna máquina virtual, por lo que
+ la lista es vacía.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Configuramos el bridge, editando el fichero 
+\family typewriter
+/etc/network/interfaces
+\family default
+ para que quede de esta forma:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "40col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+auto eth0 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+allow-hotplug eth0 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iface eth0 inet dhcp
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+auto kvmbr0
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iface kvmbr0 inet dhcp 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+bridge_ports eth0
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Detenemos network-manager y reiniciamos el demonio de red.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "50col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo service network-manager stop
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo /etc/init.d/networking restart
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Activamos las interfaces que acabamos de definir
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "50col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo ifconfig
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Reiniciamos.
+ Esto nes necesario para evitar errores de permisos en 
+\family typewriter
+/dev/kvm
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+Modificad los ficheros 
+\family typewriter
+.xml
+\family default
+ del repositorio según el tipo de dominio que vayáis a crear (Windows o
+ GNU/Linux).
+ 
+\end_layout
+
+\begin_layout Enumerate
+Arrancad la máquina virtual
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "50col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+virsh define <ruta del fichero .xml>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+virsh start <nombre de la VM>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Iniciad un cliente de escritorio remoto, conectándoos a 
+\family typewriter
+localhost
+\family default
+.
+ Por defecto, no será necesario introducir un nombre de usuario ni una contraseñ
+a.
+\end_layout
+
+\end_body
+\end_document
