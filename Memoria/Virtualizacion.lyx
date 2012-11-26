@@ -660,5 +660,302 @@ Xen gestiona los dispositivos de bloque casi como los dispotivos de red.
  el virtual.
 \end_layout
 
+\begin_layout Section
+KVM
+\end_layout
+
+\begin_layout Standard
+Kvm(Kernel-based Virtual Machine) es una aplicación de virtualización sobre
+ sistemas linux x86 que ha experimentado un rapido crecimiento.
+ Se compone de un módulo de kernel que proporciona la infraestructura de
+ virtualización de núcleo y un módulo de procesador específico.
+ 
+\end_layout
+
+\begin_layout Standard
+En realidad, el termino más acertado sobre KVM se refiere al nivel del kernel
+ donde se aloja la funcionalidad de virtualización, pero en la práctica
+ es más utilizado para hacer referencia al componente en el que trabaja
+ el usuario.
+\end_layout
+
+\begin_layout Standard
+Usando KVM, se puede ejecutar múltiples máquinas virtuales sin necesidad
+ de modificar las imagenes de linux o de windows.
+ Cada máquina virtual tiene su propio hardware de virtualización privado
+ : su propia tarjeta de red, su disco, su tarjeta gráfica etc.
+\end_layout
+
+\begin_layout Standard
+El componente KVM para el kernel viene incluido en linux desde la versión
+ 2.6.20.
+ Así kvm convierte el kernel de linux en un hipervisor.
+ Como el kernel estandar de linux es un hipervisor, todos los componentes
+ que lo forman se encuentra beneficiados por todas las ventajas de la virtualiza
+ción.
+ Las optimizaciones de estos componentes benefician tanto al hipervisor
+ del kernel (el sistema operaaivo del host) como a los diferentes huespedes.
+ Como el kernel se ejecuta como un hipervisor, es posible arrancar otros
+ sistemas operativos tanto en linux como en windows.
+\end_layout
+
+\begin_layout Standard
+Las máquinas virtuales, así como su almacenamiento y redes virtuales pueden
+ ser dirigidas por parte de libvirt y de la herramienta QEMU.
+ Libvirt es una librería que proporciona una API a los usuarios para dirigir
+ sus máquinas virtuales, basadas en diferentes soluciones de virtualización,
+ tales como KVM y Xen.
+ Esta cuenta tanto con una interfaz gráfica de usuario, como con una herramienta
+ para linea de comandos.
+\end_layout
+
+\begin_layout Standard
+Actualmente existen muchos sistemas de virtualización tales como Xen, Bochs,
+ UML, Linux VServer, y coLinux, sin embargo, kvm está adquiriendo una mayor
+ presencia en el mercado.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Tengo que reorganizar esta información.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Requisitos Hardware
+\end_layout
+
+\begin_layout Standard
+KVM está diseñado en torno a las características de virtualización de hardware
+ incluidas en los ordenadores AMD (AMD-V) e Intel (VT-x).
+ Es compatible con funciones de virtualización de chipsets y dispositivos
+ PCI, como la E/S de la unidad de memoria (IOMMU) y la la E/S del sistema
+ simple de virtualización root (SR-IOV)).
+\end_layout
+
+\begin_layout Standard
+Por ello KVM no podrá ejecutarse si el ordenador no puede soportar la virtualiza
+ción hardware o si la misma no se encuentra activada en la bios.
+\end_layout
+
+\begin_layout Standard
+En cuanto al rendimiento, es necesario tener en cuenta que el servidor deberá
+ ser capaz de afrontar el incremento de memoria RAM que supone la conexión
+ de cada huesped, y tener al menos un nucleo del procesador o un hilo para
+ cada huesped.
+\end_layout
+
+\begin_layout Subsection
+El paquete KVM
+\end_layout
+
+\begin_layout Standard
+El paquete de KVM contiene el programa qemu-kvm, el cual se encarga de realizar
+ la emulación.
+ 
+\end_layout
+
+\begin_layout Standard
+Además de este programa el paquete también incluye una utilidad de monitorizació
+n a nivel de depuración(kvm-sat), componentes de firmware, archivos de correlaci
+ón de teclas, scripts y algunos drivers para realizar la paravirtualización
+ en windows, aunque se desaconseja el uso de estos últimos por estar bastante
+ desactualizados.
+\end_layout
+
+\begin_layout Standard
+Originariamente, el paquete de kvm también contaba con los módulos del kernel
+ de kvm.
+ Sin embargo, en la actuaalidad estos módulos se encuentran ya incluidos
+ en el kernel y el paquete solo proporciona los componentes de usuario.
+\end_layout
+
+\begin_layout Standard
+Además de las herramientas incluidas en el paquete de kvm es recomendable
+ la instalación y uso de otras herramientas secundarias que facilitan la
+ gestión del sistema.
+ Todas estas herramientas son proporcionadas por los paquetes que llevan
+ su nombre.
+ Algunos de estos paquetes son:
+\end_layout
+
+\begin_layout Itemize
+Libvirt: este paquete incluye la herramienta libvirt que permite creación,
+ eliminación y gestión en general de las diferentes maquinas virtuales.
+ Además en este paquete también se incluyen herramientas de gestión de redes
+ virtuales y almacenamiento.
+\end_layout
+
+\begin_layout Itemize
+Virt-manager (Virtual Machine Manager): Incluye una herramienta gráfica
+ de administración de los huespedes de las máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+Vm-install: configura una nueva maquina virtual e instala un sistema operativo
+ en la misma.
+\end_layout
+
+\begin_layout Itemize
+Virt-viewer: Incluye una herramienta que permite interactuar con la virtualizaci
+ón de un determinado huesped.
+ Utiliza libvirt y pretende ser un reemplazo para los clientes de VNC y
+ SPICE.
+\end_layout
+
+\begin_layout Subsection
+Ventajas de KVM
+\end_layout
+
+\begin_layout Standard
+La virtualización con kvm ofrece las siguientes ventajas:
+\end_layout
+
+\begin_layout Itemize
+Esta diseñado para procesadores x86, centrando en un virtualizacion total.
+\end_layout
+
+\begin_layout Itemize
+No se modifica el kernel de GNU/Linux.
+\end_layout
+
+\begin_layout Itemize
+Está basado en un módulo que no necesita ninguna clase de parches.
+\end_layout
+
+\begin_layout Itemize
+Contiene soporte para la paravirtualización.
+\end_layout
+
+\begin_layout Itemize
+Funciona en todo tipo de maquinas, servidores, escritorios o laptop.
+\end_layout
+
+\begin_layout Itemize
+Permite una migración en caliente de las maquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+Permite una administración vía web, gráfica y consola.
+\end_layout
+
+\begin_layout Itemize
+Las máquinas serán reconocidas como procesos, facilitándose así la administració
+n de las mismas.
+\end_layout
+
+\begin_layout Itemize
+Maneja 3 tipos de configuración de red, Bridge, Route y NAT.
+\end_layout
+
+\begin_layout Itemize
+Permite ejecutar multiples máquinas virtuales, cada una con su propia instancia.
+\end_layout
+
+\begin_layout Subsection
+Limitaciones de KVM
+\end_layout
+
+\begin_layout Standard
+Aunque las maquinas virtuales se comportan casi como máquinas físicas existen
+ ciertas limitaciones.
+ Estas limitaciones afectan tanto al huesped alojado en la maquina virtual
+ como al servidor que la gestiona.
+ Las principales limitaciones que podemos encontrar en la virtualización
+ con Kvm son:
+\end_layout
+
+\begin_layout Itemize
+OverCommits : Kvm permite un overcommit tanto en la memoria como en el espacio
+ de disco.
+ Esto permite aumentar el número de usuarios conectados a un determinado
+ servidor.
+ Sin embargo, esto también provoca errores permanentes que pueden acarrear
+ fallos en la conexión de los huespedes.
+ También es posible un overcommit en la CPU, lo cual provoca un empeoramiento
+ del rendimiento.
+\end_layout
+
+\begin_layout Itemize
+Tiempo de sincronización : Generalmente los usuarios requieren de un soporte
+ adicional para poder utilizar de manera adecuada el tiempo de sincronización.
+ Este soporte adicional puede comportarse de manera contraproducente y empeorar
+ el rendimiento.
+\end_layout
+
+\begin_layout Itemize
+Direcciones MAC : Si no existe una dirección mac asociada a una tarjeta
+ de red, kvm asignará una por defecto.
+ Esto puede dar lugar a problemas en la red cuando más de una tarjeta de
+ red recibe la misma dirección MAC.
+ Se recomienda usar siempre una dirección Mac única.
+\end_layout
+
+\begin_layout Itemize
+Migración en vivo : La migración en vivo es sólo posible entre los servidores
+ host de VM con la misma CPU.
+ El almacenamiento de la información de un usuario debe ser accesible desde
+ los diferentes servidores, se encuentren o no en la misma CPU.
+ 
+\end_layout
+
+\begin_layout Itemize
+Permisos de usuario : Las diferentes herramientas de gestión deben ser autentica
+das por libvirt.
+ Por ello para que un usuario pueda invocar a qemu-kvm desde linea de comandos,
+ el usuario debe ser miembro del grupo de kvm.
+\end_layout
+
+\begin_layout Itemize
+Suspensión e hibernación del servidor de maquinas virtuales : No se permite
+ la posibilidad de suspender o hibernar el servidor mientras existan usuarios
+ conectados al mismo.
+\end_layout
+
+\begin_layout Subsection
+Red en KVM
+\end_layout
+
+\begin_layout Standard
+Como ya mencionamos en las ventajas, Kvm dispone de tres tipos de configuración
+ de red :
+\end_layout
+
+\begin_layout Itemize
+Bridge : Este tipo de configuración permite crear un puente entre las tarjeta
+ de red física y las virtuales, permitiendo al usuario conectarse a la red
+ remota como si fueran otras máquinas que estuvieran en la red local.
+ Es el más recomendado.
+\end_layout
+
+\begin_layout Itemize
+NAT : Este tipo de configuración permite tener máquinas virtuales dentro
+ de una red virtual, configurando de manera especial su conexión a la tarjeta
+ de red, lo cual ayuda a tener una mayor seguridad en las maquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Itemize
+Route 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+No he encontrado una definición sobre en que consiste este tipo de configuración.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
