@@ -625,7 +625,7 @@ iptables -t nat -L -n
 \align center
 
 \family typewriter
-iptables -t filter -n
+iptables -t filter -L -n
 \end_layout
 
 \begin_layout Section
@@ -713,15 +713,9 @@ status open
 \begin_layout Plain Layout
 
 \family typewriter
-iptables -I FORWARD -m state -d 192.168.77.0/24 --state NEW,RELATED,ESTABLISHED
- -j ACCEPT
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-iptables -t nat -A PREROUTING -p tcp --dport <puerto servidor> -j DNAT --to-dest
-ination <IP VM>:<Puerto VM>
+iptables -t nat -I PREROUTING -p <tcp|udp> --dport <puerto servidor> -j
+ DNAT --to-destination <IP VM>:<Puerto VM> iptables -A FORWARD -i eth0 -o
+ kvmbr0 -p <tcp|udp> --dport <Puerto VM> -j ACCEPT
 \end_layout
 
 \end_inset
