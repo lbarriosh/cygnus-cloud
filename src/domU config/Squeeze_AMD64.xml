@@ -78,8 +78,9 @@
     <input type='mouse' bus='ps2'/>
     <!-- VNC escuchando en dirección IP del servidor. El puerto se mete "a pelo", al igual
          que la contraseña.-->
-    <graphics type='vnc' port='15005' autoport='no' passwd='CygnusCloudRules!' keymap='es'>
+    <graphics type='vnc' port='15010' autoport='no' passwd='CygnusCloudRules!' keymap='es'>
         <listen type='address' address='192.168.0.4'/>
+    </graphics>
     <!-- Tarjeta de sonido. La pongo para evitar problemas -->
     <sound model='ich6'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
