@@ -665,11 +665,10 @@ KVM
 \end_layout
 
 \begin_layout Standard
-Kvm(Kernel-based Virtual Machine) es una aplicación de virtualización sobre
- sistemas linux x86 que ha experimentado un rapido crecimiento.
- Se compone de un módulo de kernel que proporciona la infraestructura de
- virtualización de núcleo y un módulo de procesador específico.
- 
+KVM (Kernel-based Virtual Machine) es un hipervisor tipo 1 que proporciona
+ una solución completa de virtualización para el sistema operativo Linux
+ en arquitecturas x86 que cuenten con las extensiones de virtualización
+ Intel VT/AMD-V.
 \end_layout
 
 \begin_layout Standard
@@ -689,14 +688,15 @@ Usando KVM, se puede ejecutar múltiples máquinas virtuales sin necesidad
 \begin_layout Standard
 El componente KVM para el kernel viene incluido en linux desde la versión
  2.6.20.
- Así kvm convierte el kernel de linux en un hipervisor.
- Como el kernel estandar de linux es un hipervisor, todos los componentes
- que lo forman se encuentra beneficiados por todas las ventajas de la virtualiza
-ción.
- Las optimizaciones de estos componentes benefician tanto al hipervisor
- del kernel (el sistema operaaivo del host) como a los diferentes huespedes.
- Como el kernel se ejecuta como un hipervisor, es posible arrancar otros
- sistemas operativos tanto en linux como en windows.
+ Cuando se carga el modulo KVM, Linux se convierte en un hipervisor 
+\begin_inset Quotes eld
+\end_inset
+
+bare-metal" (tipo 1) capaz de ejecutar varias maquinas virtuales aisladas.
+ KVM hospeda las maquinas virtuales como procesos, por lo que cada maquina
+ virtual puede beneficiarse de todas las características del kernel de Linux,
+ incluyendo todas aquellas referentes al hardware, seguridad, almacenamiento,
+ etc.
 \end_layout
 
 \begin_layout Standard
@@ -727,6 +727,159 @@ Tengo que reorganizar esta información.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Breve historia de KVM
+\end_layout
+
+\begin_layout Standard
+KVM se inició como un proyecto Open Source por la empresa israelí Qumranet.
+ Su principal objetivo era la de dar una infraestuctura de escritorio virtual
+ (VDI) en entornos windows.
+\end_layout
+
+\begin_layout Standard
+En el año 2007, KVM se integró como un módulo en la rama principal del kernel
+ de Linux, convirtiendose desde entonces en el hipervisor de virtualización
+ oficial para linux.
+\end_layout
+
+\begin_layout Standard
+En 2008, Red Hat adquiría Qumranet y con RHEL 6(Red hat entreprise linux)
+ centraba su estrategia en convertir KVM en la mejor solución de virtualización
+ en el mundo Open Source, desechando la solución de virtualización con Xen
+ utilizada en RHEL 5 .
+\end_layout
+
+\begin_layout Standard
+Poco después IBM también apostó por KVM, contribuyendo en areas como la
+ gestión de memoria, mejoras del rendimiento y el subsistema de entrada/salida
+ virtual.
+\end_layout
+
+\begin_layout Subsection
+Características de KVM
+\end_layout
+
+\begin_layout Standard
+Las principales características de KVM son:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Seguridad 
+\series default
+: KVM se aprovecha del modelo de seguridad estandar de Linux: SELinux/AppArmor.
+ Estos modelos proporcionan el aislamiento y el control de recursos necesarios.
+ El proyecto SVirt, un esfuerzo de la comunidad para integrar el control
+ de acceso obligatorio (MAC) con KVM, esta construido sobre SELinux y proporcion
+a una infraestructura que permite al administrador definir políticas de
+ aislamiento para las maquinas virtuales.
+ Básicamente SVirt se asegura que los recursos de una maquina virtual no
+ puedan ser accedidos por otro proceso o maquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Gestión de memoria : 
+\series default
+La memoria utilizada por una maquina virtual se gestionará de la misma forma
+ que la de otro proceso, podrá ser guardada en disco (swapped), utilizada
+ en paginas grandes (large pages).
+ El soporte NUMA de Linux, permite también el uso a las maquinas virtuales
+ de grandes cantidades de memoria.
+ Además, KVM soporta las últimas características de virtualización en memoria
+ proporcionadas por fabricantes como EPT(Extended Page Table de Intel) o
+ RVI (Rapid Virtualization Indexing de AMD).
+ La compartición de páginas de memoria de lleva a cabo por medio de la herramien
+ta integrada en linux KSM (Kernel Same-page Merging).
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Almacenamiento
+\series default
+ : KVM utiliza cualquier tipo de almacenamiento soportado por linux para
+ el almacenamiento de imágenes de las maquinas virtuales.
+ Esto incluye discos locales (IDE/SCSI/SATA), NAS (Network Attached Storage)
+ o SAN (iSCSI y Fibre Channel).
+ KVM también soporta el almacenamiento en sistemas de ficheros distribuidos
+ tales como GFS2, OCFS o ClusterFS.
+ Las imagenes de disco soportan aprovisionamiento bajo demanda evitando
+ tener que reservar todo el espacio inicialmente.
+ El formato nativo de KVM es QCOW2, el cual permite la realización de compresión
+ y cifrado.
+ Con respecto al almacenamiento podemos destacar dos tipos de almacenamiento
+ que pueden ser gestionados por KVM:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+Almacenamiento local 
+\series default
+: Es el almacenamiento que se produce al conectar directamente al host algún
+ dispositivo de almacenamiento.
+ Resulta muy útil para entornos de desarrollo, pruebas y pequeños despliegues
+ aunque no se recomienda para entornos con muchas máquinas virtuales o que
+ requieran de una migración en caliente.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Almacenamiento en red 
+\series default
+: Se refiere a los dispositivos de almacenamiento que se comparten en una
+ red o a partir de protocolos estándares.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+Migración en vivo : 
+\series default
+KVM permite migraciones en caliente (live migrations), estas migraciones
+ permiten mover una máquina virtual en ejecución entre servidores físicos
+ (hipervisores) sin intervención del servicio.
+ Estas migraciones son trasparentes al usuario ya que la maquina permanece
+ encendida, las conexiones de red activas y las aplicaciones en ejecución
+ mientras que la máquina se realoja en otro servidor físico.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Drivers : 
+\series default
+KVM soporta virtualización híbrida.
+ En los sistemas operativos invitados hay que instalar drivers paravirtualizados
+ que permiten utilizar una interfaz de entrada/salida para dispositivos
+ de bloques y dispositivos de red.
+ El hipervisor KVM utiliza el estandar VirtIO.
+ VirtIO es un estandar de drivers paravirtualizados desarrollado por IBM
+ y Red Hat con la ayuda de la comunidad Linux.
+ El objetivo principal de estos drivers es conseguir una mayor interoperabilidad
+ con los invitados.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Rendimiento y escalabilidad : 
+\series default
+KVM posee los mismos rasgos de rendimiento y escalabilidad que caracterizan
+ a Linux.
+ KVm soporta maquinas virtuales de hasta 16 CPUs virtuales y 256 GB de Ram,
+ habiendose conseguido ratios de hasta 600 maquinas virtuales en un solo
+ servidor físico.
 \end_layout
 
 \begin_layout Subsection
@@ -861,6 +1014,29 @@ Permite ejecutar multiples máquinas virtuales, cada una con su propia instancia
 \end_layout
 
 \begin_layout Subsection
+Desventajas de KVM
+\end_layout
+
+\begin_layout Standard
+La virtualización con KVM ofrece las siguientes desventajas:
+\end_layout
+
+\begin_layout Itemize
+Es un proyecto aun muy joven.
+\end_layout
+
+\begin_layout Itemize
+No hay herramientas sofisticadas para la gestión de servidores y de maquinas
+ virtuales.
+\end_layout
+
+\begin_layout Itemize
+Puede mejorar mucho más en áreas como el soporte de redes virtuales, el
+ soporte de almacenamiento virtual, la seguridad, la alta disponibilidad,
+ la tolerancia a fallos, la gestión de energía y el soporte en tiempo real.
+\end_layout
+
+\begin_layout Subsection
 Limitaciones de KVM
 \end_layout
 
@@ -933,7 +1109,11 @@ Como ya mencionamos en las ventajas, Kvm dispone de tres tipos de configuración
 Bridge : Este tipo de configuración permite crear un puente entre las tarjeta
  de red física y las virtuales, permitiendo al usuario conectarse a la red
  remota como si fueran otras máquinas que estuvieran en la red local.
- Es el más recomendado.
+ La conexión es directa.
+ Por ello habrá que asignar IPs a nuestras máquinas virtuales o tomar la
+ dirección por DHCP si en la red donde esta conectado el anfitrión hay un
+ servidor DHCP.
+ 
 \end_layout
 
 \begin_layout Itemize
@@ -944,17 +1124,13 @@ NAT : Este tipo de configuración permite tener máquinas virtuales dentro
 \end_layout
 
 \begin_layout Itemize
-Route 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-No he encontrado una definición sobre en que consiste este tipo de configuración.
-\end_layout
-
-\end_inset
-
-
+Route : En este modo el switch virtual se conecta a la LAN física del anfitrión,
+ pasando todo el trafico entre anfitrión y las máquinas virtuales sin el
+ uso de NAT.
+ Todas las máquinas virtuales se encuentran en su propia subred, enrutadas
+ a través del switch virtual.
+ Desde fuera solo se puede acceder a las maquinas virtuales si se definen
+ reglas de enrutamiento.
 \end_layout
 
 \end_body
