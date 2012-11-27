@@ -1,0 +1,1270 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Sockets en Python
+\end_layout
+
+\begin_layout Section
+Introducción
+\end_layout
+
+\begin_layout Standard
+Los sockets son un concepto abstracto con el que se designa al punto final
+ de una conexión.
+ os programas utilizan sockets para comunicarse con otros programas, que
+ pueden estar situados en computadoras distintas.
+\end_layout
+
+\begin_layout Standard
+Un socket queda definido por la dirección IP de la máquina, el puerto en
+ el que escucha, y el protocolo que utiliza.Los tipos y funciones necesarios
+ para trabajar con sockets se encuentran en Python en el módulo socket,
+ como no podría ser de otra forma.
+\end_layout
+
+\begin_layout Section
+Clasificación
+\end_layout
+
+\begin_layout Standard
+Los sockets se clasifican en sockets de flujo (socket.SOCK_STREAM) o sockets
+ de datagramas (socket.SOCK_DGRAM) dependiendo de si el servicio utiliza
+ TCP, que es orientado a conexión y fiable, o UDP, respectivamente.
+ 
+\end_layout
+
+\begin_layout Standard
+Los sockets también se pueden clasificar según la familia.
+ Tenemos sockets UNIX (socket.AF_UNIX) que se crearon antes de la concepción
+ de las redes y se basan en ficheros, sockets socket.AF_INET que son los
+ que nos interesan, sockets socket.AF_INET6 para IPv6, etc.
+\end_layout
+
+\begin_layout Section
+Familias de Sockets
+\end_layout
+
+\begin_layout Standard
+Dependiendo del sistema y las opciones de construcción, existen varias familias
+ de sockets.
+\end_layout
+
+\begin_layout Standard
+Las direcciones de sockets puden representarse como siguen :
+\end_layout
+
+\begin_layout Itemize
+Las cadenas de String simples son utilizadas para familias del tipo AF_UNIX
+\end_layout
+
+\begin_layout Itemize
+Una par de la forma (host,port).
+ Se utilizan para las familias de tipo AF_INET donde 
+\begin_inset Quotes eld
+\end_inset
+
+host
+\begin_inset Quotes erd
+\end_inset
+
+ es una cadena que representa un nombre de host en la notación de dominio
+ de Internet como 'daring.cwi.nl' o una dirección IPv4 como .50.200.5 '100 ',
+ y 
+\begin_inset Quotes eld
+\end_inset
+
+port
+\begin_inset Quotes erd
+\end_inset
+
+ es un entero.
+\end_layout
+
+\begin_layout Itemize
+En el caso de la familia de tipo AF_INET6, se utiliza una tupla de cuatro
+ elementos (host, port, flowinfo, scopeid), donde flowInfo y scopeid representan
+ los miembros sin6_flowinfo y sin6_scope_id del registro sockaddr_in6.
+ Estos parámetros pueden omitirse para compatibilidad con versiones anteriores.
+ Sin embargo, la omisión de ScopeId puede causar problemas en la manipulación
+ de ámbito de las direcciones IPv6.
+\end_layout
+
+\begin_layout Itemize
+Los sockets de la familia AF_NETLINK se representan como pares (pid, grupos).
+\end_layout
+
+\begin_layout Itemize
+El soporte de TIPC en linux solo está disponible bajo al familia AF_TIPC.
+ TIPC es un protocolo abierto, sin IP y basado en red, diseñado para ser
+ usado en ambientes con computación en cluster.
+ Las direcciones son representadas por una tupla, y sus campos dependen
+ del tipo de dirección.
+ Generalmente suele tener el siguiente aspecto (addr_type, v1, v2, v3 [,
+ scope]) donde
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+addr_type es TIPC_ADDR_NAMESEQ, TIPC_ADDR_NAME, o TIPC_ADDR_ID.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Si addr_type es TIPC_ADDR_NAME, entonces v1 es el tipo de servidor, v2 es
+ el identificador de puerto, y v3 suele ser 0.
+\end_layout
+
+\begin_layout Itemize
+Si addr_type es TIPC_ADDR_NAMESEQ, entonces v1 es el tipo de servidor, v2
+ es el número menor del puerto, y v3 es el mayor número de puerto.
+\end_layout
+
+\begin_layout Itemize
+Si addr_type es TIPC_ADDR_ID, entonces v1 es el nodo, v2 es la referencia,
+ y v3 suele ser 0.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+scope es TIPC_ZONE_SCOPE, TIPC_CLUSTER_SCOPE, o TIPC_NODE_SCOPE.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Algunas otras familias como AF_BLUETOOTH y AF_PACKET utilizan representaciones
+ específicas.
+\end_layout
+
+\begin_layout Section
+Creación de un socket
+\end_layout
+
+\begin_layout Standard
+Para crear un socket se utiliza el constructor socket.socket() que puede
+ tomar como parámetros opcionales la familia, el tipo y el protocolo.
+ Por defecto se utiliza la familia AF_INET y el tipo SOCK_STREAM.
+\end_layout
+
+\begin_layout Subsection
+Socket en el servidor
+\end_layout
+
+\begin_layout Standard
+Lo primero que tenemos que hacer es crear un objeto socket para el servidor
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+socket_s = socket.socket() 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tenemos ahora que indicar en qué puerto se va a mantener a la escucha nuestro
+ servidor utilizando el método bind.
+ Para sockets IP, como es nuestro caso, el argumento de bind es una tupla
+ que contiene el host y el puerto.
+ El host se puede dejar vacío, indicando al método que puede utilizar cualquier
+ nombre que esté disponible.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+socket_s.bind(("localhost", 9999))
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por último utilizamos listen para hacer que el socket acepte conexiones
+ y accept para comenzar a escuchar.
+ listen requiere de un parámetro que indica el número de conexiones máximas
+ que queremos aceptar; evidentemente, este valor debe ser al menos 1.
+ accept se mantiene a la espera de conexiones entrantes, bloqueando la ejecución
+ hasta que llega un mensaje.
+\end_layout
+
+\begin_layout Standard
+Cuando llega un mensaje, accept desbloquea la ejecución, devolviendo un
+ objeto socket que representa la conexión del cliente y una tupla que contiene
+ el host y puerto de dicha conexión.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+socket_s.listen(10) 
+\end_layout
+
+\begin_layout Plain Layout
+
+socket_c, (host_c, puerto_c) = socket_s.accept()
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Una vez que tenemos este objeto socket podemos comunicarnos con el cliente
+ a través suyo, mediante los métodos recv y send (o recvfrom y sendfrom
+ en UDP) que permiten recibir o enviar mensajes respectivamente.
+ El método send toma como parámetros los datos a enviar, mientras que el
+ método recv toma como parámetro el número máximo de bytes a aceptar.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+recibido = socket_c.recv(1024) 
+\end_layout
+
+\begin_layout Plain Layout
+
+print "Recibido: ", recibido 
+\end_layout
+
+\begin_layout Plain Layout
+
+socket_c.send(recibido) 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Una vez que hemos terminado de trabajar con el socket, lo cerramos con el
+ método close.
+\end_layout
+
+\begin_layout Subsection
+Socket en el cliente
+\end_layout
+
+\begin_layout Standard
+Crear un cliente es aún más sencillo.
+ Solo tenemos que crear el objeto socket, utilizar el método connect para
+ conectarnos al servidor y utilizar los métodos send y recv que vimos anteriorme
+nte.
+ El argumento de connect es una tupla con host y puerto, exactamente igual
+ que bind.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+socket_c = socket.socket() 
+\end_layout
+
+\begin_layout Plain Layout
+
+socket_c.connect(("localhost", 9999)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+socket_c.send("hola") 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Ejemplos
+\end_layout
+
+\begin_layout Subsection
+Ejemplo 1
+\end_layout
+
+\begin_layout Standard
+En este ejemplo el cliente manda al servidor cualquier mensaje que escriba
+ el usuario y el servidor no hace más que repetir el mensaje recibido.
+ La ejecución termina cuando el usuario escribe “quit”.
+\end_layout
+
+\begin_layout Standard
+Este sería el código del script servidor:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+import socket 
+\end_layout
+
+\begin_layout Plain Layout
+
+s = socket.socket() 
+\end_layout
+
+\begin_layout Plain Layout
+
+s.bind(("localhost", 9999)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+s.listen(1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+sc, addr = s.accept() 
+\end_layout
+
+\begin_layout Plain Layout
+
+while True:
+\end_layout
+
+\begin_layout Plain Layout
+
+    recibido = sc.recv(1024) 
+\end_layout
+
+\begin_layout Plain Layout
+
+    if recibido == "quit": 
+\end_layout
+
+\begin_layout Plain Layout
+
+        break 
+\end_layout
+
+\begin_layout Plain Layout
+
+    print "Recibido:", recibido 
+\end_layout
+
+\begin_layout Plain Layout
+
+    sc.send(recibido) 
+\end_layout
+
+\begin_layout Plain Layout
+
+print "adios" 
+\end_layout
+
+\begin_layout Plain Layout
+
+sc.close() 
+\end_layout
+
+\begin_layout Plain Layout
+
+s.close() 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Y a continuación tenemos el del script cliente:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+import socket
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+s = socket.socket()  
+\end_layout
+
+\begin_layout Plain Layout
+
+s.connect(("localhost", 9999))
+\end_layout
+
+\begin_layout Plain Layout
+
+while True:
+\end_layout
+
+\begin_layout Plain Layout
+
+       mensaje = raw_input("> ")
+\end_layout
+
+\begin_layout Plain Layout
+
+       s.send(mensaje)
+\end_layout
+
+\begin_layout Plain Layout
+
+       if mensaje == "quit":
+\end_layout
+
+\begin_layout Plain Layout
+
+           break
+\end_layout
+
+\begin_layout Plain Layout
+
+print "adios"
+\end_layout
+
+\begin_layout Plain Layout
+
+s.close() 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Ejemplo 2
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+## python socket chat example
+\end_layout
+
+\begin_layout Plain Layout
+
+## licence: GPL v3 
+\end_layout
+
+\begin_layout Plain Layout
+
+#server import socket import threading import time
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+SIZE = 4
+\end_layout
+
+\begin_layout Plain Layout
+
+soc = socket.socket(socket.AF_INET,socket.SOCK_STREAM) 
+\end_layout
+
+\begin_layout Plain Layout
+
+soc.bind(('127.0.0.1',5432)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+soc.listen(5)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+class CThread(threading.Thread):
+\end_layout
+
+\begin_layout Plain Layout
+
+    def __init__(self,c):
+\end_layout
+
+\begin_layout Plain Layout
+
+        threading.Thread.__init__(self)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.conn = c
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.stopIt=False
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   def mrecv(self):
+\end_layout
+
+\begin_layout Plain Layout
+
+        data = self.conn.recv(SIZE)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.conn.send('OK')
+\end_layout
+
+\begin_layout Plain Layout
+
+        msg = self.conn.recv(int(data))
+\end_layout
+
+\begin_layout Plain Layout
+
+        return msg
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   def run(self):
+\end_layout
+
+\begin_layout Plain Layout
+
+        while not self.stopIt:
+\end_layout
+
+\begin_layout Plain Layout
+
+            msg = self.mrecv()
+\end_layout
+
+\begin_layout Plain Layout
+
+            print 'recieved->  ',msg
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def setConn(con1,con2):
+\end_layout
+
+\begin_layout Plain Layout
+
+    dict={}
+\end_layout
+
+\begin_layout Plain Layout
+
+    state = con1.recv(9)
+\end_layout
+
+\begin_layout Plain Layout
+
+    con2.recv(9)
+\end_layout
+
+\begin_layout Plain Layout
+
+   if state =='WILL RECV':
+\end_layout
+
+\begin_layout Plain Layout
+
+       dict['send'] = con1 # server will send data to reciever
+\end_layout
+
+\begin_layout Plain Layout
+
+       dict['recv'] = con2     
+\end_layout
+
+\begin_layout Plain Layout
+
+   else:
+\end_layout
+
+\begin_layout Plain Layout
+
+       dict['recv'] = con1 # server will recieve data from sender
+\end_layout
+
+\begin_layout Plain Layout
+
+       dict['send'] = con2
+\end_layout
+
+\begin_layout Plain Layout
+
+   return dict
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def msend(conn,msg):
+\end_layout
+
+\begin_layout Plain Layout
+
+    if len(msg)<=999 and len(msg)>0:
+\end_layout
+
+\begin_layout Plain Layout
+
+        conn.send(str(len(msg)))
+\end_layout
+
+\begin_layout Plain Layout
+
+        if conn.recv(2) == 'OK':
+\end_layout
+
+\begin_layout Plain Layout
+
+            conn.send(msg)
+\end_layout
+
+\begin_layout Plain Layout
+
+    else:
+\end_layout
+
+\begin_layout Plain Layout
+
+	    conn.send(str(999))
+\end_layout
+
+\begin_layout Plain Layout
+
+       if conn.recv(2) == 'OK':
+\end_layout
+
+\begin_layout Plain Layout
+
+            conn.send(msg[:999])
+\end_layout
+
+\begin_layout Plain Layout
+
+            msend(conn,msg[1000:]) # calling recursive
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+(c1,a1) = soc.accept()
+\end_layout
+
+\begin_layout Plain Layout
+
+(c2,a2) = soc.accept()
+\end_layout
+
+\begin_layout Plain Layout
+
+dict = setConn(c1,c2)
+\end_layout
+
+\begin_layout Plain Layout
+
+thr = CThread(dict['recv'])
+\end_layout
+
+\begin_layout Plain Layout
+
+thr.start()
+\end_layout
+
+\begin_layout Plain Layout
+
+try:
+\end_layout
+
+\begin_layout Plain Layout
+
+    while 1:
+\end_layout
+
+\begin_layout Plain Layout
+
+   	msend(dict['send'],raw_input())
+\end_layout
+
+\begin_layout Plain Layout
+
+except:
+\end_layout
+
+\begin_layout Plain Layout
+
+  print 'closing'
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+thr.stopIt=True
+\end_layout
+
+\begin_layout Plain Layout
+
+msend(dict['send'],'bye!!!')# for stoping the thread
+\end_layout
+
+\begin_layout Plain Layout
+
+thr.conn.close()
+\end_layout
+
+\begin_layout Plain Layout
+
+soc.close()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#client 
+\end_layout
+
+\begin_layout Plain Layout
+
+import socket
+\end_layout
+
+\begin_layout Plain Layout
+
+import threading
+\end_layout
+
+\begin_layout Plain Layout
+
+SIZE =4
+\end_layout
+
+\begin_layout Plain Layout
+
+class client(threading.Thread):
+\end_layout
+
+\begin_layout Plain Layout
+
+    def __init__(self,c):
+\end_layout
+
+\begin_layout Plain Layout
+
+        threading.Thread.__init__(self)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.conn = c
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.stopIt = False
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   def mrecv(self):
+\end_layout
+
+\begin_layout Plain Layout
+
+        data = self.conn.recv(SIZE)
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.conn.send('OK')
+\end_layout
+
+\begin_layout Plain Layout
+
+        return self.conn.recv(int(data))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   def run(self):
+\end_layout
+
+\begin_layout Plain Layout
+
+        while not self.stopIt:
+\end_layout
+
+\begin_layout Plain Layout
+
+            msg = self.mrecv()
+\end_layout
+
+\begin_layout Plain Layout
+
+            print 'recieved-> ',msg
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+soc1 = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+\end_layout
+
+\begin_layout Plain Layout
+
+soc1.connect(('127.0.0.1',5432)) soc1.send('WILL SEND')
+\end_layout
+
+\begin_layout Plain Layout
+
+# telling server we will send data from here
+\end_layout
+
+\begin_layout Plain Layout
+
+soc2 = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+\end_layout
+
+\begin_layout Plain Layout
+
+soc2.connect(('127.0.0.1',5432))
+\end_layout
+
+\begin_layout Plain Layout
+
+soc2.send('WILL RECV') # telling server we will recieve data from here
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def msend(conn,msg):     
+\end_layout
+
+\begin_layout Plain Layout
+
+	if len(msg)<=999 and len(msg)>0:
+\end_layout
+
+\begin_layout Plain Layout
+
+        conn.send(str(len(msg)))
+\end_layout
+
+\begin_layout Plain Layout
+
+        if conn.recv(2) == 'OK':
+\end_layout
+
+\begin_layout Plain Layout
+
+            conn.send(msg)
+\end_layout
+
+\begin_layout Plain Layout
+
+    else:
+\end_layout
+
+\begin_layout Plain Layout
+
+        conn.send(str(999))
+\end_layout
+
+\begin_layout Plain Layout
+
+        if conn.recv(2) == 'OK':
+\end_layout
+
+\begin_layout Plain Layout
+
+            conn.send(msg[:999])
+\end_layout
+
+\begin_layout Plain Layout
+
+            msend(conn,msg[1000:]) # calling recursive
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+thr = client(soc2)
+\end_layout
+
+\begin_layout Plain Layout
+
+thr.start() 
+\end_layout
+
+\begin_layout Plain Layout
+
+try:
+\end_layout
+
+\begin_layout Plain Layout
+
+    while 1:
+\end_layout
+
+\begin_layout Plain Layout
+
+        msend(soc1,raw_input())
+\end_layout
+
+\begin_layout Plain Layout
+
+except:
+\end_layout
+
+\begin_layout Plain Layout
+
+    print 'closing'
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+thr.stopIt=True
+\end_layout
+
+\begin_layout Plain Layout
+
+msend(soc1,'bye!!') # for stoping the thread
+\end_layout
+
+\begin_layout Plain Layout
+
+thr.conn.close()
+\end_layout
+
+\begin_layout Plain Layout
+
+soc1.close()
+\end_layout
+
+\begin_layout Plain Layout
+
+soc2.close()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Bibliografia
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://docs.python.org/3.2/library/socket.html
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://docs.python.org/3.1/howto/sockets.html
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://ankurs.com/2009/07/a-simple-python-socket-chat-example/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
