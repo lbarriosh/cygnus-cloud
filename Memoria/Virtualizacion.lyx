@@ -1133,5 +1133,95 @@ Route : En este modo el switch virtual se conecta a la LAN física del anfitrió
  reglas de enrutamiento.
 \end_layout
 
+\begin_layout Section
+Xen frente a KVM
+\end_layout
+
+\begin_layout Standard
+En este apartado realizaremos una comparación entre Xen y KVM, extrayendo
+ los beneficios y defectos de cada uno de ellos y justificando las razones
+ que nos han llevado a decantarnos por KVM.
+\end_layout
+
+\begin_layout Subsection
+Integración en el kernel
+\end_layout
+
+\begin_layout Standard
+KVM es el único hipervisor de los dos que a día de hoy se encuentra completament
+e integrado en el kernel de linux.
+ Por ello no es necesario realizar ninguna acción especial para poder utilizar
+ todos los servicios que KVM nos ofrece.
+ KVM utiliza linux para todo, desde la gestión de dispositivos y el intercambio
+ de páginas de memoria hasta el uso de algoritmos para optimizar al máximo
+ la gestión de los nucleos y el control de virtualización de todo el sistema.
+\end_layout
+
+\begin_layout Standard
+Sin embargo, Xen todavía no ha sido aceptado completamente en el nucleo
+ de linux, no pudiendo aprovechar las tecnologías disponibles en linux,
+ tales como los planificadores CFS, la paginación o la sobrexplotación de
+ memoria con KSM.
+ 
+\end_layout
+
+\begin_layout Standard
+Además todavía es necesario la instalación de Xen desde cero, con la creación
+ de una maquina virtual especial llamada Dom0, que se encargue de la gestión
+ tanto del sistema como de todo el conjunto de dominios que cuelguen de
+ él.
+\end_layout
+
+\begin_layout Standard
+En resumen, el hecho de que KVM se encuentre integrado en el kernel de linux
+ le confiere una serie de beneficios contra los que Xen no puede enfrentarse
+ y necesita parchear de forma externa.
+\end_layout
+
+\begin_layout Subsection
+Rendimiento
+\end_layout
+
+\begin_layout Standard
+Con respecto al rendimiento KVM y Xen ofrecen beneficios en aspectos muy
+ diferentes, lo que hace que en este punto no pueda considerarse uno mejor
+ que el otro en todas las tareas posibles, haciendo que sea más indicado
+ uno u otro dependiendo sobre que puntos se va a basar el sistema.
+ Así las máquinas virtuales de Xen presentan un mejor rendimiento con aplicacion
+es de cálculo que las máquinas virtuales de KVM, mientras que para las pruebas
+ de escritura en disco, el rendimiento de las máquinas virtuales de KVM
+ es mejor que el de las máquinas virtuales de Xen.
+ 
+\end_layout
+
+\begin_layout Standard
+Para llegar a estas conclusiones se realizaron pruebas de rendimiento usando
+ los benchmarks de Linpack, el cual se utiliza para conocer el rendimiento
+ del sistema en cuanto a cálculo, e IOZone, el cual se utiliza para conocer
+ la medida de rendimiento del disco en los procesos de lectura y escritura.
+ En el primero se experimentó una perdida del 1% del rendimiento con respecto
+ al anfitrión para el hipervisor de Xen, mientras que las perdidas en el
+ caso de KVM alcanzaron el 36%.
+\end_layout
+
+\begin_layout Standard
+Con respecto a la segunda prueba, el hipervisor de KVM presento solo un
+ 3.6% de perdida de rendimiento para escrituras en disco frente a una perdida
+ del 42.9% experimentada por Xen.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+No se si estos últimos 2 parrafos formarán parte de la versión final.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
