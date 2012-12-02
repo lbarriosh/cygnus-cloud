@@ -1186,7 +1186,7 @@ Rendimiento
 Con respecto al rendimiento KVM y Xen ofrecen beneficios en aspectos muy
  diferentes, lo que hace que en este punto no pueda considerarse uno mejor
  que el otro en todas las tareas posibles, haciendo que sea más indicado
- uno u otro dependiendo sobre que puntos se va a basar el sistema.
+ uno u otro dependiendo de que puntos se va a basar el sistema.
  Así las máquinas virtuales de Xen presentan un mejor rendimiento con aplicacion
 es de cálculo que las máquinas virtuales de KVM, mientras que para las pruebas
  de escritura en disco, el rendimiento de las máquinas virtuales de KVM
@@ -1221,6 +1221,56 @@ No se si estos últimos 2 parrafos formarán parte de la versión final.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Soporte técnico
+\end_layout
+
+\begin_layout Standard
+Gracias a la integración en el kernel, así como por ser un sistema más actual
+ y en crecimiento, KVM ofrece una mayor atención y soporte técnico a todos
+ los usuarios que lo utilizan.
+ Esto hace que en la actualidad la mayoría de la empresas opten por utilizar
+ KVM frente a Xen.
+ Por extensión, la preferencia de las empresas por el uso de KVM otorgan
+ al usuario una mayor compatibilidad de su aplicación con otras posibles
+ herramientas, las cuales también utilizan este soporte.
+ Por otro lado, la adaptación de KVM al sistema de la gran empresa de mantenimie
+nto de linux Red hat, hace que KVM disponga de una gran cantidad de información
+ de soporte, además de encontrarse actualizado y adaptado a las últimas
+ versiones de linux, algo que Xen debe hacer de manera externa no proporcionando
+ siempre unos resultados óptimos.
+\end_layout
+
+\begin_layout Subsection
+Tipo de virtualización
+\end_layout
+
+\begin_layout Standard
+Xen utiliza paravirtualización.
+ En este tipo de virtualización se introduce una capa de abstracción intermedia
+ entre el hardware y el sistema operativo que actua como un árbitro que
+ controla el acceso al hardware de las máquinas virtuales.
+ Sin embargo, sólo se encarga de algunas de las instrucciones, el resto
+ es ejecutado directamente por el hardware en nombre de los sistemas.
+ La ventaja principal es que las operaciones no se degradan, y los sistemas
+ se ejecutan a una velocidad cercana a la nativa.
+ El inconveniente es que los núcleos dde los sistemas operativos que se
+ desean utilizar necesitan ser adaptados.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otro lado en el caso de KVM usa una virtualización completa unida a
+ linux mediante una modificación de la aplicación Qemu.
+ De esta forma KVM dispone de un módulo en el nucleo de linux que permite
+ aprovechar las instrucciones del procesador dedicadas a la virtualización(Intel
+-VT y AMD-V).
+ Esto permite usar un sistema ligero, rapido y con todos los recursos disponible
+s.
+ La contrapartida es que KVM trabaja con procesadores i386 y AMD64 y solo
+ aquellos lo suficientemente modernos como para aceptar estas instrucciones.
 \end_layout
 
 \end_body
