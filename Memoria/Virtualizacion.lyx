@@ -77,21 +77,22 @@ s hay y cuales han sido las seleccionadas para el proyecto.
 
 \begin_layout Standard
 La virtualización nos permite tener varios sistemas en la misma máquina,
- aislados unos de otros, y gracias a que esos sistemas pueden estar en un
- único archivo, podríamos cambiar alguno de ellos a otra máquina o hacer
- una copia de seguridad de forma rápida y sencilla, solo habría que copiar
- ese archivo al nuevo servidor o a un dispositivo de almacenamiento.
+ aislados unos de otros.
+ Gracias a que esos sistemas pueden estar en un único archivo, podríamos
+ cambiar alguno de ellos a otra máquina o hacer una copia de seguridad de
+ forma rápida y sencilla, solo habría que copiar ese archivo al nuevo servidor
+ o a un dispositivo de almacenamiento.
  Para conseguir esto, lo que tenemos es un hipervisor que nos permite gestionar
- esos recursos y asignarselos a las máquinas según los van necesitando.
- Este termino es un evolución de otro que se usa para referirse al 
+ esos recursos y asignárselos a las máquinas según los van necesitando.
+ Este termino es una evolución de otro que se usa para referirse al 
 \emph on
 kernel
 \emph default
  de los sistemas operativos, el supervisor.
  Esta gestión puede ser, en el caso de dispositivos de almacenamiento, la
  división de ese espacio según sea asignado por el usuario o, en el caso
- de dispositivos de tratamiento de dato como puede ser el procesador, asignadole
- un tiempo determinado de ejecución a cada sistema virtualizado.
+ de dispositivos de tratamiento de datos, como puede ser el procesador,
+ asignándole un tiempo determinado de ejecución a cada sistema virtualizado.
 \end_layout
 
 \begin_layout Section
@@ -102,6 +103,19 @@ Historia
 La virtualización, aunque pueda parecerlo, no es nueva, ya se usaba en la
  década de los 1960, antes incluso de los ordenadores personal.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Quitaría lo de aunque pueda parecerlo,no es nueva
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -119,7 +133,7 @@ VM
 Virtual Machine
 \emph default
 , Máquina Virtual), que permitía a varios usuarios usar una misma máquina
- a la vez, dando la apariencia de que eran ordenadores personales.
+ a la vez, dando la apariencia de que eran ordenadores personales independientes.
  Este desarrolló continuó en los dando soporte a los sistemas operativos
  que ya tenía IBM para que pudiesen ejecutarse sobre 
 \emph on
@@ -140,6 +154,21 @@ DOS/VSE
  e incluso el sistema 
 \emph on
 Unix.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Redefiniría lo de una misma máquina a la vez.
+ Pondría algo como permitía a varios usuarios trabajar sobre un mismo puesto
+ físico, dando la apariencia de que eran ordenadores personales independientes.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -268,7 +297,7 @@ En este caso en el sistema guest, el hardware de almacenamiento, como puede
 host
 \emph default
 , en el caso de que sean reales, la máquina virtual, en colaboración con
- el sistema host, le proporcionana al sistema virtualizado acceso a los
+ el sistema host, le proporcionará al sistema virtualizado acceso a los
  mismos.
  El hardware que no sea posible virtualizar, como pueden ser una cámara
  o un micrófono, debe usar el hardware real, para ello la maquina virtual,
@@ -285,7 +314,7 @@ host
 
 \begin_layout Standard
 El mayor inconveniente de este esquema es que, como debe haber un sistema
- operativo ejecutándose, consumedo recursos de la máquina.
+ operativo ejecutándose, consumido recursos de la máquina.
 \end_layout
 
 \begin_layout Subsection
@@ -371,7 +400,7 @@ Mac OSX
 \end_layout
 
 \begin_layout Standard
-Aunque algunos programas de virtualización que esando esta técnica han conseguid
+Aunque algunos programas de virtualización que usando esta técnica han conseguid
 o ejecutar sistemas operativos sin modificar, para ello lo que hacen es,
  en tiempo de ejecución, detectar las instrucciones problemáticas, las que
  requieren de privilegios de nivel 0, y parchearlas, para que no haya problemas
@@ -560,9 +589,9 @@ Interrupciones
 \begin_layout Standard
 Una interrupción se puede ver como una llama de atención del hardware e
  indica que ha ocurrido algo, un timer ha finalizado su cuenta, se ha pulsado
- un botón del raton\SpecialChar \ldots{}
+ un botón del ratón\SpecialChar \ldots{}
  Aunque una interrupción requiere de una acción inmediata,
- lo que hace Xen es interceptarla y planificarla, asi cuando el 
+ lo que hace Xen es interceptarla y planificarla, así cuando el 
 \emph on
 guest
 \emph default
@@ -584,7 +613,7 @@ CPU
 La CPU es el recursos mas utilizado, ya que es el que ejecuta los programas.
  Xen trata a los distintos dominios como un sistema operativo trataría a
  los programas, es decir, tiene un planificador en el que a cada dominio
- les deja cierto tiempo para que puedan hacer sus calculos, también debe
+ les deja cierto tiempo para que puedan hacer sus cálculos, también debe
  garantizar que a todos los dominios les deje usar la CPU.
 \end_layout
 
@@ -603,12 +632,12 @@ El hipervisor, como gestor de los recursos de la máquina, tiene acceso a
 \end_layout
 
 \begin_layout Standard
-Como la asociación entre memoría física y virtual se hace atraves de las
+Como la asociación entre memoria física y virtual se hace a través de las
  tablas de página, que son gestionadas por Xen, le permite tener un control
  de que dominio accede a que partes de la memoria, ya que puede denegar
  el acceso a una pagina si no le pertenece al dominio que se la ha pedido.
  Este permite aislamiento en la memoria, es decir, un dominio solo puede
- acceder a la memoría que le ha asignado Xen y le protege de que otro dominio
+ acceder a la memoria que le ha asignado Xen y le protege de que otro dominio
  modifique la memoria del primero.
 \end_layout
 
@@ -619,8 +648,8 @@ Dispositivos de entrada/salida
 \begin_layout Standard
 Ningún domU tiene gestión sobre los dispositivos, de esto se encarga el
  hipervisor con ayuda de dom0.
- Xen maneja los disposivos de E/S mediante dispositivos virtuales, que son
- enlaces entre las interfaces de los domUs y el dispositivo en el dom0.
+ Xen maneja los dispositivos de E/S mediante dispositivos virtuales, que
+ son enlaces entre las interfaces de los domUs y el dispositivo en el dom0.
  
 \end_layout
 
@@ -654,7 +683,7 @@ Son dispositivos de almacenamiento en los que solo se puede leer y escribir
 \end_layout
 
 \begin_layout Standard
-Xen gestiona los dispositivos de bloque casi como los dispotivos de red.
+Xen gestiona los dispositivos de bloque casi como los dispositivos de red.
  El hipervisor exporta el dispositivo virtual de bloques al domU y proporciona
  al dom0 la capacidad de mapear la funcionalidad del dispositivo real en
  el virtual.
@@ -668,7 +697,7 @@ KVM
 KVM (Kernel-based Virtual Machine) es un hipervisor tipo 1 que proporciona
  una solución completa de virtualización para el sistema operativo Linux
  en arquitecturas x86 que cuenten con las extensiones de virtualización
- Intel VT/AMD-V.
+ Intel VT o AMD-V.
 \end_layout
 
 \begin_layout Standard
@@ -680,7 +709,7 @@ En realidad, el termino más acertado sobre KVM se refiere al nivel del kernel
 
 \begin_layout Standard
 Usando KVM, se puede ejecutar múltiples máquinas virtuales sin necesidad
- de modificar las imagenes de linux o de windows.
+ de modificar las imágenes de linux o de windows.
  Cada máquina virtual tiene su propio hardware de virtualización privado
  : su propia tarjeta de red, su disco, su tarjeta gráfica etc.
 \end_layout
@@ -695,38 +724,8 @@ El componente KVM para el kernel viene incluido en linux desde la versión
 bare-metal" (tipo 1) capaz de ejecutar varias maquinas virtuales aisladas.
  KVM hospeda las maquinas virtuales como procesos, por lo que cada maquina
  virtual puede beneficiarse de todas las características del kernel de Linux,
- incluyendo todas aquellas referentes al hardware, seguridad, almacenamiento,
- etc.
-\end_layout
-
-\begin_layout Standard
-Las máquinas virtuales, así como su almacenamiento y redes virtuales pueden
- ser dirigidas por parte de libvirt y de la herramienta QEMU.
- Libvirt es una librería que proporciona una API a los usuarios para dirigir
- sus máquinas virtuales, basadas en diferentes soluciones de virtualización,
- tales como KVM y Xen.
- Esta cuenta tanto con una interfaz gráfica de usuario, como con una herramienta
- para linea de comandos.
-\end_layout
-
-\begin_layout Standard
-Actualmente existen muchos sistemas de virtualización tales como Xen, Bochs,
- UML, Linux VServer, y coLinux, sin embargo, kvm está adquiriendo una mayor
- presencia en el mercado.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Tengo que reorganizar esta información.
-\end_layout
-
-\end_inset
-
-
+ incluyendo todas aquellas referentes al hardware, la seguridad, el almacenamien
+to etc.
 \end_layout
 
 \begin_layout Subsection
@@ -735,13 +734,13 @@ Breve historia de KVM
 
 \begin_layout Standard
 KVM se inició como un proyecto Open Source por la empresa israelí Qumranet.
- Su principal objetivo era la de dar una infraestuctura de escritorio virtual
+ Su principal objetivo era la de dar una infraestructura de escritorio virtual
  (VDI) en entornos windows.
 \end_layout
 
 \begin_layout Standard
 En el año 2007, KVM se integró como un módulo en la rama principal del kernel
- de Linux, convirtiendose desde entonces en el hipervisor de virtualización
+ de Linux, convirtiéndose desde entonces en el hipervisor de virtualización
  oficial para linux.
 \end_layout
 
@@ -753,9 +752,16 @@ En 2008, Red Hat adquiría Qumranet y con RHEL 6(Red hat entreprise linux)
 \end_layout
 
 \begin_layout Standard
-Poco después IBM también apostó por KVM, contribuyendo en areas como la
+Poco después IBM también apostó por KVM, contribuyendo en áreas como la
  gestión de memoria, mejoras del rendimiento y el subsistema de entrada/salida
  virtual.
+\end_layout
+
+\begin_layout Standard
+Actualmente existen muchos sistemas de virtualización tales como Xen, Bochs,
+ UML, Linux VServer, y coLinux, sin embargo, KVM está adquiriendo una mayor
+ presencia en el mercado.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -771,12 +777,13 @@ Las principales características de KVM son:
 \series bold
 Seguridad 
 \series default
-: KVM se aprovecha del modelo de seguridad estandar de Linux: SELinux/AppArmor.
+: KVM se aprovecha de los modelos de seguridad estándar de Linux: SELinux
+ y AppArmor.
  Estos modelos proporcionan el aislamiento y el control de recursos necesarios.
  El proyecto SVirt, un esfuerzo de la comunidad para integrar el control
  de acceso obligatorio (MAC) con KVM, esta construido sobre SELinux y proporcion
 a una infraestructura que permite al administrador definir políticas de
- aislamiento para las maquinas virtuales.
+ aislamiento para las máquinas virtuales.
  Básicamente SVirt se asegura que los recursos de una maquina virtual no
  puedan ser accedidos por otro proceso o maquina virtual.
 \end_layout
@@ -786,15 +793,15 @@ a una infraestructura que permite al administrador definir políticas de
 \series bold
 Gestión de memoria : 
 \series default
-La memoria utilizada por una maquina virtual se gestionará de la misma forma
- que la de otro proceso, podrá ser guardada en disco (swapped), utilizada
- en paginas grandes (large pages).
- El soporte NUMA de Linux, permite también el uso a las maquinas virtuales
- de grandes cantidades de memoria.
+La memoria utilizada por una máquina virtual se gestionará de la misma forma
+ que la de otro proceso, podrá ser guardada en disco (swapped) y utilizada
+ en páginas grandes (large pages).
+ El soporte NUMA de Linux, permite también el uso por parte de las máquinas
+ virtuales de grandes cantidades de memoria.
  Además, KVM soporta las últimas características de virtualización en memoria
  proporcionadas por fabricantes como EPT(Extended Page Table de Intel) o
  RVI (Rapid Virtualization Indexing de AMD).
- La compartición de páginas de memoria de lleva a cabo por medio de la herramien
+ La compartición de páginas de memoria se lleva a cabo por medio de la herramien
 ta integrada en linux KSM (Kernel Same-page Merging).
 \end_layout
 
@@ -809,12 +816,20 @@ Almacenamiento
  o SAN (iSCSI y Fibre Channel).
  KVM también soporta el almacenamiento en sistemas de ficheros distribuidos
  tales como GFS2, OCFS o ClusterFS.
- Las imagenes de disco soportan aprovisionamiento bajo demanda evitando
- tener que reservar todo el espacio inicialmente.
+ 
+\begin_inset Newline newline
+\end_inset
+
+Las imágenes de disco utilizadas, soportan aprovisionamiento bajo demanda
+ evitando tener que reservar todo el espacio inicialmente.
  El formato nativo de KVM es QCOW2, el cual permite la realización de compresión
  y cifrado.
- Con respecto al almacenamiento podemos destacar dos tipos de almacenamiento
- que pueden ser gestionados por KVM:
+ 
+\begin_inset Newline newline
+\end_inset
+
+Con respecto al tipo de almacenamiento podemos destacar dos clases que pueden
+ ser gestionadas por KVM:
 \end_layout
 
 \begin_deeper
@@ -846,12 +861,12 @@ Almacenamiento en red
 \series bold
 Migración en vivo : 
 \series default
-KVM permite migraciones en caliente (live migrations), estas migraciones
- permiten mover una máquina virtual en ejecución entre servidores físicos
- (hipervisores) sin intervención del servicio.
+KVM permite migraciones en caliente (live migrations).
+ Estas migraciones permiten mover una máquina virtual en ejecución entre
+ servidores físicos (hipervisores) sin intervención del servicio.
  Estas migraciones son trasparentes al usuario ya que la maquina permanece
  encendida, las conexiones de red activas y las aplicaciones en ejecución
- mientras que la máquina se realoja en otro servidor físico.
+ mientras la máquina se realoja en otro servidor físico.
 \end_layout
 
 \begin_layout Itemize
@@ -863,8 +878,8 @@ KVM soporta virtualización híbrida.
  En los sistemas operativos invitados hay que instalar drivers paravirtualizados
  que permiten utilizar una interfaz de entrada/salida para dispositivos
  de bloques y dispositivos de red.
- El hipervisor KVM utiliza el estandar VirtIO.
- VirtIO es un estandar de drivers paravirtualizados desarrollado por IBM
+ El hipervisor KVM utiliza el estándar VirtIO.
+ VirtIO es un estándar de drivers paravirtualizados desarrollado por IBM
  y Red Hat con la ayuda de la comunidad Linux.
  El objetivo principal de estos drivers es conseguir una mayor interoperabilidad
  con los invitados.
@@ -877,9 +892,9 @@ Rendimiento y escalabilidad :
 \series default
 KVM posee los mismos rasgos de rendimiento y escalabilidad que caracterizan
  a Linux.
- KVm soporta maquinas virtuales de hasta 16 CPUs virtuales y 256 GB de Ram,
- habiendose conseguido ratios de hasta 600 maquinas virtuales en un solo
- servidor físico.
+ Por ello soporta máquinas virtuales de hasta 16 CPUs virtuales y 256 GB
+ de Ram, pudiéndose conseguir ratios de hasta 600 máquinas virtuales en
+ un solo servidor físico.
 \end_layout
 
 \begin_layout Subsection
@@ -890,8 +905,8 @@ Requisitos Hardware
 KVM está diseñado en torno a las características de virtualización de hardware
  incluidas en los ordenadores AMD (AMD-V) e Intel (VT-x).
  Es compatible con funciones de virtualización de chipsets y dispositivos
- PCI, como la E/S de la unidad de memoria (IOMMU) y la la E/S del sistema
- simple de virtualización root (SR-IOV)).
+ PCI, como la E/S de la unidad de memoria (IOMMU) y la E/S del sistema simple
+ de virtualización root (SR-IOV)).
 \end_layout
 
 \begin_layout Standard
@@ -902,8 +917,8 @@ ción hardware o si la misma no se encuentra activada en la bios.
 \begin_layout Standard
 En cuanto al rendimiento, es necesario tener en cuenta que el servidor deberá
  ser capaz de afrontar el incremento de memoria RAM que supone la conexión
- de cada huesped, y tener al menos un nucleo del procesador o un hilo para
- cada huesped.
+ de cada huésped, y tener al menos un núcleo del procesador o un hilo para
+ cada uno.
 \end_layout
 
 \begin_layout Subsection
@@ -913,7 +928,8 @@ El paquete KVM
 \begin_layout Standard
 El paquete de KVM contiene el programa qemu-kvm, el cual se encarga de realizar
  la emulación.
- 
+ Este programa no es más que una modificación de la aplicación QEMU también
+ integrada en linux.
 \end_layout
 
 \begin_layout Standard
@@ -925,14 +941,14 @@ n a nivel de depuración(kvm-sat), componentes de firmware, archivos de correlac
 \end_layout
 
 \begin_layout Standard
-Originariamente, el paquete de kvm también contaba con los módulos del kernel
- de kvm.
- Sin embargo, en la actuaalidad estos módulos se encuentran ya incluidos
+Originariamente, el paquete de KVM también contaba con los módulos del kernel
+ de KVM.
+ Sin embargo, en la actualidad estos módulos se encuentran ya incluidos
  en el kernel y el paquete solo proporciona los componentes de usuario.
 \end_layout
 
 \begin_layout Standard
-Además de las herramientas incluidas en el paquete de kvm es recomendable
+Además de las herramientas incluidas en el paquete de KVM es recomendable
  la instalación y uso de otras herramientas secundarias que facilitan la
  gestión del sistema.
  Todas estas herramientas son proporcionadas por los paquetes que llevan
@@ -941,15 +957,15 @@ Además de las herramientas incluidas en el paquete de kvm es recomendable
 \end_layout
 
 \begin_layout Itemize
-Libvirt: este paquete incluye la herramienta libvirt que permite creación,
- eliminación y gestión en general de las diferentes maquinas virtuales.
+Libvirt: este paquete incluye la herramienta libvirt que permite la creación,
+ eliminación y gestión en general de las diferentes máquinas virtuales.
  Además en este paquete también se incluyen herramientas de gestión de redes
  virtuales y almacenamiento.
 \end_layout
 
 \begin_layout Itemize
 Virt-manager (Virtual Machine Manager): Incluye una herramienta gráfica
- de administración de los huespedes de las máquinas virtuales.
+ de administración de los huéspedes de las máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
@@ -959,7 +975,7 @@ Vm-install: configura una nueva maquina virtual e instala un sistema operativo
 
 \begin_layout Itemize
 Virt-viewer: Incluye una herramienta que permite interactuar con la virtualizaci
-ón de un determinado huesped.
+ón de un determinado huésped.
  Utiliza libvirt y pretende ser un reemplazo para los clientes de VNC y
  SPICE.
 \end_layout
@@ -969,11 +985,11 @@ Ventajas de KVM
 \end_layout
 
 \begin_layout Standard
-La virtualización con kvm ofrece las siguientes ventajas:
+La virtualización con KVM ofrece las siguientes ventajas:
 \end_layout
 
 \begin_layout Itemize
-Esta diseñado para procesadores x86, centrando en un virtualizacion total.
+Esta diseñada para procesadores x86, centrada en una virtualización total.
 \end_layout
 
 \begin_layout Itemize
@@ -981,7 +997,7 @@ No se modifica el kernel de GNU/Linux.
 \end_layout
 
 \begin_layout Itemize
-Está basado en un módulo que no necesita ninguna clase de parches.
+Está basada en un módulo que no necesita ninguna clase de parches.
 \end_layout
 
 \begin_layout Itemize
@@ -989,11 +1005,11 @@ Contiene soporte para la paravirtualización.
 \end_layout
 
 \begin_layout Itemize
-Funciona en todo tipo de maquinas, servidores, escritorios o laptop.
+Funciona en todo tipo de máquinas, servidores, escritorios o laptop actuales.
 \end_layout
 
 \begin_layout Itemize
-Permite una migración en caliente de las maquinas virtuales.
+Permite una migración en caliente de las máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
@@ -1010,7 +1026,7 @@ Maneja 3 tipos de configuración de red, Bridge, Route y NAT.
 \end_layout
 
 \begin_layout Itemize
-Permite ejecutar multiples máquinas virtuales, cada una con su propia instancia.
+Permite ejecutar múltiples máquinas virtuales, cada una con su propia instancia.
 \end_layout
 
 \begin_layout Subsection
@@ -1018,16 +1034,18 @@ Desventajas de KVM
 \end_layout
 
 \begin_layout Standard
-La virtualización con KVM ofrece las siguientes desventajas:
+La virtualización con KVM ofrece también las siguientes desventajas:
 \end_layout
 
 \begin_layout Itemize
 Es un proyecto aun muy joven.
+ la reciente aparición de KVM en el mercado hace que no disponga de toda
+ las experiencia presente en otros modelos de virtualización.
 \end_layout
 
 \begin_layout Itemize
-No hay herramientas sofisticadas para la gestión de servidores y de maquinas
- virtuales.
+No hay herramientas muy sofisticadas para la gestión de servidores y de
+ maquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
@@ -1041,16 +1059,16 @@ Limitaciones de KVM
 \end_layout
 
 \begin_layout Standard
-Aunque las maquinas virtuales se comportan casi como máquinas físicas existen
+Aunque las máquinas virtuales se comportan casi como máquinas físicas existen
  ciertas limitaciones.
- Estas limitaciones afectan tanto al huesped alojado en la maquina virtual
+ Estas limitaciones afectan tanto al huésped alojado en la máquina virtual
  como al servidor que la gestiona.
  Las principales limitaciones que podemos encontrar en la virtualización
- con Kvm son:
+ con KVM son:
 \end_layout
 
 \begin_layout Itemize
-OverCommits : Kvm permite un overcommit tanto en la memoria como en el espacio
+OverCommits : KVM permite un overcommit tanto en la memoria como en el espacio
  de disco.
  Esto permite aumentar el número de usuarios conectados a un determinado
  servidor.
@@ -1068,16 +1086,16 @@ Tiempo de sincronización : Generalmente los usuarios requieren de un soporte
 \end_layout
 
 \begin_layout Itemize
-Direcciones MAC : Si no existe una dirección mac asociada a una tarjeta
+Direcciones Mac : Si no existe una dirección Mac asociada a una tarjeta
  de red, kvm asignará una por defecto.
  Esto puede dar lugar a problemas en la red cuando más de una tarjeta de
- red recibe la misma dirección MAC.
+ red recibe la misma dirección Mac.
  Se recomienda usar siempre una dirección Mac única.
 \end_layout
 
 \begin_layout Itemize
 Migración en vivo : La migración en vivo es sólo posible entre los servidores
- host de VM con la misma CPU.
+ host de máquinas virtuales con la misma CPU.
  El almacenamiento de la información de un usuario debe ser accesible desde
  los diferentes servidores, se encuentren o no en la misma CPU.
  
@@ -1087,7 +1105,7 @@ Migración en vivo : La migración en vivo es sólo posible entre los servidores
 Permisos de usuario : Las diferentes herramientas de gestión deben ser autentica
 das por libvirt.
  Por ello para que un usuario pueda invocar a qemu-kvm desde linea de comandos,
- el usuario debe ser miembro del grupo de kvm.
+ el usuario debe ser miembro del grupo de KVM.
 \end_layout
 
 \begin_layout Itemize
@@ -1101,8 +1119,8 @@ Red en KVM
 \end_layout
 
 \begin_layout Standard
-Como ya mencionamos en las ventajas, Kvm dispone de tres tipos de configuración
- de red :
+Como ya mencionamos en el apartado de ventajas, KVM dispone de tres tipos
+ de configuración de red :
 \end_layout
 
 \begin_layout Itemize
@@ -1119,7 +1137,7 @@ Bridge : Este tipo de configuración permite crear un puente entre las tarjeta
 \begin_layout Itemize
 NAT : Este tipo de configuración permite tener máquinas virtuales dentro
  de una red virtual, configurando de manera especial su conexión a la tarjeta
- de red, lo cual ayuda a tener una mayor seguridad en las maquinas virtuales.
+ de red, lo cual ayuda a tener una mayor seguridad en las máquinas virtuales.
  
 \end_layout
 
@@ -1129,7 +1147,7 @@ Route : En este modo el switch virtual se conecta a la LAN física del anfitrió
  uso de NAT.
  Todas las máquinas virtuales se encuentran en su propia subred, enrutadas
  a través del switch virtual.
- Desde fuera solo se puede acceder a las maquinas virtuales si se definen
+ Desde fuera solo se puede acceder a las máquinas virtuales si se definen
  reglas de enrutamiento.
 \end_layout
 
@@ -1154,28 +1172,28 @@ e integrado en el kernel de linux.
  todos los servicios que KVM nos ofrece.
  KVM utiliza linux para todo, desde la gestión de dispositivos y el intercambio
  de páginas de memoria hasta el uso de algoritmos para optimizar al máximo
- la gestión de los nucleos y el control de virtualización de todo el sistema.
+ la gestión de los núcleos y el control de virtualización de todo el sistema.
 \end_layout
 
 \begin_layout Standard
-Sin embargo, Xen todavía no ha sido aceptado completamente en el nucleo
- de linux, no pudiendo aprovechar las tecnologías disponibles en linux,
- tales como los planificadores CFS, la paginación o la sobrexplotación de
- memoria con KSM.
+Sin embargo, Xen todavía no ha sido aceptado completamente en el núcleo
+ de linux, no pudiendo aprovechar las tecnologías disponibles en este sistema
+ operativo, tales como los planificadores CFS, la paginación o la sobre
+ explotación de memoria con KSM.
  
 \end_layout
 
 \begin_layout Standard
 Además todavía es necesario la instalación de Xen desde cero, con la creación
- de una maquina virtual especial llamada Dom0, que se encargue de la gestión
+ de una máquina virtual especial llamada Dom0, que se encargue de la gestión
  tanto del sistema como de todo el conjunto de dominios que cuelguen de
  él.
 \end_layout
 
 \begin_layout Standard
-En resumen, el hecho de que KVM se encuentre integrado en el kernel de linux
- le confiere una serie de beneficios contra los que Xen no puede enfrentarse
- y necesita parchear de forma externa.
+En resumen, el hecho de que KVM se encuentre integrado completamente en
+ el kernel de linux le confiere una serie de beneficios contra los que Xen
+ no puede enfrentarse y necesita parchear de forma externa.
 \end_layout
 
 \begin_layout Subsection
@@ -1186,7 +1204,7 @@ Rendimiento
 Con respecto al rendimiento KVM y Xen ofrecen beneficios en aspectos muy
  diferentes, lo que hace que en este punto no pueda considerarse uno mejor
  que el otro en todas las tareas posibles, haciendo que sea más indicado
- uno u otro dependiendo de que puntos se va a basar el sistema.
+ uno u otro dependiendo de en que puntos se va a basar el sistema.
  Así las máquinas virtuales de Xen presentan un mejor rendimiento con aplicacion
 es de cálculo que las máquinas virtuales de KVM, mientras que para las pruebas
  de escritura en disco, el rendimiento de las máquinas virtuales de KVM
@@ -1215,7 +1233,7 @@ Con respecto a la segunda prueba, el hipervisor de KVM presento solo un
 status open
 
 \begin_layout Plain Layout
-No se si estos últimos 2 parrafos formarán parte de la versión final.
+No se si estos últimos 2 párrafos formarán parte de la versión final.
 \end_layout
 
 \end_inset
@@ -1248,26 +1266,26 @@ Tipo de virtualización
 \end_layout
 
 \begin_layout Standard
-Xen utiliza paravirtualización.
+Xen utiliza únicamente paravirtualización.
  En este tipo de virtualización se introduce una capa de abstracción intermedia
- entre el hardware y el sistema operativo que actua como un árbitro que
+ entre el hardware y el sistema operativo que actúa como un árbitro que
  controla el acceso al hardware de las máquinas virtuales.
  Sin embargo, sólo se encarga de algunas de las instrucciones, el resto
  es ejecutado directamente por el hardware en nombre de los sistemas.
  La ventaja principal es que las operaciones no se degradan, y los sistemas
  se ejecutan a una velocidad cercana a la nativa.
- El inconveniente es que los núcleos dde los sistemas operativos que se
- desean utilizar necesitan ser adaptados.
+ El inconveniente es que los núcleos de los sistemas operativos que se desean
+ utilizar necesitan ser adaptados.
  
 \end_layout
 
 \begin_layout Standard
 Por otro lado en el caso de KVM usa una virtualización completa unida a
  linux mediante una modificación de la aplicación Qemu.
- De esta forma KVM dispone de un módulo en el nucleo de linux que permite
+ De esta forma KVM dispone de un módulo en el núcleo de linux que permite
  aprovechar las instrucciones del procesador dedicadas a la virtualización(Intel
 -VT y AMD-V).
- Esto permite usar un sistema ligero, rapido y con todos los recursos disponible
+ Esto permite usar un sistema ligero, rápido y con todos los recursos disponible
 s.
  La contrapartida es que KVM trabaja con procesadores i386 y AMD64 y solo
  aquellos lo suficientemente modernos como para aceptar estas instrucciones.
