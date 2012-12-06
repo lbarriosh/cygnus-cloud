@@ -70,7 +70,7 @@
 \use_default_options true
 \maintain_unincluded_children false
 \language spanish
-\language_package babel
+\language_package auto
 \inputencoding auto
 \fontencoding global
 \font_roman charter

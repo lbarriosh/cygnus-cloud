@@ -101,7 +101,7 @@ La Universidad Complutense de Madrid (UCM) es la universidad presencial
  gran número de aulas de informática y laboratorios repartidos entre sus
  diversos centros.
  Naturalmente, la gestión y el mantenimiento de estos espacios es responsabilida
-d del personal de administración y servicios, dependiente, en última instancia,
+d de personal de administración y servicios dependiente, en última instancia,
  de los Servicios Informáticos de la universidad.
  
 \end_layout
@@ -113,7 +113,7 @@ Existen varias alternativas para llevar a cabo la gestión de las aulas de
  también la que, a causa de sus inconvenientes, ha motivado el desarrollo
  de 
 \emph on
-Cygnus Cloud
+CygnusCloud
 \emph default
 : el modelo de gestión de los laboratorios de la Facultad de Informática
  de la UCM.
@@ -231,8 +231,8 @@ Rational Software Architect
 \emph default
 .
  En la mayoría de casos, los estudiantes no pueden instalar estas aplicaciones
- en sus equipos por diversos motivos, como el elevadísimo coste de las licencias
- o la imposibilidad de encontrar la versión instalada en los laboratorios.
+ en sus equipos por diversos motivos (como el elevadísimo coste de las licencias
+ o la imposibilidad de encontrar la versión instalada en los laboratorios).
  
 \end_layout
 
@@ -246,7 +246,11 @@ De esta manera, la Facultad debe permitir trabajar a los alumnos en los
 \begin_layout Standard
 Por último, también es necesario que en los laboratorios puedan tener lugar
  exámenes de caracter práctico a lo largo de todo el curso académico.
- En las siguientes secciones, mostraremos cómo la red de laboratorios satisface
+ 
+\end_layout
+
+\begin_layout Standard
+En las siguientes secciones, mostraremos cómo la red de laboratorios satisface
  todos estos requisitos.
 \end_layout
 
@@ -390,9 +394,9 @@ reference "sec:Modelo-laboratorios-FdI UCM"
 \begin_layout Standard
 Los recursos desaprovechados son de naturaleza muy dispar: aulas de informática
  infrautilizadas que se encuentran en otros centros, PCs de la red de laboratori
-os, energía, personal\SpecialChar \ldots{}
- Para mostrar cómo se desperdician todos estos recursos,
- presentaremos algunos ejemplos.
+os, energía, personal, etcétera.
+ Para mostrar cómo se desperdician todos estos recursos, presentaremos algunos
+ ejemplos.
 \end_layout
 
 \begin_layout Subsubsection
@@ -417,15 +421,15 @@ avalancha
 \end_inset
 
  de prácticas a entregar en un corto periodo de tiempo.
- Además, es bastante habitual que los alumnos deban revisar las prácticas
- ya entregadas antes de la realización de los exámenes.
+ Además, antes de la realización de sus exámenes es bastante frecuente que
+ los alumnos deban revisar las prácticas ya entregadas.
  Por todo esto, a nadie debe extrañar el elevadísimo uso de los laboratorios
  en estas épocas del año.
 \end_layout
 
 \begin_layout Standard
 Puesto que la red de laboratorios cuenta con sólo 300 puestos y un número
- mucho mayor de alumnos (según la memoria de la Facultad del curso 2009/2010
+ mucho mayor de usuarios (según la memoria de la Facultad del curso 2009/2010
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -433,7 +437,8 @@ key "MemoriaFdI0910"
 
 \end_inset
 
-, más de 2000), los alumnos deberán competir por los distintos puestos.
+, hay más de 2000 almumnos matriculados en este centro), los alumnos deberán
+ competir por los distintos puestos.
  Ahora bien, no todos los alumnos que utilizan los puestos del mismo laboratorio
  fuera del horario de clase (horario de práctica libre) tienen por qué estar
  matriculados en las mismas asignaturas, por lo que necesitarán utilizar
@@ -455,9 +460,10 @@ distinto.
 
 \begin_layout Standard
 Consideremos la semana anterior a las vacaciones de Navidad.
- En ella, los alumnos de una asignatura de diseño de circuitos estarán trabajand
-o en una práctica de VHDL de cierta envergadura, mientras que los alumnos
- de primer curso deberán entregar una práctica de programación en C++.
+ En ella, los alumnos de la asignatura Estructura de Computadores estarán
+ trabajando en una práctica de VHDL de cierta envergadura, mientras que
+ los alumnos de primer curso deberán entregar una práctica de programación
+ en C++.
  
 \end_layout
 
@@ -476,14 +482,14 @@ Si un alumno desea trabajar en su práctica de VHDL en los laboratorios de
  práctica libre), deberá utilizar obligatoriamente los laboratorios 7 y
  8.
  Pero en los turnos de práctica libre estos laboratorios no están reservados
- en exclusiva para los alumnos de la asignatura de diseño de circuitos,
- por lo que los estudiantes de primero también podrán realizar en ellos
- su práctica de programación.
+ en exclusiva para los alumnos de Estructura de Computadores, por lo que
+ los estudiantes de primero también podrán realizar en ellos su práctica
+ de programación.
 \end_layout
 
 \begin_layout Standard
 Si no existen puestos libres en los laboratorios 7 y 8 y un alumno desea
- continuar con su práctica de diseño de circuitos, existen varias alternativas:
+ continuar con su práctica de VHDL, existen varias alternativas:
 \end_layout
 
 \begin_layout Itemize
@@ -538,8 +544,8 @@ Esta situación da lugar a mayores tiempos de espera y a un incremento considera
 le del tiempo de resolución de las incidencias, y mejoraría si los alumnos
  pudiesen distribuirse de forma más homogénea entre las aulas de informática
  de todos los centros de la UCM.
- Nuevamente, dicha distribución no es posible al no permitirlo las característic
-as técnicas de los PCs y el 
+ Nuevamente, esto no es posible al no permitirlo las características técnicas
+ de los PCs y el 
 \emph on
 software
 \emph default
@@ -554,7 +560,7 @@ Energía consumida
 Hoy en día, el coste de la energía no es despreciable en absoluto.
  Prueba de ello es que los centros de proceso de datos de más reciente construcc
 ión se caracterizan por la búsqueda de la mayor eficiencia energética posible
- para reducir al máximo los costes de explotación.
+ para así reducir lo máximo posible los costes de explotación.
 \end_layout
 
 \begin_layout Standard
@@ -563,21 +569,22 @@ Ante la actual situación de crisis económica, la Universidad Complutense
  energético permite reducir el efecto que las sucesivas reducciones del
  presupuesto tienen sobre otras partidas (como las dedicadas a becas y a
  investigación).
- Por ello, es fundamental reducir cuanto sea posible el consumo energético
- de las aulas de informática.
+ Por ello, es fundamental racionalizar el consumo energético de las aulas
+ de informática.
 \end_layout
 
 \begin_layout Standard
 La primera fuente de consumo innecesario es el sistema de climatización
  y alumbrado de las aulas de informática infrautilizadas, cuyo uso resulta
- imprescindible (al margen del número de alumnos que estén trabajando en
- el aula).
+ imprescindible con independencia del número de alumnos que estén trabajando
+ en el aula.
  
 \end_layout
 
 \begin_layout Standard
-La segunda fuente es el propio equipamiento informático asignado a las aulas
- infrautilizadas: los PCs, servidores y también el equipamiento de red.
+La segunda fuente de consumo es el propio equipamiento informático asignado
+ a las aulas infrautilizadas: los PCs, servidores y también el equipamiento
+ de red.
  Aún apagando los equipos en desuso, se sigue desperdiciando energía, ya
  que 
 \end_layout
@@ -603,7 +610,7 @@ Estos consumos pueden reducirse si los alumnos que utilizan estas aulas
 
 \begin_layout Itemize
 los PCs del aula de informática pueden no ser lo suficientemente potentes
- como para cubrir las necesidades de todos los estudiantes.
+ como para cubrir las necesidades de todos los estudiantes, y
 \end_layout
 
 \begin_layout Itemize
@@ -629,12 +636,9 @@ En las aulas de informática de la UCM se encuentran instaladas aplicaciones
 \begin_layout Standard
 Ahora bien, tal y como hemos expuesto en las secciones anteriores, no todos
  los alumnos utilizan las aulas de informática para lo mismo.
- Así, a causa de la mera ocupación del espacio, no es posible utilizar todas
- las licencias de pago adquiridas por la UCM aún cuando es necesario.
-\end_layout
-
-\begin_layout Standard
-También podemos aprovechar el ejemplo que presentamos en la sección 
+ Así, a causa de la mera ocupación de ciertos espacios, no es posible utilizar
+ todas las licencias de pago adquiridas por la UCM aún cuando es necesario.
+ También podemos aprovechar el ejemplo que presentamos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Aulas-Informática-Otros-Centros"
@@ -654,7 +658,7 @@ software
 estará instalado en todos los puestos de los laboratorios 7 y 8, pero no
  se utilizará en los puestos ocupados por los alumnos de primero.
  De esta manera, aunque las licencias de estos puestos no se utilizan, no
- será posible utilizarlas al no estar instalado el 
+ será posible aprovecharlas al no estar instalado el 
 \emph on
 software
 \emph default
@@ -678,9 +682,9 @@ software
 \emph on
 software
 \emph default
- MATLAB, en la Facultad de Ciencias Físicas no se podrán aprovechar las
- licencias sin utilizar de la Facultad de Informática y viceversa.
- 
+ MATLAB, estos dos centros no podrán compartir sus licencias de MATLAB porque
+ las aulas de informática de Físicas no forman parte de la Red de Laboratorios
+ de la Facultad de Informática.
 \end_layout
 
 \begin_layout Standard
@@ -715,7 +719,7 @@ Por otra parte, sólo es posible acceder a ese espacio de almacenamiento
  desde la propia red de laboratorios, siendo necesario utilizar dispositivos
  de almacenamiento extraíble o servicios de alojamiento de archivos en la
  nube (como Dropbox, Microsoft SkyDrive y Google Drive) para transferir
- datos desde los equipos particulares de los estudiantes a los PCs de la
+ datos entre los equipos particulares de los estudiantes y los PCs de la
  red de laboratorios.
 \end_layout
 
@@ -991,7 +995,11 @@ que se vaya a utilizar a lo largo del curso académico.
 Este servicio evita a los docentes la tediosa labor de configuración de
  todos los equipos de los laboratorios, permitiendo que estos se dediquen
  en mayor medida a la atención del resto de sus obligaciones.
- Pero también tiene un serio inconveniente: la instalación de nuevo 
+ 
+\end_layout
+
+\begin_layout Standard
+Pero también tiene un serio inconveniente: la instalación de nuevo 
 \emph on
 software
 \emph default
@@ -1009,9 +1017,9 @@ carrera de obstáculos
 \end_layout
 
 \begin_layout Standard
-Para ilustrar por qué ocurre esto último, es necesario describir el procedimient
-o a seguir para fijar la configuración de los equipos de los laboratorios.
- Para el presente curso académico (2012/2013), es el siguiente:
+Para ilustrar por qué ocurre esto último, describiremos el procedimiento
+ a seguir para fijar la configuración de los equipos de los laboratorios
+ que, en el presente curso académico (2012/2013), es el siguiente:
 \end_layout
 
 \begin_layout Enumerate
@@ -1065,33 +1073,34 @@ todas
 una
 \emph default
  semana para verificar la configuración de los equipos.
- Esta restricción tan importante impone un ritmo frenético a la hora de
- comprobar la correcta configuración de los equipos, lo que facilita que
- muchos errores se pasen por alto.
- Es más, en caso de que se detecte alguna anomalía, esta deberá subsanarse
+ Teniendo en cuenta el gran número de titulaciones que se imparten en la
+ Facultad de Informática, esta restricción impone un ritmo frenético a la
+ hora de comprobar la correcta configuración de los equipos, lo que facilita
+ que muchos errores se pasen por alto.
+ 
+\end_layout
+
+\begin_layout Standard
+Es más, en caso de que se detecte alguna anomalía, esta deberá subsanarse
  durante esa misma semana, lo cual propicia la aparición de muchos más errores.
- Por todo esto, es bastante habitual que no todo el 
+ Así, es bastante habitual que no todo el 
 \emph on
 software
 \emph default
  instalado en los puestos de laboratorio funcione de forma correcta, siendo
- fácil encontrar aplicaciones en las que algunas o incluso todas las funciones
- no se pueden utilizar.
+ fácil encontrar aplicaciones en las que no es posible utilizar ni la funcionali
+dad más básica.
 \end_layout
 
 \begin_layout Standard
-También es importante notar que los profesores sólo pueden escoger el 
+Además, es importante notar que los profesores sólo pueden escoger el 
 \emph on
 software
 \emph default
  a instalar de una lista.
  Si un programa no aparece en dicha lista, deberán solicitar su instalación
  al Analista, lo cual da lugar a otra sucesión de trabas burocráticas.
- 
-\end_layout
-
-\begin_layout Standard
-En caso de aplicaciones de pago, cuyas licencias suponen un coste importante
+ En caso de aplicaciones de pago, cuyas licencias suponen un coste importante
  para la Facultad, esto es bastante razonable.
  Pero esta situación resulta injustificable cuando se trata de 
 \emph on
@@ -1106,8 +1115,8 @@ software
 Pero el problema no acaba aquí: si un profesor detecta un error en la configurac
 ión de los puestos tras la semana de pruebas, también será necesario iniciar
  otro lento proceso burocrático para algo tan sumamente simple como volver
- a ejecutar el instalador de algunos programas ya instalados en los PCs
- de los laboratorios.
+ a ejecutar algunos intaladores en la máquina de prototipado, volver a generar
+ la imagen de disco y clonarla.
 \end_layout
 
 \begin_layout Standard
@@ -1115,7 +1124,7 @@ En definitiva, el modelo actual da lugar a una sobreacumulación de retrasos
  y errores en la configuración de los equipos que degrada considerablemente
  la calidad de la docencia e impide a los alumnos el uso normal de los puestos
  de laboratorio, obligándoles en no pocos casos a utilizar sus propios equipos
- durante una parte significativa del curso académico.
+ durante una parte muy significativa del curso académico.
 \end_layout
 
 \end_body
