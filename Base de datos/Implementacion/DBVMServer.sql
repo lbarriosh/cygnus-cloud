@@ -23,14 +23,14 @@ CREATE TABLE IF NOT EXISTS ActualVM(VNCPortAdress INTEGER PRIMARY KEY, userId IN
 # ____________________________________________________________
 
 # Tabla VirtualMachine
-INSERT INTO VirtualMachine VALUES(0,"VMName1","./VMName1/","./VMName1/");
-INSERT INTO VirtualMachine VALUES(1,"VMName2","./VMName2/","./VMName2/");
-INSERT INTO VirtualMachine VALUES(2,"VMName3","./VMName3/","./VMName3/");
-INSERT INTO VirtualMachine VALUES(3,"VMName4","./VMName4/","./VMName4/");
+INSERT IGNORE INTO VirtualMachine VALUES(0,"VMName1","./VMName1/","./VMName1/");
+INSERT IGNORE INTO VirtualMachine VALUES(1,"VMName2","./VMName2/","./VMName2/");
+INSERT IGNORE INTO VirtualMachine VALUES(2,"VMName3","./VMName3/","./VMName3/");
+INSERT IGNORE INTO VirtualMachine VALUES(3,"VMName4","./VMName4/","./VMName4/");
 
 #Tabla ActualVM
-INSERT INTO ActualVM VALUES(0,0,0,"./VMNameCopy1","./VMNameCopy1","000000","1234567890");
-INSERT INTO ActualVM VALUES(1,1,0,"./VMNameCopy1","./VMNameCopy1","111111","1234567890");
-INSERT INTO ActualVM VALUES(2,2,1,"./VMNameCopy2","./VMNameCopy2","222222","1234567890");
-INSERT INTO ActualVM VALUES(3,3,2,"./VMNameCopy3","./VMNameCopy3","333333","1234567890");
-INSERT INTO ActualVM VALUES(4,4,3,"./VMNameCopy4","./VMNameCopy4","444444","1234567890");
+INSERT IGNORE INTO ActualVM VALUES(0,0,0,"./VMNameCopy1","./VMNameCopy1","000000","1234567890");
+INSERT IGNORE INTO ActualVM VALUES(1,1,0,"./VMNameCopy1","./VMNameCopy1","111111","1234567890");
+INSERT IGNORE INTO ActualVM VALUES(2,2,1,"./VMNameCopy2","./VMNameCopy2","222222","1234567890");
+INSERT IGNORE INTO ActualVM VALUES(3,3,2,"./VMNameCopy3","./VMNameCopy3","333333","1234567890");
+INSERT IGNORE INTO ActualVM VALUES(4,4,3,"./VMNameCopy4","./VMNameCopy4","444444","1234567890");

@@ -21,7 +21,8 @@ class DBUtils:
         #Nos conectamos como root para crear el usuario
         conn = MySQLdb.Connection(host="localhost", user="root", passwd="170590ucm")
         cursor = conn.cursor()
-        cursor.execute("CREATE USER %s@%s IDENTIFIED BY %s", (user, "localhost", password))     
+        #cursor.execute("CREATE USER IF NOT EXISTS %s@%s IDENTIFIED BY %s", (user, "localhost", password))     
+        cursor.execute("GRANT ALL ON *.* TO '" +  user + "'@'" + "localhost" + "' IDENTIFIED BY '" + password + "';")
         cursor.close()
         conn.close()
         
@@ -36,7 +37,7 @@ class DBUtils:
         cursor=db.cursor()
         
         #Creamos la consulta encargada de cargar el script
-        sql = "source " + self.initFilePath
+        sql = "source " + self.initFilePath 
         
         #Ejecutamos el comando
         cursor.execute(sql)
