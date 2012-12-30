@@ -18,32 +18,63 @@ class UserManagement():
         self.user = logUser
         #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
+        self.db = self.connect()
+        self.cursor = self.db.cursor()
+        # Extraemos la lista con los tipos asociados a
+        #  el usuario
+        self.typeIds = self.getTypeIds()
+        
+    def connect(self):
+        #Seleccionamos la base de datos que vamos a manejar
+        # Nos conectamos a MySql 
         db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
         cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
         sql = "USE DBWebServer"     
         #Ejecutamos el comando
         cursor.execute(sql)
-        # Extraemos la lista con los tipos asociados a
-        #  el usuario
-        self.typeIds = self.getTypeIds()
-        
-        
+        #devolvemos el cursor
+        return db
+    
+    def disconnect(self):
+        #cerramos las conexiones
+        self.cursor.close()
+        self.db.close()
+    
+    def showUsers(self):
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT * FROM Users"     
+        #Ejecutamos el comando
+        self.cursor.execute(sql)
+        #Recogemos los resultado
+        results=self.cursor.fetchall()
+        #Guardamos en una lista los ids resultantes
+        for r in results:
+            print(r)
             
+    def showTypes(self):
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT * FROM UserType"     
+        #Ejecutamos el comando
+        self.cursor.execute(sql)
+        #Recogemos los resultado
+        results=self.cursor.fetchall()
+        #Guardamos en una lista los ids resultantes
+        for r in results:
+            print(r)  
+              
+        
     def getTypeIds(self):
         '''
             Esta función devuelve la lista de tipos asociados
             al usuario logueado
         '''
-        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-        cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT typeId FROM TypeOf WHERE userId = " + self.user     
         #Ejecutamos el comando
-        cursor.execute(sql)
+        self.cursor.execute(sql)
         #Recogemos los resultado
-        resultados=cursor.fetchall()
+        resultados=self.cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         typeIds = []
         for r in resultados:
@@ -56,15 +87,12 @@ class UserManagement():
             Esta función devuelve una lista con los identificadores de 
              grupos  asociados al usuario dado de alta en esta sesión
         '''
-        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-        cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT groupId FROM ClassGroup WHERE userId = " + self.user     
         #Ejecutamos el comando
-        cursor.execute(sql)
+        self.cursor.execute(sql)
         #Recogemos los resultado
-        resultados=cursor.fetchall()
+        resultados=self.cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         groupIds = []
         for r in resultados:
@@ -77,15 +105,12 @@ class UserManagement():
             Esta función devuelve una lista con los diferentes nombres 
              de las máquinas virtuales asociadas a un determinado grupo.
         '''
-        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-        cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VMName FROM VMByGroup WHERE groupId = " + idGroup     
         #Ejecutamos el comando
-        cursor.execute(sql)
+        self.cursor.execute(sql)
         #Recogemos los resultado
-        resultados=cursor.fetchall()
+        resultados=self.cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         vmNames = []
         for r in resultados:
@@ -100,15 +125,12 @@ class UserManagement():
              asignatura, el año académico en el que se imparte y el grupo de clase 
              asociado
         '''
-        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-        cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT subject,curse,yearGroup,curseGroup FROM UserGroup WHERE groupId = " + idGroup     
         #Ejecutamos el comando
-        cursor.execute(sql)
+        self.cursor.execute(sql)
         #Recogemos los resultado
-        resultado=cursor.fetchone()
+        resultado=self.cursor.fetchone()
         #Devolvemos la lista resultado
         return resultado 
     
@@ -117,17 +139,14 @@ class UserManagement():
             Esta función devuelve el nombre de los profesores 
             que se encuentran asociados a dicho grupo.
         '''     
-        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-        cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT u.name FROM Users u,UserGroup ug,UserType ut,TypeOf to" 
-        sql += "WHERE u.userId = ug.userId AND to.typeId = ut.typeId " 
-        sql += " AND ut.name = 'Teacher' AND ug.groupId = " + idGroup     
+        sql = "SELECT u.name FROM Users u,ClassGroup cg,UserType ut,TypeOf tof" 
+        sql += " WHERE u.userId = cg.userId AND u.userId = tof.userId AND tof.typeId = ut.typeId " 
+        sql += " AND ut.name = 'Teacher' AND cg.groupId = " + idGroup     
         #Ejecutamos el comando
-        cursor.execute(sql)
+        self.cursor.execute(sql)
         #Recogemos los resultado
-        resultados=cursor.fetchall()
+        resultados=self.cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         teachersNames = []
         for r in resultados:
@@ -140,18 +159,15 @@ class UserManagement():
             Esta función comprueba si un determinado usuario es
             del tipo que se indica como argumento
         '''
-        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-        cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT ut.name FROM UserType ut,TypeOf to" 
-        sql += "WHERE ut.typeId = to.typeId AND to.userId = " + userId     
+        sql = "SELECT ut.name FROM UserType ut,TypeOf tof " 
+        sql += "WHERE ut.typeId = tof.typeId AND tof.userId = " + userId     
         #Ejecutamos el comando
-        cursor.execute(sql)
+        self.cursor.execute(sql)
         #Recogemos los resultado
-        resultado=cursor.fetchone()
+        resultado=self.cursor.fetchone()
         #Comprobamos si los nombres coinicden
-        return (resultado ==  nameType)      
+        return (resultado[0] ==  nameType)      
          
     def deleteUser(self,userId):
         '''
@@ -161,34 +177,17 @@ class UserManagement():
         '''
         #Comprobamos que el usuario sea un administrador     
         if(self.isTypeOf("Administrator",self.user)):
-            # Nos conectamos a MySql 
-            db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-            cursor=db.cursor()
             #borramos el usuario
             sql = "DELETE FROM Users WHERE userId =" + userId 
             #Ejecutamos el comando
-            cursor.execute(sql) 
+            self.cursor.execute(sql) 
             # Gracias al ON DELETE CASCADE debería borrarse sus referencias en
             #  el resto de las tablas
-        else:        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-        cursor=db.cursor()
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT groupId FROM ClassGroup WHERE userId = " + self.user     
-        #Ejecutamos el comando
-        cursor.execute(sql)
-        #Recogemos los resultado
-        resultados=cursor.fetchall()
-        #Guardamos en una lista los ids resultantes
-        groupIds = []
-        for r in resultados:
-            groupIds.append(r[0])
-        #Devolvemos la lista resultado
-        return groupIds 
+        else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator User")
     
-    def createUser(self,name,password,TypeId):
+    def createUser(self,name,password,typeId):
         '''
             Esta función será una función exclusiva para los administradores 
              y con ella se dará de alta de forma interna a un nuevo usuario,
@@ -196,27 +195,25 @@ class UserManagement():
         '''
         #Comprobamos que el usuario sea un administrador     
         if(self.isTypeOf("Administrator",self.user)):
-            # Nos conectamos a MySql 
-            db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-            cursor=db.cursor()
             #insertamos el usuario
-            sql = "INSERT  INTO Users VALUES ('" + name + "','" + password + "')"
+            sql = "INSERT  INTO Users(name,pass) VALUES ('" + name + "','" + password + "')"
             #Ejecutamos el comando
-            cursor.execute(sql) 
+            self.cursor.execute(sql) 
             
             #Extraemos el id del usuario que acabamos de crear
-            sql = "SELECT userId FROM Users WHERE name =" + name + " AND pass = " + password
+            sql = "SELECT userId FROM Users WHERE name ='" + name + "' AND pass = '" + password +"'"
             
             #Ejecutamos el comando
-            cursor.execute(sql)
+            self.cursor.execute(sql)
             #Recogemos los resultado
-            resultados=cursor.fetchall()
+            resultados=self.cursor.fetchall()
             #Cogemos el utlimo
-            userId = resultados[cursor.rowcount -1][0]
+            userId = self.cursor.lastrowid
+            print(userId)
             #Añadimos el tipo
-            sql = "INSERT  INTO TypeOf VALUES (" + userId +")"
+            sql = "INSERT  INTO TypeOf VALUES (" + str(typeId) + "," + str(userId) + ")"
             #Ejecutamos el comando
-            cursor.execute(sql)
+            self.cursor.execute(sql)
             #Si todo ha salido bien devolvemos el id
             return userId 
             
@@ -244,13 +241,11 @@ class UserManagement():
         '''
         #Comprobamos que el usuario sea un administrador o un profesor del grupo
         if(self.isTypeOf("Administrator",self.user) or (self.isTypeOf("Teacher",self.user) and self.isUserInGroup(self,groupId))):
-            # Nos conectamos a MySql 
-            db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-            cursor=db.cursor()
+
             #Borramos la máquina virtual
-            sql = "DELETE FROM VMByGroup WHERE groupId = " + groupId + " AND VMName =" + VMName
+            sql = "DELETE FROM VMByGroup WHERE groupId = " + groupId + " AND VMName ='" + VMName + "'"
             #Ejecutamos el comando
-            cursor.execute(sql)
+            self.cursor.execute(sql)
             #Gracias al ON DELETE CASCADE se eliminará la apareición de esta VM en el resto de tablas
         else:
             #El usuario no es administrador. Lanazamos una excepción
@@ -262,13 +257,10 @@ class UserManagement():
         ''' 
         #Comprobamos que el usuario sea un administrador o un profesor del grupo
         if(self.isTypeOf("Administrator",self.user) or (self.isTypeOf("Teacher",self.user) and self.isUserInGroup(self,groupId))):
-            # Nos conectamos a MySql 
-            db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-            cursor=db.cursor()
             #Borramos las máquinas virtuales
             sql = "DELETE FROM VMByGroup WHERE groupId = " + groupId 
             #Ejecutamos el comando
-            cursor.execute(sql)
+            self.cursor.execute(sql)
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator or Teacher User")
@@ -280,16 +272,13 @@ class UserManagement():
         '''
         #Comprobamos que el usuario sea un administrador     
         if(self.isTypeOf("Administrator",self.user)):
-            # Nos conectamos a MySql 
-            db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-            cursor=db.cursor()
             #insertamos el usuario
-            sql = "INSERT  INTO UserType VALUES ('" + name + "')"
+            sql = "INSERT  INTO UserType(name) VALUES ('" + name + "')"
             #Ejecutamos el comando
-            cursor.execute(sql) 
+            self.cursor.execute(sql) 
         else:
             #El usuario no es administrador. Lanazamos una excepción
-            raise Exception("Not Administrator User")     
+            raise Exception("Not Administrator User")    
 
     def deleteType(self,typeId):
         '''
@@ -299,13 +288,10 @@ class UserManagement():
         '''
         #Comprobamos que el usuario sea un administrador     
         if(self.isTypeOf("Administrator",self.user)):
-            # Nos conectamos a MySql 
-            db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-            cursor=db.cursor()
             #insertamos el usuario
             sql = "DELETE FROM UserType WHERE typeId =" + typeId 
             #Ejecutamos el comando
-            cursor.execute(sql) 
+            self.cursor.execute(sql) 
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator User")  
@@ -315,15 +301,12 @@ class UserManagement():
             Esta función devuelve la lista con todos los identificadores de 
              grupos que se encuentran asociados a una máquina virtual
         '''
-        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-        cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT groupId FROM VMByGroup WHERE VMName = " + VMName     
+        sql = "SELECT groupId FROM VMByGroup WHERE VMName = '" + VMName + "'"     
         #Ejecutamos el comando
-        cursor.execute(sql)
+        self.cursor.execute(sql)
         #Recogemos los resultado
-        resultados=cursor.fetchall()
+        resultados=self.cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         groupIds = []
         for r in resultados:
@@ -338,21 +321,156 @@ class UserManagement():
         ''' 
         #Comprobamos que el usuario sea un administrador o un profesor del grupo
         if(self.isTypeOf("Administrator",self.user) or (self.isTypeOf("Teacher",self.user) and self.isUserInGroup(self,groupId))):
-            # Nos conectamos a MySql 
-            db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
-            cursor=db.cursor()
+
             #Borramos las máquinas virtuales
             sql = "SELECT userId FROM ClassGroup WHERE groupId = " + groupId 
             #Ejecutamos el comando
-            cursor.execute(sql)
+            self.cursor.execute(sql)
             #Recogemos los resultado
-            resultados=cursor.fetchall()
+            resultados=self.cursor.fetchall()
             #Guardamos en una lista los ids resultantes
             usersIds = []
             for r in resultados:
                 usersIds.append(r[0])
-                #Devolvemos la lista resultado
-                return usersIds 
+            #Devolvemos la lista resultado
+            return usersIds 
         else:
             #El usuario no es administrador. Lanazamos una excepción
-            raise Exception("Not Administrator or Teacher User")      
+            raise Exception("Not Administrator or Teacher User") 
+        
+def main():
+    #Obtenemos el usuario
+    print('Inserte el id de usuario:')
+    userId = raw_input()
+    #Instanciamos el objeto
+    userMan = UserManagement("CygnusCloud","cygnuscloud2012",userId)
+    sigue = 's'
+    while(sigue == 's'):
+        print("Escoja un numero de prueba (1-13)")
+        prueba = raw_input()
+        
+        if(prueba == '1'):
+            #Primera prueba : obtención de tipo
+            print("Prueba 1")
+            types = userMan.getTypeIds()
+            print("Tipos asociados al usuario :")
+            for t in types:
+                print(t)
+        elif(prueba == '2'):  
+            #Segunda prueba: grupos asociados al usuario
+            print("Prueba 2")
+            groupIds = userMan.getUserGroupsIds()
+            print("grupos asociados al usuario :")
+            for g in groupIds:
+                print(g)
+        
+        elif(prueba == '3'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 3")
+            print('Inserte el id de grupo:')
+            groupId = raw_input()
+            vmNames = userMan.getVMNames(groupId)
+            print("máquinas asociadas al grupo :")
+            for v in vmNames:
+                print(v)
+        elif(prueba == '4'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 4")
+            print('Inserte el id de grupo:')
+            groupId = raw_input()
+            s = userMan.getSubjects(groupId)
+            print("asignatura asociadas al grupo :")
+            print(s)
+        elif(prueba == '5'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 5")
+            print('Inserte el id de grupo:')
+            groupId = raw_input()
+            teachers = userMan.getTeachers(groupId)
+            print("profesores asociados al grupo :")
+            for t in teachers:
+                print(t)
+                
+        elif(prueba == '6'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 6")
+            print('Inserte el id del usuario a eliminar:')
+            uId = raw_input()
+            teachers = userMan.deleteUser(uId)
+            print("Usuario eliminado :")
+            userMan.showUsers()
+            
+        elif(prueba == '7'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 7")
+            print('Inserte el nombre del usuario a crear:')
+            name = raw_input()
+            print('Inserte la constrasennia:')
+            password = raw_input()
+            print('Inserte tipo:')
+            typeId = raw_input()
+            userMan.createUser(name,password,typeId)
+            print("Usuario creado :")
+            userMan.showUsers()
+        elif(prueba == '8'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 8")
+            print('Inserte el nombre de la maquina a eliminar:')
+            name = raw_input()
+            print('Inserte el grupo:')
+            groupId = raw_input()
+            userMan.deleteVM(name,groupId)
+            print("Maquina eliminada:")
+            print(userMan.getVMNames(groupId))
+        elif(prueba == '9'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 9")
+            print('Inserte el grupo cuyas máquinas se quieren eliminar:')
+            groupId = raw_input()
+            userMan.deleteAllVM(groupId)
+            print("Maquinas eliminadas:")
+            print(userMan.getVMNames(groupId))
+        elif(prueba == '10'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 10")
+            print('Inserte el nombre del tipo a crear:')
+            name = raw_input()
+            userMan.createType(name)
+            print("Tipo creado:")
+            userMan.showTypes()
+        elif(prueba == '11'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 11")
+            print('Inserte el id del tipo a eliminar:')
+            type = raw_input()
+            userMan.deleteType(type)
+            print("Tipo eliminado:")
+            userMan.showTypes()
+        elif(prueba == '12'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 12")
+            print('Inserte el nombre de la máquina a buscar:')
+            vmName = raw_input()
+            groupIds = userMan.getGroupId(vmName)
+            print("los grupos con esta máquina son:")
+            for g in groupIds:
+                print(g)
+        elif(prueba == '13'):         
+            #tercera prueba: lista de máquinas virtuales
+            print("Prueba 13")
+            print('Inserte el id del grupo:')
+            groupId = raw_input()
+            userIds = userMan.getUsersId(groupId)
+            print("los  usuarios registrados en dicho grupo son:")
+            for u in userIds:
+                print(u)
+        print("Desea hacer otra prueba?(s/n)")
+        sigue = raw_input()
+    
+    #Nos desconectamos
+    userMan.disconnect()
+
+    
+## Comandos a ejecutar de inicio (solo en caso de pruebas)
+if __name__ == "__main__":
+    main()     
