@@ -25,21 +25,21 @@ CREATE TABLE IF NOT EXISTS ServerImages(serverId INTEGER,imageId INTEGER,
 # ____________________________________________________________
 
 # Tabla servidores de MV
-INSERT IGNORE INTO VMServer VALUES (0,"Ip1","Port1",5);
-INSERT IGNORE INTO VMServer VALUES (1,"Ip2","Port2",5);
-INSERT IGNORE INTO VMServer VALUES (2,"Ip3","Port3",5);
+INSERT IGNORE INTO VMServer VALUES (1,"Ip1","Port1",5);
+INSERT IGNORE INTO VMServer VALUES (2,"Ip2","Port2",5);
+INSERT IGNORE INTO VMServer VALUES (3,"Ip3","Port3",5);
 
 # Tabla Imagenes
-INSERT IGNORE INTO Image VALUES (0,"VMName1","A Virtual machine Image");
-INSERT IGNORE INTO Image VALUES (1,"VMName2","A Virtual machine Image");
-INSERT IGNORE INTO Image VALUES (2,"VMName3","A Virtual machine Image");
-INSERT IGNORE INTO Image VALUES (3,"VMName4","A Virtual machine Image");
+INSERT IGNORE INTO Image VALUES (1,"VMName1","A Virtual machine Image");
+INSERT IGNORE INTO Image VALUES (2,"VMName2","A Virtual machine Image");
+INSERT IGNORE INTO Image VALUES (3,"VMName3","A Virtual machine Image");
+INSERT IGNORE INTO Image VALUES (4,"VMName4","A Virtual machine Image");
 
 # Tabla Imagenes en servidor
-INSERT IGNORE INTO ServerImages VALUES (0,0);
-INSERT IGNORE INTO ServerImages VALUES (0,2);
-INSERT IGNORE INTO ServerImages VALUES (1,2);
-INSERT IGNORE INTO ServerImages VALUES (2,0);
-INSERT IGNORE INTO ServerImages VALUES (2,1);
-INSERT IGNORE INTO ServerImages VALUES (2,2);
+INSERT IGNORE INTO ServerImages VALUES (1,1);
+INSERT IGNORE INTO ServerImages VALUES (1,3);
 INSERT IGNORE INTO ServerImages VALUES (2,3);
+INSERT IGNORE INTO ServerImages VALUES (3,1);
+INSERT IGNORE INTO ServerImages VALUES (3,2);
+INSERT IGNORE INTO ServerImages VALUES (3,3);
+INSERT IGNORE INTO ServerImages VALUES (3,4);

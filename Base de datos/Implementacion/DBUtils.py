@@ -37,15 +37,17 @@ class DBUtils:
         cursor=db.cursor()
         
         #Creamos la consulta encargada de cargar el script
-        sql = "source " + self.initFilePath 
+        sql = "source " + self.initFilePath  
         
         #Ejecutamos el comando
         cursor.execute(sql)
-        
+        #Actualizamos la base de datos
+        self.db.commit() 
         #Cerramos la conexión
         cursor.close()
         db.close()
         
+       
 
 def main():
     #Preguntamos por la ruta
@@ -62,7 +64,7 @@ def main():
     password = raw_input()  
 
     #Creamos el usuario
-    utils.initMySqlUser(user, password)
+   # utils.initMySqlUser(user, password)
     #Llamamos a la función encargada de cargar el script
     utils.loadScript(user, password)
     

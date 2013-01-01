@@ -183,6 +183,8 @@ class UserManagement():
             self.cursor.execute(sql) 
             # Gracias al ON DELETE CASCADE debería borrarse sus referencias en
             #  el resto de las tablas
+            #Actualizamos la base de datos
+            self.db.commit() 
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator User")
@@ -209,11 +211,12 @@ class UserManagement():
             resultados=self.cursor.fetchall()
             #Cogemos el utlimo
             userId = self.cursor.lastrowid
-            print(userId)
             #Añadimos el tipo
-            sql = "INSERT  INTO TypeOf VALUES (" + str(typeId) + "," + str(userId) + ")"
+            sql = "INSERT  INTO TypeOf(userId,typeId) VALUES (" + str(userId) + "," + str(typeId) + ")"
             #Ejecutamos el comando
             self.cursor.execute(sql)
+            #Actualizamos la base de datos
+            self.db.commit() 
             #Si todo ha salido bien devolvemos el id
             return userId 
             
@@ -247,9 +250,12 @@ class UserManagement():
             #Ejecutamos el comando
             self.cursor.execute(sql)
             #Gracias al ON DELETE CASCADE se eliminará la apareición de esta VM en el resto de tablas
+            #Actualizamos la base de datos
+            self.db.commit() 
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator or Teacher User")
+        
     def deleteAllVM(self,groupId):
         '''
             Esta función elimina de la base de datos todas las máquinas 
@@ -261,6 +267,8 @@ class UserManagement():
             sql = "DELETE FROM VMByGroup WHERE groupId = " + groupId 
             #Ejecutamos el comando
             self.cursor.execute(sql)
+            #Actualizamos la base de datos
+            self.db.commit() 
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator or Teacher User")
@@ -275,7 +283,9 @@ class UserManagement():
             #insertamos el usuario
             sql = "INSERT  INTO UserType(name) VALUES ('" + name + "')"
             #Ejecutamos el comando
-            self.cursor.execute(sql) 
+            self.cursor.execute(sql)
+            #Actualizamos la base de datos
+            self.db.commit()  
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator User")    
@@ -292,6 +302,8 @@ class UserManagement():
             sql = "DELETE FROM UserType WHERE typeId =" + typeId 
             #Ejecutamos el comando
             self.cursor.execute(sql) 
+            #Actualizamos la base de datos
+            self.db.commit() 
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator User")  
