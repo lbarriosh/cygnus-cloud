@@ -19,7 +19,7 @@ class Packet(object):
     @attention: The single underscore methods are semi-private, and MUST NOT
     be used along the user's code.
     """
-    def __init__(self, packetType=Packet_TYPE.DATA, priority= -1):
+    def __init__(self, packetType=Packet_TYPE.DATA, priority= 10):
         """
         Creates an empty packet with the type and priority given as arguments
         """
@@ -111,6 +111,18 @@ class Packet(object):
         Converts the packet to a string
         """
         return "Packet(" + str(self.__packetType) + "," + str(self.__priority) + ")<" + self.__data + ">"
+    
+    def _getPacketType(self):
+        """
+        Returns the packet's type
+        """
+        return self.__packetType
+    
+    def getPriority(self):
+        """
+        Returns the packet's priority
+        """
+        return self.__priority
     
     def _setData(self, data):
         """
