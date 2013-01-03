@@ -61,17 +61,17 @@ class GenericThreadSafePriorityQueue(object):
 if __name__ == "__main__" :
     
     class DumbThread(Thread):
-        def __init__(self, queue, id, threshold):
+        def __init__(self, queue, thid, threshold):
             Thread.__init__(self)
             self.__queue = queue
-            self.__id = id
+            self.__thid = thid
             self.__threshold = threshold
     
         def run(self):
-            print 'Dumb thread ' + str(self.__id) + " is running now\n"
+            print 'Dumb thread ' + str(self.__thid) + " is running now\n"
             priority = range(-self.__threshold, self.__threshold)
             for item in priority :
-                self.__queue.queue(item, "Dumb thread " + str(self.__id) + " " + str(item))
+                self.__queue.queue(item, "Dumb thread " + str(self.__thid) + " " + str(item))
             
         
     # Create an empty queue
