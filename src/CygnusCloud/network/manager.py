@@ -7,92 +7,12 @@ In this module we define the NetworkManager class and its main dependencies.
 
 from twisted.internet import reactor
 from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint
-from twisted.internet.protocol import Protocol, Factory
-from threading import Thread
 from utils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
-from network.packets.packet import Packet, Packet_TYPE
+from network.packet import Packet, Packet_TYPE
 from network.exceptions.networkManager import NetworkManagerException
+from network.threads import _IncomingDataThread, _TwistedReactorThread
+from network.protocols import _CygnusCloudProtocol, _CygnusCloudProtocolFactory
 from time import sleep
-
-class _CygnusCloudProtocol(Protocol):
-    """
-    Network protocol implementation
-    """
-    def __init__(self, queue):
-        """
-        Initializes the protocol with an incoming data priority queue.
-        """
-        self.__incomingPacketsQueue = queue
-    
-    def dataReceived(self, data):
-        """
-        Generates a packet with the received data and stores it on the
-        incoming priority queue associated with the protocol instance.
-        """
-        p = Packet._deserialize(data)
-        self.__incomingPacketsQueue.queue(p.getPriority(), p)
-    
-    def connectionMade(self):
-        print "Connection established"
-    
-    def connectionLost(self, reason):
-        print "Connection lost"  
-    
-    def sendData(self, packet):
-        """
-        Sends the serialized packet
-        """
-        self.transport.write(packet._serialize())
-        
-    def disconnect(self):
-        """
-        Closes the connection
-        """
-        self.transport.loseConnection()
-        
-class _CygnusCloudProtocolFactory(Factory):
-    """
-    Protocol factory. These objects are used to create protocol instances
-    within the Twisted Framework.
-    """    
-    def __init__(self, queue):
-        self.protocol = _CygnusCloudProtocol
-        self.__queue = queue        
-        self.__instance = None    
-    
-    def buildProtocol(self, addr):
-        """
-        Builds a protocol, stores a pointer to it and finally returns it.
-        This method is called inside Twisted code.
-        """
-        self.__instance = _CygnusCloudProtocol(self.__queue)        
-        return self.__instance
-
-    def getInstance(self):
-        """
-        Returns the last built instance
-        """
-        return self.__instance
-    
-    def getIncomingDataQueue(self):
-        """
-        Returns the incoming packages queue
-        """
-        return self.__queue
-        
-class _TwistedReactorThread(Thread):
-    """
-    These threads run the twisted reactor loop.
-    @attention: Once the reactor is stopped, it won\'t be able to start again.
-    """
-    def __init__(self):
-        Thread.__init__(self)
-    
-    def run(self):        
-        reactor.run(installSignalHandlers=0)
-        
-    def stop(self):
-        reactor.stop()
         
 class NetworkCallback(object):
     """
@@ -102,38 +22,6 @@ class NetworkCallback(object):
     def processPacket(self, packet):
         raise NotImplementedError
     
-class _IncomingDataThread(Thread):
-    """
-    A class associated to the incoming packages threads.
-    This threads will process the incoming packages.
-    """
-    def __init__(self, queue, callbackObject):
-        """
-        Initializes the thread's state
-        """
-        Thread.__init__(self)
-        self.__stop = False
-        self.__queue = queue
-        self.__isRunning = False
-        self.__callbackObject = callbackObject
-        
-    def start(self):
-        if not self.__isRunning :
-            Thread.start(self)
-            self.__isRunning = True
-    
-    def stop(self):
-        self.__stop = True
-        
-    def run(self):
-        while not (self.__stop and self.__queue.isEmpty()):
-            while not self.__queue.isEmpty() :
-                packet = self.__queue.dequeue()
-                self.__callbackObject.processPacket(packet)
-            if not self.__stop :
-                sleep(10) # Sleep for 10 milliseconds when there's nothing to do   
-    
-        
 class NetworkManager():
     """
     This class provides a facade to use Twisted in a higher abstraction level way. 

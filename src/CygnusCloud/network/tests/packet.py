@@ -6,7 +6,7 @@ Packet unit tests
 '''
 import unittest
 
-from network.packets.packet import Packet, Packet_TYPE
+from network.packet import Packet, Packet_TYPE
 from network.exceptions.packetException import PacketException
 
 class PacketTests(unittest.TestCase):    
