@@ -23,6 +23,50 @@ class NetworkCallback(object):
     def processPacket(self, packet):
         raise NotImplementedError
     
+class NetworkConnection(object):
+    def __init__(self, isServer, port, protocol, queue, callback, incomingDataThread):
+        self.__isServer = isServer
+        self.__port = port
+        self.__protocol = protocol
+        self.__queue = queue
+        self.__callback = callback
+        self.__incomingDataThread = incomingDataThread
+        self.__packagesToSend = 0
+        
+    def getQueue(self):
+        return self.__queue
+    
+    def sendPacket(self, p):
+        self.__protocol.sendData(p)
+        self.__packagesToSend -= 1
+        
+    def registerPacket(self):
+        self.__packagesToSend += 1
+    
+    def setProtocol(self, protocol):
+        self.__protocol = protocol
+    
+    def isReady(self):
+        return self.__protocol != None
+    
+    def getCallback(self):
+        return self.__callback
+    
+    def startThread(self):
+        self.__incomingDataThread.start()
+    
+    def stopThread(self, join):
+        self.__incomingDataThread.stop()
+        if join :
+            self.__incomingDataThread.join()
+    
+    def close(self):
+        if self.__isServer :
+            ipListeningPort = reactor.listen(self.__port)
+            ipListeningPort.stopListening()
+        else :
+            self.__protocol.disconnect()
+    
 class NetworkManager():
     """
     This class provides a facade to use Twisted in a higher abstraction level way. 
@@ -51,9 +95,9 @@ class NetworkManager():
         @attention: Due to some Twisted related limitations, do NOT stop the network service 
         UNTIL you KNOW PERFECTLY WELL that you won\'t be using it again. 
         """
-        for (_protocol, _queue, thread, _callback) in self.__connectionPool.values() :
-            thread.stop()
-            thread.join()
+        for connection in self.__connectionPool.values() :
+            connection.close()
+            connection.stopThread(True)
         self.__outgoingDataThread.stop()
         self.__outgoingDataThread.join()
         self.__networkThread.stop()
@@ -63,17 +107,14 @@ class NetworkManager():
         """
         Allocates (if necessary) the resources associated to a new connection 
         """
-        queue = None
-        thread = None
-        callback = None
-        found = False
-        for (_protocol, queue, thread, callback) in self.__connectionPool.values() :
-            if (callback == callbackObject) :
+        c = None
+        for connection in self.__connectionPool.values() :
+            if (connection.getCallback() == callbackObject) :
                 # Everything is allocated. Let's reuse it.
-                found = True
+                c = connection
                 break
-        if found :
-            return (queue, thread)
+        if c != None :
+            return (c.getQueue(), c.getThread())
         else :
             queue = GenericThreadSafePriorityQueue()
             thread = _IncomingDataThread(queue, callbackObject)
@@ -99,7 +140,7 @@ class NetworkManager():
         if factory.getInstance() is None :
             raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
         # Add the new connection to the connection pool
-        self.__connectionPool[port] = (factory.getInstance(), queue, callbackObject, thread) 
+        self.__connectionPool[port] = NetworkConnection(False, port, factory.getInstance(), queue, callbackObject, thread)
         # Start the connection thread
         thread.start()
         
@@ -116,16 +157,17 @@ class NetworkManager():
         endpoint = TCP4ServerEndpoint(reactor, port)
         factory = _CygnusCloudProtocolFactory(queue)        
         # Add the new connection to the connection pool
-        self.__connectionPool[port] = (None, queue, callbackObject, thread) 
+        connection = NetworkConnection(True, port, None, queue, callbackObject, thread)
+        self.__connectionPool[port] = connection
         # Create the waiting thread
-        th = _ServerWaitThread(self.__connectionPool, port, endpoint, factory, thread)
+        th = _ServerWaitThread(connection, endpoint, factory)
         th.start()
         
     def isConnectionReady(self, port):
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("The port " + str(port) +" is not in use") 
-        (protocol, _queue, _callbackObject, _thread) = self.__connectionPool[port]
-        return not protocol is None
+        connection = self.__connectionPool[port]
+        return connection.isReady()
         
     def sendPacket(self, port, packet):
         """
@@ -133,10 +175,11 @@ class NetworkManager():
         """
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
-        (protocol, _queue, _thread, _callback) = self.__connectionPool[port]
-        if protocol is None :
+        connection = self.__connectionPool[port]
+        if not connection.isReady() :
             raise NetworkManagerException("No clients have connected to this port yet")
-        self.__outgoingDataQueue.queue(packet.getPriority(), (protocol, packet))
+        connection.registerPacket()
+        self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet))
         
     def createPacket(self, priority):
         """
@@ -153,15 +196,16 @@ class NetworkManager():
         """
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
-        (protocol, _queue, callbackObject, thread) = self.__connectionPool[port]
-        protocol.disconnect()
+        connection = self.__connectionPool[port]
+        connection.close()
+        callback = connection.getCallback()
         # Delete the mapping
         self.__connectionPool.pop(port)
         stopThread = True
-        for (_protocol, _queue, _thread, callback) in self.__connectionPool.values() :
-            if (callbackObject == callback) :
+        for connection in self.__connectionPool.values() :
+            if (connection.getCallback() == callback) :
                 # The thread is assigned to another connection => we won't stop it now
                 stopThread = False
                 break
         if stopThread :
-            thread.stop()
+            connection.stopThread(False)

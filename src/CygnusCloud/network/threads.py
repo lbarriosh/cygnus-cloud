@@ -41,27 +41,21 @@ class _IncomingDataThread(QueueProcessingThread):
         
 class _OutgoingDataThread(QueueProcessingThread):
     def processElement(self, e):
-        (protocol, packet) = e
-        protocol.sendData(packet)
+        (connection, packet) = e
+        connection.sendPacket(packet)
         
 class _ServerWaitThread(BasicThread):
     
-    def __init__(self, connectionPool, port, endpoint, factory, incomingDataThread):
+    def __init__(self, connection, endpoint, factory):
         BasicThread.__init__(self)
-        self.__connectionPool = connectionPool
-        self.__port = port
+        self.__connection = connection
         self.__endpoint = endpoint
         self.__factory = factory
-        self.__incomingDataThread = incomingDataThread
         
-    def run(self):
-        try:
-            self.__endpoint.listen(self.__factory)
-            (_p, queue, callbackObject, thread) = self.__connectionPool[self.__port]
-            self.__connectionPool[self.__port] = (self.__factory.getInstance(), queue, callbackObject, thread)
-            self.__incomingDataThread.start()
-        except (SystemExit):
-            self.__incomingDataThread.stop()
+    def run(self):       
+        self.__endpoint.listen(self.__factory)
+        self.__connection.setProtocol(self.__factory.getInstance())
+        self.__connection.startThread()
         
     
         
