@@ -5,13 +5,13 @@
   Este script deberá ser cargado cada vez que sea necesario crear la base de datos
 */
 # Borramos la base de datos si ya existia previamente
-DROP DATABASE IF EXISTS  DBWebServer;
+DROP DATABASE IF EXISTS  DBWebServerTest;
 
 # Comenzamos creando la correspondiente base de datos
-CREATE DATABASE IF NOT EXISTS DBWebServer ;
+CREATE DATABASE IF NOT EXISTS DBWebServerTest ;
 
 #Abrimos la base de datos
-USE DBWebServer;
+USE DBWebServerTest;
 
 #Creamos las tablas necesarias
 CREATE TABLE IF NOT EXISTS Users(userId INTEGER  PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20),pass VARCHAR(20));
@@ -52,7 +52,6 @@ INSERT IGNORE INTO Users VALUES (5,"Teacher1","4321");
 INSERT IGNORE INTO Users VALUES (6,"Teacher2","3333");
 INSERT IGNORE INTO Users VALUES (7,"Teacher3","4567");
 
-
 # Tabla de tipos
 INSERT IGNORE INTO UserType VALUES (1,"Administrator");
 INSERT IGNORE INTO UserType VALUES (2,"Teacher");
@@ -70,9 +69,9 @@ INSERT IGNORE INTO TypeOf VALUES (7,2);
 
 # Tabla de grupos
 INSERT IGNORE INTO UserGroup VALUES (1,2012,"Subject1",1,"a");
-INSERT IGNORE INTO UserGroup VALUES (2,2012,"Subject2",1,"b");
-INSERT IGNORE INTO UserGroup VALUES (3,2012,"Subject3",2,"a");
-INSERT IGNORE INTO UserGroup VALUES (4,2012,"Subject4",3,"a");
+INSERT IGNORE INTO UserGroup VALUES (2,2012,"Subject2",2,"b");
+INSERT IGNORE INTO UserGroup VALUES (3,2012,"Subject3",3,"a");
+INSERT IGNORE INTO UserGroup VALUES (4,2012,"Subject4",4,"a");
 
 # Tabla de grupos de clase
 INSERT IGNORE INTO ClassGroup VALUES (2,1);
@@ -89,8 +88,9 @@ INSERT IGNORE INTO ClassGroup VALUES (7,4);
 
 # Tabla de MV por Grupo
 INSERT IGNORE INTO VMByGroup VALUES (1,"VMName1");
-INSERT IGNORE INTO VMByGroup VALUES (2,"VMName2");
-INSERT IGNORE INTO VMByGroup VALUES (4,"VMName3");
+INSERT IGNORE INTO VMByGroup VALUES (1,"VMName2");
+INSERT IGNORE INTO VMByGroup VALUES (2,"VMName3");
+INSERT IGNORE INTO VMByGroup VALUES (4,"VMName4");
 
 
 

@@ -1,7 +1,7 @@
 # -*- coding: UTF8 -*-
 import MySQLdb
 
-class UserAccess:
+class UserAccess(object):
     '''
     Clase encargada de gestionar el logueo de un determinado usuario
     '''
