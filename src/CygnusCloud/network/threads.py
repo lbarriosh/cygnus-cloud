@@ -5,6 +5,7 @@ Created on Jan 4, 2013
 '''
 
 from twisted.internet import reactor
+from utils.threads import QueueProcessingThread, BasicThread
 from threading import Thread
 from time import sleep
 
@@ -24,35 +25,48 @@ class _TwistedReactorThread(Thread):
         reactor.run(installSignalHandlers=0)
         
     def stop(self):
-        reactor.stop()
-        
-class _IncomingDataThread(Thread):
+        reactor.stop()   
+                
+class _IncomingDataThread(QueueProcessingThread):
     """
-    A class associated to the incoming packages threads.
+    A class associated with the incoming packages threads.
     This threads will process the incoming packages.
     """
     def __init__(self, queue, callbackObject):
-        """
-        Initializes the thread's state
-        """
-        Thread.__init__(self)
-        self.__stop = False
-        self.__queue = queue
-        self.__isRunning = False
-        self.__callbackObject = callbackObject
+        QueueProcessingThread.__init__(self, queue)   
+        self.__callbackObject = callbackObject     
         
-    def start(self):
-        if not self.__isRunning :
-            Thread.start(self)
-            self.__isRunning = True
+    def processElement(self, e):
+        self.__callbackObject.processPacket(e)
+        
+class _OutgoingDataThread(QueueProcessingThread):
+    def processElement(self, e):
+        (protocol, packet) = e
+        protocol.sendData(packet)
+        
+class _ServerWaitThread(BasicThread):
     
-    def stop(self):
-        self.__stop = True
+    def __init__(self, connectionPool, port, endpoint, factory, incomingDataThread):
+        BasicThread.__init__(self)
+        self.__connectionPool = connectionPool
+        self.__port = port
+        self.__endpoint = endpoint
+        self.__factory = factory
+        self.__incomingDataThread = incomingDataThread
         
     def run(self):
-        while not (self.__stop and self.__queue.isEmpty()):
-            while not self.__queue.isEmpty() :
-                packet = self.__queue.dequeue()
-                self.__callbackObject.processPacket(packet)
-            if not self.__stop :
-                sleep(10) # Sleep for 10 milliseconds when there's nothing to do   
+        try:
+            self.__endpoint.listen(self.__factory)
+            (_p, queue, callbackObject, thread) = self.__connectionPool[self.__port]
+            self.__connectionPool[self.__port] = (self.__factory.getInstance(), queue, callbackObject, thread)
+            self.__incomingDataThread.start()
+        except (SystemExit):
+            self.__incomingDataThread.stop()
+        
+    
+        
+    
+                
+
+                
+

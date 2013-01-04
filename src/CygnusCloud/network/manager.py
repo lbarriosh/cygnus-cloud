@@ -8,10 +8,11 @@ In this module we define the NetworkManager class and its main dependencies.
 from twisted.internet import reactor
 from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint
 from utils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
+from utils.multithreadingDictionary import GenericThreadSafeDictionary
 from network.packet import Packet, Packet_TYPE
 from network.exceptions.networkManager import NetworkManagerException
-from network.threads import _IncomingDataThread, _TwistedReactorThread
-from network.protocols import _CygnusCloudProtocol, _CygnusCloudProtocolFactory
+from network.threads import _IncomingDataThread, _TwistedReactorThread, _OutgoingDataThread, _ServerWaitThread
+from network.protocols import _CygnusCloudProtocolFactory
 from time import sleep
         
 class NetworkCallback(object):
@@ -32,14 +33,17 @@ class NetworkManager():
         """
         Initializes the state
         """
-        self.__connectionPool = dict();
+        self.__connectionPool = GenericThreadSafeDictionary()
         self.__networkThread = _TwistedReactorThread()
+        self.__outgoingDataQueue = GenericThreadSafePriorityQueue()
+        self.__outgoingDataThread = _OutgoingDataThread(self.__outgoingDataQueue)
         
     def startNetworkService(self):
         """
         Starts the reactor thread
         """
         self.__networkThread.start()
+        self.__outgoingDataThread.start()
         
     def stopNetworkService(self):
         """
@@ -50,6 +54,8 @@ class NetworkManager():
         for (_protocol, _queue, thread, _callback) in self.__connectionPool.values() :
             thread.stop()
             thread.join()
+        self.__outgoingDataThread.stop()
+        self.__outgoingDataThread.join()
         self.__networkThread.stop()
         self.__networkThread.join()
         
@@ -88,13 +94,13 @@ class NetworkManager():
         endpoint.connect(factory)   
         time = 0
         while factory.getInstance() is None and time <= timeout:            
-            sleep(1)
-            time += 1
+            sleep(10)
+            time += 10
         if factory.getInstance() is None :
             raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
         # Add the new connection to the connection pool
         self.__connectionPool[port] = (factory.getInstance(), queue, callbackObject, thread) 
-        # Start the thread
+        # Start the connection thread
         thread.start()
         
     def listenIn(self, port, callbackObject):
@@ -108,14 +114,18 @@ class NetworkManager():
         (queue, thread) = self.__allocateConnectionResources(callbackObject)       
         # Create and configure the endpoint
         endpoint = TCP4ServerEndpoint(reactor, port)
-        factory = _CygnusCloudProtocolFactory(queue)
-        endpoint.listen(factory)
-        while factory.getInstance() is None :            
-            sleep(1)
+        factory = _CygnusCloudProtocolFactory(queue)        
         # Add the new connection to the connection pool
-        self.__connectionPool[port] = (factory.getInstance(), queue, callbackObject, thread) 
-        # Start the thread
-        thread.start()
+        self.__connectionPool[port] = (None, queue, callbackObject, thread) 
+        # Create the waiting thread
+        th = _ServerWaitThread(self.__connectionPool, port, endpoint, factory, thread)
+        th.start()
+        
+    def isConnectionReady(self, port):
+        if not self.__connectionPool.has_key(port) :
+            raise NetworkManagerException("The port " + str(port) +" is not in use") 
+        (protocol, _queue, _callbackObject, _thread) = self.__connectionPool[port]
+        return not protocol is None
         
     def sendPacket(self, port, packet):
         """
@@ -124,7 +134,9 @@ class NetworkManager():
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
         (protocol, _queue, _thread, _callback) = self.__connectionPool[port]
-        protocol.sendData(packet)
+        if protocol is None :
+            raise NetworkManagerException("No clients have connected to this port yet")
+        self.__outgoingDataQueue.queue(packet.getPriority(), (protocol, packet))
         
     def createPacket(self, priority):
         """
