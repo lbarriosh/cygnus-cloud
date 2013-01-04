@@ -8,18 +8,19 @@ class UserManagement():
      
     '''
 
-    def __init__(self,sqlUser,sqlPass,logUser):
+    def __init__(self,sqlUser,sqlPass,databaseName,logUser):
         '''
         Constructor de la clase
         '''
         #Guardamos los atributos
-        self.sqlUser = sqlUser
-        self.sqlPass = sqlPass
-        self.user = logUser
+        self.__sqlUser = sqlUser
+        self.__sqlPass = sqlPass
+        self.__user = logUser
+        self.__databaseName = databaseName
         #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
-        self.db = self.connect()
-        self.cursor = self.db.cursor()
+        self.__db = self.connect()
+        self.__cursor = self.__db.cursor()
         # Extraemos la lista con los tipos asociados a
         #  el usuario
         self.typeIds = self.getTypeIds()
@@ -27,10 +28,10 @@ class UserManagement():
     def connect(self):
         #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
+        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
         cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
-        sql = "USE DBWebServer"     
+        sql = "USE " + self.__databaseName     
         #Ejecutamos el comando
         cursor.execute(sql)
         #devolvemos el cursor
@@ -38,16 +39,16 @@ class UserManagement():
     
     def disconnect(self):
         #cerramos las conexiones
-        self.cursor.close()
-        self.db.close()
+        self.__cursor.close()
+        self.__db.close()
     
     def showUsers(self):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT * FROM Users"     
         #Ejecutamos el comando
-        self.cursor.execute(sql)
+        self.__cursor.execute(sql)
         #Recogemos los resultado
-        results=self.cursor.fetchall()
+        results=self.__cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         for r in results:
             print(r)
@@ -56,9 +57,9 @@ class UserManagement():
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT * FROM UserType"     
         #Ejecutamos el comando
-        self.cursor.execute(sql)
+        self.__cursor.execute(sql)
         #Recogemos los resultado
-        results=self.cursor.fetchall()
+        results=self.__cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         for r in results:
             print(r)  
@@ -70,11 +71,11 @@ class UserManagement():
             al usuario logueado
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT typeId FROM TypeOf WHERE userId = " + self.user     
+        sql = "SELECT typeId FROM TypeOf WHERE userId = " + self.__user     
         #Ejecutamos el comando
-        self.cursor.execute(sql)
+        self.__cursor.execute(sql)
         #Recogemos los resultado
-        resultados=self.cursor.fetchall()
+        resultados=self.__cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         typeIds = []
         for r in resultados:
@@ -88,11 +89,11 @@ class UserManagement():
              grupos  asociados al usuario dado de alta en esta sesión
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT groupId FROM ClassGroup WHERE userId = " + self.user     
+        sql = "SELECT groupId FROM ClassGroup WHERE userId = " + self.__user     
         #Ejecutamos el comando
-        self.cursor.execute(sql)
+        self.__cursor.execute(sql)
         #Recogemos los resultado
-        resultados=self.cursor.fetchall()
+        resultados=self.__cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         groupIds = []
         for r in resultados:
@@ -108,9 +109,9 @@ class UserManagement():
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VMName FROM VMByGroup WHERE groupId = " + idGroup     
         #Ejecutamos el comando
-        self.cursor.execute(sql)
+        self.__cursor.execute(sql)
         #Recogemos los resultado
-        resultados=self.cursor.fetchall()
+        resultados=self.__cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         vmNames = []
         for r in resultados:
@@ -128,9 +129,9 @@ class UserManagement():
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT subject,curse,yearGroup,curseGroup FROM UserGroup WHERE groupId = " + idGroup     
         #Ejecutamos el comando
-        self.cursor.execute(sql)
+        self.__cursor.execute(sql)
         #Recogemos los resultado
-        resultado=self.cursor.fetchone()
+        resultado=self.__cursor.fetchone()
         #Devolvemos la lista resultado
         return resultado 
     
@@ -144,9 +145,9 @@ class UserManagement():
         sql += " WHERE u.userId = cg.userId AND u.userId = tof.userId AND tof.typeId = ut.typeId " 
         sql += " AND ut.name = 'Teacher' AND cg.groupId = " + idGroup     
         #Ejecutamos el comando
-        self.cursor.execute(sql)
+        self.__cursor.execute(sql)
         #Recogemos los resultado
-        resultados=self.cursor.fetchall()
+        resultados=self.__cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         teachersNames = []
         for r in resultados:
@@ -163,9 +164,9 @@ class UserManagement():
         sql = "SELECT ut.name FROM UserType ut,TypeOf tof " 
         sql += "WHERE ut.typeId = tof.typeId AND tof.userId = " + userId     
         #Ejecutamos el comando
-        self.cursor.execute(sql)
+        self.__cursor.execute(sql)
         #Recogemos los resultado
-        resultado=self.cursor.fetchone()
+        resultado=self.__cursor.fetchone()
         #Comprobamos si los nombres coinicden
         return (resultado[0] ==  nameType)      
          
@@ -176,15 +177,15 @@ class UserManagement():
              identificador se pasa como argumento
         '''
         #Comprobamos que el usuario sea un administrador     
-        if(self.isTypeOf("Administrator",self.user)):
+        if(self.isTypeOf("Administrator",self.__user)):
             #borramos el usuario
             sql = "DELETE FROM Users WHERE userId =" + userId 
             #Ejecutamos el comando
-            self.cursor.execute(sql) 
+            self.__cursor.execute(sql) 
             # Gracias al ON DELETE CASCADE debería borrarse sus referencias en
             #  el resto de las tablas
             #Actualizamos la base de datos
-            self.db.commit() 
+            self.__db.commit() 
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator User")
@@ -196,27 +197,27 @@ class UserManagement():
              cuyo nombre y contraseña se pasan como argumento.
         '''
         #Comprobamos que el usuario sea un administrador     
-        if(self.isTypeOf("Administrator",self.user)):
+        if(self.isTypeOf("Administrator",self.__user)):
             #insertamos el usuario
             sql = "INSERT  INTO Users(name,pass) VALUES ('" + name + "','" + password + "')"
             #Ejecutamos el comando
-            self.cursor.execute(sql) 
+            self.__cursor.execute(sql) 
             
             #Extraemos el id del usuario que acabamos de crear
             sql = "SELECT userId FROM Users WHERE name ='" + name + "' AND pass = '" + password +"'"
             
             #Ejecutamos el comando
-            self.cursor.execute(sql)
+            self.__cursor.execute(sql)
             #Recogemos los resultado
-            resultados=self.cursor.fetchall()
+            resultados=self.__cursor.fetchall()
             #Cogemos el utlimo
-            userId = self.cursor.lastrowid
+            userId = self.__cursor.lastrowid
             #Añadimos el tipo
             sql = "INSERT  INTO TypeOf(userId,typeId) VALUES (" + str(userId) + "," + str(typeId) + ")"
             #Ejecutamos el comando
-            self.cursor.execute(sql)
+            self.__cursor.execute(sql)
             #Actualizamos la base de datos
-            self.db.commit() 
+            self.__db.commit() 
             #Si todo ha salido bien devolvemos el id
             return userId 
             
@@ -232,8 +233,38 @@ class UserManagement():
         groups = self.getUserGroupsIds()
         #Devolvemos true si existe al menos una vez el grupo en la lista
         return (groups.count(groupId) >= 1)
+    
+    def isUserExists(self,userId):
+        '''
+            Comprueba si un usuario existe
+        '''
+        #Comprobamos que el usuario sea un administrador     
+        if(self.isTypeOf("Administrator",self.__user)):
+            sql = "SELECT COUNT(*) FROM Users WHERE userId =" + userId
+            #Ejecutamos el comando
+            self.__cursor.execute(sql)
+            #Recogemos los resultado
+            result=self.__cursor.fetchone()
+            return (result[0] == 1)
+        else:
+            #El usuario no es administrador. Lanazamos una excepción
+            raise Exception("Not Administrator User") 
         
-        
+    def isVMExists(self,VMName):
+        '''
+            Comprueba si una máquina virtual existe 
+        '''
+        #Comprobamos que el usuario sea un administrador     
+        if(self.isTypeOf("Administrator",self.__user)):
+            sql = "SELECT COUNT(*) FROM VMByGroup WHERE VMName ='" + VMName + "'"
+            #Ejecutamos el comando
+            self.__cursor.execute(sql)
+            #Recogemos los resultado
+            result=self.__cursor.fetchone()
+            return (result[0] == 1)
+        else:
+            #El usuario no es administrador. Lanazamos una excepción
+            raise Exception("Not Administrator User") 
               
     def deleteVM(self,VMName,groupId): 
         '''
@@ -243,15 +274,15 @@ class UserManagement():
              pertenezca a un grupo asociado a dicho profesor
         '''
         #Comprobamos que el usuario sea un administrador o un profesor del grupo
-        if(self.isTypeOf("Administrator",self.user) or (self.isTypeOf("Teacher",self.user) and self.isUserInGroup(self,groupId))):
+        if(self.isTypeOf("Administrator",self.__user) or (self.isTypeOf("Teacher",self.__user) and self.isUserInGroup(self,groupId))):
 
             #Borramos la máquina virtual
             sql = "DELETE FROM VMByGroup WHERE groupId = " + groupId + " AND VMName ='" + VMName + "'"
             #Ejecutamos el comando
-            self.cursor.execute(sql)
+            self.__cursor.execute(sql)
             #Gracias al ON DELETE CASCADE se eliminará la apareición de esta VM en el resto de tablas
             #Actualizamos la base de datos
-            self.db.commit() 
+            self.__db.commit() 
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator or Teacher User")
@@ -262,13 +293,13 @@ class UserManagement():
             virtuales asociadas a un determinado grupo
         ''' 
         #Comprobamos que el usuario sea un administrador o un profesor del grupo
-        if(self.isTypeOf("Administrator",self.user) or (self.isTypeOf("Teacher",self.user) and self.isUserInGroup(self,groupId))):
+        if(self.isTypeOf("Administrator",self.__user) or (self.isTypeOf("Teacher",self.__user) and self.isUserInGroup(self,groupId))):
             #Borramos las máquinas virtuales
             sql = "DELETE FROM VMByGroup WHERE groupId = " + groupId 
             #Ejecutamos el comando
-            self.cursor.execute(sql)
+            self.__cursor.execute(sql)
             #Actualizamos la base de datos
-            self.db.commit() 
+            self.__db.commit() 
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator or Teacher User")
@@ -283,9 +314,9 @@ class UserManagement():
             #insertamos el usuario
             sql = "INSERT  INTO UserType(name) VALUES ('" + name + "')"
             #Ejecutamos el comando
-            self.cursor.execute(sql)
+            self.__cursor.execute(sql)
             #Actualizamos la base de datos
-            self.db.commit()  
+            self.__db.commit()  
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator User")    
@@ -301,9 +332,9 @@ class UserManagement():
             #insertamos el usuario
             sql = "DELETE FROM UserType WHERE typeId =" + typeId 
             #Ejecutamos el comando
-            self.cursor.execute(sql) 
+            self.__cursor.execute(sql) 
             #Actualizamos la base de datos
-            self.db.commit() 
+            self.__db.commit() 
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator User")  
@@ -316,9 +347,9 @@ class UserManagement():
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT groupId FROM VMByGroup WHERE VMName = '" + VMName + "'"     
         #Ejecutamos el comando
-        self.cursor.execute(sql)
+        self.__cursor.execute(sql)
         #Recogemos los resultado
-        resultados=self.cursor.fetchall()
+        resultados=self.__cursor.fetchall()
         #Guardamos en una lista los ids resultantes
         groupIds = []
         for r in resultados:
@@ -337,9 +368,9 @@ class UserManagement():
             #Borramos las máquinas virtuales
             sql = "SELECT userId FROM ClassGroup WHERE groupId = " + groupId 
             #Ejecutamos el comando
-            self.cursor.execute(sql)
+            self.__cursor.execute(sql)
             #Recogemos los resultado
-            resultados=self.cursor.fetchall()
+            resultados=self.__cursor.fetchall()
             #Guardamos en una lista los ids resultantes
             usersIds = []
             for r in resultados:
@@ -355,7 +386,7 @@ def main():
     print('Inserte el id de usuario:')
     userId = raw_input()
     #Instanciamos el objeto
-    userMan = UserManagement("CygnusCloud","cygnuscloud2012",userId)
+    userMan = UserManagement("CygnusCloud","cygnuscloud2012","DBWebServer",userId)
     sigue = 's'
     while(sigue == 's'):
         print("Escoja un numero de prueba (1-13)")

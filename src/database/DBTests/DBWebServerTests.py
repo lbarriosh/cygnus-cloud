@@ -1,0 +1,76 @@
+# -*- coding: UTF8 -*-
+import MySQLdb
+import os
+import unittest
+
+
+from WebServerDB.UserAccess import UserAccess
+from WebServerDB.UserManagement import UserManagement
+from DBUtils.DBUtils import DBUtils
+
+class DBWebServerTests(unittest.TestCase):
+    '''
+        Clase encargada de realizar los test unitarios asociados 
+    '''
+
+
+        
+    def test_loginUsaer(self):
+        userA = UserAccess("CygnusCloud","cygnuscloud2012")
+        id1 = userA.login("Admin1", "0000")
+        id2 = 8
+        self.assertEquals(id1, id2, "User not match")
+        
+    def test_userTypes(self):
+        userM = UserManagement("CygnusCloud","cygnuscloud2012","DBWebServerTest",'2')
+        l1 = userM.getTypeIds()
+        l2 = [1,3]
+        self.assertEquals(l1, l2, "Not same types")
+        
+    def test_userGroups(self):
+        userM = UserManagement("CygnusCloud","cygnuscloud2012","DBWebServerTest",'2')
+        l1 = userM.getUserGroupsIds()
+        l2 = [1,2]
+        self.assertEquals(l1, l2, "Not same groups")
+        
+    def test_groupVMs(self):
+        userM = UserManagement("CygnusCloud","cygnuscloud2012","DBWebServerTest",'2')
+        l1 = userM.getVMNames('1')
+        l2 = ["VMName1","VMName2"]
+        self.assertEquals(l1, l2, "Not same VMS")
+        
+    def test_groupSubjects(self):
+        userM = UserManagement("CygnusCloud","cygnuscloud2012","DBWebServerTest",'2')
+        l1 = userM.getSubjects('1')
+        l2 = ("Subject1",1,2012,"a")
+        self.assertEquals(l1, l2, "Not same Subjects")   
+        
+    def test_groupTeachers(self):
+        userM = UserManagement("CygnusCloud","cygnuscloud2012","DBWebServerTest",'2')
+        l1 = userM.getTeachers('1')
+        l2 = ["Teacher1"]
+        self.assertEquals(l1, l2, "Not same Teachers") 
+        
+    def test_deleteUser(self):
+        userM = UserManagement("CygnusCloud","cygnuscloud2012","DBWebServerTest",'1')
+        userM.deleteUser('7')
+        self.assertFalse(userM.isUserExists('7'), "User not deleted")
+        
+    def test_createUser(self):
+        userM = UserManagement("CygnusCloud","cygnuscloud2012","DBWebServerTest",'1')
+        userId = userM.createUser("UserTest","testPass",2)
+        self.assertTrue(userM.isUserExists(str(userId)), "User not created")
+        
+    
+    def test_deleteVM(self):
+        userM = UserManagement("CygnusCloud","cygnuscloud2012","DBWebServerTest",'1')
+        userM.deleteVM("VMName3",'2')
+        self.assertFalse(userM.isVMExists("VMName3"), "VM not deleted")
+               
+        
+if __name__ == "__main__":
+    #Cargamos el script de prueba
+    dbUtils = DBUtils(os.getcwd() + "/DBWebServerTest.sql")
+    dbUtils.initMySqlUser("CygnusCloud","cygnuscloud2012")
+    dbUtils.loadScript("CygnusCloud","cygnuscloud2012")     
+    unittest.main()

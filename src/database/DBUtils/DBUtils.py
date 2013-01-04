@@ -37,12 +37,21 @@ class DBUtils:
         cursor=db.cursor()
         
         #Creamos la consulta encargada de cargar el script
-        sql = "source " + self.initFilePath  
-        
+        #sql = "source " + self.initFilePath   
         #Ejecutamos el comando
-        cursor.execute(sql)
+        #cursor.execute(sql)
+        sql = ""
+        fp = open(self.initFilePath)
+        for line in fp:
+                if line.endswith(';\n'):
+                    sql += line
+                    cursor.execute(sql)
+                    sql = ""
+                else:
+                    sql += line
+                    
         #Actualizamos la base de datos
-        self.db.commit() 
+        db.commit() 
         #Cerramos la conexión
         cursor.close()
         db.close()
@@ -64,7 +73,7 @@ def main():
     password = raw_input()  
 
     #Creamos el usuario
-   # utils.initMySqlUser(user, password)
+    utils.initMySqlUser(user, password)
     #Llamamos a la función encargada de cargar el script
     utils.loadScript(user, password)
     
