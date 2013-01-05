@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 '''
 Created on Jan 4, 2013
 
@@ -46,21 +47,15 @@ class _OutgoingDataThread(QueueProcessingThread):
         
 class _ServerWaitThread(BasicThread):
     
-    def __init__(self, connection, endpoint, factory):
-        BasicThread.__init__(self)
-        self.__connection = connection
-        self.__endpoint = endpoint
+    def __init__(self, factory, registerMethod, startThreadMethod):
+        BasicThread.__init__(self)        
         self.__factory = factory
+        self.__registerMethod = registerMethod
+        self.__startThreadMethod = startThreadMethod
         
-    def run(self):       
-        self.__endpoint.listen(self.__factory)
-        self.__connection.setProtocol(self.__factory.getInstance())
-        self.__connection.startThread()
-        
-    
-        
-    
-                
-
-                
-
+    def run(self): 
+        while not self.stopped() and self.__factory.getInstance() == None :
+            sleep(0.01)
+        if not self.stopped() :
+            self.__registerMethod(self.__factory.getInstance())
+            self.__startThreadMethod() 

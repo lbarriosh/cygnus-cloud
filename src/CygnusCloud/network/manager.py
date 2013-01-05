@@ -10,6 +10,7 @@ from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint
 from utils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
 from utils.multithreadingDictionary import GenericThreadSafeDictionary
 from network.packet import Packet, Packet_TYPE
+from network.connection import NetworkConnection
 from network.exceptions.networkManager import NetworkManagerException
 from network.threads import _IncomingDataThread, _TwistedReactorThread, _OutgoingDataThread, _ServerWaitThread
 from network.protocols import _CygnusCloudProtocolFactory
@@ -23,49 +24,7 @@ class NetworkCallback(object):
     def processPacket(self, packet):
         raise NotImplementedError
     
-class NetworkConnection(object):
-    def __init__(self, isServer, port, protocol, queue, callback, incomingDataThread):
-        self.__isServer = isServer
-        self.__port = port
-        self.__protocol = protocol
-        self.__queue = queue
-        self.__callback = callback
-        self.__incomingDataThread = incomingDataThread
-        self.__packagesToSend = 0
-        
-    def getQueue(self):
-        return self.__queue
-    
-    def sendPacket(self, p):
-        self.__protocol.sendData(p)
-        self.__packagesToSend -= 1
-        
-    def registerPacket(self):
-        self.__packagesToSend += 1
-    
-    def setProtocol(self, protocol):
-        self.__protocol = protocol
-    
-    def isReady(self):
-        return self.__protocol != None
-    
-    def getCallback(self):
-        return self.__callback
-    
-    def startThread(self):
-        self.__incomingDataThread.start()
-    
-    def stopThread(self, join):
-        self.__incomingDataThread.stop()
-        if join :
-            self.__incomingDataThread.join()
-    
-    def close(self):
-        if self.__isServer :
-            ipListeningPort = reactor.listen(self.__port)
-            ipListeningPort.stopListening()
-        else :
-            self.__protocol.disconnect()
+
     
 class NetworkManager():
     """
@@ -135,8 +94,8 @@ class NetworkManager():
         endpoint.connect(factory)   
         time = 0
         while factory.getInstance() is None and time <= timeout:            
-            sleep(10)
-            time += 10
+            sleep(0.001)
+            time += 0.001
         if factory.getInstance() is None :
             raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
         # Add the new connection to the connection pool
@@ -154,13 +113,20 @@ class NetworkManager():
         # Allocate the connection resources
         (queue, thread) = self.__allocateConnectionResources(callbackObject)       
         # Create and configure the endpoint
-        endpoint = TCP4ServerEndpoint(reactor, port)
+        endpoint = TCP4ServerEndpoint(reactor, port)       
         factory = _CygnusCloudProtocolFactory(queue)        
-        # Add the new connection to the connection pool
-        connection = NetworkConnection(True, port, None, queue, callbackObject, thread)
+        # Create the connection and the deferred
+        deferred = endpoint.listen(factory)
+        connection = NetworkConnection(True, port, None, queue, callbackObject, thread, deferred)
+        def registerListeningPort(port):
+            connection.setListeningPort(port)
+        deferred.addCallback(registerListeningPort)    
         self.__connectionPool[port] = connection
         # Create the waiting thread
-        th = _ServerWaitThread(connection, endpoint, factory)
+        th = _ServerWaitThread(factory, connection.setProtocol, connection.startThread)
+        # Register it
+        connection.setWaitingThread(th)
+        # And finally, start it
         th.start()
         
     def isConnectionReady(self, port):
