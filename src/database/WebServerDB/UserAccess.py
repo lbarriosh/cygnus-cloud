@@ -5,9 +5,10 @@ class UserAccess(object):
     '''
     Clase encargada de gestionar el logueo de un determinado usuario
     '''
-    def __init__(self,sqlUser,sqlPassword):
-        self.sqlUser = sqlUser
-        self.sqlPass = sqlPassword
+    def __init__(self,sqlUser,sqlPassword,databaseName):
+        self.__sqlUser = sqlUser
+        self.__sqlPass = sqlPassword
+        self.__databaseName = databaseName
         
     def login(self,name,password):
         '''
@@ -15,10 +16,10 @@ class UserAccess(object):
                 de datos con la contraseña definida
         '''
         # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.sqlUser,passwd= self.sqlPass)
+        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
         cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
-        sql = "USE DBWebServer " 
+        sql = "USE " + self.__databaseName
         
         #Ejecutamos el comando
         cursor.execute(sql)
@@ -56,7 +57,7 @@ def main():
     print('Inserte la contrasennia :')
     password = raw_input() 
     #Instanciamos la clase
-    userAccess = UserAccess("CygnusCloud","cygnuscloud2012")
+    userAccess = UserAccess("CygnusCloud","cygnuscloud2012","DBWebServer")
     # llamamos al metodo de logueado
     id = userAccess.login(user, password)
     #Mostramos el identificador
