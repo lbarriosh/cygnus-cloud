@@ -12,12 +12,12 @@ from time import sleep
 if __name__ == "__main__" :
     networkManager = NetworkManager()
     networkManager.startNetworkService()
-    print "Creating server..."
     networkManager.listenIn(8080, DummyCallback())
-    print "The server is now ready"
-    p = networkManager.createPacket(10)
-    sleep(10000)
     networkManager.closeConnection(8080)
+    sleep(5)
+    try :
+        networkManager.listenIn(8080, DummyCallback())
+    except Exception as e:
+        print e
+    print 'Finising'
     networkManager.stopNetworkService()
-
-

@@ -1,13 +1,19 @@
+# -*- coding: utf8 -*-
 '''
-Created on Jan 4, 2013
-
-@author: luis
+Thread-safe dictionary definitions.
+@author: Luis Barrios Hernández
+@version: 1.0
 '''
 
 from threading import BoundedSemaphore
 
 class GenericThreadSafeDictionary :
-    def __init__(self):
+    """
+    A thread-safe dictionary.
+    @attention: This objects are NOT iterable to avoid nasty iterator issues.
+    @note: This class\' methods behave just like the dictionary ones. 
+    """
+    def __init__(self):        
         self.__semaphore = BoundedSemaphore(1)
         self.__dict = dict()
         

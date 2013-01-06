@@ -14,13 +14,15 @@ class GenericThreadSafePriorityQueueException(Exception):
 class GenericThreadSafePriorityQueue(object):
     """
     A priority queue with multi-threading support.
-    @attention: This queues ARE NOT ITERABLE. I've done this ON PURPOSE, just to ensure that
-    no threads will monopolize the synchronization mechanism.
-    
+    @attention: This objects are NOT iterable to avoid nasty iterator issues.    
     """
     def __init__(self):
         """
         Creates an empty priority queue
+        Args:
+            None
+        Returns:
+            Nothing
         """
         # We use this to speed up the queue operations
         self.__data = dict()
@@ -29,6 +31,17 @@ class GenericThreadSafePriorityQueue(object):
         self.__elements = 0
         
     def queue(self, priority, data):
+        """
+        Adds a new element to the queue
+        Args:
+            priority: an integer priority value.
+            data: the data to add to the queue
+        Returns:
+            Nothing
+        Raises:
+            GenericThreadSafePriorityQueueException: this exceptions will be raised when
+            the priority is not an integer value.
+        """
         # Check arguments
         if not isinstance(priority, int) :
             raise GenericThreadSafePriorityQueueException("The priority must be an integer value")
@@ -40,6 +53,15 @@ class GenericThreadSafePriorityQueue(object):
             self.__elements += 1
             
     def dequeue(self):
+        """
+        Pops an element from the queue.
+        Args:
+            None
+        Returns:
+            The popped element.
+        Raises:
+            GenericThreadSafePriorityQueueException: this exceptions will be raised when the queue is empty.
+        """
         with self.__semaphore:
             if self.__elements == 0:
                 raise GenericThreadSafePriorityQueueException("The queue is empty")
@@ -54,6 +76,10 @@ class GenericThreadSafePriorityQueue(object):
     def isEmpty(self):
         """
         Checks if the list es empty or not
+        Args:
+            None
+        Returns:
+            True if the queue is empty and false otherwise.
         """
         with self.__semaphore:
             return self.__elements == 0
