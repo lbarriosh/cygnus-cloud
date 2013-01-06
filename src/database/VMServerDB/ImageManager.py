@@ -11,6 +11,7 @@ class ImageManager(object):
         '''
             Constructora de la clase
         '''
+        # Guardamos los atributos necesarios para la conexión
         self.__sqlUser = sqlUser
         self.__sqlPass = sqlPass
         self.__databaseName = databaseName
@@ -20,11 +21,10 @@ class ImageManager(object):
         self.__cursor = self.__db.cursor()
         
     def connect(self):
-        #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
         db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
         cursor=db.cursor()
-        #Creamos la consulta encargada de extraer los datos
+        #Cambiamos a la base de datos correspondiente
         sql = "USE " + self.__databaseName    
         #Ejecutamos el comando
         cursor.execute(sql)
@@ -99,11 +99,10 @@ class ImageManager(object):
         '''
             Permite cambiar la ruta de la imagen cuyo identificador se pasa como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
+        #Creamos la consulta encargada de realizar la actualización
         sql = "UPDATE VirtualMachine SET imagePath = '"  + path + "' WHERE VMId = " + str(imageId)
         #Ejecutamos el comando
-        self.__cursor.execute(sql) 
-        
+        self.__cursor.execute(sql)        
         #Actualizamos la base de datos
         self.__db.commit() 
         
@@ -111,7 +110,7 @@ class ImageManager(object):
         '''
             Permite registrar en la base de datos una nueva imagen de máquina virtual. 
         '''
-        #Creamos la consulta encargada de extraer los datos
+        #Introducimos los datos en la base de datos
         sql = "INSERT INTO VirtualMachine(name,imagePath,FileConfigPath) VALUES('"  
         sql+=    name + "','" + imagePath  +"','" + FileConfigPath +"') "  
         #Ejecutamos el comando
@@ -129,7 +128,7 @@ class ImageManager(object):
         return imageId
     
     def deleteImage(self,imageId):
-        #borramos el usuario
+        #borramos el la MV
         sql = "DELETE FROM VirtualMachine WHERE VMId =" + str(imageId) 
         #Ejecutamos el comando
         self.__cursor.execute(sql) 
@@ -142,12 +141,13 @@ class ImageManager(object):
         '''
             Comprueba si una imagen existe
         '''
-        #Comprobamos que el usuario sea un administrador     
+        #Contamos el número de MV con el id dado    
         sql = "SELECT COUNT(*) FROM VirtualMachine WHERE VMId =" + str(VMId)
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos los resultado
         result=self.__cursor.fetchone()
+        # Si el resultado es 1, la MV existe
         return (result[0] == 1)   
     
 def main():    
@@ -160,6 +160,7 @@ def main():
         prueba = raw_input()
         
         if(prueba == '1'):
+            # lista de imagenes registradas
             print("Prueba 1")
             imagesIds = imageM.getImages()
             print("Imagenes registradas")
@@ -167,6 +168,7 @@ def main():
                 print(i)
         elif(prueba == '2'):
             print("Prueba 2")
+            # Nombre asociado a una imagen
             print("Indique el id de la imagen:")
             imageId = raw_input()
             #Obtenemos el nombre
@@ -175,6 +177,7 @@ def main():
             print(imageDName)
         elif(prueba == '3'):
             print("Prueba 3")
+            #Descripcion asociada a una imagen
             print("Indique el id de la imagen:")
             imageId = raw_input()
             #Obtenemos el nombre
@@ -183,6 +186,7 @@ def main():
             print(imagePath) 
         elif(prueba == '4'):
             print("Prueba 4")
+            #Fichero de configuración asociado a una imagen
             print("Indique el id de la imagen:")
             imageId = raw_input()
             #Obtenemos el nombre
@@ -191,6 +195,7 @@ def main():
             print(imageConfigPath)
         elif(prueba == '5'):
             print("Prueba 5")
+            #Actualización de la ruta de una imagen
             print("Indique el id de la imagen:")
             imageId = raw_input()
             print("Indique la nueva ruta de la imagen:")
@@ -201,6 +206,7 @@ def main():
             print(imageM.getImagePath(imageId))
         elif(prueba == '6'):
             print("Prueba 6")
+            # Actualización de la ruta del fichero de configuración
             print("Indique el nombre de la nueva imagen:")
             imageName = raw_input()
             print("Indique la nueva ruta de la nueva imagen:")

@@ -9,26 +9,26 @@ class RuntimeData(object):
          Además también se encargará de registrar en la base de datos las nuevas máquinas 
          virtuales en ejecución y de dar de baja aquellas máquinas que se apaguen.
     '''
-
-
     def __init__(self,sqlUser,sqlPass,databaseName):
         '''
             Constructora de la clase
         '''
+        #Guardamos los atributos de conexión necesarios
         self.__sqlUser = sqlUser
         self.__sqlPass = sqlPass
         self.__databaseName = databaseName
-        #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
         self.__db = self.connect()
         self.__cursor = self.__db.cursor()
         
     def connect(self):
-        #Seleccionamos la base de datos que vamos a manejar
+        '''
+            Establece la conexión con MySql
+        '''
         # Nos conectamos a MySql 
         db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
         cursor=db.cursor()
-        #Creamos la consulta encargada de extraer los datos
+        #Cambiamos a la base de datos indicada
         sql = "USE " + self.__databaseName     
         #Ejecutamos el comando
         cursor.execute(sql)
@@ -36,11 +36,17 @@ class RuntimeData(object):
         return db
     
     def disconnect(self):
+        '''
+            Cierra la conexión con MySql
+        '''
         #cerramos las conexiones
         self.__cursor.close()
         self.__db.close()
         
     def showVMs(self):
+        '''
+            Muestra el conjunto de MV registradas
+        '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT * FROM ActualVM" 
         #Ejecutamos el comando
@@ -108,7 +114,7 @@ class RuntimeData(object):
             Devuelve el nombre de la máquina virtual que se encuentra en ejecución
              en  el puerto VNC pasado como argumento.
         '''
-         #Creamos la consulta encargada de extraer los datos
+        #Creamos la consulta encargada de extraer los datos
         sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.VNCPortAdress = '" + str(vncPort) + "' AND "
         sql += "vm.VMId = av.VMId " 
         #Ejecutamos el comando
@@ -163,7 +169,7 @@ class RuntimeData(object):
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
         '''
-        #Creamos la consulta encargada de extraer los datos
+        #CInsertamos los datos nuevos en la BD
         sql = "INSERT INTO ActualVM VALUES('"  
         sql+=    str(vncPort) + "'," + str(userId)  +"," + str(VMId) +",'" 
         sql +=  imageCopyPath + "','" + fileConfigCopyPath + "','" + mac + "','"
@@ -180,7 +186,7 @@ class RuntimeData(object):
             Da de baja en la base de datos el puerto VNC que se le pasa como argumento 
              y con él, todas las características asociadas al mismo.
         ''' 
-                #Borramos la máquina virtual
+        #Borramos la máquina virtual
         sql = "DELETE FROM ActualVM WHERE VNCPortAdress = " + str(vncPort)
         #Ejecutamos el comando
         self.__cursor.execute(sql)
@@ -192,12 +198,13 @@ class RuntimeData(object):
         '''
             Comprueba si una imagen existe
         '''
-        #Comprobamos que el usuario sea un administrador     
+        #Contamos el número de máquinas virtuales asociadas al puerto VNC dado     
         sql = "SELECT COUNT(*) FROM ActualVM WHERE VNCPortAdress =" + str(port)
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos los resultado
         result=self.__cursor.fetchone()
+        #Si el resultado es 1, la MV existirá
         return (result[0] == 1) 
         
 def main():    
@@ -264,7 +271,7 @@ def main():
             print("La contraseña asociada a este puerto es:")
             print(password)
         elif(prueba == '8'):
-            #creacion de una nueva MV
+            #registro de una nueva MV
             print("Prueba 8")
             print("Indique el identificador del puerto")
             port = raw_input()
@@ -285,7 +292,7 @@ def main():
             print("MV registrada:")
             runtimeData.showVMs()
         elif(prueba == '9'):
-            #contraseña asociado a un puerto
+            #borrado de una máquina virtual
             print("Prueba 9")
             print("Indique el identificador del puerto a dar de baja")
             port = raw_input()

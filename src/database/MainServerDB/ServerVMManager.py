@@ -12,23 +12,22 @@ class ServerVMManager(object):
 
     def __init__(self,sqlUser,sqlPass,databaseName):
         '''
-        Constructor de la clase. Recibe el nombre y lla contrasennia del usuario sql encargado
-         de gestionar la base de datos
+            Constructor de la clase. Recibe el nombre y lla contrasennia del usuario sql encargado
+             de gestionar la base de datos
         '''
+        # Guardamos los datos de conexión necesarios
         self.__sqlUser = sqlUser
         self.__sqlPass = sqlPass
         self.__databaseName = databaseName
-        #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
         self.__db = self.connect()
         self.__cursor = self.__db.cursor()
         
     def connect(self):
-        #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
         db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
         cursor=db.cursor()
-        #Creamos la consulta encargada de extraer los datos
+        #Cambiamos a la base de datos correspondeinte
         sql = "USE "  + self.__databaseName   
         #Ejecutamos el comando
         cursor.execute(sql)
@@ -53,7 +52,7 @@ class ServerVMManager(object):
         
     def getMaxVMNumber(self,serverId):
         '''
-         Función que devuelve eldevuelve el número máximo de máquinas virtuales 
+         Función que devuelve el número máximo de máquinas virtuales 
           que el servidor puede soportar
         '''
         #Creamos la consulta encargada de extraer los datos
@@ -67,12 +66,12 @@ class ServerVMManager(object):
     
     def getFreeVMNumber(self,serverId):
         '''
-            devuelve el número de máquinas virtuales libres que el servidor 
+            Devuelve el número de máquinas virtuales libres que el servidor 
             pasado como argumento puede soportar todavía.
         '''
         #Obtenemos el numero de mv activas para este servidor
         sql = "SELECT count(*) FROM ServerImages WHERE serverId =" + str(serverId)
-                #Ejecutamos el comando
+        #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos los resultado
         running=self.__cursor.fetchone()
@@ -83,7 +82,7 @@ class ServerVMManager(object):
     
     def getServers(self):
         '''
-            permite obtener una lista con los identificadores de todos los servidores de 
+            Permite obtener una lista con los identificadores de todos los servidores de 
              máquinas virtuales que actualmente se encuentran dados de alta en la base de datos.
         '''
         #Creamos la consulta encargada de extraer los datos
@@ -101,7 +100,7 @@ class ServerVMManager(object):
     
     def setMaxVM(self,serverId,maxVM): 
         '''
-            permite configurar el número de máquinas virtuales que admite como máximo el
+            Permite configurar el número de máquinas virtuales que admite como máximo el
              servidor de máquinas virtuales
         '''
          #Creamos la consulta encargada de extraer los datos
@@ -116,21 +115,22 @@ class ServerVMManager(object):
         '''
             Comprueba si un servidor existe
         '''
-        #Comprobamos que el usuario sea un administrador     
+        #Contamos el número de serviddores con el id dado    
         sql = "SELECT COUNT(*) FROM VMServer WHERE serverId =" + str(serverId)
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos los resultado
         result=self.__cursor.fetchone()
+        #Si el número es 1 entonces el servidor existe
         return (result[0] == 1)
      
         
     def subscribeServer(self,port,IP,maxVM):
         '''
-            permite registrar un Nuevo servidor de máquinas virtuales con el puerto, la IP y el número
+            Permite registrar un Nuevo servidor de máquinas virtuales con el puerto, la IP y el número
              máximo de máquinas virtuales que se le pasan como argumento
         '''
-         #Creamos la consulta encargada de extraer los datos
+        #Creamos la consulta encargada de insertar los valores en la base de datos
         sql = "INSERT INTO VMServer(ip,portAdress,maxVM) VALUES('" + IP + "','" + port +"'," + str(maxVM) +") "  
         #Ejecutamos el comando
         self.__cursor.execute(sql)               
@@ -195,7 +195,7 @@ def main():
             print("El máximo número de máquinas virtuales para este servidor son:")
             print(mn)
         elif(prueba == '2'):
-            #máximo número de mv en el servidor de mv
+            #Número de mv libres en el servidor de mv
             print("Prueba 2")
             print("Indique el identificador del servidor")
             serverId = raw_input()
@@ -203,14 +203,14 @@ def main():
             print("El número de máquinas virtuales libre para este servidor son:")
             print(mn)
         elif(prueba == '3'):
-            #máximo número de mv en el servidor de mv
+            #Servidores dados de alta
             print("Prueba 3")
             print("Servidores actualmente dados de alta")
             serverIds = serverVM.getServers()
             for s in serverIds:
                 print(s)
         elif(prueba == '4'):
-            #máximo número de mv en el servidor de mv
+            #Cambio del número máximo de MV
             print("Prueba 4")
             print("Indique el identificador del servidor")
             serverId = raw_input()
@@ -220,7 +220,7 @@ def main():
             print("El número máximo de máquinas virtuales ha sido cambiado por:")
             print(serverVM.getMaxVMNumber(serverId))
         elif(prueba == '5'):
-            #registro de un nuevo servidor
+            #Creación de un nuevo servidor
             print("Prueba 5")
             print("Indique el puerto del servidor")
             port = raw_input()
@@ -232,7 +232,7 @@ def main():
             print("El nuevo servidor ha sido creado:")
             serverVM.showServers()
         elif(prueba == '6'):
-            #dar de baja un servidor
+            #Eliminación de un servidor
             print("Prueba 6")
             print("Indique el identificador del servidor")
             serverId = raw_input()
@@ -240,7 +240,7 @@ def main():
             print("El servidor ha sido dado de baja:")
             serverVM.showServers()
         elif(prueba == '7'):
-            #servidores con una determinada imagen
+            #Servidores con una imagen dada
             print("Prueba 7")
             print("Indique el identificador de la imagen")
             imageId = raw_input()

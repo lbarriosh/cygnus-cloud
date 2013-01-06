@@ -3,50 +3,62 @@ import MySQLdb
 
 class UserAccess(object):
     '''
-    Clase encargada de gestionar el logueo de un determinado usuario
+        Clase encargada de gestionar el logueo de un determinado usuario
     '''
     def __init__(self,sqlUser,sqlPassword,databaseName):
         self.__sqlUser = sqlUser
         self.__sqlPass = sqlPassword
         self.__databaseName = databaseName
+        #Seleccionamos la base de datos que vamos a manejar
+        # Nos conectamos a MySql 
+        self.__db = self.connect()
+        self.__cursor = self.__db.cursor()
         
-    def login(self,name,password):
-        '''
-            Esta función comprueba si el usuario se encuentra registrado en la base
-                de datos con la contraseña definida
-        '''
+    def connect(self):
+        #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
         db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
         cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
-        sql = "USE " + self.__databaseName
-        
+        sql = "USE " + self.__databaseName     
         #Ejecutamos el comando
         cursor.execute(sql)
+        #devolvemos el cursor
+        return db
+    
+    def disconnect(self):
+        #cerramos las conexiones
+        self.__cursor.close()
+        self.__db.close()
+                
+    def login(self,name,password):
+        '''
+            Comprueba si el usuario se encuentra registrado en la base
+                de datos con la contraseña definida
+        '''
         
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT * FROM Users WHERE name ='" + name + "'" 
         
         #Ejecutamos el comando
-        cursor.execute(sql)
+        self.__cursor.execute(sql)
         
         #Recogemos los resultado
-        resultado=cursor.fetchone()
+        result=self.__cursor.fetchone()
         
         #Comprobamos si ha encontrado el usuario
-        if(cursor.rowcount == 1):
+        if(self.__cursor.rowcount == 1):
             #Extraemos la contraseña y comparamos
-            p = resultado[2]
+            p = result[2]
             if(p == password):
                 #Si la contraseña coincide devolvemos el id
-                return resultado[0]
+                return result[0]
             else:
+                 #Si no coincide lanzamos una excepción
                  raise Exception("Incorrect password")
         else:
+                #Si no se encuentra el usuario lanzamos una excepción
                 raise Exception("User Not Found")
-        
-        cursor.close()
-        db.close()
  
 #Metodo de prueba           
 def main():
@@ -63,6 +75,8 @@ def main():
     #Mostramos el identificador
     print("Usuario logueado con id: ")
     print(id)
+    #Nos desconectamos
+    userAccess.disconnect()
     
 
 ## Comandos a ejecutar de inicio

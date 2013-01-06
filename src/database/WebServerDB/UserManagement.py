@@ -3,21 +3,20 @@ import MySQLdb
 
 class UserManagement():
     '''
-        Clase encargada de gestionar las acciones que un usario logueado puede
+        Clase encargada de gestionar las acciones que un usuario logueado puede
         realizar sobre la base de datos de la web.
      
     '''
 
     def __init__(self,sqlUser,sqlPass,databaseName,logUser):
         '''
-        Constructor de la clase
+            Constructor de la clase
         '''
         #Guardamos los atributos
         self.__sqlUser = sqlUser
         self.__sqlPass = sqlPass
         self.__user = logUser
         self.__databaseName = databaseName
-        #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
         self.__db = self.connect()
         self.__cursor = self.__db.cursor()
@@ -26,6 +25,9 @@ class UserManagement():
         self.typeIds = self.getTypeIds()
         
     def connect(self):
+        '''
+            Realiza la conexión con MySql
+        '''
         #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
         db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
@@ -38,11 +40,17 @@ class UserManagement():
         return db
     
     def disconnect(self):
+        '''
+            Realiza la desconexión con MySql
+        '''
         #cerramos las conexiones
         self.__cursor.close()
         self.__db.close()
     
     def showUsers(self):
+        '''
+            Muestra la lista de usuarios registrados
+        '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT * FROM Users"     
         #Ejecutamos el comando
@@ -54,20 +62,23 @@ class UserManagement():
             print(r)
             
     def showTypes(self):
+        '''
+            Muestra la lista de tipos registrados
+        '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT * FROM UserType"     
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos los resultado
         results=self.__cursor.fetchall()
-        #Guardamos en una lista los ids resultantes
+        #Guardamos en una lista los tipos resultantes
         for r in results:
             print(r)  
               
         
     def getTypeIds(self):
         '''
-            Esta función devuelve la lista de tipos asociados
+            Devuelve la lista de tipos asociados
             al usuario logueado
         '''
         #Creamos la consulta encargada de extraer los datos
@@ -103,7 +114,7 @@ class UserManagement():
     
     def getVMNames(self,idGroup):
         '''
-            Esta función devuelve una lista con los diferentes nombres 
+             Devuelve una lista con los diferentes nombres 
              de las máquinas virtuales asociadas a un determinado grupo.
         '''
         #Creamos la consulta encargada de extraer los datos
@@ -111,17 +122,17 @@ class UserManagement():
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos los resultado
-        resultados=self.__cursor.fetchall()
-        #Guardamos en una lista los ids resultantes
+        results=self.__cursor.fetchall()
+        #Guardamos en una lista los nombres resultantes
         vmNames = []
-        for r in resultados:
+        for r in results:
             vmNames.append(r[0])
         #Devolvemos la lista resultado
         return vmNames
     
     def getSubjects(self,idGroup):
         '''
-            Esta función devuelve una tupla con el nombre de la asignatura asociada
+            Devuelve una tupla con el nombre de la asignatura asociada
              al grupo pasado como parámetro, el curso en la que se imparte dicha 
              asignatura, el año académico en el que se imparte y el grupo de clase 
              asociado
@@ -137,7 +148,7 @@ class UserManagement():
     
     def getTeachers(self,idGroup):
         '''
-            Esta función devuelve el nombre de los profesores 
+            Devuelve el nombre de los profesores 
             que se encuentran asociados a dicho grupo.
         '''     
         #Creamos la consulta encargada de extraer los datos
@@ -148,7 +159,7 @@ class UserManagement():
         self.__cursor.execute(sql)
         #Recogemos los resultado
         resultados=self.__cursor.fetchall()
-        #Guardamos en una lista los ids resultantes
+        #Guardamos en una lista los nombres resultantes
         teachersNames = []
         for r in resultados:
             teachersNames.append(r[0])
@@ -157,7 +168,7 @@ class UserManagement():
     
     def isTypeOf(self,nameType,userId):
         '''
-            Esta función comprueba si un determinado usuario es
+            Comprueba si un determinado usuario es
             del tipo que se indica como argumento
         '''
         #Creamos la consulta encargada de extraer los datos
@@ -202,14 +213,12 @@ class UserManagement():
             sql = "INSERT  INTO Users(name,pass) VALUES ('" + name + "','" + password + "')"
             #Ejecutamos el comando
             self.__cursor.execute(sql) 
-            
             #Extraemos el id del usuario que acabamos de crear
-            sql = "SELECT userId FROM Users WHERE name ='" + name + "' AND pass = '" + password +"'"
-            
+            sql = "SELECT userId FROM Users WHERE name ='" + name + "' AND pass = '" + password +"'" 
             #Ejecutamos el comando
             self.__cursor.execute(sql)
             #Recogemos los resultado
-            resultados=self.__cursor.fetchall()
+            results=self.__cursor.fetchall()
             #Cogemos el utlimo
             userId = self.__cursor.lastrowid
             #Añadimos el tipo
@@ -222,7 +231,7 @@ class UserManagement():
             return userId 
             
         else:
-            #El usuario no es administrador. Lanazamos una excepción
+            #El usuario no es administrador. Lanzamos una excepción
             raise Exception("Not Administrator User") 
  
     def isUserInGroup(self,groupId): 
@@ -240,14 +249,16 @@ class UserManagement():
         '''
         #Comprobamos que el usuario sea un administrador     
         if(self.isTypeOf("Administrator",str(self.__user))):
+            #Contamos el número de usuarios con ese id
             sql = "SELECT COUNT(*) FROM Users WHERE userId =" + str(userId)
             #Ejecutamos el comando
             self.__cursor.execute(sql)
             #Recogemos los resultado
             result=self.__cursor.fetchone()
+            # Si el resultado es 1, el usuario existe
             return (result[0] == 1)
         else:
-            #El usuario no es administrador. Lanazamos una excepción
+            #El usuario no es administrador. Lanzamos una excepción
             raise Exception("Not Administrator User") 
         
     def isVMExists(self,VMName):
@@ -256,11 +267,13 @@ class UserManagement():
         '''
         #Comprobamos que el usuario sea un administrador     
         if(self.isTypeOf("Administrator",str(self.__user))):
+            #Contamos el número de MV con este nombre
             sql = "SELECT COUNT(*) FROM VMByGroup WHERE VMName ='" + VMName + "'"
             #Ejecutamos el comando
             self.__cursor.execute(sql)
             #Recogemos los resultado
             result=self.__cursor.fetchone()
+            # Si la MV existe el número resultado será 1
             return (result[0] == 1)
         else:
             #El usuario no es administrador. Lanazamos una excepción
@@ -269,7 +282,7 @@ class UserManagement():
               
     def deleteVM(self,VMName,groupId): 
         '''
-            Esta función permite eliminar de la base de datos una MV cuyo nombre 
+            Permite eliminar de la base de datos una MV cuyo nombre 
              viene dado como parámetro. En caso de que el usuario dado de alta 
              sea un profesor se comprobará que la MV que se quiere eliminar 
              pertenezca a un grupo asociado a dicho profesor
@@ -290,7 +303,7 @@ class UserManagement():
         
     def deleteAllVM(self,groupId):
         '''
-            Esta función elimina de la base de datos todas las máquinas 
+            Elimina de la base de datos todas las máquinas 
             virtuales asociadas a un determinado grupo
         ''' 
         #Comprobamos que el usuario sea un administrador o un profesor del grupo
@@ -302,7 +315,7 @@ class UserManagement():
             #Actualizamos la base de datos
             self.__db.commit() 
         else:
-            #El usuario no es administrador. Lanazamos una excepción
+            #El usuario no es administrador. Lanzamos una excepción
             raise Exception("Not Administrator or Teacher User")
         
     def createType(self,name):     
@@ -328,7 +341,7 @@ class UserManagement():
             #Devolvemos el id 
             return results[0]
         else:
-            #El usuario no es administrador. Lanazamos una excepción
+            #El usuario no es administrador. Lanzamos una excepción
             raise Exception("Not Administrator User")   
      
 
@@ -356,19 +369,21 @@ class UserManagement():
         '''
         #Comprobamos que el usuario sea un administrador     
         if(self.isTypeOf("Administrator",str(self.__user))):
+            #Contamos el número de tipos con el id dado
             sql = "SELECT COUNT(*) FROM UserType WHERE typeId =" + str(typeId)
             #Ejecutamos el comando
             self.__cursor.execute(sql)
             #Recogemos los resultado
             result=self.__cursor.fetchone()
+            # Si el resultado es 1, el tipo existe
             return (result[0] == 1)
         else:
-            #El usuario no es administrador. Lanazamos una excepción
+            #El usuario no es administrador. Lanzamos una excepción
             raise Exception("Not Administrator User") 
     
     def getGroupId(self,VMName):
         '''
-            Esta función devuelve la lista con todos los identificadores de 
+            Devuelve la lista con todos los identificadores de 
              grupos que se encuentran asociados a una máquina virtual
         '''
         #Creamos la consulta encargada de extraer los datos
@@ -386,7 +401,7 @@ class UserManagement():
     
     def getUsersId(self,groupId):
         '''
-            Esta función permite obtener una lista con los identificadores 
+            Permite obtener una lista con los identificadores 
              de los usuario que se encuentran asociados con el grupo.
         ''' 
         #Comprobamos que el usuario sea un administrador o un profesor del grupo
@@ -444,7 +459,7 @@ def main():
             for v in vmNames:
                 print(v)
         elif(prueba == '4'):         
-            #tercera prueba: lista de máquinas virtuales
+            #cuarta prueba: Asignaturas asociadas a un grupo
             print("Prueba 4")
             print('Inserte el id de grupo:')
             groupId = raw_input()
@@ -452,7 +467,7 @@ def main():
             print("asignatura asociadas al grupo :")
             print(s)
         elif(prueba == '5'):         
-            #tercera prueba: lista de máquinas virtuales
+            #quinta prueba: profesores asociados a un grupo
             print("Prueba 5")
             print('Inserte el id de grupo:')
             groupId = raw_input()
@@ -462,7 +477,7 @@ def main():
                 print(t)
                 
         elif(prueba == '6'):         
-            #tercera prueba: lista de máquinas virtuales
+            #sexta prueba: eliminación de un usuario
             print("Prueba 6")
             print('Inserte el id del usuario a eliminar:')
             uId = raw_input()
@@ -471,7 +486,7 @@ def main():
             userMan.showUsers()
             
         elif(prueba == '7'):         
-            #tercera prueba: lista de máquinas virtuales
+            #septima prueba: Creación de un usuario
             print("Prueba 7")
             print('Inserte el nombre del usuario a crear:')
             name = raw_input()
@@ -483,7 +498,7 @@ def main():
             print("Usuario creado :")
             userMan.showUsers()
         elif(prueba == '8'):         
-            #tercera prueba: lista de máquinas virtuales
+            #octava prueba: eliminación de una MV
             print("Prueba 8")
             print('Inserte el nombre de la maquina a eliminar:')
             name = raw_input()
@@ -493,7 +508,7 @@ def main():
             print("Maquina eliminada:")
             print(userMan.getVMNames(groupId))
         elif(prueba == '9'):         
-            #tercera prueba: lista de máquinas virtuales
+            #novena prueba : eliminación de todas las MV
             print("Prueba 9")
             print('Inserte el grupo cuyas máquinas se quieren eliminar:')
             groupId = raw_input()
@@ -501,7 +516,7 @@ def main():
             print("Maquinas eliminadas:")
             print(userMan.getVMNames(groupId))
         elif(prueba == '10'):         
-            #tercera prueba: lista de máquinas virtuales
+            #Decima prueba : Creación de un tipo
             print("Prueba 10")
             print('Inserte el nombre del tipo a crear:')
             name = raw_input()
@@ -509,7 +524,7 @@ def main():
             print("Tipo creado:")
             userMan.showTypes()
         elif(prueba == '11'):         
-            #tercera prueba: lista de máquinas virtuales
+            #Undecima prueba: Creación de un tipo
             print("Prueba 11")
             print('Inserte el id del tipo a eliminar:')
             type = raw_input()
@@ -517,7 +532,7 @@ def main():
             print("Tipo eliminado:")
             userMan.showTypes()
         elif(prueba == '12'):         
-            #tercera prueba: lista de máquinas virtuales
+            #duodecima prueba: busqueda de grupos con una MV
             print("Prueba 12")
             print('Inserte el nombre de la máquina a buscar:')
             vmName = raw_input()
@@ -526,7 +541,7 @@ def main():
             for g in groupIds:
                 print(g)
         elif(prueba == '13'):         
-            #tercera prueba: lista de máquinas virtuales
+            #Treceaba prueba : lista de usuarios registrados
             print("Prueba 13")
             print('Inserte el id del grupo:')
             groupId = raw_input()

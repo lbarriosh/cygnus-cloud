@@ -13,17 +13,19 @@ class ImageServerManager(object):
         '''
             Constructora de la clase
         '''
+        #Guardamos los atributos necesarios
         self.__sqlUser = sqlUser
         self.__sqlPass = sqlPass
         self.__serverId = serverId
         self.__databaseName = databaseName
-        #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
         self.__db = self.connect()
         self.__cursor = self.__db.cursor()
         
     def connect(self):
-        #Seleccionamos la base de datos que vamos a manejar
+        '''
+            Gestiona la conexión con MySql
+        '''
         # Nos conectamos a MySql 
         db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
         cursor=db.cursor()
@@ -35,6 +37,9 @@ class ImageServerManager(object):
         return db
     
     def disconnect(self):
+        '''
+            Gestiona la desconexión.
+        '''
         #cerramos las conexiones
         self.__cursor.close()
         self.__db.close()
@@ -90,7 +95,7 @@ class ImageServerManager(object):
             Permite dar de alta en la base de datos una nueva imagen asociada 
              al servidor de máquinas virtuales definido como atributo.
         '''
-         #Creamos la consulta encargada de extraer los datos
+         #Insertamos los datos en la base de datos
         sql = "INSERT INTO Image(name,description) VALUES('" + name + "','" + description  +"') "  
         #Ejecutamos el comando
         self.__cursor.execute(sql)               
@@ -98,7 +103,7 @@ class ImageServerManager(object):
         sql = "SELECT imageId FROM Image WHERE name ='" + name + "' AND description ='" + description +"'"  
         #Ejecutamos el comando
         self.__cursor.execute(sql) 
-        #Cogemos el utlimo
+        #Cogemos el último
         imageId = self.__cursor.lastrowid
         #Actualizamos la base de datos
         self.__db.commit() 
@@ -109,12 +114,13 @@ class ImageServerManager(object):
         '''
             Comprueba si una imagen existe
         '''
-        #Comprobamos que el usuario sea un administrador     
+        #Contamos el número de imagenes con el identificador dado     
         sql = "SELECT COUNT(*) FROM Image WHERE imageId =" + str(imageId)
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos los resultado
         result=self.__cursor.fetchone()
+        #Si el resultado es 1, la imagen existe
         return (result[0] == 1)
     
     def setDescription(self,imageId,description):
@@ -122,7 +128,7 @@ class ImageServerManager(object):
             Permite editar la descripción asociada a una determinada imagen cuyo identificador 
              se le pasa como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
+        #Creamos la consulta encargada de realizar la actualización
         sql = "UPDATE Image SET description = '"  + description + "' WHERE imageId = " + str(imageId)
         #Ejecutamos el comando
         self.__cursor.execute(sql) 
@@ -153,7 +159,7 @@ def main():
             print("Prueba 2")
             print("Indique el id de la imagen:")
             imageId = raw_input()          
-            #Obtenemos las imagenes asociadas a este servidor
+            #Obtenemos el nombre asociado a la imagen
             imageName = imageSM.getImageName(imageId)
             print("El nombre asociado a esta imagen es:")
             print(imageName)
@@ -161,7 +167,7 @@ def main():
             print("Prueba 3")
             print("Indique el id de la imagen:")
             imageId = raw_input()          
-            #Obtenemos las imagenes asociadas a este servidor
+            #Obtenemos la descripcion asociada a la imagen
             imageDesc = imageSM.getImageDescription(imageId)
             print("la descripcion asociada a esta imagen es:")
             print(imageDesc)
@@ -171,12 +177,13 @@ def main():
             imageName = raw_input()
             print("Indique la descripcion de la nueva imagen:")
             imageDesc = raw_input()          
-            #Obtenemos las imagenes asociadas a este servidor
+            #Creación de una imagen
             imageId = imageSM.createNewImage(imageName,imageDesc)
             print("Imagen creada con identificador :")
             print(imageId)
         elif(prueba == '5'):
             print("Prueba 5")
+            # Modificación de una descripcion
             print("Indique el id de la  imagen:")
             imageId = raw_input()
             print("Indique la nueva descripcion:")
