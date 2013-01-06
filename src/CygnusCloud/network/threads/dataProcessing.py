@@ -1,16 +1,24 @@
+# -*- coding: utf8 -*-
 '''
-Created on Jan 5, 2013
-
-@author: luis
+Data processing threads definitions.
+@author: Luis Barrios Hernández
+@version: 1.0
 '''
 from utils.threads import QueueProcessingThread
 
 class _IncomingDataThread(QueueProcessingThread):
     """
-    A class associated with the incoming packages threads.
+    Incoming packages thread class.
     This threads will process the incoming packages.
     """
     def __init__(self, queue, callbackObject):
+        """
+        Initializes the thread's state
+        Args:
+            queue: The incoming packages queue 
+            callbackObject: The callback object that will process
+            all the received packets.
+        """
         QueueProcessingThread.__init__(self, queue)   
         self.__callbackObject = callbackObject     
         
@@ -18,6 +26,9 @@ class _IncomingDataThread(QueueProcessingThread):
         self.__callbackObject.processPacket(e)
         
 class _OutgoingDataThread(QueueProcessingThread):
+    """
+    Outgoing packages thread class.
+    """
     def processElement(self, e):
         (connection, packet) = e
         connection.sendPacket(packet)

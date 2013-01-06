@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 '''
-In this module we define the NetworkManager class and its main dependencies.
+Network manager class definitions.
 @author: Luis Barrios Hernández
-@version: 1.0
+@version: 3.0
 '''
 
 from twisted.internet import reactor
@@ -26,17 +26,29 @@ class NetworkCallback(object):
     These objects will process the incoming packages.
     """
     def processPacket(self, packet):
+        """
+        Processes an incoming packet
+        Args:
+            packet: the packet to process
+        Returns:
+            Nothing
+        
+        """
         raise NotImplementedError   
 
 class NetworkManager():
     """
-    This class provides a facade to use Twisted in a higher abstraction level way. 
+    This class provides a facade to use Twisted in a higher abstraction level way.    
+    @attention: If you don't want everything to conk out, DO NOT USE MORE THAN
+    ONE NetworkManager IN THE SAME PROGRAM.
     @attention: Due to some Twisted related limitations, do NOT stop the network service 
     UNTIL you KNOW PERFECTLY WELL that you won\'t be using it again. 
     """
     def __init__(self):
         """
-        Initializes the state
+        Initializes the NetworkManager.
+        Args:
+            None
         """
         self.__connectionPool = GenericThreadSafeDictionary()
         self.__networkThread = _TwistedReactorThread()
@@ -49,6 +61,10 @@ class NetworkManager():
     def startNetworkService(self):
         """
         Starts the reactor thread
+        Args:
+            None
+        Returns:
+            Nothing
         """
         self.__networkThread.start()
         self.__outgoingDataThread.start()
@@ -59,6 +75,10 @@ class NetworkManager():
         Stops the reactor thread.
         @attention: Due to some Twisted related limitations, do NOT stop the network service 
         UNTIL you KNOW PERFECTLY WELL that you won\'t be using it again. 
+        Args:
+            None
+        Returns:
+            Nothing
         """
         for connection in self.__connectionPool.values() :
             connection.close()
@@ -72,6 +92,11 @@ class NetworkManager():
     def __allocateConnectionResources(self, callbackObject):
         """
         Allocates (if necessary) the resources associated to a new connection 
+        Args:
+            callbackObject: The object that will process all the incoming packages.
+        Returns:
+            a tuple (queue, thread), where queue and thread are the incoming data queue
+            and the incoming data processing thread assigned to this connection.
         """
         c = None
         for connection in self.__connectionPool.values() :
@@ -89,6 +114,16 @@ class NetworkManager():
     def connectTo(self, host, port, timeout, callbackObject):
         """
         Connects to a remote server using its arguments
+        Args:
+            host: host IP address
+            port: the port where the host is listenning
+            timeout: timeout in seconds. If no answer is received after timeout
+                seconds, the connection process will be aborted and a 
+                NetworkManagerException will be raised.
+            callbackObject: the callback object that will process all the incoming
+                packages received through this connection.
+        Returns:
+            Nothing
         """
         if self.__connectionPool.has_key(port) :
             raise NetworkManagerException("The port " + str(port) +" is already in use")
@@ -115,6 +150,12 @@ class NetworkManager():
     def listenIn(self, port, callbackObject):
         """
         Creates a server using its arguments
+        Args:
+            port: The port to listen in. If it's not free, a NetworkManagerException will be raised.
+            callbackObject: the callback object that will process all the incoming
+                packages received through this connection.
+        Returns:
+            Nothing
         """   
         if self.__connectionPool.has_key(port) :
             raise NetworkManagerException("The port " + str(port) +" is already in use") 
@@ -141,6 +182,14 @@ class NetworkManager():
         th.start()
         
     def isConnectionReady(self, port):
+        """
+        Checks wether a connection is ready or not.
+        Args:
+            port: the port assigned to the connection. If it\'s free, a NetworkManagerException
+            will be raised.
+        Returns:
+            True if the connection is ready or False otherwise.
+        """
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("The port " + str(port) +" is not in use") 
         connection = self.__connectionPool[port]
@@ -149,6 +198,13 @@ class NetworkManager():
     def sendPacket(self, port, packet):
         """
         Sends a packet through the specified port
+        Args:
+            port: The port assigned to the connection that will be used to send the packet.
+                If this port is free or this machine is a server and no clients have connected
+                to this port, a NetworkManagerException will be raised.
+            packet: The packet to send.
+        Returns:
+            Nothing
         """
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
@@ -161,6 +217,11 @@ class NetworkManager():
     def createPacket(self, priority):
         """
         Creates an empty data packet and returns it
+        Args:
+            priority: The new packet's priority. If it's not a positive integar, a NetworkManagerException
+            will be raised
+        Returns:
+            a new data packet.
         """
         if not isinstance(priority, int) or  priority < 0 :
             raise NetworkManagerException("Data packets\' priorities MUST be positive integers")
@@ -170,6 +231,11 @@ class NetworkManager():
     def closeConnection(self, port):
         """
         Closes a connection
+        Args:
+            port: The port assigned to the connection. If it's free, a NetworkManagerException will be
+            raised.
+        Returns:
+            Nothing
         """
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))

@@ -7,6 +7,6 @@ Packet exception definitions
 
 class PacketException(Exception):
     """
-    A class that stands for a packet exception
+    Packet exception class
     """
     pass

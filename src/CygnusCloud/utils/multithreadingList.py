@@ -1,13 +1,18 @@
 # -*- coding: utf8 -*-
 '''
-Created on Jan 5, 2013
-
-@author: luis
+Multithreading list definitions.
+@author: Luis Barrios Hernández
+@version: 1.5
 '''
 
 from threading import BoundedSemaphore
 
 class GenericThreadSafeList :
+    """
+    A thread-safe list class.
+    @attention: This objects are NOT iterable to avoid nasty iterator issues.
+    @note: This class\' methods behave just like the list ones. 
+    """
     def __init__(self):
         self.__semaphore = BoundedSemaphore(1)
         self.__data = []

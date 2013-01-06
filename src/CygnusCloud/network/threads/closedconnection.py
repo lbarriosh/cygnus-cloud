@@ -1,14 +1,24 @@
+# -*- coding: utf8 -*-
 '''
-Created on Jan 5, 2013
-
-@author: luis
+Closed connection thread definitions.
+@author: Luis Barrios Hernández
+@version: 1.5
 '''
 
 from utils.threads import BasicThread
 from time import sleep
 
 class _ClosedConnectionThread(BasicThread):
+    """
+    This threads will check when a connection is safely closed.
+    """
     def __init__(self, connectionList, portList):
+        """
+        Initializes this thread's state.
+        Args:
+            connectionList: a closed connection list.
+            portList: a closed connection port list.
+        """
         BasicThread.__init__(self)        
         self.__connectionList = connectionList
         self.__portList = portList
