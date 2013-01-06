@@ -11,12 +11,13 @@ class RuntimeData(object):
     '''
 
 
-    def __init__(self,sqlUser,sqlPass):
+    def __init__(self,sqlUser,sqlPass,databaseName):
         '''
             Constructora de la clase
         '''
         self.__sqlUser = sqlUser
         self.__sqlPass = sqlPass
+        self.__databaseName = databaseName
         #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
         self.__db = self.connect()
@@ -28,7 +29,7 @@ class RuntimeData(object):
         db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
         cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
-        sql = "USE DBVMServer"     
+        sql = "USE " + self.__databaseName     
         #Ejecutamos el comando
         cursor.execute(sql)
         #devolvemos el cursor
@@ -94,7 +95,7 @@ class RuntimeData(object):
              puerto VNC pasado como argumento.
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT VMId FROM ActualVM WHERE VNCPortAdress = '" + vncPort + "'" 
+        sql = "SELECT VMId FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos el resultado
@@ -108,7 +109,7 @@ class RuntimeData(object):
              en  el puerto VNC pasado como argumento.
         '''
          #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.VNCPortAdress = '" + vncPort + "' AND "
+        sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.VNCPortAdress = '" + str(vncPort) + "' AND "
         sql += "vm.VMId = av.VMId " 
         #Ejecutamos el comando
         self.__cursor.execute(sql)
@@ -123,7 +124,7 @@ class RuntimeData(object):
              en ejecución en el puertoVNC pasado como argumento.
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT imageCopyPath FROM ActualVM  WHERE VNCPortAdress = '" + vncPort + "'"
+        sql = "SELECT imageCopyPath FROM ActualVM  WHERE VNCPortAdress = '" + str(vncPort) + "'"
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos el resultado
@@ -136,7 +137,7 @@ class RuntimeData(object):
             Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT macAdress FROM ActualVM WHERE VNCPortAdress = '" + vncPort + "'" 
+        sql = "SELECT macAdress FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos el resultado
@@ -149,7 +150,7 @@ class RuntimeData(object):
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT VNCPass FROM ActualVM WHERE VNCPortAdress = '" + vncPort + "'" 
+        sql = "SELECT VNCPass FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos el resultado
@@ -157,14 +158,14 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0]
     
-    def registerVM(self,vncPort,userId, VMId, imageCopyPath, fileConfigCopyPath, mac, password):
+    def registerVMPort(self,vncPort,userId, VMId, imageCopyPath, fileConfigCopyPath, mac, password):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "INSERT INTO ActualVM VALUES('"  
-        sql+=    vncPort + "'," + userId  +"," + VMId +",'" 
+        sql+=    str(vncPort) + "'," + str(userId)  +"," + str(VMId) +",'" 
         sql +=  imageCopyPath + "','" + fileConfigCopyPath + "','" + mac + "','"
         sql +=  password + "')"  
         #Ejecutamos el comando
@@ -180,16 +181,28 @@ class RuntimeData(object):
              y con él, todas las características asociadas al mismo.
         ''' 
                 #Borramos la máquina virtual
-        sql = "DELETE FROM ActualVM WHERE VNCPortAdress = " + vncPort
+        sql = "DELETE FROM ActualVM WHERE VNCPortAdress = " + str(vncPort)
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
         #Actualizamos la base de datos
         self.__db.commit() 
         
+    def isVMExists(self,port):   
+        '''
+            Comprueba si una imagen existe
+        '''
+        #Comprobamos que el usuario sea un administrador     
+        sql = "SELECT COUNT(*) FROM ActualVM WHERE VNCPortAdress =" + str(port)
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos los resultado
+        result=self.__cursor.fetchone()
+        return (result[0] == 1) 
+        
 def main():    
     #Instanciamos la clase
-    runtimeData = RuntimeData("CygnusCloud","cygnuscloud2012")
+    runtimeData = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServer")
     #Comenzamos con las pruebas
     other = 's'
     while(other == 's'):

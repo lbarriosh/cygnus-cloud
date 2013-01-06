@@ -7,12 +7,13 @@ class ImageManager(object):
          accesibles en el servidor de máquinas virtuales actual.
     '''
 
-    def __init__(self,sqlUser,sqlPass):
+    def __init__(self,sqlUser,sqlPass,databaseName):
         '''
             Constructora de la clase
         '''
         self.__sqlUser = sqlUser
         self.__sqlPass = sqlPass
+        self.__databaseName = databaseName
         #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
         self.__db = self.connect()
@@ -24,7 +25,7 @@ class ImageManager(object):
         db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
         cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
-        sql = "USE DBVMServer"     
+        sql = "USE " + self.__databaseName    
         #Ejecutamos el comando
         cursor.execute(sql)
         #devolvemos el cursor
@@ -58,7 +59,7 @@ class ImageManager(object):
             Devuelve el nombre de la imagen cuyo identificador se pasa como argumento. 
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT name FROM VirtualMachine WHERE VMId = " + imageId   
+        sql = "SELECT name FROM VirtualMachine WHERE VMId = " + str(imageId)   
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos los resultado
@@ -72,7 +73,7 @@ class ImageManager(object):
              de imagen se pasa como argumento.
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT imagePath FROM VirtualMachine WHERE VMId = " + imageId   
+        sql = "SELECT imagePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos los resultado
@@ -86,7 +87,7 @@ class ImageManager(object):
              la imagen cuyo identificador se pasa como argumento
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT FileConfigPath FROM VirtualMachine WHERE VMId = " + imageId   
+        sql = "SELECT FileConfigPath FROM VirtualMachine WHERE VMId = " + str(imageId)   
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos los resultado
@@ -99,7 +100,7 @@ class ImageManager(object):
             Permite cambiar la ruta de la imagen cuyo identificador se pasa como argumento.
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "UPDATE VirtualMachine SET imagePath = '"  + path + "' WHERE VMId = " + imageId
+        sql = "UPDATE VirtualMachine SET imagePath = '"  + path + "' WHERE VMId = " + str(imageId)
         #Ejecutamos el comando
         self.__cursor.execute(sql) 
         
@@ -127,10 +128,31 @@ class ImageManager(object):
         #Lo devolvemos
         return imageId
     
+    def deleteImage(self,imageId):
+        #borramos el usuario
+        sql = "DELETE FROM VirtualMachine WHERE VMId =" + str(imageId) 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql) 
+        # Gracias al ON DELETE CASCADE debería borrarse sus referencias en
+        #  el resto de las tablas
+        #Actualizamos la base de datos
+        self.__db.commit()
+ 
+    def isImageExists(self,VMId):   
+        '''
+            Comprueba si una imagen existe
+        '''
+        #Comprobamos que el usuario sea un administrador     
+        sql = "SELECT COUNT(*) FROM VirtualMachine WHERE VMId =" + str(VMId)
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos los resultado
+        result=self.__cursor.fetchone()
+        return (result[0] == 1)   
     
 def main():    
     #Instanciamos la clase
-    imageM = ImageManager("CygnusCloud","cygnuscloud2012")
+    imageM = ImageManager("CygnusCloud","cygnuscloud2012","DBVMServer")
     #Comenzamos con las pruebas
     other = 's'
     while(other == 's'):
