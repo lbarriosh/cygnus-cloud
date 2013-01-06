@@ -172,7 +172,8 @@ class NetworkManager():
         def registerListeningPort(port):
             connection.setListeningPort(port)
         deferred = endpoint.listen(factory)
-        deferred.addCallback(registerListeningPort)  
+        deferred.addCallback(registerListeningPort)
+        connection.setDeferred(deferred)  
         # Register the new connection  
         self.__connectionPool[port] = connection
         

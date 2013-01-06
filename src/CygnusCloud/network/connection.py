@@ -158,6 +158,9 @@ class NetworkConnection(object):
             Nothing
         """
         self.__listeningPort = listeningPort
+        
+    def setDeferred(self, deferred):
+        self.__deferred = deferred
            
     def close(self):
         """
