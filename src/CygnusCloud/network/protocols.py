@@ -12,13 +12,14 @@ class _CygnusCloudProtocol(Protocol):
     """
     Network protocol implementation
     """
-    def __init__(self, queue):
+    def __init__(self, queue, factory):
         """
         Initializes the protocol with an incoming data priority queue.
         Args:
             queue: The incoming data priority queue to use
         """
         self.__incomingPacketsQueue = queue
+        self.__factory = factory
     
     def dataReceived(self, data):
         """
@@ -39,7 +40,7 @@ class _CygnusCloudProtocol(Protocol):
         """
         This method is called when a connection is established.
         """
-        print "Connection established"
+        self.__factory.addConnection()
     
     def connectionLost(self, reason):
         """
@@ -47,7 +48,7 @@ class _CygnusCloudProtocol(Protocol):
         Args:
             reason: a message indicating why the connection was lost.
         """
-        print "Connection lost"  
+        self.__factory.removeConnection()
     
     def sendData(self, packet):
         """
@@ -80,15 +81,25 @@ class _CygnusCloudProtocolFactory(Factory):
         """
         self.protocol = _CygnusCloudProtocol
         self.__queue = queue        
-        self.__instance = None    
+        self.__instance = None 
+        self.__connections = 0   
     
     def buildProtocol(self, addr):
         """
         Builds a protocol, stores a pointer to it and finally returns it.
         This method is called inside Twisted code.
         """
-        self.__instance = _CygnusCloudProtocol(self.__queue)        
+        self.__instance = _CygnusCloudProtocol(self.__queue, self)        
         return self.__instance
+    
+    def addConnection(self):
+        self.__connections += 1
+        
+    def removeConnection(self):
+        self.__connections -= 1
+        
+    def disconnected(self):
+        return self.__connections == 0
 
     def getInstance(self):
         """

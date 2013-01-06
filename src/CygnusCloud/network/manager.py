@@ -2,7 +2,7 @@
 '''
 Network manager class definitions.
 @author: Luis Barrios Hernández
-@version: 3.0
+@version: 4.0
 '''
 
 from twisted.internet import reactor
@@ -15,8 +15,7 @@ from network.connection import NetworkConnection
 from network.exceptions.networkManager import NetworkManagerException
 from network.threads.dataProcessing import _IncomingDataThread, _OutgoingDataThread
 from network.threads.twistedReactor import _TwistedReactorThread
-from network.threads.server import _ServerWaitThread
-from network.threads.closedconnection import _ClosedConnectionThread
+from network.threads.connectionMonitoring import _ConnectionMonitoringThread
 from network.protocols import _CygnusCloudProtocolFactory
 from time import sleep
         
@@ -51,12 +50,11 @@ class NetworkManager():
             None
         """
         self.__connectionPool = GenericThreadSafeDictionary()
-        self.__networkThread = _TwistedReactorThread()
-        self.__outgoingDataQueue = GenericThreadSafePriorityQueue()
-        self.__outgoingDataThread = _OutgoingDataThread(self.__outgoingDataQueue)
-        self.__connectionsToDelete = GenericThreadSafeList()
         self.__portsToBeFreed = GenericThreadSafeList()
-        self.__connectionThread = _ClosedConnectionThread(self.__connectionsToDelete, self.__portsToBeFreed)
+        self.__outgoingDataQueue = GenericThreadSafePriorityQueue()
+        self.__networkThread = _TwistedReactorThread()        
+        self.__outgoingDataThread = _OutgoingDataThread(self.__outgoingDataQueue)
+        self.__connectionThread = _ConnectionMonitoringThread(self.__connectionPool, self.__portsToBeFreed)
         
     def startNetworkService(self):
         """
@@ -81,11 +79,11 @@ class NetworkManager():
             Nothing
         """
         for connection in self.__connectionPool.values() :
-            connection.close()
-            connection.stopThread(True)
-        self.__connectionThread.stop()
+            self.closeConnection(connection.getPort())
         self.__outgoingDataThread.stop()
         self.__outgoingDataThread.join()
+        self.__connectionThread.stop()
+        self.__connectionThread.join()
         self.__networkThread.stop()
         self.__networkThread.join()
         
@@ -136,16 +134,17 @@ class NetworkManager():
         factory = _CygnusCloudProtocolFactory(queue)
         endpoint = TCP4ClientEndpoint(reactor, host, port, timeout, None)
         endpoint.connect(factory)   
+        # Wait until the connection is ready
         time = 0
         while factory.getInstance() is None and time <= timeout:            
             sleep(0.001)
             time += 0.001
         if factory.getInstance() is None :
             raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
+        # Create the new connection
+        connection = NetworkConnection(False, port, factory, queue, thread, callbackObject)
         # Add the new connection to the connection pool
-        self.__connectionPool[port] = NetworkConnection(False, port, factory.getInstance(), queue, callbackObject, thread)
-        # Start the connection thread
-        thread.start()
+        self.__connectionPool[port] = connection
         
     def listenIn(self, port, callbackObject):
         """
@@ -167,19 +166,15 @@ class NetworkManager():
         # Create and configure the endpoint
         endpoint = TCP4ServerEndpoint(reactor, port)       
         factory = _CygnusCloudProtocolFactory(queue)        
-        # Create the connection and the deferred
-        deferred = endpoint.listen(factory)
-        connection = NetworkConnection(True, port, None, queue, callbackObject, thread, deferred)
+        # Create the connection       
+        connection = NetworkConnection(True, port, factory, queue, thread, callbackObject)
+        # Create the deferred to retrieve the IListeningPort object
         def registerListeningPort(port):
             connection.setListeningPort(port)
-        deferred.addCallback(registerListeningPort)    
+        deferred = endpoint.listen(factory)
+        deferred.addCallback(registerListeningPort)  
+        # Register the new connection  
         self.__connectionPool[port] = connection
-        # Create the waiting thread
-        th = _ServerWaitThread(factory, connection.setProtocol, connection.startThread)
-        # Register it
-        connection.setWaitingThread(th)
-        # And finally, start it
-        th.start()
         
     def isConnectionReady(self, port):
         """
@@ -239,18 +234,9 @@ class NetworkManager():
         """
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
-        connection = self.__connectionPool[port]
+        # Retrieve the connection
+        connection = self.__connectionPool[port]       
+        # The port is not free yet.
+        self.__portsToBeFreed.append(connection.getPort())       
+        # Ask the connection to close
         connection.close()
-        self.__connectionsToDelete.append(connection)
-        self.__portsToBeFreed.append(connection.getPort())
-        callback = connection.getCallback()
-        # Delete the mapping
-        self.__connectionPool.pop(port)
-        stopThread = True
-        for connection in self.__connectionPool.values() :
-            if (connection.getCallback() == callback) :
-                # The thread is assigned to another connection => we won't stop it now
-                stopThread = False
-                break
-        if stopThread :
-            connection.stopThread(False)

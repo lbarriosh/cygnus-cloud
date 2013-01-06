@@ -2,36 +2,51 @@
 '''
 NetworkConnection definitions
 @author: Luis Barrios Hernández
-@version: 2.0
+@version: 4.0
 '''
+
+from utils.enums import enum
+from threading import BoundedSemaphore
+from utils.multithreadingCounter import MultithreadingCounter
+
+CONNECTION_STATUS = enum("OPENING", "READY", "CLOSING", "CLOSED")
+
+class _ConnectionStatus(object):
+    def __init__(self, status):
+        self.__status = status
+        self.__semaphore = BoundedSemaphore(1)
+    def get(self):
+        return self.__status
+    def set(self, value):
+        with self.__semaphore :
+            self.__status = value
 
 class NetworkConnection(object):
     """
     A class that represents a network connection.
     """
-    def __init__(self, isServer, port, protocol, queue, callback, incomingDataThread, deferred = None):
+    def __init__(self, isServer, port, factory, queue, incomingDataThread, callbackObject):
         """
         Initializes the connection.
         Args:
             isServer: True when this is a server connection or False otherwise.
-            port: the port assigned to the connection.
-            protocol: a Protocol object. This object will be used to send data.
-            queue: the incoming data queue.
-            callback: the callback object that will process all the incoming packages.
-            incomingDataThread: the thread where all the incoming packages will be processed.
-            deferred: a Deferred object used to retrieve the IListeningPort associated to a server connection.
+            port: the port assigned to the connection.  
+            factory: the protocol factory assigned to the connnection     
+            queue: the incoming data queue assigned to the connection
+            incomingDataThread: the incoming data thread assigned to the connection
+            callbackObject: the callback object assigned to the connection     
         """
+        self.__status = _ConnectionStatus(CONNECTION_STATUS.OPENING)
         self.__isServer = isServer
         self.__port = port
-        self.__protocol = protocol
+        self.__factory = factory
         self.__queue = queue
-        self.__callback = callback
-        self.__incomingDataThread = incomingDataThread
-        self.__packagesToSend = 0
-        self.__deferred = deferred
+        self.__incomingDataThread = incomingDataThread        
+        self.__callback = callbackObject
+        self.__packagesToSend = MultithreadingCounter()
+        self.__deferred = None
         self.__listeningPort = None
-        self.__waitingThread = None
-        self.__disposable = False
+        self.__mustClose = False        
         
     def getPort(self):
         """
@@ -51,58 +66,17 @@ class NetworkConnection(object):
         Returns:
             The incoming data queue assigned to this connection            
         """
-        return self.__queue
+        return self.__queue    
     
-    def setWaitingThread(self, thread):
+    def getThread(self):
         """
-        Sets the waiting thread associated to this connection.
+        Returns the incoming data processing thread assigned to this connection
         Args:
             None
         Returns:
-            The waiting thread associated to this connection
+            The incoming data processing thread assigned to this connection
         """
-        self.__waitingThread = thread
-    
-    def sendPacket(self, p):
-        """
-        Sends a packet though this connection.
-        Args:
-            p: the packet to send
-        Returns:
-            None
-        """
-        self.__protocol.sendData(p)
-        self.__packagesToSend -= 1
-        
-    def registerPacket(self):
-        """
-        Registers a packet to send through this connection.
-        Args:
-            None
-        Returns:
-            Nothing
-        """
-        self.__packagesToSend += 1
-    
-    def setProtocol(self, protocol):
-        """
-        Sets the protocol assigned to this connection
-        Args:
-            protocol: the protocol assigned to this connection
-        Returns:
-            Nothing
-        """
-        self.__protocol = protocol
-    
-    def isReady(self):
-        """
-        Checks if the connection is ready to send data or not
-        Args:
-            None
-        Returns:
-            True if the connection is ready to send data, and false otherwise.
-        """
-        return self.__protocol != None
+        return self.__incomingDataThread
     
     def getCallback(self):
         """
@@ -112,17 +86,68 @@ class NetworkConnection(object):
         Returns:
             The callback object assigned to this connection.
         """
-        return self.__callback
+        return self.__callback    
     
-    def startThread(self):
+    def getStatus(self):
         """
-        Starts the incoming data thread
+        Returns the connection status
+        Args:
+            None
+        Returns:
+            The connection status
+        """
+        return self.__status.get()
+    
+    def sendPacket(self, p):
+        """
+        Sends a packet though this connection.
+        Args:
+            p: the packet to send
+        Returns:
+            None
+        """
+        self.__factory().getInstance().sendData(p)
+        self.__packagesToSend.decrement()
+                
+    def registerPacket(self):
+        """
+        Registers a packet to be sent through this connection.
         Args:
             None
         Returns:
             Nothing
         """
-        self.__incomingDataThread.start()
+        self.__packagesToSend.increment()
+    
+    
+    def isReady(self):
+        """
+        Checks if the connection is ready to send data or not
+        Args:
+            None
+        Returns:
+            True if the connection is ready to send data, and false otherwise.
+        """
+        return self.__status.get() == CONNECTION_STATUS.READY
+    
+    def refresh(self):
+        """
+        Updates the connection's status
+        Args:
+            None
+        Returns:
+            Nothing
+        """
+        if self.__status.get() == CONNECTION_STATUS.OPENING :
+            if (self.__isServer and self.__listeningPort != None )\
+                or (not self.__isServer and self.__factory.getInstance() != None) :
+                self.__status.set(CONNECTION_STATUS.READY)
+                self.__incomingDataThread.start()   
+                
+        if self.__status.get() == CONNECTION_STATUS.CLOSING :
+            if (self.__packagesToSend.read() == 0) :
+                # We can close the connection now
+                self.__close()    
         
     def setListeningPort(self, listeningPort):
         """
@@ -133,44 +158,27 @@ class NetworkConnection(object):
             Nothing
         """
         self.__listeningPort = listeningPort
-    
-    def stopThread(self, join):
-        """
-        Stops the incoming data thread
-        Args:
-            join: if True, the current thread will wait until the incoming data thread finishes.        
-        """
-        self.__incomingDataThread.stop()
-        if join :
-            self.__incomingDataThread.join()
-            
-    def isDisposable(self):
-        """
-        Checks if the connection can be safely deleted or not
-        Args:
-            None
-        Returns:
-            True if this connection can be safely deleted, and false otherwise.
-        """
-        return self.__disposable and self.__packagesToSend == 0
-    
+           
     def close(self):
         """
-        Closes the connection
+        Closes this connection
         Args:
             None
         Returns:
             Nothing
-        """
+        """    
+        self.__status.set(CONNECTION_STATUS.CLOSING)
+        
+    def __close(self):
+        # Ask twisted to close the connection
         if self.__isServer :
-            if self.__listeningPort is None :
-                # La conexión no se ha establecido todavía => cancelar deferred
+            if self.__listeningPort is None :                
                 self.__deferred.cancel()
-                self.__waitingThread.stop()
             else :
-                deferred = self.__listeningPort.stopListenning()
-                def setDisposable():
-                    self.__disposable = True
-                deferred.addCallback(setDisposable)
+                if not self.__factory.disconnected() :
+                    self.__listeningPort.loseConnection()
         else :
-            self.__protocol.disconnect()
+            self.__factory.getInstance().disconnect()
+        # Free the connection resources
+        self.__incomingDataThread.stop(True)
+        self.__status.set(CONNECTION_STATUS.CLOSED)

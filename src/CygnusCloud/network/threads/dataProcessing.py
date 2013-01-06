@@ -5,6 +5,7 @@ Data processing threads definitions.
 @version: 1.0
 '''
 from utils.threads import QueueProcessingThread
+from utils.multithreadingCounter import MultithreadingCounter
 
 class _IncomingDataThread(QueueProcessingThread):
     """
@@ -21,6 +22,18 @@ class _IncomingDataThread(QueueProcessingThread):
         """
         QueueProcessingThread.__init__(self, queue)   
         self.__callbackObject = callbackObject     
+        self.__referenceCounter = MultithreadingCounter()
+        
+    def start(self):
+        self.__referenceCounter.increment()
+        QueueProcessingThread.start(self)
+        
+    def stop(self, join):
+        self.__referenceCounter.decrement()
+        if self.__referenceCounter.read() == 0 :
+            QueueProcessingThread.stop(self)
+            if join :
+                self.join()
         
     def processElement(self, e):
         self.__callbackObject.processPacket(e)
