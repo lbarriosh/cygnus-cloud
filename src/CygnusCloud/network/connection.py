@@ -9,7 +9,7 @@ from utils.enums import enum
 from threading import BoundedSemaphore
 from utils.multithreadingCounter import MultithreadingCounter
 
-CONNECTION_STATUS = enum("OPENING", "READY", "CLOSING", "CLOSED")
+CONNECTION_STATUS = enum("OPENING", "READY_WAIT", "READY", "CLOSING", "CLOSED", "ERROR")
 
 class _ConnectionStatus(object):
     def __init__(self, status):
@@ -36,7 +36,11 @@ class NetworkConnection(object):
             incomingDataThread: the incoming data thread assigned to the connection
             callbackObject: the callback object assigned to the connection     
         """
-        self.__status = _ConnectionStatus(CONNECTION_STATUS.OPENING)
+        if isServer :
+            self.__status = _ConnectionStatus(CONNECTION_STATUS.OPENING)
+        else :
+            # The client connections are already ready when they are created.
+            self.__status = _ConnectionStatus(CONNECTION_STATUS.READY)
         self.__isServer = isServer
         self.__port = port
         self.__factory = factory
@@ -46,7 +50,8 @@ class NetworkConnection(object):
         self.__packagesToSend = MultithreadingCounter()
         self.__deferred = None
         self.__listeningPort = None
-        self.__mustClose = False        
+        self.__unexpectedlyClosed = False        
+        self.__error = None
         
     def getPort(self):
         """
@@ -106,7 +111,7 @@ class NetworkConnection(object):
         Returns:
             None
         """
-        self.__factory().getInstance().sendData(p)
+        self.__factory.getInstance().sendData(p)
         self.__packagesToSend.decrement()
                 
     def registerPacket(self):
@@ -141,13 +146,27 @@ class NetworkConnection(object):
         if self.__status.get() == CONNECTION_STATUS.OPENING :
             if (self.__isServer and self.__listeningPort != None )\
                 or (not self.__isServer and self.__factory.getInstance() != None) :
-                self.__status.set(CONNECTION_STATUS.READY)
+                if self.__isServer :
+                    self.__status.set(CONNECTION_STATUS.READY_WAIT)
+                else :
+                    self.__status.set(CONNECTION_STATUS.READY)
                 self.__incomingDataThread.start()   
+                
+        if self.__status.get() == CONNECTION_STATUS.READY_WAIT :
+            if not self.__factory.isDisconnected :
+                self.__status.set(CONNECTION_STATUS.READY)
                 
         if self.__status.get() == CONNECTION_STATUS.CLOSING :
             if (self.__packagesToSend.read() == 0) :
                 # We can close the connection now
-                self.__close()    
+                self.__close()   
+                
+        # Check what's happened to the factory
+        if self.__status.get() == CONNECTION_STATUS.READY and self.__factory.isDisconnected() :
+            # This connection must be closed *right* now
+            self.__status.set(CONNECTION_STATUS.CLOSED)
+            self.__unexpectedlyClosed = True
+            self.__close()
         
     def setListeningPort(self, listeningPort):
         """
@@ -161,6 +180,19 @@ class NetworkConnection(object):
         
     def setDeferred(self, deferred):
         self.__deferred = deferred
+        
+    def isInErrorState(self):
+        return self.__error != None
+    
+    def wasUnexpectedlyClosed(self):
+        return self.__unexpectedlyClosed
+        
+    def getError(self):
+        return self.__error
+    
+    def setError(self, value):
+        self.__status.set(CONNECTION_STATUS.ERROR)
+        self.__error = value
            
     def close(self):
         """
@@ -178,7 +210,7 @@ class NetworkConnection(object):
             if self.__listeningPort is None :                
                 self.__deferred.cancel()
             else :
-                if not self.__factory.disconnected() :
+                if not self.__factory.isDisconnected() :
                     self.__listeningPort.loseConnection()
         else :
             self.__factory.getInstance().disconnect()

@@ -98,7 +98,7 @@ class _CygnusCloudProtocolFactory(Factory):
     def removeConnection(self):
         self.__connections -= 1
         
-    def disconnected(self):
+    def isDisconnected(self):
         return self.__connections == 0
 
     def getInstance(self):

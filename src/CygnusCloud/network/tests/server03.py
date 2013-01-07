@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 '''
-A simple client test
+A simple server test
 @author: Luis Barrios Hernández
 @version: 1.0
 '''
@@ -12,9 +12,7 @@ from time import sleep
 if __name__ == "__main__" :
     networkManager = NetworkManager()
     networkManager.startNetworkService()
-    networkManager.connectTo('192.168.0.5', 8080, 20, DummyCallback())
-    p = networkManager.createPacket(0)
-    p.writeString("Greetings from a client")    
-    networkManager.sendPacket(8080, p)
-    sleep(100)
+    networkManager.listenIn(8080, DummyCallback())
+    print("The server is now ready")
+    sleep(200)
     networkManager.stopNetworkService()

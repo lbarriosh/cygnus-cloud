@@ -50,11 +50,10 @@ class NetworkManager():
             None
         """
         self.__connectionPool = GenericThreadSafeDictionary()
-        self.__portsToBeFreed = GenericThreadSafeList()
         self.__outgoingDataQueue = GenericThreadSafePriorityQueue()
         self.__networkThread = _TwistedReactorThread()        
         self.__outgoingDataThread = _OutgoingDataThread(self.__outgoingDataQueue)
-        self.__connectionThread = _ConnectionMonitoringThread(self.__connectionPool, self.__portsToBeFreed)
+        self.__connectionThread = _ConnectionMonitoringThread(self.__connectionPool)
         
     def startNetworkService(self):
         """
@@ -125,8 +124,6 @@ class NetworkManager():
         """
         if self.__connectionPool.has_key(port) :
             raise NetworkManagerException("The port " + str(port) +" is already in use")
-        if self.__portsToBeFreed.count(port) != 0 :
-            raise NetworkManagerException("The port " + str(port) + " is not free yet")
         # The port is free => proceed
         # Allocate the connection resources
         (queue, thread) = self.__allocateConnectionResources(callbackObject)       
@@ -158,8 +155,6 @@ class NetworkManager():
         """   
         if self.__connectionPool.has_key(port) :
             raise NetworkManagerException("The port " + str(port) +" is already in use") 
-        if self.__portsToBeFreed.count(port) != 0 :
-            raise NetworkManagerException("The port " + str(port) + " is not free yet")
         # The port is free => proceed
         # Allocate the connection resources
         (queue, thread) = self.__allocateConnectionResources(callbackObject)       
@@ -171,12 +166,15 @@ class NetworkManager():
         # Create the deferred to retrieve the IListeningPort object
         def registerListeningPort(port):
             connection.setListeningPort(port)
+        def onError(failure):
+            connection.setError(failure)
         deferred = endpoint.listen(factory)
         deferred.addCallback(registerListeningPort)
+        deferred.addErrback(onError)
         connection.setDeferred(deferred)  
         # Register the new connection  
         self.__connectionPool[port] = connection
-        
+                
     def isConnectionReady(self, port):
         """
         Checks wether a connection is ready or not.
@@ -185,11 +183,24 @@ class NetworkManager():
             will be raised.
         Returns:
             True if the connection is ready or False otherwise.
+        Raises:
+            NetworkManagerException: a NetworkManagerException will be raised if there were errors
+            when establishing the connection or if the connection was abnormally closed.
         """
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("The port " + str(port) +" is not in use") 
         connection = self.__connectionPool[port]
+        self.__detectConnectionErrors(connection)
         return connection.isReady()
+    
+    def __detectConnectionErrors(self, connection):
+        if connection.isInErrorState() :
+            # Something bad has happened => close the connection, warn the user
+            self.__connectionPool.pop(connection.getPort())
+            raise NetworkManagerException("Error: " + connection.getError())
+        if (connection.wasUnexpectedlyClosed()):
+            self.__connectionPool.pop(connection.getPort())
+            raise NetworkManagerException("Error: " + "The connection was closed abnormally")
         
     def sendPacket(self, port, packet):
         """
@@ -201,10 +212,14 @@ class NetworkManager():
             packet: The packet to send.
         Returns:
             Nothing
+        Raises:
+            NetworkManagerException: a NetworkManagerException will be raised if there were errors
+            when establishing the connection or if the connection was abnormally closed.
         """
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
         connection = self.__connectionPool[port]
+        self.__detectConnectionErrors(connection)
         if not connection.isReady() :
             raise NetworkManagerException("No clients have connected to this port yet")
         connection.registerPacket()
@@ -236,8 +251,6 @@ class NetworkManager():
         if not self.__connectionPool.has_key(port) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
         # Retrieve the connection
-        connection = self.__connectionPool[port]       
-        # The port is not free yet.
-        self.__portsToBeFreed.append(connection.getPort())       
+        connection = self.__connectionPool[port]     
         # Ask the connection to close
         connection.close()

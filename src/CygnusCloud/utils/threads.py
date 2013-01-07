@@ -83,7 +83,7 @@ class QueueProcessingThread(BasicThread):
     def run(self):
         """
         Processes the queue until it's empty and the thread is stopped.
-        """
+        """        
         while not (self.stopped() and self.__queue.isEmpty()):
             while not self.__queue.isEmpty() :
                 element = self.__queue.dequeue()
