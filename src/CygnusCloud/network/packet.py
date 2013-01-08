@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 """
-Packet-related definitions
+_Packet-related definitions
 @author: Luis Barrios Hernández
-@version: 1.5
+@version: 1.6
 """
 
 from utils.enums import enum
@@ -10,10 +10,10 @@ from network.exceptions.packetException import PacketException
 
 Packet_TYPE = enum('TICK', 'TOCK', 'DATA')
 
-class Packet(object):
+class _Packet(object):
     """
     A class that stands for a packet
-    @attention: Packet instances MUST ONLY be created through a NetworkManager
+    @attention: _Packet instances MUST ONLY be created through a NetworkManager
     to avoid priority issues that can cause serious errors in the network
     subsystem.
     @attention: The single underscore methods are semi-private, and MUST NOT
@@ -186,7 +186,7 @@ class Packet(object):
         Returns:
             A string with this packet's data, ready to be sent.
         """
-        return "Packet(" + str(self.__packetType) + "," + str(self.__priority) + ")<" + self.__data + ">"
+        return "_Packet(" + str(self.__packetType) + "," + str(self.__priority) + ")<" + self.__data + ">"
     
     def _getPacketType(self):
         """
@@ -231,7 +231,7 @@ class Packet(object):
         """            
         # Read the packet header
         (header, _openingpar, tail) = string.partition("(")
-        if (header != "Packet"):
+        if (header != "_Packet"):
             raise PacketException("Invalid packet string: Unknown header format")       
         (packetType, _comma, tail) = tail.partition(",") 
         try :            
@@ -244,18 +244,18 @@ class Packet(object):
         try :
             priority = int(priority)
         except Exception :
-            raise PacketException("Invalid packet string: Packet priority must be an integer")
+            raise PacketException("Invalid packet string: _Packet priority must be an integer")
         # Read the packet data
         data = tail[1:-1]
         # Create the packet
-        p = Packet(packetType, priority)        
+        p = _Packet(packetType, priority)        
         p._setData(data)
         # Return the readable packet
         return p        
         
         
     def __eq__(self, other):
-        if isinstance(other, Packet):
+        if isinstance(other, _Packet):
             samePriority = self.__priority == other.__priority
             sameType = self.__packetType == other.__packetType
             sameContent = self.__data == other.__data

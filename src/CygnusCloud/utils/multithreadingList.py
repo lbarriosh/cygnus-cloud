@@ -19,7 +19,8 @@ class GenericThreadSafeList :
     
     def append(self, value):
         with self.__semaphore:
-            self.__data.append(value)
+            if self.__data.count(value) == 0:
+                self.__data.append(value)
         
     def count(self, value):
         with self.__semaphore:
@@ -55,5 +56,4 @@ class GenericThreadSafeList :
         
     def getSize(self):
         with self.__semaphore:
-            return len(self.__data)
-    
+            return len(self.__data)   

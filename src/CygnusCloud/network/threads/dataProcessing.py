@@ -5,6 +5,7 @@ Data processing threads definitions.
 @version: 1.0
 '''
 from utils.threads import QueueProcessingThread
+from utils.multithreadingCounter import MultithreadingCounter
 
 class _IncomingDataThread(QueueProcessingThread):
     """
@@ -21,8 +22,42 @@ class _IncomingDataThread(QueueProcessingThread):
         """
         QueueProcessingThread.__init__(self, queue)   
         self.__callbackObject = callbackObject     
+        self.__referenceCounter = MultithreadingCounter()
+        
+    def start(self):
+        """
+        Starts the thread
+        Args:
+            None
+        Returns:
+            Nothing
+        """
+        self.__referenceCounter.increment()
+        QueueProcessingThread.start(self)
+        
+    def stop(self, join):
+        """
+        Asks this thread to terminate.
+        Args:
+            join: When True, the calling thread will wait the incoming data thread
+            to terminate. When False, the calling thread will only ask this thread to terminate.
+        Returns: 
+            Nothing
+        """
+        self.__referenceCounter.decrement()
+        if self.__referenceCounter.read() == 0 :
+            QueueProcessingThread.stop(self)
+            if join :
+                self.join()
         
     def processElement(self, e):
+        """
+        Processes a received packet
+        Args:
+            e: The packet to process
+        Returns:
+            Nothing
+        """
         self.__callbackObject.processPacket(e)
         
 class _OutgoingDataThread(QueueProcessingThread):
@@ -30,5 +65,12 @@ class _OutgoingDataThread(QueueProcessingThread):
     Outgoing packages thread class.
     """
     def processElement(self, e):
+        """
+        Processes an (connection, packet to send) pair.
+        Args:
+            e: The pair to process. Its packet will be sent through its connection.
+        Returns:
+            Nothing
+        """
         (connection, packet) = e
         connection.sendPacket(packet)

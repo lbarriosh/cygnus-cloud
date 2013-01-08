@@ -2,13 +2,11 @@
 '''
 Server connection thread definitions.
 @author: Luis Barrios Hernández
-@version: 2.0
+@version: 2.5
 '''
 
-
 from utils.threads import BasicThread
-from time import sleep           
-
+from time import sleep
         
 class _ServerWaitThread(BasicThread):
     """
@@ -30,6 +28,13 @@ class _ServerWaitThread(BasicThread):
         self.__startThreadMethod = startThreadMethod
         
     def run(self): 
+        """
+        Checks if the connection is ready. If so, finishes its initialization and terminates.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         while not self.stopped() and self.__factory.getInstance() == None :
             sleep(0.01)
         if not self.stopped() :
