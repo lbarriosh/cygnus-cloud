@@ -16,18 +16,40 @@ class _TwistedReactorThread(Thread):
     def __init__(self):
         """
         Initializes the thread's state.
+        Args:
+            None
+        Returns:
+            Nothing
         """
         Thread.__init__(self)
         
     def __workaround(self):
         """
         This is a workaround to fix a nasty Twisted bug. 
+        Args:
+            None
+        Returns:
+            Nothing
         """
         reactor.callLater(1, self.__workaround)
     
     def run(self):        
+        """
+        Starts and runs the twisted reactor loop.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         reactor.callLater(1, self.__workaround)
         reactor.run(installSignalHandlers=0)
         
     def stop(self):
+        """
+        Stops the twisted reactor loop
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         reactor.stop()  

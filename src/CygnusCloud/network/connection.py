@@ -1,27 +1,41 @@
 # -*- coding: utf8 -*-
 '''
-NetworkConnection definitions
+Network connection definitions
 @author: Luis Barrios Hernández
-@version: 4.0
+@version: 5.0
 '''
 
 from utils.enums import enum
 from threading import BoundedSemaphore
 from utils.multithreadingCounter import MultithreadingCounter
 
+# Connection status enum type
 CONNECTION_STATUS = enum("OPENING", "READY_WAIT", "READY", "CLOSING", "CLOSED", "ERROR")
 
 class _ConnectionStatus(object):
+    """
+    A class that stores a connection's status and allows its modification
+    in a thread-safe manner.
+    """
     def __init__(self, status):
+        """
+        Initializes the status using its argument.
+        """
         self.__status = status
         self.__semaphore = BoundedSemaphore(1)
     def get(self):
+        """
+        Returns the status value
+        """
         return self.__status
     def set(self, value):
+        """
+        Modifies the status.
+        """
         with self.__semaphore :
             self.__status = value
 
-class NetworkConnection(object):
+class _NetworkConnection(object):
     """
     A class that represents a network connection.
     """
@@ -179,24 +193,44 @@ class NetworkConnection(object):
         self.__listeningPort = listeningPort
         
     def setDeferred(self, deferred):
+        """
+        Modifies the deferred object stored in this connection.
+        Deferred objects are returned by twisted, and allow us to know when a server connection
+        is ready.
+        """
         self.__deferred = deferred
         
     def isInErrorState(self):
-        return self.__error != None
+        """
+        Checks if the connection is in an error state.
+        """
+        return self.__status.get() == CONNECTION_STATUS.ERROR
     
     def wasUnexpectedlyClosed(self):
+        """
+        Checks if the connection was unexpectedly closed. The connection may be closed unexpectedly
+        in two different ways:
+            1) All the clients disconnect from a server.
+            2) A server disconnects from all its clients.
+        """
         return self.__unexpectedlyClosed
         
     def getError(self):
+        """
+        Returns the error message stored in this connection.
+        """
         return self.__error
     
     def setError(self, value):
+        """
+        Modifies the error message stored in this connection.
+        """
         self.__status.set(CONNECTION_STATUS.ERROR)
         self.__error = value
            
     def close(self):
         """
-        Closes this connection
+        Asks this connection to close
         Args:
             None
         Returns:
@@ -205,7 +239,9 @@ class NetworkConnection(object):
         self.__status.set(CONNECTION_STATUS.CLOSING)
         
     def __close(self):
-        # Ask twisted to close the connection
+        """
+        Asks twisted to close this connection.
+        """
         if self.__isServer :
             if self.__listeningPort is None :                
                 self.__deferred.cancel()

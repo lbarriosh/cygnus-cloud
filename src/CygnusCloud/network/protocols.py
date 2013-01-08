@@ -2,29 +2,28 @@
 '''
 Protocol and protocol factory implementations.
 @author: Luis Barrios Hernández
-@version: 3.0
+@version: 3.6
 '''
 
 from twisted.internet.protocol import Protocol, Factory
-from network.packet import Packet
+from network.packet import _Packet
+from utils.multithreadingCounter import MultithreadingCounter
 
 class _CygnusCloudProtocol(Protocol):
     """
-    Network protocol implementation
+    Our custom network protocol.
     """
-    def __init__(self, queue, factory):
+    def __init__(self, factory):
         """
-        Initializes the protocol with an incoming data priority queue.
+        Initializes the protocol with the factory that created it.
         Args:
-            queue: The incoming data priority queue to use
-        """
-        self.__incomingPacketsQueue = queue
+            factory: the protocol factory that created this protocol instance
+        """       
         self.__factory = factory
     
     def dataReceived(self, data):
         """
-        Generates a packet with the received data and stores it on the
-        incoming priority queue associated with the protocol instance.
+        Tells the protocol factory to process the received data.
         Args:
             data: The received data string
         Returns:
@@ -33,12 +32,15 @@ class _CygnusCloudProtocol(Protocol):
             PacketException: this exception will be raised when the received packet header
                 is corrupt.
         """
-        p = Packet._deserialize(data)
-        self.__incomingPacketsQueue.queue(p.getPriority(), p)
+        self.__factory.onPacketReceived(data)
     
     def connectionMade(self):
         """
         This method is called when a connection is established.
+        Args:
+            None
+        Returns:
+            Nothing
         """
         self.__factory.addConnection()
     
@@ -47,6 +49,8 @@ class _CygnusCloudProtocol(Protocol):
         This method is called when a connection is lost
         Args:
             reason: a message indicating why the connection was lost.
+        Returns:
+            Nothing
         """
         self.__factory.removeConnection()
     
@@ -55,6 +59,8 @@ class _CygnusCloudProtocol(Protocol):
         Sends the a packet to its destination.
         Args:
             packet: The packet to send
+        Returns:
+            Nothing
         """
         self.transport.write(packet._serialize())
         
@@ -64,14 +70,15 @@ class _CygnusCloudProtocol(Protocol):
         Args:
             None
         Returns:
-            None
+            Nothing
         """
         self.transport.loseConnection()
         
 class _CygnusCloudProtocolFactory(Factory):
     """
     Protocol factory. These objects are used to create protocol instances
-    within the Twisted Framework.
+    within the Twisted Framework, and store all the data shared by multiple
+    protocol instances.
     """    
     def __init__(self, queue):
         """
@@ -82,24 +89,27 @@ class _CygnusCloudProtocolFactory(Factory):
         self.protocol = _CygnusCloudProtocol
         self.__queue = queue        
         self.__instance = None 
-        self.__connections = 0   
+        # I'm pretty sure that the connection counter will only be modified
+        # inside the twisted thread. But I prefer using this to ensure that anything
+        # will break.
+        self.__connections = MultithreadingCounter()   
     
     def buildProtocol(self, addr):
         """
         Builds a protocol, stores a pointer to it and finally returns it.
         This method is called inside Twisted code.
         """
-        self.__instance = _CygnusCloudProtocol(self.__queue, self)        
+        self.__instance = _CygnusCloudProtocol(self)        
         return self.__instance
     
     def addConnection(self):
-        self.__connections += 1
+        self.__connections.increment()
         
     def removeConnection(self):
-        self.__connections -= 1
+        self.__connections.decrement()
         
     def isDisconnected(self):
-        return self.__connections == 0
+        return self.__connections.read() == 0
 
     def getInstance(self):
         """
@@ -111,7 +121,7 @@ class _CygnusCloudProtocolFactory(Factory):
         """
         return self.__instance
     
-    def getIncomingDataQueue(self):
+    def onPacketReceived(self, p):
         """
         Returns the incoming packages queue
         Args:
@@ -119,4 +129,5 @@ class _CygnusCloudProtocolFactory(Factory):
         Returns:
             The incoming packages queue
         """
-        return self.__queue
+        p = _Packet._deserialize(p)
+        self.__queue.queue(p.getPriority(), p)
