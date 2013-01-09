@@ -13,7 +13,6 @@ if __name__ == "__main__" :
     networkManager = NetworkManager()
     networkManager.startNetworkService()
     networkManager.listenIn(8080, ConvCallback(listP))
-    networkManager.connectTo('127.0.0.1', 8081, 20, ConvCallback(listP))
     
     print("The server is now ready")
     
@@ -21,7 +20,7 @@ if __name__ == "__main__" :
     while ans != "bye":
         #esperamos una respuesta
         while(len(listP) == 0):
-            sleep(2)
+            sleep(0.1)
         # Extraemos la contestacion
         ans = listP[0]
         print("<<" + ans)
@@ -30,6 +29,8 @@ if __name__ == "__main__" :
             print(">>")
             ans = raw_input()
             p.writeString(ans)
+            while not networkManager.isConnectionReady(8080):
+                sleep(0.1)
             #enviamos el mensaje        
             networkManager.sendPacket(8080, p)
 

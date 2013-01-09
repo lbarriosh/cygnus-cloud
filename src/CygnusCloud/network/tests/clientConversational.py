@@ -12,9 +12,9 @@ if __name__ == "__main__" :
     listP = []
     networkManager = NetworkManager()
     networkManager.startNetworkService()
-    networkManager.listenIn(8081, ConvCallback(listP))
     networkManager.connectTo('127.0.0.1', 8080, 20, ConvCallback(listP))
     
+
     
     #Creamos el string gordo
     ans = ""
@@ -27,7 +27,7 @@ if __name__ == "__main__" :
         networkManager.sendPacket(8080, p)
         #esperamos una respuesta
         while(len(listP) == 0):
-            sleep(2)
+            sleep(0.1)
         #Extraemos la contestación
         print("<<" + listP[0])
         
