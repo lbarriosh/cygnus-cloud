@@ -50,11 +50,7 @@ class _NetworkConnection(object):
             incomingDataThread: the incoming data thread assigned to the connection
             callbackObject: the callback object assigned to the connection     
         """
-        if isServer :
-            self.__status = _ConnectionStatus(CONNECTION_STATUS.OPENING)
-        else :
-            # The client connections are already ready when they are created.
-            self.__status = _ConnectionStatus(CONNECTION_STATUS.READY)
+        self.__status = _ConnectionStatus(CONNECTION_STATUS.OPENING)
         self.__isServer = isServer
         self.__port = port
         self.__factory = factory
@@ -149,6 +145,9 @@ class _NetworkConnection(object):
         """
         return self.__status.get() == CONNECTION_STATUS.READY
     
+    def isServerConnection(self):
+        return self.__isServer
+    
     def refresh(self):
         """
         Updates the connection's status
@@ -158,16 +157,18 @@ class _NetworkConnection(object):
             Nothing
         """
         if self.__status.get() == CONNECTION_STATUS.OPENING :
-            if (self.__isServer and self.__listeningPort != None )\
-                or (not self.__isServer and self.__factory.getInstance() != None) :
-                if self.__isServer :
-                    self.__status.set(CONNECTION_STATUS.READY_WAIT)
-                else :
+            if (self.__factory.getInstance() != None) :
+                if (not self.__isServer):
+                    # Client => we've got everything we need
                     self.__status.set(CONNECTION_STATUS.READY)
-                self.__incomingDataThread.start()   
+                elif (self.__listeningPort != None):
+                    # Server => the connection must also have a listening port before
+                    # it's ready.
+                    self.__status.set(CONNECTION_STATUS.READY_WAIT)
+            self.__incomingDataThread.start()
                 
         if self.__status.get() == CONNECTION_STATUS.READY_WAIT :
-            if not self.__factory.isDisconnected :
+            if not self.__factory.isDisconnected() :
                 self.__status.set(CONNECTION_STATUS.READY)
                 
         if self.__status.get() == CONNECTION_STATUS.CLOSING :

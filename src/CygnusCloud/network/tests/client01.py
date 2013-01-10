@@ -12,7 +12,8 @@ from time import sleep
 if __name__ == "__main__" :
     networkManager = NetworkManager()
     networkManager.startNetworkService()
-    networkManager.connectTo('192.168.0.5', 8080, 20, DummyCallback())
+    networkManager.connectTo('192.168.0.6', 8080, 20, DummyCallback())
+    sleep(2)
     p = networkManager.createPacket(0)
     p.writeString("Greetings from a client")    
     networkManager.sendPacket(8080, p)

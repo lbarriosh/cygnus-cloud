@@ -15,13 +15,12 @@ if __name__ == "__main__" :
     print "Creating server..."
     networkManager.listenIn(8080, DummyCallback())
     print "The server is now ready"
+    sleep(15)
+    print networkManager.isConnectionReady(8080)
     p = networkManager.createPacket(10)
     p.writeString("Hello, Client!")
-    while not networkManager.isConnectionReady(8080):
-        sleep(10)
     networkManager.sendPacket(8080, p)
-    sleep(1000)
-    networkManager.closeConnection(8080)
+    print "Packet sent from server"
     networkManager.stopNetworkService()
 
 

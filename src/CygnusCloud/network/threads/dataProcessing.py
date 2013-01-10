@@ -49,6 +49,9 @@ class _IncomingDataThread(QueueProcessingThread):
             QueueProcessingThread.stop(self)
             if join :
                 self.join()
+                
+    def run(self):
+        QueueProcessingThread.run(self)
         
     def processElement(self, e):
         """

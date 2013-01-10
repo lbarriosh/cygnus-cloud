@@ -238,7 +238,10 @@ class NetworkManager():
         connection = self.__connectionPool[port]
         self.__detectConnectionErrors(connection)
         if not connection.isReady() :
-            raise NetworkManagerException("No clients have connected to this port yet")
+            if (connection.isServerConnection()) :
+                raise NetworkManagerException("No clients have connected to this port yet")
+            else :
+                raise NetworkManagerException("The connection is not ready yet")
         connection.registerPacket()
         self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet))
         

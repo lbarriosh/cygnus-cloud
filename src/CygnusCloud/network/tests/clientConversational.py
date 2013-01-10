@@ -13,7 +13,8 @@ if __name__ == "__main__" :
     networkManager = NetworkManager()
     networkManager.startNetworkService()
     networkManager.connectTo('127.0.0.1', 8080, 20, ConvCallback(listP))
-    
+    while not networkManager.isConnectionReady(8080):
+        sleep(0.1)
 
     
     #Creamos el string gordo
