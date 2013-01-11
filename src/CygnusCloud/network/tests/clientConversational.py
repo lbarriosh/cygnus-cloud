@@ -30,7 +30,9 @@ if __name__ == "__main__" :
         while(len(listP) == 0):
             sleep(0.1)
         #Extraemos la contestación
-        print("<<" + listP[0])
+        print("<<" + listP.pop())
+        
+
         
     sleep(10)
     networkManager.stopNetworkService()

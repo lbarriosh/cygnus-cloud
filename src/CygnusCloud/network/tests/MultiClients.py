@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 '''
     Test que comprueba si el servidor es capaz de recibir los paquetes enviados
     desde varios clientes.
@@ -18,6 +19,8 @@ if __name__ == "__main__" :
     client1.startNetworkService()
     client1.connectTo('127.0.0.1', 8080, 20, DummyCallback())
   
+    while(not client1.isConnectionReady(8080)):
+        sleep(0.1)
     #Fase 2: Cada cliente envia su paquete
     #Cliente 1
     p1 = client1.createPacket(0)

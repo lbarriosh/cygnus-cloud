@@ -22,7 +22,7 @@ if __name__ == "__main__" :
         while(len(listP) == 0):
             sleep(0.1)
         # Extraemos la contestacion
-        ans = listP[0]
+        ans = listP.pop()
         print("<<" + ans)
         if ans != "bye" :
             p = networkManager.createPacket(0)

@@ -20,6 +20,10 @@ if __name__ == "__main__" :
     p = networkManager.createPacket(10)
     p.writeString("Hello, Client!")
     networkManager.sendPacket(8080, p)
+    p = networkManager.createPacket(10)
+    sleep(10)
+    p.writeString("Hello, Client 1!")
+    networkManager.sendPacket(8080, p)
     print "Packet sent from server"
     networkManager.stopNetworkService()
 
