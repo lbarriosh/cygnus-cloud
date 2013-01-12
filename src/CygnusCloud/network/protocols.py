@@ -2,12 +2,12 @@
 '''
 Protocol and protocol factory implementations.
 @author: Luis Barrios Hernández
-@version: 3.6
+@version: 4.0
 '''
 
 from twisted.internet.protocol import Protocol, Factory
 from network.packet import _Packet
-from utils.multithreadingCounter import MultithreadingCounter
+from utils.multithreadingList import GenericThreadSafeList
 
 class _CygnusCloudProtocol(Protocol):
     """
@@ -20,6 +20,7 @@ class _CygnusCloudProtocol(Protocol):
             factory: the protocol factory that created this protocol instance
         """       
         self.__factory = factory
+        self.__disconnected = False
     
     def dataReceived(self, data):
         """
@@ -42,7 +43,7 @@ class _CygnusCloudProtocol(Protocol):
         Returns:
             Nothing
         """
-        self.__factory.addConnection()
+        pass
     
     def connectionLost(self, reason):
         """
@@ -52,9 +53,10 @@ class _CygnusCloudProtocol(Protocol):
         Returns:
             Nothing
         """
-        self.__factory.removeConnection()
+        self.__disconnected = True
+        self.__factory.removeConnection(self)
     
-    def sendData(self, packet):
+    def sendPacket(self, packet):
         """
         Sends the a packet to its destination.
         Args:
@@ -62,7 +64,8 @@ class _CygnusCloudProtocol(Protocol):
         Returns:
             Nothing
         """
-        self.transport.write(packet._serialize())
+        if (not self.__disconnected) :
+            self.transport.write(packet._serialize())
         
     def disconnect(self):
         """
@@ -72,6 +75,7 @@ class _CygnusCloudProtocol(Protocol):
         Returns:
             Nothing
         """
+        self.__disconnected = True
         self.transport.loseConnection()
         
 class _CygnusCloudProtocolFactory(Factory):
@@ -88,30 +92,24 @@ class _CygnusCloudProtocolFactory(Factory):
         """
         self.protocol = _CygnusCloudProtocol
         self.__queue = queue        
-        self.__instance = None 
-        # I'm pretty sure that the connection counter will only be modified
-        # inside the twisted thread. But I prefer using this to ensure that anything
-        # will break.
-        self.__connections = MultithreadingCounter()   
+        self.__connections = GenericThreadSafeList()
     
     def buildProtocol(self, addr):
         """
         Builds a protocol, stores a pointer to it and finally returns it.
         This method is called inside Twisted code.
         """
-        self.__instance = _CygnusCloudProtocol(self)        
-        return self.__instance
-    
-    def addConnection(self):
-        self.__connections.increment()
+        instance = _CygnusCloudProtocol(self)        
+        self.__connections.append(instance)
+        return instance   
         
-    def removeConnection(self):
-        self.__connections.decrement()
+    def removeConnection(self, connection):
+        self.__connections.remove(connection)
         
     def isDisconnected(self):
-        return self.__connections.read() == 0
+        return self.__connections.getSize() == 0
 
-    def getInstance(self):
+    def sendPacket(self, packet):
         """
         Returns the last built instance
         Args:
@@ -119,7 +117,10 @@ class _CygnusCloudProtocolFactory(Factory):
         Returns:
             the last built protocol instance
         """
-        return self.__instance
+        i = 0
+        while (i < self.__connections.getSize()) :
+            self.__connections[i].sendPacket(packet)
+            i += 1
     
     def onPacketReceived(self, p):
         """

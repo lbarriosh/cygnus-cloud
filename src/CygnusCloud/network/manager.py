@@ -2,7 +2,7 @@
 '''
 Network manager class definitions.
 @author: Luis Barrios Hernández
-@version: 5.0
+@version: 5.1
 '''
 
 from twisted.internet import reactor
@@ -139,10 +139,10 @@ class NetworkManager():
         endpoint.connect(factory)   
         # Wait until the connection is ready
         time = 0
-        while factory.getInstance() is None and time <= timeout:            
+        while factory.isDisconnected() and time <= timeout:            
             sleep(0.001)
             time += 0.001
-        if factory.getInstance() is None :
+        if factory.isDisconnected() :
             raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
         # Create the new connection
         connection = _NetworkConnection(False, port, factory, queue, thread, callbackObject)
