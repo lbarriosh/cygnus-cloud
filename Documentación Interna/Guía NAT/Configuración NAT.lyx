@@ -657,9 +657,9 @@ status open
 \begin_layout Plain Layout
 
 \family typewriter
-dnsmasq --strict-order --except-interface=lo --except-interface=eth0 --interface
-=kvmbr0 --listen-address=192.168.77.1 --bind-interfaces --dhcp-range=192.168.77.2,192.1
-68.77.254 --conf-file="" 
+dnsmasq --strict-order --except-interface=lo --except-interface=eth0 --except-in
+terface=vnet0 --interface=kvmbr0 --listen-address=192.168.77.1 --bind-interfaces
+ --dhcp-range=192.168.77.2,192.168.77.254 --conf-file="" 
 \series bold
 \color red
 --dhcp-leasefile=/home/luis/kvmbr0.leases 
