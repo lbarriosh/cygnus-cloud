@@ -201,6 +201,67 @@ class LibvirtXMLFileGenerator(object):
         handler = ET.SubElement(root, "on_crash")
         handler.text = crash
         
+        # Generate the devices element
+        devices = ET.SubElement(root, "devices")
+        
+        # Generate the emulator sub-element
+        emulator = ET.SubElement(devices, "emulator")
+        emulator.text = "/usr/bin/kvm"
+        
+        # Generate the serial sub-element
+        serial = ET.SubElement(devices, "serial")
+        serial.set("type", "pty")
+        target = ET.SubElement(serial, "target")
+        target.set("port", "0")
+        
+        # Generate the console sub-element
+        console = ET.SubElement(devices, "console")
+        console.set("type", "pty")
+        target = ET.SubElement(console, "target")
+        target.set("type", "serial")
+        target.set("port", "0")
+        
+        # Generate the input sub-elements
+        input = ET.SubElement(devices, "input")
+        input.set("type", "tablet")
+        input.set("bus", "usb")
+        input = ET.SubElement(devices, "input")
+        input.set("type", "mouse")
+        input.set("bus", "ps2")
+        
+        # Generate the sound sub-element
+        sound = ET.SubElement(devices, "sound")
+        sound.set("model", "ich6")
+        address = ET.SubElement(sound, "address")
+        address.set("type", "pci")
+        address.set("domain", "0x0000")
+        address.set("bus", "0x00")
+        address.set("slot", "0x04")
+        address.set("function", "0x0")
+        
+        # Generate the video sub-element
+        video = ET.SubElement(devices, "video")
+        model = ET.SubElement(video, "model")
+        model.set("type", "vga")
+        model.set("vram", "9216")
+        model.set("heads", "1")       
+        address = ET.SubElement(video, "address")
+        address.set("type", "pci")
+        address.set("domain", "0x0000")
+        address.set("bus", "0x00")
+        address.set("slot", "0x02")
+        address.set("function", "0x0")
+        
+        # Generate the membaloon sub-element
+        memballoon = ET.SubElement(devices, "memballoon")
+        memballoon.set("model", "virtio")
+        address = ET.SubElement(memballoon, "address")
+        address.set("type", "pci")
+        address.set("domain", "0x0000")
+        address.set("bus", "0x00")
+        address.set("slot", "0x06")
+        address.set("function", "0x0")
+        
         # Generate the .xml file
         tree = ET.ElementTree(root)
         tree.write(outputFilePath)

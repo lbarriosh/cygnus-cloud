@@ -121,7 +121,7 @@ class _NetworkConnection(object):
         Returns:
             None
         """
-        self.__factory.getInstance().sendData(p)
+        self.__factory.sendPacket(p)
         self.__packagesToSend.decrement()
                 
     def registerPacket(self):
@@ -157,7 +157,7 @@ class _NetworkConnection(object):
             Nothing
         """
         if self.__status.get() == CONNECTION_STATUS.OPENING :
-            if (self.__factory.getInstance() != None) :
+            if (self.__factory.isDisconnected()) :
                 if (not self.__isServer):
                     # Client => we've got everything we need
                     self.__status.set(CONNECTION_STATUS.READY)
