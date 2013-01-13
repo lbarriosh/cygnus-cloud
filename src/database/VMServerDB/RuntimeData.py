@@ -20,6 +20,73 @@ class RuntimeData(object):
         # Nos conectamos a MySql 
         self.__db = self.connect()
         self.__cursor = self.__db.cursor()
+        #Llamamos a la función encargada de generar las MACS
+        self.generateInitMacs()
+        
+    def generateInitMacs(self): 
+        '''
+            Función encargada de crear la tabla inicial de pares (UUID,MAC) libres
+        '''
+        sql = "DROP TABLE IF EXISTS freeMacs" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)  
+        #Creamos la tabla necesaria
+        sql = "CREATE TABLE IF NOT EXISTS freeMacs(UUID VARCHAR(40) ,MAC VARCHAR(20),PRIMARY KEY(UUID,MAC))"
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Generamos el relleno
+        v = 0
+        #Generamos el bucle
+        while v < 256 :
+            x = str(hex(v))[2:].upper()
+            #Ajustamos al formato de 2 digitos cuando proceda
+            if v < 16:
+                x = '0' + x
+            #Creamos la consulta   
+            sql = "INSERT INTO freeMacs VALUES (UUID(),'" + '2C:00:00:00:00:' +  x + "');"
+            #Ejecutamos el comando
+            self.__cursor.execute(sql)
+            #incrementamos el contador
+            v = v + 1
+            
+        #Actualizamos la base de datos
+        self.__db.commit() 
+        
+        
+    def extractfreeMac(self):
+        '''
+            Función que devuelve la primera ocurrencia de la tabla de macs libres y
+             la elimina de la tabla
+        '''
+        #Creamos la cosulta
+        sql = "SELECT * FROM freeMacs"
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Nos quedamos con la primera ocurrencia
+        result=self.__cursor.fetchone()
+        
+        #Eliminamos este resultado de la tabla
+        sql = "DELETE FROM freeMacs WHERE UUID = '" + result[0] + "' AND MAC ='" + result[1] + "'"
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
+        #Actualizamos la base de datos
+        self.__db.commit() 
+        
+        #Devolvemos una tupla con la UUID y la MAC
+        return (result[0],result[1])
+    
+    def insertfreeMac(self,UUID,MAC):
+        '''
+            Añade un nuevo par del tipo UUID , MAC a la tabla freeMAC
+        '''
+        #Creamso la consulta
+        sql = "INSERT INTO freeMacs VALUES ('" + UUID +"','" + MAC + "')"
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Actualizamos la base de datos
+        self.__db.commit() 
+        
         
     def connect(self):
         '''
@@ -151,6 +218,19 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0] 
     
+    def getUuidAdress(self,vncPort):
+        '''
+            Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
+        '''
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT uuid FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0] 
+    
     def getPassword(self,vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
@@ -164,7 +244,7 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0]
     
-    def registerVMPort(self,vncPort,userId, VMId, imageCopyPath, fileConfigCopyPath, mac, password):
+    def registerVM(self,vncPort,userId, VMId, imageCopyPath, mac,uuid, password):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
@@ -172,7 +252,7 @@ class RuntimeData(object):
         #CInsertamos los datos nuevos en la BD
         sql = "INSERT INTO ActualVM VALUES('"  
         sql+=    str(vncPort) + "'," + str(userId)  +"," + str(VMId) +",'" 
-        sql +=  imageCopyPath + "','" + fileConfigCopyPath + "','" + mac + "','"
+        sql +=  imageCopyPath + "','" + mac + "','" + uuid + "','"
         sql +=  password + "')"  
         #Ejecutamos el comando
         self.__cursor.execute(sql)  
@@ -213,7 +293,7 @@ def main():
     #Comenzamos con las pruebas
     other = 's'
     while(other == 's'):
-        print("Escoja un numero de prueba (1-9)")
+        print("Escoja un numero de prueba (1-11)")
         prueba = raw_input()
         
         if(prueba == '1'):
@@ -281,14 +361,14 @@ def main():
             vmId = raw_input()
             print("Indique la ruta")
             path = raw_input()
-            print("Indique la ruta del fichero de configuracion:")
-            configPath = raw_input()
             print("Indique la direccion MAC")
             mac = raw_input()
+            print("Indique la uuid")
+            uuid = raw_input()
             print("Indique la contraseña")
             portPass = raw_input()
             
-            portId = runtimeData.registerVM(port,userId,vmId,path, configPath, mac, portPass)
+            portId = runtimeData.registerVM(port,userId,vmId,path, mac, uuid, portPass)
             print("MV registrada:")
             runtimeData.showVMs()
         elif(prueba == '9'):
@@ -299,6 +379,23 @@ def main():
             runtimeData.unregisterVNCPort(port)
             print("La máquina virtual ha sido dada de baja:")
             runtimeData.showVMs()
+        elif(prueba == '10'):
+            #extracción de una MAC libre
+            print("Prueba 10")
+            print("La proxima MAC libre es:")
+            (uuid,mac) = runtimeData.extractfreeMac()
+            print("UUID = " + uuid)
+            print("MAC = " + mac)
+        elif(prueba == '11'):
+            #Adición de una MAC a la lista libre
+            print("Prueba 11")
+            print("Indique el UUID:")
+            uuid = raw_input()
+            print("Indique la direccion MAC:")
+            mac = raw_input()
+            runtimeData.insertfreeMac(uuid, mac)
+            print("La nueva MAC ha sido añadida")
+            
         else:
             print("Prueba no disponible.")
                
