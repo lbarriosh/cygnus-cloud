@@ -43,7 +43,7 @@ class GenericThreadSafeDictionary :
         
     def isEmpty(self):
         with self.__semaphore:
-            return len(self.__dict)
+            return len(self.__dict) == 0
         
     def __getitem__(self, index):
         with self.__semaphore:
