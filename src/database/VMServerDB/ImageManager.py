@@ -106,25 +106,18 @@ class ImageManager(object):
         #Actualizamos la base de datos
         self.__db.commit() 
         
-    def createImage(self,name,imagePath,FileConfigPath):
+    def createImage(self,imageId,name,imagePath,FileConfigPath):
         '''
             Permite registrar en la base de datos una nueva imagen de máquina virtual. 
         '''
         #Introducimos los datos en la base de datos
-        sql = "INSERT INTO VirtualMachine(name,imagePath,FileConfigPath) VALUES('"  
-        sql+=    name + "','" + imagePath  +"','" + FileConfigPath +"') "  
+        sql = "INSERT INTO VirtualMachine(VMId,name,imagePath,FileConfigPath) VALUES("  
+        sql+=    str(imageId) + ",'" + name + "','" + imagePath  +"','" + FileConfigPath +"') "  
         #Ejecutamos el comando
-        self.__cursor.execute(sql)               
-        #Extraemos el id del servidor recien creado
-        sql = "SELECT VMId FROM VirtualMachine WHERE name ='" + name + "' AND imagePath ='" + imagePath +"'" 
-        sql += " AND FileConfigPath = '" + FileConfigPath + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql) 
-        #Cogemos el utlimo
-        imageId = self.__cursor.lastrowid
+        self.__cursor.execute(sql)  
         #Actualizamos la base de datos
-        self.__db.commit() 
-        #Lo devolvemos
+        self.__db.commit()              
+        #Devolvemos el id
         return imageId
     
     def deleteImage(self,imageId):
@@ -207,6 +200,8 @@ def main():
         elif(prueba == '6'):
             print("Prueba 6")
             # Actualización de la ruta del fichero de configuración
+            print("Indique el id de la imagen:")
+            imageId = raw_input()
             print("Indique el nombre de la nueva imagen:")
             imageName = raw_input()
             print("Indique la nueva ruta de la nueva imagen:")
@@ -214,9 +209,9 @@ def main():
             print("Indique la nueva ruta del fichero de configuracion de la nueva imagen:")
             imageConfigPath = raw_input()
             #Creamos la imagen
-            imageId = imageM.createImage(imageName,imagePath,imageConfigPath)
+            imageIds = imageM.createImage(imageId,imageName,imagePath,imageConfigPath)
             print("La imagen ha sido creada con el id:")
-            print(imageId)
+            print(imageIds)
         else:
             print("Prueba no disponible.")
                

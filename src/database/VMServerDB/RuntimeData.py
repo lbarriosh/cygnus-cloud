@@ -244,7 +244,7 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0]
     
-    def registerVM(self,vncPort,userId, VMId, imageCopyPath, mac,uuid, password):
+    def registerVNCPort(self,vncPort,userId, VMId, imageCopyPath, mac,uuid, password):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
@@ -368,7 +368,7 @@ def main():
             print("Indique la contraseña")
             portPass = raw_input()
             
-            portId = runtimeData.registerVM(port,userId,vmId,path, mac, uuid, portPass)
+            portId = runtimeData.registerVNCPort(port,userId,vmId,path, mac, uuid, portPass)
             print("MV registrada:")
             runtimeData.showVMs()
         elif(prueba == '9'):

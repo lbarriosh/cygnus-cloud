@@ -16,7 +16,7 @@ class DBWebServerTests(unittest.TestCase):
         #Instanciamos la clase
         imageM = ImageManager("CygnusCloud","cygnuscloud2012","DBVMServerTest")
         l1 = imageM.getImages()
-        l2 = [1,2,3,4,5]
+        l2 = [1,2,3,4]
         self.assertEquals(l1, l2, "Not same images")
         
     def test_getName(self):
@@ -51,7 +51,7 @@ class DBWebServerTests(unittest.TestCase):
     def test_createImage(self):
         #Instanciamos la clase
         imageM = ImageManager("CygnusCloud","cygnuscloud2012","DBVMServerTest")
-        imageId = imageM.createImage("VMNameTest","./VMNameTest/","./VMNameTest/")
+        imageId = imageM.createImage(123,"VMNameTest","./VMNameTest/","./VMNameTest/")
         self.assertTrue(imageM.isImageExists(imageId), "Not image regist")  
         imageM.deleteImage(imageId)    
     
@@ -94,7 +94,7 @@ class DBWebServerTests(unittest.TestCase):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
         n1 = runtimeD.getMacAdress(3)
-        n2 = "333333"
+        n2 = "2C:00:00:00:00:03"
         self.assertEquals(n1, n2, "Not same VM MAC") 
         
     def test_getPassword(self):
@@ -107,11 +107,16 @@ class DBWebServerTests(unittest.TestCase):
     def test_RegisterVM(self):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
-        portId = runtimeD.registerVMPort(23,23,5,"./VMNameCopyTest","./VMNameCopyTest","testMac","testPass")
+        portId = runtimeD.registerVNCPort(23,23,4,"./VMNameCopyTest","testMac","testUUID","testPass")
         self.assertTrue(runtimeD.isVMExists(portId), "Not VM register") 
         runtimeD.unregisterVNCPort(23)
         self.assertFalse(runtimeD.isVMExists(23), "Not VM unregisted")
-
+    def test_NextMac(self):
+        #Instanciamos la clase
+        runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
+        (uuid1,mac1)= runtimeD.extractfreeMac()
+        (uuid2,mac2) = ("9a47c734-5e5f-11e2-981b-001f16b99e1d","2C:00:00:00:00:00")
+        self.assertEquals(mac1, mac2, "Not same MAC")
              
 
         
