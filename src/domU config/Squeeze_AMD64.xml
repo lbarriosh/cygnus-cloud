@@ -46,22 +46,29 @@
     <emulator>/usr/bin/kvm</emulator>
     <!--
         Disco duro
-        VirtIO, con imagen VMDK (puede usarse con VirtualBox)
+        VirtIO, con imagen VMDK del SO
+     -->
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2' cache='writeback' io='native'/>
+      <source file='/home/luis/kvm-images/DebianSqueezeAMD64/SqueezeAMD64Writable.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <!--
+        Disco duro
+        VirtIO, con imagen VMDK de los datos del usuario
      -->
     <disk type='file' device='disk'>
       <driver name='qemu' type='vmdk' cache='writeback' io='native'/>
-      <source file='/home/luis/kvm-images/DebianSqueezeAMD64/SqueezeAMD64.vmdk'/>
-      <target dev='vda' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      <source file='/home/luis/kvm-images/DebianSqueezeAMD64/Data.vmdk'/>
+      <target dev='vdb' bus='virtio'/>
     </disk>
     <!--
         Interfaz de red.
         Conexión a la puerta de enlace
      -->
-     <interface type='bridge'>
+     <interface type='network'>
+        <source network='default'/>
         <mac address='52:54:00:8a:56:41'/>
-        <source bridge='kvmbr0'/>
-        <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <!--
         Serial consoles
@@ -78,20 +85,13 @@
     <!-- VNC escuchando en dirección IP del servidor. El puerto se mete "a pelo", al igual
          que la contraseña.-->
     <graphics type='vnc' port='15010' autoport='no' passwd='CygnusCloudRules!' keymap='es'>
-        <listen type='address' address='192.168.0.4'/>
+        <listen type='address' address='192.168.0.5'/>
     </graphics>
-    <!-- Tarjeta de sonido. La pongo para evitar problemas -->
-    <sound model='ich6'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
-    </sound>
     <!-- Tarjeta gráfica -->
     <video>
       <model type='cirrus' vram='9216' heads='1'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </video>
     <!-- Memballoon de VirtIO. Debería crearse automáticamente, pero lo pongo para asegurarme -->
-    <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
-    </memballoon>
+    <memballoon model='virtio'/>
   </devices>
 </domain>
