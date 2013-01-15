@@ -2,7 +2,8 @@
 '''
 A module that contains useful functions to run commands
 @author: Luis Barrios Hernández
-@version: 1.0
+@author: Samuel Guayerbas
+@version: 2.0
 '''
 
 from subprocess import Popen, PIPE, STDOUT
@@ -13,9 +14,9 @@ def runCommand(cmd, ExceptionClass):
         Args:
             cmd: the command to run
         Returns:
-            Nothing
+            The run command's output
         Raises:
-            Exception: this exception will be raised if something goes
+            ExceptionClass: this exception will be raised if something goes
             wrong when running the command.
         """
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
@@ -24,6 +25,9 @@ def runCommand(cmd, ExceptionClass):
         if (code != 0) :
             # Something went wrong => raise an exception
             raise ExceptionClass(p.stdout.read())  
+        else :
+            # Return the command's output
+            return p.stdout.read()
 
 def runCommandBackground(cmd):
         """
@@ -34,5 +38,4 @@ def runCommandBackground(cmd):
             cmd's command
         """
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
-
         return p.pid

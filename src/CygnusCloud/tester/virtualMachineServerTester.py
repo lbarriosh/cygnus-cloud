@@ -9,18 +9,22 @@ from __future__ import print_function
 
 from network.manager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
-from packets.types import VM_SERVER_PACKET_T
+from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T
 
 class TesterCallback(NetworkCallback):
+    def __init__(self, packetHandler):
+        self.__pHandler = packetHandler
+        
     def processPacket(self, packet):
-        packet_type = VM_SERVER_PACKET_T.reverse_mapping[packet.readInt()]
+        data = self.__pHandler.readPacket()
+        packet_type = VM_SERVER_PACKET_T.reverse_mapping[data["packet_type"]]
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA) :
             print("Domain connection data: ")
-            print("VNC server IP address: " + packet.readString())
-            print("VNC server port: " + packet.readString())
-            print("VNC server password: " + packet.readString())
+            print("VNC server IP address: " + data["VNCServerIP"])
+            print("VNC server port: " + data["VNCServerPort"])
+            print("VNC server password: " + data["VNCServerPassword"])
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
-            print("Virtual machine server status: ")
+            print("Virtual machine server " +  + " status: ")
             print(packet.readInt() +  " active VMs")
         else :
             print("Error: a packet from an unexpected type has been received")
@@ -37,24 +41,20 @@ def printLogo():
     print('\t        |___/ |___/ ')
     print()
     
-def process_command(tokens, networkManager, port):
+def process_command(tokens, networkManager, pHandler, port):
     if (len(tokens) == 0) :
         return False
     command = tokens.pop(0)
     if (command == "createvm") :
-        p = networkManager.createPacket(5)
-        p.writeInt(VM_SERVER_PACKET_T.CREATE_DOMAIN)
-        p.write(tokens.pop(0))
+        p = pHandler.createVMBootPacket(tokens.pop(0), "1")
         networkManager.sendPacket(port, p)
         return False
     elif (command == "shutdown") :
-        p = networkManager.createPacket(3)
-        p.writeInt(VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN)
+        p = pHandler.createVMServerShutdownPacket()
         networkManager.sendPacket(port, p)
         return False
     elif (command == "halt" or command == "quit") :
-        p = networkManager.createPacket(1)
-        p.writeInt(VM_SERVER_PACKET_T.HALT)
+        p = pHandler.createVMServerHaltPacket()
         networkManager.sendPacket(port, p)
         return command == "quit"        
     else :
@@ -81,17 +81,19 @@ if __name__ == "__main__" :
     print()
     networkManager = NetworkManager()
     networkManager.startNetworkService()
+    # Create the packet handler
+    pHandler = VMServerPacketHandler(networkManager)
     # Ask for the port and the IP address
     ip_address = raw_input("Server IP address: ")
     port = raw_input("Server port: ")
     try :
-        networkManager.connectTo(ip_address, int(port), 10, TesterCallback())
+        networkManager.connectTo(ip_address, int(port), 10, TesterCallback(pHandler))
         end = False
         while not end :
             command = raw_input('>')
             tokens = command.split()
-            end = process_command(tokens, networkManager, 8080)
-            
+            end = process_command(tokens, networkManager, pHandler, 8080)
+    
     except NetworkManagerException as e:
         print("Error: " + str(e))
     networkManager.stopNetworkService()
