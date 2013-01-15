@@ -24,3 +24,15 @@ def runCommand(cmd, ExceptionClass):
         if (code != 0) :
             # Something went wrong => raise an exception
             raise ExceptionClass(p.stdout.read())  
+
+def runCommandBackground(cmd):
+        """
+        Runs a command in background
+        Args:
+            cmd: the command to run in background
+        Returns:
+            cmd's command
+        """
+        p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+
+        return p.pid

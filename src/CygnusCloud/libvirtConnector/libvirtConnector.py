@@ -8,52 +8,48 @@ class libvirtConnector():
     KVM = "qemu"
     Xen = "xen"
     
-    def __init__(self, hypervisor, eventCallbacks):
-        # Creamos la uri para conectarnos 
+    __eventLoopThread = None
+    
+    def __init__(self, hypervisor, startCallback, undefineCallback):
+        # Initialization of event thread
+        if self.__eventLoopThread == None:
+            self.virEventLoopNativeStart()
+        # Create the uri 
         uri = ""
         uri += hypervisor
         uri += "://"
         uri += "/system"
-        # Nos conectamos a libvirt con esa uri
-        self.connector = libvirt.open(uri)
+        # Connect to lbvirt and register the events
+        self.connector = libvirt.openReadOnly(uri)
         self.connector.domainEventRegisterAny(None, 
                                               libvirt.VIR_DOMAIN_EVENT_ID_LIFECYCLE, 
                                               self.__eventDomain, 
-                                              None)
+                                              [startCallback, undefineCallback])
 
     def __eventDomain(self, conn, domain, eventID, detail, data):
         eventHandler = {
          libvirt.VIR_DOMAIN_EVENT_DEFINED: self.__definedHandler,
-         libvirt.VIR_DOMAIN_EVENT_UNDEFINED: self.__undefinedHandler,
-         libvirt.VIR_DOMAIN_EVENT_STARTED: self.__startedHandler,
+         libvirt.VIR_DOMAIN_EVENT_UNDEFINED: data[1],
+         libvirt.VIR_DOMAIN_EVENT_STARTED: data[0],
          libvirt.VIR_DOMAIN_EVENT_SUSPENDED: self.__suspendedHandler,
          libvirt.VIR_DOMAIN_EVENT_RESUMED: self.__resumedHandler,
          libvirt.VIR_DOMAIN_EVENT_STOPPED: self.__stoppedHandler,
          libvirt.VIR_DOMAIN_EVENT_SHUTDOWN: self.__shutdownHandler}
         eventHandler[eventID](domain)
-        #data[eventID](domain)
         
     def __definedHandler(self, domain):
-        pass
-    def __undefinedHandler(self, domain):
         '''
-        Mark as free the resources in the database
-        TODO
+        Create the domain defined
         '''
-        pass
-    def __startedHandler(self, domain):
-        '''
-        Start websockify for noVNC (vnc web client)
-        TODO
-        '''
-        pass
+        domain.create()
+        
     def __suspendedHandler(self, domain):
         pass
     def __resumedHandler(self, domain):
         pass
     def __stoppedHandler(self, domain):
         '''
-        Undefine the domain when it is shutdown
+        Undefine the domain when it is stopped (when an error ocurred)
         '''
         domain.undefine()
         
@@ -73,8 +69,10 @@ class libvirtConnector():
         Raises:
             libvirtError: if an error ocurred defining or starting the domain
         '''
-        domain = self.connector.defineXML(xmlConfig)
-        domain.create()
+        self.connector.defineXML(xmlConfig)
+        
+    def getNumberOfDomains(self):
+        self.connector.numOfDomains()
         
     @staticmethod
     def virEventLoopNativeRun():
@@ -84,9 +82,9 @@ class libvirtConnector():
     @staticmethod
     def virEventLoopNativeStart():
         libvirt.virEventRegisterDefaultImpl()
-        eventLoopThread = threading.Thread(target=libvirtConnector.virEventLoopNativeRun, name="libvirtEventLoop")
-        eventLoopThread.setDaemon(True)
-        eventLoopThread.start()
+        __eventLoopThread = threading.Thread(target=libvirtConnector.virEventLoopNativeRun, name="libvirtEventLoop")
+        __eventLoopThread.setDaemon(True)
+        __eventLoopThread.start()
 
 if __name__ == "__main__" :
     libvirtConnector.virEventLoopNativeStart()
