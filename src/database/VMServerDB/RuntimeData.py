@@ -21,9 +21,10 @@ class RuntimeData(object):
         self.__db = self.connect()
         self.__cursor = self.__db.cursor()
         #Llamamos a la función encargada de generar las MACS
-        self.generateInitMacs()
+        self.generateInitMacsAndUuids()
+        self.generateVNCPorts()
         
-    def generateInitMacs(self): 
+    def generateInitMacsAndUuids(self): 
         '''
             Función encargada de crear la tabla inicial de pares (UUID,MAC) libres
         '''
@@ -52,8 +53,34 @@ class RuntimeData(object):
         #Actualizamos la base de datos
         self.__db.commit() 
         
+    def generateVNCPorts(self): 
+        '''
+            Función encargada de crear la tabla inicial de pares (UUID,MAC) libres
+        '''
+        sql = "DROP TABLE IF EXISTS freeVNCPorts" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)  
+        #Creamos la tabla necesaria
+        sql = "CREATE TABLE IF NOT EXISTS freeVNCPorts(VNCPort INTEGER PRIMARY KEY)"
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Generamos el relleno
+        p = 15000
+        v = 0
+        #Generamos el bucle
+        while v < 256 :
+            #Creamos la consulta   
+            sql = "INSERT INTO freeVNCPorts VALUES ('" + str(p) + "');"
+            #Ejecutamos el comando
+            self.__cursor.execute(sql)
+            #incrementamos el contador
+            p = p + 2
+            v = v + 1
+            
+        #Actualizamos la base de datos
+        self.__db.commit() 
         
-    def extractfreeMac(self):
+    def extractfreeMacAndUuid(self):
         '''
             Función que devuelve la primera ocurrencia de la tabla de macs libres y
              la elimina de la tabla
@@ -76,12 +103,46 @@ class RuntimeData(object):
         #Devolvemos una tupla con la UUID y la MAC
         return (result[0],result[1])
     
-    def insertfreeMac(self,UUID,MAC):
+    def insertfreeMacAndUuid(self,UUID,MAC):
         '''
             Añade un nuevo par del tipo UUID , MAC a la tabla freeMAC
         '''
         #Creamso la consulta
         sql = "INSERT INTO freeMacs VALUES ('" + UUID +"','" + MAC + "')"
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Actualizamos la base de datos
+        self.__db.commit() 
+        
+    def extractfreeVNCPort(self):
+        '''
+            Función que devuelve la primera ocurrencia de la tabla de macs libres y
+             la elimina de la tabla
+        '''
+        #Creamos la cosulta
+        sql = "SELECT * FROM freeVNCPorts"
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Nos quedamos con la primera ocurrencia
+        result=self.__cursor.fetchone()
+        
+        #Eliminamos este resultado de la tabla
+        sql = "DELETE FROM freeVNCPorts WHERE VNCPort = '" + str(result[0]) + "'"
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
+        #Actualizamos la base de datos
+        self.__db.commit() 
+        
+        #Devolvemos el puerto
+        return result[0]
+    
+    def insertfreeVNCPort(self,VNCPort):
+        '''
+            Añade un nuevo par del tipo UUID , MAC a la tabla freeMAC
+        '''
+        #Creamso la consulta
+        sql = "INSERT INTO freeVNCPorts VALUES ('" + str(VNCPort) + "')"
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Actualizamos la base de datos
@@ -244,15 +305,41 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0]
     
-    def registerVNCPort(self,vncPort,userId, VMId, imageCopyPath, mac,uuid, password):
+    def getVMPid(self,vncPort): 
+        '''
+            Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
+        ''' 
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT VMPid FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0]
+    
+    def getOsImagePath(self,vncPort): 
+        '''
+            Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
+        ''' 
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT osImagePath FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0]
+    
+    def registerVMResources(self,vncPort,userId, VMId, VMPid, imageCopyPath,osImagePath,mac,uuid, password):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
         '''
         #CInsertamos los datos nuevos en la BD
         sql = "INSERT INTO ActualVM VALUES('"  
-        sql+=    str(vncPort) + "'," + str(userId)  +"," + str(VMId) +",'" 
-        sql +=  imageCopyPath + "','" + mac + "','" + uuid + "','"
+        sql+=    str(vncPort) + "'," + str(userId)  +"," + str(VMId) +"," + str(VMPid) + ",'"  
+        sql +=  imageCopyPath + "','" + osImagePath + "','" + mac + "','" + uuid + "','"
         sql +=  password + "')"  
         #Ejecutamos el comando
         self.__cursor.execute(sql)  
@@ -261,7 +348,7 @@ class RuntimeData(object):
         #devolvemos el puerto en el que ha sido creado
         return vncPort 
     
-    def unregisterVNCPort(self,vncPort):
+    def unRegisterVMResources(self,vncPort):
         '''
             Da de baja en la base de datos el puerto VNC que se le pasa como argumento 
              y con él, todas las características asociadas al mismo.
@@ -293,13 +380,13 @@ def main():
     #Comenzamos con las pruebas
     other = 's'
     while(other == 's'):
-        print("Escoja un numero de prueba (1-11)")
+        print("Escoja un numero de prueba (1-15)")
         prueba = raw_input()
         
         if(prueba == '1'):
             #Puertos VNC actualmente en uso
             print("Prueba 1")
-            print("Los puertos VNC actualmente en uso son:")
+            print("Las VM actualmente en uso son:")
             ports = runtimeData.getRunningPorts()
             for p in ports:
                 print(p)
@@ -359,8 +446,12 @@ def main():
             userId = raw_input()
             print("Indique el identificador de la MV")
             vmId = raw_input()
+            print("Indique el PID")
+            pid = raw_input()
             print("Indique la ruta")
             path = raw_input()
+            print("Indique la ruta del OS")
+            osPath = raw_input()
             print("Indique la direccion MAC")
             mac = raw_input()
             print("Indique la uuid")
@@ -368,7 +459,7 @@ def main():
             print("Indique la contraseña")
             portPass = raw_input()
             
-            portId = runtimeData.registerVNCPort(port,userId,vmId,path, mac, uuid, portPass)
+            portId = runtimeData.registerVMResources(port,userId,vmId, pid, path, osPath, mac, uuid, portPass)
             print("MV registrada:")
             runtimeData.showVMs()
         elif(prueba == '9'):
@@ -376,14 +467,14 @@ def main():
             print("Prueba 9")
             print("Indique el identificador del puerto a dar de baja")
             port = raw_input()
-            runtimeData.unregisterVNCPort(port)
+            runtimeData.unRegisterVMResources(port)
             print("La máquina virtual ha sido dada de baja:")
             runtimeData.showVMs()
         elif(prueba == '10'):
             #extracción de una MAC libre
             print("Prueba 10")
             print("La proxima MAC libre es:")
-            (uuid,mac) = runtimeData.extractfreeMac()
+            (uuid,mac) = runtimeData.extractfreeMacAndUuid()
             print("UUID = " + uuid)
             print("MAC = " + mac)
         elif(prueba == '11'):
@@ -393,8 +484,41 @@ def main():
             uuid = raw_input()
             print("Indique la direccion MAC:")
             mac = raw_input()
-            runtimeData.insertfreeMac(uuid, mac)
+            runtimeData.insertfreeMacAndUuid(uuid, mac)
             print("La nueva MAC ha sido añadida")
+            
+        elif(prueba == '12'):
+            #contraseña asociado a un puerto
+            print("Prueba 12")
+            print("Indique el identificador del puerto")
+            port = raw_input()
+            pid = runtimeData.getVMPid(port)
+            print("El PID asociado a este puerto es:")
+            print(pid)
+            
+        elif(prueba == '13'):
+            #contraseña asociado a un puerto
+            print("Prueba 13")
+            print("Indique el identificador del puerto")
+            port = raw_input()
+            osImagePath = runtimeData.getOsImagePath(port)
+            print("La ruta del OS asociado a este puerto es:")
+            print(osImagePath)
+            
+        elif(prueba == '14'):
+            #extracción de una MAC libre
+            print("Prueba 10")
+            print("La proxima VNCPort libre es:")
+            VNCPort = runtimeData.extractfreeVNCPort()
+            print("Puerto = " + str(VNCPort))
+            
+        elif(prueba == '15'):
+            #Adición de una MAC a la lista libre
+            print("Prueba 11")
+            print("Indique el puerto:")
+            VNCPort = raw_input()
+            runtimeData.insertfreeVNCPort(VNCPort)
+            print("El nuevo puerto ha sido añadida")
             
         else:
             print("Prueba no disponible.")
