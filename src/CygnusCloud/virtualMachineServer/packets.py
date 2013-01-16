@@ -104,7 +104,6 @@ class VMServerPacketHandler(object):
         if (packet_type == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
             result["machineId"] = p.readLong()
             result["userId"] = p.readLong()
-            return result
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
             result["VNCServerIP"] = p.readString()
             result["VNCServerPort"] = p.readInt()
@@ -114,5 +113,6 @@ class VMServerPacketHandler(object):
             result["ActiveDomains"] = p.readInt()
         if (packet_type == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN or\
             packet_type == VM_SERVER_PACKET_T.HALT):
-            return result
+           
+        return result
         
