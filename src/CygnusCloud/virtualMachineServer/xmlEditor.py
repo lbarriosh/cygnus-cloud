@@ -14,9 +14,8 @@ class ConfigurationFileEditorException(Exception):
     pass
     
 class ConfigurationFileEditor(object):
-    def __init__(self, inputFilePath, outputFilePath):
+    def __init__(self, inputFilePath):
         self.__inputFilePath = inputFilePath
-        self.__outputFilePath = outputFilePath
         self.__name = None
         self.__uuid = None
         self.__virtualNetworkName = None
@@ -44,7 +43,7 @@ class ConfigurationFileEditor(object):
         self.__osImagePath = osPath
         self.__dataImagePath = dataPath
         
-    def generateOutputFile(self):
+    def generateConfigurationString(self):
         self.__checkErrors()
         # Everything is OK now. Let's do it!
         # Parse the source XML file
@@ -80,7 +79,7 @@ class ConfigurationFileEditor(object):
         listen = graphics.find("listen")
         listen.set("address", self.__vncServerIPAddress)
         # Write the new XML file to its path
-        tree.write(self.__outputFilePath)
+        return tree.tostring(root)
     
     def __checkErrors(self):
         if (self.__name == None or self.__uuid == None) :

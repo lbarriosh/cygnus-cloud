@@ -8,7 +8,7 @@ Virtual machine server packet handler definitions.
 from utils.enums import enum
 
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
-                          "USER_FRIENDLY_SHUTDOWN", "HALT")
+                          "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", "HALT")
 
 class VMServerPacketHandler(object):
     
@@ -46,6 +46,11 @@ class VMServerPacketHandler(object):
         p.writeString(vncServerIP)
         p.writeInt(vncServerPort)
         p.writeString(password)
+        return p
+    
+    def createVMServerStatusRequestPacket(self):
+        p = self.__packetCreator.createPacket(7)
+        p.writeInt(VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST)
         return p
     
     def createVMServerStatusPacket(self, vncServerIP, activeDomains):
@@ -112,7 +117,8 @@ class VMServerPacketHandler(object):
             result["VNCServerIP"] = p.readString()
             result["ActiveDomains"] = p.readInt()
         if (packet_type == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN or\
-            packet_type == VM_SERVER_PACKET_T.HALT):
-           
+            packet_type == VM_SERVER_PACKET_T.HALT or \
+            packet_type == VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST):
+           pass
         return result
         

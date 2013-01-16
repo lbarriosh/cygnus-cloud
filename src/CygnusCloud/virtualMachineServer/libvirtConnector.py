@@ -20,8 +20,8 @@ class libvirtConnector():
         uri += "://"
         uri += "/system"
         # Connect to lbvirt and register the events
-        self.connector = libvirt.openReadOnly(uri)
-        self.connector.domainEventRegisterAny(None, 
+        self.__connector = libvirt.openReadOnly(uri)
+        self.__connector.domainEventRegisterAny(None, 
                                               libvirt.VIR_DOMAIN_EVENT_ID_LIFECYCLE, 
                                               self.__eventDomain, 
                                               [startCallback, undefineCallback])
@@ -69,10 +69,10 @@ class libvirtConnector():
         Raises:
             libvirtError: if an error ocurred defining or starting the domain
         '''
-        self.connector.defineXML(xmlConfig)
+        self.__connector.defineXML(xmlConfig)
         
     def getNumberOfDomains(self):
-        self.connector.numOfDomains()
+        self.__connector.numOfDomains()
         
     @staticmethod
     def virEventLoopNativeRun():

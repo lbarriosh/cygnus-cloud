@@ -5,44 +5,38 @@ Created on 14/01/2013
 '''
 
 from network.manager import NetworkManager, NetworkCallback
-from libvirtManager import libvirtConnector
-from VMServer.Constantes import *
-from packets.types import VM_SERVER_PACKET_T
+from libvirtConnector import libvirtConnector
+from Constantes import *
+from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
+from xmlEditor import ConfigurationFileEditor
 from database.VMServerDB import ImageManager, RuntimeData
 from utils.commands import runCommand, runCommandBackground
-from xml.etree import ElementTree as ET
+try :
+    import etree.cElementTree as ET
+except ImportError:
+    import etree.ElementTree as ET
 
 class VMClientException(Exception):
     pass
 
 class VMClient(NetworkCallback):
     def __init__(self):
-        # Diccionario que relaciona un id de un dominio 
-        # con el PID de su correspondiente websockify
-        self.ID_PIDWS = {}
         self.__waitForShutdown = False
-        self.db = ImageManager(userDB, passwordDB, DBname)
-        self.MAC_UUID_table = RuntimeData(userDBMac, passwordDBMac, DBnameMac)
-        self.connector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
+        self.__db = ImageManager(userDB, passwordDB, DBname)
+        self.__MAC_UUID_table = RuntimeData(userDBMac, passwordDBMac, DBnameMac)
+        self.__connector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
         VMClient.__connect()
             
     def __connect(self):
-        self.networkManager = NetworkManager()
-        self.networkManager.startNetworkService()
+        self.__networkManager = NetworkManager()
+        self.__networkManager.startNetworkService()
+        self.__packetManager = VMServerPacketHandler(self.__networkManager)
         callback = self
-        self.networkManager.connectTo(serverIP, serverPort, listenPort, callback)
+        self.__networkManager.connectTo(serverIP, serverPort, listenPort, callback)
 
     def __startedVM(self, domain):
-        ip, port = self.__getVNCaddress_port(domain)
-        # Los puertos impares (por ejemplo) serán para KVM 
-        # y los pares los websockets
-        if (ip is None):
-            ip = "127.0.0.1" 
-        pidWS = runCommandBackground("python " + websockifyPath + " " 
-                    + ip + ":" + port + " " 
-                    + websocketServerIP + ":" + (port+1))
-        # TODO: Añadirle al diccionario ID_PIDWS
-        self.ID_PIDWS[domain.getID()] = pidWS
+        # TODO: Añadir el PID a la base de datos
+
         self.__sendConnectionData(domain)
     
     def __getVNCaddress_port(self, domain):
@@ -60,66 +54,75 @@ class VMClient(NetworkCallback):
         return password
     
     def __sendConnectionData(self, domain):
-        dataPacket = self.networkManager.createPacket(ConnectionDataPriority)
-        dataPacket.writeInt(VM_SERVER_PACKET_T.CONNECTION_DATA)
         ip, port = self.__getVNCaddress_port(domain)
         password = self.__getVNCPassword(domain)
-        dataPacket.writeString(ip)
-        dataPacket.writeInt(port+1)
-        dataPacket.writeString(password)
+        packet = self.__packetManager.createVMConnectionParametersPacket(ip, port, password)
+        self.__networkManager.sendPacket(serverPort, packet)
         
     def __stoppedVM(self, domain):
-        if self.__waitForShutdown and (self.connector.getNumberOfDomains == 0):
+        if self.__waitForShutdown and (self.__connector.getNumberOfDomains == 0):
             self.__shutdown()
-        pidToKill = self.ID_PIDWS[domain.getID()]
+        # TODO: actualizar la base de datos
+        (_ip, port) = self.__getVNCaddress_port(domain)
+        pidToKill = self.__MAC_UUID_table.getVMPid(port)
         runCommand("kill " + pidToKill, VMClientException)
+        
+        self.__db.unRegisterVMResources(port)
     
     def __shutdown(self):
-        # TODO:
+        # TODO: Destruir todos los dominios
         pass
         
     def processPacket(self, packet):
+        packetType = self.__packetManager.readPacket(packet)
         processPacket = {
             VM_SERVER_PACKET_T.CREATE_DOMAIN: self.__createDomain, 
             VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST: self.__serverStatusRequest,
             VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN: self.__userFriendlyShutdown,
             VM_SERVER_PACKET_T.HALT: self.__halt}
-        processPacket[VM_SERVER_PACKET_T.reverse_mapping[packet.readInt()]](packet)
+        processPacket[packetType['packet_type']](packetType)
 
-    def __createDomain(self, packet):
-        idVM = packet.readInt()
-        configFile = self.db.getFileConfigPath(idVM)
-        originalName = self.db.getName(idVM)
+    def __createDomain(self, info):
+        idVM = info["machineId"]
+        userID = info["userId"]
+        configFile = self.__db.getFileConfigPath(idVM)
+        originalName = self.__db.getName(idVM)
+        (osPath, dataPath) = self.__db.getImagePaths(idVM)
         
         # Calculo los nuevos parametros
         newUUID, newMAC = self.__getNewMAC_UUID()
         newName = originalName + newMAC
-        newFileDisk = ExecutionImagePath + newName + ".vmdk"
+        newDataDisk = ExecutionImagePath + dataPath + ".qcow2"
+        newOSDisk = ExecutionImagePath + osPath + ".qcow2"
         newPort = self.__getPort()
         newPassword = self.__getPassword()
         
-        # TODO: Redirigir la salida estandar para leer el xml
+        # Fichero de configuracion
+        xmlFile = ConfigurationFileEditor(configFile)
+        xmlFile.setDomainIdentifiers(newName, newUUID)
+        xmlFile.setImagePaths(newOSDisk, newDataDisk)
+        xmlFile.setNetworkConfiguration(VMClient.virtualNetwork, newMAC)
+        xmlFile.setVNCServerConfiguration(serverIP, newPort, newPassword)
         
-        # Supongo que la variable "xml" contiene el xml
-        # TODO: cambiar el puerto en la configuracion  y la contraseña
-        #        (voto por modificar virt-clone (está escrito en python) 
-        #        y añadir la opcion de cambiar puerto)
-        xmlText = runCommand("virt-clone --original-xml=" + configFile +
-                   " -u " + newUUID + " -m " + newMAC + " -n " + newName + 
-                   " -f " + newFileDisk + " --print-xml")
+        # Copio las imagenes
+        runCommand("cp "+ dataPath + " " + newDataDisk, VMClientException)
+        runCommand("qemu-img create -b " + osPath + " -f qcow2 " + newOSDisk. VMClientException)
         
-        # Añado el puerto y la contraseña en el xml
-        xml = ET.fromstring(xmlText)
-        GE = xml.find('.//graphics')
-        GE.attrib['port'] = str(newPort)
-        GE.attrib['passwd'] = newPassword
-        xmlText = ET.tostring(xml)
-        self.connector.startDomain(xmlText)
+        # Inicio el websockify
+        # Los puertos impares (por ejemplo) serán para KVM 
+        # y los pares los websockets
+        pidWS = runCommandBackground("python " + websockifyPath + " " 
+                    + serverIP + ":" + newPort + " " 
+                    + websocketServerIP + ":" + (newPort+1))
+        # Actualizo la base de datos
+        self.__MAC_UUID_table.registerVMresource(newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
+        
+        self.__connector.startDomain(xmlFile.generateConfigurationString())
     
     def __serverStatusRequest(self, packet):
-        statusPacket = self.networkManager.createPacket(7)
-        statusPacket.writeInt(VM_SERVER_PACKET_T.SERVER_STATUS)
-        statusPacket.writeInt(self.connector.getNumberOfDomains())
+        activeDomains = self.__connector.getNumberOfDomains()
+        packet = self.__packetManager.createVMServerStatusPacket(serverIP, activeDomains)
+        self.__networkManager.sendPacket(serverPort, packet)
     
     def __userFriendlyShutdown(self, packet):
         self.__waitForShutdown = True
@@ -129,12 +132,10 @@ class VMClient(NetworkCallback):
         pass
     
     def __getNewMAC_UUID(self):
-        return self.MAC_UUID_table.extractfreeMac()
+        return self.__MAC_UUID_table.extractfreeMac()
         
     def __getNewPort(self):
-        # TODO: Conseguir puertos ¿como las macs?
-        return 15000
+        return self.__MAC_UUID_table.extractfreeVNCPort()
         
     def __getNewPassword(self):
-        # TODO: Conseguir passwords aleatorios
-        return "Generad contraseñas aleatorias"
+        return runCommand("openssl base64 -rand " + passwordLength, VMClientException)
