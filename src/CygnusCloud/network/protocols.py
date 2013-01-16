@@ -121,6 +121,13 @@ class _CygnusCloudProtocolFactory(Factory):
         while (i < self.__connections.getSize()) :
             self.__connections[i].sendPacket(packet)
             i += 1
+            
+    def disconnect(self):
+        i = 0
+        while i < self.__connections.getSize() :
+            p = self.__connections[i]
+            p.disconnect()
+            i += 1
     
     def onPacketReceived(self, p):
         """

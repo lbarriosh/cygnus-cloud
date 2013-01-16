@@ -157,7 +157,7 @@ class _NetworkConnection(object):
             Nothing
         """
         if self.__status.get() == CONNECTION_STATUS.OPENING :
-            if (self.__factory.isDisconnected()) :
+            if (not self.__factory.isDisconnected()) :
                 if (not self.__isServer):
                     # Client => we've got everything we need
                     self.__status.set(CONNECTION_STATUS.READY)
@@ -250,7 +250,7 @@ class _NetworkConnection(object):
                 if not self.__factory.isDisconnected() :
                     self.__listeningPort.loseConnection()
         else :
-            self.__factory.getInstance().disconnect()
+            self.__factory.disconnect()
         # Free the connection resources
         self.__incomingDataThread.stop(True)
         self.__status.set(CONNECTION_STATUS.CLOSED)

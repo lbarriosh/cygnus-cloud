@@ -20,7 +20,7 @@ class libvirtConnector():
         uri += "://"
         uri += "/system"
         # Connect to lbvirt and register the events
-        self.__connector = libvirt.openReadOnly(uri)
+        self.__connector = libvirt.open(uri)
         self.__connector.domainEventRegisterAny(None, 
                                               libvirt.VIR_DOMAIN_EVENT_ID_LIFECYCLE, 
                                               self.__eventDomain, 

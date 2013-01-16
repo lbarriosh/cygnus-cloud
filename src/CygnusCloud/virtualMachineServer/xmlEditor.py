@@ -8,8 +8,14 @@ XML editor definitions
 try :
     import etree.cElementTree as ET
 except ImportError:
-    import etree.ElementTree as ET
-    
+    try :
+        import xml.etree.cElementTree as ET
+    except ImportError:
+        try :
+            import etree.ElementTree as ET
+        except ImportError:
+            import xml.etree.ElementTree as ET
+            
 class ConfigurationFileEditorException(Exception):
     pass
     
@@ -79,7 +85,7 @@ class ConfigurationFileEditor(object):
         listen = graphics.find("listen")
         listen.set("address", self.__vncServerIPAddress)
         # Write the new XML file to its path
-        return tree.tostring(root)
+        return ET.tostring(root)
     
     def __checkErrors(self):
         if (self.__name == None or self.__uuid == None) :
