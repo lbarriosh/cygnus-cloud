@@ -10,24 +10,25 @@ from __future__ import print_function
 from network.manager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T
+from time import sleep
 
 class TesterCallback(NetworkCallback):
     def __init__(self, packetHandler):
         self.__pHandler = packetHandler
         
     def processPacket(self, packet):
-        data = self.__pHandler.readPacket()
-        packet_type = VM_SERVER_PACKET_T.reverse_mapping[data["packet_type"]]
+        data = self.__pHandler.readPacket(packet)
+        packet_type = data["packet_type"]
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA) :
             print("Domain connection data: ")
             print("VNC server IP address: " + data["VNCServerIP"])
-            print("VNC server port: " + data["VNCServerPort"])
+            print("VNC server port: " + str(data["VNCServerPort"]))
             print("VNC server password: " + data["VNCServerPassword"])
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
             print("Virtual machine server " +  + " status: ")
             print(packet.readInt() +  " active VMs")
         else :
-            print("Error: a packet from an unexpected type has been received")
+            print("Error: a packet from an unexpected type has been received " + packet_type)
        
 
 def printLogo():
@@ -46,7 +47,7 @@ def process_command(tokens, networkManager, pHandler, port):
         return False
     command = tokens.pop(0)
     if (command == "createvm") :
-        p = pHandler.createVMBootPacket(tokens.pop(0), "1")
+        p = pHandler.createVMBootPacket(long(tokens.pop(0)), long(1))
         networkManager.sendPacket(port, p)
         return False
     elif (command == "shutdown") :
@@ -87,7 +88,10 @@ if __name__ == "__main__" :
     ip_address = raw_input("Server IP address: ")
     port = raw_input("Server port: ")
     try :
-        networkManager.connectTo(ip_address, int(port), 10, TesterCallback(pHandler))
+        port = int(port)
+        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler))
+        while not networkManager.isConnectionReady(port) :
+            sleep(0.1)
         end = False
         while not end :
             command = raw_input('>')
