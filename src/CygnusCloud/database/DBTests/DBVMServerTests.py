@@ -51,7 +51,7 @@ class DBWebServerTests(unittest.TestCase):
     def test_createImage(self):
         #Instanciamos la clase
         imageM = ImageManager("CygnusCloud","cygnuscloud2012","DBVMServerTest")
-        imageId = imageM.createImage(123,"VMNameTest","./VMNameTest/","./VMNameTest/")
+        imageId = imageM.createImage(123,"VMNameTest","./VMNameTest/","./OSImagePath1","./VMNameTest/")
         self.assertTrue(imageM.isImageExists(imageId), "Not image regist")  
         imageM.deleteImage(imageId)    
     
@@ -107,16 +107,23 @@ class DBWebServerTests(unittest.TestCase):
     def test_RegisterVM(self):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
-        portId = runtimeD.registerVNCPort(23,23,4,"./VMNameCopyTest","testMac","testUUID","testPass")
+        portId = runtimeD.registerVMResources(23,23,4,23,"./VMNameCopyTest","./OSImagePath1","testMac","testUUID","testPass")
         self.assertTrue(runtimeD.isVMExists(portId), "Not VM register") 
-        runtimeD.unregisterVNCPort(23)
+        runtimeD.unRegisterVMResources(23)
         self.assertFalse(runtimeD.isVMExists(23), "Not VM unregisted")
     def test_NextMac(self):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
-        (uuid1,mac1)= runtimeD.extractfreeMac()
+        (uuid1,mac1)= runtimeD.extractfreeMacAndUuid()
         (uuid2,mac2) = ("9a47c734-5e5f-11e2-981b-001f16b99e1d","2C:00:00:00:00:00")
         self.assertEquals(mac1, mac2, "Not same MAC")
+    
+    def test_VNCPort(self):
+        #Instanciamos la clase
+        runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
+        vncPort1= runtimeD.extractfreeVNCPort()
+        vncPort2 = (15000)
+        self.assertEquals(vncPort1, vncPort2, "Not same VNCPort")
              
 
         
