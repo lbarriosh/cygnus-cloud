@@ -17,8 +17,8 @@ class TesterCallback(NetworkCallback):
         self.__pHandler = packetHandler
         
     def processPacket(self, packet):
-        data = self.__pHandler.readPacket()
-        packet_type = VM_SERVER_PACKET_T.reverse_mapping[data["packet_type"]]
+        data = self.__pHandler.readPacket(packet)
+        packet_type = data["packet_type"]
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA) :
             print("Domain connection data: ")
             print("VNC server IP address: " + data["VNCServerIP"])
@@ -28,7 +28,7 @@ class TesterCallback(NetworkCallback):
             print("Virtual machine server " +  + " status: ")
             print(packet.readInt() +  " active VMs")
         else :
-            print("Error: a packet from an unexpected type has been received")
+            print("Error: a packet from an unexpected type has been received "+packet_type)
        
 
 def printLogo():
@@ -100,7 +100,7 @@ if __name__ == "__main__" :
         while not end :
             command = raw_input('>')
             tokens = command.split()
-            end = process_command(tokens, networkManager, pHandler, 8080)
+            end = process_command(tokens, networkManager, pHandler, port)
     
     except NetworkManagerException as e:
         print("Error: " + str(e))
