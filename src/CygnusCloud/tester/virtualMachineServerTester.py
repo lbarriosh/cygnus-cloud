@@ -17,18 +17,18 @@ class TesterCallback(NetworkCallback):
         self.__pHandler = packetHandler
         
     def processPacket(self, packet):
-        data = self.__pHandler.readPacket(packet)
-        packet_type = data["packet_type"]
+        data = self.__pHandler.readPacket()
+        packet_type = VM_SERVER_PACKET_T.reverse_mapping[data["packet_type"]]
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA) :
             print("Domain connection data: ")
             print("VNC server IP address: " + data["VNCServerIP"])
-            print("VNC server port: " + str(data["VNCServerPort"]))
+            print("VNC server port: " + data["VNCServerPort"])
             print("VNC server password: " + data["VNCServerPassword"])
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
             print("Virtual machine server " +  + " status: ")
             print(packet.readInt() +  " active VMs")
         else :
-            print("Error: a packet from an unexpected type has been received " + packet_type)
+            print("Error: a packet from an unexpected type has been received")
        
 
 def printLogo():
@@ -47,11 +47,15 @@ def process_command(tokens, networkManager, pHandler, port):
         return False
     command = tokens.pop(0)
     if (command == "createvm") :
-        p = pHandler.createVMBootPacket(long(tokens.pop(0)), long(1))
+        p = pHandler.createVMBootPacket(long(tokens.pop(0)), 1)
         networkManager.sendPacket(port, p)
         return False
     elif (command == "shutdown") :
         p = pHandler.createVMServerShutdownPacket()
+        networkManager.sendPacket(port, p)
+        return False
+    elif (command == "status") :
+        p = pHandler.createVMServerStatusRequestPacket()
         networkManager.sendPacket(port, p)
         return False
     elif (command == "halt" or command == "quit") :
