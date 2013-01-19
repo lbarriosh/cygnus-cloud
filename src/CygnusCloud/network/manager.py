@@ -2,11 +2,11 @@
 '''
 Network manager class definitions.
 @author: Luis Barrios Hernández
-@version: 5.1
+@version: 6.0
 '''
 
-from twisted.internet import reactor
-from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint
+from twisted.internet import reactor, ssl
+from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint, SSL4ServerEndpoint, SSL4ClientEndpoint
 from utils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
 from utils.multithreadingDictionary import GenericThreadSafeDictionary
 from network.packet import _Packet, Packet_TYPE
@@ -42,17 +42,18 @@ class NetworkManager():
     @attention: Due to some Twisted related limitations, do NOT stop the network service 
     UNTIL you KNOW PERFECTLY WELL that you won't be using it again. 
     """
-    def __init__(self):
+    def __init__(self, certificatesDirectory = None):
         """
         Initializes the NetworkManager's state.
         Args:
-            None
+            certificatesDirectory: the directory where the certificates are
         """
         self.__connectionPool = GenericThreadSafeDictionary()
         self.__outgoingDataQueue = GenericThreadSafePriorityQueue()
         self.__networkThread = _TwistedReactorThread()        
         self.__outgoingDataThread = _OutgoingDataThread(self.__outgoingDataQueue)
         self.__connectionThread = _ConnectionMonitoringThread(self.__connectionPool)
+        self.__certificatesDirectory = certificatesDirectory
         
     def startNetworkService(self):
         """
@@ -110,7 +111,7 @@ class NetworkManager():
             thread = _IncomingDataThread(queue, callbackObject)
             return (queue, thread)        
         
-    def connectTo(self, host, port, timeout, callbackObject):
+    def connectTo(self, host, port, timeout, callbackObject, useSSL=False):
         """
         Connects to a remote server using its arguments
         @attention: This is a blocking operation. The calling thread will be blocked until
@@ -135,7 +136,15 @@ class NetworkManager():
         (queue, thread) = self.__allocateConnectionResources(callbackObject)       
         # Create and configure the endpoint
         factory = _CygnusCloudProtocolFactory(queue)
-        endpoint = TCP4ClientEndpoint(reactor, host, port, timeout, None)
+        if (not useSSL) :
+            endpoint = TCP4ClientEndpoint(reactor, host, port, timeout, None)
+        else :
+            keyPath = self.__certificatesDirectory + "/" + "server.key"
+            certificatePath = self.__certificatesDirectory + "/" + "server.crt"
+            try :
+                endpoint = SSL4ClientEndpoint(reactor, host, port, ssl.DefaultOpenSSLContextFactory(keyPath, certificatePath))
+            except Exception:
+                raise NetworkManagerException("The key, the certificate or both were not found")
         endpoint.connect(factory)   
         # Wait until the connection is ready
         time = 0
@@ -149,7 +158,7 @@ class NetworkManager():
         # Add the new connection to the connection pool
         self.__connectionPool[port] = connection
         
-    def listenIn(self, port, callbackObject):
+    def listenIn(self, port, callbackObject, useSSL=False):
         """
         Creates a server using its arguments.
         @attention: This is a non-blocking operation. Please, check if the connection is ready BEFORE
@@ -167,7 +176,15 @@ class NetworkManager():
         # Allocate the connection resources
         (queue, thread) = self.__allocateConnectionResources(callbackObject)       
         # Create and configure the endpoint
-        endpoint = TCP4ServerEndpoint(reactor, port)       
+        if (not useSSL) :
+            endpoint = TCP4ServerEndpoint(reactor, port)       
+        else :
+            keyPath = self.__certificatesDirectory + "/" + "server.key"
+            certificatePath = self.__certificatesDirectory + "/" + "server.crt"
+            try :
+                endpoint = SSL4ServerEndpoint(reactor, port, ssl.DefaultOpenSSLContextFactory(keyPath, certificatePath))
+            except Exception:
+                raise NetworkManagerException("The key, the certificate or both were not found")
         factory = _CygnusCloudProtocolFactory(queue)        
         # Create the connection       
         connection = _NetworkConnection(True, port, factory, queue, thread, callbackObject)

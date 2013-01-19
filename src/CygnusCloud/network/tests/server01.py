@@ -10,10 +10,10 @@ from network.tests.dummyCallback import DummyCallback
 from time import sleep
 
 if __name__ == "__main__" :
-    networkManager = NetworkManager()
+    networkManager = NetworkManager("/home/luis/Certificates")
     networkManager.startNetworkService()
     print "Creating server..."
-    networkManager.listenIn(8080, DummyCallback())
+    networkManager.listenIn(8080, DummyCallback(), True)
     print "The server is now ready"
     sleep(15)
     print networkManager.isConnectionReady(8080)
