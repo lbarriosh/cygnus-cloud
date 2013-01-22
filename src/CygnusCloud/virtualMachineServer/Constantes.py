@@ -5,8 +5,8 @@ Created on 14/01/2013
 '''
 
 serverIP = '127.0.0.1'
-serverPort = 8080
-listenPort = 8080
+serverPort = 15800
+listenPort = 15800
 
 websocketServerIP = '127.0.0.1'
 
@@ -19,10 +19,10 @@ userDBMac = 'CygnusCloud'
 passwordDBMac = 'cygnuscloud2012' 
 DBnameMac = 'DBVMServer'
 
-ConfigFilePath = '/home/luis/kvm-images/'
-SourceImagePath = '/home/luis/kvm-images/'
-ExecutionImagePath = '/home/luis/runningInstances/'
-websockifyPath = '/home/luis/websockify/websockify'
+ConfigFilePath = '/home/saguma/Documentos/Universidad/CygnusCloud/Configuraciones/'
+SourceImagePath = '/home/saguma/Documentos/Universidad/CygnusCloud/Imagenes/'
+ExecutionImagePath = '/home/saguma/Documentos/Universidad/CygnusCloud/ImagenesEjecucion/'
+websockifyPath = '/home/saguma/Descargas/kanaka-noVNC-d55f537/utils/websockify'
 
 ConnectionDataPriority = 5
 
