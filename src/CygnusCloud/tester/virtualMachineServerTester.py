@@ -22,13 +22,13 @@ class TesterCallback(NetworkCallback):
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA) :
             print("Domain connection data: ")
             print("VNC server IP address: " + data["VNCServerIP"])
-            print("VNC server port: " + str(data["VNCServerPort"]))
+            print("VNC server port: " + data["VNCServerPort"])
             print("VNC server password: " + data["VNCServerPassword"])
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
             print("Virtual machine server " +  + " status: ")
             print(packet.readInt() +  " active VMs")
         else :
-            print("Error: a packet from an unexpected type has been received " + packet_type)
+            print("Error: a packet from an unexpected type has been received "+packet_type)
        
 
 def printLogo():
@@ -47,11 +47,15 @@ def process_command(tokens, networkManager, pHandler, port):
         return False
     command = tokens.pop(0)
     if (command == "createvm") :
-        p = pHandler.createVMBootPacket(long(tokens.pop(0)), long(1))
+        p = pHandler.createVMBootPacket(long(tokens.pop(0)), 1)
         networkManager.sendPacket(port, p)
         return False
     elif (command == "shutdown") :
         p = pHandler.createVMServerShutdownPacket()
+        networkManager.sendPacket(port, p)
+        return False
+    elif (command == "status") :
+        p = pHandler.createVMServerStatusRequestPacket()
         networkManager.sendPacket(port, p)
         return False
     elif (command == "halt" or command == "quit") :
@@ -96,7 +100,7 @@ if __name__ == "__main__" :
         while not end :
             command = raw_input('>')
             tokens = command.split()
-            end = process_command(tokens, networkManager, pHandler, 8080)
+            end = process_command(tokens, networkManager, pHandler, port)
     
     except NetworkManagerException as e:
         print("Error: " + str(e))

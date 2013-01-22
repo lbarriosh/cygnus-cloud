@@ -15,7 +15,7 @@ except ImportError:
         except ImportError:
             import xml.etree.ElementTree as ET
     
-from utils.commands import runCommand
+from utils.commands import runCommand, runCommandAsRoot
 
 from time import sleep
     
@@ -66,11 +66,12 @@ class VirtualNetworkManager(object):
         # Generate the .xml configuration file
         self.__generateConfigurationFile(xmlFilePath, networkName, bridgeName,\
                                          gatewayIPAddress, netmask, dhcpStartIPAddress, dhcpEndIPAddress)
+                
         # Create the virtual network
-        runCommand("virsh net-define " + xmlFilePath, VirtualNetworkManagerException)
+        runCommandAsRoot("virsh net-define " + xmlFilePath, VirtualNetworkManagerException)
         
         # Start it
-        runCommand("virsh net-start " + networkName, VirtualNetworkManagerException)
+        runCommandAsRoot("virsh net-start " + networkName, VirtualNetworkManagerException)
         
         # Delete the .xml file
         runCommand("rm " + xmlFilePath, VirtualNetworkManagerException)
@@ -97,10 +98,11 @@ class VirtualNetworkManager(object):
         # Fetch the virtual network's networkName
         networkName = nameOrIPAddress
         if (not self.__networksByName.has_key(nameOrIPAddress)):
-            networkName = self.__networksByIP[nameOrIPAddress]
+            networkName = self.__networksByIP[nameOrIPAddress]        
+        
         # Destroy the virtual network
-        runCommand("virsh net-destroy " + networkName, VirtualNetworkManagerException)
-        runCommand("virsh net-undefine " + networkName, VirtualNetworkManagerException)
+        runCommandAsRoot("virsh net-destroy " + networkName, VirtualNetworkManagerException)
+        runCommandAsRoot("virsh net-undefine " + networkName, VirtualNetworkManagerException)
         # Delete it from the internal data structures
         ip = self.__networksByName[networkName]
         self.__networksByName.pop(networkName)
