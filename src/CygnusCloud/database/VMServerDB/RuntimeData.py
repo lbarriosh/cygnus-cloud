@@ -338,7 +338,7 @@ class RuntimeData(object):
         '''
         #CInsertamos los datos nuevos en la BD
         sql = "INSERT INTO ActualVM VALUES('"  
-        sql+=    str(vncPort) + "'," + str(userId)  +"," + str(VMId) +"," + str(VMPid) + ",'"  
+        sql+=    str(VMId) + "'," + str(userId)  +"," + str(vncPort) +"," + str(VMPid) + ",'"  
         sql +=  imageCopyPath + "','" + osImagePath + "','" + mac + "','" + uuid + "','"
         sql +=  password + "')"  
         #Ejecutamos el comando
@@ -348,13 +348,13 @@ class RuntimeData(object):
         #devolvemos el puerto en el que ha sido creado
         return vncPort 
     
-    def unRegisterVMResources(self,vncPort):
+    def unRegisterVMResources(self,VMId):
         '''
             Da de baja en la base de datos el puerto VNC que se le pasa como argumento 
              y con él, todas las características asociadas al mismo.
         ''' 
         #Borramos la máquina virtual
-        sql = "DELETE FROM ActualVM WHERE VNCPortAdress = " + str(vncPort)
+        sql = "DELETE FROM ActualVM WHERE VMId = " + str(VMId)
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
@@ -465,9 +465,9 @@ def main():
         elif(prueba == '9'):
             #borrado de una máquina virtual
             print("Prueba 9")
-            print("Indique el identificador del puerto a dar de baja")
-            port = raw_input()
-            runtimeData.unRegisterVMResources(port)
+            print("Indique el identificador de la MV a dar de baja")
+            vmId = raw_input()
+            runtimeData.unRegisterVMResources(vmId)
             print("La máquina virtual ha sido dada de baja:")
             runtimeData.showVMs()
         elif(prueba == '10'):

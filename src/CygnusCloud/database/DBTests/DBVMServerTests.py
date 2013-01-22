@@ -16,7 +16,7 @@ class DBWebServerTests(unittest.TestCase):
         #Instanciamos la clase
         imageM = ImageManager("CygnusCloud","cygnuscloud2012","DBVMServerTest")
         l1 = imageM.getImages()
-        l2 = [1,2,3,4]
+        l2 = [1,2,3,4,5]
         self.assertEquals(l1, l2, "Not same images")
         
     def test_getName(self):
@@ -59,14 +59,14 @@ class DBWebServerTests(unittest.TestCase):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
         l1 = runtimeD.getRunningPorts()
-        l2 = [0,1,2,3,4]
+        l2 = [1,2,3,4]
         self.assertEquals(l1, l2, "Not same ports") 
         
     def test_getUsers(self):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
         l1 = runtimeD.getUsers()
-        l2 = [1,2,3,4,5]
+        l2 = [2,3,4,5]
         self.assertEquals(l1, l2, "Not same users")
 
     def test_getAssignedVM(self):
@@ -107,9 +107,9 @@ class DBWebServerTests(unittest.TestCase):
     def test_RegisterVM(self):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
-        portId = runtimeD.registerVMResources(23,23,4,23,"./VMNameCopyTest","./OSImagePath1","testMac","testUUID","testPass")
+        portId = runtimeD.registerVMResources(23,23,5,23,"./VMNameCopyTest","./OSImagePath1","testMac","testUUID","testPass")
         self.assertTrue(runtimeD.isVMExists(portId), "Not VM register") 
-        runtimeD.unRegisterVMResources(23)
+        runtimeD.unRegisterVMResources(5)
         self.assertFalse(runtimeD.isVMExists(23), "Not VM unregisted")
     def test_NextMac(self):
         #Instanciamos la clase
