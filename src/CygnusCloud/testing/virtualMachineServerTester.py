@@ -21,12 +21,13 @@ class TesterCallback(NetworkCallback):
         packet_type = data["packet_type"]
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA) :
             print("Domain connection data: ")
+            print("User ID: " + str(data["UserID"]))
             print("VNC server IP address: " + data["VNCServerIP"])
-            print("VNC server port: " + data["VNCServerPort"])
+            print("VNC server port: " + str(data["VNCServerPort"]))
             print("VNC server password: " + data["VNCServerPassword"])
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
-            print("Virtual machine server " +  + " status: ")
-            print(packet.readInt() +  " active VMs")
+            print("Virtual machine server " +  " status: ")
+            print(str(data["ActiveDomains"]) +  " active VMs")
         else :
             print("Error: a packet from an unexpected type has been received "+packet_type)
        
@@ -47,7 +48,7 @@ def process_command(tokens, networkManager, pHandler, port):
         return False
     command = tokens.pop(0)
     if (command == "createvm") :
-        p = pHandler.createVMBootPacket(long(tokens.pop(0)), 1)
+        p = pHandler.createVMBootPacket(long(tokens.pop(0)), long(tokens.pop(0)))
         networkManager.sendPacket(port, p)
         return False
     elif (command == "shutdown") :
@@ -84,7 +85,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager()
+    networkManager = NetworkManager("/home/luis/Certificates")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = VMServerPacketHandler(networkManager)
@@ -93,7 +94,7 @@ if __name__ == "__main__" :
     port = raw_input("Server port: ")
     try :
         port = int(port)
-        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler))
+        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
         while not networkManager.isConnectionReady(port) :
             sleep(0.1)
         end = False
