@@ -5,9 +5,9 @@ import unittest
 
 
 
-from MainServerDB.ImagesInServerManager import ImageServerManager
-from MainServerDB.ServerVMManager import ServerVMManager
-from DBUtils.DBUtils import DBUtils
+from database.MainServerDB.ImagesInServerManager import ImageServerManager
+from database.MainServerDB.ServerVMManager import ServerVMManager
+from database.DBUtils.DBUtils import DBUtils
 
 class DBMainServerTests(unittest.TestCase):
     '''

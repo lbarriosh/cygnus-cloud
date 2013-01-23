@@ -331,14 +331,38 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0]
     
+    def getDomainName(self,vncPort): 
+        '''
+            Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
+        ''' 
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT domainName FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0]
+    
     def registerVMResources(self,vncPort,userId, VMId, VMPid, imageCopyPath,osImagePath,mac,uuid, password):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
         '''
+        ##Buscamos el nombre de la máquina virtual
+        sql = "SELECT name FROM VirtualMachine WHERE VMId = " + str(VMId) 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        VMName = result[0]
+        #Formamos el nombre del dominio
+        domainName = VMName + str(vncPort) 
+        
         #CInsertamos los datos nuevos en la BD
-        sql = "INSERT INTO ActualVM VALUES('"  
-        sql+=    str(VMId) + "'," + str(userId)  +"," + str(vncPort) +"," + str(VMPid) + ",'"  
+        sql = "INSERT INTO ActualVM VALUES('"  + domainName + "'," 
+        sql+=    str(VMId) + "," + str(userId)  +"," + str(vncPort) +"," + str(VMPid) + ",'"  
         sql +=  imageCopyPath + "','" + osImagePath + "','" + mac + "','" + uuid + "','"
         sql +=  password + "')"  
         #Ejecutamos el comando
@@ -348,13 +372,13 @@ class RuntimeData(object):
         #devolvemos el puerto en el que ha sido creado
         return vncPort 
     
-    def unRegisterVMResources(self,VMId):
+    def unRegisterVMResources(self,domainName):
         '''
             Da de baja en la base de datos el puerto VNC que se le pasa como argumento 
              y con él, todas las características asociadas al mismo.
         ''' 
         #Borramos la máquina virtual
-        sql = "DELETE FROM ActualVM WHERE VMId = " + str(VMId)
+        sql = "DELETE FROM ActualVM WHERE domainName = '" + str(domainName) + "'"
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
@@ -465,9 +489,9 @@ def main():
         elif(prueba == '9'):
             #borrado de una máquina virtual
             print("Prueba 9")
-            print("Indique el identificador de la MV a dar de baja")
-            vmId = raw_input()
-            runtimeData.unRegisterVMResources(vmId)
+            print("Indique el nombre del dominio del puerto a dar de baja")
+            domainName = raw_input()
+            runtimeData.unRegisterVMResources(domainName)
             print("La máquina virtual ha sido dada de baja:")
             runtimeData.showVMs()
         elif(prueba == '10'):
@@ -519,7 +543,14 @@ def main():
             VNCPort = raw_input()
             runtimeData.insertfreeVNCPort(VNCPort)
             print("El nuevo puerto ha sido añadida")
-            
+        elif(prueba == '16'):
+             #contraseña asociado a un puerto
+            print("Prueba 16")
+            print("Indique el identificador del puerto")
+            port = raw_input()
+            domainName = runtimeData.getDomainName(port)
+            print("El nombre del dominio asociado a este puerto es:")
+            print(domainName)           
         else:
             print("Prueba no disponible.")
                

@@ -4,9 +4,9 @@ import os
 import unittest
 
 
-from WebServerDB.UserAccess import UserAccess
-from WebServerDB.UserManagement import UserManagement
-from DBUtils.DBUtils import DBUtils
+from database.WebServerDB.UserAccess import UserAccess
+from database.WebServerDB.UserManagement import UserManagement
+from database.DBUtils.DBUtils import DBUtils
 
 class DBWebServerTests(unittest.TestCase):
     '''

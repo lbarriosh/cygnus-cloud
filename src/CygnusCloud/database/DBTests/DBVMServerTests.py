@@ -4,9 +4,9 @@ import MySQLdb
 import os
 import unittest
 
-from VMServerDB.ImageManager import ImageManager
-from VMServerDB.RuntimeData import RuntimeData
-from DBUtils.DBUtils import DBUtils
+from database.VMServerDB.ImageManager import ImageManager
+from database.VMServerDB.RuntimeData import RuntimeData
+from database.DBUtils.DBUtils import DBUtils
 
 class DBWebServerTests(unittest.TestCase):
     '''
@@ -16,7 +16,7 @@ class DBWebServerTests(unittest.TestCase):
         #Instanciamos la clase
         imageM = ImageManager("CygnusCloud","cygnuscloud2012","DBVMServerTest")
         l1 = imageM.getImages()
-        l2 = [1,2,3,4,5]
+        l2 = [1,2,3,4]
         self.assertEquals(l1, l2, "Not same images")
         
     def test_getName(self):
@@ -66,7 +66,7 @@ class DBWebServerTests(unittest.TestCase):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
         l1 = runtimeD.getUsers()
-        l2 = [2,3,4,5]
+        l2 = [1,1,2,3]
         self.assertEquals(l1, l2, "Not same users")
 
     def test_getAssignedVM(self):
@@ -87,14 +87,14 @@ class DBWebServerTests(unittest.TestCase):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
         n1 = runtimeD.getMachineDataPath(2)
-        n2 = "./VMNameCopy2"
+        n2 = "./VMNameCopy1"
         self.assertEquals(n1, n2, "Not same VM path")
  
     def test_getMacAdress(self):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
         n1 = runtimeD.getMacAdress(3)
-        n2 = "2C:00:00:00:00:03"
+        n2 = "2C:00:00:00:00:02"
         self.assertEquals(n1, n2, "Not same VM MAC") 
         
     def test_getPassword(self):
@@ -107,9 +107,9 @@ class DBWebServerTests(unittest.TestCase):
     def test_RegisterVM(self):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
-        portId = runtimeD.registerVMResources(23,23,5,23,"./VMNameCopyTest","./OSImagePath1","testMac","testUUID","testPass")
+        portId = runtimeD.registerVMResources(23,23,1,23,"./VMNameCopyTest","./OSImagePath1","testMac","testUUID","testPass")
         self.assertTrue(runtimeD.isVMExists(portId), "Not VM register") 
-        runtimeD.unRegisterVMResources(5)
+        runtimeD.unRegisterVMResources("VMName123")
         self.assertFalse(runtimeD.isVMExists(23), "Not VM unregisted")
     def test_NextMac(self):
         #Instanciamos la clase
