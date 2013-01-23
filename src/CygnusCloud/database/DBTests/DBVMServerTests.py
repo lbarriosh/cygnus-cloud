@@ -107,7 +107,7 @@ class DBWebServerTests(unittest.TestCase):
     def test_RegisterVM(self):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServerTest")
-        portId = runtimeD.registerVMResources(23,23,1,23,"./VMNameCopyTest","./OSImagePath1","testMac","testUUID","testPass")
+        portId = runtimeD.registerVMResources("VMName123",23,23,1,23,"./VMNameCopyTest","./OSImagePath1","testMac","testUUID","testPass")
         self.assertTrue(runtimeD.isVMExists(portId), "Not VM register") 
         runtimeD.unRegisterVMResources("VMName123")
         self.assertFalse(runtimeD.isVMExists(23), "Not VM unregisted")

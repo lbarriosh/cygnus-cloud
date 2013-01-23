@@ -344,21 +344,11 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0]
     
-    def registerVMResources(self,vncPort,userId, VMId, VMPid, imageCopyPath,osImagePath,mac,uuid, password):
+    def registerVMResources(self,domainName,vncPort,userId, VMId, VMPid, imageCopyPath,osImagePath,mac,uuid, password):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
         '''
-        ##Buscamos el nombre de la máquina virtual
-        sql = "SELECT name FROM VirtualMachine WHERE VMId = " + str(VMId) 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
-        #Recogemos el resultado
-        result=self.__cursor.fetchone()
-        #Devolvemos el resultado
-        VMName = result[0]
-        #Formamos el nombre del dominio
-        domainName = VMName + str(vncPort) 
         
         #CInsertamos los datos nuevos en la BD
         sql = "INSERT INTO ActualVM VALUES('"  + domainName + "'," 
@@ -464,6 +454,8 @@ def main():
         elif(prueba == '8'):
             #registro de una nueva MV
             print("Prueba 8")
+            print("Indique el nombre del dominio del puerto a dar de baja")
+            domainName = raw_input()
             print("Indique el identificador del puerto")
             port = raw_input()
             print("Indique el identificador del usuario")
@@ -483,7 +475,7 @@ def main():
             print("Indique la contraseña")
             portPass = raw_input()
             
-            portId = runtimeData.registerVMResources(port,userId,vmId, pid, path, osPath, mac, uuid, portPass)
+            portId = runtimeData.registerVMResources(domainName,port,userId,vmId, pid, path, osPath, mac, uuid, portPass)
             print("MV registrada:")
             runtimeData.showVMs()
         elif(prueba == '9'):
