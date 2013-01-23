@@ -31,7 +31,7 @@ class VMServerPacketHandler(object):
         p.writeLong(userId)
         return p
     
-    def createVMConnectionParametersPacket(self, vncServerIP, vncServerPort, password):
+    def createVMConnectionParametersPacket(self, userId, vncServerIP, vncServerPort, password):
         """
         Creates a virtual machine connection parameters packet
         Args:
@@ -43,6 +43,7 @@ class VMServerPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA)
+        p.writeLong(userId)
         p.writeString(vncServerIP)
         p.writeInt(vncServerPort)
         p.writeString(password)
@@ -107,9 +108,10 @@ class VMServerPacketHandler(object):
         packet_type = p.readInt()
         result["packet_type"] = packet_type
         if (packet_type == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
-            result["machineId"] = p.readLong()
-            result["userId"] = p.readLong()
+            result["MachineID"] = p.readLong()
+            result["UserID"] = p.readLong()
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
+            result["UserID"] = p.readLong()
             result["VNCServerIP"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
@@ -119,6 +121,6 @@ class VMServerPacketHandler(object):
         if (packet_type == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN or\
             packet_type == VM_SERVER_PACKET_T.HALT or \
             packet_type == VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST):
-           pass
+            pass
         return result
         
