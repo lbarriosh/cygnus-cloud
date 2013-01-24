@@ -304,8 +304,8 @@ class _Packet(object):
             raise PacketException("The given value is not an " + self.__extractTypeName(str(dataType)) + " instance")
         dataToAdd = str(value)
         newLength = len(self.__data) + len(field) + len(dataToAdd) + 2
-        if (newLength > 16000):
-            # The maximum length is 16383 bytes. 383 bytes are reserved for the packet header.
+        if (newLength > 65000):
+            # The maximum TCP segment length is 65536 bytes. 536 bytes are reserved for the packet header.
             raise PacketException("There\'s not enough space to hold a " + self.__extractTypeName(str(dataType))\
                                    + " value")
         self.__data += field + '·' + dataToAdd + '·'

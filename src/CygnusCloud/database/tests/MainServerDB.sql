@@ -5,12 +5,9 @@
 	Version: 2.0
 */
 
+# Drop the database (if exists)
 
-# Create the database (if necessary)
-CREATE DATABASE IF NOT EXISTS MainServerDB;
-
-# Choose the database to user
-USE MainServerDB;
+DROP DATABASE IF EXISTS MainServerDB;
 
 # Create the database (if necessary)
 CREATE DATABASE IF NOT EXISTS MainServerDB;
@@ -38,3 +35,28 @@ CREATE TABLE VMServerStatus(serverId INTEGER, hosts INTEGER,
 	PRIMARY KEY(serverId),
 	FOREIGN KEY(serverId) REFERENCES VMServer(serverId) ON DELETE CASCADE ON UPDATE CASCADE)
 	ENGINE=MEMORY;
+	
+# Insert some stuff in the tables
+
+INSERT INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort) VALUES 
+	(1, 'Server1', 0, '1.2.3.4', 8080),	
+	(2, 'Server2', 1, '1.2.3.5', 8080),
+	(3, 'Server3', 1, '1.2.3.6', 8080),
+	(4, 'Server4', 1, '1.2.3.7', 8080);
+	
+INSERT INTO Image(imageId, name, description) VALUES
+	(1, 'Ubuntu', 'Ubuntu GNU/Linux x64'),
+	(2, 'Windows 7', 'Windows 7 Professional x64'),
+	(3, 'Slackware', 'Slackware GNU/Linux i686');
+	
+INSERT INTO ImageOnServer VALUES
+	(1, 1),
+	(1, 2),
+	(1, 3),
+	(2, 1),
+	(2, 2),
+	(3, 1),
+	(3, 3);
+	
+INSERT INTO VMServerStatus VALUES
+	(1, 0), (2, 10), (3, 5), (4, 0);
