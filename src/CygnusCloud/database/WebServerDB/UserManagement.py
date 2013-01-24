@@ -8,13 +8,13 @@ class UserManagement():
      
     '''
 
-    def __init__(self,sqlUser,sqlPass,databaseName,logUser):
+    def __init__(self,sqlUser,sqlPassword,databaseName,logUser):
         '''
             Constructor de la clase
         '''
         #Guardamos los atributos
         self.__sqlUser = sqlUser
-        self.__sqlPass = sqlPass
+        self.__sqlPassword = sqlPassword
         self.__user = logUser
         self.__databaseName = databaseName
         # Nos conectamos a MySql 
@@ -30,7 +30,7 @@ class UserManagement():
         '''
         #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
+        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPassword)
         cursor=db.cursor()
         #Creamos la consulta encargada de extraer los datos
         sql = "USE " + self.__databaseName     

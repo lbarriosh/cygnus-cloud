@@ -151,5 +151,17 @@ class MainServerDBTests(unittest.TestCase):
                           'ServerIP':'192.168.1.1', 'ServerPort':9000}
         self.assertEquals(result, expectedResult, 'setServerBasicData does not work')
         
+    def test_getServerID(self):
+        result = self.__connector.getVMServerID("1.2.3.4", 8080)
+        expectedResult = 1L
+        self.assertEquals(result, expectedResult, 'getServerID does not work')
+        
+        
+    def test_setVMServerStatistics(self):
+        self.__connector.setVMServerStatistics(1, 1234)
+        result = self.__connector.getVMServerStatistics(1)
+        expectedResult = {'ActiveHosts': 1234}
+        self.assertEquals(result, expectedResult, 'setVMServerStatistics does not work')
+        
 if __name__ == "__main__":
     unittest.main()

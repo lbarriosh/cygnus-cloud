@@ -7,7 +7,7 @@ Main server packet handler definitions.
 
 from utils.enums import enum
 
-MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER")
+MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR")
 
 class MainServerPacketHandler(object):
     
@@ -22,6 +22,14 @@ class MainServerPacketHandler(object):
         p.writeString(name)
         return p
     
+    def createVMRegistrationErrorPacket(self, IPAddress, port, name, reason):
+        p = self.__packetCreator.createPacket(3)
+        p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR)
+        p.writeString(IPAddress)
+        p.writeInt(port)
+        p.writeString(name)
+        p.writeString(reason)
+        return p
     
     def readPacket(self, p):
         """
@@ -32,5 +40,19 @@ class MainServerPacketHandler(object):
             A dictionary with the packet data. The packet type will be assigned to
             the key "packet_type".
         """
-        pass
+        result = dict()
+        packet_type = p.readInt()
+        result["packet_type"] = packet_type
+        if (packet_type == MAIN_SERVER_PACKET_T.REGISTER_VM_SERVER) :
+            result["VMServerIP"] = p.readString()
+            result["VMServerPort"] = p.readInt()
+            result["VMServerName"] = p.readString()
+        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
+            result["VMServerIP"] = p.readString()
+            result["VMServerPort"] = p.readInt()
+            result["VMServerName"] = p.readString()
+            result["ErrorMessage"] = p.readString()
+            
+        return result
+            
         

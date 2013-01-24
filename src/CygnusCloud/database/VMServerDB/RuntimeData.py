@@ -9,13 +9,13 @@ class RuntimeData(object):
          Además también se encargará de registrar en la base de datos las nuevas máquinas 
          virtuales en ejecución y de dar de baja aquellas máquinas que se apaguen.
     '''
-    def __init__(self,sqlUser,sqlPass,databaseName):
+    def __init__(self,sqlUser,sqlPassword,databaseName):
         '''
             Constructora de la clase
         '''
         #Guardamos los atributos de conexión necesarios
         self.__sqlUser = sqlUser
-        self.__sqlPass = sqlPass
+        self.__sqlPassword = sqlPassword
         self.__databaseName = databaseName
         # Nos conectamos a MySql 
         self.__db = self.connect()
@@ -154,7 +154,7 @@ class RuntimeData(object):
             Establece la conexión con MySql
         '''
         # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
+        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPassword)
         cursor=db.cursor()
         #Cambiamos a la base de datos indicada
         sql = "USE " + self.__databaseName     

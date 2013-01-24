@@ -182,6 +182,14 @@ class VMServerDatabaseConnector(object):
             serverIds.append(r[0])
         return serverIds
     
+    def getVMServerID(self, IPAddress,  port):
+        query = "SELECT serverId FROM VMServer WHERE serverIP = '" + IPAddress + \
+            "' AND serverPort = " + str(port) + ";"
+        # Execute it
+        self.__cursor.execute(query)
+        results=self.__cursor.fetchall()
+        return results[0][0]
+    
     def updateVMServerStatus(self, serverId, newStatus):
         '''
             Updates a virtual machine server's status
@@ -290,6 +298,17 @@ class VMServerDatabaseConnector(object):
         # Execute it
         self.__cursor.execute(query)
         # Write the changes to the database NOW
+        self.__db.commit() 
+        
+    def setVMServerStatistics(self, serverID, runningHosts):
+        query = "INSERT INTO VMServerStatus VALUES(" + str(serverID) + ", " + str(runningHosts) + ");"
+        try :
+            self.__cursor.execute(query)
+        except Exception :
+            query = "UPDATE VMServerStatus SET hosts = " + str(runningHosts) + " WHERE serverId = "\
+                + str(serverID) + ";"
+            self.__cursor.execute(query)
+        # Update the database NOW
         self.__db.commit() 
         
     def setServerBasicData(self, serverId, name, status, IPAddress, port):

@@ -7,13 +7,13 @@ class ImageManager(object):
          accesibles en el servidor de máquinas virtuales actual.
     '''
 
-    def __init__(self,sqlUser,sqlPass,databaseName):
+    def __init__(self,sqlUser,sqlPassword,databaseName):
         '''
             Constructora de la clase
         '''
         # Guardamos los atributos necesarios para la conexión
         self.__sqlUser = sqlUser
-        self.__sqlPass = sqlPass
+        self.__sqlPassword = sqlPassword
         self.__databaseName = databaseName
         #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
@@ -22,7 +22,7 @@ class ImageManager(object):
         
     def connect(self):
         # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
+        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPassword)
         cursor=db.cursor()
         #Cambiamos a la base de datos correspondiente
         sql = "USE " + self.__databaseName    
@@ -144,7 +144,7 @@ class ImageManager(object):
         #Actualizamos la base de datos
         self.__db.commit()
  
-    def isImageExists(self,VMId):   
+    def doesImageExist(self,VMId):   
         '''
             Comprueba si una imagen existe
         '''

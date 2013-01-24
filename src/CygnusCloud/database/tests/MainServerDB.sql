@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER,
 	FOREIGN KEY(imageId) REFERENCES Image(imageId) ON DELETE CASCADE ON UPDATE CASCADE);
 	
 # This table will never exist: it's a memory table
-CREATE TABLE VMServerStatus(serverId INTEGER, hosts INTEGER,
+CREATE TABLE IF NOT EXISTS VMServerStatus(serverId INTEGER, hosts INTEGER,
 	PRIMARY KEY(serverId),
 	FOREIGN KEY(serverId) REFERENCES VMServer(serverId) ON DELETE CASCADE ON UPDATE CASCADE)
 	ENGINE=MEMORY;
