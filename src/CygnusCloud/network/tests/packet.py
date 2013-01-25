@@ -30,11 +30,11 @@ class PacketTests(unittest.TestCase):
         p1 = _Packet(Packet_TYPE.DATA, 10)     
         p2 = _Packet()
         p1.writeString("It works")
-        p1.writeBool(True)
+        p1.writeBool(False)
         p1.writeInt(10)
         p1.writeFloat(3.14159264)
         p1.writeLong(52)
-        p2._setContent(10, "string·It works·bool·True·int·10·float·3.14159264·long·52·")
+        p2._setContent(10, "string·It works·bool·False·int·10·float·3.14159264·long·52·")
         self.assertEquals(p1, p2, "Two packages with the same type,\
             priority level and data must be equal")
         
@@ -67,12 +67,12 @@ class PacketTests(unittest.TestCase):
         self.assertEquals(p1, expected, "The deserialized packets must be equals")
         
     def test_read(self):
-        rawdata = "_Packet(" + str(Packet_TYPE.DATA) + ", 10)<int·10·float·3.14159264·string·Hello, world!·bool·true·long·60·>"
+        rawdata = "_Packet(" + str(Packet_TYPE.DATA) + ", 10)<int·10·float·3.14159264·string·Hello, world!·int·0·long·60·>"
         p1 = _Packet._deserialize(rawdata)
         self.assertEquals(10, p1.readInt(), "The read integer must have the expected value")    
         self.assertEquals(3.14159264, p1.readFloat(), "The read float must have the expected value")   
         self.assertEquals("Hello, world!",p1.readString(), "The read string must have the expected value") 
-        self.assertEquals(True, p1.readBool(), "The read bool must have the expected value")
+        self.assertEquals(False, p1.readBool(), "The read bool must have the expected value")
         self.assertEquals(60L, p1.readLong(), "The read long must have the expected value")
         self.assertFalse(p1.hasMoreData(), "The packet should be empty after reading all its data")
         

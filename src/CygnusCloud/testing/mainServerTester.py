@@ -1,0 +1,116 @@
+# -*- coding: utf8 -*-
+'''
+This module contains statements to connect to a virtual machine
+server and control it.
+@author: Luis Barrios Hernández
+@version: 1.0
+'''
+from __future__ import print_function
+
+from network.manager import NetworkManager, NetworkCallback
+from network.exceptions.networkManager import NetworkManagerException
+from mainServer.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
+from time import sleep
+
+class TesterCallback(NetworkCallback):
+    def __init__(self, packetHandler):
+        self.__pHandler = packetHandler
+        
+    def processPacket(self, packet):
+        data = self.__pHandler.readPacket(packet)
+        if (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
+            print("Virtual machine server registration error")
+            print("\t" + data["VMServerIP"])
+            print("\t" + str(data["VMServerPort"]))
+            print("\t" + data["VMServerName"])
+            print("\tReason: " + data["ErrorMessage"])
+        if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
+            print("Virtual machine servers' current status")
+            print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
+            for row in data["Data"] :
+                print(row)
+       
+
+def printLogo():
+    print('\t   _____                             _____ _                 _ ')
+    print('\t  / ____|                           / ____| |               | |')
+    print('\t | |    _   _  __ _ _ __  _   _ ___| |    | | ___  _   _  __| |')
+    print('\t | |   | | | |/ _` | \'_ \| | | / __| |    | |/ _ \| | | |/ _` |')
+    print('\t | |___| |_| | (_| | | | | |_| \__ \ |____| | (_) | |_| | (_| |')
+    print('\t  \_____\__, |\__, |_| |_|\__,_|___/\_____|_|\___/ \__,_|\__,_|')
+    print('\t         __/ | __/ |                                           ')
+    print('\t        |___/ |___/ ')
+    print()
+    
+def process_command(tokens, networkManager, pHandler, port):
+    if (len(tokens) == 0) :
+        return False
+    try :
+        command = tokens.pop(0)
+        if (command == "registerVMServer") :
+            ip = tokens.pop(0)
+            serverPort = int(tokens.pop(0))
+            name = tokens.pop(0)
+            p = pHandler.createVMServerRegistrationPacket(ip, serverPort, name)
+            networkManager.sendPacket(port, p)
+            return False  
+        elif (command == "obtainVMServerStatus") :
+            p = pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
+            networkManager.sendPacket(port, p)
+        elif (command == "unregisterVMServer") :
+            p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), False)
+            networkManager.sendPacket(port, p)
+        elif (command == "shutdownVMServer") :
+            p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), True)
+            networkManager.sendPacket(port, p)
+        elif (command == "quit") :
+            return True
+        elif (command == "help") :
+            displayHelpMessage()
+            return False
+    except Exception as e:
+        print(e) 
+        print("Error: invalid argument")
+        displayHelpMessage()
+        
+def displayHelpMessage():
+    print("Usage: ")
+    print("=====")
+    print("\tregisterVMServer <IP> <Port> <Name>: registers a virtual machine server")
+    print("\tobtainVMServerStatus: obtains all the virtual machine server's status")
+    print("\tunregisterVMServer <Name or IP> <Halt?>: unregisters a virtual machine server")
+    print("\tquit: closes this application")
+    
+
+if __name__ == "__main__" :
+    print('*' * 80)
+    print('*' * 80)
+    printLogo()
+    print('Main Server tester')
+    print('Version 1.0')
+    print('*' * 80)
+    print('*' * 80)
+    print()
+    networkManager = NetworkManager("/home/luis/Certificates")
+    networkManager.startNetworkService()
+    # Create the packet handler
+    pHandler = MainServerPacketHandler(networkManager)
+    # Ask for the port and the IP address
+    ip_address = raw_input("Server IP address: ")
+    port = raw_input("Server port: ")
+    try :
+        port = int(port)
+        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
+        while not networkManager.isConnectionReady(port) :
+            sleep(0.1)
+        end = False
+        while not end :
+            command = raw_input('>')
+            tokens = command.split()
+            end = process_command(tokens, networkManager, pHandler, port)
+    
+    except NetworkManagerException as e:
+        print("Error: " + str(e))
+    networkManager.stopNetworkService()
+    
+    

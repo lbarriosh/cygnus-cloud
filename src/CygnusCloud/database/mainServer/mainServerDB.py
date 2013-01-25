@@ -3,9 +3,9 @@ import MySQLdb
 
 from utils.enums import enum
 
-SERVER_STATE_T = enum("BOOTING", "READY")
+SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN")
 
-class VMServerDatabaseConnector(object):
+class MainServerDatabaseConnector(object):
     '''
         These objects register and delete virtual machine servers to the database.   
     '''
@@ -143,7 +143,7 @@ class VMServerDatabaseConnector(object):
         # Return the new server's ID
         return serverId
     
-    def unregisterVMServer(self, serverId):
+    def unregisterVMServer(self, serverNameOrIPAddress):
         '''
             Unregisters a virtual machine server.
             Args:
@@ -151,8 +151,13 @@ class VMServerDatabaseConnector(object):
             Returns:
                 Nothing
         '''
+        serverId = self.getVMServerID(serverNameOrIPAddress)
         # Delete the row
-        query = "DELETE FROM VMServer WHERE serverId = " + str(serverId)
+        query = "DELETE FROM VMServer WHERE serverId = " + str(serverId) + ";"
+        self.__cursor.execute(query)
+        # Workaround. ON DELETE CASCADE does not work when different storage engines are used
+        # with the tables.
+        query = "DELETE From VMServerStatus WHERE serverId = " + str(serverId) + ";"
         self.__cursor.execute(query)
         # Write the changes to the database
         self.__db.commit() 
@@ -182,9 +187,9 @@ class VMServerDatabaseConnector(object):
             serverIds.append(r[0])
         return serverIds
     
-    def getVMServerID(self, IPAddress,  port):
-        query = "SELECT serverId FROM VMServer WHERE serverIP = '" + IPAddress + \
-            "' AND serverPort = " + str(port) + ";"
+    def getVMServerID(self, nameOrIPAddress):
+        query = "SELECT serverId FROM VMServer WHERE serverIP = '" + nameOrIPAddress +\
+             "' OR serverName = '" + nameOrIPAddress + "';"
         # Execute it
         self.__cursor.execute(query)
         results=self.__cursor.fetchall()

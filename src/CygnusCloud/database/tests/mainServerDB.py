@@ -10,8 +10,8 @@ import os
 import unittest
 
 from database.utils.configuration import DBConfigurator
-from database.mainServer.vmServerDB import SERVER_STATE_T
-from database.mainServer.vmServerDB import VMServerDatabaseConnector
+from database.mainServer.mainServerDB import SERVER_STATE_T
+from database.mainServer.mainServerDB import MainServerDatabaseConnector
 
 class MainServerDBTests(unittest.TestCase):
     '''
@@ -26,7 +26,7 @@ class MainServerDBTests(unittest.TestCase):
         dbConfigurator.runSQLScript("./MainServerDB.sql")
         # Add a user to it
         dbConfigurator.addUser("cygnuscloud", "cygnuscloud", "MainServerDB")
-        self.__connector = VMServerDatabaseConnector("cygnuscloud", "cygnuscloud", "MainServerDB")     
+        self.__connector = MainServerDatabaseConnector("cygnuscloud", "cygnuscloud", "MainServerDB")     
         self.__connector.connect()   
         
     def tearDown(self):
@@ -77,9 +77,10 @@ class MainServerDBTests(unittest.TestCase):
         '''
         Tests the deletion of a virtual machine server
         '''
-        self.__connector.unregisterVMServer(1)
+        self.__connector.unregisterVMServer('Server1')
+        self.__connector.unregisterVMServer('1.2.3.5')
         ids = self.__connector.getVMServerIDs()
-        expectedIds = [2,3,4]
+        expectedIds = [3,4]
         self.assertEquals(ids, expectedIds, 'unregisterVMServer does not work')
        
     def test_getAvailableVMServers(self):
@@ -152,7 +153,7 @@ class MainServerDBTests(unittest.TestCase):
         self.assertEquals(result, expectedResult, 'setServerBasicData does not work')
         
     def test_getServerID(self):
-        result = self.__connector.getVMServerID("1.2.3.4", 8080)
+        result = self.__connector.getVMServerID("1.2.3.4")
         expectedResult = 1L
         self.assertEquals(result, expectedResult, 'getServerID does not work')
         

@@ -111,7 +111,10 @@ class _Packet(object):
             PacketException: these exceptions will be raised when type errors are detected
                 and when the packet has not enough room to hold the value.
         """
-        self.__commonWriteCode(value, bool, "bool", True)
+        if (value) :
+            self.writeInt(1)
+        else :
+            self.writeInt(0)
         
     def readInt(self):
         """
@@ -150,7 +153,7 @@ class _Packet(object):
             PacketException: this exceptions will be raised when the value cannot be read
             from the packet.
         """
-        return self.__commonReadCode("bool", bool)
+        return self.readInt() == 1
         
     def readString(self):
         """

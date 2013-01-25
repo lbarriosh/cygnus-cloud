@@ -3,7 +3,7 @@
 In this module, we define a dummy virtual machine server.
 This code will only be used for testing purposes.
 @author: Luis Barrios Hernández
-@version: 1.0
+@version: 1.1
 '''
 
 from network.manager import NetworkCallback, NetworkManager
@@ -41,6 +41,7 @@ class DummyVMServer(NetworkCallback):
         if (packetType == PACKET_T.CREATE_DOMAIN) :
             self.__createDomain(processedPacket)            
         elif (packetType == PACKET_T.HALT or packetType == PACKET_T.USER_FRIENDLY_SHUTDOWN) :
+            print("The dummy virtual machine server is shutting down now")
             self.__finished = True
         else :
             # Server status request
@@ -80,8 +81,11 @@ class DummyVMServer(NetworkCallback):
 if __name__ == "__main__" :
     nmanager = NetworkManager("/home/luis/Certificates")
     nmanager.startNetworkService()
-    callback = DummyVMServer(nmanager, "1.2.3.4", 8080)
-    nmanager.listenIn(8080, callback, True)
+    print "Dummy virtual machine server - Version 1.0"
+    ip = raw_input("IP address: ")
+    port = int(raw_input("Port: "))
+    callback = DummyVMServer(nmanager, ip, port)
+    nmanager.listenIn(port, callback, True)
     while (not callback.hasFinished()) :
         sleep(1)
     nmanager.stopNetworkService()
