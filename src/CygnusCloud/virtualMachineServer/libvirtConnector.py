@@ -46,29 +46,23 @@ class libvirtConnector():
         
     def __definedHandler(self, domain):
         print("__definedHandler " + domain.name())
-        print(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE | libvirt.VIR_DOMAIN_XML_SECURE | libvirt.VIR_DOMAIN_XML_UPDATE_CPU))
         pass
     def __suspendedHandler(self, domain):
         print("__suspendedHandler " + domain.name())
-        print(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE | libvirt.VIR_DOMAIN_XML_SECURE | libvirt.VIR_DOMAIN_XML_UPDATE_CPU))
         pass
     def __resumedHandler(self, domain):
         print("__resumedHandler " + domain.name())
-        print(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE | libvirt.VIR_DOMAIN_XML_SECURE | libvirt.VIR_DOMAIN_XML_UPDATE_CPU))
         pass
     def __undefinedHandler(self, domain):
         print("__undefinedHandler " + domain.name())
-        print(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE | libvirt.VIR_DOMAIN_XML_SECURE | libvirt.VIR_DOMAIN_XML_UPDATE_CPU))
         pass
     def __stoppedHandler(self, domain):
         print("__stoppedHandler " + domain.name())
-        print(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE | libvirt.VIR_DOMAIN_XML_SECURE | libvirt.VIR_DOMAIN_XML_UPDATE_CPU))
         domainInfo = {"name" : domain.name}
         self.__shutdownCallback(domainInfo)
         pass
     def __shutdownHandler(self, domain):
         print("__shutdownHandler " + domain.name())
-        print(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE | libvirt.VIR_DOMAIN_XML_SECURE | libvirt.VIR_DOMAIN_XML_UPDATE_CPU))
         pass
     def __startedHandler(self, domain):
         print("__startedHandler " + domain.name())
@@ -78,9 +72,8 @@ class libvirtConnector():
         password = graphic_element.attrib['passwd']
         listen_element = graphic_element.find('.//listen')
         ip = listen_element.attrib['address']
-        print(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE | libvirt.VIR_DOMAIN_XML_SECURE | libvirt.VIR_DOMAIN_XML_UPDATE_CPU))
         domainInfo = {"name" : domain.name(),
-                      "VNCport" : port,
+                      "VNCport" : int(port),
                       "VNCip" : ip,
                       "VNCpassword" : password}
         self.__startCallback(domainInfo)
@@ -97,6 +90,12 @@ class libvirtConnector():
         '''
         self.__connector.createXML(xmlConfig, libvirt.VIR_DOMAIN_NONE)
         
+    def stopAllDomain(self):
+        idsMV = self.__connector.listDomainsID()
+        for id in idsMV:
+            domain = self.__connector.lookupByID(id)
+            domain.destroy()
+    
     def getNumberOfDomains(self):
         return self.__connector.numOfDomains()
         

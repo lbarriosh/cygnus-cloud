@@ -16,6 +16,8 @@ from virtualNetwork.VirtualNetworkManager import VirtualNetworkManager
 
 from utils.commands import runCommand, runCommandBackground
 from time import sleep
+import os
+from os import path
 
 class VMClientException(Exception):
     pass
@@ -46,7 +48,7 @@ class VMClient(NetworkCallback):
         ip = domainInfo["VNCip"]
         port = domainInfo["VNCport"]
         password = domainInfo["VNCpassword"]
-        packet = self.__packetManager.createVMConnectionParametersPacket(ip, port+1, password)
+        packet = self.__packetManager.createVMConnectionParametersPacket(ip, port + 1, password)
         self.__networkManager.sendPacket(serverPort, packet)
         
     def __stoppedVM(self, domainInfo):
@@ -69,12 +71,14 @@ class VMClient(NetworkCallback):
         self.__runningImageData.unRegisterVMResources(name)
     
     def __shutdown(self):
-        # TODO: Destruir todos los dominios
+        # Cosas a hacer cuando se desea apagar el servidor
+        #self.__virtualNetwork.destroyVirtualNetwork(VNName)
         pass
         
     def processPacket(self, packet):
-        print "paquete recibido"
         packetType = self.__packetManager.readPacket(packet)
+        print "paquete recibido " + str(packetType['packet_type'])
+        print  VM_SERVER_PACKET_T.HALT
         processPacket = {
             VM_SERVER_PACKET_T.CREATE_DOMAIN: self.__createDomain, 
             VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST: self.__serverStatusRequest,
@@ -100,18 +104,32 @@ class VMClient(NetworkCallback):
         sourceDataDisk = SourceImagePath + dataPath
         sourceOSDisk = SourceImagePath + osPath        
         
+        # Preparo los archivos
+                
+        # Compruebo si ya existe alguno de los archivos
+        if (os.path.exists(newDataDisk)):
+            print("The file " + newDataDisk + " already exist")
+            return
+        if (os.path.exists(newOSDisk)):
+            print("The file " + newOSDisk + " already exist")
+            return
+        # Copio las imagenes
+        runCommand("cd " + SourceImagePath + ";" + "cp --parents "+ dataPath + " " + ExecutionImagePath, VMClientException)
+        runCommand("mv " + ExecutionImagePath + dataPath +" " + newDataDisk, VMClientException)
+        runCommand("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMClientException)
+        #runCommand("chmod -R 777 " + ExecutionImagePath, VMClientException)
+        
         # Fichero de configuracion
         xmlFile = ConfigurationFileEditor(configFile)
         xmlFile.setDomainIdentifiers(newName, newUUID)
         xmlFile.setImagePaths(newOSDisk, newDataDisk)
         xmlFile.setNetworkConfiguration(VNName, newMAC)
         xmlFile.setVNCServerConfiguration(serverIP, newPort, newPassword)
-                
-        # Copio las imagenes
-        runCommand("cd " + SourceImagePath + ";" + "cp --parents "+ dataPath + " " + ExecutionImagePath, VMClientException)
-        runCommand("mv " + ExecutionImagePath + dataPath +" " + newDataDisk, VMClientException)
-        runCommand("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMClientException)
-        #runCommand("chmod -R 777 " + ExecutionImagePath, VMClientException)
+        
+        string = xmlFile.generateConfigurationString()
+        
+        # Arranco la máquina
+        self.__connector.startDomain(string)
         
         # Inicio el websockify
         # Los puertos impares (por ejemplo) serán para KVM 
@@ -120,12 +138,10 @@ class VMClient(NetworkCallback):
         #pidWS = runCommandBackground("python " + websockifyPath + " " 
         #            + websocketServerIP + ":" + str(newPort + 1) + " " 
         #            + serverIP + ":" + str(newPort))
+        
         # Actualizo la base de datos
-        self.__runningImageData.registerVMResources(newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
+        self.__runningImageData.registerVMResources(newName, newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
         
-        string = xmlFile.generateConfigurationString()
-        
-        self.__connector.startDomain(string)
     
     def __serverStatusRequest(self, packet):
         activeDomains = self.__connector.getNumberOfDomains()
@@ -136,9 +152,9 @@ class VMClient(NetworkCallback):
         self.__waitForShutdown = True
     
     def __halt(self, packet):
-        # TODO:
-        self.__virtualNetwork.destroyVirtualNetwork(VNName)
-        pass
+        # Destruyo los dominios
+        self.__connector.stopAllDomain()
+        self.__shutdown()
     
     def __getNewMAC_UUID(self):
         return self.__runningImageData.extractfreeMacAndUuid()
