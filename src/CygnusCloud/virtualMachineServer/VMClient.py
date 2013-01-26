@@ -134,10 +134,9 @@ class VMClient(NetworkCallback):
         # Inicio el websockify
         # Los puertos impares (por ejemplo) serán para KVM 
         # y los pares los websockets
-        pidWS = 0
-        #pidWS = runCommandBackground("python " + websockifyPath + " " 
-        #            + websocketServerIP + ":" + str(newPort + 1) + " " 
-        #            + serverIP + ":" + str(newPort))
+        pidWS = runCommandBackground("python " + websockifyPath + " " 
+                    + websocketServerIP + ":" + str(newPort + 1) + " " 
+                    + serverIP + ":" + str(newPort))
         
         # Actualizo la base de datos
         self.__runningImageData.registerVMResources(newName, newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
