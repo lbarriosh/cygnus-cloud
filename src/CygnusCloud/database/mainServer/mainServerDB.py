@@ -6,72 +6,113 @@ from utils.enums import enum
 SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN")
 
 class MainServerDatabaseConnector(object):
+    """
+    Nota: esta clase es ServerVMManager, con los métodos específicos
+    de ImagesInServerManager.
+    """
     '''
         These objects register and delete virtual machine servers to the database.   
     '''
 
     def __init__(self, sqlUser, sqlPassword, databaseName):
         '''
-            Initializes the manager's state
-            Args:
-                sqlUser: the user to use to connect to a MySQL database
-                sqlPassword: the password to use to connect to the MySQL database
-                databaseName: the name of the database which we'll connect to
-            Returns:
-                Nothing
+            Constructor de la clase. Recibe el nombre y lla contrasennia del usuario sql encargado
+            de gestionar la base de datos
+            Argumentos:
+                sqlUser: usuario para conectarnos a MySQL
+                sqlPassword: contraseña para conectarnos a MySQL
+                databaseName: nombre de la base de datos a la que nos vamos a conectar
+            Devuelve:
+                Nada
         '''
-        # Store the connection data
+        # Guardamos los datos de conexión necesarios
         self.__sqlUser = sqlUser
         self.__sqlPassword = sqlPassword
         self.__databaseName = databaseName
+        # Nota: no nos conectamos a MySQL aquí: el código cliente llama a connect.
         
     def connect(self):
         '''
-            Connects to a MySQL database
-            Args:
-                None
-            Returns:
-                Nothing
+            Realiza la conexión con la base de datos
+            Argumentos:
+                Ninguno
+            Devuelve:
+                Nada
         '''
-        # Connect to MySQL
+       # Nos conectamos a MySql 
         db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPassword)
         cursor=db.cursor()
-        # Select the database to use
+        #Cambiamos a la base de datos correspondeinte
         sql = "USE "  + self.__databaseName   
         cursor.execute(sql)        
-        # Connect to the database
+        #Ejecutamos el comando
         self.__db = db
         self.__cursor = db.cursor()
+        # No hace falta devolver el cursor: ya lo tenemos guardado y listo para usar
     
     def disconnect(self):
         '''
-            Disconnects from a MySQL database
-            Args:
-                None
-            Returns:
-                Nothing
+            Realiza la desconexión de una base de datos
+            Argumentos:
+                Ninguno
+            Devuelve:
+                Nada
         '''
-        # Close the connection
+        #cerramos las conexiones
         self.__cursor.close()
         self.__db.close()
         
+    #===========================================================================
+    # No aparecen aquí:
+    # - showServers. No hace falta imprimir los datos de los servidores.
+    # - el método main() con pruebas. Para eso están las unitarias.
+    # - el método getMaxVMNumber. Las estadísticas del servidor se guardan en otra
+    #   tabla, y lo que me parece más razonable es que sea el servidor el que nos informe
+    #   (al arrancar) de cuántas máquinas virtuales puede alojar.
+    #   De todas formas, el servidor de máquinas virtuales actual no hace eso,
+    #   por lo que esos datos no están en el esquema
+    # - el método getFreeVMNumber no aparece porque el servidor de máquinas virtuales
+    #   no nos dice nada de esto.
+    #===========================================================================
+    
+    def isServerExists(self,serverId):
+        '''
+            Comprueba si un servidor existe
+            Duda: si los IDs salen siempre de la base de datos, ¿no crees que este método
+            no tiene mucho sentido?
+            Otra cosa: yo lo llamaría doesServerExist.
+        '''
+        #Contamos el número de serviddores con el id dado    
+        sql = "SELECT COUNT(*) FROM VMServer WHERE serverId =" + str(serverId)
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos los resultado
+        result=self.__cursor.fetchone()
+        #Si el número es 1 entonces el servidor existe
+        return (result[0] == 1)
+        
     def getVMServerBasicData(self, serverId):
         '''
-            Returns the data associated to a virtual machine server
-            Args:
-                serverId: the virtual machine server's unique identifier
-            Returns:
-                A dictionary with the server's data.
+            Devuelve la información asociada a un servidor de máquinas virtuales
+            Argumentos:
+                serverId: el identificador único del servidor
+            Devuelve:
+                Diccionario con los datos del servidor
+                Nota: ¿por qué no una tupla o una lista? Porque el orden en que se devuelven
+                las cosas importaría, lo cual es un fastidio para añadir y quitar cosas
+                (lo sé por la red). Al devolver un diccionario, es mucho más fácil añadir
+                y quitar cosas a devolver.
         '''
-        # Create the query
+        #Creamos la consulta encargada de extraer los datos
         query = "SELECT serverName, serverStatus, serverIP, serverPort FROM VMServer"\
             + " WHERE serverId = " + str(serverId) + ";"
-        # Execute it
+        #Ejecutamos el comando
         self.__cursor.execute(query)
-        # Retrieve the results
+        # Recogemos los resultados
         results=self.__cursor.fetchall()
         d = dict()
         (name, status, ip, port) = results[0]
+        # Devolvemos el resultado 
         d["ServerName"] = name
         d["ServerStatus"] = status
         d["ServerIP"] = ip
@@ -80,114 +121,140 @@ class MainServerDatabaseConnector(object):
         
     def getVMServerStatistics(self, serverId):
         '''
-            Returns a virtual machine server's statistics
-            Args:
-                serverId: the virtual machine server's unique identifier
+            Devuelve las estadísticas de un servidor de máquinas virtuales
+            Argumentos:
+                serverId: el identificador único del servidor
             Returns:
-                A dictionary containing the server's statistics (right now, just the
-                number of active hosts)
+                Diccionario con las estadísticas del servidor.
         '''
-        # Create the query
+        #Creamos la consulta encargada de extraer los datos
         query = "SELECT hosts FROM VMServerStatus WHERE serverId = " + str(serverId) + ";"
-        # Execute it
+         #Ejecutamos el comando
         self.__cursor.execute(query)
-        # Retrieve the results
+        #Recogemos los resultado
         results=self.__cursor.fetchall()
         d = dict()
         if (results != tuple()) :
             activeHosts = results[0][0]
             d["ActiveHosts"] = activeHosts
+        # Devolvemos los resultados
         return d
     
     def getVMServerIDs(self):
         '''
-            Returns the virtual machine servers' IDs
-            Args: 
-                None
-            Returns:
-                A list containing all the virtual machine servers' IDs.
+            Permite obtener una lista con los identificadores de todos los servidores de 
+            máquinas virtuales que actualmente se encuentran dados de alta en la base de datos.
+        
+            Nota: este es el antiguo método getServers
+            Argumentos: 
+                Ninguno
+            Devuelve:
+                Lista con los identificadores de todos los servidores de máquinas virtuales
         '''
-        # Create the query
+        #Creamos la consulta encargada de extraer los datos
         query = "SELECT serverId FROM VMServer;"  
-        # Execute it
+        #Ejecutamos el comando
         self.__cursor.execute(query)
-        # Retrieve the results
+        #Recogemos los resultado
         results=self.__cursor.fetchall()
         serverIds = []
         for r in results:
             serverIds.append(r[0])
-        # Return them
+        #Devolvemos la lista resultado
         return serverIds
         
-    def registerVMServer(self, name, IPAddress, port):
+    def subscribeVMServer(self, name, IPAddress, port):
         '''
-            Registers a new virtual machine server in the database
-            Args:
-                name: the new server's name
-                IPAddress: the new server's IP address
-                port: the new server's port
+            Permite registrar un Nuevo servidor de máquinas virtuales con el puerto, la IP y el número
+             máximo de máquinas virtuales que se le pasan como argumento
+            Argumentos:
+                name: nombre del nuevo servidor
+                IPAddress: la IP del nuevo servidor
+                port: el puerto del nuevo servidor
             Returns:
-                The new server's ID
+                El identificador del nuevo servidor.
+            Nota: creo que es mejor el nombre registerVMServer. subscribe significa suscribir,
+            ratificar algo.
         '''
-        # Create the query
+        #Creamos la consulta encargada de insertar los valores en la base de datos
         query = "INSERT INTO VMServer(serverStatus, serverName, serverIP, serverPort) VALUES (" + \
             str(SERVER_STATE_T.BOOTING) + ", '" + name + "', '" + IPAddress + "'," + str(port) +");"
-        # Execute it
+        #Ejecutamos el comando
         self.__cursor.execute(query)               
-        # Obtain the new server's ID
+        #Extraemos el id del servidor recien creado
         query = "SELECT serverId FROM VMServer WHERE serverIP ='" + IPAddress + "';"
+        # Nota: con coger una columna que identifique de forma única al servidor, basta.
+        # Cuantas menos condiciones se evalúen, menos costoso es esto.
+        # Revisé esto porque me cargué una columna, el máximo número de máquinas virtuales.
         self.__cursor.execute(query) 
+        #Cogemos el utlimo
         serverId = self.__cursor.lastrowid
-        # Update the database NOW
+        #Actualizamos la base de datos
         self.__db.commit() 
-        # Return the new server's ID
+        #Lo devolvemos
         return serverId
     
-    def unregisterVMServer(self, serverNameOrIPAddress):
+    def unsubscribeVMServer(self, serverNameOrIPAddress):
         '''
-            Unregisters a virtual machine server.
-            Args:
-                serverId: the virtual machine server's unique ID
-            Returns:
-                Nothing
+            Permite eliminar un determinado servidor de máquinas virtuales de la base de datos cuyo
+             identificador se le pasa como argumento.
+            Argumentos:
+                serverNameOrIPAddress: el nombre o la IP del servidor
+            Devuelve:
+                Nada
+            Nota: tuve que dejar de usar el id porque la web no sabe que ids tiene asignado
+            cada servidor. Estos son únicos dentro del servidor principal.
         '''
         serverId = self.getVMServerID(serverNameOrIPAddress)
-        # Delete the row
+        # Borramos la fila
         query = "DELETE FROM VMServer WHERE serverId = " + str(serverId) + ";"
+        #Ejecutamos el comando
         self.__cursor.execute(query)
-        # Workaround. ON DELETE CASCADE does not work when different storage engines are used
-        # with the tables.
+        # Apaño. ON DELETE CASCADE no funciona cuando las tablas usan un motor de almacenamiento
+        # distinto. Una usa INNODB (VMServer) y otra usa MEMORY (VMServerStatus, que es nueva)
         query = "DELETE From VMServerStatus WHERE serverId = " + str(serverId) + ";"
         self.__cursor.execute(query)
-        # Write the changes to the database
+        # Actualizamos la base de datos
         self.__db.commit() 
-        # Note that the server registered images have already been erased (thanks
-        # to the ON DELETE CASCADE SQL sentence)
         
-    def getAvailableVMServers(self, imageId):
+    def getImageServers(self, imageId):
         '''
-            Returns a list with the unique identifiers of all the virtual machine servers that can
-            host an specific image.
-            Args:
-                imageId: the image's unique identifier
-            Returns:
-                A list containing the image's ID
+            Devuelve una lista con todos los identificadores de servidores que pueden dar acceso a la
+             imagen cuyo identificador se pasa como argumento.
+            Argumentos:
+                imageId: el identificador único de la imagen
+            Devuelve:
+                lista con los identificadores de los servidores que tienen la imagen
+            Nota: tuve que añadir el estado de los servidores de máquinas virtuales, que no
+            estaba contemplado en el diseño inicial. Y tengo que cruzar dos tablas: una imagen
+            no está disponible si un servidor que no está preparado, que está apagado o que
+            se ha desconectado la tiene. Sólo está disponible si el servidor está listo.
         '''
-        # Create the query 
+        # Creamos la consulta
         query = "SELECT ImageOnServer.serverId FROM ImageOnServer " +\
             "INNER JOIN VMServer ON ImageOnServer.serverId = VMServer.serverID " \
                 + "WHERE VMServer.serverStatus = " + str(SERVER_STATE_T.READY) \
                 + " AND " + "imageId =" + str(imageId) + ";"
-        # Run it
+        #Ejecutamos el comando
         self.__cursor.execute(query)
-        # Retrieve the results
+        #Recogemos los resultado
         results=self.__cursor.fetchall()
+        #Guardamos en una lista los ids resultantes
         serverIds = []
         for r in results:
             serverIds.append(r[0])
+        #Devolvemos la lista resultado
         return serverIds
     
     def getVMServerID(self, nameOrIPAddress):
+        '''
+        Devuelve el ID de un servidor de máquinas virtuales a partir de su nombre o
+        su IP.
+        Argumentos:    
+            nameOrIPAddress: el nombre o la IP del servidor de máquinas virtuales
+        Devuelve:
+            El ID del servidor.
+        '''
         query = "SELECT serverId FROM VMServer WHERE serverIP = '" + nameOrIPAddress +\
              "' OR serverName = '" + nameOrIPAddress + "';"
         # Execute it
@@ -197,12 +264,13 @@ class MainServerDatabaseConnector(object):
     
     def updateVMServerStatus(self, serverId, newStatus):
         '''
-            Updates a virtual machine server's status
-            Args:
-                serverId: the virtual machine server's unique identifier
-                newStatus: the new virtual machine server's status
-            Returns:
-                Nothing
+            Actualiza el estado de un servidor de máquinas virtuales (listo, arrancando,
+            desconectado,...)
+            Argumentos:
+                serverId: el identificador úncio del servidor
+                newStatus: el nuevo estado del servidor
+            Devuelve:
+                Nada
         '''
         query = "UPDATE VMServer SET serverStatus=" + str(newStatus) + \
             " WHERE serverId = " + str(serverId) + ";"
@@ -211,14 +279,17 @@ class MainServerDatabaseConnector(object):
         # Write the changes to the database
         self.__db.commit()   
         
-    def getImages(self, serverId):
+    def getServerImages(self, serverId):
         '''
-            Returns a list with the identifiers of the images that a virtual
-            machine server contains.
-            Args:
-                serverId: the virtual machine server's unique ID
+            Devuelve una lista con los identificadores de las imágenes asociadas a un servidor 
+              de máquinas virtuales.
+            Argumentos:
+                serverId: el identificador del servidor de máquinas virtuales
             Returns:
-                A list containing all the image identifiers.
+                Lista con los identificadores de las imágenes
+            Nota: este método está modificado para que un solo objeto me sirva para 
+            leer la base de datos. Tal y como estaba, tenía que tener un objeto ImageServerManager
+            para cada servidor de máquinas virtuales, y eso son muchas conexiones.
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT imageId FROM ImageOnServer WHERE serverId = " + str(serverId)    
@@ -235,51 +306,73 @@ class MainServerDatabaseConnector(object):
     
     def getImageData(self, imageId):
         '''
-        Returns all the data associated to an image.
-        Args:
-            imageId: the image's unique identifier
-        Returns:
-            A dictionary with the image name and description
+        Antiguo método getImageDescription. No sólo devuelve la descripción de la imagen,
+        sino también su nombre (seguro que alguna vez habrá que leerlo).
+        Argumentos:
+            imageId: identificaodr único de su imagen
+        Devuelve:
+            Diccionario con los datos de la imagen
         '''
-        # Create the query
+        #Creamos la consulta encargada de extraer los datos
         query = "SELECT name, Description FROM Image WHERE imageId = " + str(imageId)   
-        # Execute it
+        #Ejecutamos el comando
         self.__cursor.execute(query)
-        # Fetch its output
+        #Recogemos los resultado
         result=self.__cursor.fetchone()
         d = dict()
         d["ImageName"] = result[0]
         d["ImageDescription"] = result[1]
+        #Devolvemos el resultado
         return d
         
     def createNewImage(self, name, description):
         '''
-            Creates a new image in the database
-            Args:
-                name: the new image's name
-                description: the new image's description
-            Returns:
-                Nothing
+            Permite dar de alta en la base de datos una nueva imagen asociada 
+             al servidor de máquinas virtuales definido como atributo.
+            Argumentos:
+                name: nombre de la nueva imagen
+                description: descripción de la nueva imagen
+            Devuelve:
+                identificador único de la nueva imagen
         '''
-        # Insert the row in the table
+        #Insertamos los datos en la base de datos
         query = "INSERT INTO Image(name,description) VALUES('" + name + "','" + description  +"') "  
+        #Ejecutamos el comando
         self.__cursor.execute(query)               
-        # Obtain the new image's unique identifier
+        #Extraemos el id de la imagen recién creada
         query = "SELECT imageId FROM Image WHERE name ='" + name + "' AND description ='" + description +"'"  
         self.__cursor.execute(query) 
+        #Cogemos el último
         imageId = self.__cursor.lastrowid
-        # Write the changes to the database NOW
+        #Actualizamos la base de datos
         self.__db.commit() 
         # Return the new image's id
         return imageId
     
+    def isImageExists(self,imageId):   
+        '''
+            Comprueba si una imagen existe
+            Nota: creo que este método también sobra: los ids de las imágenes van a salir
+            siempre de la base de datos.
+            Nota: el nombre debería ser doesImageExist
+        '''
+        #Contamos el número de imagenes con el identificador dado     
+        sql = "SELECT COUNT(*) FROM Image WHERE imageId =" + str(imageId)
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos los resultado
+        result=self.__cursor.fetchone()
+        #Si el resultado es 1, la imagen existe
+        return (result[0] == 1)
+    
     def assignImageToServer(self, serverID, imageID):
         '''
-        Assigns an image to a virtual machine server. This means that the server can instantiate it.
-        Args:
-            serverID: the server's unique identifier
-            imageID: the image's unique identifiers
-        Returns: Nothing
+        Asigna una imagen a un servidor de máquinas virtuales
+        Argumentos:
+            serverID: identificador único del servidor de máquinas virtuales
+            imageID: identificador único de la imagen
+        Devuelve:
+            Nada.
         '''
         # Insert the row in the table
         query = "INSERT INTO ImageOnServer VALUES(" + str(serverID)+ "," + str(imageID)  +") "  
@@ -289,23 +382,26 @@ class MainServerDatabaseConnector(object):
         
     def setImageData(self, imageId, imageName, imageDescription):
         '''
-        Modifies an image's data
-        Args:
-            imageId: the image's unique identifier
-            imageName: the image's new name
-            imageDescription: the image's new description
-        Returns:
-            Nothing
+        Antiguo método setDescription. Ahora deja cambiar también el nombre.
+        Argumentos:
+            imageId: el identificador único de la imagen
+            imageName: el nuevo nombre de la imagen
+            imageDescription: la nueva descripción de la imagen
+        Devuelve:
+            Nada
         '''
-        # Create the query
+        #Creamos la consulta encargada de realizar la actualización
         query = "UPDATE Image SET name = '"  + imageName + "', description = '" + imageDescription +\
             "' WHERE imageId = " + str(imageId) + ";"
-        # Execute it
+        #Ejecutamos el comando
         self.__cursor.execute(query)
-        # Write the changes to the database NOW
+        #Actualizamos la base de datos
         self.__db.commit() 
         
     def setVMServerStatistics(self, serverID, runningHosts):
+        '''
+        Actualiza las estadísticas de un servidor de máquinas virtuales.
+        '''
         query = "INSERT INTO VMServerStatus VALUES(" + str(serverID) + ", " + str(runningHosts) + ");"
         try :
             self.__cursor.execute(query)
@@ -318,14 +414,14 @@ class MainServerDatabaseConnector(object):
         
     def setServerBasicData(self, serverId, name, status, IPAddress, port):
         '''
-            Modifies a virtual machine server's basic data
-            Args:
-                name: the new server's name
-                status: the new server's status
-                IPAddress: the new server's IP address
-                port: the new server's port
-            Returns:
-                Nothing
+            Modifica los datos básicos de un servidor de máquinas virtuales
+            Argumentos:
+                name: nuevo nombre del servidor
+                status: nuevo estado del servidor
+                IPAddress: nueva IP del servidor
+                port: nuevo puerto del servidor
+            Devuelve:
+                Nada
         '''
         # Create the query
         query = "UPDATE VMServer SET serverName = '" + name + "', serverIP = '" + IPAddress + "', "+\
