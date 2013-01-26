@@ -68,7 +68,7 @@ class MainServerDBTests(unittest.TestCase):
         '''
         Tests the registration of a new virtual machine server
         '''
-        self.__connector.registerVMServer('A new server', '100.101.102.103', 89221)
+        self.__connector.subscribeVMServer('A new server', '100.101.102.103', 89221)
         ids = self.__connector.getVMServerIDs()
         expectedIds = [1,2,3,4, ids[len(ids) - 1]]
         self.assertEquals(ids, expectedIds, 'registerVMServer does not work')
@@ -77,8 +77,8 @@ class MainServerDBTests(unittest.TestCase):
         '''
         Tests the deletion of a virtual machine server
         '''
-        self.__connector.unregisterVMServer('Server1')
-        self.__connector.unregisterVMServer('1.2.3.5')
+        self.__connector.unsubscribeVMServer('Server1')
+        self.__connector.unsubscribeVMServer('1.2.3.5')
         ids = self.__connector.getVMServerIDs()
         expectedIds = [3,4]
         self.assertEquals(ids, expectedIds, 'unregisterVMServer does not work')
@@ -87,7 +87,7 @@ class MainServerDBTests(unittest.TestCase):
         '''
         Tries to retrieve the virtual machine servers that can host an image.
         '''
-        result = self.__connector.getAvailableVMServers(1)
+        result = self.__connector.getImageServers(1)
         expectedResult = [2,3]
         self.assertEquals(result, expectedResult, 'getAvailableVMServers does not work')
         
@@ -103,7 +103,7 @@ class MainServerDBTests(unittest.TestCase):
         '''
         Tries to retrieve the images that can be hosted on a virtual machine server
         '''
-        result = self.__connector.getImages(1)
+        result = self.__connector.getServerImages(1)
         expectedResult = [1,2,3]
         self.assertEquals(result, expectedResult, 'getImages does not work')
         
@@ -129,8 +129,8 @@ class MainServerDBTests(unittest.TestCase):
         Tries to assign an image to a virtual machine server
         '''
         self.__connector.assignImageToServer(4, 2)
-        result = self.__connector.getImages(4)
-        expectedResult = [2]
+        result = self.__connector.getImageServers(2)
+        expectedResult = [2,4]
         self.assertEquals(result, expectedResult, 'assignImageToServer does not work')
         
     def test_setImageData(self):

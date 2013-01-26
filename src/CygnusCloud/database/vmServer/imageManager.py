@@ -1,7 +1,9 @@
 # -*- coding: UTF8 -*-
 import MySQLdb
 
-class ImageManager(object):
+from database.utils.connector import BasicDatabaseConnector
+
+class ImageManager(BasicDatabaseConnector):
     '''
         Esta clase permite gestionar las diferentes características de las imágenes 
          accesibles en el servidor de máquinas virtuales actual.
@@ -11,30 +13,8 @@ class ImageManager(object):
         '''
             Constructora de la clase
         '''
-        # Guardamos los atributos necesarios para la conexión
-        self.__sqlUser = sqlUser
-        self.__sqlPassword = sqlPassword
-        self.__databaseName = databaseName
-        #Seleccionamos la base de datos que vamos a manejar
-        # Nos conectamos a MySql 
-        self.__db = self.connect()
-        self.__cursor = self.__db.cursor()
-        
-    def connect(self):
-        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPassword)
-        cursor=db.cursor()
-        #Cambiamos a la base de datos correspondiente
-        sql = "USE " + self.__databaseName    
-        #Ejecutamos el comando
-        cursor.execute(sql)
-        #devolvemos el cursor
-        return db
-    
-    def disconnect(self):
-        #cerramos las conexiones
-        self.__cursor.close()
-        self.__db.close()
+        BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
+        self.connect()
 
     def getImages(self):
         '''
@@ -43,10 +23,8 @@ class ImageManager(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VMId FROM VirtualMachine" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        results=self.__cursor.fetchall()
+        results=self.executeQuery(sql)
         #Guardamos en una lista los ids resultantes
         imageIds = []
         for r in results:
@@ -59,11 +37,9 @@ class ImageManager(object):
             Devuelve el nombre de la imagen cuyo identificador se pasa como argumento. 
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT name FROM VirtualMachine WHERE VMId = " + str(imageId)   
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
+        sql = "SELECT name FROM VirtualMachine WHERE VMId = " + str(imageId)
         #Recogemos los resultado
-        result=self.__cursor.fetchone()
+        result=self.executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0]  
     
@@ -74,10 +50,8 @@ class ImageManager(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT imagePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        result=self.__cursor.fetchone()
+        result=self.executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0]
     
@@ -88,10 +62,8 @@ class ImageManager(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT osImagePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        result=self.__cursor.fetchone()
+        result=self.executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0]
     
@@ -102,10 +74,8 @@ class ImageManager(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT FileConfigPath FROM VirtualMachine WHERE VMId = " + str(imageId)   
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        result=self.__cursor.fetchone()
+        result=self.executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0]
     
@@ -116,9 +86,7 @@ class ImageManager(object):
         #Creamos la consulta encargada de realizar la actualización
         sql = "UPDATE VirtualMachine SET imagePath = '"  + path + "' WHERE VMId = " + str(imageId)
         #Ejecutamos el comando
-        self.__cursor.execute(sql)        
-        #Actualizamos la base de datos
-        self.__db.commit() 
+        self.executeUpdate(sql)
         
     def createImage(self,imageId,name,imagePath,osImagePath,FileConfigPath):
         '''
@@ -128,9 +96,7 @@ class ImageManager(object):
         sql = "INSERT INTO VirtualMachine(VMId,name,imagePath,osImagePath,FileConfigPath) VALUES("  
         sql+=    str(imageId) + ",'" + name + "','" + imagePath  +"','" + osImagePath + "','"+ FileConfigPath +"') "  
         #Ejecutamos el comando
-        self.__cursor.execute(sql)  
-        #Actualizamos la base de datos
-        self.__db.commit()              
+        self.executeUpdate(sql)          
         #Devolvemos el id
         return imageId
     
@@ -138,11 +104,7 @@ class ImageManager(object):
         #borramos el la MV
         sql = "DELETE FROM VirtualMachine WHERE VMId =" + str(imageId) 
         #Ejecutamos el comando
-        self.__cursor.execute(sql) 
-        # Gracias al ON DELETE CASCADE debería borrarse sus referencias en
-        #  el resto de las tablas
-        #Actualizamos la base de datos
-        self.__db.commit()
+        self.executeUpdate(sql)
  
     def doesImageExist(self,VMId):   
         '''
@@ -150,10 +112,8 @@ class ImageManager(object):
         '''
         #Contamos el número de MV con el id dado    
         sql = "SELECT COUNT(*) FROM VirtualMachine WHERE VMId =" + str(VMId)
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        result=self.__cursor.fetchone()
+        result=self.executeQuery(sql, True)
         # Si el resultado es 1, la MV existe
         return (result[0] == 1)   
     

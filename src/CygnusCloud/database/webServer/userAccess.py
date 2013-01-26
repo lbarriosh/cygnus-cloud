@@ -1,35 +1,17 @@
 # -*- coding: UTF8 -*-
 import MySQLdb
 
-class UserAccess(object):
+from database.utils.connector import BasicDatabaseConnector
+
+class UserAccess(BasicDatabaseConnector):
     '''
         Clase encargada de gestionar el logueo de un determinado usuario
     '''
     def __init__(self,sqlUser,sqlPassword,databaseName):
-        self.__sqlUser = sqlUser
-        self.__sqlPass = sqlPassword
-        self.__databaseName = databaseName
+        BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         #Seleccionamos la base de datos que vamos a manejar
         # Nos conectamos a MySql 
-        self.__db = self.connect()
-        self.__cursor = self.__db.cursor()
-        
-    def connect(self):
-        #Seleccionamos la base de datos que vamos a manejar
-        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
-        cursor=db.cursor()
-        #Creamos la consulta encargada de extraer los datos
-        sql = "USE " + self.__databaseName     
-        #Ejecutamos el comando
-        cursor.execute(sql)
-        #devolvemos el cursor
-        return db
-    
-    def disconnect(self):
-        #cerramos las conexiones
-        self.__cursor.close()
-        self.__db.close()
+        self.connect()
                 
     def login(self,name,password):
         '''
@@ -39,15 +21,12 @@ class UserAccess(object):
         
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT * FROM Users WHERE name ='" + name + "'" 
-        
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
-        
+             
         #Recogemos los resultado
-        result=self.__cursor.fetchone()
+        result=self.executeQuery(sql, True)
         
         #Comprobamos si ha encontrado el usuario
-        if(self.__cursor.rowcount == 1):
+        if(result != tuple()):
             #Extraemos la contraseña y comparamos
             p = result[2]
             if(p == password):

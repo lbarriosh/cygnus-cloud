@@ -66,10 +66,18 @@ class DBConfigurator(object):
                     command = ""
                 else:
                     command += line          
-        # Run the last command
-        cursor.execute(command)
+        # Run the last command (if necessary)
+        if (not DBConfigurator.__isEmpty__(command)) :
+            cursor.execute(command)
         # Write the changes to the database
         db.commit() 
         # Close the database connection
         cursor.close()
         db.close()
+        
+    @staticmethod
+    def __isEmpty__(str):
+        for c in str :
+            if (c != ' ' and c != '\n' and c != '\r' and c != 't') :
+                return False
+        return True

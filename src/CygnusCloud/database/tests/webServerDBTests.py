@@ -4,17 +4,15 @@ import os
 import unittest
 
 
-from WebServerDB.UserAccess import UserAccess
-from WebServerDB.UserManagement import UserManagement
-from DBUtils.DBUtils import DBUtils
+from database.webServer.userAccess import UserAccess
+from database.webServer.userManagement import UserManagement
+from database.utils.configuration import DBConfigurator
 
 class DBWebServerTests(unittest.TestCase):
     '''
         Clase encargada de realizar los test unitarios asociados 
     '''
-
-
-        
+       
     def test_loginUsaer(self):
         userA = UserAccess("CygnusCloud","cygnuscloud2012","DBWebServerTest")
         id1 = userA.login("Admin1", "0000")
@@ -100,7 +98,7 @@ class DBWebServerTests(unittest.TestCase):
         
 if __name__ == "__main__":
     #Cargamos el script de prueba
-    dbUtils = DBUtils(os.getcwd() + "/DBWebServerTest.sql")
-    dbUtils.initMySqlUser("CygnusCloud","cygnuscloud2012")
-    dbUtils.loadScript("CygnusCloud","cygnuscloud2012")     
+    dbUtils = DBConfigurator("")
+    dbUtils.runSQLScript("./WebServerDBTest.sql")
+    dbUtils.addUser("CygnusCloud","cygnuscloud2012", "DBWebServerTest")
     unittest.main()

@@ -2,17 +2,18 @@
 import MySQLdb
 
 from utils.enums import enum
+from database.utils.connector import BasicDatabaseConnector
 
 SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN")
 
-class MainServerDatabaseConnector(object):
+class MainServerDatabaseConnector(BasicDatabaseConnector):
     """
     Nota: esta clase es ServerVMManager, con los métodos específicos
     de ImagesInServerManager.
     """
     '''
         These objects register and delete virtual machine servers to the database.   
-    '''
+    '''    
 
     def __init__(self, sqlUser, sqlPassword, databaseName):
         '''
@@ -25,42 +26,7 @@ class MainServerDatabaseConnector(object):
             Devuelve:
                 Nada
         '''
-        # Guardamos los datos de conexión necesarios
-        self.__sqlUser = sqlUser
-        self.__sqlPassword = sqlPassword
-        self.__databaseName = databaseName
-        # Nota: no nos conectamos a MySQL aquí: el código cliente llama a connect.
-        
-    def connect(self):
-        '''
-            Realiza la conexión con la base de datos
-            Argumentos:
-                Ninguno
-            Devuelve:
-                Nada
-        '''
-       # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPassword)
-        cursor=db.cursor()
-        #Cambiamos a la base de datos correspondeinte
-        sql = "USE "  + self.__databaseName   
-        cursor.execute(sql)        
-        #Ejecutamos el comando
-        self.__db = db
-        self.__cursor = db.cursor()
-        # No hace falta devolver el cursor: ya lo tenemos guardado y listo para usar
-    
-    def disconnect(self):
-        '''
-            Realiza la desconexión de una base de datos
-            Argumentos:
-                Ninguno
-            Devuelve:
-                Nada
-        '''
-        #cerramos las conexiones
-        self.__cursor.close()
-        self.__db.close()
+        BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         
     #===========================================================================
     # No aparecen aquí:
@@ -84,10 +50,7 @@ class MainServerDatabaseConnector(object):
         '''
         #Contamos el número de serviddores con el id dado    
         sql = "SELECT COUNT(*) FROM VMServer WHERE serverId =" + str(serverId)
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
-        #Recogemos los resultado
-        result=self.__cursor.fetchone()
+        result = self.executeQuery(sql, True)
         #Si el número es 1 entonces el servidor existe
         return (result[0] == 1)
         
@@ -106,10 +69,8 @@ class MainServerDatabaseConnector(object):
         #Creamos la consulta encargada de extraer los datos
         query = "SELECT serverName, serverStatus, serverIP, serverPort FROM VMServer"\
             + " WHERE serverId = " + str(serverId) + ";"
-        #Ejecutamos el comando
-        self.__cursor.execute(query)
         # Recogemos los resultados
-        results=self.__cursor.fetchall()
+        results=self.executeQuery(query)
         d = dict()
         (name, status, ip, port) = results[0]
         # Devolvemos el resultado 
@@ -129,10 +90,7 @@ class MainServerDatabaseConnector(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         query = "SELECT hosts FROM VMServerStatus WHERE serverId = " + str(serverId) + ";"
-         #Ejecutamos el comando
-        self.__cursor.execute(query)
-        #Recogemos los resultado
-        results=self.__cursor.fetchall()
+        results=self.executeQuery(query)
         d = dict()
         if (results != tuple()) :
             activeHosts = results[0][0]
@@ -153,10 +111,8 @@ class MainServerDatabaseConnector(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         query = "SELECT serverId FROM VMServer;"  
-        #Ejecutamos el comando
-        self.__cursor.execute(query)
         #Recogemos los resultado
-        results=self.__cursor.fetchall()
+        results=self.executeQuery(query)
         serverIds = []
         for r in results:
             serverIds.append(r[0])
@@ -180,17 +136,14 @@ class MainServerDatabaseConnector(object):
         query = "INSERT INTO VMServer(serverStatus, serverName, serverIP, serverPort) VALUES (" + \
             str(SERVER_STATE_T.BOOTING) + ", '" + name + "', '" + IPAddress + "'," + str(port) +");"
         #Ejecutamos el comando
-        self.__cursor.execute(query)               
+        self.executeUpdate(query)      
         #Extraemos el id del servidor recien creado
         query = "SELECT serverId FROM VMServer WHERE serverIP ='" + IPAddress + "';"
         # Nota: con coger una columna que identifique de forma única al servidor, basta.
         # Cuantas menos condiciones se evalúen, menos costoso es esto.
         # Revisé esto porque me cargué una columna, el máximo número de máquinas virtuales.
-        self.__cursor.execute(query) 
         #Cogemos el utlimo
-        serverId = self.__cursor.lastrowid
-        #Actualizamos la base de datos
-        self.__db.commit() 
+        serverId = self.getLastRowId(query)
         #Lo devolvemos
         return serverId
     
@@ -209,13 +162,11 @@ class MainServerDatabaseConnector(object):
         # Borramos la fila
         query = "DELETE FROM VMServer WHERE serverId = " + str(serverId) + ";"
         #Ejecutamos el comando
-        self.__cursor.execute(query)
+        self.executeUpdate(query)
         # Apaño. ON DELETE CASCADE no funciona cuando las tablas usan un motor de almacenamiento
         # distinto. Una usa INNODB (VMServer) y otra usa MEMORY (VMServerStatus, que es nueva)
         query = "DELETE From VMServerStatus WHERE serverId = " + str(serverId) + ";"
-        self.__cursor.execute(query)
-        # Actualizamos la base de datos
-        self.__db.commit() 
+        self.executeUpdate(query)
         
     def getImageServers(self, imageId):
         '''
@@ -235,10 +186,8 @@ class MainServerDatabaseConnector(object):
             "INNER JOIN VMServer ON ImageOnServer.serverId = VMServer.serverID " \
                 + "WHERE VMServer.serverStatus = " + str(SERVER_STATE_T.READY) \
                 + " AND " + "imageId =" + str(imageId) + ";"
-        #Ejecutamos el comando
-        self.__cursor.execute(query)
         #Recogemos los resultado
-        results=self.__cursor.fetchall()
+        results=self.executeQuery(query)
         #Guardamos en una lista los ids resultantes
         serverIds = []
         for r in results:
@@ -258,8 +207,7 @@ class MainServerDatabaseConnector(object):
         query = "SELECT serverId FROM VMServer WHERE serverIP = '" + nameOrIPAddress +\
              "' OR serverName = '" + nameOrIPAddress + "';"
         # Execute it
-        self.__cursor.execute(query)
-        results=self.__cursor.fetchall()
+        results=self.executeQuery(query)
         return results[0][0]
     
     def updateVMServerStatus(self, serverId, newStatus):
@@ -275,9 +223,7 @@ class MainServerDatabaseConnector(object):
         query = "UPDATE VMServer SET serverStatus=" + str(newStatus) + \
             " WHERE serverId = " + str(serverId) + ";"
         # Execute it
-        self.__cursor.execute(query)
-        # Write the changes to the database
-        self.__db.commit()   
+        self.executeUpdate(query)
         
     def getServerImages(self, serverId):
         '''
@@ -293,10 +239,8 @@ class MainServerDatabaseConnector(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT imageId FROM ImageOnServer WHERE serverId = " + str(serverId)    
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        results=self.__cursor.fetchall()
+        results=self.executeQuery(sql)
         #Guardamos en una lista los ids resultantes
         serverIds = []
         for r in results:
@@ -315,10 +259,8 @@ class MainServerDatabaseConnector(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         query = "SELECT name, Description FROM Image WHERE imageId = " + str(imageId)   
-        #Ejecutamos el comando
-        self.__cursor.execute(query)
         #Recogemos los resultado
-        result=self.__cursor.fetchone()
+        result=self.executeQuery(query, True)
         d = dict()
         d["ImageName"] = result[0]
         d["ImageDescription"] = result[1]
@@ -338,14 +280,11 @@ class MainServerDatabaseConnector(object):
         #Insertamos los datos en la base de datos
         query = "INSERT INTO Image(name,description) VALUES('" + name + "','" + description  +"') "  
         #Ejecutamos el comando
-        self.__cursor.execute(query)               
+        self.executeUpdate(query)              
         #Extraemos el id de la imagen recién creada
         query = "SELECT imageId FROM Image WHERE name ='" + name + "' AND description ='" + description +"'"  
-        self.__cursor.execute(query) 
         #Cogemos el último
-        imageId = self.__cursor.lastrowid
-        #Actualizamos la base de datos
-        self.__db.commit() 
+        imageId = self.getLastRowId(query)
         # Return the new image's id
         return imageId
     
@@ -358,10 +297,8 @@ class MainServerDatabaseConnector(object):
         '''
         #Contamos el número de imagenes con el identificador dado     
         sql = "SELECT COUNT(*) FROM Image WHERE imageId =" + str(imageId)
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        result=self.__cursor.fetchone()
+        result=self.executeQuery(sql, True)
         #Si el resultado es 1, la imagen existe
         return (result[0] == 1)
     
@@ -376,9 +313,7 @@ class MainServerDatabaseConnector(object):
         '''
         # Insert the row in the table
         query = "INSERT INTO ImageOnServer VALUES(" + str(serverID)+ "," + str(imageID)  +") "  
-        self.__cursor.execute(query)               
-        # Write the changes to the database NOW
-        self.__db.commit() 
+        self.executeUpdate(query)
         
     def setImageData(self, imageId, imageName, imageDescription):
         '''
@@ -394,9 +329,7 @@ class MainServerDatabaseConnector(object):
         query = "UPDATE Image SET name = '"  + imageName + "', description = '" + imageDescription +\
             "' WHERE imageId = " + str(imageId) + ";"
         #Ejecutamos el comando
-        self.__cursor.execute(query)
-        #Actualizamos la base de datos
-        self.__db.commit() 
+        self.executeUpdate(query)
         
     def setVMServerStatistics(self, serverID, runningHosts):
         '''
@@ -404,13 +337,11 @@ class MainServerDatabaseConnector(object):
         '''
         query = "INSERT INTO VMServerStatus VALUES(" + str(serverID) + ", " + str(runningHosts) + ");"
         try :
-            self.__cursor.execute(query)
+            self.executeUpdate(query)
         except Exception :
             query = "UPDATE VMServerStatus SET hosts = " + str(runningHosts) + " WHERE serverId = "\
                 + str(serverID) + ";"
-            self.__cursor.execute(query)
-        # Update the database NOW
-        self.__db.commit() 
+            self.executeUpdate(query)
         
     def setServerBasicData(self, serverId, name, status, IPAddress, port):
         '''
@@ -428,6 +359,4 @@ class MainServerDatabaseConnector(object):
             "serverPort = " + str(port) + ", serverStatus = " + str(status) +\
             " WHERE  serverId = " + str(serverId) + ";"
         # Execute it
-        self.__cursor.execute(query)               
-        # Update the database NOW
-        self.__db.commit() 
+        self.executeUpdate(query)
