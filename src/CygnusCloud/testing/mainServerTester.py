@@ -24,11 +24,16 @@ class TesterCallback(NetworkCallback):
             print("\t" + str(data["VMServerPort"]))
             print("\t" + data["VMServerName"])
             print("\tReason: " + data["ErrorMessage"])
-        if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
+        if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA 
+            or data["packet_type"] == PACKET_T.AVAILABLE_IMAGES_DATA) :
             print("Virtual machine servers' current status")
             print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
             for row in data["Data"] :
                 print(row)
+        if (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR):
+            print("Virtual machine server bootup error")
+            print("\tServer name or IP address: " + data["ServerNameOrIPAddress"])
+            print("\tReason: " + data["ErrorMessage"])
        
 
 def printLogo():
@@ -62,6 +67,12 @@ def process_command(tokens, networkManager, pHandler, port):
             networkManager.sendPacket(port, p)
         elif (command == "shutdownVMServer") :
             p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), True)
+            networkManager.sendPacket(port, p)
+        elif (command == "bootUpVMServer") :
+            p = pHandler.createVMServerBootUpPacket(tokens.pop(0))
+            networkManager.sendPacket(port, p)
+        elif (command == "obtainAvailableImagesData") :
+            p = pHandler.createDataRequestPacket(PACKET_T.QUERY_AVAILABLE_IMAGES)
             networkManager.sendPacket(port, p)
         elif (command == "quit") :
             return True

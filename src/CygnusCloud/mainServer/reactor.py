@@ -11,6 +11,7 @@ from database.mainServer.mainServerDB import MainServerDatabaseConnector, SERVER
 from network.manager import NetworkManager
 from packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
+from time import sleep
 
 class WebReactor(object):
     '''
@@ -55,12 +56,14 @@ class MainServerReactor(WebReactor, VMServerReactor):
         data = self.__webPacketHandler.readPacket(packet)
         if (data["packet_type"] == WEB_PACKET_T.REGISTER_VM_SERVER) :
             self.__registerVMServer(data)
-        if (data["packet_type"] == WEB_PACKET_T.QUERY_VM_SERVERS_STATUS) :
+        elif (data["packet_type"] == WEB_PACKET_T.QUERY_VM_SERVERS_STATUS) :
             self.__sendVMServerStatusData()
-        if (data["packet_type"] == WEB_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
+        elif (data["packet_type"] == WEB_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
             self.__unregisterOrShutdownVMServer(data["ServerNameOrIPAddress"], data["Halt"], data["Shut_down"])
-        if (data["packet_type"] == WEB_PACKET_T.BOOOTUP_VM_SERVER) :
+        elif (data["packet_type"] == WEB_PACKET_T.BOOTUP_VM_SERVER) :
             self.__bootUpVMServer(data["ServerNameOrIPAddress"])
+        elif (data["packet_type"] == WEB_PACKET_T.QUERY_AVAILABLE_IMAGES) :
+            self.__sendAvailableImagesData()
                 
                 
     def __registerVMServer(self, data):
@@ -69,10 +72,12 @@ class MainServerReactor(WebReactor, VMServerReactor):
             self.__networkManager.connectTo(data["VMServerIP"], data["VMServerPort"], 
                                                 20, self.__vmServerCallback, True)
             # Register the server on the database
-            self.__dbConnector.registerVMServer(data["VMServerName"], data["VMServerIP"], 
+            self.__dbConnector.subscribeVMServer(data["VMServerName"], data["VMServerIP"], 
                                                     data["VMServerPort"])
             # Command the virtual machine server to tell us its state
             p = self.__vmServerPacketHandler.createVMServerStatusRequestPacket()
+            while not self.__networkManager.isConnectionReady(data["VMServerPort"]) :
+                sleep(0.1)
             self.__networkManager.sendPacket(data["VMServerPort"], p)
         except Exception as e:                
             p = self.__webPacketHandler.createVMRegistrationErrorPacket(data["VMServerIP"], 
@@ -94,9 +99,10 @@ class MainServerReactor(WebReactor, VMServerReactor):
         
         if (shutdown) :
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
+            self.__dbConnector.deleteVMServerStatics(serverId)
         else :
             # Update the virtual machine server's state
-            self.__dbConnector.unregisterVMServer(key)   
+            self.__dbConnector.unsubscribeVMServer(key)   
             
     def __updateVMServerStatus(self, data):
         # Fetch the virtual machine server's ID
@@ -131,6 +137,9 @@ class MainServerReactor(WebReactor, VMServerReactor):
         segmentNumber = (len(serverIDs) / segmentSize)
         if (len(serverIDs) % segmentSize != 0) :
             segmentNumber += 1
+            sendLastSegment = True
+        else :
+            sendLastSegment = False
         for serverID in serverIDs :
             row = self.__dbConnector.getVMServerBasicData(serverID)
             outgoingData.append(row)
@@ -142,9 +151,39 @@ class MainServerReactor(WebReactor, VMServerReactor):
                 outgoingData = []
                 segmentCounter += 1
         # Send the last segment
-        packet = self.__webPacketHandler.createVMServerStatusPacket(segmentCounter, 
+        if (sendLastSegment) :
+            packet = self.__webPacketHandler.createVMServerStatusPacket(segmentCounter, 
                                                                             segmentNumber, outgoingData)
-        self.__networkManager.sendPacket(self.__webPort, packet)                
+            self.__networkManager.sendPacket(self.__webPort, packet)             
+        
+    def __sendAvailableImagesData(self):
+        segmentSize = 5
+        segmentCounter = 1
+        outgoingData = []
+        imageIDs = self.__dbConnector.getImageIDs();
+        if (len(imageIDs) == 0) :
+            segmentCounter = 0  
+        segmentNumber = (len(imageIDs) / segmentSize)
+        if (len(imageIDs) % segmentSize != 0) :
+            segmentNumber += 1  
+            sendLastSegment = True
+        else :
+            sendLastSegment = False
+        for imageID in imageIDs :
+            row = self.__dbConnector.getImageData(imageID)
+            outgoingData.append(row)
+            if (len(outgoingData) >= segmentSize) :
+                # Flush
+                packet = self.__webPacketHandler.createAvailableImagesPacket(segmentCounter, 
+                                                                            segmentNumber, outgoingData)
+                self.__networkManager.sendPacket(self.__webPort, packet)
+                outgoingData = []
+                segmentCounter += 1
+        # Send the last segment
+        if (sendLastSegment) :
+            packet = self.__webPacketHandler.createAvailableImagesPacket(segmentCounter, 
+                                                                            segmentNumber, outgoingData)
+            self.__networkManager.sendPacket(self.__webPort, packet) 
         
     
     def processVMServerIncomingPacket(self, packet):

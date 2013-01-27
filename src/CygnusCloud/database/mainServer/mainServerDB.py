@@ -53,6 +53,18 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         result = self.executeQuery(sql, True)
         #Si el número es 1 entonces el servidor existe
         return (result[0] == 1)
+    
+    def deleteVMServerStatics(self, serverId):
+        '''
+        Borra las estadísticas de un servidor de máquinas virtuales
+            Argumentos:
+                serverId: el identificador único del servidor
+            Devuelve:
+                Nada
+        '''
+        command = "DELETE FROM VMServerStatus WHERE serverId = " + str(serverId)
+        self.executeUpdate(command)
+        
         
     def getVMServerBasicData(self, serverId):
         '''
@@ -167,6 +179,14 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         # distinto. Una usa INNODB (VMServer) y otra usa MEMORY (VMServerStatus, que es nueva)
         query = "DELETE From VMServerStatus WHERE serverId = " + str(serverId) + ";"
         self.executeUpdate(query)
+        
+    def getImageIDs(self):
+        query = "SELECT imageId FROM Image;"
+        results = self.executeQuery(query)
+        imageIDs = []
+        for r in results:
+            imageIDs.append(r[0])
+        return imageIDs
         
     def getImageServers(self, imageId):
         '''
