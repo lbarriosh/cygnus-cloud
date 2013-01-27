@@ -237,6 +237,20 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0] 
     
+    def getAssignedVMinDomain(self,domainName):
+        '''
+            Devuelve el identificador de la máquina virtual que se encuentra en ejecución en el 
+            dominio pasado como argumento.
+        '''
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT VMId FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0] 
+    
     def getAssignedVMName(self,vncPort):
         '''
             Devuelve el nombre de la máquina virtual que se encuentra en ejecución
@@ -244,6 +258,21 @@ class RuntimeData(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.VNCPortAdress = '" + str(vncPort) + "' AND "
+        sql += "vm.VMId = av.VMId " 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0] 
+    
+    def getAssignedVMNameinDomain(self,domainName):
+        '''
+            Devuelve el nombre de la máquina virtual que se encuentra en ejecución
+             en  el puerto VNC pasado como argumento.
+        '''
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.domainName = '" + str(domainName) + "' AND "
         sql += "vm.VMId = av.VMId " 
         #Ejecutamos el comando
         self.__cursor.execute(sql)
@@ -266,12 +295,39 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0] 
     
+    def getMachineDataPathinDomain(self,domainName):
+        '''
+            Devuelve la ruta asociada a la copia de la imagen de la máquina virtual que se encuentra 
+             en ejecución en el puertoVNC pasado como argumento.
+        '''
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT imageCopyPath FROM ActualVM  WHERE domainName = '" + str(domainName) + "'"
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0] 
+    
     def getMacAdress(self,vncPort):
         '''
             Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT macAdress FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0] 
+    
+    def getMacAdressinDomain(self,domainName):
+        '''
+            Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
+        '''
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT macAdress FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos el resultado
@@ -292,12 +348,38 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0] 
     
+    def getUuidAdressinDomain(self,domainName):
+        '''
+            Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
+        '''
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT uuid FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0] 
+    
     def getPassword(self,vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VNCPass FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0]
+    
+    def getPasswordinDomain(self,domainName): 
+        '''
+            Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
+        ''' 
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT VNCPass FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
         #Ejecutamos el comando
         self.__cursor.execute(sql)
         #Recogemos el resultado
@@ -318,6 +400,19 @@ class RuntimeData(object):
         #Devolvemos el resultado
         return result[0]
     
+    def getVMPidinDomain(self,domainName): 
+        '''
+            Devuelve la contraseña que se ha dado el dominio que se le pasa como argumento.
+        ''' 
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT VMPid FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0]
+    
     def getOsImagePath(self,vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
@@ -330,6 +425,19 @@ class RuntimeData(object):
         result=self.__cursor.fetchone()
         #Devolvemos el resultado
         return result[0]
+    
+    def getOsImagePathinDomain(self,domainName): 
+        '''
+            Devuelve la contraseña que se ha dado al dominio que se le pasa como argumento.
+        ''' 
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT osImagePath FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        #Ejecutamos el comando
+        self.__cursor.execute(sql)
+        #Recogemos el resultado
+        result=self.__cursor.fetchone()
+        #Devolvemos el resultado
+        return result[0]    
     
     def getDomainName(self,vncPort): 
         '''
@@ -542,7 +650,15 @@ def main():
             port = raw_input()
             domainName = runtimeData.getDomainName(port)
             print("El nombre del dominio asociado a este puerto es:")
-            print(domainName)           
+            print(domainName)   
+        elif(prueba == '17'):
+            #nombre de la MV asociado a un puerto
+            print("Prueba 17")
+            print("Indique el nombre del dominio")
+            domainName = raw_input()
+            VMName = runtimeData.getAssignedVMNameinDomain(domainName)
+            print("La máquina virtual asociada a este dominio es:")
+            print(VMName)        
         else:
             print("Prueba no disponible.")
                
