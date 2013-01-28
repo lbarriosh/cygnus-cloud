@@ -12,6 +12,7 @@ from network.manager import NetworkManager
 from packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 from time import sleep
+from loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
 
 class WebReactor(object):
     '''
@@ -44,6 +45,7 @@ class MainServerReactor(WebReactor, VMServerReactor):
         self.__dbConnector.connect()
         
     def startListenning(self, certificatePath, port):
+        self.__loadBalancer = SimpleLoadBalancer(self.__dbConnector)
         self.__networkManager = NetworkManager(certificatePath)
         self.__webPort = port
         self.__networkManager.startNetworkService()        
@@ -64,6 +66,8 @@ class MainServerReactor(WebReactor, VMServerReactor):
             self.__bootUpVMServer(data["ServerNameOrIPAddress"])
         elif (data["packet_type"] == WEB_PACKET_T.QUERY_AVAILABLE_IMAGES) :
             self.__sendAvailableImagesData()
+        elif (data["packet_type"] == WEB_PACKET_T.VM_BOOT_REQUEST):
+            self.__bootUpVM(data["VMName"], data["UserID"])
                 
                 
     def __registerVMServer(self, data):
@@ -118,6 +122,8 @@ class MainServerReactor(WebReactor, VMServerReactor):
             # Connect to the virtual machine server
             self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 
                                                 20, self.__vmServerCallback, True)
+            while not self.__networkManager.isConnectionReady(serverData["ServerPort"]) :
+                sleep(0.1)
             # Change its status
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)
             # Send the status request
@@ -184,13 +190,33 @@ class MainServerReactor(WebReactor, VMServerReactor):
             packet = self.__webPacketHandler.createAvailableImagesPacket(segmentCounter, 
                                                                             segmentNumber, outgoingData)
             self.__networkManager.sendPacket(self.__webPort, packet) 
-        
+            
+    def __bootUpVM(self, vmName, userID):
+        # Obtain the image's ID
+        imageID = self.__dbConnector.getImageID(vmName)
+        # Choose a virtual machine server to boot it
+        (serverID, errorMessage) = self.__loadBalancer.assignVMServer(imageID)
+        if (errorMessage != None) :
+            # Something went wrong => warn the user
+            p = self.__webPacketHandler.createVMBootFailurePacket(vmName, userID, errorMessage)
+            self.__networkManager.sendPacket(self.__webPort, p)
+        else :
+            # Ask the virtual machine server to boot up the VM
+            p = self.__vmServerPacketHandler.createVMBootPacket(imageID, userID)
+            port = self.__dbConnector.getVMServerBasicData(serverID)["ServerPort"]
+            self.__networkManager.sendPacket(port, p)    
     
     def processVMServerIncomingPacket(self, packet):
         data = self.__vmServerPacketHandler.readPacket(packet)
         if (data["packet_type"] == VMSRVR_PACKET_T.SERVER_STATUS) :
             self.__updateVMServerStatus(data)
-        
+        elif (data["packet_type"] == VMSRVR_PACKET_T.DOMAIN_CONNECTION_DATA) :
+            self.__sendVMConnectionData(data)
+            
+    def __sendVMConnectionData(self, data):
+        p = self.__webPacketHandler.createVMConnectionDataPacket(data["UserID"], data["VNCServerIP"], 
+                                                                 data["VNCServerPort"], data["VNCServerPassword"])
+        self.__networkManager.sendPacket(self.__webPort, p)        
     
     def hasFinished(self):
         return self.__finished

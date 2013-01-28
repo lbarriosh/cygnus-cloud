@@ -34,6 +34,17 @@ class TesterCallback(NetworkCallback):
             print("Virtual machine server bootup error")
             print("\tServer name or IP address: " + data["ServerNameOrIPAddress"])
             print("\tReason: " + data["ErrorMessage"])
+        if (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE):
+            print("Virtual machine boot failure")
+            print("\tMachine name: " + data["VMName"])
+            print("\tUser ID: " + str(data["UserID"]))
+            print("\tReason: " + data["ErrorMessage"])
+        if (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
+            print("Virtual machine connection data")
+            print("\tUser ID: " + str(data["UserID"]))
+            print("\tVNC server IP address: " + data["VNCServerIPAddress"])
+            print("\tVNC server port: " + str(data["VNCServerPort"]))
+            print("\tVNC server password: " + data["VNCServerPassword"])
        
 
 def printLogo():
@@ -74,6 +85,9 @@ def process_command(tokens, networkManager, pHandler, port):
         elif (command == "obtainAvailableImagesData") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_AVAILABLE_IMAGES)
             networkManager.sendPacket(port, p)
+        elif (command == "bootUpVM") :
+            p = pHandler.createVMBootRequestPacket(tokens.pop(0), long(tokens.pop(0)))
+            networkManager.sendPacket(port, p)
         elif (command == "quit") :
             return True
         elif (command == "help") :
@@ -90,6 +104,10 @@ def displayHelpMessage():
     print("\tregisterVMServer <IP> <Port> <Name>: registers a virtual machine server")
     print("\tobtainVMServerStatus: obtains all the virtual machine server's status")
     print("\tunregisterVMServer <Name or IP> <Halt?>: unregisters a virtual machine server")
+    print("\tshutdownVMServer <Name or IP> <Halt?>: shuts down a virtual machine server")
+    print("\tbootUpVMServer <Name or IP>: boots up a virtual machine server")
+    print("\tobtainAvailableImagesData: shows available images' data")
+    print("\tbootUpVM <Name> <UserID>: boots up a virtual machine")
     print("\tquit: closes this application")
     
 

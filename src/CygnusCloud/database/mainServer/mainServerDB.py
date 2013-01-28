@@ -1,5 +1,4 @@
 # -*- coding: UTF8 -*-
-import MySQLdb
 
 from utils.enums import enum
 from database.utils.connector import BasicDatabaseConnector
@@ -307,6 +306,18 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         imageId = self.getLastRowId(query)
         # Return the new image's id
         return imageId
+    
+    def getImageID(self, imageName):
+        '''
+        Devuelve el identificador único de una imagen a partir de su nombre
+        Argumentos:
+            imageName: el nombre de la imagen
+        Devuelve:
+            el identificador único de la imagen
+        '''
+        query = "SELECT imageID FROM Image WHERE name = '" + imageName + "';"
+        result = self.executeQuery(query, True)
+        return result[0]
     
     def isImageExists(self,imageId):   
         '''
