@@ -3,7 +3,6 @@ import MySQLdb
 import os
 import unittest
 
-
 from database.webServer.userAccess import UserAccess
 from database.webServer.userManagement import UserManagement
 from database.utils.configuration import DBConfigurator
