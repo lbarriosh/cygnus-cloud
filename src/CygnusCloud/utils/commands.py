@@ -39,10 +39,7 @@ def runCommandInBackground(cmd):
     Returns:
         cmd's command
     """
-    print "Ejecutando: " 
-    for l in cmd:
-        print l
-    p = Popen(cmd, shell=False, close_fds=True)
+    p = Popen(cmd, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     return p.pid
 
 def runCommandAsRoot(cmd, ExceptionClass):
