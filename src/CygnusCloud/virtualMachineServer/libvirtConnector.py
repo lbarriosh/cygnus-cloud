@@ -58,7 +58,7 @@ class libvirtConnector():
         pass
     def __stoppedHandler(self, domain):
         print("__stoppedHandler " + domain.name())
-        domainInfo = {"name" : domain.name}
+        domainInfo = {"name" : domain.name()}
         self.__shutdownCallback(domainInfo)
         pass
     def __shutdownHandler(self, domain):
@@ -76,6 +76,7 @@ class libvirtConnector():
                       "VNCport" : int(port),
                       "VNCip" : ip,
                       "VNCpassword" : password}
+        print domainInfo["name"]
         self.__startCallback(domainInfo)
     
     def startDomain(self, xmlConfig):

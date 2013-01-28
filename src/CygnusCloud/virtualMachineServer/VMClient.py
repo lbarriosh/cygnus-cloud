@@ -14,10 +14,9 @@ from database.VMServerDB.ImageManager import ImageManager
 from database.VMServerDB.RuntimeData import RuntimeData
 from virtualNetwork.VirtualNetworkManager import VirtualNetworkManager
 
-from utils.commands import runCommand, runCommandBackground
+from utils.commands import runCommand, runCommandInBackground
 from time import sleep
 import os
-from os import path
 
 class VMClientException(Exception):
     pass
@@ -56,16 +55,16 @@ class VMClient(NetworkCallback):
             self.__shutdown()
 
         name = domainInfo["name"]
-        dataPath = self.__runningImageData.getMachineDataPath(name)
-        osPath = self.__runningImageData.getOsImagePath(name)
-        pidToKill = self.__runningImageData.getVMPid(name)
+        dataPath = self.__runningImageData.getMachineDataPathinDomain(name)
+        osPath = self.__runningImageData.getOsImagePathinDomain(name)
+        pidToKill = self.__runningImageData.getVMPidinDomain(name)
         
         # Delete the virtual machine images disk
         runCommand("rm " + dataPath, VMClientException)
         runCommand("rm " + osPath, VMClientException)
         
         # Kill websockify process
-        runCommand("kill " + str(pidToKill), VMClientException)
+        runCommand("kill -s TERM " + str(pidToKill), VMClientException)
         
         # Update the database
         self.__runningImageData.unRegisterVMResources(name)
@@ -78,7 +77,6 @@ class VMClient(NetworkCallback):
     def processPacket(self, packet):
         packetType = self.__packetManager.readPacket(packet)
         print "paquete recibido " + str(packetType['packet_type'])
-        print  VM_SERVER_PACKET_T.HALT
         processPacket = {
             VM_SERVER_PACKET_T.CREATE_DOMAIN: self.__createDomain, 
             VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST: self.__serverStatusRequest,
@@ -134,9 +132,9 @@ class VMClient(NetworkCallback):
         # Inicio el websockify
         # Los puertos impares (por ejemplo) serán para KVM 
         # y los pares los websockets
-        pidWS = runCommandBackground("python " + websockifyPath + " " 
-                    + websocketServerIP + ":" + str(newPort + 1) + " " 
-                    + serverIP + ":" + str(newPort))
+        pidWS = runCommandInBackground([websockifyPath,
+                    websocketServerIP + ":" + str(newPort + 1),
+                    serverIP + ":" + str(newPort)])
         
         # Actualizo la base de datos
         self.__runningImageData.registerVMResources(newName, newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
