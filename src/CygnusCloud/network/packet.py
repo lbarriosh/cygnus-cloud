@@ -111,7 +111,10 @@ class _Packet(object):
             PacketException: these exceptions will be raised when type errors are detected
                 and when the packet has not enough room to hold the value.
         """
-        self.__commonWriteCode(value, bool, "bool", True)
+        if (value) :
+            self.writeInt(1)
+        else :
+            self.writeInt(0)
         
     def readInt(self):
         """
@@ -150,7 +153,7 @@ class _Packet(object):
             PacketException: this exceptions will be raised when the value cannot be read
             from the packet.
         """
-        return self.__commonReadCode("bool", bool)
+        return self.readInt() == 1
         
     def readString(self):
         """
@@ -304,8 +307,8 @@ class _Packet(object):
             raise PacketException("The given value is not an " + self.__extractTypeName(str(dataType)) + " instance")
         dataToAdd = str(value)
         newLength = len(self.__data) + len(field) + len(dataToAdd) + 2
-        if (newLength > 16000):
-            # The maximum length is 16383 bytes. 383 bytes are reserved for the packet header.
+        if (newLength > 65000):
+            # The maximum TCP segment length is 65536 bytes. 536 bytes are reserved for the packet header.
             raise PacketException("There\'s not enough space to hold a " + self.__extractTypeName(str(dataType))\
                                    + " value")
         self.__data += field + '·' + dataToAdd + '·'

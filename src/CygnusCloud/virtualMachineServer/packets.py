@@ -90,7 +90,7 @@ class VMServerPacketHandler(object):
             A packet with the specified data
         """
         p = self.__packetCreator.createPacket(3)
-        p.writeInt(VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN)
+        p.writeInt(VM_SERVER_PACKET_T.HALT)
         return p
     
     
@@ -114,11 +114,11 @@ class VMServerPacketHandler(object):
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
         if (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
-            result["VNCServerIP"] = p.readString()
+            result["VMServerIP"] = p.readString()
             result["ActiveDomains"] = p.readInt()
         if (packet_type == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN or\
             packet_type == VM_SERVER_PACKET_T.HALT or \
             packet_type == VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST):
-           pass
+            pass
         return result
         

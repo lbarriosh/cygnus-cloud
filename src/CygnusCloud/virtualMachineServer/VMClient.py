@@ -10,12 +10,13 @@ from libvirtConnector import libvirtConnector
 from Constantes import *
 from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from xmlEditor import ConfigurationFileEditor
-from database.VMServerDB.ImageManager import ImageManager
-from database.VMServerDB.RuntimeData import RuntimeData
+from database.vmServer.imageManager import ImageManager
+from database.vmServer.runtimeData import RuntimeData
 from virtualNetwork.VirtualNetworkManager import VirtualNetworkManager
 
-from utils.commands import runCommand, runCommandBackground
+from utils.commands import runCommand, runCommandInBackground
 from time import sleep
+import os
 
 class VMClientException(Exception):
     pass
@@ -46,7 +47,7 @@ class VMClient(NetworkCallback):
         ip = domainInfo["VNCip"]
         port = domainInfo["VNCport"]
         password = domainInfo["VNCpassword"]
-        packet = self.__packetManager.createVMConnectionParametersPacket(ip, port+1, password)
+        packet = self.__packetManager.createVMConnectionParametersPacket(ip, port + 1, password)
         self.__networkManager.sendPacket(serverPort, packet)
         
     def __stoppedVM(self, domainInfo):
@@ -54,27 +55,28 @@ class VMClient(NetworkCallback):
             self.__shutdown()
 
         name = domainInfo["name"]
-        dataPath = self.__runningImageData.getMachineDataPath(name)
-        osPath = self.__runningImageData.getOsImagePath(name)
-        pidToKill = self.__runningImageData.getVMPid(name)
+        dataPath = self.__runningImageData.getMachineDataPathinDomain(name)
+        osPath = self.__runningImageData.getOsImagePathinDomain(name)
+        pidToKill = self.__runningImageData.getVMPidinDomain(name)
         
         # Delete the virtual machine images disk
         runCommand("rm " + dataPath, VMClientException)
         runCommand("rm " + osPath, VMClientException)
         
         # Kill websockify process
-        runCommand("kill " + str(pidToKill), VMClientException)
+        runCommand("kill -s TERM " + str(pidToKill), VMClientException)
         
         # Update the database
         self.__runningImageData.unRegisterVMResources(name)
     
     def __shutdown(self):
-        # TODO: Destruir todos los dominios
+        # Cosas a hacer cuando se desea apagar el servidor
+        #self.__virtualNetwork.destroyVirtualNetwork(VNName)
         pass
         
     def processPacket(self, packet):
-        print "paquete recibido"
         packetType = self.__packetManager.readPacket(packet)
+        print "paquete recibido " + str(packetType['packet_type'])
         processPacket = {
             VM_SERVER_PACKET_T.CREATE_DOMAIN: self.__createDomain, 
             VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST: self.__serverStatusRequest,
@@ -100,32 +102,43 @@ class VMClient(NetworkCallback):
         sourceDataDisk = SourceImagePath + dataPath
         sourceOSDisk = SourceImagePath + osPath        
         
-        # Fichero de configuracion
-        xmlFile = ConfigurationFileEditor(configFile)
-        xmlFile.setDomainIdentifiers(newName, newUUID)
-        xmlFile.setImagePaths(newOSDisk, newDataDisk)
-        xmlFile.setNetworkConfiguration(VNName, newMAC)
-        xmlFile.setVNCServerConfiguration(serverIP, newPort, newPassword)
+        # Preparo los archivos
                 
+        # Compruebo si ya existe alguno de los archivos
+        if (os.path.exists(newDataDisk)):
+            print("The file " + newDataDisk + " already exist")
+            return
+        if (os.path.exists(newOSDisk)):
+            print("The file " + newOSDisk + " already exist")
+            return
         # Copio las imagenes
         runCommand("cd " + SourceImagePath + ";" + "cp --parents "+ dataPath + " " + ExecutionImagePath, VMClientException)
         runCommand("mv " + ExecutionImagePath + dataPath +" " + newDataDisk, VMClientException)
         runCommand("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMClientException)
         #runCommand("chmod -R 777 " + ExecutionImagePath, VMClientException)
         
-        # Inicio el websockify
-        # Los puertos impares (por ejemplo) serán para KVM 
-        # y los pares los websockets
-        pidWS = 0
-        #pidWS = runCommandBackground("python " + websockifyPath + " " 
-        #            + websocketServerIP + ":" + str(newPort + 1) + " " 
-        #            + serverIP + ":" + str(newPort))
-        # Actualizo la base de datos
-        self.__runningImageData.registerVMResources(newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
+        # Fichero de configuracion
+        xmlFile = ConfigurationFileEditor(configFile)
+        xmlFile.setDomainIdentifiers(newName, newUUID)
+        xmlFile.setImagePaths(newOSDisk, newDataDisk)
+        xmlFile.setNetworkConfiguration(VNName, newMAC)
+        xmlFile.setVNCServerConfiguration(serverIP, newPort, newPassword)
         
         string = xmlFile.generateConfigurationString()
         
+        # Arranco la máquina
         self.__connector.startDomain(string)
+        
+        # Inicio el websockify
+        # Los puertos impares (por ejemplo) serán para KVM 
+        # y los pares los websockets
+        pidWS = runCommandInBackground([websockifyPath,
+                    websocketServerIP + ":" + str(newPort + 1),
+                    serverIP + ":" + str(newPort)])
+        
+        # Actualizo la base de datos
+        self.__runningImageData.registerVMResources(newName, newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
+        
     
     def __serverStatusRequest(self, packet):
         activeDomains = self.__connector.getNumberOfDomains()
@@ -136,9 +149,9 @@ class VMClient(NetworkCallback):
         self.__waitForShutdown = True
     
     def __halt(self, packet):
-        # TODO:
-        self.__virtualNetwork.destroyVirtualNetwork(VNName)
-        pass
+        # Destruyo los dominios
+        self.__connector.stopAllDomain()
+        self.__shutdown()
     
     def __getNewMAC_UUID(self):
         return self.__runningImageData.extractfreeMacAndUuid()
