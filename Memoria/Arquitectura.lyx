@@ -65,5 +65,316 @@
 Arquitectura del sistema
 \end_layout
 
+\begin_layout Section
+Introducción
+\end_layout
+
+\begin_layout Standard
+En este capítulo presentaremos una visión general de la arquitectura de
+ 
+\emph on
+CygnusCloud
+\emph default
+.
+ Para facilitar su comprensión, hemos intentado que la claridad prevalezca
+ a la hora de exponer los distintos conceptos y decisiones de diseño.
+ Por ello, evitaremos a toda costa realizar descripciones exhaustivas de
+ todas y cada una de las clases y de sus distintos atributos.
+ Si el lector desea conocer con total precisión qué atributos y qué métodos
+ tiene cada clase, cómo se comporta cierto método o cuál es la finalidad
+ de un determinado atributo, le remitimos al código fuente, extensamente
+ comentado.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, en este capítulo también prestaremos especial atención a
+ las decisiones de diseño que hemos tomado ya que, a nuestro parecer, son
+ fundamentales para comprender el funcionamiento del sistema, sus ventajas
+ y sus limitaciones.
+\end_layout
+
+\begin_layout Subsection
+Visión general
+\end_layout
+
+\begin_layout Standard
+Los contenidos de este capítulo se agrupan en las siguientes secciones:
+\end_layout
+
+\begin_layout Enumerate
+La presente 
+\series bold
+introducción
+\series default
+.
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+Objetivos de la arquitectura y restricciones
+\series default
+.
+ En esta sección expondremos todos los objetivos que se tuvieron al diseñar
+ 
+\emph on
+CygnusCloud
+\emph default
+, y también recopilaremos las restricciones con las que hemos tenido que
+ tratar a lo largo de todo el proceso de diseño.
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+Vista lógica
+\series default
+.
+ En esta sección, mostraremos cómo las funciones de cada subsistema se distribuy
+en entre sus distintos módulos con la ayuda de un diagrama de paquetes.
+ Además, utilizaremos diagramas de clase y diagramas de secuencia para exponer
+ las responsabilidades de cada elemento significativo de la arquitectura
+ y sus relaciones con el resto de componentes de la misma.
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+Vista de procesos
+\series default
+.
+ En ella mostraremos el funcionamiento de cada subsistema desde el punto
+ de vista de los procesos ligeros o 
+\emph on
+threads
+\emph default
+, y también discutiremos el cometido de los mismos.
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+Vista de despliegue
+\series default
+.
+ En esta sección mostraremos cómo se distribuyen los distintos subsistemas
+ que forman parte de 
+\emph on
+CygnusCloud
+\emph default
+ entre las distintas máquinas que forman parte de la infraestructura utilizada.
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+Vista de implementación
+\series default
+.
+ Concluiremos el presente capítulo con esta sección, en la que describiremos
+ los componentes que se distribuyen con cada subsistema.
+\end_layout
+
+\begin_layout Subsection
+Sobre los diagramas UML de este documento
+\end_layout
+
+\begin_layout Standard
+Para que el aumento del tamaño de los diagramas UML en un lector de ficheros
+ PDF no suponga una pérdida de calidad de los mismos, hemos procurado incrustarl
+os en este documento como ficheros 
+\family typewriter
+.pdf
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+El comando de 
+\emph on
+IBM Rational Software Architect 7.5
+\emph default
+ que los genera usa degradados para mejorar la presentación de los diagramas
+ de clase y de los diagramas de paquetes, haciendo que los elementos que
+ aparecen en la parte superior del diagrama sean más oscuros que los que
+ aparecen en la parte inferior del mismo.
+\end_layout
+
+\begin_layout Standard
+En cualquier caso, este efecto 
+\emph on
+no
+\emph default
+ tiene asociado ningún tipo de significado en los diagramas.
+\end_layout
+
+\begin_layout Section
+Objetivos de la arquitectura y restricciones
+\end_layout
+
+\begin_layout Standard
+En esta sección describiremos todos los objetivos que consideramos a la
+ hora de diseñar la arquitectura, así como las restricciones que hemos tenido
+ en cuenta a lo largo de todo el proceso de diseño.
+\end_layout
+
+\begin_layout Subsection
+Objetivos
+\end_layout
+
+\begin_layout Standard
+Con 
+\emph on
+CygnusCloud
+\emph default
+ no sólo queremos proporcionar a los estudiantes de la Facultad de Informática
+ más laboratorios en los que trabajar: también queremos ofrecer una alternativa
+ viable para que cualquier alumno pueda sacar el máximo partido a cualquier
+ aula de informática infrautilizada del campus.
+ Por ello, la 
+\emph on
+escalabilidad 
+\emph default
+es una característica fundamental del diseño: utilizando más servidores
+ y más ancho de banda, es posible que 
+\emph on
+CygnusCloud
+\emph default
+ atienda a un mayor número de usuarios.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, para que alumnos y profesores de cualquier titulación sean capaces
+ de utilizar 
+\emph on
+CygnusCloud 
+\emph default
+en cualquier aula de informática, nuestro sistema debe ser 
+\emph on
+fácil de usar
+\emph default
+, y también debe poder utilizarse sin necesidad de instalar 
+\emph on
+software
+\emph default
+ en dichas aulas.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, considerando la actual situación de crisis económica, también
+ deseamos que 
+\emph on
+CygnusCloud
+\emph default
+ sirva para mostrar cómo sacar el máximo partido a los recursos informáticos
+ existentes en la Universidad.
+ Así, 
+\emph on
+CygnusCloud
+\emph default
+ debe poder implantarse con 
+\emph on
+coste cero
+\emph default
+, lo que nos ha obligado a buscar la 
+\emph on
+eficiencia
+\emph default
+ a la hora de diseñarlo.
+\end_layout
+
+\begin_layout Standard
+Finalmente, dado que el desarrollo de 
+\emph on
+CygnusCloud 
+\emph default
+sólo se extiende a lo largo de un curso académico, también queremos que
+ cualquiera que lo desee pueda continuarlo.
+ Por ello, hemos procurado que nuestro diseño también se caracterice por
+ su 
+\emph on
+simplicidad
+\emph default
+: en todos los procesos se sigue siempre una secuencia de pasos muy marcados,
+ que sólo varía en función de las características de las máquinas que intervenga
+n.
+\end_layout
+
+\begin_layout Subsection
+Restricciones
+\end_layout
+
+\begin_layout Standard
+Tal y como mencionamos en el apartado anterior, 
+\emph on
+CygnusCloud
+\emph default
+ debe poder implantarse con coste cero.
+ Para ello, es imprescindible construir este sistema con 
+\emph on
+software
+\emph default
+ gratuito.
+ Como los hipervisores deben instalarse en un sistema operativo en concreto,
+ que tiene que ser gratuito, esto ha impuesto la primera restricción importante:
+ la 
+\emph on
+dependencia de la plataforma GNU/Linux
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Y dado que existe una ingente cantidad de distribuciones 
+\emph on
+GNU/Linux
+\emph default
+ que pueden requerir procedimientos de configuración diferentes, es fundamental
+ utilizar mecanismos estándar para interactuar con los hipervisores y, a
+ ser posible, lenguajes interpretados, para garantizar que nuestro sistema
+ funcione sin problemas en cualquier sistema 
+\emph on
+GNU/Linux
+\emph default
+.
+ Esto ha impuesto una doble restricción: 
+\end_layout
+
+\begin_layout Itemize
+el uso obligatorio de la librería 
+\emph on
+libvirt 
+\emph default
+para interactuar con los hipervisores y configurar las redes virtuales.
+\end_layout
+
+\begin_layout Itemize
+el uso de un lenguaje de tipo interpretado, como Java o Python, como principal
+ lenguaje de programación.
+\end_layout
+
+\begin_layout Standard
+Finalmente, debido a las incompatibilidades entre los formatos de paquete
+ hemos tenido que utilizar la misma librería de red para comunicar todos
+ los sistemas que componen 
+\emph on
+CygnusCloud
+\emph default
+.
+ Además, para reducir la complejidad de nuestro sistema hemos utilizado
+ el mismo lenguaje de programación principal en todos los subsistemas, lo
+ que ha restringido significativamente el número de 
+\emph on
+frameworks
+\emph default
+ que hemos podido considerar para implementar la página 
+\emph on
+web
+\emph default
+.
+\end_layout
+
 \end_body
 \end_document
