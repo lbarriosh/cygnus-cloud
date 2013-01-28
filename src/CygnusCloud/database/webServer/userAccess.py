@@ -23,7 +23,7 @@ class UserAccess(BasicDatabaseConnector):
         sql = "SELECT * FROM Users WHERE name ='" + name + "'" 
              
         #Recogemos los resultado
-        result=self.executeQuery(sql, True)
+        result=self._executeQuery(sql, True)
         
         #Comprobamos si ha encontrado el usuario
         if(result != tuple()):

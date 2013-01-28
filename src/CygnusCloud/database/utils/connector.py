@@ -59,7 +59,7 @@ class BasicDatabaseConnector(object):
         self.__cursor.close()
         self.__db.close()
         
-    def executeUpdate(self, command):
+    def _executeUpdate(self, command):
         '''
         Ejecuta una actualización sobre la base de datos
         Argumentos:
@@ -76,7 +76,7 @@ class BasicDatabaseConnector(object):
         '''
         self.__db.commit() 
         
-    def executeQuery(self, command, pickOneResult=False):
+    def _executeQuery(self, command, pickOneResult=False):
         '''
         Ejecuta una consulta en la base de datos.
         Argumentos:

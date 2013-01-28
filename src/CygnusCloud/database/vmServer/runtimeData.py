@@ -1,25 +1,21 @@
 # -*- coding: UTF8 -*-
 import MySQLdb
 
+from database.utils.connector import BasicDatabaseConnector
 
-class RuntimeData(object):
+class RuntimeData(BasicDatabaseConnector):
     '''
         Esta clase se encargará de gestionar las características de las diferentes 
-         máquinas virtuales que se encuentran en ejecución en un momento determinado.
-         Además también se encargará de registrar en la base de datos las nuevas máquinas 
-         virtuales en ejecución y de dar de baja aquellas máquinas que se apaguen.
+        máquinas virtuales que se encuentran en ejecución en un momento determinado.
+        Además también se encargará de registrar en la base de datos las nuevas máquinas 
+        virtuales en ejecución y de dar de baja aquellas máquinas que se apaguen.
     '''
     def __init__(self,sqlUser,sqlPass,databaseName):
         '''
             Constructora de la clase
         '''
-        #Guardamos los atributos de conexión necesarios
-        self.__sqlUser = sqlUser
-        self.__sqlPass = sqlPass
-        self.__databaseName = databaseName
-        # Nos conectamos a MySql 
-        self.__db = self.connect()
-        self.__cursor = self.__db.cursor()
+        BasicDatabaseConnector.__init__(self, sqlUser, sqlPass, databaseName)
+        self.connect()
         #Llamamos a la función encargada de generar las MACS
         self.generateInitMacsAndUuids()
         self.generateVNCPorts()
@@ -30,11 +26,11 @@ class RuntimeData(object):
         '''
         sql = "DROP TABLE IF EXISTS freeMacs" 
         #Ejecutamos el comando
-        self.__cursor.execute(sql)  
+        self._executeUpdate(sql)  
         #Creamos la tabla necesaria
         sql = "CREATE TABLE IF NOT EXISTS freeMacs(UUID VARCHAR(40) ,MAC VARCHAR(20),PRIMARY KEY(UUID,MAC))"
         #Ejecutamos el comando
-        self.__cursor.execute(sql)
+        self._executeUpdate(sql)
         #Generamos el relleno
         v = 0
         #Generamos el bucle
@@ -46,12 +42,10 @@ class RuntimeData(object):
             #Creamos la consulta   
             sql = "INSERT INTO freeMacs VALUES (UUID(),'" + '2C:00:00:00:00:' +  x + "');"
             #Ejecutamos el comando
-            self.__cursor.execute(sql)
+            self._executeUpdate(sql)
             #incrementamos el contador
             v = v + 1
             
-        #Actualizamos la base de datos
-        self.__db.commit() 
         
     def generateVNCPorts(self): 
         '''
@@ -59,11 +53,11 @@ class RuntimeData(object):
         '''
         sql = "DROP TABLE IF EXISTS freeVNCPorts" 
         #Ejecutamos el comando
-        self.__cursor.execute(sql)  
+        self._executeUpdate(sql)  
         #Creamos la tabla necesaria
         sql = "CREATE TABLE IF NOT EXISTS freeVNCPorts(VNCPort INTEGER PRIMARY KEY)"
         #Ejecutamos el comando
-        self.__cursor.execute(sql)
+        self._executeUpdate(sql)
         #Generamos el relleno
         p = 15000
         v = 0
@@ -72,13 +66,10 @@ class RuntimeData(object):
             #Creamos la consulta   
             sql = "INSERT INTO freeVNCPorts VALUES ('" + str(p) + "');"
             #Ejecutamos el comando
-            self.__cursor.execute(sql)
+            self._executeUpdate(sql)
             #incrementamos el contador
             p = p + 2
             v = v + 1
-            
-        #Actualizamos la base de datos
-        self.__db.commit() 
         
     def extractfreeMacAndUuid(self):
         '''
@@ -87,18 +78,15 @@ class RuntimeData(object):
         '''
         #Creamos la cosulta
         sql = "SELECT * FROM freeMacs"
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Nos quedamos con la primera ocurrencia
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         
         #Eliminamos este resultado de la tabla
         sql = "DELETE FROM freeMacs WHERE UUID = '" + result[0] + "' AND MAC ='" + result[1] + "'"
         #Ejecutamos el comando
-        self.__cursor.execute(sql)
+        self._executeUpdate(sql)
         #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
         #Actualizamos la base de datos
-        self.__db.commit() 
         
         #Devolvemos una tupla con la UUID y la MAC
         return (result[0],result[1])
@@ -110,9 +98,7 @@ class RuntimeData(object):
         #Creamso la consulta
         sql = "INSERT INTO freeMacs VALUES ('" + UUID +"','" + MAC + "')"
         #Ejecutamos el comando
-        self.__cursor.execute(sql)
-        #Actualizamos la base de datos
-        self.__db.commit() 
+        self._executeUpdate(sql)
         
     def extractfreeVNCPort(self):
         '''
@@ -121,18 +107,15 @@ class RuntimeData(object):
         '''
         #Creamos la cosulta
         sql = "SELECT * FROM freeVNCPorts"
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Nos quedamos con la primera ocurrencia
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         
         #Eliminamos este resultado de la tabla
         sql = "DELETE FROM freeVNCPorts WHERE VNCPort = '" + str(result[0]) + "'"
         #Ejecutamos el comando
-        self.__cursor.execute(sql)
+        self._executeUpdate(sql)
         #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
         #Actualizamos la base de datos
-        self.__db.commit() 
         
         #Devolvemos el puerto
         return result[0]
@@ -144,32 +127,7 @@ class RuntimeData(object):
         #Creamso la consulta
         sql = "INSERT INTO freeVNCPorts VALUES ('" + str(VNCPort) + "')"
         #Ejecutamos el comando
-        self.__cursor.execute(sql)
-        #Actualizamos la base de datos
-        self.__db.commit() 
-        
-        
-    def connect(self):
-        '''
-            Establece la conexión con MySql
-        '''
-        # Nos conectamos a MySql 
-        db=MySQLdb.connect(host='localhost',user= self.__sqlUser,passwd= self.__sqlPass)
-        cursor=db.cursor()
-        #Cambiamos a la base de datos indicada
-        sql = "USE " + self.__databaseName     
-        #Ejecutamos el comando
-        cursor.execute(sql)
-        #devolvemos el cursor
-        return db
-    
-    def disconnect(self):
-        '''
-            Cierra la conexión con MySql
-        '''
-        #cerramos las conexiones
-        self.__cursor.close()
-        self.__db.close()
+        self._executeUpdate(sql)
         
     def showVMs(self):
         '''
@@ -177,10 +135,8 @@ class RuntimeData(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT * FROM ActualVM" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        results=self.__cursor.fetchall()
+        results=self._executeQuery(sql, False)
         #Mostramos los resultados
         for r in results:
             print(r)        
@@ -193,10 +149,8 @@ class RuntimeData(object):
         ''' 
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VNCPortAdress FROM ActualVM" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        results=self.__cursor.fetchall()
+        results=self._executeQuery(sql, True)
         #Guardamos en una lista los ids resultantes
         ports = []
         for r in results:
@@ -212,10 +166,8 @@ class RuntimeData(object):
         ''' 
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT userId FROM ActualVM" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        results=self.__cursor.fetchall()
+        results=self._executeQuery(sql, True)
         #Guardamos en una lista los ids resultantes
         users = []
         for r in results:
@@ -230,10 +182,8 @@ class RuntimeData(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VMId FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0] 
     
@@ -244,10 +194,8 @@ class RuntimeData(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VMId FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0] 
     
@@ -259,10 +207,8 @@ class RuntimeData(object):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.VNCPortAdress = '" + str(vncPort) + "' AND "
         sql += "vm.VMId = av.VMId " 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0] 
     
@@ -274,10 +220,8 @@ class RuntimeData(object):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.domainName = '" + str(domainName) + "' AND "
         sql += "vm.VMId = av.VMId " 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0] 
     
@@ -288,10 +232,8 @@ class RuntimeData(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT imageCopyPath FROM ActualVM  WHERE VNCPortAdress = '" + str(vncPort) + "'"
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0] 
     
@@ -302,10 +244,8 @@ class RuntimeData(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT imageCopyPath FROM ActualVM  WHERE domainName = '" + str(domainName) + "'"
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0] 
     
@@ -315,10 +255,8 @@ class RuntimeData(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT macAdress FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0] 
     
@@ -328,10 +266,8 @@ class RuntimeData(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT macAdress FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0] 
     
@@ -341,23 +277,19 @@ class RuntimeData(object):
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT uuid FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0] 
     
-    def getUuidAdressinDomain(self,domainName):
+    def getUuidAdressInDomain(self,domainName):
         '''
             Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
         '''
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT uuid FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0] 
     
@@ -367,10 +299,8 @@ class RuntimeData(object):
         ''' 
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VNCPass FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0]
     
@@ -380,10 +310,8 @@ class RuntimeData(object):
         ''' 
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VNCPass FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0]
     
@@ -393,10 +321,8 @@ class RuntimeData(object):
         ''' 
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VMPid FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0]
     
@@ -406,10 +332,8 @@ class RuntimeData(object):
         ''' 
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VMPid FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0]
     
@@ -419,10 +343,8 @@ class RuntimeData(object):
         ''' 
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT osImagePath FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuerY(sql, True)
         #Devolvemos el resultado
         return result[0]
     
@@ -432,10 +354,8 @@ class RuntimeData(object):
         ''' 
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT osImagePath FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0]    
     
@@ -445,10 +365,8 @@ class RuntimeData(object):
         ''' 
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT domainName FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos el resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Devolvemos el resultado
         return result[0]
     
@@ -464,9 +382,7 @@ class RuntimeData(object):
         sql +=  imageCopyPath + "','" + osImagePath + "','" + mac + "','" + uuid + "','"
         sql +=  password + "')"  
         #Ejecutamos el comando
-        self.__cursor.execute(sql)  
-        #Actualizamos la base de datos
-        self.__db.commit()              
+        self._executeUpdate(sql)        
         #devolvemos el puerto en el que ha sido creado
         return vncPort 
     
@@ -478,10 +394,9 @@ class RuntimeData(object):
         #Borramos la máquina virtual
         sql = "DELETE FROM ActualVM WHERE domainName = '" + str(domainName) + "'"
         #Ejecutamos el comando
-        self.__cursor.execute(sql)
+        self._executeUpdate(sql)
         #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
         #Actualizamos la base de datos
-        self.__db.commit() 
         
     def isVMExists(self,port):   
         '''
@@ -489,10 +404,8 @@ class RuntimeData(object):
         '''
         #Contamos el número de máquinas virtuales asociadas al puerto VNC dado     
         sql = "SELECT COUNT(*) FROM ActualVM WHERE VNCPortAdress =" + str(port)
-        #Ejecutamos el comando
-        self.__cursor.execute(sql)
         #Recogemos los resultado
-        result=self.__cursor.fetchone()
+        result=self._executeQuery(sql, True)
         #Si el resultado es 1, la MV existirá
         return (result[0] == 1) 
         

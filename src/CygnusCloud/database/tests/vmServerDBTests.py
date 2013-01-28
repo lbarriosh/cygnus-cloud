@@ -4,9 +4,9 @@ import MySQLdb
 import os
 import unittest
 
-from database.VMServerDB.ImageManager import ImageManager
-from database.VMServerDB.RuntimeData import RuntimeData
-from database.DBUtils.DBUtils import DBUtils
+from database.vmServer.imageManager import ImageManager
+from database.vmServer.runtimeData import RuntimeData
+from database.utils.configuration import DBConfigurator
 
 class DBWebServerTests(unittest.TestCase):
     '''
@@ -129,7 +129,7 @@ class DBWebServerTests(unittest.TestCase):
         
 if __name__ == "__main__":
     #Cargamos el script de prueba
-    dbUtils = DBUtils(os.getcwd() + "/DBVMServerTest.sql")
-    dbUtils.initMySqlUser("CygnusCloud","cygnuscloud2012")
-    dbUtils.loadScript("CygnusCloud","cygnuscloud2012")     
+    dbConfigurator = DBConfigurator("")
+    dbConfigurator.runSQLScript("./VMServerDBTest.sql")
+    dbConfigurator.addUser("CygnusCloud", "cygnuscloud2012", "DBVMServerTest", True)
     unittest.main()

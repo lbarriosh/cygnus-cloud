@@ -30,7 +30,7 @@ class UserManagement(BasicDatabaseConnector):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT * FROM Users"     
         #Recogemos los resultado
-        results=self.executeQuery(sql)
+        results=self._executeQuery(sql)
         #Guardamos en una lista los ids resultantes
         for r in results:
             print(r)
@@ -42,7 +42,7 @@ class UserManagement(BasicDatabaseConnector):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT * FROM UserType"     
         #Recogemos los resultado
-        results=self.executeQuery(sql)
+        results=self._executeQuery(sql)
         #Guardamos en una lista los tipos resultantes
         for r in results:
             print(r)  
@@ -56,7 +56,7 @@ class UserManagement(BasicDatabaseConnector):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT typeId FROM TypeOf WHERE userId = " + str(self.__user)     
         #Recogemos los resultado
-        resultados=self.executeQuery(sql)
+        resultados=self._executeQuery(sql)
         #Guardamos en una lista los ids resultantes
         typeIds = []
         for r in resultados:
@@ -72,7 +72,7 @@ class UserManagement(BasicDatabaseConnector):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT groupId FROM ClassGroup WHERE userId = " + str(self.__user)     
         #Recogemos los resultado
-        resultados=self.executeQuery(sql)
+        resultados=self._executeQuery(sql)
         #Guardamos en una lista los ids resultantes
         groupIds = []
         for r in resultados:
@@ -88,7 +88,7 @@ class UserManagement(BasicDatabaseConnector):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VMName FROM VMByGroup WHERE groupId = " + str(idGroup)     
         #Recogemos los resultado
-        results=self.executeQuery(sql)
+        results=self._executeQuery(sql)
         #Guardamos en una lista los nombres resultantes
         vmNames = []
         for r in results:
@@ -106,7 +106,7 @@ class UserManagement(BasicDatabaseConnector):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT subject,curse,yearGroup,curseGroup FROM UserGroup WHERE groupId = " + str(idGroup)     
         #Recogemos los resultado
-        resultado=self.executeQuery(sql, True)
+        resultado=self._executeQuery(sql, True)
         #Devolvemos la lista resultado
         return resultado 
     
@@ -120,7 +120,7 @@ class UserManagement(BasicDatabaseConnector):
         sql += " WHERE u.userId = cg.userId AND u.userId = tof.userId AND tof.typeId = ut.typeId " 
         sql += " AND ut.name = 'Teacher' AND cg.groupId = " + str(idGroup)     
         #Recogemos los resultado
-        resultados=self.executeQuery(sql)
+        resultados=self._executeQuery(sql)
         #Guardamos en una lista los nombres resultantes
         teachersNames = []
         for r in resultados:
@@ -137,7 +137,7 @@ class UserManagement(BasicDatabaseConnector):
         sql = "SELECT ut.name FROM UserType ut,TypeOf tof " 
         sql += "WHERE ut.typeId = tof.typeId AND tof.userId = " + str(userId)     
         #Recogemos los resultado
-        resultado=self.executeQuery(sql, True)
+        resultado=self._executeQuery(sql, True)
         #Comprobamos si los nombres coinicden
         return (resultado[0] ==  nameType)      
          
@@ -152,7 +152,7 @@ class UserManagement(BasicDatabaseConnector):
             #borramos el usuario
             sql = "DELETE FROM Users WHERE userId =" + str(userId) 
             #Ejecutamos el comando
-            self.executeUpdate(sql)
+            self._executeUpdate(sql)
             # Gracias al ON DELETE CASCADE debería borrarse sus referencias en
             #  el resto de las tablas
         else:
@@ -170,7 +170,7 @@ class UserManagement(BasicDatabaseConnector):
             #insertamos el usuario
             sql = "INSERT  INTO Users(name,pass) VALUES ('" + name + "','" + password + "')"
             #Ejecutamos el comando
-            self.executeUpdate(sql)
+            self._executeUpdate(sql)
             #Extraemos el id del usuario que acabamos de crear
             sql = "SELECT userId FROM Users WHERE name ='" + name + "' AND pass = '" + password +"'" 
             #Cogemos el utlimo
@@ -178,7 +178,7 @@ class UserManagement(BasicDatabaseConnector):
             #Añadimos el tipo
             sql = "INSERT  INTO TypeOf(userId,typeId) VALUES (" + str(userId) + "," + str(typeId) + ")"
             #Ejecutamos el comando
-            self.executeUpdate(sql)
+            self._executeUpdate(sql)
             #Si todo ha salido bien devolvemos el id
             return userId 
             
@@ -204,7 +204,7 @@ class UserManagement(BasicDatabaseConnector):
             #Contamos el número de usuarios con ese id
             sql = "SELECT COUNT(*) FROM Users WHERE userId =" + str(userId)
             #Recogemos los resultado
-            result=self.executeQuery(sql, True)
+            result=self._executeQuery(sql, True)
             # Si el resultado es 1, el usuario existe
             return (result[0] == 1)
         else:
@@ -220,7 +220,7 @@ class UserManagement(BasicDatabaseConnector):
             #Contamos el número de MV con este nombre
             sql = "SELECT COUNT(*) FROM VMByGroup WHERE VMName ='" + VMName + "'"
             #Recogemos los resultado
-            result=self.executeQuery(sql, True)
+            result=self._executeQuery(sql, True)
             # Si la MV existe el número resultado será 1
             return (result[0] == 1)
         else:
@@ -241,7 +241,7 @@ class UserManagement(BasicDatabaseConnector):
             #Borramos la máquina virtual
             sql = "DELETE FROM VMByGroup WHERE groupId = " + str(groupId) + " AND VMName ='" + VMName + "'"
             #Ejecutamos el comando
-            self.executeUpdate(sql)
+            self._executeUpdate(sql)
             #Gracias al ON DELETE CASCADE se eliminará la apareición de esta VM en el resto de tablas
         else:
             #El usuario no es administrador. Lanazamos una excepción
@@ -257,7 +257,7 @@ class UserManagement(BasicDatabaseConnector):
             #Borramos las máquinas virtuales
             sql = "DELETE FROM VMByGroup WHERE groupId = " + str(groupId) 
             #Ejecutamos el comando
-            self.executeUpdate(sql)
+            self._executeUpdate(sql)
         else:
             #El usuario no es administrador. Lanzamos una excepción
             raise Exception("Not Administrator or Teacher User")
@@ -272,11 +272,11 @@ class UserManagement(BasicDatabaseConnector):
             #insertamos el usuario
             sql = "INSERT  INTO UserType(name) VALUES ('" + name + "')"
             #Ejecutamos el comando
-            self.executeUpdate(sql)
+            self._executeUpdate(sql)
             #Extraemos el id del tipo que acabamos de crear
             sql = "SELECT typeId FROM UserType WHERE name ='" + name + "'" 
             #Recogemos los resultado
-            results=self.executeQuery(sql, True)
+            results=self._executeQuery(sql, True)
             #Devolvemos el id 
             return results[0]
         else:
@@ -295,7 +295,7 @@ class UserManagement(BasicDatabaseConnector):
             #insertamos el usuario
             sql = "DELETE FROM UserType WHERE typeId =" + str(typeId) 
             #Ejecutamos el comando
-            self.executeUpdate(sql)
+            self._executeUpdate(sql)
         else:
             #El usuario no es administrador. Lanazamos una excepción
             raise Exception("Not Administrator User")  
@@ -309,7 +309,7 @@ class UserManagement(BasicDatabaseConnector):
             #Contamos el número de tipos con el id dado
             sql = "SELECT COUNT(*) FROM UserType WHERE typeId =" + str(typeId)
             #Recogemos los resultado
-            result=self.executeQuery(sql, True)
+            result=self._executeQuery(sql, True)
             # Si el resultado es 1, el tipo existe
             return (result[0] == 1)
         else:
@@ -324,7 +324,7 @@ class UserManagement(BasicDatabaseConnector):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT groupId FROM VMByGroup WHERE VMName = '" + VMName + "'"     
         #Recogemos los resultado
-        resultados=self.executeQuery(sql)
+        resultados=self._executeQuery(sql)
         #Guardamos en una lista los ids resultantes
         groupIds = []
         for r in resultados:
@@ -343,7 +343,7 @@ class UserManagement(BasicDatabaseConnector):
             #Borramos las máquinas virtuales
             sql = "SELECT userId FROM ClassGroup WHERE groupId = " + str(groupId) 
             #Recogemos los resultado
-            resultados=self.executeQuery(sql)
+            resultados=self._executeQuery(sql)
             #Guardamos en una lista los ids resultantes
             usersIds = []
             for r in resultados:

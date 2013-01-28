@@ -10,8 +10,8 @@ from libvirtConnector import libvirtConnector
 from Constantes import *
 from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from xmlEditor import ConfigurationFileEditor
-from database.VMServerDB.ImageManager import ImageManager
-from database.VMServerDB.RuntimeData import RuntimeData
+from database.vmServer.imageManager import ImageManager
+from database.vmServer.runtimeData import RuntimeData
 from virtualNetwork.VirtualNetworkManager import VirtualNetworkManager
 
 from utils.commands import runCommand, runCommandInBackground
