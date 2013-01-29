@@ -21,7 +21,7 @@ USE MainServerDB;
 # Create the VMServer table.
 CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT, 
 	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER, 
-	UNIQUE(serverName), UNIQUE(serverIP));
+	UNIQUE(serverName), UNIQUE(serverIP, serverPort));
 
 # Create the Image table
 CREATE TABLE IF NOT EXISTS Image(imageId INTEGER PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20) NOT NULL,

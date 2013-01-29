@@ -49,9 +49,9 @@ class MainServerPacketHandler(object):
         p.writeInt(sequenceSize)
         for row in data :
             p.writeString(row["ServerName"])
-            p.writeString(row["ServerIP"])
-            p.writeInt(int(row["ServerPort"]))
             p.writeString(MainServerPacketHandler.__vm_server_status_to_string(row["ServerStatus"]))
+            p.writeString(row["ServerIP"])
+            p.writeInt(int(row["ServerPort"]))            
         return p
     
     def createAvailableImagesPacket(self, segment, sequenceSize, data):

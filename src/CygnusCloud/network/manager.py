@@ -149,8 +149,8 @@ class NetworkManager():
         # Wait until the connection is ready
         time = 0
         while factory.isDisconnected() and time <= timeout:            
-            sleep(0.001)
-            time += 0.001
+            sleep(0.01)
+            time += 0.01
         if factory.isDisconnected() :
             raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
         # Create the new connection
