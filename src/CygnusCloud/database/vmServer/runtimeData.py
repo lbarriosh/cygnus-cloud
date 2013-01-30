@@ -408,6 +408,18 @@ class RuntimeData(BasicDatabaseConnector):
         result=self._executeQuery(sql, True)
         #Si el resultado es 1, la MV existirá
         return (result[0] == 1) 
+    
+    def getAssignedUserInDomain(self,domainName):
+        '''
+            Devuelve el identificador del usuario asociado a la mv que se encuentra en ejecución en el 
+            dominio pasado como argumento.
+        '''
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT userId FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        #Recogemos el resultado
+        result=self._executeQuery(sql, True)
+        #Devolvemos el resultado
+        return result[0]
         
 def main():    
     #Instanciamos la clase
