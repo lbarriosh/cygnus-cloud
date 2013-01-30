@@ -5,8 +5,6 @@
     @author: Luis Barrios Hernández
     @version: 2.0
 '''
-import MySQLdb
-import os
 import unittest
 
 from database.utils.configuration import DBConfigurator
@@ -23,10 +21,10 @@ class MainServerDBTests(unittest.TestCase):
         '''
         # Create the database
         dbConfigurator = DBConfigurator("")
-        dbConfigurator.runSQLScript("./MainServerDB.sql")
+        dbConfigurator.runSQLScript("MainServerDBTest", "./MainServerDB.sql")
         # Add a user to it
-        dbConfigurator.addUser("cygnuscloud", "cygnuscloud", "MainServerDB")
-        self.__connector = MainServerDatabaseConnector("cygnuscloud", "cygnuscloud", "MainServerDB")     
+        dbConfigurator.addUser("cygnuscloud", "cygnuscloud", "MainServerDBTest")
+        self.__connector = MainServerDatabaseConnector("cygnuscloud", "cygnuscloud", "MainServerDBTest")     
         self.__connector.connect()   
         
     def tearDown(self):
@@ -34,6 +32,8 @@ class MainServerDBTests(unittest.TestCase):
         This method will be ran after EVERY unit test.
         '''
         self.__connector.disconnect()
+        dbConfigurator = DBConfigurator("")
+        dbConfigurator.dropDatabase("MainServerDBTest")
         
     def test_getBasicServerData(self):
         '''

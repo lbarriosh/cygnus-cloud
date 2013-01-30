@@ -37,9 +37,9 @@ class MainServerReactor(WebReactor, VMServerReactor):
         self.__webCallback = WebCallback(self)
         self.__finished = False
         
-    def connectToDatabase(self, rootsPassword, dbUser, dbPassword, scriptPath, databaseName):
+    def connectToDatabase(self, rootsPassword, dbName, dbUser, dbPassword, scriptPath, databaseName):
         configurator = DBConfigurator(rootsPassword)
-        configurator.runSQLScript(scriptPath)
+        configurator.runSQLScript(dbName, scriptPath)
         configurator.addUser(dbUser, dbPassword, databaseName, True)
         self.__dbConnector = MainServerDatabaseConnector(dbUser, dbPassword, databaseName)
         self.__dbConnector.connect()

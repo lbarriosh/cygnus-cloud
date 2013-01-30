@@ -33,9 +33,9 @@ class GenericWebCallback(object):
     def handleVMServerRegistrationError(self, vmServerNameOrIP, errorMessage) :
         print 'VM Server registration error ' + vmServerNameOrIP + " " + errorMessage
     def handleVMBootFailure(self, vmName, userID, errorMessage) :
-        print 'VM Boot failure ' + vmName + " " + userID + " " + errorMessage
+        print 'VM Boot failure ' + vmName + " " + str(userID) + " " + errorMessage
     def handleVMConnectionData(self, userID, vncSrvrIP, vncSrvrPort, vncSrvrPassword) :
-        print 'VM Connection data ' + userID + " " + vncSrvrIP + " " + vncSrvrPort + " " + vncSrvrPassword
+        print 'VM Connection data ' + str(userID) + " " + vncSrvrIP + " " + str(vncSrvrPort) + " " + vncSrvrPassword
 
 class MainServerConnector(object):    
 
@@ -43,22 +43,25 @@ class MainServerConnector(object):
         self.__stopped = False
         self.__callback = callback
     
-    def connectToDatabase(self, rootsPassword, websiteUser, websiteUserPassword, updateUser, updateUserPassword):
+    def connectToDatabase(self, rootsPassword, databaseName, websiteUser, websiteUserPassword, updateUser, updateUserPassword):
         # Create the status database
+        self.__rootsPassword = rootsPassword
+        self.__databaseName = databaseName
         configurator = DBConfigurator(rootsPassword)
-        configurator.runSQLScript("../../database/SystemStatusDB.sql")
+        configurator.runSQLScript(databaseName, "../../database/SystemStatusDB.sql")
         # Register the website and the update users
-        configurator.addUser(websiteUser, websiteUserPassword, "SystemStatusDB", False)
-        configurator.addUser(updateUser, updateUserPassword, "SystemStatusDB", True)
+        configurator.addUser(websiteUser, websiteUserPassword, databaseName, False)
+        configurator.addUser(updateUser, updateUserPassword, databaseName, True)
         # Create the database connectors
-        self.__reader = SystemStatusDatabaseReader(websiteUser, websiteUserPassword, "SystemStatusDB")
-        self.__writer = SystemStatusDatabaseWriter(updateUser, updateUserPassword, "SystemStatusDB")
+        self.__reader = SystemStatusDatabaseReader(websiteUser, websiteUserPassword, databaseName)
+        self.__writer = SystemStatusDatabaseWriter(updateUser, updateUserPassword, databaseName)
         # Connect to the database
         self.__reader.connect()
         self.__writer.connect()
         
     def connectToMainServer(self, certificatePath, mainServerIP, mainServerListenningPort):
         self.__manager = NetworkManager(certificatePath)
+        self.__manager.startNetworkService()
         callback = _MainServerConnectorCallback(self)
         # Connect to the main server
         self.__mainServerPort = mainServerListenningPort
@@ -82,6 +85,9 @@ class MainServerConnector(object):
         self.__writer.disconnect()
         # Stop the network service
         self.__manager.stopNetworkService()
+        # Delete the status database
+        dbConfigurator = DBConfigurator(self.__rootsPassword)
+        dbConfigurator.dropDatabase(self.__databaseName)
         
     def getImages(self):
         return self.__reader.getImages()
@@ -138,10 +144,18 @@ class MainServerConnector(object):
         
 if __name__ == "__main__" :
     connector = MainServerConnector(GenericWebCallback())
-    connector.connectToDatabase("", "websiteUser", "cygnuscloud", "updateUser", "cygnuscloud")
+    connector.connectToDatabase("","SystemStatusDB", "websiteUser", "cygnuscloud", "updateUser", "cygnuscloud")
     connector.connectToMainServer("/home/luis/Certificates", "127.0.0.1", 9000)
     sleep(10)
     print connector.getVMServersData()
     print connector.getImages()
+    connector.bootUpVMServer("Server1")
+    sleep(10)
+    print connector.getVMServersData()
+    connector.bootUpVirtualMachine("Debian", 1)
+    sleep(10)
+    connector.shutdownVMServer("Server1", True)
+    sleep(10)
+    print connector.getVMServersData()
     connector.disconnectFromMainServer()
     

@@ -145,7 +145,7 @@ class MainServerPacketHandler(object):
             result["SequenceSize"] = p.readInt()
             data = []
             while (p.hasMoreData()) :
-                data.append((p.readString(), p.readString(), p.readInt(), p.readString()))
+                data.append((p.readString(), p.readString(), p.readString(), p.readInt()))
             result["Data"] = data
             
         elif (packet_type == MAIN_SERVER_PACKET_T.AVAILABLE_IMAGES_DATA) :

@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         dbConfigurator = DBConfigurator("")
-        dbConfigurator.runSQLScript("./SystemStatusDBTest.sql")
+        dbConfigurator.runSQLScript("SystemStatusDBTest", "./SystemStatusDBTest.sql")
         dbConfigurator.addUser("website", "cygnuscloud", "SystemStatusDBTest", False)
         dbConfigurator.addUser("statusDBUpdater", "cygnuscloud", "SystemStatusDBTest", True)
         self.__reader = SystemStatusDatabaseReader("website", "cygnuscloud", "SystemStatusDBTest")
@@ -25,6 +25,8 @@ class Test(unittest.TestCase):
     def tearDown(self):
         self.__reader.disconnect()
         self.__writer.disconnect()
+        dbConfigurator = DBConfigurator("")
+        dbConfigurator.dropDatabase("SystemStatusDBTest")
 
     def testUpdateVMServerData(self):
         segment1Data = [('Server1', 'Ready', 'IP1', 1)]

@@ -5,16 +5,6 @@
 	Version: 2.0
 */
 
-# Drop the database (if exists)
-
-DROP DATABASE IF EXISTS MainServerDB;
-
-# Create the database (if necessary)
-CREATE DATABASE IF NOT EXISTS MainServerDB;
-
-# Choose the database to user
-USE MainServerDB;
-
 # Create the VMServer table.
 CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT, 
 	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER, 

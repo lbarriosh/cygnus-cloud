@@ -41,12 +41,32 @@ class DBConfigurator(object):
             privileges = "SELECT"            
         cursor.execute("GRANT " + privileges + " ON " + databaseName + ".* TO '" +  user + "'@'" + "localhost" + "' IDENTIFIED BY '" + password + "';")
         cursor.close()
-        conn.close()     
+        conn.close()  
         
-    def runSQLScript(self, sqlFilePath, username="root", password=None):
+    def createDatabase(self, databaseName):
+        '''
+        Creates a MySQL database
+        '''   
+        db = MySQLdb.connect(host='localhost',user="root",passwd=self.__rootPassword)
+        command = "CREATE DATABASE " + databaseName + ";"
+        cursor = db.cursor()
+        cursor.execute(command)
+        cursor.close()
+        db.close()
+        
+    def dropDatabase(self, databaseName):
+        db = MySQLdb.connect(host='localhost',user="root",passwd=self.__rootPassword)
+        command = "DROP DATABASE " + databaseName + ";"
+        cursor = db.cursor()
+        cursor.execute(command)
+        cursor.close()
+        db.close()
+        
+    def runSQLScript(self, database, sqlFilePath, username="root", password=None):
         '''
             Runs a SQL script
             Args:
+                databaseName: the MySQL database to use
                 sqlFilePath: the SQL script path
                 username: a MySQL user name.
                 password: the user's password
@@ -57,7 +77,12 @@ class DBConfigurator(object):
             db = MySQLdb.connect(host='localhost',user=username,passwd=password)    
         cursor=db.cursor()
         
+        command = "CREATE DATABASE IF NOT EXISTS " + database + ";"
+        cursor.execute(command)
+        command = "USE " + database + ";"
+        cursor.execute(command)
         command = ""
+        
         fp = open(sqlFilePath)
         for line in fp:
                 if line.endswith(';\n'):
