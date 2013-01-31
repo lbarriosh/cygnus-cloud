@@ -1,0 +1,1555 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Diseño Web 
+\end_layout
+
+\begin_layout Standard
+En el presente documento se tratará un posible diseño de la web a partir
+ de los conocimientos adquiridos sobre web2py.
+ Para conseguir una mejor explicación en documento se dividirá en 2 secciones.
+ En la primera se hablará sobre la estructura de la web a alto nivel, orientada
+ a explicar las diferentes páginas que debe tener la web y las funcionalidades
+ asociadas a cada una de ellas.
+ En la segunda se enfocará el problema desde una visión a bajo nivel, indicando
+ una aproximación sobre los diferentes módulos y ficheros de código que
+ serán necesarios.
+ Toda la información que se detalla en este documento está sujeta a posibles
+ cambios que puedan surgir durante el desarrollo de la web por problemas
+ u otras decisiones de los desarrolladores.
+\end_layout
+
+\begin_layout Part
+Funcionalidades y aspecto de la web.
+\end_layout
+
+\begin_layout Standard
+La web de CygnusCloud estará compuesta por una serie de páginas las cuales
+ permitirán la redirección de unas a otras por medio de una cabecera de
+ enlaces o por el sistema de gestión de usuarios.
+ Estas páginas estarán asociadas a unas restricciones de acceso permitiendose
+ en algunas el acceso libre, mientras que otras requerirán de estar logueado
+ y ser miembro explicito del grupo asociado a dicha página.
+ Así la web de CygnusCloud se encontrará dividida en 7 páginas estructuradas
+ según se indica a continuación.
+ 
+\end_layout
+
+\begin_layout Standard
+Los modelos que se muestran a continuación son meras aproximaciones a la
+ versión definitiva, la cual será completamente detallada durante la implementac
+ión.
+\end_layout
+
+\begin_layout Subsection*
+Página de acceso
+\end_layout
+
+\begin_layout Standard
+Esta página será de acceso público y corresponderá al index de la web.
+ En ella se permitirá al usuario loguearse en el sistema introduciendo un
+ nombre de usuario y una contraseña válidos.
+ 
+\end_layout
+
+\begin_layout Standard
+Esta página contará en su parte superior de una diseño de cabecera con el
+ logotipo de CygnusCloud y el dibujo de cabecera que decidamos.
+ Esta cabecera será común a todas las páginas y deberá estar incluido en
+ la 
+\begin_inset Quotes eld
+\end_inset
+
+plantilla
+\begin_inset Quotes erd
+\end_inset
+
+ de la página.
+ 
+\end_layout
+
+\begin_layout Standard
+Debajo de la cabecera habrá una barra de direcciones que permitirán a un
+ usuario no logueado pasar de una página a otra.
+ Esta barra deberá aparecer en todas las páginas pero su contenido será
+ independiente a la página en concreto.
+ de esta forma, en la página principal, la barra de direcciones contendrá:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Iniciar sesión
+\begin_inset Quotes erd
+\end_inset
+
+: como ya estamos en principal, esta opción deberá aparecer marcada y no
+ podrá volverse a pulsar.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Acerca de
+\begin_inset Quotes erd
+\end_inset
+
+: Al pulsarse sobre ella redirigirá a a la página quienes_somos
+\end_layout
+
+\begin_layout Standard
+Por último, centrado en la ventana, aparecerá un formulario en forma de
+ cuadro donde deberá indicarse el nombre del usuario y su contraseña (en
+ formato oculto).
+ Debajo de ambos campos aparecerá el botón de 
+\begin_inset Quotes eld
+\end_inset
+
+Entrar
+\begin_inset Quotes erd
+\end_inset
+
+ que se encargará de verificar los datos introducidos y redireccionará a
+ la próxima página.
+ Cuando el usuario haya introducido un nombre de usuario y una contraseña
+ validas, se comprobará el grupo (administrador ,profesor o alumno) y se
+ redireccionará a la página que corresponda.
+\end_layout
+
+\begin_layout Standard
+Una posible estructura para esta página aparece en la imagen 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-inicio"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ImagenesWeb/Index.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página de inicio
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Página-de-inicio"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Página Acerca de
+\end_layout
+
+\begin_layout Standard
+Esta es una página opcional (su implementación se decidirá según tiempo
+ aunque no debería llevar demasiado) que muestra información sobre que es
+ CygnusCloud, que intenta abarcar, licencia del producto y posibles referencias
+ a nuestro trabajo en otras direcciones (Por medio de videos, urls, imagenes...).
+ Su acceso será público para cualquier usuario no necesariamente registrado.
+\end_layout
+
+\begin_layout Standard
+La página contará con una cabecera similar a la del apartado anterior, una
+ barra de direcciones con las opciones:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Iniciar sesión
+\begin_inset Quotes erd
+\end_inset
+
+: Redirecciona a la página de inicio donde el usuario podrá meter su nombre
+ y contraseña.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Acerca de
+\begin_inset Quotes erd
+\end_inset
+
+: Aparecerá marcada y no podrá volverse a pulsar.
+\end_layout
+
+\begin_layout Standard
+El resto de la página estará compuesta por un formulario con la información
+ que consideremos oportuna.
+\end_layout
+
+\begin_layout Standard
+Una posible estructura para esta página se muestra en la imagen 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-¿Quienes-Somos?"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ImagenesWeb/Quienes_Somos.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página Acerca de
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Página-¿Quienes-Somos?"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Página arranque de máquinas virtuales alumnos
+\end_layout
+
+\begin_layout Standard
+Esta página estará restringida a usuarios dados de alta cuyo grupo sea el
+ de alumnos.
+ Por lo tanto, antes de iniciar la página se comprobará dichas restricciones
+ y se lanzará un error en caso de que no se cumplan.
+\end_layout
+
+\begin_layout Standard
+En esta página se le mostrará al alumnos el nombre de las diferentes máquinas
+ virtuales que puede iniciar ordenadas por curso y asignatura y permitirá
+ al alumno iniciar la que quiera.
+ 
+\end_layout
+
+\begin_layout Standard
+Así la página estará formada por las siguientes subsecciones:
+\end_layout
+
+\begin_layout Itemize
+Una cabecera similar a las definidas en las páginas anteriores.
+\end_layout
+
+\begin_layout Itemize
+Un recuadro en la parte superior derecha con con el nombre del usuario y
+ la opción de salir.
+ En caso de seleccionar la opción de salir, se cerrará la sesión del usuario
+ y se redireccionará a la página de inicio 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-inicio"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Una barra de direcciones con una única opción 
+\begin_inset Quotes eld
+\end_inset
+
+Selección de máquina
+\begin_inset Quotes erd
+\end_inset
+
+ que aparecerá seleccionada y no se podrá volver a pulsar.
+ Aunque en este aspecto, esta barra es totalmente inútil, se mantiene para
+ seguir la estructura del resto de páginas y para permitir una fácil incorporaci
+ón de futuras páginas asociadas al alumno que queramos introducir.
+\end_layout
+
+\begin_layout Itemize
+Un esquema que ocupara el resto de la página y que mostrará el conjunto
+ de máquinas virtuales accesibles por un alumno agrupadas de la siguiente
+ forma:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Asignaturas : es el primer nivel de agrupación.
+ Se mostrará el conjunto de asignaturas que el alumno tiene asociadas a
+ alguna máquina virtual.
+ Como resulta lógico y puede observarse en el diseño de la base de datos
+ de la web, una misma asignatura puede disponer de diferentes máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+Tabla de máquinas virtuales: Cada una de las máquinas virtuales asociadas
+ a un curso y una asignatura correspondientes serán mostradas en este segundo
+ nivel de agrupación.
+ La representación de las máquinas virtuales será dada en una tabla de 4
+ columnas con la siguiente distribución:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Nombre de la máquina virtual (nombre para ser mostrado).
+\end_layout
+
+\begin_layout Itemize
+Descripción de la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+casilla que permite seleccionar la máquina virtual.
+ Cuando se pulse esta casilla, se desmarcarán las casillas del resto de
+ máquinas.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+Un botón 
+\begin_inset Quotes eld
+\end_inset
+
+Arrancar
+\begin_inset Quotes erd
+\end_inset
+
+ inferior que permitirá ejecutar la máquina virtual seleccionada.
+ En caso de no haberse seleccionado ninguna máquina se mostrará el error.
+\end_layout
+
+\begin_layout Standard
+Una posible representación de la estructura de esta página aparece en la
+ imagen 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-arranque-alumnos"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ImagenesWeb/Maquinas_Alumnos.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página de arranque de máquinas virtuales por alumnos.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Página-de-arranque-alumnos"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Página arranque máquinas virtuales administrador
+\end_layout
+
+\begin_layout Standard
+Esta página estará restringida a usuarios dados de alta en el sistema y
+ que pertenezca al grupo de administradores.
+ En este caso el conjunto de asignaturas a las que el administrador podrá
+ acceder serán todas las asignaturas, por lo que no resulta aceptable mostrarlas
+ en una misma página.
+ Así, la página se dividirá en las siguientes secciones:
+\end_layout
+
+\begin_layout Itemize
+Una cabecera similar a las definidas en las páginas anteriores.
+\end_layout
+
+\begin_layout Itemize
+Un recuadro en la parte superior derecha con con el nombre del usuario y
+ la opción de salir.
+ En caso de seleccionar la opción de salir, se cerrará la sesión del usuario
+ y se redireccionará a la página de inicio 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-inicio"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Una barra de direcciones con las opciones de 
+\begin_inset Quotes eld
+\end_inset
+
+Arrancar máquina
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+Administrar servidores
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+Administrar usuarios
+\begin_inset Quotes erd
+\end_inset
+
+.
+ La primera opción estará seleccionada y no podrá volverse a pulsar.
+ La segunda redireccionará a la página de administración de servidores.
+ La tercera redireccionará a la página de gestión de usuarios.
+\end_layout
+
+\begin_layout Itemize
+Una sección de búsqueda en la cual el administrador podrá introducir un
+ nombre de asignatura o el nombre de un profesor y el sistema buscará aquellas
+ máquinas virtuales asociadas a este grupo.
+ Así esta sección estará compuesta por dos campos de texto donde el administrado
+r podrá introducir el nombre de la asignatura o del profesor (o ambos) y
+ un botón 
+\begin_inset Quotes eld
+\end_inset
+
+Buscar
+\begin_inset Quotes erd
+\end_inset
+
+ que permitirá realizar la búsqueda con los datos introducidos.
+\end_layout
+
+\begin_layout Itemize
+Una sección de resultados.
+ En esta sección se mostrará la lista de máquinas virtuales resultantes
+ de la última búsqueda realizada.
+ Estas máquinas virtuales podrán ser seleccionadas por medio de un cuadro
+ de selección al igual que se hacía en la página del usuario.
+\end_layout
+
+\begin_layout Itemize
+Un botón arrancar que permitirá arrancar la máquina virtual seleccionada.
+ En caso de no haber ninguna se mostrará un error.
+\end_layout
+
+\begin_layout Standard
+Un ejemplo del modelo para esta página aparece en la imagen 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-de-administrados"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ImagenesWeb/Maquinas_Administrador.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Arranque de máquinas desde el administrador.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-de-administrados"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Página administración de servidores de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+En esta página se le permitirá al administrador gestionar los diferentes
+ servidores de máquinas virtuales, así como las máquinas virtuales que pueden
+ alojarse en cada uno de ellos.
+ Al igual que en la página anterior, el acceso a esta página estará restringido
+ a usuarios dados de alta en el sistema, cuyo grupo asociado sea el de administr
+adores.
+\end_layout
+
+\begin_layout Standard
+Desde esta página el administrador podrá:
+\end_layout
+
+\begin_layout Itemize
+Eliminar una máquina virtual existente en un determinado servidor.
+\end_layout
+
+\begin_layout Itemize
+Mover una máquina virtual de un servidor a otro.
+\end_layout
+
+\begin_layout Itemize
+Crear un nuevo servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+Eliminar un servidor de máquinas virtuales existentes y todas las máquinas
+ virtuales asociadas al mismo.
+\end_layout
+
+\begin_layout Standard
+Para poder realizar todas estas acciones la página dispondrá de las siguientes
+ secciones:
+\end_layout
+
+\begin_layout Itemize
+Una cabecera similar a las definidas en las páginas anteriores.
+\end_layout
+
+\begin_layout Itemize
+Un recuadro en la parte superior derecha con con el nombre del usuario y
+ la opción de salir.
+ En caso de seleccionar la opción de salir, se cerrará la sesión del usuario
+ y se redireccionará a la página de inicio 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-inicio"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Una barra de direcciones con las opciones de 
+\begin_inset Quotes eld
+\end_inset
+
+Arrancar máquina
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+Administrar servidores
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+Administrar usuarios
+\begin_inset Quotes erd
+\end_inset
+
+.
+ La primera opción redireccionará a la página de arranque de máquinas virtuales
+ definido en el apartado anterior.
+ La segunda estará seleccionada y no podrá volverse a pulsar.
+ La tercera redireccionará a la página de gestión de usuarios.
+\end_layout
+
+\begin_layout Itemize
+Una barra de direcciones secundaria que permitirá decidir entre dos posibles
+ acciones 
+\begin_inset Quotes eld
+\end_inset
+
+Añadir/eliminar
+\begin_inset Quotes erd
+\end_inset
+
+ y 
+\begin_inset Quotes eld
+\end_inset
+
+Mover máquinas
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Según la opción seleccionada el cuadro mostrado a continuación sera uno
+ u otro
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Si la opción seleccionada es 
+\begin_inset Quotes eld
+\end_inset
+
+Añadir/eliminar
+\begin_inset Quotes erd
+\end_inset
+
+, el cuadro inferior mostrará una una lista con el nombre de todos los servidore
+s y una casilla de selección a su derecha.
+ Esta casilla permite eliminar un determinado servidor pulsando en el botón
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Eliminar seleccionado
+\begin_inset Quotes erd
+\end_inset
+
+ en la parte inferior de la página.
+ Un modelo para esta página sería el de la imagen.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ImagenesWeb/Administrar_servidor2.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página añadir/eliminar servidores.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Página-añadir/eliminar-servidore"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Itemize
+Si la opción seleccionada es 
+\begin_inset Quotes eld
+\end_inset
+
+Mover máquinas
+\begin_inset Quotes erd
+\end_inset
+
+, aparecerá una sección con un menu desplegable en el que podremos seleccionar
+ el servidor que se quiere editar.
+ Una vez seleccionado el servidor en la parte inferior aparecerá una lista
+ con los nombres de todas las máquinas disponibles para este servidor y
+ un cuadro que permitirá seleccionar una de las máquinas.
+ Una vez seleccionada, esta máquina podrá ser eliminada o movida a otro
+ servidor por medio del botón y del menú desplegable que aparece en la parte
+ inferior de la página.
+ Un modelo para esta página sería el de la imagen 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ImagenesWeb/Administrar_servidor1.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página mover máquinas virtuales.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Página-mover-máquinas"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Administración de usuarios
+\end_layout
+
+\begin_layout Standard
+Esta página es opcional y su acceso será restringido para los usuarios dados
+ de alta y cuyo grupo sea el de aministrador.
+ Por medio de esta página un administrador podrá dar de alta a nuevos usuarios,
+ borrar usuarios existentes y cambiar el grupo al que pertenece cada usuario.
+\end_layout
+
+\begin_layout Standard
+Para ello, esta página dispondrá de las siguientes secciones:
+\end_layout
+
+\begin_layout Itemize
+Una cabecera similar a las definidas en las páginas anteriores.
+\end_layout
+
+\begin_layout Itemize
+Un recuadro en la parte superior derecha con con el nombre del usuario y
+ la opción de salir.
+ En caso de seleccionar la opción de salir, se cerrará la sesión del usuario
+ y se redireccionará a la página de inicio 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-inicio"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Una barra de direcciones con las opciones de 
+\begin_inset Quotes eld
+\end_inset
+
+Arrancar máquina
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+Administrar servidores
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+Administrar usuarios
+\begin_inset Quotes erd
+\end_inset
+
+.
+ La primera opción redireccionará a la página de arranque de máquinas virtuales
+ definido en el apartado anterior.
+ La segunda redireccionará a la página de administración de servidores de
+ máquinas virtuales.
+ Por último, la tercera estará seleccionada y no se podrá volver a pulsar.
+\end_layout
+
+\begin_layout Itemize
+una subbarra de direcciones que nos permitirá elegir entre las opciones
+ de eliminar un usuario ya creado, crear un nuevo usuario y asociar máquinas
+ virtuales a asignaturas.
+ Las opciones de esta barra permitirán desplazarse de una subpágina a otra
+ desmarcandose en cada caso la opción actual.
+ Así según la dirección seleccionada:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Eliminar
+\begin_inset Quotes erd
+\end_inset
+
+: Esta subpágina permite eliminar un usuario seleccionado, así como cambiar
+ el grupo al que pertenece.
+ Para ello esta subpágina constará de una sección en la que se permite buscar
+ un usuario a partir de su nombre o de su grupo.
+ Debajo de esta sección aparecerá una tabla con el conjunto de los usuarios
+ buscados.
+ En esta tabla se mostrará el nombre y la contraseña del usuario, así como
+ un menu desplegable que podrá ser modificado con el grupo al cual pertenece
+ este usuario.
+ Por último a la izquierda de cada usuario aparecerá un recuadro que permitirá
+ seleccionar el usuario que se va a eliminar, pulsando sobre el correspondiente
+ botón 
+\begin_inset Quotes eld
+\end_inset
+
+Eliminar seleccionado.
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Un posible modelo para esto será como el representado en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-eliminación"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Añadir
+\begin_inset Quotes erd
+\end_inset
+
+ : Permite añadir un nuevo usuario a la base de datos.
+ Esta subpágina contendrá un sección donde se deberá indicar el nombre,
+ la contraseña y el grupo al que pertenece dicho usuario.
+ Debajo de esta sección aparecerá una nueva que nos permitirá asociar una
+ lista de grupos de asignaturas a dicho usuario .
+ Para ello se deberá indicar el código de la asignatura, el nombre, el curso,
+ el año y el grupo y pulsar sobre el botón 
+\begin_inset Quotes eld
+\end_inset
+
+añadir
+\begin_inset Quotes erd
+\end_inset
+
+ una vez rellenos.
+ Este botón comprobará si el grupo especifico existe y asociará al usuario
+ a este o lo creara en caso de que no exista.
+ En esta sección también podremos desvincular la última asignatura asociada
+ al usuario pulsando sobre el botón 
+\begin_inset Quotes eld
+\end_inset
+
+Eliminar última
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Por último una vez relleno los campos del usuario y sus grupos asociados
+ se creará el mismo pulsando sobre el botón 
+\begin_inset Quotes eld
+\end_inset
+
+Añadir usuario
+\begin_inset Quotes erd
+\end_inset
+
+ .Un posible modelo para esto será como el representado en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Pagina-añadir-usuario."
+
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ImagenesWeb/Administrar_Usuarios1.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página de eliminación de usuarios.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Página-de-eliminación"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ImagenesWeb/Administrar_Usuarios.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Pagina añadir usuario.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Pagina-añadir-usuario."
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Página cliente VNC
+\end_layout
+
+\begin_layout Standard
+Esta página será la encargada de mostrar el cliente VNC en ejecución cuando
+ se haya dado a arrancar una máquina virtual.
+ Esta página será lanzada en una nueva pestaña y será accesible solo para
+ los usuarios dados de alta que previamente hayan arrancado esa máquina
+ virtual.
+\end_layout
+
+\begin_layout Standard
+Con el fin de ofrecer el mayor espacio posible al usuario para que pueda
+ ver con la mejor calidad el escritorio virtual, esta página solo dispondrá
+ de la ventana de ejecución del escritorio, eliminando la cabecera y la
+ barra de direcciones.
+ 
+\end_layout
+
+\begin_layout Standard
+Debido a la simplicidad de esta página a nivel web, no se mostrará un ejemplo
+ de diseño sobre ella.
+\end_layout
+
+\begin_layout Part
+Diseño de los módulos de implementación
+\end_layout
+
+\begin_layout Standard
+En este apartado trataremos la estructura que tendrá la web a nivel de implement
+ación, indicando los principales módulos y ficheros de código que será necesario
+ implementar desde cero o modificar a partir de los ficheros que nos proporciona
+n web2py.
+ La estructura de todo el código seguirá la estructura exigida por web2py
+ basada en el modelo vista controlador.
+\end_layout
+
+\begin_layout Standard
+Con el fin de poder abarcar cada sección de código de manera lo más modular
+ posible,trataremos este apartado en 3 secciones diferentes según el tipo
+ de código necesario.
+\end_layout
+
+\begin_layout Section
+Módulos Python
+\end_layout
+
+\begin_layout Standard
+Los módulos python serán os encargados de crear los diferentes elementos
+ que serán mostrados por la web, así como de aportar la funcionalidad que
+ dichos elementos necesiten.
+ Además estos módulos también se encargarán de gestionar las bases de datos
+ asociadas a la web.
+\end_layout
+
+\begin_layout Standard
+En esta sección podemos destacar 2 grupos de módulos python.
+ El primero son los módulos requeridos por web2Py y que tendremos que rellenar
+ siguiendo la estructura dada.
+ El segundo grupo corresponde al conjunto de módulos auxiliares que interacciona
+rán con los módulos de web2Py para llevar a cabo las diferentes acciones
+ asociadas a los elementos que interaccionan con el usuario, así como los
+ módulos internos encargados de realizar las correspondientes actualizaciones
+ de las bases de datos y el envio y la recepción de paquetes con el servidor
+ principal.
+\end_layout
+
+\begin_layout Subsection
+Módulos usados por web2py
+\end_layout
+
+\begin_layout Itemize
+db.py : Este módulo será el encargado de realizar las conexiones entre la
+ web y las diferentes bases de datos y cargar la estructura de las mismas
+ a partir de los diferentes ficheros script o definirlas directamente en
+ su código.
+ Así, este módulo instanciará una variable serverdb que realizará la conexión
+ con la bases de datos de gestión de los servidores de máquinas virtuales
+ cargada en memoria y una variable userdb que gestionará la conexión y carga
+ de las bases de datos de los usuarios.
+ Para facilitar la gestión de restricciones de acceso a una u otras páginas,
+ esta última base de datos se asociará a una variable auth, la cual será
+ una instancia de la clase Auth.
+\end_layout
+
+\begin_layout Itemize
+menu.py : En principio este módulo será el encargado de crear el título,
+ subtítulo y los diferentes accesos disponibles en la barra de direcciones.
+ En principio, web2Py aporta este módulo para que los accesos al mismo detallado
+s en el menu resulten permanente para todas las páginas que componen la
+ información por lo que será necesario modificarlo para que sea posible
+ su actualización cada vez que se genere una nueva página.
+\end_layout
+
+\begin_layout Itemize
+appadmin.py : Este módulo proporciona algunas funcionalidades sobre administració
+n de tablas y gestión de subida y descarga de ficheros.
+ En principio, aunque algunas de las funcionalidades que parecen aquí podrán
+ ser útiles en un futuro, nosotros no tendremos que modificarlas de momento.
+\end_layout
+
+\begin_layout Itemize
+default.py : Este módulo corresponde al 
+\begin_inset Quotes eld
+\end_inset
+
+centro de procesamiento
+\begin_inset Quotes erd
+\end_inset
+
+ de todas las funcionalidades a las que podrá acceder la web.
+ Así, este módulo, además de las funciones auxiliares que sean necesarias
+ tendrá una función por cada una de las páginas que nuestra aplicación deberá
+ ser capaz de crear.
+ Estas funciones se encargarán de crear los elementos que se mostrarán en
+ la correspondiente página, definiendo que acción realizarán cada uno cuando
+ el usuario interaccione con ellos.
+ Cada una de estas funciones devolverán un diccionario con el conjunto de
+ elementos que las vistas (los ficheros html) deberán colocar en determinadas
+ posiciones de la página y modificar lo que sea necesario.
+ El nombre de cada una de estas funciones deberá coincidir con el nombre
+ que asociemos a las vista correspondiente.
+ Así, este módulo tendrá al menos las siguientes funciones:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Index: crea y aplica las funcionalidades a los elementos de gestión de las
+ cuentas utilizando la variable local ath.
+ Devolverá un diccionario con un formulario con los componentes a mostrar
+ (cuadros de texto de nombre de usuario y contraseña y botón de submit).
+ Es posible gestionar el logueado utilizando directamente la app de Google,
+ lo cual podría ser útil en caso de que el sistema fuera a aplicarse en
+ un entorno real.
+ Para nuestro caso compensa gestionarla con nuestra propia base de datos.
+\end_layout
+
+\begin_layout Itemize
+Info : Esta función define las funcionalidades asociadas a la información
+ que se mostrará en la página de 
+\begin_inset Quotes eld
+\end_inset
+
+Acerca de
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Así en el diccionario devolverá la información a mostrar, la lista de posibles
+ títulos,la lista de posibles direcciones , la lista de posibles imagenes....
+\end_layout
+
+\begin_layout Itemize
+studentVMPage : esta función se encargará de crear el formulario con la
+ información de las máquinas virtuales disponibles con respecto a cada asignatur
+a y las asignaturas correspondientes a cada curso.
+ Además también definirá la funcionalidad (mediante un callback) a realizar
+ por los botones de arranque de máquinas virtuales.
+ Por tanto, esta función deberá instanciar la clase que contendrá las funciones
+ de extracción de información de las máquinas virtuales asociadas a un usuario.
+\end_layout
+
+\begin_layout Itemize
+adminVMPage : esta función se encargará de crear el formulario con la informació
+n sobre todas las máquinas virtuales existentes en todas las asignaturas
+ de todos los cursos que será utilizados por la página de arranque de máquinas
+ virtuales por parte del administrador.
+ Así , esta función deberá instanciar la clase que contendrá las funciones
+ de extracción de información de las máquinas virtuales asociadas a un usuario.
+ Además deberá definir por medio de una función callback las acciones asociadas
+ al botón de arranque de una nueva máquina virtual.
+ Para no realizar trabajo por repetido, las funciones auxiliares comunes
+ a este módulo y al anterior que sean necesarias, serán definidas en un
+ módulo auxiliar independiente.
+\end_layout
+
+\begin_layout Itemize
+adminServersPage : esta función definirá los elementos necesarios para la
+ gestión de los servidores de máquinas virtuales.
+ Para ello, instanciará la clase del conector con la base de datos de los
+ servidores de máquinas virtuales cargada en memoria y extraerá de ella
+ la lista de servidores y sus máquinas asociadas.
+ Además deberá definicr las funciones callback que serán llamadas cuando
+ se pulsen los correspondientes botones de eliminación de máquinas virtuales,
+ eliminación de servidores, creación de nuevos servidores y revinculación
+ de una máquina virtual a un servidor diferente.
+ Con todo ello la función devolverá un diccionario con un formulario que
+ contendrá los nombres de servidores y las máquinas virtuales asociadas
+ a cada servidor (y sus correspondientes botones).
+\end_layout
+
+\begin_layout Itemize
+adminUsersPage : esta función definirá los elementos correspondientes a
+ los usuarios registrados en la página.
+ Así esta función instanciará la clase encargada de gestionar la base de
+ datos de usuarios y creará un formulario con los diferentes nombres de
+ usuarios, contraseñas y grupo de pertenencia de cada usuario.
+ Además definirá las acciones asociadas al callback que se llamará cuando
+ el administrador quiera cambiar el grupo de un usuario, el callback que
+ se encargará de crear un nuevo usuario con los datos introducidos en los
+ elementos correspondientes.
+ Una vez definidos todos los elementos y sus correspondientes funcionalidades,
+ se devolverá un diccionario con los elementos creados.
+\end_layout
+
+\begin_layout Itemize
+vncPage : esta función estará asociada a la página encargada de mostrar
+ el escritorio de una determinada máquina virtual en ejecución.
+ Para ello, la función tendrá una instancia a la clase encargada de gestionar
+ el cliente vnc y obtendrá de ella la dirección del fichero html que será
+ ejecutado por la vista.
+ Así, esta función devolverá un diccionario con la dirección del cliente
+ vnc completamente configurado.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Las direcciones html asociadas a dichas páginas tendrá el flag 
+\begin_inset Quotes eld
+\end_inset
+
+default
+\begin_inset Quotes erd
+\end_inset
+
+ antepuesto al nombre de la página correspondiente.
+ Nose si es posible cambiar el nombre a esta función pero en caso de ser
+ así sería conveniente cambiarlo.
+ Si no, siempre podremos guardar una librería encargada de sustituir las
+ direcciones internas por otras más aparentes de cara al público.
+\end_layout
+
+\begin_layout Subsection
+Módulos auxiliares
+\end_layout
+
+\begin_layout Standard
+Estos módulos definirán las funciones auxiliares que será utilizadas por
+ los módulos principales.
+ En principio, los módulos auxiliares necesarios, serían :
+\end_layout
+
+\begin_layout Itemize
+mainServerConnector : Conector con la base de datos de gestión de los servidores
+ de máquinas virtuales.
+ Este módulo incluye todas las funciones que serán necesarias en la página
+ de gestión de servidores.
+\end_layout
+
+\begin_layout Itemize
+userAccess y userManagement : Estos módulos permiten la conexión con la
+ base de datos de gestión de usuarios y definen una serie de funciones que
+ permiten extraer información acerca de los grupos de usuarios, las asignaturas,
+ los cursos y las máquinas virtuales asociadas a cada uno de los usuarios.
+ Estos módulos será utilizados por las páginas que gestionen o requieran
+ de los datos de los usuarios.
+\end_layout
+
+\begin_layout Itemize
+vncAdmin : Este módulo gestionará el envio y recepción de paquetes relacionados
+ con la creación de clientes VNC.
+ Será utilizado por la página de arranque de máquinas virtuales y la página
+ de ejecución del cliente vnc,
+\end_layout
+
+\begin_layout Section
+Vistas
+\end_layout
+
+\begin_layout Standard
+En esta sección hablaremos sobre los diferentes ficheros html que serán
+ necesarios en nuestra aplicación.
+ Como ya dijimos antes, cada página requerirá de un fichero html asociado
+ que se encargará de gestionar la representación de los diferentes elementos
+ que le lleguen desde default y su distribución por la página.
+ Todas estas páginas heredarán de una página padre que define el 
+\begin_inset Quotes eld
+\end_inset
+
+layout
+\begin_inset Quotes erd
+\end_inset
+
+ principal sobre el que se definirán el resto de páginas.
+ Con esto será necesario al menos 8 ficheros html diferentes.
+\end_layout
+
+\begin_layout Subsection
+Layout principal
+\end_layout
+
+\begin_layout Standard
+Todas las páginas html que definen la estructura particular de una determinada
+ página de la aplicación deben heredar de un layout principal que define
+ los colores, encabezado y en general todos aquellos aspectos que será comunes
+ para todas las páginas.
+ Por defecto web2Py hereda de un fichero llamado 
+\begin_inset Quotes eld
+\end_inset
+
+Layout.html
+\begin_inset Quotes erd
+\end_inset
+
+, pero este puede ser modificado por cualquiera de los ficheros de ejemplo
+ que web2py nos ofrece como base.
+ De esta forma, a la hora de implementar dicho fichero podemos:
+\end_layout
+
+\begin_layout Itemize
+Modificar el propio fichero 
+\begin_inset Quotes eld
+\end_inset
+
+Layout.html
+\begin_inset Quotes erd
+\end_inset
+
+ con las características, colores e imagenes que compondrán nuestra página.
+\end_layout
+
+\begin_layout Itemize
+Obtener un modelo básico a partir de 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://web2py.com/layouts
+\end_layout
+
+\end_inset
+
+, cargarlo en la sección 
+\begin_inset Quotes eld
+\end_inset
+
+plugins
+\begin_inset Quotes erd
+\end_inset
+
+ o 
+\begin_inset Quotes eld
+\end_inset
+
+private files
+\begin_inset Quotes erd
+\end_inset
+
+ de web2py, modificarlo para que se ajuste a las caraterísticas personales
+ que necesitemos y referenciarlo desde el resto de ficheros html (sustituyendolo
+ por la referencia a 
+\begin_inset Quotes eld
+\end_inset
+
+Layout.html
+\begin_inset Quotes erd
+\end_inset
+
+ dada por defecto.
+ Según he podido leer, todos estos layouts base son completamente modificables,
+ siempre y cuando no se borre la referencia a los desarrolladores originales
+ (marcadas en el fichero con un comentario).
+\end_layout
+
+\begin_layout Subsection
+Resto de layouts
+\end_layout
+
+\begin_layout Standard
+Esta sección, así como las posteriores serán terminadas de detallar hasta
+ mañana.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Es necesario realizar una modificación en la base de datos del grupo de
+ asignatura.
+ Ahora será necesario añadir una nueva tabla con el código y el nombre de
+ la asignatura asociada a dicho código.
+ La tabla del grupo de asignatura tendrá ahora el código de la asignatura
+ en vez de su nombre.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
