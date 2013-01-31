@@ -378,7 +378,7 @@ class RuntimeData(BasicDatabaseConnector):
         
         #CInsertamos los datos nuevos en la BD
         sql = "INSERT INTO ActualVM VALUES('"  + domainName + "'," 
-        sql+=    str(VMId) + "," + str(userId)  +"," + str(vncPort) +"," + str(VMPid) + ",'"  
+        sql+=    str(VMId) + "," + str(vncPort)  +"," + str(userId) +"," + str(VMPid) + ",'"  # BUG: puerto e ID del usuario estaban intercambiados
         sql +=  imageCopyPath + "','" + osImagePath + "','" + mac + "','" + uuid + "','"
         sql +=  password + "')"  
         #Ejecutamos el comando
@@ -419,7 +419,10 @@ class RuntimeData(BasicDatabaseConnector):
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
         #Devolvemos el resultado
-        return result[0]
+        if result != None :
+            return result[0]
+        else :
+            return result
         
 def main():    
     #Instanciamos la clase

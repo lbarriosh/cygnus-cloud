@@ -17,8 +17,8 @@ USE VMServerDB;
 CREATE TABLE IF NOT EXISTS VirtualMachine(VMId INTEGER PRIMARY KEY, name VARCHAR(20), imagePath VARCHAR(100),osImagePath VARCHAR(100),
 	FileConfigPath VARCHAR(100));
 	
-CREATE TABLE IF NOT EXISTS ActualVM(domainName VARCHAR(30) PRIMARY KEY,VMId INTEGER,VNCPortAdress INTEGER, userId INTEGER, VMPid INTEGER, imageCopyPath VARCHAR(100), 
-	osImagePath  VARCHAR(100),macAdress VARCHAR(20),uuid VARCHAR(40), VNCPass VARCHAR(64),
+CREATE TABLE IF NOT EXISTS ActualVM(domainName VARCHAR(30) PRIMARY KEY,VMId INTEGER,VNCPortAdress INTEGER, userId INTEGER, VMPid INTEGER, imageCopyPath VARCHAR(200), 
+	osImagePath  VARCHAR(200),macAdress VARCHAR(20),uuid VARCHAR(40), VNCPass VARCHAR(64),
 	FOREIGN KEY (VMId) REFERENCES VirtualMachine(VMId) ON DELETE CASCADE ON UPDATE CASCADE);
 
 # Comenzamos a rellenar las tablas con los valores por defecto
@@ -27,6 +27,6 @@ CREATE TABLE IF NOT EXISTS ActualVM(domainName VARCHAR(30) PRIMARY KEY,VMId INTE
 # Tabla VirtualMachine
 
 INSERT IGNORE INTO VirtualMachine VALUES 
-	(1, 'Debian', 'DebianSqueezeAMD64/Data.qcow2', 'DebianSqueezeAMD64/SqueezeAMD64.qcow2', 'DebianSqueezeAMD64/Squeeze_AMD64');
+	(1, 'Debian', 'DebianSqueezeAMD64/Data.qcow2', 'DebianSqueezeAMD64/SqueezeAMD64.qcow2', 'DebianSqueezeAMD64/Squeeze_AMD64.xml');
 
 #Tabla ActualVM => no hay maquinas virtuales activas. No insertamos nada

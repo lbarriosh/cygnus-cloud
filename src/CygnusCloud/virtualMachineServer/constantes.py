@@ -26,9 +26,10 @@ ConfigFilePath = '/home/luis/VirtualMachineServer/configuraciones/'
 SourceImagePath = '/home/luis/VirtualMachineServer/imagenes/'
 ExecutionImagePath = '/home/luis/VirtualMachineServer/imagenes_en_ejecucion/'
 websockifyPath = '/home/luis/VirtualMachineServer/utils/websockify'
+CertificatePath = '/home/luis/Certificates'
 
 #Virtual network settings
-VNName = "default" # Quizá deberíamos cambiar de nombre: puede chocar con algunas distros
+VNName = "ccnet" # Quizá deberíamos cambiar de nombre: puede chocar con algunas distros
 gatewayIP = "192.168.77.1"
 NetMask = "255.255.255.0"
 DHCPStartIP = "192.168.77.2"

@@ -1,6 +1,4 @@
 # -*- coding: UTF8 -*-
-import MySQLdb
-
 from database.utils.connector import BasicDatabaseConnector
 
 class ImageManager(BasicDatabaseConnector):
@@ -77,7 +75,7 @@ class ImageManager(BasicDatabaseConnector):
         #Recogemos los resultado
         result=self._executeQuery(sql)
         #Devolvemos el resultado
-        return result[0]
+        return result[0][0] # BUG aquí
     
     def setImagePath(self,imageId,path):
         '''
