@@ -39,7 +39,7 @@ def runCommandInBackground(cmd):
     Returns:
         cmd's command
     """
-    p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    p = Popen(cmd, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     return p.pid
 
 def runCommandAsRoot(cmd, ExceptionClass):

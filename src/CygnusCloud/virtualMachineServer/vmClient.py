@@ -63,7 +63,7 @@ class VMClient(NetworkCallback):
         self.__networkManager.sendPacket(self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):
-        if self.__shutDown and (self.__connector.getNumberOfDomains == 0):
+        if self.__shutDown and (self.__connector.getNumberOfDomains() == 0):
             self.__shutdown()
 
         name = domainInfo["name"]
@@ -146,8 +146,8 @@ class VMClient(NetworkCallback):
         # Los puertos impares (por ejemplo) serán para KVM 
         # y los pares los websockets
         pidWS = runCommandInBackground([websockifyPath,
-                    self.__vncServerIP + ":" + str(newPort),
-                    self.__vncServerIP + ":" + str(newPort + 1)])
+                    self.__vncServerIP + ":" + str(newPort + 1),
+                    self.__vncServerIP + ":" + str(newPort)])
         
         # Actualizo la base de datos
         self.__runningImageData.registerVMResources(newName, newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
