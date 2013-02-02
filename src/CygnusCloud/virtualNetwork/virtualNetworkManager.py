@@ -35,7 +35,7 @@ class VirtualNetworkManager(object):
         self.__networksByName = dict();
         
     def createVirtualNetwork(self, networkName, gatewayIPAddress, netmask,
-                                    dhcpStartIPAddress, dhcpEndIPAddress, bridgeName=None):
+                                    dhcpStartIPAddress, dhcpEndIPAddress, bridgeName=None, runAsRoot=False):
         """
         Creates a virtual network.
         Args:
@@ -67,11 +67,15 @@ class VirtualNetworkManager(object):
         self.__generateConfigurationFile(xmlFilePath, networkName, bridgeName,\
                                          gatewayIPAddress, netmask, dhcpStartIPAddress, dhcpEndIPAddress)
                 
+        if (runAsRoot) :
+            runMethod = runCommandAsRoot
+        else :
+            runMethod = runCommand
         # Create the virtual network
-        runCommandAsRoot("virsh net-define " + xmlFilePath, VirtualNetworkManagerException)
+        runMethod("virsh net-define " + xmlFilePath, VirtualNetworkManagerException)
         
         # Start it
-        runCommandAsRoot("virsh net-start " + networkName, VirtualNetworkManagerException)
+        runMethod("virsh net-start " + networkName, VirtualNetworkManagerException)
         
         # Delete the .xml file
         runCommand("rm " + xmlFilePath, VirtualNetworkManagerException)
