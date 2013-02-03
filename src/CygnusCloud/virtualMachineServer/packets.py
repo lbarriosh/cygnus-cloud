@@ -108,7 +108,7 @@ class VMServerPacketHandler(object):
         packet_type = p.readInt()
         result["packet_type"] = packet_type
         if (packet_type == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
-            result["machineId"] = p.readLong()
+            result["MachineID"] = p.readLong()
             result["UserID"] = p.readLong()
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
             result["UserID"] = p.readLong()

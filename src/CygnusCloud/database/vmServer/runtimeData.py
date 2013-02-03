@@ -1,6 +1,4 @@
 # -*- coding: UTF8 -*-
-import MySQLdb
-
 from database.utils.connector import BasicDatabaseConnector
 
 class RuntimeData(BasicDatabaseConnector):
@@ -28,7 +26,7 @@ class RuntimeData(BasicDatabaseConnector):
         #Ejecutamos el comando
         self._executeUpdate(sql)  
         #Creamos la tabla necesaria
-        sql = "CREATE TABLE IF NOT EXISTS freeMacs(UUID VARCHAR(40) ,MAC VARCHAR(20),PRIMARY KEY(UUID,MAC))"
+        sql = "CREATE TABLE IF NOT EXISTS freeMacs(UUID VARCHAR(40) ,MAC VARCHAR(20),PRIMARY KEY(UUID,MAC)) ENGINE=MEMORY;"
         #Ejecutamos el comando
         self._executeUpdate(sql)
         #Generamos el relleno
@@ -51,11 +49,11 @@ class RuntimeData(BasicDatabaseConnector):
         '''
             Función encargada de crear la tabla inicial de pares (UUID,MAC) libres
         '''
-        sql = "DROP TABLE IF EXISTS freeVNCPorts" 
+        sql = "DROP TABLE IF EXISTS freeVNCPorts;" 
         #Ejecutamos el comando
         self._executeUpdate(sql)  
         #Creamos la tabla necesaria
-        sql = "CREATE TABLE IF NOT EXISTS freeVNCPorts(VNCPort INTEGER PRIMARY KEY)"
+        sql = "CREATE TABLE IF NOT EXISTS freeVNCPorts(VNCPort INTEGER PRIMARY KEY) ENGINE=MEMORY;"
         #Ejecutamos el comando
         self._executeUpdate(sql)
         #Generamos el relleno
@@ -80,7 +78,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT * FROM freeMacs"
         #Nos quedamos con la primera ocurrencia
         result=self._executeQuery(sql, True)
-        
+        if (result == None) : 
+            return None        
         #Eliminamos este resultado de la tabla
         sql = "DELETE FROM freeMacs WHERE UUID = '" + result[0] + "' AND MAC ='" + result[1] + "'"
         #Ejecutamos el comando
@@ -109,7 +108,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT * FROM freeVNCPorts"
         #Nos quedamos con la primera ocurrencia
         result=self._executeQuery(sql, True)
-        
+        if (result == None) : 
+            return None
         #Eliminamos este resultado de la tabla
         sql = "DELETE FROM freeVNCPorts WHERE VNCPort = '" + str(result[0]) + "'"
         #Ejecutamos el comando
@@ -184,6 +184,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT VMId FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0] 
     
@@ -196,6 +198,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT VMId FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0] 
     
@@ -209,6 +213,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql += "vm.VMId = av.VMId " 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0] 
     
@@ -222,6 +228,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql += "vm.VMId = av.VMId " 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0] 
     
@@ -234,6 +242,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT imageCopyPath FROM ActualVM  WHERE VNCPortAdress = '" + str(vncPort) + "'"
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0] 
     
@@ -246,6 +256,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT imageCopyPath FROM ActualVM  WHERE domainName = '" + str(domainName) + "'"
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0] 
     
@@ -257,6 +269,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT macAdress FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0] 
     
@@ -268,6 +282,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT macAdress FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0] 
     
@@ -279,6 +295,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT uuid FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0] 
     
@@ -290,6 +308,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT uuid FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0] 
     
@@ -301,6 +321,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT VNCPass FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0]
     
@@ -312,6 +334,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT VNCPass FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0]
     
@@ -323,6 +347,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT VMPid FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0]
     
@@ -334,6 +360,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT VMPid FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0]
     
@@ -344,7 +372,9 @@ class RuntimeData(BasicDatabaseConnector):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT osImagePath FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
         #Recogemos el resultado
-        result=self._executeQuerY(sql, True)
+        result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0]
     
@@ -356,6 +386,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT osImagePath FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0]    
     
@@ -367,6 +399,8 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT domainName FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
         #Recogemos el resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0]
     
@@ -378,7 +412,7 @@ class RuntimeData(BasicDatabaseConnector):
         
         #CInsertamos los datos nuevos en la BD
         sql = "INSERT INTO ActualVM VALUES('"  + domainName + "'," 
-        sql+=    str(VMId) + "," + str(userId)  +"," + str(vncPort) +"," + str(VMPid) + ",'"  
+        sql+=    str(VMId) + "," + str(vncPort)  +"," + str(userId) +"," + str(VMPid) + ",'"  # BUG: puerto e ID del usuario estaban intercambiados
         sql +=  imageCopyPath + "','" + osImagePath + "','" + mac + "','" + uuid + "','"
         sql +=  password + "')"  
         #Ejecutamos el comando
@@ -406,8 +440,24 @@ class RuntimeData(BasicDatabaseConnector):
         sql = "SELECT COUNT(*) FROM ActualVM WHERE VNCPortAdress =" + str(port)
         #Recogemos los resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Si el resultado es 1, la MV existirá
         return (result[0] == 1) 
+    
+    def getAssignedUserInDomain(self,domainName):
+        '''
+            Devuelve el identificador del usuario asociado a la mv que se encuentra en ejecución en el 
+            dominio pasado como argumento.
+        '''
+        #Creamos la consulta encargada de extraer los datos
+        sql = "SELECT userId FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        #Recogemos el resultado
+        result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
+        #Devolvemos el resultado
+        return result[0]
         
 def main():    
     #Instanciamos la clase

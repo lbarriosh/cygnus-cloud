@@ -1,6 +1,4 @@
 # -*- coding: UTF8 -*-
-import MySQLdb
-
 from database.utils.connector import BasicDatabaseConnector
 
 class ImageManager(BasicDatabaseConnector):
@@ -40,6 +38,8 @@ class ImageManager(BasicDatabaseConnector):
         sql = "SELECT name FROM VirtualMachine WHERE VMId = " + str(imageId)   
         #Recogemos los resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0]  
     
@@ -52,6 +52,8 @@ class ImageManager(BasicDatabaseConnector):
         sql = "SELECT imagePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
         #Recogemos los resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0]
     
@@ -64,6 +66,8 @@ class ImageManager(BasicDatabaseConnector):
         sql = "SELECT osImagePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
         #Recogemos los resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
         return result[0]
     
@@ -76,8 +80,10 @@ class ImageManager(BasicDatabaseConnector):
         sql = "SELECT FileConfigPath FROM VirtualMachine WHERE VMId = " + str(imageId)   
         #Recogemos los resultado
         result=self._executeQuery(sql)
+        if (result == None) : 
+            return None
         #Devolvemos el resultado
-        return result[0]
+        return result[0][0] # BUG aquí
     
     def setImagePath(self,imageId,path):
         '''
@@ -117,6 +123,8 @@ class ImageManager(BasicDatabaseConnector):
         sql = "SELECT COUNT(*) FROM VirtualMachine WHERE VMId =" + str(VMId)
         #Recogemos los resultado
         result=self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
         # Si el resultado es 1, la MV existe
         return (result[0] == 1)   
     

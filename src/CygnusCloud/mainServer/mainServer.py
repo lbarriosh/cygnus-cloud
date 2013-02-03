@@ -19,7 +19,7 @@ listeningPort = 9000
 
 if __name__ == "__main__":
     reactor = MainServerReactor()
-    reactor.connectToDatabase(rootsPassword, dbName, dbUser, dbPassword, scriptPath, databaseName)
+    reactor.connectToDatabase(rootsPassword, dbName, dbUser, dbPassword, scriptPath)
     reactor.startListenning(certificatePath, 9000)
     while not reactor.hasFinished() :
         sleep(30)

@@ -37,11 +37,11 @@ class MainServerReactor(WebReactor, VMServerReactor):
         self.__webCallback = WebCallback(self)
         self.__finished = False
         
-    def connectToDatabase(self, rootsPassword, dbName, dbUser, dbPassword, scriptPath, databaseName):
+    def connectToDatabase(self, rootsPassword, dbName, dbUser, dbPassword, scriptPath):
         configurator = DBConfigurator(rootsPassword)
-        configurator.runSQLScript(dbName, scriptPath)
-        configurator.addUser(dbUser, dbPassword, databaseName, True)
-        self.__dbConnector = MainServerDatabaseConnector(dbUser, dbPassword, databaseName)
+        configurator.runSQLScript(scriptPath)
+        configurator.addUser(dbUser, dbPassword, dbName, True)
+        self.__dbConnector = MainServerDatabaseConnector(dbUser, dbPassword, dbName)
         self.__dbConnector.connect()
         
     def startListenning(self, certificatePath, port):
@@ -110,7 +110,11 @@ class MainServerReactor(WebReactor, VMServerReactor):
             
     def __updateVMServerStatus(self, data):
         # Fetch the virtual machine server's ID
-        serverID = self.__dbConnector.getVMServerID(data["VMServerIP"])
+        serverID = None
+        while (serverID == None) :
+            serverID = self.__dbConnector.getVMServerID(data["VMServerIP"])
+            if (serverID == None) :
+                sleep(0.1)
         # Change its status
         self.__dbConnector.updateVMServerStatus(serverID, SERVER_STATE_T.READY)
         self.__dbConnector.setVMServerStatistics(serverID, data["ActiveDomains"])

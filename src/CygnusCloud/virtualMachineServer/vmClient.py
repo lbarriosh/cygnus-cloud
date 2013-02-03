@@ -6,16 +6,17 @@ Created on 14/01/2013
 '''
 
 from network.manager import NetworkManager, NetworkCallback
+from network.interfaces.ipAddresses import get_ip_address 
 from libvirtConnector import libvirtConnector
-from Constantes import *
+from constantes import *
 from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from xmlEditor import ConfigurationFileEditor
 from database.vmServer.imageManager import ImageManager
 from database.vmServer.runtimeData import RuntimeData
-from virtualNetwork.VirtualNetworkManager import VirtualNetworkManager
+from virtualNetwork.virtualNetworkManager import VirtualNetworkManager
+from time import sleep
 
 from utils.commands import runCommand, runCommandInBackground
-from time import sleep
 import os
 
 class VMClientException(Exception):
@@ -23,22 +24,28 @@ class VMClientException(Exception):
 
 class VMClient(NetworkCallback):
     def __init__(self):
-        self.__waitForShutdown = False
-        self.__db = ImageManager(userDB, passwordDB, DBname)
-        self.__runningImageData = RuntimeData(userDBMac, passwordDBMac, DBnameMac)
-        # TODO: esto debe ejecutarse como root
-        #self.__virtualNetwork = VirtualNetworkManager()
-        #self.__virtualNetwork.createVirtualNetwork(VNName, gatewayIP, NetMask,
-        #                            DHCPStartIP, DHCPEndIP)
+        self.__shutDown = False
+        self.__connectToDatabases(databaseName, databaseUserName, databasePassword)
+        self.__connectToLibvirt()
+        self.__startListenning(vncNetworkInterface, listenningPort)
+        
+    def __connectToDatabases(self, databaseName, user, password):
+        self.__db = ImageManager(user, password, databaseName)
+        self.__runningImageData = RuntimeData(user, password, databaseName)
+        
+    def __connectToLibvirt(self) :
         self.__connector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
-        self.__connect()
+        self.__virtualNetworkManager = VirtualNetworkManager()
+        self.__virtualNetworkManager.createVirtualNetwork(VNName, gatewayIP, NetMask,
+                                    DHCPStartIP, DHCPEndIP)
             
-    def __connect(self):
-        self.__networkManager = NetworkManager()
+    def __startListenning(self, networkInterface, listenningPort):
+        self.__vncServerIP = get_ip_address(networkInterface)
+        self.__listenningPort = listenningPort
+        self.__networkManager = NetworkManager(CertificatePath)
         self.__networkManager.startNetworkService()
         self.__packetManager = VMServerPacketHandler(self.__networkManager)
-        callback = self
-        self.__networkManager.listenIn(listenPort, callback)
+        self.__networkManager.listenIn(self.__listenningPort, self, True) # Usamos SSL
 
     def __startedVM(self, domain):
         self.__sendConnectionData(domain)
@@ -47,11 +54,16 @@ class VMClient(NetworkCallback):
         ip = domainInfo["VNCip"]
         port = domainInfo["VNCport"]
         password = domainInfo["VNCpassword"]
-        packet = self.__packetManager.createVMConnectionParametersPacket(ip, port + 1, password)
-        self.__networkManager.sendPacket(serverPort, packet)
+        domainName = domainInfo["name"]
+        userID = None
+        while (userID == None) :
+            userID = self.__runningImageData.getAssignedUserInDomain(domainName)
+            sleep(0.1)
+        packet = self.__packetManager.createVMConnectionParametersPacket(userID, ip, port + 1, password)
+        self.__networkManager.sendPacket(self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):
-        if self.__waitForShutdown and (self.__connector.getNumberOfDomains == 0):
+        if self.__shutDown and (self.__connector.getNumberOfDomains() == 0):
             self.__shutdown()
 
         name = domainInfo["name"]
@@ -71,8 +83,8 @@ class VMClient(NetworkCallback):
     
     def __shutdown(self):
         # Cosas a hacer cuando se desea apagar el servidor
-        #self.__virtualNetwork.destroyVirtualNetwork(VNName)
-        pass
+        self.__virtualNetworkManager.destroyVirtualNetwork(VNName)
+        self.__networkManager.stopNetworkService()
         
     def processPacket(self, packet):
         packetType = self.__packetManager.readPacket(packet)
@@ -85,8 +97,8 @@ class VMClient(NetworkCallback):
         processPacket[packetType['packet_type']](packetType)
 
     def __createDomain(self, info):
-        idVM = info["machineId"]
-        userID = info["userId"]
+        idVM = info["MachineID"]
+        userID = info["UserID"]
         configFile = ConfigFilePath + self.__db.getFileConfigPath(idVM)
         originalName = self.__db.getName(idVM)
         dataPath = self.__db.getImagePath(idVM)
@@ -99,7 +111,8 @@ class VMClient(NetworkCallback):
         newDataDisk = ExecutionImagePath + dataPath + str(newPort) + ".qcow2"
         newOSDisk = ExecutionImagePath + osPath + str(newPort) + ".qcow2"
         newPassword = self.__getNewPassword()
-        sourceDataDisk = SourceImagePath + dataPath
+        # Esta variable no se está utilizando
+        #sourceDataDisk = SourceImagePath + dataPath
         sourceOSDisk = SourceImagePath + osPath        
         
         # Preparo los archivos
@@ -122,7 +135,7 @@ class VMClient(NetworkCallback):
         xmlFile.setDomainIdentifiers(newName, newUUID)
         xmlFile.setImagePaths(newOSDisk, newDataDisk)
         xmlFile.setNetworkConfiguration(VNName, newMAC)
-        xmlFile.setVNCServerConfiguration(serverIP, newPort, newPassword)
+        xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword)
         
         string = xmlFile.generateConfigurationString()
         
@@ -133,8 +146,8 @@ class VMClient(NetworkCallback):
         # Los puertos impares (por ejemplo) serán para KVM 
         # y los pares los websockets
         pidWS = runCommandInBackground([websockifyPath,
-                    websocketServerIP + ":" + str(newPort + 1),
-                    serverIP + ":" + str(newPort)])
+                    self.__vncServerIP + ":" + str(newPort + 1),
+                    self.__vncServerIP + ":" + str(newPort)])
         
         # Actualizo la base de datos
         self.__runningImageData.registerVMResources(newName, newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
@@ -142,11 +155,11 @@ class VMClient(NetworkCallback):
     
     def __serverStatusRequest(self, packet):
         activeDomains = self.__connector.getNumberOfDomains()
-        packet = self.__packetManager.createVMServerStatusPacket(serverIP, activeDomains)
-        self.__networkManager.sendPacket(serverPort, packet)
+        packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
+        self.__networkManager.sendPacket(self.__listenningPort, packet)
     
     def __userFriendlyShutdown(self, packet):
-        self.__waitForShutdown = True
+        self.__shutDown = True
     
     def __halt(self, packet):
         # Destruyo los dominios
@@ -161,9 +174,6 @@ class VMClient(NetworkCallback):
         
     def __getNewPassword(self):
         return runCommand("openssl rand -base64 " + str(passwordLength), VMClientException)
-        
-if __name__ == "__main__" :
-    VMClient()
-    while True :
-        print "Running"
-        sleep(1000)
+    
+    def hasFinished(self):
+        return self.__shutDown
