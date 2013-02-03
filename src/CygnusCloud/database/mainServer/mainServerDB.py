@@ -50,7 +50,7 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         #Contamos el número de serviddores con el id dado    
         sql = "SELECT COUNT(*) FROM VMServer WHERE serverId =" + str(serverId)
         result = self._executeQuery(sql, True)
-        if (result == ()) : 
+        if (result == None) : 
             return None
         #Si el número es 1 entonces el servidor existe
         return (result[0] == 1)
@@ -287,7 +287,7 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         query = "SELECT name, Description FROM Image WHERE imageId = " + str(imageId)   
         #Recogemos los resultado
         result=self._executeQuery(query, True)
-        if (result == ()) : 
+        if (result == None) : 
             return None
         d = dict()
         d["ImageName"] = result[0]
@@ -326,7 +326,7 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         '''
         query = "SELECT imageID FROM Image WHERE name = '" + imageName + "';"
         result = self._executeQuery(query, True)
-        if (result == ()) : 
+        if (result == None) : 
             return None
         return result[0]
     
@@ -341,7 +341,7 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         sql = "SELECT COUNT(*) FROM Image WHERE imageId =" + str(imageId)
         #Recogemos los resultado
         result=self._executeQuery(sql, True)
-        if (result == ()) : 
+        if (result == None) : 
             return None
         #Si el resultado es 1, la imagen existe
         return (result[0] == 1)

@@ -8,8 +8,6 @@
 '''
 import MySQLdb
 
-from os import path
-
 class DBConfigurator(object):
 
     def __init__(self, rootPassword):
@@ -66,7 +64,7 @@ class DBConfigurator(object):
         # Tokenize its content
         commandNumber = fileContent.count(";")
         commands = fileContent.split(";", commandNumber)
-        print commands
+        # Run its commands
         for command in commands :
             if not DBConfigurator.__isEmpty__(command) :
                 cursor.execute(command + ";")        
@@ -77,8 +75,8 @@ class DBConfigurator(object):
         db.close()
         
     @staticmethod
-    def __isEmpty__(str):
-        for c in str :
+    def __isEmpty__(string):
+        for c in string :
             if (c != ' ' and c != '\n' and c != '\r' and c != 't') :
                 return False
         return True
