@@ -25,7 +25,7 @@ passwordLength = 64
 ConfigFilePath = '/home/luis/VirtualMachineServer/configuraciones/'
 SourceImagePath = '/home/luis/VirtualMachineServer/imagenes/'
 ExecutionImagePath = '/home/luis/VirtualMachineServer/imagenes_en_ejecucion/'
-websockifyPath = '/home/luis/VirtualMachineServer/utils/websockify'
+websockifyPath = '/home/luis/VirtualMachineServer/noVNC/utils/websockify'
 CertificatePath = '/home/luis/Certificates'
 
 #Virtual network settings

@@ -50,6 +50,8 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         #Contamos el número de serviddores con el id dado    
         sql = "SELECT COUNT(*) FROM VMServer WHERE serverId =" + str(serverId)
         result = self._executeQuery(sql, True)
+        if (result == ()) : 
+            return None
         #Si el número es 1 entonces el servidor existe
         return (result[0] == 1)
     
@@ -82,6 +84,8 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
             + " WHERE serverId = " + str(serverId) + ";"
         # Recogemos los resultados
         results=self._executeQuery(query)
+        if (results == ()) : 
+            return None
         d = dict()
         (name, status, ip, port) = results[0]
         # Devolvemos el resultado 
@@ -102,10 +106,11 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         #Creamos la consulta encargada de extraer los datos
         query = "SELECT hosts FROM VMServerStatus WHERE serverId = " + str(serverId) + ";"
         results=self._executeQuery(query)
-        d = dict()
-        if (results != tuple()) :
-            activeHosts = results[0][0]
-            d["ActiveHosts"] = activeHosts
+        if (results == ()) : 
+            return None
+        d = dict()        
+        activeHosts = results[0][0]
+        d["ActiveHosts"] = activeHosts
         # Devolvemos los resultados
         return d
     
@@ -227,6 +232,8 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
              "' OR serverName = '" + nameOrIPAddress + "';"
         # Execute it
         results=self._executeQuery(query)
+        if (results == ()) : 
+            return None
         return results[0][0]
     
     def updateVMServerStatus(self, serverId, newStatus):
@@ -280,6 +287,8 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         query = "SELECT name, Description FROM Image WHERE imageId = " + str(imageId)   
         #Recogemos los resultado
         result=self._executeQuery(query, True)
+        if (result == ()) : 
+            return None
         d = dict()
         d["ImageName"] = result[0]
         d["ImageDescription"] = result[1]
@@ -317,6 +326,8 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         '''
         query = "SELECT imageID FROM Image WHERE name = '" + imageName + "';"
         result = self._executeQuery(query, True)
+        if (result == ()) : 
+            return None
         return result[0]
     
     def isImageExists(self,imageId):   
@@ -330,6 +341,8 @@ class MainServerDatabaseConnector(BasicDatabaseConnector):
         sql = "SELECT COUNT(*) FROM Image WHERE imageId =" + str(imageId)
         #Recogemos los resultado
         result=self._executeQuery(sql, True)
+        if (result == ()) : 
+            return None
         #Si el resultado es 1, la imagen existe
         return (result[0] == 1)
     

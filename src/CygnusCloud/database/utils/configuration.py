@@ -57,18 +57,19 @@ class DBConfigurator(object):
             db = MySQLdb.connect(host='localhost',user=username,passwd=password)    
         cursor=db.cursor()
         
-        command = ""
+        # Read the whole file
+        fileContent = ""
         fp = open(sqlFilePath)
-        for line in fp:
-                if line.endswith(';\n'):
-                    command += line
-                    cursor.execute(command)
-                    command = ""
-                else:
-                    command += line          
-        # Run the last command (if necessary)
-        if (not DBConfigurator.__isEmpty__(command)) :
-            cursor.execute(command)
+        for line in fp :
+            fileContent += line
+        fp.close()
+        # Tokenize its content
+        commandNumber = fileContent.count(";")
+        commands = fileContent.split(";", commandNumber)
+        print commands
+        for command in commands :
+            if not DBConfigurator.__isEmpty__(command) :
+                cursor.execute(command + ";")        
         # Write the changes to the database
         db.commit() 
         # Close the database connection

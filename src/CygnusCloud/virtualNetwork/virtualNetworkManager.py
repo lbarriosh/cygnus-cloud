@@ -30,12 +30,13 @@ class VirtualNetworkManager(object):
     This class provides methods to create, destroy
     and to open ports in virtual machine networks.
     """
-    def __init__(self):
+    def __init__(self, runAsRoot=False):
         self.__networksByIP = dict()
         self.__networksByName = dict();
+        self.__runAsRoot = runAsRoot
         
     def createVirtualNetwork(self, networkName, gatewayIPAddress, netmask,
-                                    dhcpStartIPAddress, dhcpEndIPAddress, bridgeName=None, runAsRoot=False):
+                                    dhcpStartIPAddress, dhcpEndIPAddress, bridgeName=None):
         """
         Creates a virtual network.
         Args:
@@ -67,7 +68,7 @@ class VirtualNetworkManager(object):
         self.__generateConfigurationFile(xmlFilePath, networkName, bridgeName,\
                                          gatewayIPAddress, netmask, dhcpStartIPAddress, dhcpEndIPAddress)
                 
-        if (runAsRoot) :
+        if (self.__runAsRoot) :
             runMethod = runCommandAsRoot
         else :
             runMethod = runCommand
@@ -104,9 +105,13 @@ class VirtualNetworkManager(object):
         if (not self.__networksByName.has_key(nameOrIPAddress)):
             networkName = self.__networksByIP[nameOrIPAddress]        
         
+        if (self.__runAsRoot) :
+            runMethod = runCommandAsRoot
+        else :
+            runMethod = runCommand
         # Destroy the virtual network
-        runCommandAsRoot("virsh net-destroy " + networkName, VirtualNetworkManagerException)
-        runCommandAsRoot("virsh net-undefine " + networkName, VirtualNetworkManagerException)
+        runMethod("virsh net-destroy " + networkName, VirtualNetworkManagerException)
+        runMethod("virsh net-undefine " + networkName, VirtualNetworkManagerException)
         # Delete it from the internal data structures
         ip = self.__networksByName[networkName]
         self.__networksByName.pop(networkName)

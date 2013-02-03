@@ -30,7 +30,7 @@ def runCommand(cmd, ExceptionClass):
     else :
         # Return the command's output
         return p.stdout.read()
-
+    
 def runCommandInBackground(cmd):
     """
     Runs a command in background
@@ -39,6 +39,7 @@ def runCommandInBackground(cmd):
     Returns:
         cmd's command
     """
+    print cmd
     p = Popen(cmd, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     return p.pid
 
