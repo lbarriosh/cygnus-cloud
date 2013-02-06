@@ -1,3 +1,4 @@
+#Barra de idiomas
 plugin_translate_current_language = 'es'
 
 session._language = request.vars._language or session._language or plugin_translate_current_language

@@ -73,7 +73,18 @@
     <div class="flash">{{=response.flash or ''}}</div>
     <div class="navbar-inner">
       <div class="container">
-          {{=plugin_translate()}} 
+              <!-- Barra de idiomas y de inicio de sesión -->      
+              {{=plugin_translate()}} 
+                <!-- start header -->
+              {{try:}}
+              {{if(auth.user):}}
+              <!--{{nav = auth.navbar()}}
+              {{nav.components = nav.components[:4] + [']']}}
+              {{=nav}}-->
+          {{=FORM(T('Bienvenido ' + str(auth.user['first_name']) + '   ')  ,A(T('Salir'),_href= URL(c = 'main' , f = 'logoutUser')))}}
+              {{pass}}
+              {{except:pass}}
+
 
         <!-- the next tag is necessary for bootstrap menus, do not remove -->
         <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">

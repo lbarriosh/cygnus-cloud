@@ -53,5 +53,5 @@ userDB.auth_group.insert(role = 'Administrator',description =  'All privilages a
 u1 = userDB.auth_user.insert(password = userDB.auth_user.password.validate('1234')[0],email = 'Admin1@ucm.es',first_name='Bertoldo',last_name='Pedralbes')
 
 #Enlazamos los usuarios a los grupos
-auth.add_membership('Administrator',u1)
+auth.add_membership('Student',u1)
 print userDB.tables

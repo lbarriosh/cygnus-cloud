@@ -25,7 +25,7 @@ response.google_analytics_id = None
 #########################################################################
 
 
-DEVELOPMENT_MENU = False
+DEVELOPMENT_MENU = True
 
 #########################################################################
 ## provide shortcuts for development. remove in production
