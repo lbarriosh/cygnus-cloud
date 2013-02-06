@@ -1,0 +1,58 @@
+# -*- coding: utf-8 -*-
+from configuration import DBConfigurator
+from gluon.tools import Auth
+
+#conf = DBConfigurator('170590ucm')
+#conf.dropDatabase('UserDB')
+#conf.createDatabase('UserDB')
+#conf.addUser('CygnusCloud','cygnuscloud2012', 'UserDB')
+userDB = DAL('mysql://CygnusCloud:cygnuscloud2012@localhost/UserDB',migrate_enabled=True)
+
+# Autentication
+
+auth = Auth(userDB)
+auth.define_tables(migrate = True)
+
+    
+      
+#Usuario de prueba
+#u1 = userDB.auth_user.insert(password = userDB.auth_user.password.validate('1234')[0],email = 'Admin1@ucm.es',first_name='Bertoldo',last_name='Pedralbes')
+ 
+                  
+
+
+#Añadimos los grupos
+#auth.add_group('Student', 'Only run virtual machines available')
+#auth.add_group('Administrator', 'All privilages available')
+
+ 
+#Enlazamos los usuarios a los grupos
+#auth.add_membership('Administrator',u1)
+      
+userDB.define_table('UserGroup',
+   Field('yearGroup','integer', 'reference Users'),
+   Field('cod','integer','reference subjects'),
+   Field('curse','integer'),
+   Field('curseGroup', length=1),
+   primarykey=['cod','curseGroup'],migrate= True)
+      
+userDB.define_table('ClassGroup',
+   Field('userId','integer', 'reference auth_user' ),
+   Field('cod','integer','reference UserGroup'),
+   Field('curseGroup','reference UserGroup',length=1 ),
+   primarykey=['cod','curseGroup','userId'],migrate= True)
+   
+userDB.define_table('Subjects',
+   Field('code','integer'),
+   Field('name',length=15),migrate= True)
+   
+
+   
+userDB.define_table('VMByGroup',
+   Field('VMName',length=20),
+   Field('cod','integer','reference UserGroup'),
+   Field('curseGroup','reference UserGroup',length=1 ),
+   primarykey=['cod','curseGroup','VMName'],migrate= True)
+
+ 
+print userDB.tables

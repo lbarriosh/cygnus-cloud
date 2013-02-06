@@ -1,0 +1,7 @@
+{{extend 'layout.html'}}
+<h1>{{=T('Bienvenido a CygnusCloud!')}}</h1>
+<div id="login_form">
+Please fill the form
+{{=form}}
+ 
+</div>

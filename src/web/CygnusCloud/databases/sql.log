@@ -1,0 +1,925 @@
+timestamp: 2013-02-01T16:51:29.880966
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2013-02-01T16:51:30.158376
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2013-02-01T16:51:30.328742
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-02-01T16:51:30.499480
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2013-02-01T16:51:30.653463
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2013-02-01T16:51:30.836753
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2013-02-01T16:52:15.031207
+CREATE TABLE image(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title CHAR(512) UNIQUE,
+    file CHAR(512)
+);
+success!
+timestamp: 2013-02-01T16:52:15.225378
+CREATE TABLE post(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    image_id INTEGER REFERENCES image (id) ON DELETE CASCADE,
+    author CHAR(512),
+    email CHAR(512),
+    body TEXT
+);
+success!
+timestamp: 2013-02-01T16:52:15.425502
+ALTER TABLE auth_user ADD username CHAR(128);
+timestamp: 2013-02-04T11:32:30.136486
+CREATE TABLE plugin_multitranslate_translation(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title CHAR(512),
+    owner INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    language CHAR(512),
+    source TEXT,
+    translation TEXT,
+    translator INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    assigned TIMESTAMP,
+    pending CHAR(1),
+    ready CHAR(1),
+    notes TEXT
+);
+success!
+timestamp: 2013-02-04T11:32:30.295465
+CREATE TABLE plugin_multitranslate_comment(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    comment CHAR(512),
+    translation INTEGER REFERENCES plugin_multitranslate_translation (id) ON DELETE CASCADE,
+    member INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    commented TIMESTAMP
+);
+success!
+timestamp: 2013-02-04T11:32:30.446891
+CREATE TABLE plugin_multitranslate_application(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    applicant INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    approved CHAR(1),
+    languages TEXT,
+    note TEXT
+);
+success!
+timestamp: 2013-02-05T13:07:08.359034
+CREATE TABLE image(
+    id INT AUTO_INCREMENT NOT NULL,
+    title VARCHAR(255) UNIQUE,
+    file VARCHAR(255),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T13:07:08.668230
+CREATE TABLE post(
+    id INT AUTO_INCREMENT NOT NULL,
+    image_id INT, INDEX image_id__idx (image_id), FOREIGN KEY (image_id) REFERENCES image (id) ON DELETE CASCADE,
+    author VARCHAR(255),
+    email VARCHAR(255),
+    body LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T13:07:08.795076
+CREATE TABLE auth_user(
+    id INT AUTO_INCREMENT NOT NULL,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(255),
+    username VARCHAR(128),
+    password VARCHAR(255),
+    registration_key VARCHAR(255),
+    reset_password_key VARCHAR(255),
+    registration_id VARCHAR(255),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T13:07:08.914391
+CREATE TABLE auth_group(
+    id INT AUTO_INCREMENT NOT NULL,
+    role VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T13:07:09.026720
+CREATE TABLE auth_membership(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T13:07:09.201512
+CREATE TABLE auth_permission(
+    id INT AUTO_INCREMENT NOT NULL,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(255),
+    table_name VARCHAR(255),
+    record_id INT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T13:07:09.314563
+CREATE TABLE auth_event(
+    id INT AUTO_INCREMENT NOT NULL,
+    time_stamp DATETIME,
+    client_ip VARCHAR(255),
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T13:07:09.453747
+CREATE TABLE auth_cas(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on DATETIME,
+    service VARCHAR(255),
+    ticket VARCHAR(255),
+    renew CHAR(1),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T16:08:39.598680
+ALTER TABLE auth_user DROP COLUMN username;
+success!
+timestamp: 2013-02-05T16:08:40.254319
+CREATE TABLE ClassGroup(
+    id INT AUTO_INCREMENT NOT NULL,
+    userId INT,
+    groupId INT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T16:11:25.235666
+CREATE TABLE Subjects(
+    id INT AUTO_INCREMENT NOT NULL,
+    code INT,
+    name VARCHAR(15),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T16:12:19.344110
+CREATE TABLE UserGroup(
+    groupId INT AUTO_INCREMENT NOT NULL,
+    yearGroup INT,
+    cod INT NOT NULL,
+    curse INT,
+    curseGroup VARCHAR(1) NOT NULL,
+    PRIMARY KEY(cod, curseGroup))  ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2013-02-05T16:18:16.096146
+ALTER TABLE ClassGroup ADD userid__tmp INT NOT NULL;
+success!
+UPDATE ClassGroup SET userid__tmp=userid;
+success!
+ALTER TABLE ClassGroup DROP COLUMN userid;
+success!
+ALTER TABLE ClassGroup ADD userid INT NOT NULL;
+success!
+UPDATE ClassGroup SET userid=userid__tmp;
+success!
+ALTER TABLE ClassGroup DROP COLUMN userid__tmp;
+success!
+timestamp: 2013-02-05T16:18:17.485940
+ALTER TABLE ClassGroup ADD cod INT NOT NULL;
+success!
+timestamp: 2013-02-05T16:18:17.755869
+ALTER TABLE ClassGroup ADD cursegroup INT;
+success!
+timestamp: 2013-02-05T16:18:18.064520
+ALTER TABLE ClassGroup DROP COLUMN id;
+success!
+timestamp: 2013-02-05T16:18:18.342144
+ALTER TABLE ClassGroup DROP COLUMN groupid;
+success!
+timestamp: 2013-02-05T16:18:18.659492
+CREATE TABLE UserGroup(
+    yearGroup INT,
+    cod INT NOT NULL,
+    curse INT,
+    curseGroup VARCHAR(1) NOT NULL,
+    PRIMARY KEY(cod, curseGroup))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T16:18:18.799710
+CREATE TABLE VMByGroup(
+    id INT AUTO_INCREMENT NOT NULL,
+    groupId INT,
+    VMName VARCHAR(20),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T16:19:08.586781
+ALTER TABLE VMByGroup ADD vmname__tmp VARCHAR(20) NOT NULL;
+success!
+UPDATE VMByGroup SET vmname__tmp=vmname;
+success!
+ALTER TABLE VMByGroup DROP COLUMN vmname;
+success!
+ALTER TABLE VMByGroup ADD vmname VARCHAR(20) NOT NULL;
+success!
+UPDATE VMByGroup SET vmname=vmname__tmp;
+success!
+ALTER TABLE VMByGroup DROP COLUMN vmname__tmp;
+success!
+timestamp: 2013-02-05T16:19:09.936701
+ALTER TABLE VMByGroup ADD cod INT NOT NULL;
+success!
+timestamp: 2013-02-05T16:19:10.214918
+ALTER TABLE VMByGroup ADD cursegroup INT;
+success!
+timestamp: 2013-02-05T16:19:10.525818
+ALTER TABLE VMByGroup DROP COLUMN id;
+success!
+timestamp: 2013-02-05T16:19:10.806025
+ALTER TABLE VMByGroup DROP COLUMN groupid;
+success!
+timestamp: 2013-02-05T16:36:03.508998
+CREATE TABLE Users(
+    id INT AUTO_INCREMENT NOT NULL,
+    name VARCHAR(15),
+    password VARCHAR(15),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T16:49:17.636146
+CREATE TABLE UserType(
+    id INT AUTO_INCREMENT NOT NULL,
+    role VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T16:49:17.775384
+CREATE TABLE TypeOf(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES UserType (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T16:56:43.999404
+ALTER TABLE auth_user ADD password__tmp VARCHAR(15);
+success!
+UPDATE auth_user SET password__tmp=password;
+success!
+ALTER TABLE auth_user DROP COLUMN password;
+success!
+ALTER TABLE auth_user ADD password VARCHAR(15);
+success!
+UPDATE auth_user SET password=password__tmp;
+success!
+ALTER TABLE auth_user DROP COLUMN password__tmp;
+success!
+timestamp: 2013-02-05T16:56:45.140115
+ALTER TABLE auth_user ADD name VARCHAR(15);
+success!
+timestamp: 2013-02-05T16:56:45.425844
+ALTER TABLE auth_user DROP COLUMN first_name;
+success!
+timestamp: 2013-02-05T16:56:45.703152
+ALTER TABLE auth_user DROP COLUMN last_name;
+success!
+timestamp: 2013-02-05T16:56:46.001295
+ALTER TABLE auth_user DROP COLUMN registration_id;
+success!
+timestamp: 2013-02-05T16:56:46.271573
+ALTER TABLE auth_user DROP COLUMN reset_password_key;
+success!
+timestamp: 2013-02-05T16:56:46.547556
+ALTER TABLE auth_user DROP COLUMN registration_key;
+success!
+timestamp: 2013-02-05T16:56:46.824532
+ALTER TABLE auth_user DROP COLUMN email;
+success!
+timestamp: 2013-02-05T16:56:47.119652
+ALTER TABLE Users ADD first_name VARCHAR(128);
+success!
+timestamp: 2013-02-05T16:56:47.393495
+ALTER TABLE Users ADD last_name VARCHAR(128);
+success!
+timestamp: 2013-02-05T16:56:47.679767
+ALTER TABLE Users ADD registration_id VARCHAR(255);
+success!
+timestamp: 2013-02-05T16:56:47.956947
+ALTER TABLE Users ADD reset_password_key VARCHAR(255);
+success!
+timestamp: 2013-02-05T16:56:48.246253
+ALTER TABLE Users ADD password__tmp VARCHAR(255);
+success!
+UPDATE Users SET password__tmp=password;
+success!
+ALTER TABLE Users DROP COLUMN password;
+success!
+ALTER TABLE Users ADD password VARCHAR(255);
+success!
+UPDATE Users SET password=password__tmp;
+success!
+ALTER TABLE Users DROP COLUMN password__tmp;
+success!
+timestamp: 2013-02-05T16:56:49.779835
+ALTER TABLE Users ADD registration_key VARCHAR(255);
+success!
+timestamp: 2013-02-05T16:56:50.140441
+ALTER TABLE Users ADD email VARCHAR(255);
+success!
+timestamp: 2013-02-05T16:56:50.444597
+ALTER TABLE Users DROP COLUMN name;
+success!
+timestamp: 2013-02-05T17:05:01.907763
+ALTER TABLE auth_user ADD first_name VARCHAR(128);
+success!
+timestamp: 2013-02-05T17:05:02.229939
+ALTER TABLE auth_user ADD last_name VARCHAR(128);
+success!
+timestamp: 2013-02-05T17:05:02.507878
+ALTER TABLE auth_user ADD registration_id VARCHAR(255);
+success!
+timestamp: 2013-02-05T17:05:02.786423
+ALTER TABLE auth_user ADD reset_password_key VARCHAR(255);
+success!
+timestamp: 2013-02-05T17:05:03.065058
+ALTER TABLE auth_user ADD password__tmp VARCHAR(255);
+success!
+UPDATE auth_user SET password__tmp=password;
+success!
+ALTER TABLE auth_user DROP COLUMN password;
+success!
+ALTER TABLE auth_user ADD password VARCHAR(255);
+success!
+UPDATE auth_user SET password=password__tmp;
+success!
+ALTER TABLE auth_user DROP COLUMN password__tmp;
+success!
+timestamp: 2013-02-05T17:05:04.332549
+ALTER TABLE auth_user ADD registration_key VARCHAR(255);
+success!
+timestamp: 2013-02-05T17:05:04.773380
+ALTER TABLE auth_user ADD email VARCHAR(255);
+success!
+timestamp: 2013-02-05T17:05:05.106557
+ALTER TABLE auth_user DROP COLUMN name;
+success!
+timestamp: 2013-02-05T17:45:20.924451
+CREATE TABLE auth_user(
+    id INT AUTO_INCREMENT NOT NULL,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(255),
+    password VARCHAR(255),
+    registration_key VARCHAR(255),
+    reset_password_key VARCHAR(255),
+    registration_id VARCHAR(255),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T17:45:21.124619
+CREATE TABLE auth_group(
+    id INT AUTO_INCREMENT NOT NULL,
+    role VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T17:45:21.238935
+CREATE TABLE auth_membership(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T17:45:21.460745
+CREATE TABLE auth_permission(
+    id INT AUTO_INCREMENT NOT NULL,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(255),
+    table_name VARCHAR(255),
+    record_id INT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T17:45:21.573572
+CREATE TABLE auth_event(
+    id INT AUTO_INCREMENT NOT NULL,
+    time_stamp DATETIME,
+    client_ip VARCHAR(255),
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T17:45:21.709439
+CREATE TABLE auth_cas(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on DATETIME,
+    service VARCHAR(255),
+    ticket VARCHAR(255),
+    renew CHAR(1),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T17:45:21.845445
+CREATE TABLE ClassGroup(
+    userId INT NOT NULL,
+    cod INT NOT NULL,
+    curseGroup INT,
+    PRIMARY KEY(cod, curseGroup, userId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T17:45:21.977820
+CREATE TABLE Subjects(
+    id INT AUTO_INCREMENT NOT NULL,
+    code INT,
+    name VARCHAR(15),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T17:45:22.100552
+CREATE TABLE UserGroup(
+    yearGroup INT,
+    cod INT NOT NULL,
+    curse INT,
+    curseGroup VARCHAR(1) NOT NULL,
+    PRIMARY KEY(cod, curseGroup))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T17:45:22.255790
+CREATE TABLE VMByGroup(
+    VMName VARCHAR(20) NOT NULL,
+    cod INT NOT NULL,
+    curseGroup INT,
+    PRIMARY KEY(cod, curseGroup, VMName))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:22:43.448873
+CREATE TABLE auth_user(
+    id INT AUTO_INCREMENT NOT NULL,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(255),
+    password VARCHAR(255),
+    registration_key VARCHAR(255),
+    reset_password_key VARCHAR(255),
+    registration_id VARCHAR(255),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:22:43.600686
+CREATE TABLE auth_group(
+    id INT AUTO_INCREMENT NOT NULL,
+    role VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:22:43.734114
+CREATE TABLE auth_membership(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:22:43.946328
+CREATE TABLE auth_permission(
+    id INT AUTO_INCREMENT NOT NULL,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(255),
+    table_name VARCHAR(255),
+    record_id INT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:22:44.079782
+CREATE TABLE auth_event(
+    id INT AUTO_INCREMENT NOT NULL,
+    time_stamp DATETIME,
+    client_ip VARCHAR(255),
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:22:44.279837
+CREATE TABLE auth_cas(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on DATETIME,
+    service VARCHAR(255),
+    ticket VARCHAR(255),
+    renew CHAR(1),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:22:44.559207
+CREATE TABLE UserGroup(
+    yearGroup INT,
+    cod INT NOT NULL,
+    curse INT,
+    curseGroup VARCHAR(1) NOT NULL,
+    PRIMARY KEY(cod, curseGroup))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:22:44.723345
+CREATE TABLE ClassGroup(
+    userId INT NOT NULL,
+    cod INT NOT NULL,
+    curseGroup INT,
+    PRIMARY KEY(cod, curseGroup, userId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:22:44.835029
+CREATE TABLE Subjects(
+    id INT AUTO_INCREMENT NOT NULL,
+    code INT,
+    name VARCHAR(15),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:22:44.947135
+CREATE TABLE VMByGroup(
+    VMName VARCHAR(20) NOT NULL,
+    cod INT NOT NULL,
+    curseGroup INT,
+    PRIMARY KEY(cod, curseGroup, VMName))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:24:08.842854
+CREATE TABLE auth_user(
+    id INT AUTO_INCREMENT NOT NULL,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(255),
+    password VARCHAR(255),
+    registration_key VARCHAR(255),
+    reset_password_key VARCHAR(255),
+    registration_id VARCHAR(255),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:24:08.978058
+CREATE TABLE auth_group(
+    id INT AUTO_INCREMENT NOT NULL,
+    role VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:24:09.119342
+CREATE TABLE auth_membership(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:24:09.279799
+CREATE TABLE auth_permission(
+    id INT AUTO_INCREMENT NOT NULL,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(255),
+    table_name VARCHAR(255),
+    record_id INT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:24:09.404857
+CREATE TABLE auth_event(
+    id INT AUTO_INCREMENT NOT NULL,
+    time_stamp DATETIME,
+    client_ip VARCHAR(255),
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:24:09.556259
+CREATE TABLE auth_cas(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on DATETIME,
+    service VARCHAR(255),
+    ticket VARCHAR(255),
+    renew CHAR(1),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:24:09.766187
+CREATE TABLE UserGroup(
+    yearGroup INT,
+    cod INT NOT NULL,
+    curse INT,
+    curseGroup VARCHAR(1) NOT NULL,
+    PRIMARY KEY(cod, curseGroup))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:24:09.943526
+CREATE TABLE ClassGroup(
+    userId INT NOT NULL,
+    cod INT NOT NULL,
+    curseGroup INT,
+    PRIMARY KEY(cod, curseGroup, userId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:24:10.065794
+CREATE TABLE Subjects(
+    id INT AUTO_INCREMENT NOT NULL,
+    code INT,
+    name VARCHAR(15),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:24:10.187827
+CREATE TABLE VMByGroup(
+    VMName VARCHAR(20) NOT NULL,
+    cod INT NOT NULL,
+    curseGroup INT,
+    PRIMARY KEY(cod, curseGroup, VMName))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:31:04.716030
+CREATE TABLE auth_user(
+    id INT AUTO_INCREMENT NOT NULL,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(255),
+    password VARCHAR(255),
+    registration_key VARCHAR(255),
+    reset_password_key VARCHAR(255),
+    registration_id VARCHAR(255),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:31:04.892169
+CREATE TABLE auth_group(
+    id INT AUTO_INCREMENT NOT NULL,
+    role VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:31:05.092047
+CREATE TABLE auth_membership(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:31:05.325914
+CREATE TABLE auth_permission(
+    id INT AUTO_INCREMENT NOT NULL,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(255),
+    table_name VARCHAR(255),
+    record_id INT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:31:05.462295
+CREATE TABLE auth_event(
+    id INT AUTO_INCREMENT NOT NULL,
+    time_stamp DATETIME,
+    client_ip VARCHAR(255),
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:31:05.659309
+CREATE TABLE auth_cas(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on DATETIME,
+    service VARCHAR(255),
+    ticket VARCHAR(255),
+    renew CHAR(1),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:31:05.895665
+CREATE TABLE UserGroup(
+    yearGroup INT,
+    cod INT NOT NULL,
+    curse INT,
+    curseGroup VARCHAR(1) NOT NULL,
+    PRIMARY KEY(cod, curseGroup))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:31:06.081873
+CREATE TABLE ClassGroup(
+    userId INT NOT NULL,
+    cod INT NOT NULL,
+    curseGroup INT,
+    PRIMARY KEY(cod, curseGroup, userId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:31:06.227053
+CREATE TABLE Subjects(
+    id INT AUTO_INCREMENT NOT NULL,
+    code INT,
+    name VARCHAR(15),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-05T20:31:06.339235
+CREATE TABLE VMByGroup(
+    VMName VARCHAR(20) NOT NULL,
+    cod INT NOT NULL,
+    curseGroup INT,
+    PRIMARY KEY(cod, curseGroup, VMName))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE auth_user;
+SET FOREIGN_KEY_CHECKS=1;
+success!
+SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE auth_group;
+SET FOREIGN_KEY_CHECKS=1;
+success!
+SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE auth_membership;
+SET FOREIGN_KEY_CHECKS=1;
+success!
+SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE auth_event;
+SET FOREIGN_KEY_CHECKS=1;
+success!
+timestamp: 2013-02-06T00:35:50.359861
+CREATE TABLE auth_user(
+    id INT AUTO_INCREMENT NOT NULL,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(255),
+    password VARCHAR(255),
+    registration_key VARCHAR(255),
+    reset_password_key VARCHAR(255),
+    registration_id VARCHAR(255),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-06T00:35:50.565235
+CREATE TABLE auth_group(
+    id INT AUTO_INCREMENT NOT NULL,
+    role VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-06T00:35:50.712451
+CREATE TABLE auth_membership(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-06T00:35:50.903092
+CREATE TABLE auth_event(
+    id INT AUTO_INCREMENT NOT NULL,
+    time_stamp DATETIME,
+    client_ip VARCHAR(255),
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+TRUNCATE TABLE auth_user ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_user ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_user ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_user ;
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_user ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_user ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_user ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_group ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_permission ;
+success!
+TRUNCATE TABLE auth_group ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_group ;
+TRUNCATE TABLE auth_permission ;
+success!
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_group ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_group ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_permission ;
+success!
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_group ;
+TRUNCATE TABLE auth_membership ;
+success!
+TRUNCATE TABLE auth_permission ;
+success!
+TRUNCATE TABLE auth_event ;
+success!
+TRUNCATE TABLE auth_cas ;
+success!
+TRUNCATE TABLE auth_group ;
