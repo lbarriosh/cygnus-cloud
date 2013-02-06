@@ -65,6 +65,19 @@
 Arquitectura del sistema
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: meter referencias noVNC, KVM y Twisted
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Introducción
 \end_layout
@@ -322,6 +335,13 @@ n.
 
 \begin_layout Subsection
 Restricciones
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Restricciones-arquitectura"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1366,6 +1386,513 @@ Decisiones de diseño
 \begin_layout Standard
 En esta sección discutiremos brevemente las decisiones de diseño más importantes
  que hemos tomado a lo largo del desarrollo del proyecto.
+\end_layout
+
+\begin_layout Subsubsection
+Uso de 
+\emph on
+Python
+\emph default
+ como principal lenguaje de programación
+\end_layout
+
+\begin_layout Standard
+Tal y como mencionamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Restricciones-arquitectura"
+
+\end_inset
+
+, debido a las distintas características y procedimientos de configuración
+ de las distribuciones 
+\emph on
+GNU/Linux
+\emph default
+, es altamente recomendable utilizar lenguajes interpretados para facilitar
+ la portabilidad del sistema.
+ Los lenguajes de este tipo que consideramos al inicio del proyecto fueron
+ esencialmente dos: 
+\emph on
+Java
+\emph default
+ y 
+\emph on
+Python
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+El uso de 
+\emph on
+Python 
+\emph default
+tenía las siguientes ventajas:
+\end_layout
+
+\begin_layout Itemize
+el grado de adopción de 
+\emph on
+Python
+\emph default
+ no ha hecho más que crecer a lo largo de los últimos años, por lo que aprender
+ a utilizarlo era muy importante para mejorar nuestras perspectivas laborales.
+\end_layout
+
+\begin_layout Itemize
+a diferencia de 
+\emph on
+Java
+\emph default
+, 
+\emph on
+Python
+\emph default
+ es 
+\emph on
+software
+\emph default
+ libre, por lo que sus restricciones de uso son considerablemente menores
+ que las de 
+\emph on
+Java
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+la interacción entre 
+\emph on
+scripts
+\emph default
+ y programas escritos en 
+\emph on
+Python
+\emph default
+ es claramente mejor en 
+\emph on
+Python
+\emph default
+ que en Java.
+\end_layout
+
+\begin_layout Itemize
+los programas escritos en 
+\emph on
+Python
+\emph default
+ son mucho más breves y más fáciles de leer que los programas escritos en
+ 
+\emph on
+Java
+\emph default
+, lo que facilita la comprensión del código y su depuración.
+ 
+\end_layout
+
+\begin_layout Itemize
+para ejecutar un programa 
+\emph on
+Python
+\emph default
+ se utiliza su propio código fuente, lo que facilita enormemente la resolución
+ de los problemas que aparecen al utilizar componentes de terceros.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Python
+\emph default
+ forma parte de la instalación estándar de la inmensa mayoría de distribuciones
+ 
+\emph on
+GNU/Linux
+\emph default
+, lo que simplifica el proceso de instalación de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Los grandes inconvenientes del uso de 
+\emph on
+Python
+\emph default
+ eran principalmente dos:
+\end_layout
+
+\begin_layout Itemize
+era necesario aprender a utilizar una tecnología nueva, cosa que no ocurría
+ en el caso de 
+\emph on
+Java
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+en general, hay muchas más bibliotecas y 
+\emph on
+frameworks
+\emph default
+ escritos en 
+\emph on
+Java
+\emph default
+ que escritos en 
+\emph on
+Python
+\emph default
+, lo que limitaba las alternativas que podíamos considerar a lo largo del
+ desarrollo del proyecto.
+\end_layout
+
+\begin_layout Standard
+Ante el gran número de ventajas que tenía el uso de 
+\emph on
+Python
+\emph default
+, estos dos inconvenientes nos parecieron aceptables, por lo que decidimos
+ utilizar 
+\emph on
+Python
+\emph default
+ como principal lenguaje de programación.
+\end_layout
+
+\begin_layout Subsubsection
+Descomposición del sistema 
+\emph on
+CygnusCloud
+\emph default
+ en tres subsistemas
+\end_layout
+
+\begin_layout Standard
+Instanciar una máquina virtual requiere muchos recursos.
+ No basta con asignarle memoria RAM y tiempo de CPU: también es necesario
+ reservar espacio en disco en el que almacenar los datos de los usuarios
+ y los archivos de paginación, conectar la máquina a una red, configurar
+ un servidor de escritorio remoto o un servidor SSH para poder acceder a
+ ella,\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Standard
+Así pues, para que nuestro sistema sea escalable, es imprescindible la existenci
+a de nodos que alberguen exclusivamente máquinas virtuales y que se ocupen
+ de su instanciación y descomposición: los 
+\series bold
+servidores de máquinas virtuales
+\series default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, es necesario distribuir las máquinas virtuales activas entre
+ todos estos nodos y recopilar información de estado, por lo que es necesario
+ utilizar al menos una máquina adicional, a la que llamaremos por ahora
+ 
+\begin_inset Quotes eld
+\end_inset
+
+servidor principal
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Esta hipotética máquina también debería albergar la web, a través de la
+ cual los usuarios utilizan el sistema.
+ 
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, una vez instanciadas las máquinas virtuales, los
+ usuarios se comunican directamente con un servidor de máquinas virtuales,
+ es decir, el tráfico generado por el protocolo VNC y el tráfico generado
+ para conectarse a internet no atraviesa el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Esta arquitectura, a pesar de ser sencilla, tiene un serio inconveniente:
+ al aumentar el número de usuarios (y, por tanto, el número de servidores
+ de máquinas virtuales) el 
+\begin_inset Quotes eld
+\end_inset
+
+servidor principal
+\begin_inset Quotes erd
+\end_inset
+
+ se convierte en un cuello de botella: no sólo debe atender un número de
+ peticiones procedentes de la web cada vez mayor, sino que también debe
+ procesar cada vez más tráfico procedente de los servidores de máquinas
+ virtuales.
+\end_layout
+
+\begin_layout Standard
+Este problema puede resolverse distribuyendo la funcionalidad de nuestro
+ 
+\begin_inset Quotes eld
+\end_inset
+
+servidor principal
+\begin_inset Quotes erd
+\end_inset
+
+ en dos máquinas: el 
+\series bold
+servidor de 
+\emph on
+cluster
+\emph default
+ 
+\series default
+y el 
+\series bold
+servidor web
+\series default
+.
+ Así, 
+\end_layout
+
+\begin_layout Itemize
+cada usuario tendrá asignado un servidor de 
+\emph on
+cluster
+\emph default
+, al que se dirigirán todas sus peticiones.
+\end_layout
+
+\begin_layout Itemize
+los servidores de 
+\emph on
+cluster
+\emph default
+ se encargarán exclusivamente de coordinar el funcionamiento de todos los
+ servidores de máquinas virtuales que tienen asignados.
+\end_layout
+
+\begin_layout Itemize
+el servidor web atenderá exclusivamente todas las peticiones que se reciban
+ desde la web.
+ Para ello, intercambiará datos con los servidores de 
+\emph on
+cluster
+\emph default
+ correspondientes.
+\end_layout
+
+\begin_layout Standard
+La nueva alternativa tiene un serio inconveniente: el tráfico total que
+ se genera es mayor, ya que hay que comunicar el servidor web con los distintos
+ servidores de cluster.
+ Pero su gran ventaja es la escalabilidad: añadiendo más servidores de máquinas
+ virtuales y más servidores de 
+\emph on
+cluster 
+\emph default
+es posible atender a un número mucho mayor de alumnos.
+\end_layout
+
+\begin_layout Standard
+Considerando el elevado número de estudiantes de la Universidad Complutense,
+ nos pareció fundamental hacer 
+\emph on
+CygnusCloud
+\emph default
+ tan escalable como fuese posible, por lo que nos decantamos por el segundo
+ modelo de arquitectura.
+\end_layout
+
+\begin_layout Subsubsection
+Uso de la librería de red 
+\emph on
+twisted
+\end_layout
+
+\begin_layout Standard
+Puesto que 
+\emph on
+CygnusCloud
+\emph default
+ se compone de sistemas diferentes que residen en máquinas distintas, es
+ imprescindible comunicarlos.
+ Puesto que las máquinas intercambian entre sí un gran volumen de datos,
+ es muy conveniente utilizar un servicio orientado a conexión y fiable:
+ TCP.
+\end_layout
+
+\begin_layout Standard
+Para realizar las comunicaciones 
+\emph on
+socket 
+\emph default
+a 
+\emph on
+socket
+\emph default
+, optamos por utilizar la librería de red 
+\emph on
+twisted
+\emph default
+.
+ Las razones que nos llevaron a elegirla fueron las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+twisted 
+\emph default
+es el estándar 
+\emph on
+de facto
+\emph default
+ para comunicar programas escritos en 
+\emph on
+Python
+\emph default
+ sin necesidad de manipular 
+\emph on
+sockets
+\emph default
+ directamente, y forma parte de la instalación predeterminada de la mayoría
+ de distribuciones 
+\emph on
+GNU/Linux
+\emph default
+ (e incluso de 
+\emph on
+Mac OS X
+\emph default
+).
+\end_layout
+
+\begin_layout Itemize
+existen libros, una ingente cantidad de documentación, foros y tutoriales
+ con abundantes explicaciones de uso.
+\end_layout
+
+\begin_layout Itemize
+se trata de una librería de código abierto, distribuida bajo licencia MIT
+ y actualizada periódicamente.
+\end_layout
+
+\begin_layout Itemize
+proporciona toda la funcionalidad que hemos utilizado a lo largo del desarrollo
+ del proyecto.
+\end_layout
+
+\begin_layout Standard
+El gran inconveniente de esta librería es su propia documentación.
+ Debido a su enorme extensión, hay partes desactualizadas, partes que contradice
+n a otras, partes sin apenas documentar\SpecialChar \ldots{}
+ por lo que en la práctica su uso
+ requiere seguir el método de prueba y error.
+\end_layout
+
+\begin_layout Standard
+No obstante, tal y como expusimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Restricciones-arquitectura"
+
+\end_inset
+
+, para facilitar la portabilidad entre distribuciones 
+\emph on
+GNU/Linux 
+\emph default
+es imprescindible utilizar mecanismos estandarizados, por lo que nos acabamos
+ decantando por utilizar esta librería.
+\end_layout
+
+\begin_layout Subsubsection
+Cifrado selectivo del tráfico
+\end_layout
+
+\begin_layout Standard
+El tráfico que genera el sistema 
+\emph on
+CygnusCloud
+\emph default
+ puede clasificarse en dos grupos:
+\end_layout
+
+\begin_layout Itemize
+tráfico generado por el protocolo de escritorio remoto VNC.
+ Se trata del tráfico mayoritario, y permite a los usuarios manipular sus
+ máquinas virtuales utilizando las interfaces gráficas a las que están acostumbr
+ados.
+\end_layout
+
+\begin_layout Itemize
+tráfico generado por los protocolos de 
+\emph on
+CygnusCloud
+\emph default
+.
+ Este tráfico es minoritario, y se genera al procesar peticiones como la
+ instanciación y destrucción de máquinas virtuales, la recopilación de estadísti
+cas dentro de los distintos 
+\emph on
+clusters
+\emph default
+, \SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Standard
+Considerando que la red de la UCM es ya de por sí segura, no sería necesario
+ cifrar el tráfico.
+ No obstante, para garantizar el correcto funcionamiento del sistema 
+\emph on
+CygnusCloud
+\emph default
+, todas las comunicaciones salvo las conexiones a escritorio remoto están
+ protegidas mediante cifrado SSL.
+ Esto nos permite:
+\end_layout
+
+\begin_layout Itemize
+ahorrar ancho de banda.
+ Como el tráfico mayoritario está sin cifrar, es posible utilizar el ancho
+ de banda para soportar más conexiones a escritorio remoto (y, por tanto,
+ dar servicio a un mayor número de usuarios).
+\end_layout
+
+\begin_layout Itemize
+monitorizar fácilmente las actividades que realizan los usuarios en sus
+ máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+aumentar la robustez del sistema frente a ataques desde la propia red de
+ la UCM.
+ Gracias al cifrado de los datos generados por los protocolos, lo único
+ que un atacante puede controlar con facilidad es una única máquina virtual,
+ pero no la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Uso del 
+\emph on
+framework
+\emph default
+ 
+\emph on
+web2py
 \end_layout
 
 \end_body
