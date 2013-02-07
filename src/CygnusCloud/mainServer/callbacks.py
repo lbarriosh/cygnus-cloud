@@ -5,7 +5,7 @@ Main server callback definitions
 @version: 1.0
 '''
 
-from network.manager import NetworkCallback
+from network.manager.networkManager import NetworkCallback
 
 class WebCallback(NetworkCallback):
     '''

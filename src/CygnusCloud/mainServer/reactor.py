@@ -8,7 +8,7 @@ Main server reactor definitions.
 from callbacks import VMServerCallback, WebCallback
 from database.utils.configuration import DBConfigurator
 from database.mainServer.mainServerDB import MainServerDatabaseConnector, SERVER_STATE_T
-from network.manager import NetworkManager
+from network.manager.networkManager import NetworkManager
 from packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 from time import sleep
@@ -80,14 +80,14 @@ class MainServerReactor(WebReactor, VMServerReactor):
                                                     data["VMServerPort"])
             # Command the virtual machine server to tell us its state
             p = self.__vmServerPacketHandler.createVMServerStatusRequestPacket()
-            while not self.__networkManager.isConnectionReady(data["VMServerPort"]) :
+            while not self.__networkManager.isConnectionReady(data["VMServerIP"], data["VMServerPort"]) :
                 sleep(0.1)
-            self.__networkManager.sendPacket(data["VMServerPort"], p)
+            self.__networkManager.sendPacket(data["VMServerIP"], data["VMServerPort"], p)
         except Exception as e:                
             p = self.__webPacketHandler.createVMRegistrationErrorPacket(data["VMServerIP"], 
                                                                             data["VMServerPort"], 
                                                                             data["VMServerName"], str(e))        
-            self.__networkManager.sendPacket(self.__webPort, p)
+            self.__networkManager.sendPacket(data["VMServerIP"], self.__webPort, p)
             
     def __unregisterOrShutdownVMServer(self, key, halt, shutdown):
         # Shut down the server (if necessary)
@@ -99,8 +99,9 @@ class MainServerReactor(WebReactor, VMServerReactor):
                 p = self.__vmServerPacketHandler.createVMServerShutdownPacket()
             else :
                 p = self.__vmServerPacketHandler.createVMServerHaltPacket()
-            self.__networkManager.sendPacket(serverData["ServerPort"], p)
-        
+            self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
+        # Close the network connection
+        self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])
         if (shutdown) :
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
             self.__dbConnector.deleteVMServerStatics(serverId)
@@ -126,16 +127,16 @@ class MainServerReactor(WebReactor, VMServerReactor):
             # Connect to the virtual machine server
             self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 
                                                 20, self.__vmServerCallback, True)
-            while not self.__networkManager.isConnectionReady(serverData["ServerPort"]) :
+            while not self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"]) :
                 sleep(0.1)
             # Change its status
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)
             # Send the status request
             p = self.__vmServerPacketHandler.createVMServerStatusRequestPacket()
-            self.__networkManager.sendPacket(serverData["ServerPort"], p)
+            self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
         except Exception as e:
             p = self.__webPacketHandler.createVMServerBootUpErrorPacket(serverNameOrIPAddress, str(e))
-            self.__networkManager.sendPacket(self.__webPort, p)
+            self.__networkManager.sendPacket(serverData["ServerIP"], self.__webPort, p)
         
     def __sendVMServerStatusData(self):
         segmentSize = 5
@@ -157,14 +158,14 @@ class MainServerReactor(WebReactor, VMServerReactor):
                 # Flush
                 packet = self.__webPacketHandler.createVMServerStatusPacket(segmentCounter, 
                                                                             segmentNumber, outgoingData)
-                self.__networkManager.sendPacket(self.__webPort, packet)
+                self.__networkManager.sendPacket('', self.__webPort, packet)
                 outgoingData = []
                 segmentCounter += 1
         # Send the last segment
         if (sendLastSegment) :
             packet = self.__webPacketHandler.createVMServerStatusPacket(segmentCounter, 
                                                                             segmentNumber, outgoingData)
-            self.__networkManager.sendPacket(self.__webPort, packet)             
+            self.__networkManager.sendPacket('', self.__webPort, packet)             
         
     def __sendAvailableImagesData(self):
         segmentSize = 5
@@ -186,14 +187,14 @@ class MainServerReactor(WebReactor, VMServerReactor):
                 # Flush
                 packet = self.__webPacketHandler.createAvailableImagesPacket(segmentCounter, 
                                                                             segmentNumber, outgoingData)
-                self.__networkManager.sendPacket(self.__webPort, packet)
+                self.__networkManager.sendPacket('', self.__webPort, packet)
                 outgoingData = []
                 segmentCounter += 1
         # Send the last segment
         if (sendLastSegment) :
             packet = self.__webPacketHandler.createAvailableImagesPacket(segmentCounter, 
                                                                             segmentNumber, outgoingData)
-            self.__networkManager.sendPacket(self.__webPort, packet) 
+            self.__networkManager.sendPacket('', self.__webPort, packet) 
             
     def __bootUpVM(self, vmName, userID):
         # Obtain the image's ID
@@ -203,12 +204,12 @@ class MainServerReactor(WebReactor, VMServerReactor):
         if (errorMessage != None) :
             # Something went wrong => warn the user
             p = self.__webPacketHandler.createVMBootFailurePacket(vmName, userID, errorMessage)
-            self.__networkManager.sendPacket(self.__webPort, p)
+            self.__networkManager.sendPacket('', self.__webPort, p)
         else :
             # Ask the virtual machine server to boot up the VM
             p = self.__vmServerPacketHandler.createVMBootPacket(imageID, userID)
             port = self.__dbConnector.getVMServerBasicData(serverID)["ServerPort"]
-            self.__networkManager.sendPacket(port, p)    
+            self.__networkManager.sendPacket('', port, p)    
     
     def processVMServerIncomingPacket(self, packet):
         data = self.__vmServerPacketHandler.readPacket(packet)
@@ -220,7 +221,7 @@ class MainServerReactor(WebReactor, VMServerReactor):
     def __sendVMConnectionData(self, data):
         p = self.__webPacketHandler.createVMConnectionDataPacket(data["UserID"], data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"])
-        self.__networkManager.sendPacket(self.__webPort, p)        
+        self.__networkManager.sendPacket('', self.__webPort, p)        
     
     def hasFinished(self):
         return self.__finished

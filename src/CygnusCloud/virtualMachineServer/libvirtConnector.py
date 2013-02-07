@@ -2,7 +2,6 @@
 
 import threading
 import libvirt
-import logging
 try :
     import xml.etree.cElementTree as ET
 except ImportError:

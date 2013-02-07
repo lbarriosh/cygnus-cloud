@@ -58,7 +58,7 @@ def printLogo():
     print('\t        |___/ |___/ ')
     print()
     
-def process_command(tokens, networkManager, pHandler, port):
+def process_command(tokens, networkManager, pHandler, ip_address, port):
     if (len(tokens) == 0) :
         return False
     try :
@@ -68,26 +68,26 @@ def process_command(tokens, networkManager, pHandler, port):
             serverPort = int(tokens.pop(0))
             name = tokens.pop(0)
             p = pHandler.createVMServerRegistrationPacket(ip, serverPort, name)
-            networkManager.sendPacket(port, p)
+            networkManager.sendPacket(ip_address, port, p)
             return False  
         elif (command == "obtainVMServerStatus") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
-            networkManager.sendPacket(port, p)
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "unregisterVMServer") :
             p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), False)
-            networkManager.sendPacket(port, p)
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "shutdownVMServer") :
             p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), True)
-            networkManager.sendPacket(port, p)
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "bootUpVMServer") :
             p = pHandler.createVMServerBootUpPacket(tokens.pop(0))
-            networkManager.sendPacket(port, p)
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "obtainAvailableImagesData") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_AVAILABLE_IMAGES)
-            networkManager.sendPacket(port, p)
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "bootUpVM") :
             p = pHandler.createVMBootRequestPacket(tokens.pop(0), long(tokens.pop(0)))
-            networkManager.sendPacket(port, p)
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True
         elif (command == "help") :
@@ -130,13 +130,13 @@ if __name__ == "__main__" :
     try :
         port = int(port)
         networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
-        while not networkManager.isConnectionReady(port) :
+        while not networkManager.isConnectionReady(ip_address, port) :
             sleep(0.1)
         end = False
         while not end :
             command = raw_input('>')
             tokens = command.split()
-            end = process_command(tokens, networkManager, pHandler, port)
+            end = process_command(tokens, networkManager, pHandler, ip_address, port)
     
     except NetworkManagerException as e:
         print("Error: " + str(e))

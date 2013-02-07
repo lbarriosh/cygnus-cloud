@@ -21,7 +21,7 @@ class DummyVMServer(NetworkCallback):
         Initializes the callback's state
         """
         self.__packetHandler = VMServerPacketHandler(networkManager)
-        self.__packetSender = lambda p : networkManager.sendPacket(port, p)
+        self.__packetSender = lambda p : networkManager.sendPacket('', port, p)
         self.__dummyDomains = 0
         self.__dummyIP = dummyIP
         self.__finished = False

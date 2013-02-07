@@ -5,7 +5,7 @@ Created on 14/01/2013
 @author: saguma
 '''
 
-from network.manager import NetworkManager, NetworkCallback
+from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.interfaces.ipAddresses import get_ip_address 
 from libvirtConnector import libvirtConnector
 from constantes import *
@@ -60,7 +60,7 @@ class VMClient(NetworkCallback):
             userID = self.__runningImageData.getAssignedUserInDomain(domainName)
             sleep(0.1)
         packet = self.__packetManager.createVMConnectionParametersPacket(userID, ip, port + 1, password)
-        self.__networkManager.sendPacket(self.__listenningPort, packet)
+        self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):
         if self.__shutDown and (self.__connector.getNumberOfDomains() == 0):
@@ -156,7 +156,7 @@ class VMClient(NetworkCallback):
     def __serverStatusRequest(self, packet):
         activeDomains = self.__connector.getNumberOfDomains()
         packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
-        self.__networkManager.sendPacket(self.__listenningPort, packet)
+        self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
     def __userFriendlyShutdown(self, packet):
         self.__shutDown = True
