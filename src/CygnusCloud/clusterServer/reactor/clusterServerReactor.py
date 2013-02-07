@@ -5,30 +5,30 @@ Main server reactor definitions.
 @version: 1.0
 '''
 
-from callbacks import VMServerCallback, WebCallback
+from clusterServer.networking.callbacks import VMServerCallback, WebCallback
 from database.utils.configuration import DBConfigurator
 from database.mainServer.mainServerDB import MainServerDatabaseConnector, SERVER_STATE_T
 from network.manager.networkManager import NetworkManager
-from packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
+from clusterServer.networking.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 from time import sleep
-from loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
+from clusterServer.loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
 
-class WebReactor(object):
+class WebPacketReactor(object):
     '''
     These objects react to packets received from a web server
     '''
     def processWebIncomingPacket(self, packet):
         raise NotImplementedError
     
-class VMServerReactor(object):
+class VMServerPacketReactor(object):
     '''
     These objects react to packets received from a virtual machine server
     '''
     def processVMServerIncomingPacket(self, packet):
         raise NotImplementedError
 
-class MainServerReactor(WebReactor, VMServerReactor):
+class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
     '''
     These objects react to packages received from the website or from
     a virtual machine server.
@@ -39,7 +39,7 @@ class MainServerReactor(WebReactor, VMServerReactor):
         
     def connectToDatabase(self, rootsPassword, dbName, dbUser, dbPassword, scriptPath):
         configurator = DBConfigurator(rootsPassword)
-        configurator.runSQLScript(scriptPath)
+        configurator.runSQLScript(dbName, scriptPath)
         configurator.addUser(dbUser, dbPassword, dbName, True)
         self.__dbConnector = MainServerDatabaseConnector(dbUser, dbPassword, dbName)
         self.__dbConnector.connect()

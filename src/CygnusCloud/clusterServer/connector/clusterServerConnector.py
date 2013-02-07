@@ -6,21 +6,21 @@ Main server connector definitions
 '''
 
 from databaseUpdateThread import StatusDatabaseUpdateThread, UpdateHandler
-from mainServer.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
+from clusterServer.networking.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from database.utils.configuration import DBConfigurator
 from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
 from database.systemStatusDB.systemStatusDBWriter import SystemStatusDatabaseWriter
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from time import sleep
 
-class _MainServerConnectorCallback(NetworkCallback):
+class _ClusterServerConnectorCallback(NetworkCallback):
     def __init__(self, connector):
         self.__connector = connector
         
     def processPacket(self, packet):
         self.__connector._processIncomingPacket(packet)
         
-class _MainServerConnectorUpdateHandler(UpdateHandler):
+class _ClusterServerConnectorUpdateHandler(UpdateHandler):
     def __init__(self, connector):
         self.__connector = connector
         
@@ -37,7 +37,7 @@ class GenericWebCallback(object):
     def handleVMConnectionData(self, userID, vncSrvrIP, vncSrvrPort, vncSrvrPassword) :
         print 'VM Connection data ' + str(userID) + " " + vncSrvrIP + " " + str(vncSrvrPort) + " " + vncSrvrPassword
 
-class MainServerConnector(object):    
+class ClusterServerConnector(object):    
 
     def __init__(self, callback):
         self.__stopped = False
@@ -62,7 +62,7 @@ class MainServerConnector(object):
     def connectToMainServer(self, certificatePath, mainServerIP, mainServerListenningPort):
         self.__manager = NetworkManager(certificatePath)
         self.__manager.startNetworkService()
-        callback = _MainServerConnectorCallback(self)
+        callback = _ClusterServerConnectorCallback(self)
         # Connect to the main server
         self.__mainServerIP = mainServerIP
         self.__mainServerPort = mainServerListenningPort
@@ -72,7 +72,7 @@ class MainServerConnector(object):
         # Create the packet handler
         self.__pHandler = MainServerPacketHandler(self.__manager)
         # Create the update thread
-        self.__updateRequestThread = StatusDatabaseUpdateThread(_MainServerConnectorUpdateHandler(self), 20)
+        self.__updateRequestThread = StatusDatabaseUpdateThread(_ClusterServerConnectorUpdateHandler(self), 20)
         # Start it
         self.__updateRequestThread.start()
         
@@ -144,7 +144,7 @@ class MainServerConnector(object):
         self.__manager.sendPacket(self.__mainServerIP, self.__mainServerPort, p)
         
 if __name__ == "__main__" :
-    connector = MainServerConnector(GenericWebCallback())
+    connector = ClusterServerConnector(GenericWebCallback())
     connector.connectToDatabase("","SystemStatusDB", "websiteUser", "cygnuscloud", "updateUser", "cygnuscloud")
     connector.connectToMainServer("/home/luis/Certificates", "127.0.0.1", 9000)
     sleep(10)
