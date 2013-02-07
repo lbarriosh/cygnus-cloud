@@ -1,14 +1,16 @@
 # -*- coding: utf8 -*-
 """
-_Packet-related definitions
+Packet-related definitions
 @author: Luis Barrios Hernández
-@version: 1.6
+@version: 2.0
 """
 
 from utils.enums import enum
 from network.exceptions.packetException import PacketException
 
-Packet_TYPE = enum('TICK', 'TOCK', 'DATA')
+Packet_TYPE = enum('DATA')
+
+_DATA_TYPE = enum("INT", "LONG", "STRING", "FLOAT")
 
 class _Packet(object):
     """
@@ -57,7 +59,7 @@ class _Packet(object):
             PacketException: these exceptions will be raised when type errors are detected
                 and when the packet has not enough room to hold the value.
         """
-        self.__commonWriteCode(value, int, "int", True)
+        self.__commonWriteCode(value, int, _DATA_TYPE.INT, True)
         
     def writeLong(self, value):
         """
@@ -69,10 +71,10 @@ class _Packet(object):
                 and when the packet has not enough room to hold the value.
         """
         try :
-            self.__commonWriteCode(value, long, "long", True)
+            self.__commonWriteCode(value, long, _DATA_TYPE.LONG, True)
         except PacketException as e:
             if isinstance(value, int) :
-                self.__commonWriteCode(value, long, "long", False)
+                self.__commonWriteCode(value, long, _DATA_TYPE.LONG, False)
             else : raise e
         
     def writeString(self, value):
@@ -86,9 +88,9 @@ class _Packet(object):
         """
         if not isinstance(value, str):
             raise PacketException("The given value is not an " + self.__extractTypeName(str) + " instance")
-        if '·' in value :
-            raise PacketException('Strings cannot contain the \'·\' character')
-        self.__commonWriteCode(value, str, "string", False)       
+        if '$' in value :
+            raise PacketException('Strings cannot contain the \'$\' character')
+        self.__commonWriteCode(value, str, _DATA_TYPE.STRING, False)       
   
     
     def writeFloat(self, value):
@@ -100,7 +102,7 @@ class _Packet(object):
             PacketException: these exceptions will be raised when type errors are detected
                 and when the packet has not enough room to hold the value.
         """
-        self.__commonWriteCode(value, float, "float", True)
+        self.__commonWriteCode(value, float, _DATA_TYPE.FLOAT, True)
         
     def writeBool(self, value):
         """
@@ -111,6 +113,8 @@ class _Packet(object):
             PacketException: these exceptions will be raised when type errors are detected
                 and when the packet has not enough room to hold the value.
         """
+        if not isinstance(value, bool) :
+            raise PacketException("The given value is not a " + self.__extractTypeName(str(bool)) + " instance")
         if (value) :
             self.writeInt(1)
         else :
@@ -127,7 +131,7 @@ class _Packet(object):
             PacketException: this exceptions will be raised when the value cannot be read
             from the packet.
         """
-        return self.__commonReadCode("int", int)
+        return self.__commonReadCode(_DATA_TYPE.INT, int)
         
     def readLong(self):
         """
@@ -140,7 +144,7 @@ class _Packet(object):
             PacketException: this exceptions will be raised when the value cannot be read
             from the packet.
         """
-        return self.__commonReadCode("long", long)
+        return self.__commonReadCode(_DATA_TYPE.LONG, long)
         
     def readBool(self):
         """
@@ -166,7 +170,7 @@ class _Packet(object):
             PacketException: this exceptions will be raised when the value cannot be read
             from the packet.
         """
-        return self.__commonReadCode("string", str)
+        return self.__commonReadCode(_DATA_TYPE.STRING, str)
     
     def readFloat(self):
         """
@@ -179,7 +183,7 @@ class _Packet(object):
             PacketException: this exceptions will be raised when the value cannot be read
             from the packet.
         """
-        return self.__commonReadCode("float", float)
+        return self.__commonReadCode(_DATA_TYPE.FLOAT, float)
         
     def _serialize(self):
         """
@@ -247,7 +251,7 @@ class _Packet(object):
         try :
             priority = int(priority)
         except Exception :
-            raise PacketException("Invalid packet string: _Packet priority must be an integer")
+            raise PacketException("Invalid packet string: packet priority must be an integer")
         # Read the packet data
         data = tail[1:-1]
         # Create the packet
@@ -306,12 +310,12 @@ class _Packet(object):
         if checkType and not isinstance(value, dataType):            
             raise PacketException("The given value is not an " + self.__extractTypeName(str(dataType)) + " instance")
         dataToAdd = str(value)
-        newLength = len(self.__data) + len(field) + len(dataToAdd) + 2
+        newLength = len(self.__data) + len(str(field)) + len(dataToAdd) + 2
         if (newLength > 65000):
             # The maximum TCP segment length is 65536 bytes. 536 bytes are reserved for the packet header.
             raise PacketException("There\'s not enough space to hold a " + self.__extractTypeName(str(dataType))\
                                    + " value")
-        self.__data += field + '·' + dataToAdd + '·'
+        self.__data += str(field) + '$' + dataToAdd + '$'
         
     def __commonReadCode(self, typeLabel, returnType):
         """
@@ -325,10 +329,10 @@ class _Packet(object):
             PacketException: this exceptions will be raised when the packet's current value does not
             match with the type label and when the packet value and the type label do not match.
         """
-        (label,_dot,tail) = self.__data.partition("·")
-        if (typeLabel != label) :
+        (label,_dot,tail) = self.__data.partition("$")
+        if (typeLabel != int(label)) :
             raise PacketException("Can't read a " + self.__extractTypeName(returnType) + " value")
-        (value,_dot,tail) = tail.partition("·")
+        (value,_dot,tail) = tail.partition("$")
         try :
             returnValue = returnType(value)
         except Exception :
