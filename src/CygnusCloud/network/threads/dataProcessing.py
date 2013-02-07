@@ -33,7 +33,9 @@ class _IncomingDataThread(QueueProcessingThread):
             Nothing
         """
         self.__referenceCounter.increment()
-        QueueProcessingThread.start(self)
+        print "increasing " + str(self.__referenceCounter.read())
+        if (self.__referenceCounter.read() == 1) :
+            QueueProcessingThread.start(self)
         
     def stop(self, join):
         """
@@ -45,6 +47,7 @@ class _IncomingDataThread(QueueProcessingThread):
             Nothing
         """
         self.__referenceCounter.decrement()
+        print "decreasing " + str(self.__referenceCounter.read())
         if self.__referenceCounter.read() == 0 :
             QueueProcessingThread.stop(self)
             if join :

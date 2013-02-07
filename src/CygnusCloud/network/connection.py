@@ -165,7 +165,7 @@ class _NetworkConnection(object):
                     # Server => the connection must also have a listening port before
                     # it's ready.
                     self.__status.set(CONNECTION_STATUS.READY_WAIT)
-            self.__incomingDataThread.start()
+                self.__incomingDataThread.start()
                 
         if self.__status.get() == CONNECTION_STATUS.READY_WAIT :
             if not self.__factory.isDisconnected() :
