@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from network.manager import NetworkCallback
+from network.manager.networkManager import NetworkCallback
 
 class ConvCallback(NetworkCallback):
     def __init__(self,listP):

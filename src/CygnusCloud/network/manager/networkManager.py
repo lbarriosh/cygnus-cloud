@@ -9,13 +9,13 @@ from twisted.internet import reactor, ssl
 from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint, SSL4ServerEndpoint, SSL4ClientEndpoint
 from utils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
 from utils.multithreadingDictionary import GenericThreadSafeDictionary
-from network.packet import _Packet, Packet_TYPE
-from network.connection import _NetworkConnection
+from network.packets.packet import _Packet, Packet_TYPE
+from network.twistedInteraction.connection import _NetworkConnection
 from network.exceptions.networkManager import NetworkManagerException
 from network.threads.dataProcessing import _IncomingDataThread, _OutgoingDataThread
 from network.threads.twistedReactor import _TwistedReactorThread
 from network.threads.connectionMonitoring import _ConnectionMonitoringThread
-from network.protocols import _CygnusCloudProtocolFactory
+from network.twistedInteraction.protocols import _CygnusCloudProtocolFactory
 from time import sleep
         
 class NetworkCallback(object):
@@ -81,7 +81,7 @@ class NetworkManager():
             Nothing
         """
         for connection in self.__connectionPool.values() :
-            self.closeConnection(connection.getPort())
+            self.closeConnection(connection.getIPAddress(), connection.getPort())
         self.__outgoingDataThread.stop()
         self.__outgoingDataThread.join()
         self.__connectionThread.stop()
@@ -129,7 +129,7 @@ class NetworkManager():
                 seconds, the connection process will be aborted and a 
                 NetworkManagerException will be raised.
         """
-        if self.__connectionPool.has_key(port) :
+        if self.__connectionPool.has_key((host,port)) :
             raise NetworkManagerException("The port " + str(port) +" is already in use")
         # The port is free => proceed
         # Allocate the connection resources
@@ -154,9 +154,9 @@ class NetworkManager():
         if factory.isDisconnected() :
             raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
         # Create the new connection
-        connection = _NetworkConnection(False, port, factory, queue, thread, callbackObject)
+        connection = _NetworkConnection(False, host, port, factory, queue, thread, callbackObject)
         # Add the new connection to the connection pool
-        self.__connectionPool[port] = connection
+        self.__connectionPool[(host, port)] = connection
         
     def listenIn(self, port, callbackObject, useSSL=False):
         """
@@ -170,7 +170,7 @@ class NetworkManager():
         Returns:
             Nothing
         """   
-        if self.__connectionPool.has_key(port) :
+        if self.__connectionPool.has_key(('127.0.0.1', port)) :
             raise NetworkManagerException("The port " + str(port) +" is already in use") 
         # The port is free => proceed
         # Allocate the connection resources
@@ -187,7 +187,7 @@ class NetworkManager():
                 raise NetworkManagerException("The key, the certificate or both were not found")
         factory = _CygnusCloudProtocolFactory(queue)        
         # Create the connection       
-        connection = _NetworkConnection(True, port, factory, queue, thread, callbackObject)
+        connection = _NetworkConnection(True, '', port, factory, queue, thread, callbackObject)
         # Create the deferred to retrieve the IListeningPort object
         def registerListeningPort(port):
             connection.setListeningPort(port)
@@ -198,9 +198,9 @@ class NetworkManager():
         deferred.addErrback(onError)
         connection.setDeferred(deferred)  
         # Register the new connection  
-        self.__connectionPool[port] = connection
+        self.__connectionPool[('', port)] = connection
                 
-    def isConnectionReady(self, port):
+    def isConnectionReady(self, host, port):
         """
         Checks wether a connection is ready or not.
         Args:
@@ -213,9 +213,9 @@ class NetworkManager():
                 - if the connection was abnormally closed, or
                 - if the supplied port is free
         """
-        if not self.__connectionPool.has_key(port) :
+        if not self.__connectionPool.has_key((host,port)) :
             raise NetworkManagerException("The port " + str(port) +" is not in use") 
-        connection = self.__connectionPool[port]
+        connection = self.__connectionPool[(host, port)]
         self.__detectConnectionErrors(connection)
         return connection.isReady()
     
@@ -229,15 +229,15 @@ class NetworkManager():
         """
         if connection.isInErrorState() :
             # Something bad has happened => close the connection, warn the user
-            self.__connectionPool.pop(connection.getPort())
+            self.__connectionPool.pop((connection.getIPAddress(), connection.getPort()))
             raise NetworkManagerException("Error: " + connection.getError())
         if (connection.wasUnexpectedlyClosed()):
-            self.__connectionPool.pop(connection.getPort())
+            self.__connectionPool.pop((connection.getIPAddress(), connection.getPort()))
             raise NetworkManagerException("Error: " + "The connection was closed abnormally")
         
-    def sendPacket(self, port, packet):
+    def sendPacket(self, host, port, packet):
         """
-        Sends a packet through the specified port
+        Sends a packet through the specified port and IP address.
         Args:
             port: The port assigned to the connection that will be used to send the packet.
             packet: The packet to send.
@@ -250,9 +250,9 @@ class NetworkManager():
             - if the connection is a server connection and it's not ready yet, or
             - if the supplied port is free
         """
-        if not self.__connectionPool.has_key(port) :
+        if not self.__connectionPool.has_key((host, port)) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
-        connection = self.__connectionPool[port]
+        connection = self.__connectionPool[(host, port)]
         self.__detectConnectionErrors(connection)
         if not connection.isReady() :
             if (connection.isServerConnection()) :
@@ -278,7 +278,7 @@ class NetworkManager():
         p = _Packet(Packet_TYPE.DATA, priority)
         return p
         
-    def closeConnection(self, port):
+    def closeConnection(self, host, port):
         """
         Closes a connection
         Args:
@@ -287,9 +287,9 @@ class NetworkManager():
         Returns:
             Nothing
         """
-        if not self.__connectionPool.has_key(port) :
+        if not self.__connectionPool.has_key((host, port)) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
         # Retrieve the connection
-        connection = self.__connectionPool[port]     
+        connection = self.__connectionPool[(host, port)]     
         # Ask the connection to close
         connection.close()

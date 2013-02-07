@@ -3,7 +3,7 @@
      String de 15000 caracteres.
     Testeado con server 03
 '''
-from network.manager import NetworkManager
+from network.manager.networkManager import NetworkManager
 from network.tests.dummyCallback import DummyCallback
 from time import sleep
 
@@ -17,6 +17,6 @@ if __name__ == "__main__" :
     for i in range(15000):
         bigS += 's'
     p.writeString(bigS)        
-    networkManager.sendPacket(8080, p)
+    networkManager.sendPacket('127.0.0.1', 8080, p)
     sleep(100)
     networkManager.stopNetworkService()

@@ -5,7 +5,7 @@ Dummy callback object definition
 @version: 1.0
 '''
 
-from network.manager import NetworkCallback
+from network.manager.networkManager import NetworkCallback
 
 class DummyCallback(NetworkCallback):
     def processPacket(self, packet):
