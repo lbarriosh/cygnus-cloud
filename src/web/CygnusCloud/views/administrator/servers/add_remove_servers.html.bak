@@ -1,0 +1,4 @@
+{{extend 'layout.html'}}
+<h1>Esta es la plantilla administrator/servers/add_remove_servers.html</h1>
+{{=menu}}
+{{=form}}

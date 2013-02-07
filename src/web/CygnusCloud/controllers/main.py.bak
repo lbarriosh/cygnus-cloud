@@ -6,7 +6,7 @@ def login():
     #Creamos la barra de direcciones
     createAdressBar()
     #Gestionamos los usuarios ya logueados
-    auth.settings.controller = 'login'
+    auth.settings.controller = 'main'
     auth.settings.login_onaccept = loginAccess
     #auth.settings.login_next = URL(c='main',f='login')  
     return dict(form=auth.login())
@@ -33,9 +33,11 @@ def initValues():
         #auth.add_group('Administrator', 'All privilages available')
         #Usuario de prueba
         u1 = userDB.auth_user.insert(password = userDB.auth_user.password.validate('1234')[0],email = 'Admin1@ucm.es',first_name='Bertoldo',last_name='Pedralbes')
+        u2 = userDB.auth_user.insert(password = userDB.auth_user.password.validate('1234')[0],email = 'Student1@ucm.es',first_name='Robert',last_name='Neville')
         
         #Enlazamos los usuarios a los grupos
-        auth.add_membership('Student',u1)
+        auth.add_membership('Administrator',u1)
+        auth.add_membership('Student',u2)
         print userDB.tables
         
 @auth.requires_login()                                      
