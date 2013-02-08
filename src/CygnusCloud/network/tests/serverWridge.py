@@ -16,7 +16,7 @@
         Módulos necesarios:
             -serverWridge,clientEmisor,clientReceptor
 '''
-from network.manager import NetworkManager
+from network.manager.networkManager import NetworkManager
 from network.tests.ConvCallback import ConvCallback
 from time import sleep
 
@@ -36,7 +36,7 @@ if __name__ == "__main__" :
     #Se la enviamos al otro cliente
     p = networkManager.createPacket(0)
     p.writeString(ans)    
-    networkManager.sendPacket(8081, p)
+    networkManager.sendPacket('', 8081, p)
     #Esperamos al de regreso
     while(len(listP1) == 0):
         sleep(0.1)      
@@ -45,8 +45,6 @@ if __name__ == "__main__" :
     #Se la enviamos al otro cliente
     p = networkManager.createPacket(0)
     p.writeString(ans)    
-    networkManager.sendPacket(8080, p)
-
-    
+    networkManager.sendPacket('', 8080, p)    
     sleep(200)
     networkManager.stopNetworkService()

@@ -6,7 +6,7 @@ This code will only be used for testing purposes.
 @version: 1.1
 '''
 
-from network.manager import NetworkCallback, NetworkManager
+from network.manager.networkManager import NetworkCallback, NetworkManager
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as PACKET_T
 from time import sleep
 
@@ -21,7 +21,7 @@ class DummyVMServer(NetworkCallback):
         Initializes the callback's state
         """
         self.__packetHandler = VMServerPacketHandler(networkManager)
-        self.__packetSender = lambda p : networkManager.sendPacket(port, p)
+        self.__packetSender = lambda p : networkManager.sendPacket('', port, p)
         self.__dummyDomains = 0
         self.__dummyIP = dummyIP
         self.__finished = False

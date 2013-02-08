@@ -4,6 +4,13 @@
    pruebas pertinentes y poder gestionar el sistema.
   Este script deberá ser cargado cada vez que sea necesario crear la base de datos
 */
+
+DROP DATABASE IF EXISTS VMServerDBTest;
+
+CREATE DATABASE VMServerDBTest;
+
+USE VMServerDBTest;
+
 #Creamos las tablas necesarias
 CREATE TABLE IF NOT EXISTS VirtualMachine(VMId INTEGER PRIMARY KEY, name VARCHAR(20), imagePath VARCHAR(100),osImagePath VARCHAR(100),
 	FileConfigPath VARCHAR(100));

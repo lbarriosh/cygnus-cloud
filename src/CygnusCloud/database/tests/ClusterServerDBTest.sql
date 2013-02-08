@@ -5,6 +5,12 @@
 	Version: 2.0
 */
 
+DROP DATABASE IF EXISTS ClusterServerDBTest;
+
+CREATE DATABASE ClusterServerDBTest;
+
+USE ClusterServerDBTest;
+
 # Create the VMServer table.
 CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT, 
 	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER, 

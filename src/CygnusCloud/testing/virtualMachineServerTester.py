@@ -7,7 +7,7 @@ server and control it.
 '''
 from __future__ import print_function
 
-from network.manager import NetworkManager, NetworkCallback
+from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T
 from time import sleep
@@ -44,26 +44,28 @@ def printLogo():
     print('\t        |___/ |___/ ')
     print()
     
-def process_command(tokens, networkManager, pHandler, port):
+def process_command(tokens, networkManager, pHandler, ip_address, port):
     if (len(tokens) == 0) :
         return False
     command = tokens.pop(0)
     if (command == "createvm") :
         p = pHandler.createVMBootPacket(long(tokens.pop(0)), long(tokens.pop(0)))
-        networkManager.sendPacket(port, p)
+        networkManager.sendPacket(ip_address, port, p)
         return False
     elif (command == "shutdown") :
         p = pHandler.createVMServerShutdownPacket()
-        networkManager.sendPacket(port, p)
+        networkManager.sendPacket(ip_address, port, p)
         return False
     elif (command == "status") :
         p = pHandler.createVMServerStatusRequestPacket()
-        networkManager.sendPacket(port, p)
+        networkManager.sendPacket(ip_address, port, p)
         return False
-    elif (command == "halt" or command == "quit") :
+    elif (command == "halt" ) :
         p = pHandler.createVMServerHaltPacket()
-        networkManager.sendPacket(port, p)
-        return command == "quit"        
+        networkManager.sendPacket(ip_address, port, p)
+        return False
+    elif (command == "quit") :
+        return True
     else :
         if (command != "help") :
             print("Error: unknown command")
@@ -96,13 +98,13 @@ if __name__ == "__main__" :
     try :
         port = int(port)
         networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
-        while not networkManager.isConnectionReady(port) :
+        while not networkManager.isConnectionReady(ip_address, port) :
             sleep(0.1)
         end = False
         while not end :
             command = raw_input('>')
             tokens = command.split()
-            end = process_command(tokens, networkManager, pHandler, port)
+            end = process_command(tokens, networkManager, pHandler, ip_address, port)
     
     except NetworkManagerException as e:
         print("Error: " + str(e))

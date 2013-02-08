@@ -5,6 +5,12 @@
   Este script deberá ser cargado cada vez que sea necesario crear la base de datos
 */
 
+DROP DATABASE IF EXISTS WebServerDBTest;
+
+CREATE DATABASE WebServerDBTest;
+
+USE WebServerDBTest;
+
 #Creamos las tablas necesarias
 CREATE TABLE IF NOT EXISTS Users(userId INTEGER  PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20),pass VARCHAR(20));
 

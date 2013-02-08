@@ -112,8 +112,8 @@ class DBWebServerTests(unittest.TestCase):
     def test_NextMac(self):
         #Instanciamos la clase
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","VMServerDBTest")
-        (uuid1,mac1)= runtimeD.extractfreeMacAndUuid()
-        (uuid2,mac2) = ("9a47c734-5e5f-11e2-981b-001f16b99e1d","2C:00:00:00:00:00")
+        (_uuid1,mac1)= runtimeD.extractfreeMacAndUuid()
+        (_uuid2,mac2) = ("9a47c734-5e5f-11e2-981b-001f16b99e1d","2C:00:00:00:00:00")
         self.assertEquals(mac1, mac2, "Not same MAC")
     
     def test_VNCPort(self):

@@ -2,7 +2,7 @@
 '''
 Network connection definitions
 @author: Luis Barrios Hernández
-@version: 5.0
+@version: 5.2
 '''
 
 from utils.enums import enum
@@ -39,11 +39,12 @@ class _NetworkConnection(object):
     """
     A class that represents a network connection.
     """
-    def __init__(self, isServer, port, factory, queue, incomingDataThread, callbackObject):
+    def __init__(self, isServer, ipAddr, port, factory, queue, incomingDataThread, callbackObject):
         """
         Initializes the connection.
         Args:
             isServer: True when this is a server connection or False otherwise.
+            ipAddr: the server's IP address
             port: the port assigned to the connection.  
             factory: the protocol factory assigned to the connnection     
             queue: the incoming data queue assigned to the connection
@@ -52,6 +53,7 @@ class _NetworkConnection(object):
         """
         self.__status = _ConnectionStatus(CONNECTION_STATUS.OPENING)
         self.__isServer = isServer
+        self.__ipAddr = ipAddr
         self.__port = port
         self.__factory = factory
         self.__queue = queue
@@ -62,6 +64,17 @@ class _NetworkConnection(object):
         self.__listeningPort = None
         self.__unexpectedlyClosed = False        
         self.__error = None
+        
+    def getIPAddress(self):
+        """
+        Returns the server's IP address
+        Args:
+            None
+        Returns:
+            The server's IP address. If this machine is a server, then 127.0.0.1
+            will be returned.
+        """
+        return self.__ipAddr
         
     def getPort(self):
         """
@@ -115,12 +128,15 @@ class _NetworkConnection(object):
     
     def sendPacket(self, p):
         """
-        Sends a packet though this connection.
+        Sends a packet though this connection. If the connection is closed, the packet will be discarded.
         Args:
             p: the packet to send
         Returns:
             None
         """
+        if (self.__status == CONNECTION_STATUS.CLOSED) :
+            # No packets will be sent though a closed connection.
+            return
         self.__factory.sendPacket(p)
         self.__packagesToSend.decrement()
                 
@@ -165,7 +181,7 @@ class _NetworkConnection(object):
                     # Server => the connection must also have a listening port before
                     # it's ready.
                     self.__status.set(CONNECTION_STATUS.READY_WAIT)
-            self.__incomingDataThread.start()
+                self.__incomingDataThread.start()
                 
         if self.__status.get() == CONNECTION_STATUS.READY_WAIT :
             if not self.__factory.isDisconnected() :

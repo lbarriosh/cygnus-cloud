@@ -3,7 +3,7 @@
 Basic load balancer definitions
 
 @author: Luis Barrios Hernández
-@version: 1.0
+@version: 1.1
 '''
 
 class LoadBalancer(object):

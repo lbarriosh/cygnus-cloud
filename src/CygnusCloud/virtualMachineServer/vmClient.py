@@ -5,10 +5,12 @@ Created on 14/01/2013
 @author: saguma
 '''
 
-from network.manager import NetworkManager, NetworkCallback
+from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.interfaces.ipAddresses import get_ip_address 
 from libvirtConnector import libvirtConnector
-from constantes import *
+from constantes import databaseName, databaseUserName, databasePassword, vncNetworkInterface, listenningPort, \
+    vnName, gatewayIP, netMask, dhcpStartIP, dhcpEndIP, configFilePath, certificatePath, sourceImagePath, executionImagePath,\
+    passwordLength, websockifyPath
 from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from xmlEditor import ConfigurationFileEditor
 from database.vmServer.imageManager import ImageManager
@@ -25,6 +27,7 @@ class VMClientException(Exception):
 class VMClient(NetworkCallback):
     def __init__(self):
         self.__shutDown = False
+        self.__shuttingDown = False
         self.__connectToDatabases(databaseName, databaseUserName, databasePassword)
         self.__connectToLibvirt()
         self.__startListenning(vncNetworkInterface, listenningPort)
@@ -36,13 +39,13 @@ class VMClient(NetworkCallback):
     def __connectToLibvirt(self) :
         self.__connector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
         self.__virtualNetworkManager = VirtualNetworkManager()
-        self.__virtualNetworkManager.createVirtualNetwork(VNName, gatewayIP, NetMask,
-                                    DHCPStartIP, DHCPEndIP)
+        self.__virtualNetworkManager.createVirtualNetwork(vnName, gatewayIP, netMask,
+                                    dhcpStartIP, dhcpEndIP)
             
     def __startListenning(self, networkInterface, listenningPort):
         self.__vncServerIP = get_ip_address(networkInterface)
         self.__listenningPort = listenningPort
-        self.__networkManager = NetworkManager(CertificatePath)
+        self.__networkManager = NetworkManager(certificatePath)
         self.__networkManager.startNetworkService()
         self.__packetManager = VMServerPacketHandler(self.__networkManager)
         self.__networkManager.listenIn(self.__listenningPort, self, True) # Usamos SSL
@@ -60,11 +63,11 @@ class VMClient(NetworkCallback):
             userID = self.__runningImageData.getAssignedUserInDomain(domainName)
             sleep(0.1)
         packet = self.__packetManager.createVMConnectionParametersPacket(userID, ip, port + 1, password)
-        self.__networkManager.sendPacket(self.__listenningPort, packet)
+        self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):
-        if self.__shutDown and (self.__connector.getNumberOfDomains() == 0):
-            self.__shutdown()
+        if self.__shuttingDown and (self.__connector.getNumberOfDomains() == 0):
+            self.__shutDown = True
 
         name = domainInfo["name"]
         dataPath = self.__runningImageData.getMachineDataPathinDomain(name)
@@ -81,9 +84,10 @@ class VMClient(NetworkCallback):
         # Update the database
         self.__runningImageData.unRegisterVMResources(name)
     
-    def __shutdown(self):
-        # Cosas a hacer cuando se desea apagar el servidor
-        self.__virtualNetworkManager.destroyVirtualNetwork(VNName)
+    def shutdown(self):
+        # Cosas a hacer cuando se desea apagar el servidor.
+        # Importante: esto debe llamarse desde el hilo principal
+        self.__virtualNetworkManager.destroyVirtualNetwork(vnName)
         self.__networkManager.stopNetworkService()
         
     def processPacket(self, packet):
@@ -99,7 +103,7 @@ class VMClient(NetworkCallback):
     def __createDomain(self, info):
         idVM = info["MachineID"]
         userID = info["UserID"]
-        configFile = ConfigFilePath + self.__db.getFileConfigPath(idVM)
+        configFile = configFilePath + self.__db.getFileConfigPath(idVM)
         originalName = self.__db.getName(idVM)
         dataPath = self.__db.getImagePath(idVM)
         osPath = self.__db.getOsImagePath(idVM)
@@ -108,12 +112,12 @@ class VMClient(NetworkCallback):
         newUUID, newMAC = self.__getNewMAC_UUID()
         newPort = self.__getNewPort()
         newName = originalName + str(newPort)
-        newDataDisk = ExecutionImagePath + dataPath + str(newPort) + ".qcow2"
-        newOSDisk = ExecutionImagePath + osPath + str(newPort) + ".qcow2"
+        newDataDisk = executionImagePath + dataPath + str(newPort) + ".qcow2"
+        newOSDisk = executionImagePath + osPath + str(newPort) + ".qcow2"
         newPassword = self.__getNewPassword()
         # Esta variable no se está utilizando
-        #sourceDataDisk = SourceImagePath + dataPath
-        sourceOSDisk = SourceImagePath + osPath        
+        #sourceDataDisk = sourceImagePath + dataPath
+        sourceOSDisk = sourceImagePath + osPath        
         
         # Preparo los archivos
                 
@@ -125,16 +129,16 @@ class VMClient(NetworkCallback):
             print("The file " + newOSDisk + " already exist")
             return
         # Copio las imagenes
-        runCommand("cd " + SourceImagePath + ";" + "cp --parents "+ dataPath + " " + ExecutionImagePath, VMClientException)
-        runCommand("mv " + ExecutionImagePath + dataPath +" " + newDataDisk, VMClientException)
+        runCommand("cd " + sourceImagePath + ";" + "cp --parents "+ dataPath + " " + executionImagePath, VMClientException)
+        runCommand("mv " + executionImagePath + dataPath +" " + newDataDisk, VMClientException)
         runCommand("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMClientException)
-        #runCommand("chmod -R 777 " + ExecutionImagePath, VMClientException)
+        #runCommand("chmod -R 777 " + executionImagePath, VMClientException)
         
         # Fichero de configuracion
         xmlFile = ConfigurationFileEditor(configFile)
         xmlFile.setDomainIdentifiers(newName, newUUID)
         xmlFile.setImagePaths(newOSDisk, newDataDisk)
-        xmlFile.setNetworkConfiguration(VNName, newMAC)
+        xmlFile.setNetworkConfiguration(vnName, newMAC)
         xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword)
         
         string = xmlFile.generateConfigurationString()
@@ -156,15 +160,15 @@ class VMClient(NetworkCallback):
     def __serverStatusRequest(self, packet):
         activeDomains = self.__connector.getNumberOfDomains()
         packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
-        self.__networkManager.sendPacket(self.__listenningPort, packet)
+        self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
     def __userFriendlyShutdown(self, packet):
-        self.__shutDown = True
+        self.__shuttingDown = True
     
     def __halt(self, packet):
         # Destruyo los dominios
         self.__connector.stopAllDomain()
-        self.__shutdown()
+        self.__shutDown = True
     
     def __getNewMAC_UUID(self):
         return self.__runningImageData.extractfreeMacAndUuid()

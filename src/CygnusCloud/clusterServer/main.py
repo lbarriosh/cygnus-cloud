@@ -5,21 +5,22 @@ Main server entry point
 @version: 1.0
 '''
 
-from reactor import MainServerReactor
+from clusterServer.reactor.clusterServerReactor import ClusterServerReactor
 from time import sleep
 
 rootsPassword = ""
 dbName = "MainServerDB"
 dbUser ="cygnuscloud"
 dbPassword ="cygnuscloud"
-scriptPath = "../database/MainServerDB.sql"
-databaseName = "MainServerDB"
+scriptPath = "../database/ClusterServerDB.sql"
+databaseName = "ClusterServerDB"
 certificatePath ="/home/luis/Certificates"
 listeningPort = 9000
 
 if __name__ == "__main__":
-    reactor = MainServerReactor()
+    reactor = ClusterServerReactor()
     reactor.connectToDatabase(rootsPassword, dbName, dbUser, dbPassword, scriptPath)
     reactor.startListenning(certificatePath, 9000)
     while not reactor.hasFinished() :
-        sleep(30)
+        sleep(20)
+    reactor.shutdown()

@@ -16,7 +16,7 @@
         Módulos necesarios:
             -serverWridge,clientEmisor,clientReceptor
 '''
-from network.manager import NetworkManager
+from network.manager.networkManager import NetworkManager
 from network.tests.dummyCallback import DummyCallback
 from time import sleep
 
@@ -27,6 +27,6 @@ if __name__ == "__main__" :
     sleep(20)
     p = networkManager.createPacket(0)
     p.writeString("Hello Client 1!")    
-    networkManager.sendPacket(8081, p)
+    networkManager.sendPacket('127.0.0.1', 8081, p)
     sleep(100)
     networkManager.stopNetworkService()

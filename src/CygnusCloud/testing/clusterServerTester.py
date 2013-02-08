@@ -7,9 +7,9 @@ server and control it.
 '''
 from __future__ import print_function
 
-from network.manager import NetworkManager, NetworkCallback
+from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
-from mainServer.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
+from clusterServer.networking.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from time import sleep
 
 class TesterCallback(NetworkCallback):
@@ -87,6 +87,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "bootUpVM") :
             p = pHandler.createVMBootRequestPacket(tokens.pop(0), long(tokens.pop(0)))
+            networkManager.sendPacket(ip_address, port, p)
+        elif (command == "halt") :
+            p = pHandler.createHaltPacket(True)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True
