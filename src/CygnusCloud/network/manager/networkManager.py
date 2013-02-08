@@ -46,7 +46,7 @@ class NetworkManager():
         """
         Initializes the NetworkManager's state.
         Args:
-            certificatesDirectory: the directory where the certificates are
+            certificatesDirectory: the directory where the files server.crt and server.key are.
         """
         self.__connectionPool = GenericThreadSafeDictionary()
         self.__outgoingDataQueue = GenericThreadSafePriorityQueue()

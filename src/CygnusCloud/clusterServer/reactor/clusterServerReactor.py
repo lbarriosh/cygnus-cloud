@@ -2,7 +2,7 @@
 '''
 Main server reactor definitions.
 @author: Luis Barrios Hernández
-@version: 1.0
+@version: 1.1
 '''
 
 from clusterServer.networking.callbacks import VMServerCallback, WebCallback
@@ -34,10 +34,24 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
     a virtual machine server.
     '''
     def __init__(self):
+        """
+        Initializes the reactor's state.
+        Args:
+            None
+        """
         self.__webCallback = WebCallback(self)
         self.__finished = False
         
     def connectToDatabase(self, rootsPassword, dbName, dbUser, dbPassword, scriptPath):
+        """
+        Establishes a connection with the cluster server database.
+        Args:
+            rootsPassword: MySQL root's password
+            dbName: the cluster server database's name
+            dbUser: the cluster server database's user name
+            dbPassword: the cluster server database's user password
+            scriptPath: the cluster server database's initialization script path
+        """
         configurator = DBConfigurator(rootsPassword)
         configurator.runSQLScript(dbName, scriptPath)
         configurator.addUser(dbUser, dbPassword, dbName, True)
@@ -45,6 +59,14 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__dbConnector.connect()
         
     def startListenning(self, certificatePath, port):
+        """
+        Starts the network service and creates a server connection.
+        Args:
+            certificatePath: the server.crt and server.key files path
+            port: the listenning port
+        Returns:
+            Nothing
+        """
         self.__loadBalancer = SimpleLoadBalancer(self.__dbConnector)
         self.__networkManager = NetworkManager(certificatePath)
         self.__webPort = port
@@ -55,6 +77,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__vmServerCallback = VMServerCallback(self)
         
     def processWebIncomingPacket(self, packet):
+        """
+        Processes a packet received from the web server.
+        Args:
+            packet: the packet to process
+        Returns:
+            Nothing
+        """
         data = self.__webPacketHandler.readPacket(packet)
         if (data["packet_type"] == WEB_PACKET_T.REGISTER_VM_SERVER) :
             self.__registerVMServer(data)
@@ -72,10 +101,24 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__halt(data["HaltVMServers"])
             
     def __halt(self, haltVMServers):
+        """
+        Shuts down the cluster (including the virtual machine servers).
+        Args:
+            haltVMServers: if True, all the active virtual machines will be destroyed and the virtual machine
+            servers will be shut down. If false, the virtual machine servers will wait until there are no
+            active virtual machines, and then they'll be shut down.
+        """
         # TODO: shut down all the virtual machine servers
         self.__finished = True                
                 
     def __registerVMServer(self, data):
+        """
+        Processes a virtual machine server registration packet.
+        Args:
+            data: the received virtual machine server registration packet.
+        Returns:
+            Nothing
+        """
         try :
             # Establish a connection
             self.__networkManager.connectTo(data["VMServerIP"], data["VMServerPort"], 
@@ -95,6 +138,14 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket(data["VMServerIP"], self.__webPort, p)
             
     def __unregisterOrShutdownVMServer(self, key, halt, unregister):
+        """
+        Processes a virtual machine server unregistration or shutdown packet.
+        Args:
+            key: the virtual machine server's IPv4 address or its name.
+            halt: if True, the virtual machine server will be shut down immediately. If false, it'll
+            wait until all the virtual machines are shut down, and then it will finally be shut down.
+            unregister: if True, the virtual machine server will be deleted from the cluster server's database. 
+        """
         # Shut down the server (if necessary)
         serverId = self.__dbConnector.getVMServerID(key)
         serverData = self.__dbConnector.getVMServerBasicData(serverId)
@@ -115,6 +166,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__dbConnector.unsubscribeVMServer(key)   
             
     def __updateVMServerStatus(self, data):
+        """
+        Processes a virtual machine server's status packet.
+        Args:
+            data: the received packet
+        Returns:
+            Nothing
+        """
         # Fetch the virtual machine server's ID
         serverID = None
         while (serverID == None) :
@@ -126,6 +184,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__dbConnector.setVMServerStatistics(serverID, data["ActiveDomains"])
         
     def __bootUpVMServer(self, serverNameOrIPAddress):
+        """
+        Processes a virtual machine server boot packet.
+        Args:
+            serverNameOrIPAddress: the virtual machine server's name or IPv4 address.
+        Returns:
+            Nothing
+        """
         try :
             serverId = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
             serverData = self.__dbConnector.getVMServerBasicData(serverId)
@@ -144,6 +209,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket('', self.__webPort, p)
         
     def __sendVMServerStatusData(self):
+        """
+        Processes a virtual machine server data request packet.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         segmentSize = 5
         segmentCounter = 1
         outgoingData = []
@@ -173,6 +245,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket('', self.__webPort, packet)             
         
     def __sendAvailableImagesData(self):
+        """
+        Processes an image data request packet.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         segmentSize = 5
         segmentCounter = 1
         outgoingData = []
@@ -202,6 +281,14 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket('', self.__webPort, packet) 
             
     def __bootUpVM(self, vmName, userID):
+        """
+        Processes a virtual machine boot request packet.
+        Args:
+            vmName: the virtual machine's name
+            userID: the user's unique identifier
+        Returns:
+            Nothing
+        """
         # Obtain the image's ID
         imageID = self.__dbConnector.getImageID(vmName)
         # Choose a virtual machine server to boot it
@@ -217,6 +304,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
     
     def processVMServerIncomingPacket(self, packet):
+        """
+        Processes a packet sent from a virtual machine server.
+        Args:
+            packet: the packet to process
+        Returns:
+            Nothing
+        """
         data = self.__vmServerPacketHandler.readPacket(packet)
         if (data["packet_type"] == VMSRVR_PACKET_T.SERVER_STATUS) :
             self.__updateVMServerStatus(data)
@@ -224,14 +318,30 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendVMConnectionData(data)
             
     def __sendVMConnectionData(self, data):
+        """
+        Processes a virtual machine connection data packet.
+        Args:
+            data: the packet to process' data.
+        Returns:
+            Nothing
+        """
         p = self.__webPacketHandler.createVMConnectionDataPacket(data["UserID"], data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"])
         self.__networkManager.sendPacket('', self.__webPort, p)        
     
     def hasFinished(self):
+        """
+        Indicates if the cluster server has finished or not.
+        """
         return self.__finished
     
     def shutdown(self):
+        """
+        Shuts down the cluster server.
+        Args:
+            None
+        Returns:
+            Nothing
+        @attention: this method MUST NOT be called from a network thread. If you do so, the application will hang!
+        """
         self.__networkManager.stopNetworkService()
-        
-    
