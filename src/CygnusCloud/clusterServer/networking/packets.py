@@ -14,11 +14,27 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", "HALT")
 
 class MainServerPacketHandler(object):
-    
+    """
+    These objects will read and write the main server's packages.
+    """    
     def __init__(self, networkManager):
+        """
+        Initializes the packet handler's state
+        Args:
+            networkManager: the networkManager object that will create the new packets
+        """
         self.__packetCreator = networkManager
             
     def createVMServerRegistrationPacket(self, IPAddress, port, name):
+        """
+        Creates a virtual machine server registration packet
+        Args:
+            IPAddress: the virtual machine server's IPv4 address
+            port: the virtual machine server's port
+            name: the virtual machine server's desired name
+        Returns:
+            a new virtual machine server registration packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.REGISTER_VM_SERVER)
         p.writeString(IPAddress)
@@ -27,6 +43,16 @@ class MainServerPacketHandler(object):
         return p
     
     def createVMRegistrationErrorPacket(self, IPAddress, port, name, reason):
+        """
+        Creates a virtual machine server registration error packet
+        Args:
+            IPAddress: the virtual machine server's IPv4 address
+            port: the virtual machine server's port
+            name: the virtual machine server's desired name
+            reason: an error message
+        Returns:
+            a new virtual machine server registration error packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR)
         p.writeString(IPAddress)
@@ -36,11 +62,28 @@ class MainServerPacketHandler(object):
         return p
     
     def createDataRequestPacket(self, query):
+        """
+        Creates a data request packet. These packets are used to obtain a cluster's current status
+        right from a cluster server.
+        Args:
+            query: the information we want to retrieve (i.e. active virtual machines, available images,...)
+        Returns:
+            a new virtual machine data request packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(query)
         return p
     
     def createVMServerStatusPacket(self, segment, sequenceSize, data):
+        """
+        Creates a virtual machine server status packet
+        Args:
+            segment: the packet's data sequence number
+            sequenceSize: the number of segments in the sequence
+            data: the packet's data
+        Returns:
+            a new virtual machine server status packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA)
         p.writeInt(segment)
@@ -53,6 +96,15 @@ class MainServerPacketHandler(object):
         return p
     
     def createAvailableImagesPacket(self, segment, sequenceSize, data):
+        """
+        Creates an available images packet
+        Args:
+            segment: the packet's data sequence number
+            sequenceSize: the number of segments in the sequence
+            data: the packet's data
+        Returns:
+            a new available images packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(MAIN_SERVER_PACKET_T.AVAILABLE_IMAGES_DATA)
         p.writeInt(segment)
@@ -62,21 +114,46 @@ class MainServerPacketHandler(object):
             p.writeString(row["ImageDescription"])
         return p
     
-    def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, halt, shutdown):
+    def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, halt, unregister):
+        """
+        Creates a virtual machine server unregistration request packet
+        Args:
+            serverNameOrIPAddress: the virtual machine server's name or IPv4 address
+            halt: True if the server must stop immediately, and false otherwise.
+            unregister: True if the virtual machine server must be deleted from the cluster server's database,
+            and false otherwise.
+        Returns:
+            a new virtual machine server unregistration request packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER)
         p.writeString(serverNameOrIPAddress)
         p.writeBool(halt)
-        p.writeBool(shutdown)
+        p.writeBool(unregister)
         return p
     
     def createVMServerBootUpPacket(self, serverNameOrIPAddress):
+        """
+        Creates a virtual machine server boot packet
+        Args:
+            serverNameOrIPAddress: the virtual machine server's name or IPv4 address
+        Returns:
+            a new virtual machine server boot packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.BOOTUP_VM_SERVER)
         p.writeString(serverNameOrIPAddress)
         return p
     
     def createVMServerBootUpErrorPacket(self, serverNameOrIPAddress, reason):
+        """
+        Creates a virtual machine server boot up error packet
+        Args:
+            serverNameOrIPAddress: the virtual machine server's name or IPv4 address
+            reason: an error message
+        Returns:
+            a new virtual machine server boot up error packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR)
         p.writeString(serverNameOrIPAddress)
@@ -84,6 +161,14 @@ class MainServerPacketHandler(object):
         return p
     
     def createVMBootRequestPacket(self, vmName, userID):
+        """
+        Creates a virtual machine boot request packet
+        Args:
+            vmName: the virtual machine's name
+            userID: the virtual machine user's ID
+        Returns:
+            a new virtual machine boot request packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST)
         p.writeString(vmName)
@@ -91,6 +176,15 @@ class MainServerPacketHandler(object):
         return p
     
     def createVMBootFailurePacket(self, vmName, userID, reason):
+        """
+        Creates a virtual machine boot failure packet
+        Args:
+            vmName: the virtual machine's name
+            userID: the virtual machine user's ID
+            reason: an error message
+        Returns:
+            a new virtual machine boot failure packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE)
         p.writeString(vmName)
@@ -99,6 +193,16 @@ class MainServerPacketHandler(object):
         return p
     
     def createVMConnectionDataPacket(self, userID, IPAddress, port, password):
+        """
+        Creates a virtual machine connection data packet
+        Args:
+            userID: the virtual machine user's ID
+            IPAddress: the VNC server's IPv4 address
+            port: the VNC server's port
+            password: the VNC server's password
+        Returns:
+            a new virtual machine connection request packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA)
         p.writeLong(userID)
@@ -108,6 +212,15 @@ class MainServerPacketHandler(object):
         return p
     
     def createHaltPacket(self, haltServers):
+        """
+        Creates a cluster server halt packet
+        Args:
+            haltServers: if True, all the virtual machine servers in the cluster will kill
+            their active virtual machines. If False, they'll wait until all their virtual
+            machines will have been shut down.
+        Returns:
+            a cluster server halt packet containing the supplied data.
+        """
         p = self.__packetCreator.createPacket(1)
         p.writeInt(MAIN_SERVER_PACKET_T.HALT)
         p.writeBool(haltServers)
@@ -115,6 +228,13 @@ class MainServerPacketHandler(object):
     
     @staticmethod
     def __vm_server_status_to_string(status):
+        """
+        Converts the virtual machine server's status code to a human-readable string.
+        Args:
+            status: a virtual machine server's status code.
+        Returns:
+            a string with a human-readable virtual machine server status
+        """
         if (status == SERVER_STATE_T.BOOTING) :
             return "Booting"
         if (status == SERVER_STATE_T.READY) :
@@ -124,7 +244,7 @@ class MainServerPacketHandler(object):
     
     def readPacket(self, p):
         """
-        Reads the content of a virtual machine server packet
+        Reads the content of a cluster server packet
         Args:
             p: the packet with the data to read
         Returns:
@@ -165,7 +285,7 @@ class MainServerPacketHandler(object):
             value = p.readBool()
             result["Halt"] = value
             value = p.readBool()
-            result["Shut_down"] = value
+            result["Unregister"] = value
             
         elif (packet_type == MAIN_SERVER_PACKET_T.BOOTUP_VM_SERVER) :
             result["ServerNameOrIPAddress"] = p.readString()

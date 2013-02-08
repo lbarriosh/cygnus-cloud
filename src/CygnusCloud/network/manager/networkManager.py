@@ -2,7 +2,7 @@
 '''
 Network manager class definitions.
 @author: Luis Barrios Hernández
-@version: 6.0
+@version: 6.1
 '''
 
 from twisted.internet import reactor, ssl
@@ -75,6 +75,8 @@ class NetworkManager():
         UNTIL you KNOW PERFECTLY WELL that you won't be using it again. 
         @attention: Remember: there's just one network manager per application, so *please* THINK
         before you stop it.
+        @attention: If this method is called from a network thread, your application will HANG. 
+        Please, call it from your application's MAIN thread.
         Args:
             None
         Returns:

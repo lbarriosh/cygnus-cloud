@@ -14,6 +14,9 @@ from network.manager.networkManager import NetworkManager, NetworkCallback
 from time import sleep
 
 class _ClusterServerConnectorCallback(NetworkCallback):
+    """
+    This is 
+    """
     def __init__(self, connector):
         self.__connector = connector
         

@@ -61,7 +61,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         elif (data["packet_type"] == WEB_PACKET_T.QUERY_VM_SERVERS_STATUS) :
             self.__sendVMServerStatusData()
         elif (data["packet_type"] == WEB_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
-            self.__unregisterOrShutdownVMServer(data["ServerNameOrIPAddress"], data["Halt"], data["Shut_down"])
+            self.__unregisterOrShutdownVMServer(data["ServerNameOrIPAddress"], data["Halt"], data["Unregister"])
         elif (data["packet_type"] == WEB_PACKET_T.BOOTUP_VM_SERVER) :
             self.__bootUpVMServer(data["ServerNameOrIPAddress"])
         elif (data["packet_type"] == WEB_PACKET_T.QUERY_AVAILABLE_IMAGES) :
@@ -94,7 +94,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                                                                             data["VMServerName"], str(e))        
             self.__networkManager.sendPacket(data["VMServerIP"], self.__webPort, p)
             
-    def __unregisterOrShutdownVMServer(self, key, halt, shutdown):
+    def __unregisterOrShutdownVMServer(self, key, halt, unregister):
         # Shut down the server (if necessary)
         serverId = self.__dbConnector.getVMServerID(key)
         serverData = self.__dbConnector.getVMServerBasicData(serverId)
@@ -107,7 +107,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
         # Close the network connection
         self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])
-        if (shutdown) :
+        if (unregister) :
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
             self.__dbConnector.deleteVMServerStatics(serverId)
         else :

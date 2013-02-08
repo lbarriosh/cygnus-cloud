@@ -14,9 +14,22 @@ class SimpleLoadBalancer(LoadBalancer):
     '''
     
     def __init__(self, databaseConnector):
+        """
+        Initializes the load balancer's state
+        Args:
+            databaseConnector: the object that will be used to read from the status database.
+        """
         LoadBalancer.__init__(self, databaseConnector)
     
     def assignVMServer(self, imageId):
+        """
+        Chooses the virtual machine server that will host a virtual machine.
+        Args:
+            imageId: the virtual machine's unique identifier
+        Returns:
+            a tuple (chosenServer, errorMessage). When errorMessage is None,
+            chosenServer is the chosen virtual machine server's ID.
+        """
         # Determine what virtual machine servers can host this image
         availableServers = self._dbConnector.getImageServers(imageId)
         if (len(availableServers) == 0) :
