@@ -36,4 +36,5 @@ def _():
     # shortcuts
     app = request.application
     ctr = request.controller
+        
 if DEVELOPMENT_MENU: _()

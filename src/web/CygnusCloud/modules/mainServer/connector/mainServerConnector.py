@@ -4,14 +4,17 @@ Main server connector definitions
 @author: Luis Barrios Hernández
 @version: 1.0
 '''
-
-from databaseUpdateThread import StatusDatabaseUpdateThread, UpdateHandler
-from mainServer.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
+from mainServer.connector.databaseUpdateThread import StatusDatabaseUpdateThread, UpdateHandler
 from database.utils.configuration import DBConfigurator
 from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
 from database.systemStatusDB.systemStatusDBWriter import SystemStatusDatabaseWriter
 from network.manager import NetworkManager, NetworkCallback
 from time import sleep
+from mainServer.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
+
+
+
+
 
 class _MainServerConnectorCallback(NetworkCallback):
     def __init__(self, connector):
@@ -158,4 +161,3 @@ if __name__ == "__main__" :
     sleep(10)
     print connector.getVMServersData()
     connector.disconnectFromMainServer()
-    

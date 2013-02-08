@@ -5,9 +5,10 @@ Status database update thread definitions
 @version: 1.0
 '''
 
-from utils.threads import BasicThread
 
+    
 from time import sleep
+from utils1.threads import BasicThread
 
 class UpdateHandler(object):
     def sendUpdateRequestPackets(self):
@@ -18,11 +19,8 @@ class StatusDatabaseUpdateThread(BasicThread):
         BasicThread.__init__(self)
         self.__handler = updateHandler
         self.__sleepTime = sleepTime
-        
+
     def run(self):
         while not self.stopped() :
             self.__handler.sendUpdateRequestPackets()
             sleep(self.__sleepTime)
-        
-
-

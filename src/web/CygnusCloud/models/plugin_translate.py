@@ -10,13 +10,22 @@ if T.accepted_language != session._language:
     response.files.append(URL(r=request,c='plugin_translate',f='translate',args=lang+'.js'))
 
 def plugin_translate():
-    return FORM(T('Languages:'),A(IMG(_src=URL('static','spain'),_alt = 'spain'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('es',request.application,request.controller,request.function))),
-                       A(IMG(_src=URL('static','england'),_alt = 'england'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('en',request.application,request.controller,request.function))),
-                       A(IMG(_src=URL('static','france'),_alt = 'france'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('fr',request.application,request.controller,request.function))),
-                       A(IMG(_src=URL('static','german'),_alt = 'german'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('nl',request.application,request.controller,request.function))),
-                       A(IMG(_src=URL('static','portugal'),_alt = 'portugal'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('po',request.application,request.controller,request.function))),
-                       A(IMG(_src=URL('static','italy'),_alt = 'italy'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('it',request.application,request.controller,request.function))),
-                       value=session._language)
+    if(len(request.args) > 0):
+        return FORM(T('Languages:'),A(IMG(_src=URL('static','spain'),_alt = 'spain'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('es',request.application,request.controller,request.function,request.args[0]))),
+                           A(IMG(_src=URL('static','england'),_alt = 'england'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('en',request.application,request.controller,request.function,request.args[0]))),
+                           A(IMG(_src=URL('static','france'),_alt = 'france'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('fr',request.application,request.controller,request.function,request.args[0]))),
+                           A(IMG(_src=URL('static','german'),_alt = 'german'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('nl',request.application,request.controller,request.function,request.args[0]))),
+                           A(IMG(_src=URL('static','portugal'),_alt = 'portugal'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('po',request.application,request.controller,request.function,request.args[0]))),
+                           A(IMG(_src=URL('static','italy'),_alt = 'italy'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('it',request.application,request.controller,request.function,request.args[0]))),
+                           value=session._language)
+    else:
+        return FORM(T('Languages:'),A(IMG(_src=URL('static','spain'),_alt = 'spain'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('es',request.application,request.controller,request.function))),
+                           A(IMG(_src=URL('static','england'),_alt = 'england'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('en',request.application,request.controller,request.function))),
+                           A(IMG(_src=URL('static','france'),_alt = 'france'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('fr',request.application,request.controller,request.function))),
+                           A(IMG(_src=URL('static','german'),_alt = 'german'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('nl',request.application,request.controller,request.function))),
+                           A(IMG(_src=URL('static','portugal'),_alt = 'portugal'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('po',request.application,request.controller,request.function))),
+                           A(IMG(_src=URL('static','italy'),_alt = 'italy'),_href = URL(r=request,c='plugin_translate',f='changeLanguage',args = ('it',request.application,request.controller,request.function))),
+                           value=session._language)    
                        
                        
 def changeLanguage(lang):

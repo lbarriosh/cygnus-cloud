@@ -1,8 +1,14 @@
 # coding: utf8
 # Método encargado de la página de inicio de sesión
+from   mainServer.connector.mainServerConnector import MainServerConnector
+from  mainServer.connector.webCallback import WebCallback
+
+
 def login():
     #Iniciamos los valores, si procede
     initValues() 
+    #iniciamos el arranque con el mainserver
+    initMainServerConnection()
     #Creamos la barra de direcciones
     createAdressBar()
     #Gestionamos los usuarios ya logueados
@@ -39,6 +45,16 @@ def initValues():
         auth.add_membership('Administrator',u1)
         auth.add_membership('Student',u2)
         print userDB.tables
+        
+def initMainServerConnection():
+    #instanciamos la clase
+    connector = MainServerConnector(WebCallback())
+    #conectamos con la base de datos
+    connector.connectToDatabase("170590ucm","SystemStatusDB", "websiteUser", "cygnuscloud", "updateUser", "cygnuscloud")
+    #conectamos con el servidor principal
+    connector.connectToMainServer("static/Certificados", ip, port)        
+        
+        
         
 @auth.requires_login()                                      
 def loginAccess(state):

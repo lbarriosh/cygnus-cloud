@@ -1,0 +1,5 @@
+{{extend 'layout.html'}}
+{{if(request.args(0) == 'add_remove_servers'):}}
+<h1>{{=T('Administración de usuarios')}}</h1>
+{{=form}}
+{{pass}}

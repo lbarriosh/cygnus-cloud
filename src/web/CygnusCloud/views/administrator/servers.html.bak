@@ -1,6 +1,7 @@
 {{extend 'layout.html'}}
-<h1>{{=T('Administración de servidores')}}</h1>
+
 {{if(request.args(0) == 'add_remove_servers'):}}
 {{=menu}}
+<h1>{{=T('Administración de servidores')}}</h1>
 {{=form}}
 {{pass}}

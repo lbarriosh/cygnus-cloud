@@ -5,7 +5,7 @@ Main server packet handler definitions.
 @version: 1.0
 '''
 
-from utils.enums import enum
+from utils1.enums import enum
 from database.mainServer.mainServerDB import SERVER_STATE_T
 
 MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR", "QUERY_VM_SERVERS_STATUS",
@@ -186,5 +186,3 @@ class MainServerPacketHandler(object):
             result["VNCServerPassword"] = p.readString()
                       
         return result
-            
-        
