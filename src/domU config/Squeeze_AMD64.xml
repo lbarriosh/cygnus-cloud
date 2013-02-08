@@ -50,16 +50,16 @@
      -->
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' cache='writeback' io='native'/>
-      <source file='/home/luis/kvm-images/DebianSqueezeAMD64/SqueezeAMD64Writable.qcow2'/>
+      <source file='/home/luis/kvm-images/DebianSqueezeAMD64/SqueezeAMD64.qcow2'/>
       <target dev='vda' bus='virtio'/>
     </disk>
     <!--
         Disco duro
-        VirtIO, con imagen VMDK de los datos del usuario
+        VirtIO, con imagen QCOW2 con los datos del usuario
      -->
     <disk type='file' device='disk'>
-      <driver name='qemu' type='vmdk' cache='writeback' io='native'/>
-      <source file='/home/luis/kvm-images/DebianSqueezeAMD64/Data.vmdk'/>
+      <driver name='qemu' type='qcow2' cache='writeback' io='native'/>
+      <source file='/home/luis/kvm-images/DebianSqueezeAMD64/Data.qcow2'/>
       <target dev='vdb' bus='virtio'/>
     </disk>
     <!--

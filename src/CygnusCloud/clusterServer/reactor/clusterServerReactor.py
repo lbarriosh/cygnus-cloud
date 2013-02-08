@@ -7,7 +7,7 @@ Main server reactor definitions.
 
 from clusterServer.networking.callbacks import VMServerCallback, WebCallback
 from database.utils.configuration import DBConfigurator
-from database.mainServer.mainServerDB import MainServerDatabaseConnector, SERVER_STATE_T
+from database.clusterServer.clusterServerDB import ClusterServerDatabaseConnector, SERVER_STATE_T
 from network.manager.networkManager import NetworkManager
 from clusterServer.networking.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
@@ -55,7 +55,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         configurator = DBConfigurator(rootsPassword)
         configurator.runSQLScript(dbName, scriptPath)
         configurator.addUser(dbUser, dbPassword, dbName, True)
-        self.__dbConnector = MainServerDatabaseConnector(dbUser, dbPassword, dbName)
+        self.__dbConnector = ClusterServerDatabaseConnector(dbUser, dbPassword, dbName)
         self.__dbConnector.connect()
         
     def startListenning(self, certificatePath, port):

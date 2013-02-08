@@ -6,7 +6,7 @@ Main server packet handler definitions.
 '''
 
 from utils.enums import enum
-from database.mainServer.mainServerDB import SERVER_STATE_T
+from database.clusterServer.clusterServerDB import SERVER_STATE_T
 
 MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR", "QUERY_VM_SERVERS_STATUS",
                             "VM_SERVERS_STATUS_DATA", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",

@@ -12,8 +12,8 @@ rootsPassword = ""
 dbName = "MainServerDB"
 dbUser ="cygnuscloud"
 dbPassword ="cygnuscloud"
-scriptPath = "../database/MainServerDB.sql"
-databaseName = "MainServerDB"
+scriptPath = "../database/ClusterServerDB.sql"
+databaseName = "ClusterServerDB"
 certificatePath ="/home/luis/Certificates"
 listeningPort = 9000
 
