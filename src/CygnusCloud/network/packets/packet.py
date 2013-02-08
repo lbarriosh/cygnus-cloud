@@ -329,10 +329,10 @@ class _Packet(object):
             PacketException: this exceptions will be raised when the packet's current value does not
             match with the type label and when the packet value and the type label do not match.
         """
-        (label,_dot,tail) = self.__data.partition("$")
+        (label,_dollar,tail) = self.__data.partition("$")
         if (typeLabel != int(label)) :
             raise PacketException("Can't read a " + self.__extractTypeName(returnType) + " value")
-        (value,_dot,tail) = tail.partition("$")
+        (value,_dollar,tail) = tail.partition("$")
         try :
             returnValue = returnType(value)
         except Exception :

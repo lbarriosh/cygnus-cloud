@@ -21,7 +21,7 @@ class _TwistedReactorThread(Thread):
         Returns:
             Nothing
         """
-        Thread.__init__(self)
+        Thread.__init__(self, name="Twisted reactor thread")
         
     def __workaround(self):
         """

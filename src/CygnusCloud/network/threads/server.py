@@ -22,7 +22,7 @@ class _ServerWaitThread(BasicThread):
             startThreadMethod: the method to start the new connection's incoming package
             thread.
         """
-        BasicThread.__init__(self)        
+        BasicThread.__init__(self, "Server connection wait thread")        
         self.__factory = factory
         self.__registerMethod = registerMethod
         self.__startThreadMethod = startThreadMethod
@@ -35,8 +35,8 @@ class _ServerWaitThread(BasicThread):
         Returns:
             Nothing
         """
-        while not self.stopped() and self.__factory.getInstance() == None :
+        while not self.finish() and self.__factory.getInstance() == None :
             sleep(0.01)
-        if not self.stopped() :
+        if not self.finish() :
             self.__registerMethod(self.__factory.getInstance())
             self.__startThreadMethod() 

@@ -6,7 +6,7 @@ This code will only be used for testing purposes.
 @version: 1.1
 '''
 
-from network.manager import NetworkCallback, NetworkManager
+from network.manager.networkManager import NetworkCallback, NetworkManager
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as PACKET_T
 from time import sleep
 

@@ -22,4 +22,5 @@ if __name__ == "__main__":
     reactor.connectToDatabase(rootsPassword, dbName, dbUser, dbPassword, scriptPath)
     reactor.startListenning(certificatePath, 9000)
     while not reactor.hasFinished() :
-        sleep(30)
+        sleep(20)
+    reactor.shutdown()

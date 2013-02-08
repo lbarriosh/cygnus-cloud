@@ -82,10 +82,10 @@ class NetworkManager():
         """
         for connection in self.__connectionPool.values() :
             self.closeConnection(connection.getIPAddress(), connection.getPort())
-        self.__outgoingDataThread.stop()
-        self.__outgoingDataThread.join()
         self.__connectionThread.stop()
         self.__connectionThread.join()
+        self.__outgoingDataThread.stop()
+        self.__outgoingDataThread.join()
         self.__networkThread.stop()
         self.__networkThread.join()
         

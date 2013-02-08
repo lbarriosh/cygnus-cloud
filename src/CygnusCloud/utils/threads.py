@@ -12,23 +12,23 @@ class BasicThread(Thread):
     """
     A class for a stoppable thread.
     """
-    def __init__(self):
+    def __init__(self, threadName):
         """
         Initializes the thread's state.
         Args:
             None
         """
-        Thread.__init__(self)
+        Thread.__init__(self, name=threadName)
         self.__stop = False
         self.__isRunning = False
         
-    def stopped(self):
+    def finish(self):
         """
-        Checks if this thread is stopped or not.
+        Checks if this thread must finish or not.
         Args:
             None
         Returns:
-            True if this thread is stopped or false otherwise.
+            True if this thread must finish, and false otherwise.
         """
         return self.__stop
     
@@ -61,13 +61,13 @@ class QueueProcessingThread(BasicThread):
     These threads read data from a queue and process
     them in an abstract way.
     """
-    def __init__(self, queue):
+    def __init__(self, threadName, queue):
         """
         Initializes the thread's state
         Args:
             queue: the queue to monitor.
         """
-        BasicThread.__init__(self)        
+        BasicThread.__init__(self, threadName)        
         self.__queue = queue     
         
     def processElement(self, element):
@@ -82,10 +82,12 @@ class QueueProcessingThread(BasicThread):
     
     def run(self):
         """
-        Processes the queue until it's empty and the thread is stopped.
+        Processes the queue until it's empty and the thread is finish.
         """        
-        while not (self.stopped() and self.__queue.isEmpty()):
+        while not (self.finish() and self.__queue.isEmpty()):
             while not self.__queue.isEmpty() :
                 element = self.__queue.dequeue()
-                self.processElement(element)           
+                self.processElement(element)      
+            if (self.finish()) :
+                print "Empty queue!"    
             sleep(0.01) # Sleep for 10 milliseconds when there's nothing to do   

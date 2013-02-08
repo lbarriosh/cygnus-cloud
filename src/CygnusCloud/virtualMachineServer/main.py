@@ -14,11 +14,12 @@ from constantes import databaseName, databaseUserName, databasePassword, mysqlRo
 if __name__ == "__main__" :
     # Crear la base de datos (si es necesario)
     configurator = DBConfigurator(mysqlRootsPassword)
-    configurator.runSQLScript("../database/VMServerDB.sql")
+    configurator.runSQLScript(databaseName, "../database/VMServerDB.sql")
     # Crear un usuario y darle permisos
     configurator.addUser(databaseUserName, databasePassword, databaseName, True)
     # Crear el servidor de máquinas virtuales
     vmServer = VMClient()
     # Dormir hasta que se apague
     while not vmServer.hasFinished():
-        sleep(20)
+        sleep(10)
+    vmServer.shutdown()

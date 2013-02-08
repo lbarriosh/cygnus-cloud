@@ -11,15 +11,13 @@ from database.mainServer.mainServerDB import SERVER_STATE_T
 MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR", "QUERY_VM_SERVERS_STATUS",
                             "VM_SERVERS_STATUS_DATA", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",
                             "VM_SERVER_BOOTUP_ERROR", "QUERY_AVAILABLE_IMAGES", "AVAILABLE_IMAGES_DATA", "VM_BOOT_REQUEST",
-                            "VM_CONNECTION_DATA", "VM_BOOT_FAILURE")
+                            "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", "HALT")
 
 class MainServerPacketHandler(object):
     
     def __init__(self, networkManager):
         self.__packetCreator = networkManager
-        
-    # TODO: paquetes de arranque
-    
+            
     def createVMServerRegistrationPacket(self, IPAddress, port, name):
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.REGISTER_VM_SERVER)
@@ -109,6 +107,12 @@ class MainServerPacketHandler(object):
         p.writeString(password)
         return p
     
+    def createHaltPacket(self, haltServers):
+        p = self.__packetCreator.createPacket(1)
+        p.writeInt(MAIN_SERVER_PACKET_T.HALT)
+        p.writeBool(haltServers)
+        return p
+    
     @staticmethod
     def __vm_server_status_to_string(status):
         if (status == SERVER_STATE_T.BOOTING) :
@@ -184,7 +188,8 @@ class MainServerPacketHandler(object):
             result["VNCServerIPAddress"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.HALT) :
+            result["HaltVMServers"] = p.readBool()
                       
         return result
-            
-        

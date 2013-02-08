@@ -7,7 +7,7 @@ server and control it.
 '''
 from __future__ import print_function
 
-from network.manager import NetworkManager, NetworkCallback
+from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T
 from time import sleep

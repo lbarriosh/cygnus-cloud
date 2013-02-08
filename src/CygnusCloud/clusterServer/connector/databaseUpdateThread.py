@@ -20,7 +20,7 @@ class StatusDatabaseUpdateThread(BasicThread):
         self.__sleepTime = sleepTime
         
     def run(self):
-        while not self.stopped() :
+        while not self.finish() :
             self.__handler.sendUpdateRequestPackets()
             sleep(self.__sleepTime)
         

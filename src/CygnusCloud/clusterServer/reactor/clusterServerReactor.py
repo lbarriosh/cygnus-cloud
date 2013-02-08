@@ -68,7 +68,12 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendAvailableImagesData()
         elif (data["packet_type"] == WEB_PACKET_T.VM_BOOT_REQUEST):
             self.__bootUpVM(data["VMName"], data["UserID"])
-                
+        elif (data["packet_type"] == WEB_PACKET_T.HALT) :
+            self.__halt(data["HaltVMServers"])
+            
+    def __halt(self, haltVMServers):
+        # TODO: shut down all the virtual machine servers
+        self.__finished = True                
                 
     def __registerVMServer(self, data):
         try :
@@ -136,7 +141,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
         except Exception as e:
             p = self.__webPacketHandler.createVMServerBootUpErrorPacket(serverNameOrIPAddress, str(e))
-            self.__networkManager.sendPacket(serverData["ServerIP"], self.__webPort, p)
+            self.__networkManager.sendPacket('', self.__webPort, p)
         
     def __sendVMServerStatusData(self):
         segmentSize = 5
@@ -208,8 +213,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         else :
             # Ask the virtual machine server to boot up the VM
             p = self.__vmServerPacketHandler.createVMBootPacket(imageID, userID)
-            port = self.__dbConnector.getVMServerBasicData(serverID)["ServerPort"]
-            self.__networkManager.sendPacket('', port, p)    
+            serverData = self.__dbConnector.getVMServerBasicData(serverID)
+            self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
     
     def processVMServerIncomingPacket(self, packet):
         data = self.__vmServerPacketHandler.readPacket(packet)
@@ -225,5 +230,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
     
     def hasFinished(self):
         return self.__finished
+    
+    def shutdown(self):
+        self.__networkManager.stopNetworkService()
         
     

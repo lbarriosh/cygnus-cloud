@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS VirtualMachine(VMId INTEGER PRIMARY KEY, name VARCHAR
 	FileConfigPath VARCHAR(100));
 	
 CREATE TABLE IF NOT EXISTS ActualVM(domainName VARCHAR(30) PRIMARY KEY,VMId INTEGER,VNCPortAdress INTEGER, userId INTEGER, VMPid INTEGER, imageCopyPath VARCHAR(200), 
-	osImagePath  VARCHAR(200),macAdress VARCHAR(20),uuid VARCHAR(40), VNCPass VARCHAR(64),
+	osImagePath  VARCHAR(200),macAdress VARCHAR(20),uuid VARCHAR(40), VNCPass VARCHAR(65),
 	FOREIGN KEY (VMId) REFERENCES VirtualMachine(VMId) ON DELETE CASCADE ON UPDATE CASCADE);
 
 # Comenzamos a rellenar las tablas con los valores por defecto
