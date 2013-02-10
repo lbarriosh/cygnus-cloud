@@ -97,6 +97,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__bootUpVM(data["VMID"], data["UserID"])
         elif (data["packet_type"] == WEB_PACKET_T.HALT) :
             self.__halt(data["HaltVMServers"])
+        elif (data["packet_type"] == WEB_PACKET_T.QUERY_VM_DISTRIBUTION) :
+            self.__sendVMDistributionData()
             
     def __halt(self, haltVMServers):
         """
@@ -205,7 +207,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         except Exception as e:
             p = self.__webPacketHandler.createVMServerBootUpErrorPacket(serverNameOrIPAddress, str(e))
             self.__networkManager.sendPacket('', self.__webPort, p)
-        
+            
     def __sendVMServerStatusData(self):
         """
         Processes a virtual machine server data request packet.
@@ -214,6 +216,27 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Returns:
             Nothing
         """
+        self.__sendStatusData(self.__dbConnector.getVMServerBasicData, self.__webPacketHandler.createVMServerStatusPacket)
+        
+    def __sendVMDistributionData(self):
+        """
+        Processes a virtual machine distribution data packet
+        Args:
+            None
+        Returns:
+            Nothing
+        """    
+        self.__sendStatusData(self.__dbConnector.getHostedImages, self.__webPacketHandler.createVMDistributionPacket)
+        
+    def __sendStatusData(self, queryMethod, packetCreationMethod):
+        """
+        Processes a data request packet.
+        Args:
+            queryMethod: the method that extracts the data from the database
+            packetCreationMethod: the method that creates the packet
+        Returns:
+            Nothing
+        """        
         segmentSize = 5
         segmentCounter = 1
         outgoingData = []
@@ -227,19 +250,20 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         else :
             sendLastSegment = False
         for serverID in serverIDs :
-            row = self.__dbConnector.getVMServerBasicData(serverID)
-            outgoingData.append(row)
+            row = queryMethod(serverID)
+            if (isinstance(row, dict)) :
+                outgoingData.append(row)
+            else :
+                outgoingData += row
             if (len(outgoingData) >= segmentSize) :
                 # Flush
-                packet = self.__webPacketHandler.createVMServerStatusPacket(segmentCounter, 
-                                                                            segmentNumber, outgoingData)
+                packet = packetCreationMethod(segmentCounter, segmentNumber, outgoingData)
                 self.__networkManager.sendPacket('', self.__webPort, packet)
                 outgoingData = []
                 segmentCounter += 1
         # Send the last segment
         if (sendLastSegment) :
-            packet = self.__webPacketHandler.createVMServerStatusPacket(segmentCounter, 
-                                                                            segmentNumber, outgoingData)
+            packet = packetCreationMethod(segmentCounter, segmentNumber, outgoingData)
             self.__networkManager.sendPacket('', self.__webPort, packet)             
                    
     def __bootUpVM(self, vmID, userID):

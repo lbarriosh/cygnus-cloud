@@ -205,9 +205,19 @@ class ClusterServerConnector(object):
         Args:
             None
         Returns:
-            A dictionary containing all the virtual machine servers' data.
+            A list of dictionaries containing all the virtual machine servers' data.
         """
         return self.__reader.getVMServersData()
+    
+    def getVMDistributionData(self):
+        """
+        Returns the virtual machines' distribution data
+        Args:
+            None
+        Returns:
+            A list of dictionaries containing the virtual machines' distribution data 
+        """
+        return self.__reader.getVMDistributionData()
     
     def registerVMServer(self, vmServerIP, vmServerPort, vmServerName):
         """
@@ -282,6 +292,8 @@ class ClusterServerConnector(object):
         data = self.__pHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
             self.__writer.processVMServerSegment(data["Segment"], data["SequenceSize"], data["Data"])
+        elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
+            self.__writer.processVMDistributionSegment(data["Segment"], data["SequenceSize"], data["Data"])
         elif (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
             self.__callback.handleVMServerBootUpError(data["ServerNameOrIPAddress"], data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
@@ -302,8 +314,10 @@ class ClusterServerConnector(object):
         """
         if (self.__stopped) :
             return
-        # Send some update request packets to the main server
+        # Send some update request packets to the cluster server
         p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
+        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)        
+        p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         
 if __name__ == "__main__" :
@@ -312,6 +326,7 @@ if __name__ == "__main__" :
     connector.connectToClusterServer("/home/luis/Certificates", "127.0.0.1", 9000, 5)
     sleep(10)
     print connector.getVMServersData()
+    print connector.getVMDistributionData()
     connector.bootUpVMServer("Server1")
     sleep(10)
     print connector.getVMServersData()

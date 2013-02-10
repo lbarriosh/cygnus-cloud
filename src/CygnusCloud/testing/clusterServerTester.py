@@ -24,21 +24,21 @@ class TesterCallback(NetworkCallback):
             print("\t" + str(data["VMServerPort"]))
             print("\t" + data["VMServerName"])
             print("\tReason: " + data["ErrorMessage"])
-        if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
+        elif (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA or data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
             print("Virtual machine servers' current status")
             print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
             for row in data["Data"] :
                 print(row)
-        if (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR):
+        elif (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR):
             print("Virtual machine server bootup error")
             print("\tServer name or IP address: " + data["ServerNameOrIPAddress"])
             print("\tReason: " + data["ErrorMessage"])
-        if (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE):
+        elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE):
             print("Virtual machine boot failure")
             print("\tMachine ID: " + data["VMID"])
             print("\tUser ID: " + str(data["UserID"]))
             print("\tReason: " + data["ErrorMessage"])
-        if (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
+        elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
             print("Virtual machine connection data")
             print("\tUser ID: " + str(data["UserID"]))
             print("\tVNC server IP address: " + data["VNCServerIPAddress"])
@@ -72,6 +72,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         elif (command == "obtainVMServerStatus") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
             networkManager.sendPacket(ip_address, port, p)
+        elif (command == "obtainVMDistributionData") :
+            p = pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "unregisterVMServer") :
             p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), False)
             networkManager.sendPacket(ip_address, port, p)
@@ -102,6 +105,7 @@ def displayHelpMessage():
     print("=====")
     print("\tregisterVMServer <IP> <Port> <Name>: registers a virtual machine server")
     print("\tobtainVMServerStatus: obtains all the virtual machine server's status")
+    print("\tobtainVMDistributionData: obtains the virtual machines' distribution data")
     print("\tunregisterVMServer <Name or IP> <Halt?>: unregisters a virtual machine server")
     print("\tshutdownVMServer <Name or IP> <Halt?>: shuts down a virtual machine server")
     print("\tbootUpVMServer <Name or IP>: boots up a virtual machine server")
