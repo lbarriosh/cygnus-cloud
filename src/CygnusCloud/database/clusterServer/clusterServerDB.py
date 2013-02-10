@@ -185,7 +185,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         self._executeUpdate(query)
         
     def getImageIDs(self):
-        query = "SELECT imageId FROM Image;"
+        query = "SELECT DISTINCT imageId FROM ImageOnServer;"
         results = self._executeQuery(query)
         imageIDs = []
         for r in results:
@@ -273,79 +273,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             serverIds.append(r[0])
         #Devolvemos la lista resultado
         return serverIds
-    
-    def getImageData(self, imageId):
-        '''
-        Antiguo método getImageDescription. No sólo devuelve la descripción de la imagen,
-        sino también su nombre (seguro que alguna vez habrá que leerlo).
-        Argumentos:
-            imageId: identificaodr único de su imagen
-        Devuelve:
-            Diccionario con los datos de la imagen
-        '''
-        #Creamos la consulta encargada de extraer los datos
-        query = "SELECT name, Description FROM Image WHERE imageId = " + str(imageId)   
-        #Recogemos los resultado
-        result=self._executeQuery(query, True)
-        if (result == None) : 
-            return None
-        d = dict()
-        d["ImageName"] = result[0]
-        d["ImageDescription"] = result[1]
-        #Devolvemos el resultado
-        return d
-        
-    def createNewImage(self, name, description):
-        '''
-            Permite dar de alta en la base de datos una nueva imagen asociada 
-             al servidor de máquinas virtuales definido como atributo.
-            Argumentos:
-                name: nombre de la nueva imagen
-                description: descripción de la nueva imagen
-            Devuelve:
-                identificador único de la nueva imagen
-        '''
-        #Insertamos los datos en la base de datos
-        query = "INSERT INTO Image(name,description) VALUES('" + name + "','" + description  +"') "  
-        #Ejecutamos el comando
-        self._executeUpdate(query)              
-        #Extraemos el id de la imagen recién creada
-        query = "SELECT imageId FROM Image WHERE name ='" + name + "' AND description ='" + description +"'"  
-        #Cogemos el último
-        imageId = self.getLastRowId(query)
-        # Return the new image's id
-        return imageId
-    
-    def getImageID(self, imageName):
-        '''
-        Devuelve el identificador único de una imagen a partir de su nombre
-        Argumentos:
-            imageName: el nombre de la imagen
-        Devuelve:
-            el identificador único de la imagen
-        '''
-        query = "SELECT imageID FROM Image WHERE name = '" + imageName + "';"
-        result = self._executeQuery(query, True)
-        if (result == None) : 
-            return None
-        return result[0]
-    
-    def isImageExists(self,imageId):   
-        '''
-            Comprueba si una imagen existe
-            Nota: creo que este método también sobra: los ids de las imágenes van a salir
-            siempre de la base de datos.
-            Nota: el nombre debería ser doesImageExist
-        '''
-        #Contamos el número de imagenes con el identificador dado     
-        sql = "SELECT COUNT(*) FROM Image WHERE imageId =" + str(imageId)
-        #Recogemos los resultado
-        result=self._executeQuery(sql, True)
-        if (result == None) : 
-            return None
-        #Si el resultado es 1, la imagen existe
-        return (result[0] == 1)
-    
+         
     def assignImageToServer(self, serverID, imageID):
         '''
         Asigna una imagen a un servidor de máquinas virtuales
@@ -357,22 +285,6 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         '''
         # Insert the row in the table
         query = "INSERT INTO ImageOnServer VALUES(" + str(serverID)+ "," + str(imageID)  +") "  
-        self._executeUpdate(query)
-        
-    def setImageData(self, imageId, imageName, imageDescription):
-        '''
-        Antiguo método setDescription. Ahora deja cambiar también el nombre.
-        Argumentos:
-            imageId: el identificador único de la imagen
-            imageName: el nuevo nombre de la imagen
-            imageDescription: la nueva descripción de la imagen
-        Devuelve:
-            Nada
-        '''
-        #Creamos la consulta encargada de realizar la actualización
-        query = "UPDATE Image SET name = '"  + imageName + "', description = '" + imageDescription +\
-            "' WHERE imageId = " + str(imageId) + ";"
-        #Ejecutamos el comando
         self._executeUpdate(query)
         
     def setVMServerStatistics(self, serverID, runningHosts):

@@ -93,10 +93,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__unregisterOrShutdownVMServer(data["ServerNameOrIPAddress"], data["Halt"], data["Unregister"])
         elif (data["packet_type"] == WEB_PACKET_T.BOOTUP_VM_SERVER) :
             self.__bootUpVMServer(data["ServerNameOrIPAddress"])
-        elif (data["packet_type"] == WEB_PACKET_T.QUERY_AVAILABLE_IMAGES) :
-            self.__sendAvailableImagesData()
         elif (data["packet_type"] == WEB_PACKET_T.VM_BOOT_REQUEST):
-            self.__bootUpVM(data["VMName"], data["UserID"])
+            self.__bootUpVM(data["VMID"], data["UserID"])
         elif (data["packet_type"] == WEB_PACKET_T.HALT) :
             self.__halt(data["HaltVMServers"])
             
@@ -243,63 +241,25 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             packet = self.__webPacketHandler.createVMServerStatusPacket(segmentCounter, 
                                                                             segmentNumber, outgoingData)
             self.__networkManager.sendPacket('', self.__webPort, packet)             
-        
-    def __sendAvailableImagesData(self):
-        """
-        Processes an image data request packet.
-        Args:
-            None
-        Returns:
-            Nothing
-        """
-        segmentSize = 5
-        segmentCounter = 1
-        outgoingData = []
-        imageIDs = self.__dbConnector.getImageIDs();
-        if (len(imageIDs) == 0) :
-            segmentCounter = 0  
-        segmentNumber = (len(imageIDs) / segmentSize)
-        if (len(imageIDs) % segmentSize != 0) :
-            segmentNumber += 1  
-            sendLastSegment = True
-        else :
-            sendLastSegment = False
-        for imageID in imageIDs :
-            row = self.__dbConnector.getImageData(imageID)
-            outgoingData.append(row)
-            if (len(outgoingData) >= segmentSize) :
-                # Flush
-                packet = self.__webPacketHandler.createAvailableImagesPacket(segmentCounter, 
-                                                                            segmentNumber, outgoingData)
-                self.__networkManager.sendPacket('', self.__webPort, packet)
-                outgoingData = []
-                segmentCounter += 1
-        # Send the last segment
-        if (sendLastSegment) :
-            packet = self.__webPacketHandler.createAvailableImagesPacket(segmentCounter, 
-                                                                            segmentNumber, outgoingData)
-            self.__networkManager.sendPacket('', self.__webPort, packet) 
-            
-    def __bootUpVM(self, vmName, userID):
+                   
+    def __bootUpVM(self, vmID, userID):
         """
         Processes a virtual machine boot request packet.
         Args:
-            vmName: the virtual machine's name
+            vmName: the virtual machine's ID
             userID: the user's unique identifier
         Returns:
             Nothing
         """
-        # Obtain the image's ID
-        imageID = self.__dbConnector.getImageID(vmName)
-        # Choose a virtual machine server to boot it
-        (serverID, errorMessage) = self.__loadBalancer.assignVMServer(imageID)
+        # Choose the virtual machine server that will host the image
+        (serverID, errorMessage) = self.__loadBalancer.assignVMServer(vmID)
         if (errorMessage != None) :
             # Something went wrong => warn the user
-            p = self.__webPacketHandler.createVMBootFailurePacket(vmName, userID, errorMessage)
+            p = self.__webPacketHandler.createVMBootFailurePacket(vmID, userID, errorMessage)
             self.__networkManager.sendPacket('', self.__webPort, p)
         else :
             # Ask the virtual machine server to boot up the VM
-            p = self.__vmServerPacketHandler.createVMBootPacket(imageID, userID)
+            p = self.__vmServerPacketHandler.createVMBootPacket(vmID, userID)
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
     

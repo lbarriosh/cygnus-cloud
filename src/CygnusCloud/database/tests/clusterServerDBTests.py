@@ -49,7 +49,7 @@ class ClusterServerDBTests(unittest.TestCase):
         Determines how many virtual machines are running on a virtual machine server
         '''
         result = self.__connector.getVMServerStatistics(100)
-        expectedResult = {}
+        expectedResult = None
         self.assertEquals(result, expectedResult, 'getVMServerStatistics does not work')
         result = self.__connector.getVMServerStatistics(2)
         expectedResult = {'ActiveHosts': 10}
@@ -105,24 +105,7 @@ class ClusterServerDBTests(unittest.TestCase):
         result = self.__connector.getServerImages(1)
         expectedResult = [1,2,3]
         self.assertEquals(result, expectedResult, 'getImages does not work')
-        
-    def test_getImageData(self):
-        '''
-        Tries to retrieve an image's data
-        '''
-        result = self.__connector.getImageData(1)
-        expectedResult = {'ImageName':'Ubuntu', 'ImageDescription':'Ubuntu GNU/Linux x64'}
-        self.assertEquals(result, expectedResult, 'getImageData does not work')
-        
-    def test_createNewImage(self):
-        '''
-        Tries to create a new image
-        '''
-        imageID = self.__connector.createNewImage('Windows XP', 'Windows XP Professional')
-        result = self.__connector.getImageData(imageID)
-        expectedResult = {'ImageName':'Windows XP', 'ImageDescription':'Windows XP Professional'}
-        self.assertEquals(result, expectedResult, 'createNewImage does not work')
-        
+              
     def test_assignImageToServer(self):
         '''
         Tries to assign an image to a virtual machine server
@@ -131,16 +114,7 @@ class ClusterServerDBTests(unittest.TestCase):
         result = self.__connector.getImageServers(2)
         expectedResult = [2,4]
         self.assertEquals(result, expectedResult, 'assignImageToServer does not work')
-        
-    def test_setImageData(self):
-        '''
-        Tries to modify an image's data
-        '''
-        self.__connector.setImageData(1, 'Ubuntu Natty', 'Ubuntu GNU/Linux 12.04 x64')
-        result = self.__connector.getImageData(1)
-        expectedResult = {'ImageName':'Ubuntu Natty', 'ImageDescription':'Ubuntu GNU/Linux 12.04 x64'}
-        self.assertEquals(result, expectedResult, 'setImageData does not work')
-        
+               
     def test_setServerBasicData(self):
         '''
         Tries to modify a virtual machine server's data

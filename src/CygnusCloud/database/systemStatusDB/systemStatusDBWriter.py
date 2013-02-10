@@ -23,17 +23,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             command = "INSERT INTO VirtualMachineServer VALUES " + SystemStatusDatabaseWriter.__segmentsToStr(self.__vmServerSegments)
             self.__vmServerSegments = []            
             self._executeUpdate(command)
-            
-    def processImageSegment(self, segmentNumber, segmentCount, data):
-        self.__imageSegments.append(data)
-        if (len(self.__imageSegments) == segmentCount) :
-            # Write changes to the database
-            command = "DELETE FROM Image;"
-            self._executeUpdate(command)
-            command = "INSERT INTO Image VALUES " + SystemStatusDatabaseWriter.__segmentsToStr(self.__imageSegments)
-            self.__imageSegments = []
-            self._executeUpdate(command)
-            
+                        
     @staticmethod
     def __segmentsToStr(segmentList):
         isFirstSegment = True
@@ -46,5 +36,4 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
                     command += ", "
                 command += str(segmentTuple)
         command += ";"
-        return command
-    
+        return command    

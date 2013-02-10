@@ -82,17 +82,17 @@ class GenericWebCallback(object):
             Nothing
         """
         print 'VM Server registration error ' + vmServerNameOrIP + " " + errorMessage
-    def handleVMBootFailure(self, vmName, userID, errorMessage) :
+    def handleVMBootFailure(self, vmID, userID, errorMessage) :
         """
         Handles a virtual machine boot error.
         Args:
-            vmName: the virtual machine's name
+            vmID: the virtual machine's unique identifier.
             userID: the user's unique identifier.
             errorMessage: an error message
         Returns:
             Nothing
         """
-        print 'VM Boot failure ' + vmName + " " + str(userID) + " " + errorMessage
+        print 'VM Boot failure ' + str(vmID) + " " + str(userID) + " " + errorMessage
     def handleVMConnectionData(self, userID, vncSrvrIP, vncSrvrPort, vncSrvrPassword) :
         """
         Handles a virtual machine's VNC connection data
@@ -145,13 +145,14 @@ class ClusterServerConnector(object):
         self.__reader.connect()
         self.__writer.connect()
         
-    def connectToClusterServer(self, certificatePath, clusterServerIP, clusterServerListenningPort):
+    def connectToClusterServer(self, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval):
         """
         Establishes a connection with the cluster server.
         Args:
             certificatePath: the server.crt and server.key directory path.
             clusterServerIP: the cluster server's IPv4 address
             clusterServerListenningPort: the cluster server's listenning port.
+            statusDBUpdateInterval: the status database update interval (in seconds)
         Returns:
             Nothing
         """
@@ -167,20 +168,24 @@ class ClusterServerConnector(object):
         # Create the packet handler
         self.__pHandler = MainServerPacketHandler(self.__manager)
         # Create the update thread
-        self.__updateRequestThread = StatusDatabaseUpdateThread(_ClusterServerConnectorUpdateHandler(self), 20)
+        self.__updateRequestThread = StatusDatabaseUpdateThread(_ClusterServerConnectorUpdateHandler(self), statusDBUpdateInterval)
         # Start it
         self.__updateRequestThread.start()
         
-    def disconnectFromMainServer(self):
+    def disconnectFromClusterServer(self, haltVMServers):
         """
         Closes the connection with the cluster server.
         Args:
-            None
+            haltVMServers: if True, the virtual machine servers will be halted immediately. If false, they will be
+            halted until all their virtual machines have been shut down.
         Returns:
             Nothing
         @attention: DO NOT call this method inside a network thread (i.e. inside the web callback). If you do so,
         your application will hang.
         """
+        # Send a halt packet to the cluster server
+        p = self.__pHandler.createHaltPacket(haltVMServers)
+        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         # Discard all the incoming packets and the scheduled updates
         self.__stopped = True
         # Stop the update request thread
@@ -193,16 +198,6 @@ class ClusterServerConnector(object):
         # Delete the status database
         dbConfigurator = DBConfigurator(self.__rootsPassword)
         dbConfigurator.dropDatabase(self.__databaseName)
-        
-    def getImages(self):
-        """
-        Returns all the available images
-        Args:
-            None
-        Returns:
-            A dictionary containing all the available images' data.
-        """
-        return self.__reader.getImages()
         
     def getVMServersData(self):
         """
@@ -262,16 +257,16 @@ class ClusterServerConnector(object):
         p = self.__pHandler.createVMServerUnregistrationOrShutdownPacket(vmServerNameOrIP, halt, True)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         
-    def bootUpVirtualMachine(self, imageName, userID):
+    def bootUpVirtualMachine(self, vmID, userID):
         """
         Boots up a virtual machine.
         Args:
-            imageName: the virtual machine's name.
+            vmID: the virtual machine's unique identifier.
             userID: the user's unique identifier.
         Returns:
             Nothing
         """
-        p = self.__pHandler.createVMBootRequestPacket(imageName, userID)
+        p = self.__pHandler.createVMBootRequestPacket(vmID, userID)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         
     def _processIncomingPacket(self, packet):
@@ -287,14 +282,12 @@ class ClusterServerConnector(object):
         data = self.__pHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
             self.__writer.processVMServerSegment(data["Segment"], data["SequenceSize"], data["Data"])
-        elif (data["packet_type"] == PACKET_T.AVAILABLE_IMAGES_DATA) :
-            self.__writer.processImageSegment(data["Segment"], data["SequenceSize"], data["Data"])
         elif (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
             self.__callback.handleVMServerBootUpError(data["ServerNameOrIPAddress"], data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
             self.__callback.handleVMServerRegistrationError(data["ServerNameOrIPAddress"], data["ErrorMessage"])  
         elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE) :
-            self.__callback.handleVMBootFailure(data["VMName"], data["UserID"], data["ErrorMessage"])  
+            self.__callback.handleVMBootFailure(data["VMID"], data["UserID"], data["ErrorMessage"])  
         elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
             self.__callback.handleVMConnectionData(data["UserID"], data["VNCServerIPAddress"], data["VNCServerPort"],
                                                    data["VNCServerPassword"])
@@ -312,23 +305,20 @@ class ClusterServerConnector(object):
         # Send some update request packets to the main server
         p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
-        p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_AVAILABLE_IMAGES)
-        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         
 if __name__ == "__main__" :
     connector = ClusterServerConnector(GenericWebCallback())
     connector.connectToDatabase("","SystemStatusDB", "websiteUser", "cygnuscloud", "updateUser", "cygnuscloud")
-    connector.connectToClusterServer("/home/luis/Certificates", "127.0.0.1", 9000)
+    connector.connectToClusterServer("/home/luis/Certificates", "127.0.0.1", 9000, 5)
     sleep(10)
     print connector.getVMServersData()
-    print connector.getImages()
     connector.bootUpVMServer("Server1")
     sleep(10)
     print connector.getVMServersData()
-    connector.bootUpVirtualMachine("Debian", 1)
+    connector.bootUpVirtualMachine(1, 1)
     sleep(10)
     connector.shutdownVMServer("Server1", True)
     sleep(10)
     print connector.getVMServersData()
-    connector.disconnectFromMainServer()
+    connector.disconnectFromClusterServer(True)
     
