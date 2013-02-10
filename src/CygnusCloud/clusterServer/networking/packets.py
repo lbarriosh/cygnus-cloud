@@ -10,8 +10,8 @@ from database.clusterServer.clusterServerDB import SERVER_STATE_T
 
 MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR", "QUERY_VM_SERVERS_STATUS",
                             "VM_SERVERS_STATUS_DATA", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",
-                            "VM_SERVER_BOOTUP_ERROR", "QUERY_AVAILABLE_IMAGES", "AVAILABLE_IMAGES_DATA", "VM_BOOT_REQUEST",
-                            "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", "HALT")
+                            "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
+                            "HALT")
 
 class MainServerPacketHandler(object):
     """
@@ -95,25 +95,6 @@ class MainServerPacketHandler(object):
             p.writeInt(int(row["ServerPort"]))            
         return p
     
-    def createAvailableImagesPacket(self, segment, sequenceSize, data):
-        """
-        Creates an available images packet
-        Args:
-            segment: the packet's data sequence number
-            sequenceSize: the number of segments in the sequence
-            data: the packet's data
-        Returns:
-            a new available images packet containing the supplied data.
-        """
-        p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.AVAILABLE_IMAGES_DATA)
-        p.writeInt(segment)
-        p.writeInt(sequenceSize)
-        for row in data :
-            p.writeString(row["ImageName"])
-            p.writeString(row["ImageDescription"])
-        return p
-    
     def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, halt, unregister):
         """
         Creates a virtual machine server unregistration request packet
@@ -160,26 +141,26 @@ class MainServerPacketHandler(object):
         p.writeString(reason)
         return p
     
-    def createVMBootRequestPacket(self, vmName, userID):
+    def createVMBootRequestPacket(self, vmID, userID):
         """
         Creates a virtual machine boot request packet
         Args:
-            vmName: the virtual machine's name
+            vmID: the virtual machine's ID
             userID: the virtual machine user's ID
         Returns:
             a new virtual machine boot request packet containing the supplied data.
         """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST)
-        p.writeString(vmName)
+        p.writeInt(vmID)
         p.writeLong(userID)
         return p
     
-    def createVMBootFailurePacket(self, vmName, userID, reason):
+    def createVMBootFailurePacket(self, vmID, userID, reason):
         """
         Creates a virtual machine boot failure packet
         Args:
-            vmName: the virtual machine's name
+            vmID: the virtual machine's ID
             userID: the virtual machine user's ID
             reason: an error message
         Returns:
@@ -187,7 +168,7 @@ class MainServerPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE)
-        p.writeString(vmName)
+        p.writeInt(vmID)
         p.writeLong(userID)
         p.writeString(reason)
         return p
@@ -271,15 +252,7 @@ class MainServerPacketHandler(object):
             while (p.hasMoreData()) :
                 data.append((p.readString(), p.readString(), p.readString(), p.readInt()))
             result["Data"] = data
-            
-        elif (packet_type == MAIN_SERVER_PACKET_T.AVAILABLE_IMAGES_DATA) :
-            result["Segment"] = p.readInt()
-            result["SequenceSize"] = p.readInt()
-            data = []
-            while (p.hasMoreData()) :
-                data.append((p.readString(), p.readString()))
-            result["Data"] = data
-        
+                
         elif (packet_type == MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
             result["ServerNameOrIPAddress"] = p.readString()
             value = p.readBool()
@@ -295,11 +268,11 @@ class MainServerPacketHandler(object):
             result["ErrorMessage"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST):
-            result["VMName"] = p.readString()
+            result["VMID"] = p.readInt()
             result["UserID"] = p.readLong()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE):
-            result["VMName"] = p.readString()
+            result["VMID"] = p.readInt()
             result["UserID"] = p.readLong()
             result["ErrorMessage"] = p.readString()
             

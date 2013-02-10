@@ -37,7 +37,7 @@ class StatusDatabaseUpdateThread(BasicThread):
             sleepTime: the number of seconds that will separate two consecutive
             update requests.
         """
-        BasicThread.__init__(self)
+        BasicThread.__init__(self, "Status database update thread")
         self.__handler = updateHandler
         self.__sleepTime = sleepTime
         
