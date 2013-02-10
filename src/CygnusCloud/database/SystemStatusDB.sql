@@ -15,8 +15,3 @@ CREATE TABLE IF NOT EXISTS VirtualMachineServer(serverName VARCHAR(30) PRIMARY K
     serverPort INTEGER NOT NULL, UNIQUE(serverIP, serverPort)) ENGINE=MEMORY;
     
 DELETE FROM VirtualMachineServer;
-    
-CREATE TABLE IF NOT EXISTS Image(name VARCHAR(20) PRIMARY KEY NOT NULL, description VARCHAR(200))
-    ENGINE=MEMORY;
-    
-DELETE FROM Image;
