@@ -127,7 +127,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__dbConnector.subscribeVMServer(data["VMServerName"], data["VMServerIP"], 
                                                     data["VMServerPort"])
             # Command the virtual machine server to tell us its state
-            p = self.__vmServerPacketHandler.createVMServerStatusRequestPacket()
+            p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
             while not self.__networkManager.isConnectionReady(data["VMServerIP"], data["VMServerPort"]) :
                 sleep(0.1)
             self.__networkManager.sendPacket(data["VMServerIP"], data["VMServerPort"], p)
@@ -202,7 +202,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Change its status
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)
             # Send the status request
-            p = self.__vmServerPacketHandler.createVMServerStatusRequestPacket()
+            p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
         except Exception as e:
             p = self.__webPacketHandler.createVMServerBootUpErrorPacket(serverNameOrIPAddress, str(e))

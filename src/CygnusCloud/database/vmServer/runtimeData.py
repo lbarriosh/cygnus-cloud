@@ -432,7 +432,7 @@ class RuntimeData(BasicDatabaseConnector):
         #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
         #Actualizamos la base de datos
         
-    def isVMExists(self,port):   
+    def doesVMExist(self,port):   
         '''
             Comprueba si una imagen existe
         '''
@@ -458,10 +458,29 @@ class RuntimeData(BasicDatabaseConnector):
             return None
         #Devolvemos el resultado
         return result[0]
+    
+    def getVMsConnectionData(self):
+        '''
+        Devuelve una lista con los datos de conexión a las máquinas vituales activas
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Lista de diccionarios con los datos de conexión a las máquinas virtuales
+        '''
+        query = "SELECT domainName, VNCPortAdress, VNCPass FROM ActualVM;"
+        results = self._executeQuery(query, False)
+        if (results == None) :
+            return []
+        else :
+            ac = []
+            for row in results:
+                ac.append({"VMName" : row[0], "VNCPort" : row[1], "VNCPass" : row[2]})
+            return ac
+                
         
 def main():    
     #Instanciamos la clase
-    runtimeData = RuntimeData("CygnusCloud","cygnuscloud2012","DBVMServer")
+    runtimeData = RuntimeData("CygnusCloud","cygnuscloud2012","VMServerDB")
     #Comenzamos con las pruebas
     other = 's'
     while(other == 's'):
@@ -546,7 +565,7 @@ def main():
             print("Indique la contraseña")
             portPass = raw_input()
             
-            portId = runtimeData.registerVMResources(domainName,port,userId,vmId, pid, path, osPath, mac, uuid, portPass)
+            runtimeData.registerVMResources(domainName,port,userId,vmId, pid, path, osPath, mac, uuid, portPass)
             print("MV registrada:")
             runtimeData.showVMs()
         elif(prueba == '9'):
@@ -607,7 +626,7 @@ def main():
             runtimeData.insertfreeVNCPort(VNCPort)
             print("El nuevo puerto ha sido añadida")
         elif(prueba == '16'):
-             #contraseña asociado a un puerto
+            #contraseña asociado a un puerto
             print("Prueba 16")
             print("Indique el identificador del puerto")
             port = raw_input()

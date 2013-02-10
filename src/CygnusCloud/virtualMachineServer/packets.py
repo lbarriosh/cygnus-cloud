@@ -8,7 +8,8 @@ Virtual machine server packet handler definitions.
 from utils.enums import enum
 
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
-                          "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", "HALT")
+                          "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
+                          "QUERY_VNC_CONNECTION_DATA", "VNC_CONNECTION_DATA", "HALT")
 
 class VMServerPacketHandler(object):
     
@@ -49,9 +50,9 @@ class VMServerPacketHandler(object):
         p.writeString(password)
         return p
     
-    def createVMServerStatusRequestPacket(self):
+    def createVMServerDataRequestPacket(self, packet_type):
         p = self.__packetCreator.createPacket(7)
-        p.writeInt(VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST)
+        p.writeInt(packet_type)
         return p
     
     def createVMServerStatusPacket(self, vncServerIP, activeDomains):
@@ -94,6 +95,24 @@ class VMServerPacketHandler(object):
         p.writeInt(VM_SERVER_PACKET_T.HALT)
         return p
     
+    def createVNCConnectionDataPacket(self, serverIPAddress, segment, sequenceSize, data):
+        """
+        Creates a VNC connection data packet
+        Args:
+            serverIPAddress: the VNC server's IPv4 address
+            segment: the data's segment number
+            sequenceSize: the total number of data segments
+            data: the segment's data
+        """
+        p = self.__packetCreator.createPacket(6)
+        p.writeInt(segment)
+        p.writeInt(sequenceSize)
+        p.writeString(serverIPAddress)
+        for row in data :
+            p.writeString(row["VMName"])
+            p.writeInt(row["VMPort"])
+            p.writeString(row["VNCPass"])
+        return p    
     
     def readPacket(self, p):
         """
@@ -110,17 +129,15 @@ class VMServerPacketHandler(object):
         if (packet_type == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
             result["MachineID"] = p.readLong()
             result["UserID"] = p.readLong()
-        if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
+        elif (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
             result["UserID"] = p.readLong()
             result["VNCServerIP"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
-        if (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
+        elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
             result["VMServerIP"] = p.readString()
             result["ActiveDomains"] = p.readInt()
-        if (packet_type == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN or\
-            packet_type == VM_SERVER_PACKET_T.HALT or \
-            packet_type == VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST):
-            pass
+        # Note that the connection data segments will be sent to the web server immediately.
+        # Therefore, they don't need to be read in the main server or in the virtual machine server.        
         return result
         

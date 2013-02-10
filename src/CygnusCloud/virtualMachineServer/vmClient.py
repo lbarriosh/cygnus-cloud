@@ -33,7 +33,7 @@ class VMClient(NetworkCallback):
         self.__startListenning(vncNetworkInterface, listenningPort)
         
     def __connectToDatabases(self, databaseName, user, password):
-        self.__db = ImageManager(user, password, databaseName)
+        self.__imageManager = ImageManager(user, password, databaseName)
         self.__runningImageData = RuntimeData(user, password, databaseName)
         
     def __connectToLibvirt(self) :
@@ -91,22 +91,53 @@ class VMClient(NetworkCallback):
         self.__networkManager.stopNetworkService()
         
     def processPacket(self, packet):
-        packetType = self.__packetManager.readPacket(packet)
-        print "paquete recibido " + str(packetType['packet_type'])
+        packetData = self.__packetManager.readPacket(packet)
+        print "paquete recibido " + str(packetData['packet_type'])
         processPacket = {
             VM_SERVER_PACKET_T.CREATE_DOMAIN: self.__createDomain, 
             VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST: self.__serverStatusRequest,
             VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN: self.__userFriendlyShutdown,
             VM_SERVER_PACKET_T.HALT: self.__halt}
-        processPacket[packetType['packet_type']](packetType)
+        if (packetData['packet_type'] == VM_SERVER_PACKET_T.QUERY_VNC_CONNECTION_DATA) :
+            self.__sendVNCConnectionData()
+        else :
+            processPacket[packetData['packet_type']](packetData)
+        
+    def __sendVNCConnectionData(self):
+        # Extraer los datos de la base de datos
+        vncConnectionData = self.__runningImageData.getVMsConnectionData()
+        # Generar los segmentos
+        segmentSize = 5
+        segmentCounter = 1
+        outgoingData = []
+        if (len(vncConnectionData) == 0) :
+            segmentCounter = 0
+        segmentNumber = (len(vncConnectionData) / segmentSize)
+        if (len(vncConnectionData) % segmentSize != 0) :
+            segmentNumber += 1
+            sendLastSegment = True
+        else :
+            sendLastSegment = False # Para ahorrar tráfico
+        for connectionParameters in vncConnectionData :
+            outgoingData.append(connectionParameters)
+            if (len(outgoingData) >= segmentSize) :
+                # Flush
+                packet = self.__packetManager.createVNCConnectionDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
+                self.__networkManager.sendPacket('', self.__listenningPort, packet)
+                outgoingData = []
+                segmentCounter += 1
+        # Send the last segment
+        if (sendLastSegment) :
+            packet = self.__packetManager.createVNCConnectionDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
+            self.__networkManager.sendPacket('', self.__webPort, packet) 
 
     def __createDomain(self, info):
         idVM = info["MachineID"]
         userID = info["UserID"]
-        configFile = configFilePath + self.__db.getFileConfigPath(idVM)
-        originalName = self.__db.getName(idVM)
-        dataPath = self.__db.getImagePath(idVM)
-        osPath = self.__db.getOsImagePath(idVM)
+        configFile = configFilePath + self.__imageManager.getFileConfigPath(idVM)
+        originalName = self.__imageManager.getName(idVM)
+        dataPath = self.__imageManager.getImagePath(idVM)
+        osPath = self.__imageManager.getOsImagePath(idVM)
         
         # Calculo los nuevos parametros
         newUUID, newMAC = self.__getNewMAC_UUID()
