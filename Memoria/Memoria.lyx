@@ -13,8 +13,8 @@
 %% modificación puede hacer que TODO deje de compilar.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\getProyecto}{Cygnus Cloud: provisión de puestos de laboratorio virtuales bajo demanda}
-\newcommand{\getProyectoCorto}{Cygnus Cloud}
+\newcommand{\getProyecto}{CygnusCloud: provisión de puestos de laboratorio virtuales bajo demanda}
+\newcommand{\getProyectoCorto}{CygnusCloud}
 
 %% Configurar multirow a mi gusto
 
@@ -65,6 +65,15 @@
 
 %% Hacer que el símbolo del euro salga bien
 \usepackage{eurosym}
+
+% Modificar los párrafos
+\makeatletter
+\renewcommand\paragraph{%
+   \@startsection{paragraph}{4}{0mm}%
+      {-\baselineskip}%
+      {.5\baselineskip}%
+      {\normalfont\normalsize\bfseries}}
+\makeatother
 \end_preamble
 \options a4paper
 \use_default_options true
