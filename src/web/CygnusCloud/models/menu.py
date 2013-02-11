@@ -5,8 +5,8 @@
 #########################################################################
 import translateMenu
 
-response.logo = A(B('web',SPAN(2),'py'),XML('&trade;&nbsp;'),
-                  _class="brand",_href="http://www.web2py.com/")
+response.logo = A(IMG(src=URL('static','logo.png'),_alt="My Logo"),XML('&trade;&nbsp;'),
+                  _class="brand",_href=URL('main','about'))
 response.title = ' '.join(
     word.capitalize() for word in request.application.split('_'))
 response.subtitle = T('customize me!')

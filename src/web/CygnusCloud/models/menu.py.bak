@@ -5,8 +5,8 @@
 #########################################################################
 import translateMenu
 
-response.logo = A(B('web',SPAN(2),'py'),XML('&trade;&nbsp;'),
-                  _class="brand",_href="http://www.web2py.com/")
+response.logo = A(IMG(src=URL('static','logo32.png'),_alt="My Logo"),XML('&trade;&nbsp;'),
+                  _class="brand",_href=URL('main','about'))
 response.title = ' '.join(
     word.capitalize() for word in request.application.split('_'))
 response.subtitle = T('customize me!')
@@ -36,24 +36,5 @@ def _():
     # shortcuts
     app = request.application
     ctr = request.controller
-    #Iniciamos los valores, si procede
-    initValues()
-    print "llama"
-    
-    
-def initValues():
-    if(userDB(userDB.auth_user.email == 'Admin1@ucm.es').count() == 0):
-        #Añadimos los grupos
-        userDB.auth_group.insert(role = 'Student',description =  'Only run virtual machines available')
-        userDB.auth_group.insert(role = 'Administrator',description =  'All privilages available')
-        #auth.add_group('Administrator', 'All privilages available')
-        #Usuario de prueba
-        u1 = userDB.auth_user.insert(password = userDB.auth_user.password.validate('1234')[0],email = 'Admin1@ucm.es',first_name='Bertoldo',last_name='Pedralbes')
-        u2 = userDB.auth_user.insert(password = userDB.auth_user.password.validate('1234')[0],email = 'Student1@ucm.es',first_name='Robert',last_name='Neville')
-        
-        #Enlazamos los usuarios a los grupos
-        auth.add_membership('Administrator',u1)
-        auth.add_membership('Student',u2)
-        print userDB.tables
         
 if DEVELOPMENT_MENU: _()

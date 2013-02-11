@@ -1,5 +1,10 @@
 {{extend 'layout.html'}}
-{{if(request.args(0) == 'add_remove_servers'):}}
+{{if(request.args(0) == 'add'):}}
 <h1>{{=T('Administración de usuarios')}}</h1>
 {{=form}}
+{{pass}}
+{{if(request.args(0) == 'associate_subjects'):}}
+<h1>{{=T('Asociar asignaturas')}}</h1>
+{{=form1}}
+{{=form2}}
 {{pass}}

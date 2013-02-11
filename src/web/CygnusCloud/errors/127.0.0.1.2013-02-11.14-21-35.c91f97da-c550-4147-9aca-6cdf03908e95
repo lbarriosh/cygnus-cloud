@@ -1,0 +1,21 @@
+(dp1
+S'output'
+p2
+S'<class \'_mysql_exceptions.ProgrammingError\'> (1146, "Table \'UserDB.ClassGroup\' doesn\'t exist")'
+p3
+sS'layer'
+p4
+S'/home/adrian/web2py/applications/CygnusCloud/models/db.py'
+p5
+sS'code'
+p6
+S"# -*- coding: utf-8 -*-\nfrom configuration import DBConfigurator\nfrom gluon.tools import Auth\n\nconf = DBConfigurator('170590ucm')\nconf.createDatabase('UserDB')\n#conf.addUser('CygnusCloud','cygnuscloud2012', 'UserDB')\nuserDB = DAL('mysql://CygnusCloud:cygnuscloud2012@localhost/UserDB',migrate_enabled=True, pool_size=0)\n\n\n# Autentication\nauth = Auth(userDB)\nauth.define_tables(migrate = True)\n\n\n\n\n#userDB.auth_user.email.requires = IS_NOT_IN_DB(userDB, userDB.auth_user.email)\n\nuserDB.define_table('Images',\n            Field('VMId','integer' ),\n            Field('name',length=20 ),\n            Field('description',length=50 ),\n            primarykey=['VMId'],migrate= True)\n\n\nuserDB.define_table('ClassGroup',\n   Field('yearGroup','integer', 'reference Users'),\n   Field('cod','integer','reference subjects'),\n   Field('curse','integer'),\n   Field('curseGroup', length=1),\n   primarykey=['cod'],migrate= True)\n\nuserDB.define_table('UserGroup',\n   Field('userId','integer', 'reference auth_user' ),\n   Field('cod','integer','reference UserGroup'),\n   Field('curseGroup','reference UserGroup',length=1 ),\n   primarykey=['cod','curseGroup','userId'],migrate= True)\n\nuserDB.define_table('Subjects',\n   Field('code','integer'),\n   Field('name',length=15),\n   primarykey=['code'],migrate= True)\n\n\n\nuserDB.define_table('VMByGroup',\n   Field('VMId','integer','reference Images'),\n   Field('cod','integer','reference UserGroup'),\n   Field('curseGroup',requires=IS_IN_DB(userDB,'UserGroup.curseGroup'),length=1 ),\n   primarykey=['cod','curseGroup','VMId'],migrate= True)\n"
+p7
+sS'snapshot'
+p8
+(dp9
+sS'traceback'
+p10
+S'Traceback (most recent call last):\n  File "/home/adrian/web2py/gluon/restricted.py", line 212, in restricted\n    exec ccode in environment\n  File "/home/adrian/web2py/applications/CygnusCloud/models/db.py", line 32, in <module>\n    primarykey=[\'cod\'],migrate= True)\n  File "/home/adrian/web2py/gluon/dal.py", line 7186, in define_table\n    table = self.lazy_define_table(tablename,*fields,**args)\n  File "/home/adrian/web2py/gluon/dal.py", line 7222, in lazy_define_table\n    polymodel=polymodel)\n  File "/home/adrian/web2py/gluon/dal.py", line 963, in create_table\n    fake_migrate=fake_migrate)\n  File "/home/adrian/web2py/gluon/dal.py", line 1069, in migrate_table\n    self.execute(sub_query)\n  File "/home/adrian/web2py/gluon/dal.py", line 1709, in execute\n    return self.log_execute(*a, **b)\n  File "/home/adrian/web2py/gluon/dal.py", line 1703, in log_execute\n    ret = self.cursor.execute(*a, **b)\n  File "/usr/lib/python2.7/dist-packages/MySQLdb/cursors.py", line 174, in execute\n    self.errorhandler(self, exc, value)\n  File "/usr/lib/python2.7/dist-packages/MySQLdb/connections.py", line 36, in defaulterrorhandler\n    raise errorclass, errorvalue\nProgrammingError: (1146, "Table \'UserDB.ClassGroup\' doesn\'t exist")\n'
+p11
+s.

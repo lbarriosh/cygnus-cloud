@@ -923,3 +923,302 @@ success!
 TRUNCATE TABLE auth_cas ;
 success!
 TRUNCATE TABLE auth_group ;
+timestamp: 2013-02-10T17:59:38.243169
+CREATE TABLE Images(
+    id INT AUTO_INCREMENT NOT NULL,
+    name VARCHAR(20),
+    description VARCHAR(50),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-10T17:59:38.529669
+ALTER TABLE VMByGroup ADD vmid INT NOT NULL;
+success!
+timestamp: 2013-02-10T17:59:38.803191
+ALTER TABLE VMByGroup DROP COLUMN vmname;
+success!
+timestamp: 2013-02-10T18:01:12.557858
+ALTER TABLE VMByGroup ADD id INT NOT NULL;
+success!
+timestamp: 2013-02-10T18:01:12.828682
+ALTER TABLE VMByGroup DROP COLUMN vmid;
+success!
+timestamp: 2013-02-10T18:25:00.569262
+ALTER TABLE Images ADD vmid INT NOT NULL;
+success!
+timestamp: 2013-02-10T18:25:00.897925
+ALTER TABLE Images DROP COLUMN id;
+success!
+timestamp: 2013-02-10T18:25:32.494288
+ALTER TABLE VMByGroup ADD vmid INT NOT NULL;
+success!
+timestamp: 2013-02-10T18:25:33.026796
+ALTER TABLE VMByGroup DROP COLUMN id;
+success!
+timestamp: 2013-02-10T18:38:20.268479
+ALTER TABLE VMByGroup ADD cursegroup__tmp VARCHAR(1) NOT NULL;
+success!
+UPDATE VMByGroup SET cursegroup__tmp=cursegroup;
+success!
+ALTER TABLE VMByGroup DROP COLUMN cursegroup;
+success!
+ALTER TABLE VMByGroup ADD cursegroup VARCHAR(1) NOT NULL;
+success!
+UPDATE VMByGroup SET cursegroup=cursegroup__tmp;
+success!
+ALTER TABLE VMByGroup DROP COLUMN cursegroup__tmp;
+success!
+timestamp: 2013-02-10T20:09:19.138076
+ALTER TABLE UserGroup ADD cursegroup__tmp VARCHAR(1);
+success!
+UPDATE UserGroup SET cursegroup__tmp=cursegroup;
+success!
+ALTER TABLE UserGroup DROP COLUMN cursegroup;
+success!
+ALTER TABLE UserGroup ADD cursegroup VARCHAR(1);
+success!
+UPDATE UserGroup SET cursegroup=cursegroup__tmp;
+success!
+ALTER TABLE UserGroup DROP COLUMN cursegroup__tmp;
+success!
+timestamp: 2013-02-10T20:09:20.837500
+ALTER TABLE Subjects ADD code__tmp INT NOT NULL;
+success!
+UPDATE Subjects SET code__tmp=code;
+success!
+ALTER TABLE Subjects DROP COLUMN code;
+success!
+ALTER TABLE Subjects ADD code INT NOT NULL;
+success!
+UPDATE Subjects SET code=code__tmp;
+success!
+ALTER TABLE Subjects DROP COLUMN code__tmp;
+success!
+timestamp: 2013-02-10T20:09:22.217940
+ALTER TABLE Subjects DROP COLUMN id;
+success!
+timestamp: 2013-02-11T14:14:55.508720
+ALTER TABLE ClassGroup ADD yeargroup INT;
+success!
+timestamp: 2013-02-11T14:14:55.945380
+ALTER TABLE ClassGroup ADD curse INT;
+success!
+timestamp: 2013-02-11T14:14:56.276461
+ALTER TABLE ClassGroup ADD cursegroup__tmp VARCHAR(1);
+success!
+UPDATE ClassGroup SET cursegroup__tmp=cursegroup;
+success!
+ALTER TABLE ClassGroup DROP COLUMN cursegroup;
+success!
+ALTER TABLE ClassGroup ADD cursegroup VARCHAR(1);
+success!
+UPDATE ClassGroup SET cursegroup=cursegroup__tmp;
+success!
+ALTER TABLE ClassGroup DROP COLUMN cursegroup__tmp;
+success!
+timestamp: 2013-02-11T14:14:57.574304
+ALTER TABLE ClassGroup DROP COLUMN userid;
+success!
+timestamp: 2013-02-11T14:15:15.561215
+ALTER TABLE ClassGroup ADD userid INT NOT NULL;
+success!
+timestamp: 2013-02-11T14:15:15.816569
+ALTER TABLE ClassGroup DROP COLUMN yeargroup;
+success!
+timestamp: 2013-02-11T14:15:16.090660
+ALTER TABLE ClassGroup DROP COLUMN curse;
+success!
+timestamp: 2013-02-11T14:15:39.376507
+ALTER TABLE ClassGroup ADD yeargroup INT;
+success!
+timestamp: 2013-02-11T14:15:39.643470
+ALTER TABLE ClassGroup ADD curse INT;
+success!
+timestamp: 2013-02-11T14:15:39.908288
+ALTER TABLE ClassGroup ADD cursegroup__tmp VARCHAR(1);
+success!
+UPDATE ClassGroup SET cursegroup__tmp=cursegroup;
+success!
+ALTER TABLE ClassGroup DROP COLUMN cursegroup;
+success!
+ALTER TABLE ClassGroup ADD cursegroup VARCHAR(1);
+success!
+UPDATE ClassGroup SET cursegroup=cursegroup__tmp;
+success!
+ALTER TABLE ClassGroup DROP COLUMN cursegroup__tmp;
+success!
+timestamp: 2013-02-11T14:15:41.184878
+ALTER TABLE ClassGroup DROP COLUMN userid;
+success!
+timestamp: 2013-02-11T14:21:35.546448
+CREATE TABLE Images(
+    VMId INT NOT NULL,
+    name VARCHAR(20),
+    description VARCHAR(50),
+    PRIMARY KEY(VMId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T14:21:35.683331
+ALTER TABLE ClassGroup ADD yeargroup INT;
+timestamp: 2013-02-11T14:22:42.931480
+ALTER TABLE ClassGroup ADD yeargroup INT;
+timestamp: 2013-02-11T14:22:47.089230
+ALTER TABLE ClassGroup ADD yeargroup INT;
+timestamp: 2013-02-11T14:25:35.853721
+ALTER TABLE ClassGroup ADD yeargroup INT;
+timestamp: 2013-02-11T15:54:30.424932
+ALTER TABLE ClassGroup ADD userid INT NOT NULL;
+success!
+timestamp: 2013-02-11T15:54:30.728830
+ALTER TABLE ClassGroup DROP COLUMN yeargroup;
+success!
+timestamp: 2013-02-11T15:54:31.145979
+ALTER TABLE ClassGroup DROP COLUMN curse;
+success!
+timestamp: 2013-02-11T15:56:00.792795
+CREATE TABLE auth_user(
+    id INT AUTO_INCREMENT NOT NULL,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(255),
+    password VARCHAR(255),
+    registration_key VARCHAR(255),
+    reset_password_key VARCHAR(255),
+    registration_id VARCHAR(255),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T15:56:00.931270
+CREATE TABLE auth_group(
+    id INT AUTO_INCREMENT NOT NULL,
+    role VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T15:56:01.056818
+CREATE TABLE auth_membership(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T15:56:01.224090
+CREATE TABLE auth_permission(
+    id INT AUTO_INCREMENT NOT NULL,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(255),
+    table_name VARCHAR(255),
+    record_id INT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T15:56:01.347224
+CREATE TABLE auth_event(
+    id INT AUTO_INCREMENT NOT NULL,
+    time_stamp DATETIME,
+    client_ip VARCHAR(255),
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(255),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T15:56:01.468819
+CREATE TABLE auth_cas(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on DATETIME,
+    service VARCHAR(255),
+    ticket VARCHAR(255),
+    renew CHAR(1),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T15:56:01.597272
+CREATE TABLE Images(
+    VMId INT NOT NULL,
+    name VARCHAR(20),
+    description VARCHAR(50),
+    PRIMARY KEY(VMId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T15:56:01.700270
+CREATE TABLE ClassGroup(
+    yearGroup INT,
+    cod INT NOT NULL,
+    curse INT,
+    curseGroup VARCHAR(1),
+    PRIMARY KEY(cod))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T15:56:01.800798
+CREATE TABLE UserGroup(
+    userId INT NOT NULL,
+    cod INT NOT NULL,
+    curseGroup INT,
+    PRIMARY KEY(cod, curseGroup, userId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T15:56:01.932111
+CREATE TABLE Subjects(
+    code INT NOT NULL,
+    name VARCHAR(15),
+    PRIMARY KEY(code))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T15:56:02.047154
+CREATE TABLE VMByGroup(
+    VMId INT NOT NULL,
+    cod INT NOT NULL,
+    curseGroup VARCHAR(1) NOT NULL,
+    PRIMARY KEY(cod, curseGroup, VMId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-02-11T16:24:07.894461
+ALTER TABLE Images ADD description__tmp VARCHAR(255);
+success!
+UPDATE Images SET description__tmp=description;
+success!
+ALTER TABLE Images DROP COLUMN description;
+success!
+ALTER TABLE Images ADD description VARCHAR(255);
+success!
+UPDATE Images SET description=description__tmp;
+success!
+ALTER TABLE Images DROP COLUMN description__tmp;
+success!
+timestamp: 2013-02-11T16:24:09.207261
+ALTER TABLE Subjects ADD name__tmp VARCHAR(50);
+success!
+UPDATE Subjects SET name__tmp=name;
+success!
+ALTER TABLE Subjects DROP COLUMN name;
+success!
+ALTER TABLE Subjects ADD name VARCHAR(50);
+success!
+UPDATE Subjects SET name=name__tmp;
+success!
+ALTER TABLE Subjects DROP COLUMN name__tmp;
+success!
+timestamp: 2013-02-11T19:29:05.358866
+ALTER TABLE UserGroup ADD cursegroup__tmp VARCHAR(1) NOT NULL;
+success!
+UPDATE UserGroup SET cursegroup__tmp=cursegroup;
+success!
+ALTER TABLE UserGroup DROP COLUMN cursegroup;
+success!
+ALTER TABLE UserGroup ADD cursegroup VARCHAR(1) NOT NULL;
+success!
+UPDATE UserGroup SET cursegroup=cursegroup__tmp;
+success!
+ALTER TABLE UserGroup DROP COLUMN cursegroup__tmp;
+success!
+timestamp: 2013-02-11T20:05:56.400166
+ALTER TABLE UserGroup ADD userid__tmp VARCHAR(255) NOT NULL;
+success!
+UPDATE UserGroup SET userid__tmp=userid;
+success!
+ALTER TABLE UserGroup DROP COLUMN userid;
+success!
+ALTER TABLE UserGroup ADD userid VARCHAR(255) NOT NULL;
+success!
+UPDATE UserGroup SET userid=userid__tmp;
+success!
+ALTER TABLE UserGroup DROP COLUMN userid__tmp;
+success!
