@@ -4,7 +4,75 @@
 @auth.requires_membership('Administrator')
 def runVM():
     createAdressBar()
-    return dict()
+    #Creamos el formulario de busqueda
+    form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Asignatura: '),BR(),INPUT(_name = 'name')),
+           INPUT(_type='submit',_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
+    #Creamos el segundo formulario
+    listSubjectsAux = request.vars.subjectsFind or []
+    #Comprobamos si se ha tomado como una lista
+        
+    if(isinstance(listSubjectsAux,str)):
+        listSubjects = [eval(request.vars.subjectsFind)]
+    else:
+        listSubjects = []
+        for l in listSubjectsAux:
+            print l
+            listSubjects.append(eval(l))
+        #listSubjects.append(request.vars.subjectsFind)
+    print listSubjects
+    table = TABLE(_class='data', _name='table')
+    table.append(TR(TH('S.'),TH(T('Cod-Asignatura'),TH(T('Grupo')),TH(T('Nombre')))))
+    i = 0
+    for l in listSubjects:
+        for vm in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2]) \
+        & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
+            table.append(TR(\
+            TD(INPUT(_type='radio',_name = 'selection',_value = [l[0] , l[2], i])),\
+            TD(LABEL(str(l[0]) + '-' + l[1]),_width = '50%'),
+            TD(LABEL(l[2])),
+            TD(LABEL(vm.name))))
+            i = i + 1
+    pass
+    #Creamos el segundo formulario
+    form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))))
+        
+    #Actuamos frente a la busqueda
+    if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
+        if len(form1.vars.name) > 0 :
+            try:
+                
+                listSubjectsAux = userDB((userDB.ClassGroup.cod == int(form1.vars.name)) & \
+                (userDB.Subjects.code == userDB.ClassGroup.cod)).select(\
+                userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name)
+                print "Llega" + form1.vars.name
+                listSubjects = [] 
+                for l in listSubjectsAux : 
+                        listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
+                        
+            except ValueError:
+                listSubjectsAux = userDB(userDB.Subjects.code == userDB.ClassGroup.cod).select( \
+                userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name)
+                listSubjects = [] 
+                for l in listSubjectsAux :                  
+                    if(form1.vars.name != ""):
+                            if (form1.vars.name in l.Subjects.name):                    
+                                listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
+                    else:
+                            listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
+            
+
+            #redireccinamos con los resultados
+            redirect(URL(c='administrator',f='runVM',vars = dict(subjectsFind=listSubjects) ))
+    #Actuamos frente al arranque
+    if(form2.accepts(request.vars)) and (form2.vars.run):
+           if(form2.vars.selection != ""):
+               #TODO: Configurar cliente VNC...
+               #Abrimos una nueva pestaña
+               form2.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form2.vars.selection)[0], 
+               _href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))   
+        
+
+    return dict(form1=form1,form2=form2)
     
 @auth.requires_membership('Administrator')
 def servers():
@@ -246,7 +314,7 @@ def createUserSearchForm(state):
     
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
         query = ""
-        if(form1.vars.group != 'All'):
+        if(form1.vars.group != 'all'):
             query =  (userDB.auth_group.role  ==  form1.vars.group) & (userDB.auth_group.id == userDB.auth_membership.group_id) 
             query &= userDB.auth_membership.user_id  ==  userDB.auth_user.id
                 
