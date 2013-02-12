@@ -47,5 +47,5 @@ userDB.define_table('Subjects',
 userDB.define_table('VMByGroup',
    Field('VMId','integer','reference Images'),
    Field('cod','integer','reference UserGroup'),
-   Field('curseGroup',requires=IS_IN_DB(userDB,'UserGroup.curseGroup'),length=1 ),
+   Field('curseGroup',length=1 ),
    primarykey=['cod','curseGroup','VMId'],migrate= True)

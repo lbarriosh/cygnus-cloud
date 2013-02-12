@@ -21,7 +21,7 @@ def users():
         #Creamos el primer formulario
         form = FORM(HR(),H2(T('Añadir un nuevo usuario')),DIV( T('Nombre: '),BR(),INPUT(_name = 'name')),
                 DIV( T('Contraseña: '),BR(),INPUT(_name ='password')),
-                DIV(T('Grupo: '),BR(),SELECT(_name = 'group',*[OPTION(row.role,_value = T(str(row.role))) 
+                DIV(T('Grupo: '),BR(),SELECT(_name = 'group',*[OPTION(T(str(row.role)),_value = row.role,_selected="selected") 
                 for row in userDB().select(userDB.auth_group.role)])),HR(),CENTER(INPUT(_type='submit',_name = 'add' ,_value=T('Añadir Usuario'))))                
         
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
@@ -236,9 +236,9 @@ def createAdressBar():
                        
 def createUserSearchForm(state):        
     listTypes = []
-    listTypes.append(OPTION('all',_value = T('All')))
+    listTypes.append(OPTION(T('All'),_value = 'all'))
     for row in userDB().select(userDB.auth_group.role):
-        listTypes.append(OPTION(row.role,_value = T(str(row.role)))) 
+        listTypes.append(OPTION(T(str(row.role)),_value = row.role )) 
         
     form1 = FORM(HR(),H2(T('Buscar un usuario')),DIV( T('Nombre: '),BR(),INPUT(_name = 'name')),
            DIV(T('Grupo: '),BR(),SELECT(_name = 'group', *listTypes)),
@@ -246,7 +246,7 @@ def createUserSearchForm(state):
     
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
         query = ""
-        if(form1.vars.group != 'All'):
+        if(form1.vars.group != 'all'):
             query =  (userDB.auth_group.role  ==  form1.vars.group) & (userDB.auth_group.id == userDB.auth_membership.group_id) 
             query &= userDB.auth_membership.user_id  ==  userDB.auth_user.id
                 

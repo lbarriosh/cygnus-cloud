@@ -32,10 +32,9 @@ userDB.define_table('ClassGroup',
    primarykey=['cod'],migrate= True)
 
 userDB.define_table('UserGroup',
-   Field('userId','reference auth_user',length = 512 ),
+   Field('userId',length = 512 ),
    Field('cod','integer','reference ClassGroup'),
-   Field('curseGroup',length=1 ),
-   primarykey=['cod','curseGroup','userId'],migrate= True)
+   Field('curseGroup',length=1 ),migrate= True)
 
 userDB.define_table('Subjects',
    Field('code','integer'),
@@ -47,5 +46,5 @@ userDB.define_table('Subjects',
 userDB.define_table('VMByGroup',
    Field('VMId','integer','reference Images'),
    Field('cod','integer','reference UserGroup'),
-   Field('curseGroup',requires=IS_IN_DB(userDB,'UserGroup.curseGroup'),length=1 ),
+   Field('curseGroup',length=1 ),
    primarykey=['cod','curseGroup','VMId'],migrate= True)

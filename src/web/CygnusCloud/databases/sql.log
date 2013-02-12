@@ -1222,3 +1222,85 @@ UPDATE UserGroup SET userid=userid__tmp;
 success!
 ALTER TABLE UserGroup DROP COLUMN userid__tmp;
 success!
+timestamp: 2013-02-12T01:04:04.259277
+ALTER TABLE UserGroup ADD cod__tmp INT;
+success!
+UPDATE UserGroup SET cod__tmp=cod;
+success!
+ALTER TABLE UserGroup DROP COLUMN cod;
+success!
+ALTER TABLE UserGroup ADD cod INT;
+success!
+UPDATE UserGroup SET cod=cod__tmp;
+success!
+ALTER TABLE UserGroup DROP COLUMN cod__tmp;
+success!
+timestamp: 2013-02-12T01:04:05.746192
+ALTER TABLE UserGroup ADD userid__tmp VARCHAR(255);
+success!
+UPDATE UserGroup SET userid__tmp=userid;
+success!
+ALTER TABLE UserGroup DROP COLUMN userid;
+success!
+ALTER TABLE UserGroup ADD userid VARCHAR(255);
+success!
+UPDATE UserGroup SET userid=userid__tmp;
+success!
+ALTER TABLE UserGroup DROP COLUMN userid__tmp;
+success!
+timestamp: 2013-02-12T01:04:07.233501
+ALTER TABLE UserGroup ADD cursegroup__tmp VARCHAR(1);
+success!
+UPDATE UserGroup SET cursegroup__tmp=cursegroup;
+success!
+ALTER TABLE UserGroup DROP COLUMN cursegroup;
+success!
+ALTER TABLE UserGroup ADD cursegroup VARCHAR(1);
+success!
+UPDATE UserGroup SET cursegroup=cursegroup__tmp;
+success!
+ALTER TABLE UserGroup DROP COLUMN cursegroup__tmp;
+success!
+timestamp: 2013-02-12T01:04:09.144199
+ALTER TABLE UserGroup ADD id INT AUTO_INCREMENT NOT NULL;
+timestamp: 2013-02-12T01:05:18.346952
+ALTER TABLE UserGroup ADD id INT AUTO_INCREMENT NOT NULL;
+timestamp: 2013-02-12T01:05:29.812977
+ALTER TABLE UserGroup ADD userid__tmp VARCHAR(255) NOT NULL;
+success!
+UPDATE UserGroup SET userid__tmp=userid;
+success!
+ALTER TABLE UserGroup DROP COLUMN userid;
+success!
+ALTER TABLE UserGroup ADD userid VARCHAR(255) NOT NULL;
+success!
+UPDATE UserGroup SET userid=userid__tmp;
+success!
+ALTER TABLE UserGroup DROP COLUMN userid__tmp;
+success!
+timestamp: 2013-02-12T01:05:31.359463
+ALTER TABLE UserGroup ADD cod__tmp INT NOT NULL;
+success!
+UPDATE UserGroup SET cod__tmp=cod;
+success!
+ALTER TABLE UserGroup DROP COLUMN cod;
+success!
+ALTER TABLE UserGroup ADD cod INT NOT NULL;
+success!
+UPDATE UserGroup SET cod=cod__tmp;
+success!
+ALTER TABLE UserGroup DROP COLUMN cod__tmp;
+success!
+timestamp: 2013-02-12T01:05:32.800137
+ALTER TABLE UserGroup ADD cursegroup__tmp VARCHAR(1) NOT NULL;
+success!
+UPDATE UserGroup SET cursegroup__tmp=cursegroup;
+success!
+ALTER TABLE UserGroup DROP COLUMN cursegroup;
+success!
+ALTER TABLE UserGroup ADD cursegroup VARCHAR(1) NOT NULL;
+success!
+UPDATE UserGroup SET cursegroup=cursegroup__tmp;
+success!
+ALTER TABLE UserGroup DROP COLUMN cursegroup__tmp;
+success!
