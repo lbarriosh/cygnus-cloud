@@ -130,6 +130,13 @@ class ClusterServerDBTests(unittest.TestCase):
         expectedResult = 1L
         self.assertEquals(result, expectedResult, 'getServerID does not work')
         
+    def test_getActiveVMServersConnectionData(self):
+        result = self.__connector.getActiveVMServersConnectionData()
+        expectedResult = [{"ServerIP" : '1.2.3.5', "ServerPort" : 8080},
+                          {"ServerIP" : '1.2.3.6', "ServerPort" : 8080},
+                          {"ServerIP" : '1.2.3.7', "ServerPort" : 8080}]
+        self.assertEquals(result, expectedResult, 'getActiveVMServersConnectionData does not work')
+        
         
     def test_setVMServerStatistics(self):
         self.__connector.setVMServerStatistics(1, 1234)

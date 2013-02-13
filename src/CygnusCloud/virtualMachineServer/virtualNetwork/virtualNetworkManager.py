@@ -15,7 +15,7 @@ except ImportError:
         except ImportError:
             import xml.etree.ElementTree as ET
     
-from utils.commands import runCommand, runCommandAsRoot
+from ccutils.commands import runCommand, runCommandAsRoot
 
 from time import sleep
     

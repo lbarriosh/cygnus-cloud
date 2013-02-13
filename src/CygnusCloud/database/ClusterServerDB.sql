@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS VMServerStatus(serverId INTEGER, hosts INTEGER,
 	ENGINE=MEMORY;
 
 INSERT IGNORE INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort) VALUES
-    (1, 'Server1', 2, '192.168.0.4', 15800);
+    (1, 'Server1', 2, '192.168.0.5', 15800);
 
 INSERT IGNORE INTO ImageOnServer VALUES
 	(1, 1);

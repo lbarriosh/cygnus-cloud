@@ -123,7 +123,16 @@ class DBWebServerTests(unittest.TestCase):
         vncPort2 = (15000)
         self.assertEquals(vncPort1, vncPort2, "Not same VNCPort")
              
-
+    def test_getVMsConnectionData(self):
+        runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","VMServerDBTest")
+        result = runtimeD.getVMsConnectionData()
+        expectedResult = [
+                          {"UserID": 1, "VMID": 1, "VMName" :"VMName11", "VNCPort" : 1, "VNCPass" : "1234567890"},
+                          {"UserID": 1, "VMID": 1, "VMName" :"VMName22", "VNCPort" : 2, "VNCPass" : "1234567890"},
+                          {"UserID": 2, "VMID": 1, "VMName" :"VMName33", "VNCPort" : 3, "VNCPass" : "1234567890Test"},
+                          {"UserID": 3, "VMID": 1, "VMName" :"VMName44", "VNCPort" : 4, "VNCPass" : "1234567890"}
+                          ]
+        self.assertEquals(result, expectedResult, "getVMsConnectionData does not work")
         
 if __name__ == "__main__":
     #Cargamos el script de prueba

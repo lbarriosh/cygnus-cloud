@@ -29,6 +29,9 @@ class TesterCallback(NetworkCallback):
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
             print("Virtual machine server " +  " status: ")
             print(str(data["ActiveDomains"]) +  " active VMs")
+        elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_VM_DATA) :
+            print("Virtual machines' connection data")
+            print(packet._getData())
         else :
             print("Error: a packet from an unexpected type has been received "+packet_type)
        
@@ -57,7 +60,11 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         networkManager.sendPacket(ip_address, port, p)
         return False
     elif (command == "status") :
-        p = pHandler.createVMServerStatusRequestPacket()
+        p = pHandler.createVMServerDataRequestPacket(VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST)
+        networkManager.sendPacket(ip_address, port, p)
+        return False
+    elif (command == "readConnectionData") :
+        p = pHandler.createVMServerDataRequestPacket(VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA)
         networkManager.sendPacket(ip_address, port, p)
         return False
     elif (command == "halt" ) :
@@ -73,6 +80,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         print("=====")
         print("\tcreatevm <ID>: creates a virtual machine ")
         print("\tshutdown: asks the virtual machine server to terminate")
+        print("\tstatus: asks the virtual machine server the number of active VMs")
         print("\thalt: commands the virtual machine server to destroy all the virtual machines\n\t\t\
             and exit immediately")
         print("\thelp: prints the following help message")

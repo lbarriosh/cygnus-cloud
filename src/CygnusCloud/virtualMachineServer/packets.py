@@ -5,10 +5,11 @@ Virtual machine server packet handler definitions.
 @version: 2.0
 '''
 
-from utils.enums import enum
+from ccutils.enums import enum
 
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
-                          "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", "HALT")
+                          "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
+                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT")
 
 class VMServerPacketHandler(object):
     
@@ -27,8 +28,8 @@ class VMServerPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.CREATE_DOMAIN)
-        p.writeLong(machineId)
-        p.writeLong(userId)
+        p.writeInt(machineId)
+        p.writeInt(userId)
         return p
     
     def createVMConnectionParametersPacket(self, userID, vncServerIP, vncServerPort, password):
@@ -43,15 +44,15 @@ class VMServerPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA)
-        p.writeLong(userID)
+        p.writeInt(userID)
         p.writeString(vncServerIP)
         p.writeInt(vncServerPort)
         p.writeString(password)
         return p
     
-    def createVMServerStatusRequestPacket(self):
+    def createVMServerDataRequestPacket(self, packet_type):
         p = self.__packetCreator.createPacket(7)
-        p.writeInt(VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST)
+        p.writeInt(packet_type)
         return p
     
     def createVMServerStatusPacket(self, vncServerIP, activeDomains):
@@ -94,6 +95,27 @@ class VMServerPacketHandler(object):
         p.writeInt(VM_SERVER_PACKET_T.HALT)
         return p
     
+    def createActiveVMsDataPacket(self, serverIPAddress, segment, sequenceSize, data):
+        """
+        Creates an active virtual machines data packet
+        Args:
+            serverIPAddress: the VNC server's IPv4 address
+            segment: the data's segment number
+            sequenceSize: the total number of data segments
+            data: the segment's data
+        """
+        p = self.__packetCreator.createPacket(6)
+        p.writeInt(VM_SERVER_PACKET_T.ACTIVE_VM_DATA)
+        p.writeInt(segment)
+        p.writeInt(sequenceSize)
+        p.writeString(serverIPAddress)
+        for row in data :
+            p.writeInt(row["UserID"])
+            p.writeInt(row["VMID"])
+            p.writeString(row["VMName"])
+            p.writeInt(row["VNCPort"])
+            p.writeString(row["VNCPass"])
+        return p    
     
     def readPacket(self, p):
         """
@@ -108,19 +130,17 @@ class VMServerPacketHandler(object):
         packet_type = p.readInt()
         result["packet_type"] = packet_type
         if (packet_type == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
-            result["MachineID"] = p.readLong()
-            result["UserID"] = p.readLong()
-        if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
-            result["UserID"] = p.readLong()
+            result["MachineID"] = p.readInt()
+            result["UserID"] = p.readInt()
+        elif (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
+            result["UserID"] = p.readInt()
             result["VNCServerIP"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
-        if (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
+        elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
             result["VMServerIP"] = p.readString()
             result["ActiveDomains"] = p.readInt()
-        if (packet_type == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN or\
-            packet_type == VM_SERVER_PACKET_T.HALT or \
-            packet_type == VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST):
-            pass
+        # Note that the connection data segments will be sent to the web server immediately.
+        # Therefore, they don't need to be read in the main server or in the virtual machine server.        
         return result
         
