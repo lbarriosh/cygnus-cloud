@@ -18,7 +18,7 @@ from database.vmServer.runtimeData import RuntimeData
 from virtualNetwork.virtualNetworkManager import VirtualNetworkManager
 from time import sleep
 
-from utils.commands import runCommand, runCommandInBackground
+from ccutils.commands import runCommand, runCommandInBackground
 import os
 
 class VMClientException(Exception):

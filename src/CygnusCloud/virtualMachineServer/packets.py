@@ -5,7 +5,7 @@ Virtual machine server packet handler definitions.
 @version: 2.0
 '''
 
-from utils.enums import enum
+from ccutils.enums import enum
 
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 

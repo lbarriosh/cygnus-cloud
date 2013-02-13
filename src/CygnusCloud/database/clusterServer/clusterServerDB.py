@@ -1,6 +1,6 @@
 # -*- coding: UTF8 -*-
 
-from utils.enums import enum
+from ccutils.enums import enum
 from database.utils.connector import BasicDatabaseConnector
 
 SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN")

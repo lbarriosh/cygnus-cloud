@@ -1,5 +1,4 @@
 # -*- coding: UTF8 -*-
-import MySQLdb
 
 from database.utils.connector import BasicDatabaseConnector
 

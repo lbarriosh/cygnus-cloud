@@ -5,7 +5,7 @@ Main server packet handler definitions.
 @version: 1.0
 '''
 
-from utils.enums import enum
+from ccutils.enums import enum
 from database.clusterServer.clusterServerDB import SERVER_STATE_T
 
 MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR", "QUERY_VM_SERVERS_STATUS",

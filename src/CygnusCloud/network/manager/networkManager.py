@@ -7,8 +7,8 @@ Network manager class definitions.
 
 from twisted.internet import reactor, ssl
 from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint, SSL4ServerEndpoint, SSL4ClientEndpoint
-from utils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
-from utils.multithreadingDictionary import GenericThreadSafeDictionary
+from ccutils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
+from ccutils.multithreadingDictionary import GenericThreadSafeDictionary
 from network.packets.packet import _Packet, Packet_TYPE
 from network.twistedInteraction.connection import _NetworkConnection
 from network.exceptions.networkManager import NetworkManagerException

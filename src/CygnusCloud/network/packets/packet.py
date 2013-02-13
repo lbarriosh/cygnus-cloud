@@ -5,7 +5,7 @@ Packet-related definitions
 @version: 2.1
 """
 
-from utils.enums import enum
+from ccutils.enums import enum
 from network.exceptions.packetException import PacketException
 
 Packet_TYPE = enum('DATA')
