@@ -13,6 +13,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         self.__vmServerSegments = []
         self.__imageDistributionSegments = []
+        self.__activeVMSegments = dict()
         
     def processVMServerSegment(self, segmentNumber, segmentCount, data):
         self.__vmServerSegments.append(data)
@@ -33,9 +34,28 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             command = "INSERT INTO VirtualMachineDistribution VALUES " + SystemStatusDatabaseWriter.__segmentsToStr(self.__imageDistributionSegments)
             self.__imageDistributionSegments = []            
             self._executeUpdate(command)
+            
+    def processActiveVMSegment(self, segmentNumber, segmentCount, vmServerIP, data):
+        if (not self.__activeVMSegments.has_key(vmServerIP)) :
+            self.__activeVMSegments[vmServerIP] = []
+        self.__activeVMSegments[vmServerIP].append(data)
+        if (len(self.__activeVMSegments[vmServerIP]) == segmentCount) :
+            # Fetch the virtual machine server's name
+            serverName = self.__getVMServerName(vmServerIP)
+            # Write changes to the database
+            command = "DELETE FROM ActiveVirtualMachines WHERE serverName = '" + serverName + "';"
+            self._executeUpdate(command)
+            command = "INSERT INTO ActiveVirtualMachines VALUES " + SystemStatusDatabaseWriter.__segmentsToStr(self.__activeVMSegments[vmServerIP], [serverName])
+            self.__activeVMSegments[vmServerIP] = []         
+            self._executeUpdate(command)
+            
+    def __getVMServerName(self, serverIP):
+        query = "SELECT serverName FROM VirtualMachineServer WHERE serverIP = '" + serverIP + "';"
+        result = self._executeQuery(query, True)
+        return result[0]
                         
     @staticmethod
-    def __segmentsToStr(segmentList):
+    def __segmentsToStr(segmentList, dataToAdd = []):
         isFirstSegment = True
         command = ""
         for segment in segmentList :
@@ -44,6 +64,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
                     isFirstSegment = False
                 else :
                     command += ", "
-                command += str(segmentTuple)
+                segmentTuple_list = dataToAdd + list(segmentTuple)
+                command += str(tuple(segmentTuple_list))
         command += ";"
         return command    

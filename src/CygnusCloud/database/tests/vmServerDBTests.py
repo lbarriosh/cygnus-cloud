@@ -127,10 +127,10 @@ class DBWebServerTests(unittest.TestCase):
         runtimeD = RuntimeData("CygnusCloud","cygnuscloud2012","VMServerDBTest")
         result = runtimeD.getVMsConnectionData()
         expectedResult = [
-                          {"VMName" :"VMName11", "VNCPort" : 1, "VNCPass" : "1234567890"},
-                          {"VMName" :"VMName22", "VNCPort" : 2, "VNCPass" : "1234567890"},
-                          {"VMName" :"VMName33", "VNCPort" : 3, "VNCPass" : "1234567890Test"},
-                          {"VMName" :"VMName44", "VNCPort" : 4, "VNCPass" : "1234567890"}
+                          {"UserID": 1, "VMID": 1, "VMName" :"VMName11", "VNCPort" : 1, "VNCPass" : "1234567890"},
+                          {"UserID": 1, "VMID": 1, "VMName" :"VMName22", "VNCPort" : 2, "VNCPass" : "1234567890"},
+                          {"UserID": 2, "VMID": 1, "VMName" :"VMName33", "VNCPort" : 3, "VNCPass" : "1234567890Test"},
+                          {"UserID": 3, "VMID": 1, "VMName" :"VMName44", "VNCPort" : 4, "VNCPass" : "1234567890"}
                           ]
         self.assertEquals(result, expectedResult, "getVMsConnectionData does not work")
         

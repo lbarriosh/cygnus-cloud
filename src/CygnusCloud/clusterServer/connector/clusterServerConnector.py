@@ -6,7 +6,7 @@ Main server connector definitions
 '''
 
 from databaseUpdateThread import StatusDatabaseUpdateThread, UpdateHandler
-from clusterServer.networking.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
+from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from database.utils.configuration import DBConfigurator
 from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
 from database.systemStatusDB.systemStatusDBWriter import SystemStatusDatabaseWriter
@@ -166,7 +166,7 @@ class ClusterServerConnector(object):
         while (not self.__manager.isConnectionReady(clusterServerIP, clusterServerListenningPort)) :
             sleep(0.1)
         # Create the packet handler
-        self.__pHandler = MainServerPacketHandler(self.__manager)
+        self.__pHandler = ClusterServerPacketHandler(self.__manager)
         # Create the update thread
         self.__updateRequestThread = StatusDatabaseUpdateThread(_ClusterServerConnectorUpdateHandler(self), statusDBUpdateInterval)
         # Start it
@@ -267,6 +267,16 @@ class ClusterServerConnector(object):
         p = self.__pHandler.createVMServerUnregistrationOrShutdownPacket(vmServerNameOrIP, halt, True)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         
+    def getActiveVMsData(self):
+        """
+        Returns the active virtual machines data
+        Args:
+            None
+        Returns:
+            A list of dictionaries containing all the active virtual machines' data.
+        """
+        return self.__reader.getActiveVMsData()
+        
     def bootUpVirtualMachine(self, vmID, userID):
         """
         Boots up a virtual machine.
@@ -294,6 +304,8 @@ class ClusterServerConnector(object):
             self.__writer.processVMServerSegment(data["Segment"], data["SequenceSize"], data["Data"])
         elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
             self.__writer.processVMDistributionSegment(data["Segment"], data["SequenceSize"], data["Data"])
+        elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
+            self.__writer.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])
         elif (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
             self.__callback.handleVMServerBootUpError(data["ServerNameOrIPAddress"], data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
@@ -319,6 +331,8 @@ class ClusterServerConnector(object):
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)        
         p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
+        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         
 if __name__ == "__main__" :
     connector = ClusterServerConnector(GenericWebCallback())
@@ -327,9 +341,11 @@ if __name__ == "__main__" :
     sleep(10)
     print connector.getVMServersData()
     print connector.getVMDistributionData()
+    print connector.getActiveVMsData()
     connector.bootUpVMServer("Server1")
     sleep(10)
     print connector.getVMServersData()
+    print connector.getActiveVMsData()
     connector.bootUpVirtualMachine(1, 1)
     sleep(10)
     connector.shutdownVMServer("Server1", True)

@@ -66,5 +66,19 @@ class Test(unittest.TestCase):
         d1 = {"VMServerName":"Server4", "VMID":10}
         self.assertEquals(serversData, [d1], "processVMDistributionSegment does not work")
         
+    def testUpdateActiveVMData(self):
+        segment1Data = [('Server1', 'Ready', 'IP1', 1)]
+        self.__writer.processVMServerSegment(1, 1, segment1Data)
+        segment1Data = [(1, 1, 'Debian1', 15800, 'Password')]
+        segment2Data = [(2, 1, 'Debian1', 15802, 'Password')]
+        self.__writer.processActiveVMSegment(1, 2, 'IP1', segment1Data)
+        self.__writer.processActiveVMSegment(2, 2, 'IP1', segment2Data)
+        result = self.__reader.getActiveVMsData()
+        expectedResult = [
+            {"VMServerName" : "Server1", "UserID" : 1, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15800, "VNCPassword" : "Password" },
+            {"VMServerName" : "Server1", "UserID" : 2, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15802, "VNCPassword" : "Password" }
+            ]
+        self.assertEquals(result, expectedResult, "processVMServerSegment does not work")
+        
 if __name__ == "__main__":
     unittest.main()

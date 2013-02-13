@@ -14,7 +14,7 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
                             "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA")
 
-class MainServerPacketHandler(object):
+class ClusterServerPacketHandler(object):
     """
     These objects will read and write the main server's packages.
     """    
@@ -91,7 +91,7 @@ class MainServerPacketHandler(object):
         p.writeInt(sequenceSize)
         for row in data :
             p.writeString(row["ServerName"])
-            p.writeString(MainServerPacketHandler.__vm_server_status_to_string(row["ServerStatus"]))
+            p.writeString(ClusterServerPacketHandler.__vm_server_status_to_string(row["ServerStatus"]))
             p.writeString(row["ServerIP"])
             p.writeInt(int(row["ServerPort"]))            
         return p
@@ -173,7 +173,7 @@ class MainServerPacketHandler(object):
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST)
         p.writeInt(vmID)
-        p.writeLong(userID)
+        p.writeInt(userID)
         return p
     
     def createVMBootFailurePacket(self, vmID, userID, reason):
@@ -189,11 +189,11 @@ class MainServerPacketHandler(object):
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE)
         p.writeInt(vmID)
-        p.writeLong(userID)
+        p.writeInt(userID)
         p.writeString(reason)
         return p
     
-    def createActiveVMsDataPacket(self, userID, IPAddress, port, password):
+    def createVMConnectionDataPacket(self, userID, IPAddress, port, password):
         """
         Creates a virtual machine connection data packet
         Args:
@@ -206,10 +206,23 @@ class MainServerPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA)
-        p.writeLong(userID)
+        p.writeInt(userID)
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(password)
+        return p
+    
+    def createActiveVMsDataPacket(self, packet):
+        """
+        Creates a VNC connection data packet
+        Args:
+            packet: a packet containing a VNC connection data segment.
+        Returns:
+            a vnc connection data packet with packet's data
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.ACTIVE_VM_DATA)
+        p.dumpData(packet)
         return p
     
     def createHaltPacket(self, haltServers):
@@ -225,19 +238,6 @@ class MainServerPacketHandler(object):
         p = self.__packetCreator.createPacket(1)
         p.writeInt(MAIN_SERVER_PACKET_T.HALT)
         p.writeBool(haltServers)
-        return p
-    
-    def createActiveVMsDataPacket(self, packet):
-        """
-        Creates a VNC connection data packet
-        Args:
-            packet: a packet containing a VNC connection data segment.
-        Returns:
-            a vnc connection data packet with packet's data
-        """
-        p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.ACTIVE_VM_DATA)
-        p.dumpData(packet)
         return p
     
     @staticmethod
@@ -300,7 +300,7 @@ class MainServerPacketHandler(object):
             result["VMServerIP"] = p.readString()
             data = []
             while (p.hasMoreData()) :
-                data.append((p.readLong(), p.readInt(), p.readString(), p.readInt(), p.readString()))
+                data.append((p.readInt(), p.readInt(), p.readString(), p.readInt(), p.readString()))
             result["Data"] = data
                 
         elif (packet_type == MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
@@ -319,15 +319,15 @@ class MainServerPacketHandler(object):
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST):
             result["VMID"] = p.readInt()
-            result["UserID"] = p.readLong()
+            result["UserID"] = p.readInt()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE):
             result["VMID"] = p.readInt()
-            result["UserID"] = p.readLong()
+            result["UserID"] = p.readInt()
             result["ErrorMessage"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA):
-            result["UserID"] = p.readLong()
+            result["UserID"] = p.readInt()
             result["VNCServerIPAddress"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()

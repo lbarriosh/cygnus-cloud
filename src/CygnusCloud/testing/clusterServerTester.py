@@ -3,13 +3,13 @@
 This module contains statements to connect to a virtual machine
 server and control it.
 @author: Luis Barrios Hernández
-@version: 1.0
+@version: 2.0
 '''
 from __future__ import print_function
 
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
-from clusterServer.networking.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
+from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from time import sleep
 
 class TesterCallback(NetworkCallback):
@@ -90,12 +90,12 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createVMServerBootUpPacket(tokens.pop(0))
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "bootUpVM") :
-            p = pHandler.createVMBootRequestPacket(int(tokens.pop(0)), long(tokens.pop(0)))
+            p = pHandler.createVMBootRequestPacket(int(tokens.pop(0)), int(tokens.pop(0)))
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "halt") :
             p = pHandler.createHaltPacket(True)
             networkManager.sendPacket(ip_address, port, p)
-        elif (command == "getConnectionData") :
+        elif (command == "obtainActiveVMsData") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
@@ -119,6 +119,7 @@ def displayHelpMessage():
     print("\tbootUpVMServer <Name or IP>: boots up a virtual machine server")
     print("\tobtainAvailableImagesData: shows available images' data")
     print("\tbootUpVM <Name> <UserID>: boots up a virtual machine")
+    print("\tobtainActiveVMsData: obtains the active virtual machines' data")
     print("\tquit: closes this application")
     
 
@@ -126,15 +127,15 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     printLogo()
-    print('Main Server tester')
-    print('Version 1.0')
+    print('Cluster Server tester')
+    print('Version 2.0')
     print('*' * 80)
     print('*' * 80)
     print()
     networkManager = NetworkManager("/home/luis/Certificates")
     networkManager.startNetworkService()
     # Create the packet handler
-    pHandler = MainServerPacketHandler(networkManager)
+    pHandler = ClusterServerPacketHandler(networkManager)
     # Ask for the port and the IP address
     ip_address = raw_input("Server IP address: ")
     port = raw_input("Server port: ")

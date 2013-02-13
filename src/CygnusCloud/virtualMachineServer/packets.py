@@ -28,8 +28,8 @@ class VMServerPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.CREATE_DOMAIN)
-        p.writeLong(machineId)
-        p.writeLong(userId)
+        p.writeInt(machineId)
+        p.writeInt(userId)
         return p
     
     def createVMConnectionParametersPacket(self, userID, vncServerIP, vncServerPort, password):
@@ -44,7 +44,7 @@ class VMServerPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA)
-        p.writeLong(userID)
+        p.writeInt(userID)
         p.writeString(vncServerIP)
         p.writeInt(vncServerPort)
         p.writeString(password)
@@ -110,7 +110,7 @@ class VMServerPacketHandler(object):
         p.writeInt(sequenceSize)
         p.writeString(serverIPAddress)
         for row in data :
-            p.writeLong(row["UserID"])
+            p.writeInt(row["UserID"])
             p.writeInt(row["VMID"])
             p.writeString(row["VMName"])
             p.writeInt(row["VNCPort"])
@@ -130,10 +130,10 @@ class VMServerPacketHandler(object):
         packet_type = p.readInt()
         result["packet_type"] = packet_type
         if (packet_type == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
-            result["MachineID"] = p.readLong()
-            result["UserID"] = p.readLong()
+            result["MachineID"] = p.readInt()
+            result["UserID"] = p.readInt()
         elif (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
-            result["UserID"] = p.readLong()
+            result["UserID"] = p.readInt()
             result["VNCServerIP"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()

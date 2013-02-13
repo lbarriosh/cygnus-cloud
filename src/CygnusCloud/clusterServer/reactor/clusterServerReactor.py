@@ -9,7 +9,7 @@ from clusterServer.networking.callbacks import VMServerCallback, WebCallback
 from database.utils.configuration import DBConfigurator
 from database.clusterServer.clusterServerDB import ClusterServerDatabaseConnector, SERVER_STATE_T
 from network.manager.networkManager import NetworkManager
-from clusterServer.networking.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
+from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 from time import sleep
 from clusterServer.loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
@@ -71,7 +71,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__networkManager = NetworkManager(certificatePath)
         self.__webPort = port
         self.__networkManager.startNetworkService()        
-        self.__webPacketHandler = MainServerPacketHandler(self.__networkManager)
+        self.__webPacketHandler = ClusterServerPacketHandler(self.__networkManager)
         self.__vmServerPacketHandler = VMServerPacketHandler(self.__networkManager)
         self.__networkManager.listenIn(port, self.__webCallback, True)
         self.__vmServerCallback = VMServerCallback(self)
@@ -318,9 +318,9 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         elif (data["packet_type"] == VMSRVR_PACKET_T.DOMAIN_CONNECTION_DATA) :
             self.__sendVMConnectionData(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_DATA) :
-            self.__sendVNCConnectionData(packet)
+            self.__sendActiveVMsData(packet)
             
-    def __sendVNCConnectionData(self, packet):
+    def __sendActiveVMsData(self, packet):
         """
         Processes a VNC connection data packet
         Args:
@@ -339,7 +339,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Returns:
             Nothing
         """
-        p = self.__webPacketHandler.createActiveVMConnectionDataPacket(data["UserID"], data["VNCServerIP"], 
+        p = self.__webPacketHandler.createVMConnectionDataPacket(data["UserID"], data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"])
         self.__networkManager.sendPacket('', self.__webPort, p)        
     

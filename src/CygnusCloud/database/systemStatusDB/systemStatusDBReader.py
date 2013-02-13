@@ -36,9 +36,9 @@ class SystemStatusDatabaseReader(BasicDatabaseConnector):
             retrievedData.append(d)
         return retrievedData 
     
-    def getActiveVirtualMachines(self):
+    def getActiveVMsData(self):
         command = "SELECT * FROM ActiveVirtualMachines;"
-         results = self._executeQuery(command, False)
+        results = self._executeQuery(command, False)
         retrievedData = []
         for row in results :
             d = dict()

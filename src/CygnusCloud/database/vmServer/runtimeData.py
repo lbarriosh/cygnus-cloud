@@ -457,7 +457,7 @@ class RuntimeData(BasicDatabaseConnector):
         if (result == None) : 
             return None
         #Devolvemos el resultado
-        return result[0]
+        return int(result[0])
     
     def getVMsConnectionData(self):
         '''
@@ -474,7 +474,7 @@ class RuntimeData(BasicDatabaseConnector):
         else :
             ac = []
             for row in results:
-                ac.append({"UserID" : row[0], "VMID" : int(row[1]), "VMName": row[2], "VNCPort" : int(row[3]), "VNCPass" : row[4]})
+                ac.append({"UserID" : int(row[0]), "VMID" : int(row[1]), "VMName": row[2], "VNCPort" : int(row[3]), "VNCPass" : row[4]})
             return ac
                 
         
