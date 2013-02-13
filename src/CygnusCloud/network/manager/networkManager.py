@@ -2,13 +2,13 @@
 '''
 Network manager class definitions.
 @author: Luis Barrios Hernández
-@version: 6.1
+@version: 6.2
 '''
 
 from twisted.internet import reactor, ssl
 from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint, SSL4ServerEndpoint, SSL4ClientEndpoint
-from utils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
-from utils.multithreadingDictionary import GenericThreadSafeDictionary
+from ccutils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
+from ccutils.multithreadingDictionary import GenericThreadSafeDictionary
 from network.packets.packet import _Packet, Packet_TYPE
 from network.twistedInteraction.connection import _NetworkConnection
 from network.exceptions.networkManager import NetworkManagerException
@@ -42,15 +42,20 @@ class NetworkManager():
     @attention: Due to some Twisted related limitations, do NOT stop the network service 
     UNTIL you KNOW PERFECTLY WELL that you won't be using it again. 
     """
-    def __init__(self, certificatesDirectory = None):
+    def __init__(self, certificatesDirectory = None, createReactorThread = True):
         """
         Initializes the NetworkManager's state.
         Args:
             certificatesDirectory: the directory where the files server.crt and server.key are.
+            createReactorThread: if True, a dedicated reactor thread will be created. If false,
+            this thread won't be created.
         """
         self.__connectionPool = GenericThreadSafeDictionary()
         self.__outgoingDataQueue = GenericThreadSafePriorityQueue()
-        self.__networkThread = _TwistedReactorThread()        
+        if (createReactorThread) :
+            self.__networkThread = _TwistedReactorThread()    
+        else :
+            self.__networkThread = None    
         self.__outgoingDataThread = _OutgoingDataThread(self.__outgoingDataQueue)
         self.__connectionThread = _ConnectionMonitoringThread(self.__connectionPool)
         self.__certificatesDirectory = certificatesDirectory
@@ -64,7 +69,8 @@ class NetworkManager():
         Returns:
             Nothing
         """
-        self.__networkThread.start()
+        if (self.__networkThread != None) :
+            self.__networkThread.start()
         self.__outgoingDataThread.start()
         self.__connectionThread.start()
         
@@ -88,8 +94,9 @@ class NetworkManager():
         self.__connectionThread.join()
         self.__outgoingDataThread.stop()
         self.__outgoingDataThread.join()
-        self.__networkThread.stop()
-        self.__networkThread.join()
+        if (self.__networkThread != None) :
+            self.__networkThread.stop()
+            self.__networkThread.join()
         
     def __allocateConnectionResources(self, callbackObject):
         """

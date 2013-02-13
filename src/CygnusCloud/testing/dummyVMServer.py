@@ -3,7 +3,7 @@
 In this module, we define a dummy virtual machine server.
 This code will only be used for testing purposes.
 @author: Luis Barrios Hernández
-@version: 1.1
+@version: 1.2
 '''
 
 from network.manager.networkManager import NetworkCallback, NetworkManager
@@ -40,6 +40,8 @@ class DummyVMServer(NetworkCallback):
         packetType = processedPacket["packet_type"]
         if (packetType == PACKET_T.CREATE_DOMAIN) :
             self.__createDomain(processedPacket)            
+        elif (packetType == PACKET_T.QUERY_ACTIVE_VM_DATA) :
+            self.__sendActiveVMsData()
         elif (packetType == PACKET_T.HALT or packetType == PACKET_T.USER_FRIENDLY_SHUTDOWN) :
             print("The dummy virtual machine server is shutting down now")
             self.__finished = True
@@ -77,6 +79,15 @@ class DummyVMServer(NetworkCallback):
         # Generate the answer and send it
         packetToSend = self.__packetHandler.createVMServerStatusPacket(self.__dummyIP, self.__dummyDomains)
         self.__packetSender(packetToSend)
+        
+    def __sendActiveVMsData(self):
+        statusData = [
+            {"VMServerName" : "Server1", "UserID" : 1, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15800, "VNCPass" : "Password" },
+            {"VMServerName" : "Server1", "UserID" : 2, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15802, "VNCPass" : "Password" }
+            ]
+        p = self.__packetHandler.createActiveVMsDataPacket(self.__dummyIP, 1, 1, statusData)
+        self.__packetSender(p)
+         
         
 if __name__ == "__main__" :
     nmanager = NetworkManager("/home/luis/Certificates")

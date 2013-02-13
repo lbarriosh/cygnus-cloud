@@ -7,7 +7,7 @@ Protocol and protocol factory implementations.
 
 from twisted.internet.protocol import Protocol, Factory
 from network.packets.packet import _Packet
-from utils.multithreadingList import GenericThreadSafeList
+from ccutils.multithreadingList import GenericThreadSafeList
 
 class _CygnusCloudProtocol(Protocol):
     """

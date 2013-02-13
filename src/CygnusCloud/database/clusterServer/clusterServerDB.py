@@ -1,6 +1,6 @@
 # -*- coding: UTF8 -*-
 
-from utils.enums import enum
+from ccutils.enums import enum
 from database.utils.connector import BasicDatabaseConnector
 
 SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN")
@@ -39,22 +39,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     # - el método getFreeVMNumber no aparece porque el servidor de máquinas virtuales
     #   no nos dice nada de esto.
     #===========================================================================
-    
-    def isServerExists(self,serverId):
-        '''
-            Comprueba si un servidor existe
-            Duda: si los IDs salen siempre de la base de datos, ¿no crees que este método
-            no tiene mucho sentido?
-            Otra cosa: yo lo llamaría doesServerExist.
-        '''
-        #Contamos el número de serviddores con el id dado    
-        sql = "SELECT COUNT(*) FROM VMServer WHERE serverId =" + str(serverId)
-        result = self._executeQuery(sql, True)
-        if (result == None) : 
-            return None
-        #Si el número es 1 entonces el servidor existe
-        return (result[0] == 1)
-    
+        
     def deleteVMServerStatics(self, serverId):
         '''
         Borra las estadísticas de un servidor de máquinas virtuales
@@ -134,6 +119,22 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             serverIds.append(r[0])
         #Devolvemos la lista resultado
         return serverIds
+    
+    def getActiveVMServersConnectionData(self):
+        """
+        Returns a list containing the active servers' IP addresses.
+        Args:
+            None
+        Returns: 
+            Nothing
+        """
+        query = "SELECT serverIP, serverPort FROM VMServer WHERE serverStatus = " + str(SERVER_STATE_T.READY) + ";"
+        results = self._executeQuery(query)
+        serverIPs = []
+        for r in results :
+            serverIPs.append({"ServerIP" : r[0], "ServerPort" : r[1]})
+        return serverIPs
+        
         
     def subscribeVMServer(self, name, IPAddress, port):
         '''
@@ -218,6 +219,27 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             serverIds.append(r[0])
         #Devolvemos la lista resultado
         return serverIds
+    
+    def getHostedImages(self, serverID):
+        '''
+            Devuelve la lista de máquinas virtuales que puede albergar el servidor de máquinas virtuales
+            cuyo identificador nos proporcionan como argumento.
+            Argumentos:
+                imageId: el identificador único de la imagen
+            Devuelve:
+                lista con los identificadores de los servidores que tienen la imagen
+        '''
+        # Creamos la consulta
+        query = "SELECT serverName, imageId FROM VMServer, ImageOnServer " +\
+                 "WHERE VMServer.serverId = ImageOnServer.serverId;"
+        #Recogemos los resultado
+        results=self._executeQuery(query)
+        #Guardamos en una lista los ids resultantes
+        retrievedData = []
+        for r in results:
+            retrievedData.append({"ServerName" : r[0], "VMID" : int(r[1])})
+        #Devolvemos la lista resultado
+        return retrievedData
     
     def getVMServerID(self, nameOrIPAddress):
         '''
