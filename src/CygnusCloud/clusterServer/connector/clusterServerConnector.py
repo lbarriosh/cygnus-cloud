@@ -147,18 +147,20 @@ class ClusterServerConnector(object):
         self.__reader.connect()
         self.__writer.connect()
         
-    def connectToClusterServer(self, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval):
+    def connectToClusterServer(self, certificatePath, createReactorThread, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval):
         """
         Establishes a connection with the cluster server.
         Args:
             certificatePath: the server.crt and server.key directory path.
+            createReactorThread: if true, a reactor thread will be created. Otherwise, somebody else will have to
+            create it.
             clusterServerIP: the cluster server's IPv4 address
             clusterServerListenningPort: the cluster server's listenning port.
             statusDBUpdateInterval: the status database update interval (in seconds)
         Returns:
             Nothing
         """
-        self.__manager = NetworkManager(certificatePath)
+        self.__manager = NetworkManager(certificatePath, createReactorThread)
         self.__manager.startNetworkService()
         callback = _ClusterServerConnectorCallback(self)
         # Connect to the main server
@@ -340,7 +342,7 @@ if __name__ == "__main__" :
     connector = ClusterServerConnector(GenericWebCallback())
     connector.connectToDatabase("","SystemStatusDB", "../../database/SystemStatusDB.sql", "websiteUser", 
                                 "cygnuscloud", "updateUser", "cygnuscloud")
-    connector.connectToClusterServer("/home/luis/Certificates", "127.0.0.1", 9000, 5)
+    connector.connectToClusterServer("/home/luis/Certificates", True, "127.0.0.1", 9000, 5)
     sleep(10)
     print connector.getVMServersData()
     print connector.getVMDistributionData()
