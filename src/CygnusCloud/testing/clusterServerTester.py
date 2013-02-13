@@ -44,6 +44,11 @@ class TesterCallback(NetworkCallback):
             print("\tVNC server IP address: " + data["VNCServerIPAddress"])
             print("\tVNC server port: " + str(data["VNCServerPort"]))
             print("\tVNC server password: " + data["VNCServerPassword"])
+        elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
+            print("VNC connection data")
+            print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
+            print("\tVNC server IP address: " + data["VMServerIP"])
+            print("\t" + str(data["Data"]))
        
 
 def printLogo():
@@ -89,6 +94,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "halt") :
             p = pHandler.createHaltPacket(True)
+            networkManager.sendPacket(ip_address, port, p)
+        elif (command == "getConnectionData") :
+            p = pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True

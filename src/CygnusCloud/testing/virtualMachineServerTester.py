@@ -29,7 +29,7 @@ class TesterCallback(NetworkCallback):
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
             print("Virtual machine server " +  " status: ")
             print(str(data["ActiveDomains"]) +  " active VMs")
-        elif (packet_type == VM_SERVER_PACKET_T.VNC_CONNECTION_DATA) :
+        elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_VM_DATA) :
             print("Virtual machines' connection data")
             print(packet._getData())
         else :
@@ -64,7 +64,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         networkManager.sendPacket(ip_address, port, p)
         return False
     elif (command == "readConnectionData") :
-        p = pHandler.createVMServerDataRequestPacket(VM_SERVER_PACKET_T.QUERY_VNC_CONNECTION_DATA)
+        p = pHandler.createVMServerDataRequestPacket(VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA)
         networkManager.sendPacket(ip_address, port, p)
         return False
     elif (command == "halt" ) :

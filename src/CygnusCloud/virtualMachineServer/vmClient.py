@@ -98,7 +98,7 @@ class VMClient(NetworkCallback):
             VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST: self.__serverStatusRequest,
             VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN: self.__userFriendlyShutdown,
             VM_SERVER_PACKET_T.HALT: self.__halt}
-        if (packetData['packet_type'] == VM_SERVER_PACKET_T.QUERY_VNC_CONNECTION_DATA) :
+        if (packetData['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA) :
             self.__sendVNCConnectionData()
         else :
             processPacket[packetData['packet_type']](packetData)
@@ -122,14 +122,14 @@ class VMClient(NetworkCallback):
             outgoingData.append(connectionParameters)
             if (len(outgoingData) >= segmentSize) :
                 # Flush
-                packet = self.__packetManager.createVNCConnectionDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
+                packet = self.__packetManager.createActiveVMsDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
                 self.__networkManager.sendPacket('', self.__listenningPort, packet)
                 outgoingData = []
                 segmentCounter += 1
         # Send the last segment
         if (sendLastSegment) :
-            packet = self.__packetManager.createVNCConnectionDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
-            self.__networkManager.sendPacket('', self.__webPort, packet) 
+            packet = self.__packetManager.createActiveVMsDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
+            self.__networkManager.sendPacket('', self.__listenningPort, packet) 
 
     def __createDomain(self, info):
         idVM = info["MachineID"]

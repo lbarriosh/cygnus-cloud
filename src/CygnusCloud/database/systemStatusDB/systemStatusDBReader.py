@@ -35,3 +35,18 @@ class SystemStatusDatabaseReader(BasicDatabaseConnector):
             d["VMID"] = row[1]
             retrievedData.append(d)
         return retrievedData 
+    
+    def getActiveVirtualMachines(self):
+        command = "SELECT * FROM ActiveVirtualMachines;"
+         results = self._executeQuery(command, False)
+        retrievedData = []
+        for row in results :
+            d = dict()
+            d["VMServerName"] = row[0]
+            d["UserID"] = row[1]
+            d["VMID"] = row[2]
+            d["VMName"] = row[3]
+            d["VNCPort"] = row[4]
+            d["VNCPassword"] = row[5]
+            retrievedData.append(d)
+        return retrievedData 

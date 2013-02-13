@@ -2,7 +2,7 @@
 """
 Packet-related definitions
 @author: Luis Barrios Hernández
-@version: 2.0
+@version: 2.1
 """
 
 from utils.enums import enum
@@ -119,6 +119,16 @@ class _Packet(object):
             self.writeInt(1)
         else :
             self.writeInt(0)
+            
+    def dumpData(self, packet):
+        """
+        Dumps another packet's data into this one.
+        Args:
+            packet: the packet whose data will be written into this one.
+        Returns:
+            Nothing
+        """
+        self.__data += packet._getData()
         
     def readInt(self):
         """

@@ -99,6 +99,23 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__halt(data["HaltVMServers"])
         elif (data["packet_type"] == WEB_PACKET_T.QUERY_VM_DISTRIBUTION) :
             self.__sendVMDistributionData()
+        elif (data["packet_type"] == WEB_PACKET_T.QUERY_ACTIVE_VM_DATA) :
+            self.__requestVNCConnectionData()
+            
+    def __requestVNCConnectionData(self):
+        """
+        Sends a VNC connection data request packet to all the active virtual machine servers
+        Args:
+            None
+        Returns:
+            Nothing
+        """
+        # Create a VNC connection data packet
+        p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_VM_DATA)
+        # Fetch the active virtual machine server's IP addresses and ports
+        connectionData = self.__dbConnector.getActiveVMServersConnectionData()
+        for cd in connectionData :
+            self.__networkManager.sendPacket(cd["ServerIP"], cd["ServerPort"], p)
             
     def __halt(self, haltVMServers):
         """
@@ -300,6 +317,19 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__updateVMServerStatus(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.DOMAIN_CONNECTION_DATA) :
             self.__sendVMConnectionData(data)
+        elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_DATA) :
+            self.__sendVNCConnectionData(packet)
+            
+    def __sendVNCConnectionData(self, packet):
+        """
+        Processes a VNC connection data packet
+        Args:
+            packet: the packet to process
+        Returns:
+            Nothing
+        """
+        p = self.__webPacketHandler.createActiveVMsDataPacket(packet)
+        self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __sendVMConnectionData(self, data):
         """
@@ -309,7 +339,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Returns:
             Nothing
         """
-        p = self.__webPacketHandler.createVMConnectionDataPacket(data["UserID"], data["VNCServerIP"], 
+        p = self.__webPacketHandler.createActiveVMConnectionDataPacket(data["UserID"], data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"])
         self.__networkManager.sendPacket('', self.__webPort, p)        
     

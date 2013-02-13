@@ -119,6 +119,22 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             serverIds.append(r[0])
         #Devolvemos la lista resultado
         return serverIds
+    
+    def getActiveVMServersConnectionData(self):
+        """
+        Returns a list containing the active servers' IP addresses.
+        Args:
+            None
+        Returns: 
+            Nothing
+        """
+        query = "SELECT serverIP, serverPort FROM VMServer WHERE serverStatus = " + str(SERVER_STATE_T.READY) + ";"
+        results = self._executeQuery(query)
+        serverIPs = []
+        for r in results :
+            serverIPs.append({"ServerIP" : r[0], "ServerPort" : r[1]})
+        return serverIPs
+        
         
     def subscribeVMServer(self, name, IPAddress, port):
         '''

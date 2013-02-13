@@ -27,3 +27,10 @@ INSERT IGNORE INTO VirtualMachine VALUES
 	(1, 'Debian', 'DebianSqueezeAMD64/Data.qcow2', 'DebianSqueezeAMD64/SqueezeAMD64.qcow2', 'DebianSqueezeAMD64/Squeeze_AMD64.xml');
 
 #Tabla ActualVM => no hay maquinas virtuales activas. No insertamos nada
+
+# TODO: borrar basura
+
+INSERT IGNORE INTO ActualVM VALUES("VMName11",1,1,1,1,"./VMNameCopy1","./OSImagePath1","2C:00:00:00:00:00","fce02cff-5d6d-11e2-a3f0-001f16b99e1d","1234567890");
+INSERT IGNORE INTO ActualVM VALUES("VMName22",1,2,1,2,"./VMNameCopy1","./OSImagePath2","2C:00:00:00:00:01","fce04938-5d6d-11e2-a3f0-001f16b99e1d","1234567890");
+INSERT IGNORE INTO ActualVM VALUES("VMName33",1,3,2,3,"./VMNameCopy2","./OSImagePath3","2C:00:00:00:00:02","fce0707c-5d6d-11e2-a3f0-001f16b99e1d","1234567890Test");
+INSERT IGNORE INTO ActualVM VALUES("VMName44",1,4,3,4,"./VMNameCopy3","./OSImagePath4","2C:00:00:00:00:03","fce083a2-5d6d-11e2-a3f0-001f16b99e1d","1234567890");

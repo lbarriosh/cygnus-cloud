@@ -467,14 +467,14 @@ class RuntimeData(BasicDatabaseConnector):
         Devuelve:
             Lista de diccionarios con los datos de conexión a las máquinas virtuales
         '''
-        query = "SELECT domainName, VNCPortAdress, VNCPass FROM ActualVM;"
+        query = "SELECT userId, VMId, domainName, VNCPortAdress, VNCPass FROM ActualVM;"
         results = self._executeQuery(query, False)
         if (results == None) :
             return []
         else :
             ac = []
             for row in results:
-                ac.append({"VMName" : row[0], "VNCPort" : row[1], "VNCPass" : row[2]})
+                ac.append({"UserID" : row[0], "VMID" : int(row[1]), "VMName": row[2], "VNCPort" : int(row[3]), "VNCPass" : row[4]})
             return ac
                 
         

@@ -9,7 +9,7 @@ from utils.enums import enum
 
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
-                          "QUERY_VNC_CONNECTION_DATA", "VNC_CONNECTION_DATA", "HALT")
+                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT")
 
 class VMServerPacketHandler(object):
     
@@ -95,9 +95,9 @@ class VMServerPacketHandler(object):
         p.writeInt(VM_SERVER_PACKET_T.HALT)
         return p
     
-    def createVNCConnectionDataPacket(self, serverIPAddress, segment, sequenceSize, data):
+    def createActiveVMsDataPacket(self, serverIPAddress, segment, sequenceSize, data):
         """
-        Creates a VNC connection data packet
+        Creates an active virtual machines data packet
         Args:
             serverIPAddress: the VNC server's IPv4 address
             segment: the data's segment number
@@ -105,12 +105,15 @@ class VMServerPacketHandler(object):
             data: the segment's data
         """
         p = self.__packetCreator.createPacket(6)
+        p.writeInt(VM_SERVER_PACKET_T.ACTIVE_VM_DATA)
         p.writeInt(segment)
         p.writeInt(sequenceSize)
         p.writeString(serverIPAddress)
         for row in data :
+            p.writeLong(row["UserID"])
+            p.writeInt(row["VMID"])
             p.writeString(row["VMName"])
-            p.writeInt(row["VMPort"])
+            p.writeInt(row["VNCPort"])
             p.writeString(row["VNCPass"])
         return p    
     

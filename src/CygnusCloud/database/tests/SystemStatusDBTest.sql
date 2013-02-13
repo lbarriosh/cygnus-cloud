@@ -24,3 +24,10 @@ CREATE TABLE IF NOT EXISTS VirtualMachineDistribution(
         ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=MEMORY;
         
 DELETE FROM VirtualMachineDistribution;
+
+CREATE TABLE IF NOT EXISTS ActiveVirtualMachines(
+	serverName VARCHAR(30), userID BIGINT, virtualMachineID INTEGER, virtualMachineName VARCHAR(30),
+	port INTEGER, password VARCHAR(60),
+	PRIMARY KEY (serverName, userID, virtualMachineID)) ENGINE=MEMORY;
+	
+DELETE FROM ActiveVirtualMachines;

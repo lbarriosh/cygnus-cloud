@@ -12,7 +12,7 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "VM_SERVERS_STATUS_DATA", "QUERY_VM_DISTRIBUTION", "VM_DISTRIBUTION_DATA",
                             "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",
                             "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
-                            "HALT")
+                            "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA")
 
 class MainServerPacketHandler(object):
     """
@@ -193,7 +193,7 @@ class MainServerPacketHandler(object):
         p.writeString(reason)
         return p
     
-    def createVMConnectionDataPacket(self, userID, IPAddress, port, password):
+    def createActiveVMsDataPacket(self, userID, IPAddress, port, password):
         """
         Creates a virtual machine connection data packet
         Args:
@@ -225,6 +225,19 @@ class MainServerPacketHandler(object):
         p = self.__packetCreator.createPacket(1)
         p.writeInt(MAIN_SERVER_PACKET_T.HALT)
         p.writeBool(haltServers)
+        return p
+    
+    def createActiveVMsDataPacket(self, packet):
+        """
+        Creates a VNC connection data packet
+        Args:
+            packet: a packet containing a VNC connection data segment.
+        Returns:
+            a vnc connection data packet with packet's data
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.ACTIVE_VM_DATA)
+        p.dumpData(packet)
         return p
     
     @staticmethod
@@ -279,6 +292,15 @@ class MainServerPacketHandler(object):
             data = []
             while (p.hasMoreData()) :
                 data.append((p.readString(), p.readInt()))
+            result["Data"] = data
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.ACTIVE_VM_DATA) :
+            result["Segment"] = p.readInt()
+            result["SequenceSize"] = p.readInt()
+            result["VMServerIP"] = p.readString()
+            data = []
+            while (p.hasMoreData()) :
+                data.append((p.readLong(), p.readInt(), p.readString(), p.readInt(), p.readString()))
             result["Data"] = data
                 
         elif (packet_type == MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
