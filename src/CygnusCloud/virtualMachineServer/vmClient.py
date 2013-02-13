@@ -99,11 +99,11 @@ class VMClient(NetworkCallback):
             VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN: self.__userFriendlyShutdown,
             VM_SERVER_PACKET_T.HALT: self.__halt}
         if (packetData['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA) :
-            self.__sendActiveVMsData()
+            self.__sendVNCConnectionData()
         else :
             processPacket[packetData['packet_type']](packetData)
         
-    def __sendActiveVMsData(self):
+    def __sendVNCConnectionData(self):
         # Extraer los datos de la base de datos
         vncConnectionData = self.__runningImageData.getVMsConnectionData()
         # Generar los segmentos

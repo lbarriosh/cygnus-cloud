@@ -318,9 +318,9 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         elif (data["packet_type"] == VMSRVR_PACKET_T.DOMAIN_CONNECTION_DATA) :
             self.__sendVMConnectionData(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_DATA) :
-            self.__sendActiveVMsData(packet)
+            self.__sendVNCConnectionData(packet)
             
-    def __sendActiveVMsData(self, packet):
+    def __sendVNCConnectionData(self, packet):
         """
         Processes a VNC connection data packet
         Args:

@@ -119,12 +119,14 @@ class ClusterServerConnector(object):
         self.__stopped = False
         self.__callback = callback
     
-    def connectToDatabase(self, rootsPassword, databaseName, websiteUser, websiteUserPassword, updateUser, updateUserPassword):
+    def connectToDatabase(self, rootsPassword, databaseName, sqlFilePath, websiteUser, websiteUserPassword, 
+                          updateUser, updateUserPassword):
         """
         Establishes a connection with the system status database.
         Args:
             rootsPassword: MySQL root's password
             databaseName: the status database name
+            sqlFilePath: the database schema definition SQL file path
             websiteUser: the website user's name. This user will just have SELECT privileges on the status database.
             websiteUserPassword: the website user's password
             updateUser: the update user's name. This user will have ALL privileges on the status database.
@@ -134,7 +136,7 @@ class ClusterServerConnector(object):
         self.__rootsPassword = rootsPassword
         self.__databaseName = databaseName
         configurator = DBConfigurator(rootsPassword)
-        configurator.runSQLScript(databaseName, "../../database/SystemStatusDB.sql")
+        configurator.runSQLScript(databaseName, sqlFilePath)
         # Register the website and the update users
         configurator.addUser(websiteUser, websiteUserPassword, databaseName, False)
         configurator.addUser(updateUser, updateUserPassword, databaseName, True)
@@ -336,7 +338,8 @@ class ClusterServerConnector(object):
         
 if __name__ == "__main__" :
     connector = ClusterServerConnector(GenericWebCallback())
-    connector.connectToDatabase("","SystemStatusDB", "websiteUser", "cygnuscloud", "updateUser", "cygnuscloud")
+    connector.connectToDatabase("","SystemStatusDB", "../../database/SystemStatusDB.sql", "websiteUser", 
+                                "cygnuscloud", "updateUser", "cygnuscloud")
     connector.connectToClusterServer("/home/luis/Certificates", "127.0.0.1", 9000, 5)
     sleep(10)
     print connector.getVMServersData()
