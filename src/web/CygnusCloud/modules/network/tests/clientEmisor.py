@@ -18,7 +18,7 @@
 '''
 
 
-from network.manager import NetworkManager
+from network.manager.networkManager import NetworkManager
 from network.tests.dummyCallback import DummyCallback
 from time import sleep
 
@@ -29,7 +29,7 @@ if __name__ == "__main__" :
     sleep(2)
     p = networkManager.createPacket(0)
     p.writeString("Hello Client 2!")    
-    networkManager.sendPacket(8080, p)
+    networkManager.sendPacket('127.0.0.1', 8080, p)
     p = networkManager.createPacket(0)
     sleep(100)
     networkManager.stopNetworkService()

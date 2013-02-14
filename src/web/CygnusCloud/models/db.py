@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 from configuration import DBConfigurator
 from gluon.tools import Auth
+from clusterServer.connector.clusterServerConnector import ClusterServerConnector
+from clusterServer.connector.clusterServerConnector import GenericWebCallback
+import os
+#Contraseña root
+rootPassword = '170590ucm'
+#Ruta de los certificados
+print os.getcwd() 
+certificatesPath = "applications/CygnusCloud/static/Certificates"
 
-conf = DBConfigurator('170590ucm')
+conf = DBConfigurator(rootPassword)
 conf.createDatabase('CygnusCloudUserDB')
 #conf.addUser('CygnusCloud','cygnuscloud2012', 'UserDB')
 userDB = DAL('mysql://CygnusCloud:cygnuscloud2012@localhost/CygnusCloudUserDB',migrate_enabled=True, pool_size=0)
@@ -49,3 +57,9 @@ userDB.define_table('VMByGroup',
    Field('cod','integer','reference UserGroup'),
    Field('curseGroup',length=1 ),
    primarykey=['cod','curseGroup','VMId'],migrate= True)
+
+
+#Establecemos la conexión con el servidor principal
+#connector = ClusterServerConnector(GenericWebCallback())
+#connector.connectToDatabase(rootPassword,"SystemStatusDB", "websiteUser", "cygnuscloud", "updateUser", "cygnuscloud")
+#connector.connectToClusterServer(certificatesPath,'127.0.0.1' , 8000, 5)

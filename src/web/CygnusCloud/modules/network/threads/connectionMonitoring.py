@@ -2,11 +2,11 @@
 '''
 Connection monitoring thread definitions.
 @author: Luis Barrios Hernández
-@version: 3.0
+@version: 3.5
 '''
 
 from utils1.threads import BasicThread
-from network.connection import CONNECTION_STATUS
+from network.twistedInteraction.connection import CONNECTION_STATUS
 from time import sleep
 
 class _ConnectionMonitoringThread(BasicThread):
@@ -18,7 +18,7 @@ class _ConnectionMonitoringThread(BasicThread):
         """
         Initializes the thread's state.
         """
-        BasicThread.__init__(self)
+        BasicThread.__init__(self, "Connection monitoring thread")
         self.__connectionPool = connectionPool
         
     def run(self):
@@ -26,11 +26,11 @@ class _ConnectionMonitoringThread(BasicThread):
         Refreshes all the network connections until the thread must stop
         and there are no more connections to refresh.
         """
-        while not (self.stopped() and self.__connectionPool.isEmpty()):           
+        while not (self.finish() and self.__connectionPool.isEmpty()):        
             # Refresh the active connections
             connections = self.__connectionPool.values()
             for connection in connections :
                 connection.refresh()
                 if (connection.getStatus() == CONNECTION_STATUS.CLOSED) :
-                    self.__connectionPool.pop(connection.getPort())
-            sleep(0.1)
+                    self.__connectionPool.pop((connection.getIPAddress(), connection.getPort()))
+            sleep(1)

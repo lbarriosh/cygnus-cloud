@@ -11,7 +11,7 @@
     Módulos necesarios:
         -Multiclient,server04
 '''
-from network.manager import NetworkManager
+from network.manager.networkManager import NetworkManager
 from network.tests.dummyCallback import DummyCallback
 from time import sleep
 
@@ -23,6 +23,6 @@ if __name__ == "__main__" :
     sleep(20)
     p = networkManager.createPacket(0)
     p.writeString("Hello clients!")    
-    networkManager.sendPacket(8080, p)
+    networkManager.sendPacket('', 8080, p)
     sleep(200)
     networkManager.stopNetworkService()

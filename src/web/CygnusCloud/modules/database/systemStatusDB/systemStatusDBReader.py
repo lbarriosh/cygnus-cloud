@@ -11,18 +11,7 @@ from database.utils.connector import BasicDatabaseConnector
 class SystemStatusDatabaseReader(BasicDatabaseConnector):
     def __init__(self, sqlUser, sqlPassword, databaseName):
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
-        
-    def getImages(self):
-        command = "SELECT * FROM Image;"
-        results = self._executeQuery(command, False)
-        retrievedData = []
-        for row in results :
-            d = dict()
-            d["ImageName"] = row[0]
-            d["ImageDescription"] = row[1]
-            retrievedData.append(d)
-        return retrievedData
-            
+                  
     def getVMServersData(self):
         command = "SELECT * FROM VirtualMachineServer;"
         results = self._executeQuery(command, False)
