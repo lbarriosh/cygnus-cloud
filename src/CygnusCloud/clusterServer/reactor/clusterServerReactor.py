@@ -9,7 +9,7 @@ from clusterServer.networking.callbacks import VMServerCallback, WebCallback
 from database.utils.configuration import DBConfigurator
 from database.clusterServer.clusterServerDB import ClusterServerDatabaseConnector, SERVER_STATE_T
 from network.manager.networkManager import NetworkManager
-from clusterServer.networking.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
+from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 from time import sleep
 from clusterServer.loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
@@ -71,7 +71,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__networkManager = NetworkManager(certificatePath)
         self.__webPort = port
         self.__networkManager.startNetworkService()        
-        self.__webPacketHandler = MainServerPacketHandler(self.__networkManager)
+        self.__webPacketHandler = ClusterServerPacketHandler(self.__networkManager)
         self.__vmServerPacketHandler = VMServerPacketHandler(self.__networkManager)
         self.__networkManager.listenIn(port, self.__webCallback, True)
         self.__vmServerCallback = VMServerCallback(self)
@@ -97,6 +97,25 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__bootUpVM(data["VMID"], data["UserID"])
         elif (data["packet_type"] == WEB_PACKET_T.HALT) :
             self.__halt(data["HaltVMServers"])
+        elif (data["packet_type"] == WEB_PACKET_T.QUERY_VM_DISTRIBUTION) :
+            self.__sendVMDistributionData()
+        elif (data["packet_type"] == WEB_PACKET_T.QUERY_ACTIVE_VM_DATA) :
+            self.__requestVNCConnectionData()
+            
+    def __requestVNCConnectionData(self):
+        """
+        Sends a VNC connection data request packet to all the active virtual machine servers
+        Args:
+            None
+        Returns:
+            Nothing
+        """
+        # Create a VNC connection data packet
+        p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_VM_DATA)
+        # Fetch the active virtual machine server's IP addresses and ports
+        connectionData = self.__dbConnector.getActiveVMServersConnectionData()
+        for cd in connectionData :
+            self.__networkManager.sendPacket(cd["ServerIP"], cd["ServerPort"], p)
             
     def __halt(self, haltVMServers):
         """
@@ -125,7 +144,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__dbConnector.subscribeVMServer(data["VMServerName"], data["VMServerIP"], 
                                                     data["VMServerPort"])
             # Command the virtual machine server to tell us its state
-            p = self.__vmServerPacketHandler.createVMServerStatusRequestPacket()
+            p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
             while not self.__networkManager.isConnectionReady(data["VMServerIP"], data["VMServerPort"]) :
                 sleep(0.1)
             self.__networkManager.sendPacket(data["VMServerIP"], data["VMServerPort"], p)
@@ -200,12 +219,12 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Change its status
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)
             # Send the status request
-            p = self.__vmServerPacketHandler.createVMServerStatusRequestPacket()
+            p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
         except Exception as e:
             p = self.__webPacketHandler.createVMServerBootUpErrorPacket(serverNameOrIPAddress, str(e))
             self.__networkManager.sendPacket('', self.__webPort, p)
-        
+            
     def __sendVMServerStatusData(self):
         """
         Processes a virtual machine server data request packet.
@@ -214,6 +233,27 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Returns:
             Nothing
         """
+        self.__sendStatusData(self.__dbConnector.getVMServerBasicData, self.__webPacketHandler.createVMServerStatusPacket)
+        
+    def __sendVMDistributionData(self):
+        """
+        Processes a virtual machine distribution data packet
+        Args:
+            None
+        Returns:
+            Nothing
+        """    
+        self.__sendStatusData(self.__dbConnector.getHostedImages, self.__webPacketHandler.createVMDistributionPacket)
+        
+    def __sendStatusData(self, queryMethod, packetCreationMethod):
+        """
+        Processes a data request packet.
+        Args:
+            queryMethod: the method that extracts the data from the database
+            packetCreationMethod: the method that creates the packet
+        Returns:
+            Nothing
+        """        
         segmentSize = 5
         segmentCounter = 1
         outgoingData = []
@@ -227,19 +267,20 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         else :
             sendLastSegment = False
         for serverID in serverIDs :
-            row = self.__dbConnector.getVMServerBasicData(serverID)
-            outgoingData.append(row)
+            row = queryMethod(serverID)
+            if (isinstance(row, dict)) :
+                outgoingData.append(row)
+            else :
+                outgoingData += row
             if (len(outgoingData) >= segmentSize) :
                 # Flush
-                packet = self.__webPacketHandler.createVMServerStatusPacket(segmentCounter, 
-                                                                            segmentNumber, outgoingData)
+                packet = packetCreationMethod(segmentCounter, segmentNumber, outgoingData)
                 self.__networkManager.sendPacket('', self.__webPort, packet)
                 outgoingData = []
                 segmentCounter += 1
         # Send the last segment
         if (sendLastSegment) :
-            packet = self.__webPacketHandler.createVMServerStatusPacket(segmentCounter, 
-                                                                            segmentNumber, outgoingData)
+            packet = packetCreationMethod(segmentCounter, segmentNumber, outgoingData)
             self.__networkManager.sendPacket('', self.__webPort, packet)             
                    
     def __bootUpVM(self, vmID, userID):
@@ -276,6 +317,19 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__updateVMServerStatus(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.DOMAIN_CONNECTION_DATA) :
             self.__sendVMConnectionData(data)
+        elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_DATA) :
+            self.__sendVNCConnectionData(packet)
+            
+    def __sendVNCConnectionData(self, packet):
+        """
+        Processes a VNC connection data packet
+        Args:
+            packet: the packet to process
+        Returns:
+            Nothing
+        """
+        p = self.__webPacketHandler.createActiveVMsDataPacket(packet)
+        self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __sendVMConnectionData(self, data):
         """

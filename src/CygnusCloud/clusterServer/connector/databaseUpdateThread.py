@@ -5,7 +5,7 @@ Status database update thread definitions
 @version: 1.1
 '''
 
-from utils.threads import BasicThread
+from ccutils.threads import BasicThread
 
 from time import sleep
 
