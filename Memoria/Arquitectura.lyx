@@ -2916,7 +2916,7 @@ CC
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -2949,10 +2949,6 @@ Interacción con la librería
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -3016,8 +3012,11 @@ CygnusCloudProtocolFactory
 Protocol
 \family default
  asociados a la conexión.
- Asimismo, la clase CygnusCloud tratará las notificaciones de conexión y
- desconexión que la librería 
+ Asimismo, la clase 
+\family typewriter
+CygnusCloudProtocolFactory
+\family default
+ tratará las notificaciones de conexión y desconexión que la librería 
 \emph on
 twisted
 \emph default
@@ -3038,6 +3037,33 @@ MultithreadingPriorityQueue
 ).
  Como veremos más adelante, en principio cada conexión dispone de su propia
  cola de recepción de paquetes.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, como ya hemos dicho la librería de red 
+\emph on
+twisted
+\emph default
+ sólo puede enviar 
+\emph on
+strings
+\emph default
+ y recibir 
+\emph on
+strings
+\emph default
+.
+ Para serializar los datos antes de enviarlos y deserializarlos tras recibirlos,
+ los objetos 
+\family typewriter
+CygnusCloudProtocol
+\family default
+ manipulan objetos 
+\family typewriter
+Packet
+\family default
+, que también se utilizan en el código del cliente para enviar y recibir
+ información.
 \end_layout
 
 \begin_layout Standard
@@ -3522,7 +3548,13 @@ NetworkConnection
 \end_layout
 
 \begin_layout Standard
-Las relaciones existentes entre la clase
+La clase 
+\family typewriter
+NetworkConnection 
+\family default
+define una interfaz que permite manipular los recursos asignados a una conexión
+ de red a un elevado nivel de abstracción.
+ Las relaciones existentes entre la clase
 \family typewriter
  NetworkConnection
 \family default
@@ -3585,6 +3617,265 @@ NetworkConnection
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Para establecer una conexión, es necesario utilizar un objeto 
+\family typewriter
+Endpoint
+\family default
+.
+ Dependiendo del tipo de conexión (cliente o servidor) y del protocolo utilizado
+ (SSL o TCP versión 4), se utiliza una subclase distinta de 
+\family typewriter
+Endpoint
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, para realizar el envío de datos, el procesamiento de datos
+ entrantes, la detección de desconexiones y el cierre ordenado de la conexión
+ se utiliza un objeto 
+\family typewriter
+CygnusCloudProtocolFactory
+\family default
+ en cada extremo de la comunicación.
+\end_layout
+
+\begin_layout Standard
+Finalmente, cada conexión también tendrá asociado un hilo de procesamiento
+ de los paquetes recibidos, que es una instancia de 
+\family typewriter
+IncomingDataThread
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+La clase 
+\family typewriter
+NetworkManager
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+NetworkConnection
+\family default
+ permite manipular los recursos asignados a una determinada conexión de
+ red.
+ Pero para poder comunicar dos máquinas no basta con utilizar objetos 
+\family typewriter
+NetworkConnection
+\family default
+: también es necesario disponer de
+\end_layout
+
+\begin_layout Itemize
+un hilo de envío de paquetes, que envíe todos los paquetes salientes a sus
+ destinatarios a través de las conexiones.
+\end_layout
+
+\begin_layout Itemize
+un hilo que actualice periódicamente el estado de las conexiones, algo imprescin
+dible para establecerlas y detectar errores.
+\end_layout
+
+\begin_layout Itemize
+un hilo que ejecute el bucle reactor de 
+\emph on
+twisted
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+mecanismos que permitan construir paquetes que transportan datos del usuario
+ de forma correcta (para evitar la aparición de errores relacionados con
+ los tipos de paquete y sus prioridades)
+\end_layout
+
+\begin_layout Itemize
+mecanismos que detecten el uso incorrecto de la red, que facilitarán la
+ depuración del código del cliente.
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+NetworkManager
+\family default
+ proporciona una fachada que permite comunicar dos o más máquinas entre
+ sí a un nivel de abstracción razonablemente elevado.
+ Entre otras cosas, permite a los clientes:
+\end_layout
+
+\begin_layout Itemize
+crear servidores o conectarse a ellos.
+\end_layout
+
+\begin_layout Itemize
+crear paquetes ocultando la existencia de los tipos de paquete reservados
+ y sus prioridades.
+\end_layout
+
+\begin_layout Itemize
+intercambiar contenido arbitrario entre varias máquinas diferentes.
+\end_layout
+
+\begin_layout Itemize
+procesar los datos recibidos de acuerdo a las necesidades de la aplicación.
+ 
+\end_layout
+
+\begin_layout Standard
+Las relaciones entre la clase 
+\family typewriter
+NetworkManager
+\family default
+ y el resto de clases del paquete 
+\family typewriter
+Network
+\family default
+ aparece en el diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Relaciones-network-manager"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/DiagramaClasesNetworkManager.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Relaciones-network-manager"
+
+\end_inset
+
+Relaciones de la clase 
+\family typewriter
+NetworkManager
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El hilo de paquetes salientes, 
+\family typewriter
+OutgoingDataThread
+\family default
+, está compartido por todas las conexiones, y las utiliza para realizar
+ el envío de los paquetes.
+ Por su parte, el hilo de actualización del estado de las conexiones (
+\family typewriter
+ConnectionMonitoringThread
+\family default
+) llama periódicamente al método de actualización de estado de cada conexión.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el hilo 
+\family typewriter
+TwistedReactorThread 
+\family default
+no interactúa con ningún otro hilo.
+ Su único cometido es ejecutar el bucle reactor de 
+\emph on
+twisted
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Los objetos 
+\family typewriter
+NetworkManager
+\family default
+ también disponen de métodos para crear paquetes que transportarán los datos
+ de los usuarios, lo que nos permite garantizar que el encabezado de los
+ paquetes que circulan por la red es siempre correcto, evitando así la aparición
+ de comportamientos incorrectos provocados por una prioridad o un tipo de
+ paquete incorrectos.
+\end_layout
+
+\begin_layout Standard
+Finalmente, siempre que se produzcan errores, los objetos 
+\family typewriter
+NetworkManager 
+\family default
+lanzarán excepciones del tipo 
+\family typewriter
+NetworkException
+\family default
+.
+ Si se produce un error en una conexión, la excepción se lanzará al intentar
+ utilizarla.
+\end_layout
+
+\begin_layout Subsection
+El paquete 
+\family typewriter
+virtualMachineServer
+\end_layout
+
+\begin_layout Subsection
+El paquete 
+\family typewriter
+clusterServer
+\end_layout
+
+\begin_layout Subsection
+El paquete 
+\family typewriter
+webServer
+\end_layout
+
+\begin_layout Section
+Vista de procesos
+\end_layout
+
+\begin_layout Section
+Vista de despliegue
+\end_layout
+
+\begin_layout Section
+Vista de implementación
 \end_layout
 
 \end_body
