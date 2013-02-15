@@ -5,15 +5,16 @@ Main server packet handler definitions.
 @version: 1.0
 '''
 
-from utils1.enums import enum
+from ccutils.enums import enum
 from database.clusterServer.clusterServerDB import SERVER_STATE_T
 
 MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR", "QUERY_VM_SERVERS_STATUS",
-                            "VM_SERVERS_STATUS_DATA", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",
+                            "VM_SERVERS_STATUS_DATA", "QUERY_VM_DISTRIBUTION", "VM_DISTRIBUTION_DATA",
+                            "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",
                             "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
-                            "HALT")
+                            "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA")
 
-class MainServerPacketHandler(object):
+class ClusterServerPacketHandler(object):
     """
     These objects will read and write the main server's packages.
     """    
@@ -90,9 +91,28 @@ class MainServerPacketHandler(object):
         p.writeInt(sequenceSize)
         for row in data :
             p.writeString(row["ServerName"])
-            p.writeString(MainServerPacketHandler.__vm_server_status_to_string(row["ServerStatus"]))
+            p.writeString(ClusterServerPacketHandler.__vm_server_status_to_string(row["ServerStatus"]))
             p.writeString(row["ServerIP"])
             p.writeInt(int(row["ServerPort"]))            
+        return p
+    
+    def createVMDistributionPacket(self, segment, sequenceSize, data):
+        """
+        Creates a virtual machine distribution packet
+        Args:
+            segment: the packet's data sequence number
+            sequenceSize: the number of segments in the sequence
+            data: the packet's data
+        Returns:
+            a new virtual machine distribution packet containing the supplied data.
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.VM_DISTRIBUTION_DATA)
+        p.writeInt(segment)
+        p.writeInt(sequenceSize)
+        for row in data :
+            p.writeString(row["ServerName"])
+            p.writeInt(row["VMID"])
         return p
     
     def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, halt, unregister):
@@ -153,7 +173,7 @@ class MainServerPacketHandler(object):
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST)
         p.writeInt(vmID)
-        p.writeLong(userID)
+        p.writeInt(userID)
         return p
     
     def createVMBootFailurePacket(self, vmID, userID, reason):
@@ -169,7 +189,7 @@ class MainServerPacketHandler(object):
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE)
         p.writeInt(vmID)
-        p.writeLong(userID)
+        p.writeInt(userID)
         p.writeString(reason)
         return p
     
@@ -186,10 +206,23 @@ class MainServerPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA)
-        p.writeLong(userID)
+        p.writeInt(userID)
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(password)
+        return p
+    
+    def createActiveVMsDataPacket(self, packet):
+        """
+        Creates a VNC connection data packet
+        Args:
+            packet: a packet containing a VNC connection data segment.
+        Returns:
+            a vnc connection data packet with packet's data
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.ACTIVE_VM_DATA)
+        p.dumpData(packet)
         return p
     
     def createHaltPacket(self, haltServers):
@@ -252,6 +285,23 @@ class MainServerPacketHandler(object):
             while (p.hasMoreData()) :
                 data.append((p.readString(), p.readString(), p.readString(), p.readInt()))
             result["Data"] = data
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.VM_DISTRIBUTION_DATA) :
+            result["Segment"] = p.readInt()
+            result["SequenceSize"] = p.readInt()
+            data = []
+            while (p.hasMoreData()) :
+                data.append((p.readString(), p.readInt()))
+            result["Data"] = data
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.ACTIVE_VM_DATA) :
+            result["Segment"] = p.readInt()
+            result["SequenceSize"] = p.readInt()
+            result["VMServerIP"] = p.readString()
+            data = []
+            while (p.hasMoreData()) :
+                data.append((p.readInt(), p.readInt(), p.readString(), p.readInt(), p.readString()))
+            result["Data"] = data
                 
         elif (packet_type == MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
             result["ServerNameOrIPAddress"] = p.readString()
@@ -269,15 +319,15 @@ class MainServerPacketHandler(object):
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST):
             result["VMID"] = p.readInt()
-            result["UserID"] = p.readLong()
+            result["UserID"] = p.readInt()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE):
             result["VMID"] = p.readInt()
-            result["UserID"] = p.readLong()
+            result["UserID"] = p.readInt()
             result["ErrorMessage"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA):
-            result["UserID"] = p.readLong()
+            result["UserID"] = p.readInt()
             result["VNCServerIPAddress"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()

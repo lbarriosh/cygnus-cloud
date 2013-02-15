@@ -6,5 +6,6 @@
 {{pass}}
 {{if(request.args(0) == 'remove_servers'):}}
 <h1>{{=T('Administración de servidores')}}</h1>
-{{=form}}
+{{=form1}}
+{{=fomr2}}
 {{pass}}

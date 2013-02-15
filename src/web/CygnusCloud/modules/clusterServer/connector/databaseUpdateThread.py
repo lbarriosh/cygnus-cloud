@@ -5,7 +5,7 @@ Status database update thread definitions
 @version: 1.1
 '''
 
-from utils1.threads import BasicThread
+from ccutils.threads import BasicThread
 
 from time import sleep
 
@@ -40,7 +40,7 @@ class StatusDatabaseUpdateThread(BasicThread):
         BasicThread.__init__(self, "Status database update thread")
         self.__handler = updateHandler
         self.__sleepTime = sleepTime
-
+        
     def run(self):
         """
         Sends the update request packets when necessary.
@@ -52,3 +52,6 @@ class StatusDatabaseUpdateThread(BasicThread):
         while not self.finish() :
             self.__handler.sendUpdateRequestPackets()
             sleep(self.__sleepTime)
+        
+
+

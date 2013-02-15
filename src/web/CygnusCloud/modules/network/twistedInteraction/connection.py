@@ -5,9 +5,9 @@ Network connection definitions
 @version: 5.2
 '''
 
-from utils1.enums import enum
+from ccutils.enums import enum
 from threading import BoundedSemaphore
-from utils1.multithreadingCounter import MultithreadingCounter
+from ccutils.multithreadingCounter import MultithreadingCounter
 
 # Connection status enum type
 CONNECTION_STATUS = enum("OPENING", "READY_WAIT", "READY", "CLOSING", "CLOSED", "ERROR")

@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from configuration import DBConfigurator
 from gluon.tools import Auth
+from serverConnector.constants import rootPassword
+from serverConnector.singletonServerConnector import Singleton
 from clusterServer.connector.clusterServerConnector import ClusterServerConnector
 from clusterServer.connector.clusterServerConnector import GenericWebCallback
 import os
-#Contraseña root
-rootPassword = '170590ucm'
-#Ruta de los certificados
+
+
 print os.getcwd() 
-certificatesPath = "applications/CygnusCloud/static/Certificates"
+
 
 conf = DBConfigurator(rootPassword)
 conf.createDatabase('CygnusCloudUserDB')
@@ -60,6 +61,4 @@ userDB.define_table('VMByGroup',
 
 
 #Establecemos la conexión con el servidor principal
-#connector = ClusterServerConnector(GenericWebCallback())
-#connector.connectToDatabase(rootPassword,"SystemStatusDB", "websiteUser", "cygnuscloud", "updateUser", "cygnuscloud")
-#connector.connectToClusterServer(certificatesPath,'127.0.0.1' , 8000, 5)
+connector = Singleton.getInstance()

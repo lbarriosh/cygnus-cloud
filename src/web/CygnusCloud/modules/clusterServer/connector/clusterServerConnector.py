@@ -5,15 +5,13 @@ Main server connector definitions
 @version: 1.1
 '''
 
-
-from clusterServer.networking.packets import MainServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from clusterServer.connector.databaseUpdateThread import StatusDatabaseUpdateThread, UpdateHandler
+from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from database.utils.configuration import DBConfigurator
 from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
 from database.systemStatusDB.systemStatusDBWriter import SystemStatusDatabaseWriter
 from network.networkManager import NetworkManager, NetworkCallback
 from time import sleep
-import os
 
 class _ClusterServerConnectorCallback(NetworkCallback):
     """
@@ -121,12 +119,14 @@ class ClusterServerConnector(object):
         self.__stopped = False
         self.__callback = callback
     
-    def connectToDatabase(self, rootsPassword, databaseName, websiteUser, websiteUserPassword, updateUser, updateUserPassword):
+    def connectToDatabase(self, rootsPassword, databaseName, sqlFilePath, websiteUser, websiteUserPassword, 
+                          updateUser, updateUserPassword):
         """
         Establishes a connection with the system status database.
         Args:
             rootsPassword: MySQL root's password
             databaseName: the status database name
+            sqlFilePath: the database schema definition SQL file path
             websiteUser: the website user's name. This user will just have SELECT privileges on the status database.
             websiteUserPassword: the website user's password
             updateUser: the update user's name. This user will have ALL privileges on the status database.
@@ -135,9 +135,8 @@ class ClusterServerConnector(object):
         # Create the status database
         self.__rootsPassword = rootsPassword
         self.__databaseName = databaseName
-
         configurator = DBConfigurator(rootsPassword)
-        configurator.runSQLScript(databaseName,"applications/CygnusCloud/modules/database/SystemStatusDB.sql")
+        configurator.runSQLScript(databaseName, sqlFilePath)
         # Register the website and the update users
         configurator.addUser(websiteUser, websiteUserPassword, databaseName, False)
         configurator.addUser(updateUser, updateUserPassword, databaseName, True)
@@ -148,18 +147,20 @@ class ClusterServerConnector(object):
         self.__reader.connect()
         self.__writer.connect()
         
-    def connectToClusterServer(self, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval):
+    def connectToClusterServer(self, certificatePath, createReactorThread, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval):
         """
         Establishes a connection with the cluster server.
         Args:
             certificatePath: the server.crt and server.key directory path.
+            createReactorThread: if true, a reactor thread will be created. Otherwise, somebody else will have to
+            create it.
             clusterServerIP: the cluster server's IPv4 address
             clusterServerListenningPort: the cluster server's listenning port.
             statusDBUpdateInterval: the status database update interval (in seconds)
         Returns:
             Nothing
         """
-        self.__manager = NetworkManager(certificatePath)
+        self.__manager = NetworkManager(certificatePath, createReactorThread)
         self.__manager.startNetworkService()
         callback = _ClusterServerConnectorCallback(self)
         # Connect to the main server
@@ -169,7 +170,7 @@ class ClusterServerConnector(object):
         while (not self.__manager.isConnectionReady(clusterServerIP, clusterServerListenningPort)) :
             sleep(0.1)
         # Create the packet handler
-        self.__pHandler = MainServerPacketHandler(self.__manager)
+        self.__pHandler = ClusterServerPacketHandler(self.__manager)
         # Create the update thread
         self.__updateRequestThread = StatusDatabaseUpdateThread(_ClusterServerConnectorUpdateHandler(self), statusDBUpdateInterval)
         # Start it
@@ -208,9 +209,19 @@ class ClusterServerConnector(object):
         Args:
             None
         Returns:
-            A dictionary containing all the virtual machine servers' data.
+            A list of dictionaries containing all the virtual machine servers' data.
         """
         return self.__reader.getVMServersData()
+    
+    def getVMDistributionData(self):
+        """
+        Returns the virtual machines' distribution data
+        Args:
+            None
+        Returns:
+            A list of dictionaries containing the virtual machines' distribution data 
+        """
+        return self.__reader.getVMDistributionData()
     
     def registerVMServer(self, vmServerIP, vmServerPort, vmServerName):
         """
@@ -260,6 +271,16 @@ class ClusterServerConnector(object):
         p = self.__pHandler.createVMServerUnregistrationOrShutdownPacket(vmServerNameOrIP, halt, True)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         
+    def getActiveVMsData(self):
+        """
+        Returns the active virtual machines data
+        Args:
+            None
+        Returns:
+            A list of dictionaries containing all the active virtual machines' data.
+        """
+        return self.__reader.getActiveVMsData()
+        
     def bootUpVirtualMachine(self, vmID, userID):
         """
         Boots up a virtual machine.
@@ -285,6 +306,10 @@ class ClusterServerConnector(object):
         data = self.__pHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
             self.__writer.processVMServerSegment(data["Segment"], data["SequenceSize"], data["Data"])
+        elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
+            self.__writer.processVMDistributionSegment(data["Segment"], data["SequenceSize"], data["Data"])
+        elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
+            self.__writer.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])
         elif (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
             self.__callback.handleVMServerBootUpError(data["ServerNameOrIPAddress"], data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
@@ -305,6 +330,30 @@ class ClusterServerConnector(object):
         """
         if (self.__stopped) :
             return
-        # Send some update request packets to the main server
+        # Send some update request packets to the cluster server
         p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
+        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)        
+        p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
+        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        
+if __name__ == "__main__" :
+    connector = ClusterServerConnector(GenericWebCallback())
+    connector.connectToDatabase("","SystemStatusDB", "../../database/SystemStatusDB.sql", "websiteUser", 
+                                "cygnuscloud", "updateUser", "cygnuscloud")
+    connector.connectToClusterServer("/home/luis/Certificates", True, "127.0.0.1", 9000, 5)
+    sleep(10)
+    print connector.getVMServersData()
+    print connector.getVMDistributionData()
+    print connector.getActiveVMsData()
+    connector.bootUpVMServer("Server1")
+    sleep(10)
+    print connector.getVMServersData()
+    print connector.getActiveVMsData()
+    connector.bootUpVirtualMachine(1, 1)
+    sleep(10)
+    connector.shutdownVMServer("Server1", True)
+    sleep(10)
+    print connector.getVMServersData()
+    connector.disconnectFromClusterServer(True)

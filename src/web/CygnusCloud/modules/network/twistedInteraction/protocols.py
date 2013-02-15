@@ -7,7 +7,7 @@ Protocol and protocol factory implementations.
 
 from twisted.internet.protocol import Protocol, Factory
 from network.packets.packet import _Packet
-from utils1.multithreadingList import GenericThreadSafeList
+from ccutils.multithreadingList import GenericThreadSafeList
 
 class _CygnusCloudProtocol(Protocol):
     """
@@ -18,10 +18,10 @@ class _CygnusCloudProtocol(Protocol):
         Initializes the protocol with the factory that created it.
         Args:
             factory: the protocol factory that created this protocol instance
-        """
+        """       
         self.__factory = factory
         self.__disconnected = False
-
+    
     def dataReceived(self, data):
         """
         Tells the protocol factory to process the received data.
@@ -34,7 +34,7 @@ class _CygnusCloudProtocol(Protocol):
                 is corrupt.
         """
         self.__factory.onPacketReceived(data)
-
+    
     def connectionMade(self):
         """
         This method is called when a connection is established.
@@ -44,7 +44,7 @@ class _CygnusCloudProtocol(Protocol):
             Nothing
         """
         pass
-
+    
     def connectionLost(self, reason):
         """
         This method is called when a connection is lost
@@ -55,7 +55,7 @@ class _CygnusCloudProtocol(Protocol):
         """
         self.__disconnected = True
         self.__factory.removeConnection(self)
-
+    
     def sendPacket(self, packet):
         """
         Sends the a packet to its destination.
@@ -66,7 +66,7 @@ class _CygnusCloudProtocol(Protocol):
         """
         if (not self.__disconnected) :
             self.transport.write(packet._serialize())
-
+        
     def disconnect(self):
         """
         Closes a CLIENT connection.
@@ -77,13 +77,13 @@ class _CygnusCloudProtocol(Protocol):
         """
         self.__disconnected = True
         self.transport.loseConnection()
-
+        
 class _CygnusCloudProtocolFactory(Factory):
     """
     Protocol factory. These objects are used to create protocol instances
     within the Twisted Framework, and store all the data shared by multiple
     protocol instances.
-    """
+    """    
     def __init__(self, queue):
         """
         Initializes the protocol factory
@@ -91,21 +91,21 @@ class _CygnusCloudProtocolFactory(Factory):
             queue: the incoming data queue to use by all protocol instances
         """
         self.protocol = _CygnusCloudProtocol
-        self.__queue = queue
+        self.__queue = queue        
         self.__connections = GenericThreadSafeList()
-
+    
     def buildProtocol(self, addr):
         """
         Builds a protocol, stores a pointer to it and finally returns it.
         This method is called inside Twisted code.
         """
-        instance = _CygnusCloudProtocol(self)
+        instance = _CygnusCloudProtocol(self)        
         self.__connections.append(instance)
-        return instance
-
+        return instance   
+        
     def removeConnection(self, connection):
         self.__connections.remove(connection)
-
+        
     def isDisconnected(self):
         return self.__connections.getSize() == 0
 
@@ -121,14 +121,14 @@ class _CygnusCloudProtocolFactory(Factory):
         while (i < self.__connections.getSize()) :
             self.__connections[i].sendPacket(packet)
             i += 1
-
+            
     def disconnect(self):
         i = 0
         while i < self.__connections.getSize() :
             p = self.__connections[i]
             p.disconnect()
             i += 1
-
+    
     def onPacketReceived(self, p):
         """
         Returns the incoming packages queue
