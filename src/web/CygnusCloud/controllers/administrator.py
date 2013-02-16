@@ -56,7 +56,7 @@ def runVM():
                 listSubjects = [] 
                 for l in listSubjectsAux :                  
                     if(form1.vars.name != ""):
-                            if (form1.vars.name in l.Subjects.name):                    
+                            if (form1.vars.name.lower() in l.Subjects.name.lower()):                    
                                 listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
                     else:
                             listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
@@ -78,9 +78,50 @@ def runVM():
 @auth.requires_membership('Administrator')
 def servers():
     createAdressBar()
-    if(request.args(0) == 'add_remove_servers'):
-        form = FORM(T('Servidores'),SELECT('server1','server 2'))
+    if(request.args(0) == 'add_servers'):
+        #Creamos el primer formulario
+        form = FORM(HR(),H2(T('Añadir un nuevo servidor')),DIV( T('Nombre: '),BR(),INPUT(_name = 'name')),
+                DIV( T('Dirección IP: '),BR(),INPUT(_name ='ipDir')),
+                DIV( T('Puerto: '),BR(),INPUT(_name ='port')),
+                HR(),CENTER(INPUT(_type='submit',_name = 'add' ,_value=T('Añadir Servidor'))))                
+        
+        if form.accepts(request.vars,keepvalues=True) and form.vars.add:
+            if(len(form.vars.name) > 0) and (len(form.vars.ipDir) > 0) and (len(form.vars.port) > 0):
+                #Registramos el servidor
+                connector.registerVMServer(form.vars.ipDir,form.vars.port,form.vars.name)        
+            #redireccinamos 
+            redirect(URL(c='administrator',f='users',args = ['add'],vars = dict(usersFind=request.vars.usersFind) ))
+        #Devolvemos el formulario             
         return dict(form = form)
+    elif(request.args(0) == 'remove_servers'): 
+         
+        infoServer = request.vars.info or ['No info','No info','No info']
+        print infoServer 
+        #servers = connector.getVMServersData()
+        #form1 = FORM(T('Servidores'),SELECT(_name = 'server',*[OPTION(T(str(s.VMServerName)),_value = s.VMServerName,_selected="selected") 
+        #        for s in servers],_onclick = "ajax('changeOption', ['server'], 'newInfo')"))
+        i = 0
+        select = SELECT(_name = 'server')
+        for s in connector.getVMServersData():
+            select.append(OPTION(T(str(s["VMServerName"])),_value = i ,_selected="selected"))
+            i = i + 1    
+        form1 = FORM(H4(T('Servidores')),select,BR(),INPUT(_type='submit',_name = 'search' ,_value=T('Buscar servidor')))
+        form2 = FORM(HR(),H2(T('Información del servidor')),DIV( T('Nombre: '),BR(),LABEL(infoServer[0],_name = 'name')),
+                DIV( T('Dirección IP: '),BR(),LABEL(infoServer[1])),
+                DIV( T('Puerto: '),BR(),LABEL(infoServer[2])),
+                HR(),CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor')))) 
+                
+        if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:  
+            sInfo = connector.getVMServersData()[form1.vars.server]
+            redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [serversInfo["VMServerName"],\
+            serversInfo["VMServerIP"],serversInfo["VMServerListenningPort"]]) ))
+            
+        if form2.accepts(request.vars,keepvalues=True) and form2.vars.remove: 
+             #Damos de baja el servidor
+             connector.unregisterVMServer(form2.var.name,False)
+        
+        return dict(form1 = form1,form2 = form2)
+
 
       
 @auth.requires_membership('Administrator')
@@ -292,8 +333,9 @@ def subjects():
 def createAdressBar():
  
     response.menu=[[SPAN(T('Arrancar máquina'), _class='highlighted'), False,URL('runVM'),[]],
-                    [SPAN(T('Administrar servidores'), _class='highlighted'), False, URL(f = 'servers',args = ['add_remove_servers']),[
-                        (T('Añadir/Eliminar'),False,URL(f = 'servers',args = ['add_remove_servers']))]],
+                    [SPAN(T('Administrar servidores'), _class='highlighted'), False, URL(f = 'servers',args = ['add_servers']),[
+                        (T('Añadir servidor'),False,URL(f = 'servers',args = ['add_servers'])),
+                        (T('Eliminar servidor'),False,URL(f = 'servers',args = ['remove_servers']))]],
                     [SPAN(T('Administrar usuarios'), _class='highlighted'), False, URL(f = 'initUsers',args = ['remove']),[
                         (T('Eliminar'),False,URL(f = 'users',args = ['remove'])),
                         (T('Añadir'),False,URL(f = 'users',args = ['add'])),
@@ -325,7 +367,7 @@ def createUserSearchForm(state):
         listUsersAux = [] 
         for row in rows :                  
             if(form1.vars.name != "") and (form1.vars.name != None):
-                    if (form1.vars.name in row.email):                    
+                    if (form1.vars.name.lower() in row.email.lower()):                    
                         listUsersAux.append(row.email)
             else:
                     listUsersAux.append(row.email)
@@ -370,7 +412,7 @@ def createSubjectsSearchForm(state):
         for row in rows :
             add = True                  
             if(form1.vars.name != ""):
-                    add = form1.vars.name in userDB(row.cod == userDB.Subjects.code).select()[0].name 
+                    add = form1.vars.name.lower() in userDB(row.cod == userDB.Subjects.code).select()[0].name.lower() 
             if(form1.vars.cod != "") and (add):
                     add = form1.vars.cod in str(row.cod)                    
             if(add):
@@ -415,3 +457,8 @@ def selectRadioButton():
          (userDB.VMByGroup.curseGroup == eval(request.vars.selection)[1]) & \
         (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.description)[eval(request.vars.selection)[2]].description
     return descriptionAct
+    
+def changeOption():
+    #Extraemos la descripcion actual
+    print 'Entra'
+    return ['Server1','Ip1','Port1']

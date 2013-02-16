@@ -3,7 +3,7 @@
 Web status database reader definitions
 
 @author: Luis Barrios Hernández
-@version: 1.0
+@version: 2.0
 '''
 
 from database.utils.connector import BasicDatabaseConnector
@@ -11,18 +11,7 @@ from database.utils.connector import BasicDatabaseConnector
 class SystemStatusDatabaseReader(BasicDatabaseConnector):
     def __init__(self, sqlUser, sqlPassword, databaseName):
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
-        
-    def getImages(self):
-        command = "SELECT * FROM Image;"
-        results = self._executeQuery(command, False)
-        retrievedData = []
-        for row in results :
-            d = dict()
-            d["ImageName"] = row[0]
-            d["ImageDescription"] = row[1]
-            retrievedData.append(d)
-        return retrievedData
-            
+                  
     def getVMServersData(self):
         command = "SELECT * FROM VirtualMachineServer;"
         results = self._executeQuery(command, False)
@@ -35,3 +24,29 @@ class SystemStatusDatabaseReader(BasicDatabaseConnector):
             d["VMServerListenningPort"] = row[3]
             retrievedData.append(d)
         return retrievedData
+    
+    def getVMDistributionData(self):
+        command = "SELECT * FROM VirtualMachineDistribution;"
+        results = self._executeQuery(command, False)
+        retrievedData = []
+        for row in results :
+            d = dict()
+            d["VMServerName"] = row[0]
+            d["VMID"] = row[1]
+            retrievedData.append(d)
+        return retrievedData 
+    
+    def getActiveVMsData(self):
+        command = "SELECT * FROM ActiveVirtualMachines;"
+        results = self._executeQuery(command, False)
+        retrievedData = []
+        for row in results :
+            d = dict()
+            d["VMServerName"] = row[0]
+            d["UserID"] = row[1]
+            d["VMID"] = row[2]
+            d["VMName"] = row[3]
+            d["VNCPort"] = row[4]
+            d["VNCPassword"] = row[5]
+            retrievedData.append(d)
+        return retrievedData 

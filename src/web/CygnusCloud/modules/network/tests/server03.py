@@ -5,7 +5,7 @@ A simple server test
 @version: 1.0
 '''
 
-from network.manager import NetworkManager
+from network.manager.networkManager import NetworkManager
 from network.tests.dummyCallback import DummyCallback
 from time import sleep
 

@@ -8,7 +8,7 @@ def login():
     #Iniciamos los valores, si procede
     initValues() 
     #iniciamos el arranque con el mainserver
-    initMainServerConnection()
+    #initMainServerConnection()
     #Creamos la barra de direcciones
     createAdressBar()
     #Gestionamos los usuarios ya logueados

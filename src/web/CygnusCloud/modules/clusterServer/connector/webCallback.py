@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+# coding: utf8
+from gluon import *
+from  mainServer.connector.mainServerConnector import GenericWebCallback
+
+class WebCallback(GenericWebCallback): 
+    def handleVMServerBootUpError(self, vmServerNameOrIP, errorMessage) :
+        print T('VM Server bootup error ') + vmServerNameOrIP + " " + errorMessage
+    def handleVMServerRegistrationError(self, vmServerNameOrIP, errorMessage) :
+        print T('VM Server registration error ') + vmServerNameOrIP + " " + errorMessage
+    def handleVMBootFailure(self, vmName, userID, errorMessage) :
+        print T('VM Boot failure ') + vmName + " " + str(userID) + " " + errorMessage
+    def handleVMConnectionData(self, userID, vncSrvrIP, vncSrvrPort, vncSrvrPassword) :
+        print T('VM Connection data ') + str(userID) + " " + vncSrvrIP + " " + str(vncSrvrPort) + " " + vncSrvrPassword

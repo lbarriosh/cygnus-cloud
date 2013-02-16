@@ -1,0 +1,18 @@
+{{extend 'layout.html'}}
+
+Servidores: 
+<select>
+    {{for servidor in servidores:}}
+    <option value={{=servidor['id']}}>{{=servidor['nombre']}}</option>
+    {{pass}}
+</select>
+
+{{for servidor in servidores:}}
+<div class="serverInfo">
+<span>{{=T("Nombre")}}: <input value={{=servidor['nombre']}} /> </span>
+<span>{{=T("IP")}}: <input value={{=servidor['IP']}} /> </span>
+<span>{{=T("Puerto")}}: <input value={{=servidor['puerto']}} /> </span>
+</div>
+{{pass}}
+
+<input type="submit" value={{=T("Añadir servidor")}} /><input type="submit" value={{=T("Eliminar")}} />

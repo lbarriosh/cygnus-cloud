@@ -4,8 +4,8 @@ Data processing threads definitions.
 @author: Luis Barrios Hernández
 @version: 1.0
 '''
-from utils1.threads import QueueProcessingThread
-from utils1.multithreadingCounter import MultithreadingCounter
+from ccutils.threads import QueueProcessingThread
+from ccutils.multithreadingCounter import MultithreadingCounter
 
 class _IncomingDataThread(QueueProcessingThread):
     """
@@ -20,7 +20,7 @@ class _IncomingDataThread(QueueProcessingThread):
             callbackObject: The callback object that will process
             all the received packets.
         """
-        QueueProcessingThread.__init__(self, queue)   
+        QueueProcessingThread.__init__(self, "Incoming data processing thread", queue)   
         self.__callbackObject = callbackObject     
         self.__referenceCounter = MultithreadingCounter()
         
@@ -33,7 +33,8 @@ class _IncomingDataThread(QueueProcessingThread):
             Nothing
         """
         self.__referenceCounter.increment()
-        QueueProcessingThread.start(self)
+        if (self.__referenceCounter.read() == 1) :
+            QueueProcessingThread.start(self)
         
     def stop(self, join):
         """
@@ -64,6 +65,10 @@ class _IncomingDataThread(QueueProcessingThread):
         self.__callbackObject.processPacket(e)
         
 class _OutgoingDataThread(QueueProcessingThread):
+    
+    def __init__(self, queue):
+        QueueProcessingThread.__init__(self, "Outgoing data processing thread", queue)
+        
     """
     Outgoing packages thread class.
     """

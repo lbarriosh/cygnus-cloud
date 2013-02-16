@@ -4,7 +4,7 @@
     Este test se ejecuta junto al módulo clientConversational y requiere
      del módulo ConvCallback
 '''
-from network.manager import NetworkManager
+from network.manager.networkManager import NetworkManager
 from network.tests.ConvCallback import ConvCallback
 from time import sleep
 
@@ -29,11 +29,9 @@ if __name__ == "__main__" :
             print(">>")
             ans = raw_input()
             p.writeString(ans)
-            while not networkManager.isConnectionReady(8080):
+            while not networkManager.isConnectionReady('', 8080):
                 sleep(0.1)
             #enviamos el mensaje        
-            networkManager.sendPacket(8080, p)
-
-        
+            networkManager.sendPacket('', 8080, p)        
     sleep(10)
     networkManager.stopNetworkService()

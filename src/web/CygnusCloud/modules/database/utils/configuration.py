@@ -75,6 +75,7 @@ class DBConfigurator(object):
             db = MySQLdb.connect(host='localhost',user=username,passwd=password)    
         cursor=db.cursor()
         
+        fileContent = ''
         fp = open(sqlFilePath)
         for line in fp :
             fileContent += line
