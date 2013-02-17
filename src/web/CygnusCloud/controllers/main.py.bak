@@ -1,7 +1,6 @@
 # coding: utf8
 # Método encargado de la página de inicio de sesión
-from   mainServer.connector.mainServerConnector import MainServerConnector
-from  mainServer.connector.webCallback import WebCallback
+import init
 
 
 def login():

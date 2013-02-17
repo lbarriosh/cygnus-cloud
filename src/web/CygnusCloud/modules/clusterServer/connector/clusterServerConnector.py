@@ -337,23 +337,3 @@ class ClusterServerConnector(object):
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
-        
-if __name__ == "__main__" :
-    connector = ClusterServerConnector(GenericWebCallback())
-    connector.connectToDatabase("","SystemStatusDB", "../../database/SystemStatusDB.sql", "websiteUser", 
-                                "cygnuscloud", "updateUser", "cygnuscloud")
-    connector.connectToClusterServer("/home/luis/Certificates", True, "127.0.0.1", 9000, 5)
-    sleep(10)
-    print connector.getVMServersData()
-    print connector.getVMDistributionData()
-    print connector.getActiveVMsData()
-    connector.bootUpVMServer("Server1")
-    sleep(10)
-    print connector.getVMServersData()
-    print connector.getActiveVMsData()
-    connector.bootUpVirtualMachine(1, 1)
-    sleep(10)
-    connector.shutdownVMServer("Server1", True)
-    sleep(10)
-    print connector.getVMServersData()
-    connector.disconnectFromClusterServer(True)

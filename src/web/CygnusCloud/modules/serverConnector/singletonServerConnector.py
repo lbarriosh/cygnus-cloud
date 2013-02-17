@@ -10,8 +10,9 @@ class Singleton(object):
 	@staticmethod
 	def getInstance():
 		if (Singleton.staticConnector == None) :
+			print "Entra en el singleton"
 			# El atributo estático no está inicializado => lo inicializamos
 			staticConnector = ClusterServerConnector(GenericWebCallback())
 			staticConnector.connectToDatabase(rootPassword,dbStatusName,dbStatusPath, webUserName, webUserPass,updateUserName, updateUserPass)
-			staticConnector.connectToClusterServer(certificatesPath,False,serverIp ,serverPort, statusInterval)
+			staticConnector.connectToClusterServer(certificatesPath,True,serverIp ,serverPort, statusInterval)
 		return staticConnector

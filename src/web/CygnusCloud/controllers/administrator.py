@@ -88,7 +88,7 @@ def servers():
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
             if(len(form.vars.name) > 0) and (len(form.vars.ipDir) > 0) and (len(form.vars.port) > 0):
                 #Registramos el servidor
-                connector.registerVMServer(form.vars.ipDir,form.vars.port,form.vars.name)        
+               request.vars.connector.registerVMServer(form.vars.ipDir,form.vars.port,form.vars.name)        
             #redireccinamos 
             redirect(URL(c='administrator',f='users',args = ['add'],vars = dict(usersFind=request.vars.usersFind) ))
         #Devolvemos el formulario             

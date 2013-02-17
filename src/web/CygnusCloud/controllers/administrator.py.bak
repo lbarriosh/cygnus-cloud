@@ -88,7 +88,7 @@ def servers():
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
             if(len(form.vars.name) > 0) and (len(form.vars.ipDir) > 0) and (len(form.vars.port) > 0):
                 #Registramos el servidor
-                connector.registerVMServer(form.vars.ipDir,form.vars.port,form.vars.name)        
+                request.vars.connector.registerVMServer(form.vars.ipDir,form.vars.port,form.vars.name)        
             #redireccinamos 
             redirect(URL(c='administrator',f='users',args = ['add'],vars = dict(usersFind=request.vars.usersFind) ))
         #Devolvemos el formulario             
@@ -102,7 +102,7 @@ def servers():
         #        for s in servers],_onclick = "ajax('changeOption', ['server'], 'newInfo')"))
         i = 0
         select = SELECT(_name = 'server')
-        for s in [connector.getVMServersData()]:
+        for s in request.vars.connector.getVMServersData():
             select.append(OPTION(T(str(s["VMServerName"])),_value = i ,_selected="selected"))
             i = i + 1    
         form1 = FORM(H4(T('Servidores')),select,BR(),INPUT(_type='submit',_name = 'search' ,_value=T('Buscar servidor')))

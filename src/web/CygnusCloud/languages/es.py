@@ -70,6 +70,7 @@
 'Añadir asignatura': 'Añadir asignatura',
 'Añadir asignaturas': 'Añadir asignaturas',
 'Añadir máquina virtual': 'Añadir máquina virtual',
+'Añadir Servidor': 'Añadir Servidor',
 'Añadir servidor': 'Añadir servidor',
 'Añadir un nueva asignatura': 'Añadir un nueva asignatura',
 'Añadir un nuevo servidor': 'Añadir un nuevo servidor',

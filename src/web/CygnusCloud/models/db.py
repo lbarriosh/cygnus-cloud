@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from gluon.custom_import import track_changes;
+track_changes(False)
+
 from configuration import DBConfigurator
 from gluon.tools import Auth
 from serverConnector.constants import rootPassword
@@ -6,9 +9,10 @@ from serverConnector.singletonServerConnector import Singleton
 from clusterServer.connector.clusterServerConnector import ClusterServerConnector
 from clusterServer.connector.clusterServerConnector import GenericWebCallback
 import os
+import init
 
+print os.getcwd()
 
-print os.getcwd() 
 
 
 conf = DBConfigurator(rootPassword)
