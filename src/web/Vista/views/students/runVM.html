@@ -1,0 +1,17 @@
+{{extend 'layout.html'}}
+{{for asignatura in asignaturas:}}
+    {{=H1(asignatura['nombre'])}}
+    <table>
+    {{for mv in asignatura['mv']:}}
+        <tr>
+            <td>{{=INPUT(_type="radio", _name="MV", value=mv['id'])}}</td>
+            <td class="VMname">{{=mv['nombre']}}</td>
+        </tr>
+        <tr>
+        <td></td><td class="VMdescription">{{=mv['descripcion']}}</td>
+        </tr>
+        {{pass}}
+    </table>
+{{pass}}
+
+<input type="submit" value={{=T("Arrancar")}} />
