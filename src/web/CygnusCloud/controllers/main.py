@@ -1,4 +1,5 @@
 # coding: utf8
+from gluon import *
 # Método encargado de la página de inicio de sesión
 
 

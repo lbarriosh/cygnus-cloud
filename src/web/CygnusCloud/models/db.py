@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from gluon.custom_import import track_changes;
-track_changes(False)
+from gluon import *
+
 
 from configuration import DBConfigurator
 from gluon.tools import Auth
@@ -9,7 +9,6 @@ from serverConnector.singletonServerConnector import Singleton
 from clusterServer.connector.clusterServerConnector import ClusterServerConnector
 from clusterServer.connector.clusterServerConnector import GenericWebCallback
 import os
-import init
 
 print os.getcwd()
 
@@ -62,7 +61,7 @@ userDB.define_table('VMByGroup',
    Field('cod','integer','reference UserGroup'),
    Field('curseGroup',length=1 ),
    primarykey=['cod','curseGroup','VMId'],migrate= True)
-
-
+   
+   
 #Establecemos la conexión con el servidor principal
 connector = Singleton.getInstance()

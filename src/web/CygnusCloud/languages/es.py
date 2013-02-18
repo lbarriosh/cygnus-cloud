@@ -352,6 +352,7 @@
 'save': 'guardar',
 'Saved file hash:': 'Hash del archivo guardado:',
 'Semantic': 'Semántica',
+'Server1': 'Server1',
 'Services': 'Servicios',
 'Servidores': 'Servidores',
 'session expired': 'sesión expirada',

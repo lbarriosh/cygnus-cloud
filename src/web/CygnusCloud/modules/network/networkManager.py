@@ -50,6 +50,7 @@ class NetworkManager():
             createReactorThread: if True, a dedicated reactor thread will be created. If false,
             this thread won't be created.
         """
+        createReactorThread = not reactor.running
         self.__connectionPool = GenericThreadSafeDictionary()
         self.__outgoingDataQueue = GenericThreadSafePriorityQueue()
         if (createReactorThread) :

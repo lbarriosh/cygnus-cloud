@@ -1,4 +1,5 @@
 # coding: utf8
+from gluon import *
 
 #Método encargado de manejar la página de arranque de máquinas para el usuario
 @auth.requires_membership('Student')

@@ -1,6 +1,6 @@
 # coding: utf8
 # Método encargado de la página de inicio de sesión
-import init
+
 
 
 def login():
