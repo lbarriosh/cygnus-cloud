@@ -126,8 +126,11 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             servers will be shut down. If false, the virtual machine servers will wait until there are no
             active virtual machines, and then they'll be shut down.
         """
-        # TODO: shut down all the virtual machine servers
-        self.__finished = True                
+        self.__finished = True              
+        vmServersConnectionData = self.__dbConnector.getActiveVMServersConnectionData()
+        if (vmServersConnectionData != None) :
+            for connectionData in vmServersConnectionData :
+                self.__unregisterOrShutdownVMServer(connectionData['ServerIP'], haltVMServers, False)  
                 
     def __registerVMServer(self, data):
         """

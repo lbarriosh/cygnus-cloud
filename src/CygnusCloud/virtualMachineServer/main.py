@@ -2,7 +2,8 @@
 '''
 Punto de entrada del servidor de máquinas virtuales
 
-@author: luis
+@author: Luis Barrios Hernández
+@version: 1.0
 '''
 
 from database.utils.configuration import DBConfigurator

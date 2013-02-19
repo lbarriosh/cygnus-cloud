@@ -78,9 +78,9 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         d["ServerStatus"] = status
         d["ServerIP"] = ip
         d["ServerPort"] = port
-        return d        
+        return d         
         
-    def getVMServerStatistics(self, serverId):
+    def getVMServerStatistics(self, serverId) :
         '''
             Devuelve las estadísticas de un servidor de máquinas virtuales
             Argumentos:
