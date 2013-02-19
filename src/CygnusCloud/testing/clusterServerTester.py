@@ -117,8 +117,7 @@ def displayHelpMessage():
     print("\tunregisterVMServer <Name or IP> <Halt?>: unregisters a virtual machine server")
     print("\tshutdownVMServer <Name or IP> <Halt?>: shuts down a virtual machine server")
     print("\tbootUpVMServer <Name or IP>: boots up a virtual machine server")
-    print("\tobtainAvailableImagesData: shows available images' data")
-    print("\tbootUpVM <Name> <UserID>: boots up a virtual machine")
+    print("\tbootUpVM <MachineID> <UserID>: boots up a virtual machine")
     print("\tobtainActiveVMsData: obtains the active virtual machines' data")
     print("\tquit: closes this application")
     

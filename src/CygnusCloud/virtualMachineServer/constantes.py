@@ -8,7 +8,7 @@ Created on 14/01/2013
 mysqlRootsPassword = ""
 databaseName = "VMServerDB"
 # Cuidado con esto: si está mal puesta, cascará al arrancar
-vncNetworkInterface = "eth0"
+vncNetworkInterface = "lo"
 databaseUserName = "cygnuscloud"
 databasePassword = "cygnuscloud"
 listenningPort = 15800
