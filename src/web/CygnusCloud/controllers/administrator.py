@@ -1,5 +1,5 @@
 # coding: utf8
-
+from time import sleep
 
 @auth.requires_membership('Administrator')
 def runVM():
@@ -78,6 +78,9 @@ def runVM():
 @auth.requires_membership('Administrator')
 def servers():
     createAdressBar()
+    #Establecemos la conexión con el servidor principal
+    connector = Singleton.getInstance()
+    
     if(request.args(0) == 'add_servers'):
         #Creamos el primer formulario
         form = FORM(HR(),H2(T('Añadir un nuevo servidor')),DIV( T('Nombre: '),BR(),INPUT(_name = 'name')),
@@ -87,10 +90,13 @@ def servers():
         
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
             if(len(form.vars.name) > 0) and (len(form.vars.ipDir) > 0) and (len(form.vars.port) > 0):
-                #Registramos el servidor
-                connector.registerVMServer(form.vars.ipDir,form.vars.port,form.vars.name)        
+                #Registramos el servido
+                try:
+                       connector.registerVMServer(form.valevars.ipDir,int(form.vars.port),form.vars.name)
+                except ValueError:
+                       response.flash = T('E puerto debe ser un entero.')
             #redireccinamos 
-            redirect(URL(c='administrator',f='users',args = ['add'],vars = dict(usersFind=request.vars.usersFind) ))
+            redirect(URL(c='administrator',f='servers',args = ['add_servers'] ))
         #Devolvemos el formulario             
         return dict(form = form)
     elif(request.args(0) == 'remove_servers'): 
@@ -102,7 +108,10 @@ def servers():
         #        for s in servers],_onclick = "ajax('changeOption', ['server'], 'newInfo')"))
         i = 0
         select = SELECT(_name = 'server')
-        for s in connector.getVMServersData():
+        sleep(10)
+        servers = connector.getVMServersData()
+        print "Servers: " + str(servers)
+        for s in servers:
             select.append(OPTION(T(str(s["VMServerName"])),_value = i ,_selected="selected"))
             i = i + 1    
         form1 = FORM(H4(T('Servidores')),select,BR(),INPUT(_type='submit',_name = 'search' ,_value=T('Buscar servidor')))

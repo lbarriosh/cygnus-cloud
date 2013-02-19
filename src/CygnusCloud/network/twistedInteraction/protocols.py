@@ -91,7 +91,7 @@ class _CygnusCloudProtocolFactory(Factory):
             queue: the incoming data queue to use by all protocol instances
         """
         self.protocol = _CygnusCloudProtocol
-        self.__queue = queue        
+        self._queue = queue        
         self.__connections = GenericThreadSafeList()
     
     def buildProtocol(self, addr):
@@ -138,4 +138,4 @@ class _CygnusCloudProtocolFactory(Factory):
             The incoming packages queue
         """
         p = _Packet._deserialize(p)
-        self.__queue.queue(p.getPriority(), p)
+        self._queue.queue(p.getPriority(), p)

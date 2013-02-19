@@ -2,7 +2,7 @@
 '''
 Main server reactor definitions.
 @author: Luis Barrios Hernández
-@version: 1.1
+@version: 2.0
 '''
 
 from clusterServer.networking.callbacks import VMServerCallback, WebCallback
@@ -13,6 +13,7 @@ from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SE
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 from time import sleep
 from clusterServer.loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
+from network.twistedInteraction.connection import RECONNECTION_T
 
 class WebPacketReactor(object):
     '''
@@ -125,8 +126,11 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             servers will be shut down. If false, the virtual machine servers will wait until there are no
             active virtual machines, and then they'll be shut down.
         """
-        # TODO: shut down all the virtual machine servers
-        self.__finished = True                
+        self.__finished = True              
+        vmServersConnectionData = self.__dbConnector.getActiveVMServersConnectionData()
+        if (vmServersConnectionData != None) :
+            for connectionData in vmServersConnectionData :
+                self.__unregisterOrShutdownVMServer(connectionData['ServerIP'], haltVMServers, False)  
                 
     def __registerVMServer(self, data):
         """
@@ -137,11 +141,19 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             Nothing
         """
         try :
+            # Check if the IP address is assigned to another virtual machine server
+            server_id = self.__dbConnector.getVMServerID(data["VMServerIP"])
+            if (server_id != None) :
+                raise Exception("The IP address " + data["VMServerIP"] + " is assigned to another VM server")
+            # Check if the name is assigned to another virtual machine server
+            server_id = self.__dbConnector.getVMServerID(data["VMServerName"])
+            if (server_id != None) :
+                raise Exception("The name " + data["VMServerName"] + " is assigned to another VM server")
             # Establish a connection
             self.__networkManager.connectTo(data["VMServerIP"], data["VMServerPort"], 
-                                                20, self.__vmServerCallback, True)
+                                                20, self.__vmServerCallback, True, True)
             # Register the server on the database
-            self.__dbConnector.subscribeVMServer(data["VMServerName"], data["VMServerIP"], 
+            self.__dbConnector.registerVMServer(data["VMServerName"], data["VMServerIP"], 
                                                     data["VMServerPort"])
             # Command the virtual machine server to tell us its state
             p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
@@ -152,7 +164,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             p = self.__webPacketHandler.createVMRegistrationErrorPacket(data["VMServerIP"], 
                                                                             data["VMServerPort"], 
                                                                             data["VMServerName"], str(e))        
-            self.__networkManager.sendPacket(data["VMServerIP"], self.__webPort, p)
+            self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __unregisterOrShutdownVMServer(self, key, halt, unregister):
         """
@@ -173,8 +185,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             else :
                 p = self.__vmServerPacketHandler.createVMServerHaltPacket()
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
-        # Close the network connection
-        self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])
+            # Close the network connection
+            self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])
         if (unregister) :
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
             self.__dbConnector.deleteVMServerStatics(serverId)
@@ -210,10 +222,12 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         """
         try :
             serverId = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
+            if (serverId == None) :
+                raise Exception("The virtual machine server is not registered")
             serverData = self.__dbConnector.getVMServerBasicData(serverId)
             # Connect to the virtual machine server
             self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 
-                                                20, self.__vmServerCallback, True)
+                                                20, self.__vmServerCallback, True, True)
             while not self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"]) :
                 sleep(0.1)
             # Change its status
@@ -319,6 +333,26 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendVMConnectionData(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_DATA) :
             self.__sendVNCConnectionData(packet)
+            
+    def processServerReconnectionData(self, ipAddress, reconnection_status) :
+        """
+        Processes a reconnection status event
+        Args:
+            ipAddress: the connection's IPv4 address
+            port: the connection's port
+            reconnection_status: the reconnection process' status
+        Returns:
+            Nothing
+        """
+        if (reconnection_status == RECONNECTION_T.RECONNECTING) : 
+            status = SERVER_STATE_T.RECONNECTING
+        elif (reconnection_status == RECONNECTION_T.REESTABLISHED) :
+            status = SERVER_STATE_T.READY
+        else :
+            status = SERVER_STATE_T.CONNECTION_TIMED_OUT
+        
+        serverID = self.__dbConnector.getVMServerID(ipAddress)
+        self.__dbConnector.updateVMServerStatus(serverID, status)
             
     def __sendVNCConnectionData(self, packet):
         """

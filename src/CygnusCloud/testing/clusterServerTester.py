@@ -20,9 +20,9 @@ class TesterCallback(NetworkCallback):
         data = self.__pHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
             print("Virtual machine server registration error")
-            print("\t" + data["VMServerIP"])
-            print("\t" + str(data["VMServerPort"]))
-            print("\t" + data["VMServerName"])
+            print("\tServer IP: " + data["VMServerIP"])
+            print("\tServer port: " + str(data["VMServerPort"]))
+            print("\tServer name: " + data["VMServerName"])
             print("\tReason: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA or data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
             print("Virtual machine servers' current status")
@@ -35,7 +35,7 @@ class TesterCallback(NetworkCallback):
             print("\tReason: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE):
             print("Virtual machine boot failure")
-            print("\tMachine ID: " + data["VMID"])
+            print("\tMachine ID: " + str(data["VMID"]))
             print("\tUser ID: " + str(data["UserID"]))
             print("\tReason: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
@@ -49,7 +49,6 @@ class TesterCallback(NetworkCallback):
             print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
             print("\tVNC server IP address: " + data["VMServerIP"])
             print("\t" + str(data["Data"]))
-       
 
 def printLogo():
     print('\t   _____                             _____ _                 _ ')
@@ -117,8 +116,7 @@ def displayHelpMessage():
     print("\tunregisterVMServer <Name or IP> <Halt?>: unregisters a virtual machine server")
     print("\tshutdownVMServer <Name or IP> <Halt?>: shuts down a virtual machine server")
     print("\tbootUpVMServer <Name or IP>: boots up a virtual machine server")
-    print("\tobtainAvailableImagesData: shows available images' data")
-    print("\tbootUpVM <Name> <UserID>: boots up a virtual machine")
+    print("\tbootUpVM <MachineID> <UserID>: boots up a virtual machine")
     print("\tobtainActiveVMsData: obtains the active virtual machines' data")
     print("\tquit: closes this application")
     

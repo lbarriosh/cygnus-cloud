@@ -251,10 +251,14 @@ class ClusterServerPacketHandler(object):
         """
         if (status == SERVER_STATE_T.BOOTING) :
             return "Booting"
-        if (status == SERVER_STATE_T.READY) :
+        elif (status == SERVER_STATE_T.READY) :
             return "Ready"
-        if (status == SERVER_STATE_T.SHUT_DOWN) :
+        elif (status == SERVER_STATE_T.SHUT_DOWN) :
             return "Shut down"
+        elif (status == SERVER_STATE_T.RECONNECTING) :
+            return "Reconnecting"
+        else :
+            return "Connection lost"
     
     def readPacket(self, p):
         """

@@ -10,7 +10,7 @@ from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SE
 from database.utils.configuration import DBConfigurator
 from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
 from database.systemStatusDB.systemStatusDBWriter import SystemStatusDatabaseWriter
-from network.manager.networkManager import NetworkManager, NetworkCallback
+from network.networkManager import NetworkManager, NetworkCallback
 from time import sleep
 
 class _ClusterServerConnectorCallback(NetworkCallback):

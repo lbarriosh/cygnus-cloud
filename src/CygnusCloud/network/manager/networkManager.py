@@ -2,21 +2,18 @@
 '''
 Network manager class definitions.
 @author: Luis Barrios Hernández
-@version: 6.2
+@version: 7.1
 '''
-
-from twisted.internet import reactor, ssl
-from twisted.internet.endpoints import TCP4ServerEndpoint, TCP4ClientEndpoint, SSL4ServerEndpoint, SSL4ClientEndpoint
+from twisted.internet import reactor
 from ccutils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
 from ccutils.multithreadingDictionary import GenericThreadSafeDictionary
 from network.packets.packet import _Packet, Packet_TYPE
-from network.twistedInteraction.connection import _NetworkConnection
+from network.twistedInteraction.connection import _NetworkConnection, RECONNECTION_T
 from network.exceptions.networkManager import NetworkManagerException
+from network.exceptions.connection import ConnectionException
 from network.threads.dataProcessing import _IncomingDataThread, _OutgoingDataThread
 from network.threads.twistedReactor import _TwistedReactorThread
 from network.threads.connectionMonitoring import _ConnectionMonitoringThread
-from network.twistedInteraction.protocols import _CygnusCloudProtocolFactory
-from time import sleep
         
 class NetworkCallback(object):
     """
@@ -33,6 +30,25 @@ class NetworkCallback(object):
         
         """
         raise NotImplementedError   
+    
+    def processServerReconnectionData(self, ipAddress, port, reconnection_status):
+        """
+        Processes a server reconnection error.
+        Args:
+            ipAddress: the server's IPv4 address
+            port: the server's port
+            reconnection_status: an enum value containing the reconnection status
+        Returns:
+            Nothing
+        """
+        if (reconnection_status == RECONNECTION_T.REESTABLISHED):
+            string = "Connection reestablished" 
+        elif (reconnection_status == RECONNECTION_T.TIMED_OUT):
+            string = "Connection timed out"
+        else :
+            string = "Reconnecting"
+  
+        print ipAddress + " " + str(port) + " " + string
 
 class NetworkManager():
     """
@@ -42,17 +58,15 @@ class NetworkManager():
     @attention: Due to some Twisted related limitations, do NOT stop the network service 
     UNTIL you KNOW PERFECTLY WELL that you won't be using it again. 
     """
-    def __init__(self, certificatesDirectory = None, createReactorThread = True):
+    def __init__(self, certificatesDirectory = None):
         """
         Initializes the NetworkManager's state.
         Args:
             certificatesDirectory: the directory where the files server.crt and server.key are.
-            createReactorThread: if True, a dedicated reactor thread will be created. If false,
-            this thread won't be created.
         """
         self.__connectionPool = GenericThreadSafeDictionary()
         self.__outgoingDataQueue = GenericThreadSafePriorityQueue()
-        if (createReactorThread) :
+        if (not reactor.running) :
             self.__networkThread = _TwistedReactorThread()    
         else :
             self.__networkThread = None    
@@ -118,9 +132,9 @@ class NetworkManager():
         else :
             queue = GenericThreadSafePriorityQueue()
             thread = _IncomingDataThread(queue, callbackObject)
-            return (queue, thread)        
-        
-    def connectTo(self, host, port, timeout, callbackObject, useSSL=False):
+            return (queue, thread)  
+                
+    def connectTo(self, host, port, timeout, callbackObject, useSSL=False, reconnect=False):
         """
         Connects to a remote server using its arguments
         @attention: This is a blocking operation. The calling thread will be blocked until
@@ -131,6 +145,10 @@ class NetworkManager():
             timeout: timeout in seconds. 
             callbackObject: the callback object that will process all the incoming
                 packages received through this connection.
+            useSSL: if True, the SSL version 4 protocol will be used. Otherwise, we'll stick
+                to TCP version 4.
+            reconnect: if True, the network subsystem will try to reconnect to the server
+                when the connection is lost.
         Returns:
             Nothing
         Raises:
@@ -142,30 +160,19 @@ class NetworkManager():
             raise NetworkManagerException("The port " + str(port) +" is already in use")
         # The port is free => proceed
         # Allocate the connection resources
-        (queue, thread) = self.__allocateConnectionResources(callbackObject)       
-        # Create and configure the endpoint
-        factory = _CygnusCloudProtocolFactory(queue)
-        if (not useSSL) :
-            endpoint = TCP4ClientEndpoint(reactor, host, port, timeout, None)
-        else :
-            keyPath = self.__certificatesDirectory + "/" + "server.key"
-            certificatePath = self.__certificatesDirectory + "/" + "server.crt"
-            try :
-                endpoint = SSL4ClientEndpoint(reactor, host, port, ssl.DefaultOpenSSLContextFactory(keyPath, certificatePath))
-            except Exception:
-                raise NetworkManagerException("The key, the certificate or both were not found")
-        endpoint.connect(factory)   
-        # Wait until the connection is ready
-        time = 0
-        while factory.isDisconnected() and time <= timeout:            
-            sleep(0.01)
-            time += 0.01
-        if factory.isDisconnected() :
-            raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
-        # Create the new connection
-        connection = _NetworkConnection(False, host, port, factory, queue, thread, callbackObject)
-        # Add the new connection to the connection pool
-        self.__connectionPool[(host, port)] = connection
+        (queue, thread) = self.__allocateConnectionResources(callbackObject)   
+        # Create the NetworkConnection object
+        connection = _NetworkConnection(False, useSSL, self.__certificatesDirectory, host, port, queue, thread, reconnect, callbackObject)
+        # Try to establish the connection
+        try :
+            if (connection.establish(timeout)) :
+                # The connection could be created => add it to the connection pool
+                self.__connectionPool[(host, port)] = connection
+            else :
+                # Raise an exception
+                raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
+        except ConnectionException as e:
+            raise NetworkManagerException(str(e))
         
     def listenIn(self, port, callbackObject, useSSL=False):
         """
@@ -176,6 +183,8 @@ class NetworkManager():
             port: The port to listen in. If it's not free, a NetworkManagerException will be raised.
             callbackObject: the callback object that will process all the incoming
                 packages received through this connection.
+            useSSL: if True, the SSL version 4 protocol will be used. Otherwise, we'll stick
+                to TCP version 4.
         Returns:
             Nothing
         """   
@@ -183,31 +192,16 @@ class NetworkManager():
             raise NetworkManagerException("The port " + str(port) +" is already in use") 
         # The port is free => proceed
         # Allocate the connection resources
-        (queue, thread) = self.__allocateConnectionResources(callbackObject)       
-        # Create and configure the endpoint
-        if (not useSSL) :
-            endpoint = TCP4ServerEndpoint(reactor, port)       
-        else :
-            keyPath = self.__certificatesDirectory + "/" + "server.key"
-            certificatePath = self.__certificatesDirectory + "/" + "server.crt"
-            try :
-                endpoint = SSL4ServerEndpoint(reactor, port, ssl.DefaultOpenSSLContextFactory(keyPath, certificatePath))
-            except Exception:
-                raise NetworkManagerException("The key, the certificate or both were not found")
-        factory = _CygnusCloudProtocolFactory(queue)        
-        # Create the connection       
-        connection = _NetworkConnection(True, '', port, factory, queue, thread, callbackObject)
-        # Create the deferred to retrieve the IListeningPort object
-        def registerListeningPort(port):
-            connection.setListeningPort(port)
-        def onError(failure):
-            connection.setError(failure)
-        deferred = endpoint.listen(factory)
-        deferred.addCallback(registerListeningPort)
-        deferred.addErrback(onError)
-        connection.setDeferred(deferred)  
-        # Register the new connection  
-        self.__connectionPool[('', port)] = connection
+        (queue, thread) = self.__allocateConnectionResources(callbackObject)    
+        # Create the NetworkConnection object
+        connection = _NetworkConnection(True, useSSL, self.__certificatesDirectory, '', port, queue, thread, None, callbackObject)
+        try :
+            # Establish it
+            connection.establish()
+            # Register the new connection 
+            self.__connectionPool[('', port)] = connection
+        except ConnectionException as e:
+            raise NetworkManagerException(str(e))
                 
     def isConnectionReady(self, host, port):
         """
@@ -219,8 +213,8 @@ class NetworkManager():
         Raises:
             NetworkManagerException: a NetworkManagerException will be raised if 
                 - there were errors while establishing the connection, or 
-                - if the connection was abnormally closed, or
-                - if the supplied port is free
+                - the connection was abnormally closed, or
+                - the supplied port is free
         """
         if not self.__connectionPool.has_key((host,port)) :
             raise NetworkManagerException("The port " + str(port) +" is not in use") 
@@ -254,22 +248,17 @@ class NetworkManager():
             Nothing
         Raises:
             NetworkManagerException: a NetworkManagerException will be raised if 
-            - there were errors while establishing the connection, or 
-            - if the connection was abnormally closed, or
-            - if the connection is a server connection and it's not ready yet, or
-            - if the supplied port is free
+            - the connection is a server connection and it's not ready yet, or
+            - the connection doesn't exist
+        @attention: If the connection is not ready, the packet will be discarded.
+        To avoid this, you must check the connection's availability BEFORE using it.
         """
         if not self.__connectionPool.has_key((host, port)) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
         connection = self.__connectionPool[(host, port)]
-        self.__detectConnectionErrors(connection)
-        if not connection.isReady() :
-            if (connection.isServerConnection()) :
-                raise NetworkManagerException("No clients have connected to this port yet")
-            else :
-                raise NetworkManagerException("The connection is not ready yet")
-        connection.registerPacket()
-        self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet))
+        if connection.isReady() :
+            connection.registerPacket()
+            self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet))
         
     def createPacket(self, priority):
         """
