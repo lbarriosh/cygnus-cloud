@@ -72,6 +72,16 @@ class VirtualNetworkManager(object):
             runMethod = runCommandAsRoot
         else :
             runMethod = runCommand
+        # Destroy the virtual network (if it already exists)
+        try :
+            runMethod("virsh net-destroy " + networkName, Exception)
+        except Exception :
+            pass
+        try :
+            runMethod("virsh net-undefine " + networkName, Exception)
+        except Exception :
+            pass
+        
         # Create the virtual network
         runMethod("virsh net-define " + xmlFilePath, VirtualNetworkManagerException)
         
