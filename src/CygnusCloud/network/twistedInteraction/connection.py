@@ -71,7 +71,7 @@ class _NetworkConnection(object):
         self.__ipAddr = ipAddr
         self.__port = port
         self.__factory = None
-        self.__queue = queue
+        self._queue = queue
         self.__incomingDataThread = incomingDataThread        
         self.__callback = callbackObject
         self.__packagesToSend = MultithreadingCounter()
@@ -105,7 +105,7 @@ class _NetworkConnection(object):
             True if the connection was established, and False if it wasn't.
         """
         # Create and configure the endpoint
-        self.__factory = _CygnusCloudProtocolFactory(self.__queue)
+        self.__factory = _CygnusCloudProtocolFactory(self._queue)
         if (not self.__useSSL) :
             endpoint = TCP4ClientEndpoint(reactor, self.__ipAddr, self.__port, timeout, None)
         else :
@@ -142,7 +142,7 @@ class _NetworkConnection(object):
                 endpoint = SSL4ServerEndpoint(reactor, self.__port, ssl.DefaultOpenSSLContextFactory(keyPath, certificatePath))
             except Exception:
                 raise ConnectionException("The key, the certificate or both were not found")
-        self.__factory = _CygnusCloudProtocolFactory(self.__queue)   
+        self.__factory = _CygnusCloudProtocolFactory(self._queue)   
         # Establish the connection     
         def _registerListeningPort(port):
             self.__listeningPort = port
@@ -182,7 +182,7 @@ class _NetworkConnection(object):
         Returns:
             The incoming data queue assigned to this connection            
         """
-        return self.__queue    
+        return self._queue    
     
     def getThread(self):
         """
@@ -220,11 +220,12 @@ class _NetworkConnection(object):
         Args:
             p: the packet to send
         Returns:
-            None
+            Nothing
         """
         if (self.__status.get() == CONNECTION_STATUS.READY or self.__status.get() == CONNECTION_STATUS.CLOSING) :           
             self.__factory.sendPacket(p)
             self.__packagesToSend.decrement()
+            return True
                 
     def registerPacket(self):
         """
@@ -266,15 +267,17 @@ class _NetworkConnection(object):
             Nothing
         """
         if self.__status.get() == CONNECTION_STATUS.OPENING :
-            if (not self.__factory.isDisconnected()) :
-                if (not self.__isServerConnection):
+            if (not self.__isServerConnection) :
+                if (not self.__factory.isDisconnected()) :
                     # Client => we've got everything we need
                     self.__status.set(CONNECTION_STATUS.READY)
-                elif (self.__listeningPort != None):
+                    self.__incomingDataThread.start()
+            else :
+                if (self.__listeningPort != None): 
                     # Server => the connection must also have a listening port before
                     # it's ready.
                     self.__status.set(CONNECTION_STATUS.READY_WAIT)
-                self.__incomingDataThread.start()
+                    self.__incomingDataThread.start()
                 
         elif self.__status.get() == CONNECTION_STATUS.READY_WAIT :
             if not self.__factory.isDisconnected() :

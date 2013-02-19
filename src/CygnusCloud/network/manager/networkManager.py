@@ -256,7 +256,6 @@ class NetworkManager():
         if not self.__connectionPool.has_key((host, port)) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
         connection = self.__connectionPool[(host, port)]
-        self.__detectConnectionErrors(connection)
         if connection.isReady() :
             connection.registerPacket()
             self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet))

@@ -35,7 +35,7 @@ class TesterCallback(NetworkCallback):
             print("\tReason: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE):
             print("Virtual machine boot failure")
-            print("\tMachine ID: " + data["VMID"])
+            print("\tMachine ID: " + str(data["VMID"]))
             print("\tUser ID: " + str(data["UserID"]))
             print("\tReason: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :

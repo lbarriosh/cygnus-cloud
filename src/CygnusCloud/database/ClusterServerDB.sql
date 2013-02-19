@@ -6,9 +6,9 @@
 */
 
 
-CREATE DATABASE IF NOT EXISTS MainServerDB;
+CREATE DATABASE IF NOT EXISTS ClusterServerDB;
 
-USE MainServerDB;
+USE ClusterServerDB;
 
 CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT, 
 	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER, 
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS VMServerStatus(serverId INTEGER, hosts INTEGER,
 	ENGINE=MEMORY;
 
 INSERT IGNORE INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort) VALUES
-    (1, 'Server1', 2, '192.168.0.5', 15800);
+    (1, 'Server1', 2, '127.0.0.1', 15800);
 
 INSERT IGNORE INTO ImageOnServer VALUES
 	(1, 1);
