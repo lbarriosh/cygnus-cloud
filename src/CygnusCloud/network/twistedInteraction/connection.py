@@ -39,11 +39,11 @@ class _NetworkConnection(object):
     """
     A class that represents a network connection.
     """
-    def __init__(self, isServer, ipAddr, port, factory, queue, incomingDataThread, callbackObject):
+    def __init__(self, isServerConnection, ipAddr, port, factory, queue, incomingDataThread, callbackObject):
         """
         Initializes the connection.
         Args:
-            isServer: True when this is a server connection or False otherwise.
+            isServerConnection: True when this is a server connection or False otherwise.
             ipAddr: the server's IP address
             port: the port assigned to the connection.  
             factory: the protocol factory assigned to the connnection     
@@ -52,7 +52,7 @@ class _NetworkConnection(object):
             callbackObject: the callback object assigned to the connection     
         """
         self.__status = _ConnectionStatus(CONNECTION_STATUS.OPENING)
-        self.__isServer = isServer
+        self.__isServerConnection = isServerConnection
         self.__ipAddr = ipAddr
         self.__port = port
         self.__factory = factory
@@ -162,7 +162,7 @@ class _NetworkConnection(object):
         return self.__status.get() == CONNECTION_STATUS.READY
     
     def isServerConnection(self):
-        return self.__isServer
+        return self.__isServerConnection
     
     def refresh(self):
         """
@@ -174,7 +174,7 @@ class _NetworkConnection(object):
         """
         if self.__status.get() == CONNECTION_STATUS.OPENING :
             if (not self.__factory.isDisconnected()) :
-                if (not self.__isServer):
+                if (not self.__isServerConnection):
                     # Client => we've got everything we need
                     self.__status.set(CONNECTION_STATUS.READY)
                 elif (self.__listeningPort != None):
@@ -194,10 +194,15 @@ class _NetworkConnection(object):
                 
         # Check what's happened to the factory
         if self.__status.get() == CONNECTION_STATUS.READY and self.__factory.isDisconnected() :
-            # This connection must be closed *right* now
-            self.__status.set(CONNECTION_STATUS.CLOSED)
-            self.__unexpectedlyClosed = True
-            self.__close()
+            if (self.__isServerConnection) :
+                # There are no connected clients, but the connection has not been closed yet
+                # => accept new client connections
+                self.__status.set(CONNECTION_STATUS.READY_WAIT)
+            else :
+                # This connection must be closed *right* now
+                self.__status.set(CONNECTION_STATUS.CLOSED)
+                self.__unexpectedlyClosed = True
+                self.__close()
         
     def setListeningPort(self, listeningPort):
         """
@@ -259,7 +264,7 @@ class _NetworkConnection(object):
         """
         Asks twisted to close this connection.
         """
-        if self.__isServer :
+        if self.__isServerConnection :
             if self.__listeningPort is None :                
                 self.__deferred.cancel()
             else :

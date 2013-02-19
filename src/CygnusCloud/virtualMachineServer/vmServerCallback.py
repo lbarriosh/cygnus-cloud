@@ -17,14 +17,14 @@ from database.vmServer.imageManager import ImageManager
 from database.vmServer.runtimeData import RuntimeData
 from virtualNetwork.virtualNetworkManager import VirtualNetworkManager
 from time import sleep
-
 from ccutils.commands import runCommand, runCommandInBackground
+from ccutils.network_utils import sendPacket
 import os
 
-class VMClientException(Exception):
+class VMServerCallbackException(Exception):
     pass
 
-class VMClient(NetworkCallback):
+class VMServerCallback(NetworkCallback):
     def __init__(self):
         self.__shutDown = False
         self.__shuttingDown = False
@@ -63,7 +63,7 @@ class VMClient(NetworkCallback):
             userID = self.__runningImageData.getAssignedUserInDomain(domainName)
             sleep(0.1)
         packet = self.__packetManager.createVMConnectionParametersPacket(userID, ip, port + 1, password)
-        self.__networkManager.sendPacket('', self.__listenningPort, packet)
+        sendPacket(self.__networkManager, '', self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):
         if self.__shuttingDown and (self.__connector.getNumberOfDomains() == 0):
@@ -75,11 +75,11 @@ class VMClient(NetworkCallback):
         pidToKill = self.__runningImageData.getVMPidinDomain(name)
         
         # Delete the virtual machine images disk
-        runCommand("rm " + dataPath, VMClientException)
-        runCommand("rm " + osPath, VMClientException)
+        runCommand("rm " + dataPath, VMServerCallbackException)
+        runCommand("rm " + osPath, VMServerCallbackException)
         
         # Kill websockify process
-        runCommand("kill -s TERM " + str(pidToKill), VMClientException)
+        runCommand("kill -s TERM " + str(pidToKill), VMServerCallbackException)
         
         # Update the database
         self.__runningImageData.unRegisterVMResources(name)
@@ -123,13 +123,13 @@ class VMClient(NetworkCallback):
             if (len(outgoingData) >= segmentSize) :
                 # Flush
                 packet = self.__packetManager.createActiveVMsDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
-                self.__networkManager.sendPacket('', self.__listenningPort, packet)
+                sendPacket(self.__networkManager, '', self.__listenningPort, packet)
                 outgoingData = []
                 segmentCounter += 1
         # Send the last segment
         if (sendLastSegment) :
             packet = self.__packetManager.createActiveVMsDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
-            self.__networkManager.sendPacket('', self.__listenningPort, packet) 
+            sendPacket(self.__networkManager, '', self.__listenningPort, packet) 
 
     def __createDomain(self, info):
         idVM = info["MachineID"]
@@ -160,10 +160,10 @@ class VMClient(NetworkCallback):
             print("The file " + newOSDisk + " already exist")
             return
         # Copio las imagenes
-        runCommand("cd " + sourceImagePath + ";" + "cp --parents "+ dataPath + " " + executionImagePath, VMClientException)
-        runCommand("mv " + executionImagePath + dataPath +" " + newDataDisk, VMClientException)
-        runCommand("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMClientException)
-        #runCommand("chmod -R 777 " + executionImagePath, VMClientException)
+        runCommand("cd " + sourceImagePath + ";" + "cp --parents "+ dataPath + " " + executionImagePath, VMServerCallbackException)
+        runCommand("mv " + executionImagePath + dataPath +" " + newDataDisk, VMServerCallbackException)
+        runCommand("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerCallbackException)
+        #runCommand("chmod -R 777 " + executionImagePath, VMServerCallbackException)
         
         # Fichero de configuracion
         xmlFile = ConfigurationFileEditor(configFile)
@@ -191,7 +191,7 @@ class VMClient(NetworkCallback):
     def __serverStatusRequest(self, packet):
         activeDomains = self.__connector.getNumberOfDomains()
         packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
-        self.__networkManager.sendPacket('', self.__listenningPort, packet)
+        sendPacket(self.__networkManager, '', self.__listenningPort, packet)
     
     def __userFriendlyShutdown(self, packet):
         self.__shuttingDown = True
@@ -208,7 +208,7 @@ class VMClient(NetworkCallback):
         return self.__runningImageData.extractfreeVNCPort()
         
     def __getNewPassword(self):
-        return runCommand("openssl rand -base64 " + str(passwordLength), VMClientException)
+        return runCommand("openssl rand -base64 " + str(passwordLength), VMServerCallbackException)
     
     def hasFinished(self):
         return self.__shutDown

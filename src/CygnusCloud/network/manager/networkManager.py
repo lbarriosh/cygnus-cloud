@@ -42,17 +42,15 @@ class NetworkManager():
     @attention: Due to some Twisted related limitations, do NOT stop the network service 
     UNTIL you KNOW PERFECTLY WELL that you won't be using it again. 
     """
-    def __init__(self, certificatesDirectory = None, createReactorThread = True):
+    def __init__(self, certificatesDirectory = None):
         """
         Initializes the NetworkManager's state.
         Args:
             certificatesDirectory: the directory where the files server.crt and server.key are.
-            createReactorThread: if True, a dedicated reactor thread will be created. If false,
-            this thread won't be created.
         """
         self.__connectionPool = GenericThreadSafeDictionary()
         self.__outgoingDataQueue = GenericThreadSafePriorityQueue()
-        if (createReactorThread) :
+        if (not reactor.running) :
             self.__networkThread = _TwistedReactorThread()    
         else :
             self.__networkThread = None    
