@@ -141,11 +141,19 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             Nothing
         """
         try :
+            # Check if the IP address is assigned to another virtual machine server
+            server_id = self.__dbConnector.getVMServerID(data["VMServerIP"])
+            if (server_id != None) :
+                raise Exception("The IP address " + data["VMServerIP"] + " is assigned to another VM server")
+            # Check if the name is assigned to another virtual machine server
+            server_id = self.__dbConnector.getVMServerID(data["VMServerName"])
+            if (server_id != None) :
+                raise Exception("The name " + data["VMServerName"] + " is assigned to another VM server")
             # Establish a connection
             self.__networkManager.connectTo(data["VMServerIP"], data["VMServerPort"], 
                                                 20, self.__vmServerCallback, True, True)
             # Register the server on the database
-            self.__dbConnector.subscribeVMServer(data["VMServerName"], data["VMServerIP"], 
+            self.__dbConnector.registerVMServer(data["VMServerName"], data["VMServerIP"], 
                                                     data["VMServerPort"])
             # Command the virtual machine server to tell us its state
             p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
@@ -156,7 +164,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             p = self.__webPacketHandler.createVMRegistrationErrorPacket(data["VMServerIP"], 
                                                                             data["VMServerPort"], 
                                                                             data["VMServerName"], str(e))        
-            self.__networkManager.sendPacket(data["VMServerIP"], self.__webPort, p)
+            self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __unregisterOrShutdownVMServer(self, key, halt, unregister):
         """
@@ -177,8 +185,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             else :
                 p = self.__vmServerPacketHandler.createVMServerHaltPacket()
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
-        # Close the network connection
-        self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])
+            # Close the network connection
+            self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])
         if (unregister) :
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
             self.__dbConnector.deleteVMServerStatics(serverId)
@@ -214,6 +222,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         """
         try :
             serverId = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
+            if (serverId == None) :
+                raise Exception("The virtual machine server is not registered")
             serverData = self.__dbConnector.getVMServerBasicData(serverId)
             # Connect to the virtual machine server
             self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 

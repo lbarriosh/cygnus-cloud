@@ -20,9 +20,9 @@ class TesterCallback(NetworkCallback):
         data = self.__pHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
             print("Virtual machine server registration error")
-            print("\t" + data["VMServerIP"])
-            print("\t" + str(data["VMServerPort"]))
-            print("\t" + data["VMServerName"])
+            print("\tServer IP: " + data["VMServerIP"])
+            print("\tServer port: " + str(data["VMServerPort"]))
+            print("\tServer name: " + data["VMServerName"])
             print("\tReason: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA or data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
             print("Virtual machine servers' current status")
@@ -49,7 +49,6 @@ class TesterCallback(NetworkCallback):
             print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
             print("\tVNC server IP address: " + data["VMServerIP"])
             print("\t" + str(data["Data"]))
-       
 
 def printLogo():
     print('\t   _____                             _____ _                 _ ')

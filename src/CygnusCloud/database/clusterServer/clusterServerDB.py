@@ -136,7 +136,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         return serverIPs
         
         
-    def subscribeVMServer(self, name, IPAddress, port):
+    def registerVMServer(self, name, IPAddress, port):
         '''
             Permite registrar un Nuevo servidor de máquinas virtuales con el puerto, la IP y el número
              máximo de máquinas virtuales que se le pasan como argumento
