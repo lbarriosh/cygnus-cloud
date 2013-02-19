@@ -1,8 +1,12 @@
+# -*- coding: utf8 -*-
 '''
-Created on Feb 19, 2013
-
-@author: luis
+Connection exception definitions
+@author: Luis Barrios Hernández
+@version: 1.0
 '''
 
 class ConnectionException(Exception):
+    """
+    Connection exception class
+    """
     pass

@@ -6,6 +6,6 @@ Network manager exception definitions
 '''
 class NetworkManagerException(Exception):
     """
-    NetworkManager exception class
+    Network manager exception class
     """
     pass

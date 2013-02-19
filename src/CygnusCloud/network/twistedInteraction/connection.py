@@ -2,7 +2,7 @@
 '''
 Network connection definitions
 @author: Luis Barrios Hernández
-@version: 6.0
+@version: 6.1
 '''
 
 from ccutils.enums import enum
@@ -14,9 +14,14 @@ from twisted.internet.endpoints import TCP4ClientEndpoint, TCP4ServerEndpoint, S
 from twisted.internet import reactor, ssl
 from time import sleep
 
-# Connection status enum type
+"""
+Connection status enum type.
+"""
 CONNECTION_STATUS = enum("OPENING", "READY_WAIT", "READY", "CLOSING", "CLOSED", "ERROR", "RECONNECT")
 
+"""
+Reconnection status enum type
+"""
 RECONNECTION_T = enum("RECONNECTING", "REESTABLISHED", "TIMED_OUT") 
 
 class _ConnectionStatus(object):
@@ -82,7 +87,6 @@ class _NetworkConnection(object):
         Args:
             timeout: the timeout in seconds. This argument will only be used with client
             connections.
-            certificatesPath: the directory where the files server.crt and server.key are. 
         Returns:
             True if the connection could be established. Otherwise, it will return false.
         """
@@ -90,9 +94,16 @@ class _NetworkConnection(object):
             self.__establishServerConnection()
             return True
         else :
-            return self.__establishClientConnection( timeout)
+            return self.__establishClientConnection(timeout)
         
     def __establishClientConnection(self, timeout):
+        """
+        Tries to establish a client connection.
+        Args:
+            timeout: the timeout in seconds
+        Returns:
+            True if the connection was established, and False if it wasn't.
+        """
         # Create and configure the endpoint
         self.__factory = _CygnusCloudProtocolFactory(self.__queue)
         if (not self.__useSSL) :
@@ -114,6 +125,13 @@ class _NetworkConnection(object):
         return not self.__factory.isDisconnected()
     
     def __establishServerConnection(self):
+        """
+        Establishes a server connection.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         # Create and configure the endpoint
         if (not self.__useSSL) :
             endpoint = TCP4ServerEndpoint(reactor, self.__port)       
@@ -230,6 +248,13 @@ class _NetworkConnection(object):
         return self.__status.get() == CONNECTION_STATUS.READY
     
     def isServerConnection(self):
+        """
+        Determines if this is a server connection or not.
+        Args:
+            None
+        Returns:
+            True if this connection is a server one, and false if it isn't.
+        """
         return self.__isServerConnection
     
     def refresh(self):
@@ -278,7 +303,7 @@ class _NetworkConnection(object):
                     self.__delay = 1
                     self.__reconnections = 0
                     self.__status.set(CONNECTION_STATUS.RECONNECT)   
-                    self.__closeTwistedConection()
+                    self.__destroyTwistedResources()
                     self.__callback.processServerReconnectionData(self.__ipAddr, self.__port, RECONNECTION_T.RECONNECTING)
                                  
         elif (self.__status.get() == CONNECTION_STATUS.RECONNECT) :
@@ -339,7 +364,14 @@ class _NetworkConnection(object):
         """    
         self.__status.set(CONNECTION_STATUS.CLOSING)
         
-    def __closeTwistedConection(self):
+    def __destroyTwistedResources(self):
+        """
+        Destroys the twisted-related connection resources.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         if self.__isServerConnection :
             if self.__listeningPort is None :                
                 self.__deferred.cancel()
@@ -351,9 +383,13 @@ class _NetworkConnection(object):
         
     def __close(self):
         """
-        Asks twisted to close this connection.
+        Closes this connection.
+        Args:
+            None
+        Returns:
+            Nothing
         """
-        self.__closeTwistedConection()
+        self.__destroyTwistedResources()
         # Free the connection resources
         self.__incomingDataThread.stop(True)
         self.__status.set(CONNECTION_STATUS.CLOSED)

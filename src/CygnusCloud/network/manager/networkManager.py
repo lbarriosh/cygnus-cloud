@@ -2,7 +2,7 @@
 '''
 Network manager class definitions.
 @author: Luis Barrios Hernández
-@version: 7.0
+@version: 7.1
 '''
 from twisted.internet import reactor
 from ccutils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
@@ -14,8 +14,6 @@ from network.exceptions.connection import ConnectionException
 from network.threads.dataProcessing import _IncomingDataThread, _OutgoingDataThread
 from network.threads.twistedReactor import _TwistedReactorThread
 from network.threads.connectionMonitoring import _ConnectionMonitoringThread
-from ccutils.enums import enum
-
         
 class NetworkCallback(object):
     """
@@ -215,8 +213,8 @@ class NetworkManager():
         Raises:
             NetworkManagerException: a NetworkManagerException will be raised if 
                 - there were errors while establishing the connection, or 
-                - if the connection was abnormally closed, or
-                - if the supplied port is free
+                - the connection was abnormally closed, or
+                - the supplied port is free
         """
         if not self.__connectionPool.has_key((host,port)) :
             raise NetworkManagerException("The port " + str(port) +" is not in use") 
@@ -252,6 +250,8 @@ class NetworkManager():
             NetworkManagerException: a NetworkManagerException will be raised if 
             - the connection is a server connection and it's not ready yet, or
             - the connection doesn't exist
+        @attention: If the connection is not ready, the packet will be discarded.
+        To avoid this, you must check the connection's availability BEFORE using it.
         """
         if not self.__connectionPool.has_key((host, port)) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))

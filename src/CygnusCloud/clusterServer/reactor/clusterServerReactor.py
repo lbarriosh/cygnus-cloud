@@ -2,7 +2,7 @@
 '''
 Main server reactor definitions.
 @author: Luis Barrios Hernández
-@version: 1.1
+@version: 2.0
 '''
 
 from clusterServer.networking.callbacks import VMServerCallback, WebCallback
@@ -322,6 +322,15 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendVNCConnectionData(packet)
             
     def processServerReconnectionData(self, ipAddress, reconnection_status) :
+        """
+        Processes a reconnection status event
+        Args:
+            ipAddress: the connection's IPv4 address
+            port: the connection's port
+            reconnection_status: the reconnection process' status
+        Returns:
+            Nothing
+        """
         if (reconnection_status == RECONNECTION_T.RECONNECTING) : 
             status = SERVER_STATE_T.RECONNECTING
         elif (reconnection_status == RECONNECTION_T.REESTABLISHED) :

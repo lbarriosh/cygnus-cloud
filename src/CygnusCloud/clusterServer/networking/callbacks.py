@@ -2,7 +2,7 @@
 '''
 Main server callback definitions
 @author: Luis Barrios Hernández
-@version: 1.0
+@version: 2.0
 '''
 
 from network.manager.networkManager import NetworkCallback
@@ -54,5 +54,14 @@ class VMServerCallback(NetworkCallback):
         self.__reactor.processVMServerIncomingPacket(packet)   
         
     def processServerReconnectionData(self, ipAddress, port, reconnection_status):
+        """
+        Processes a reconnection status event
+        Args:
+            ipAddress: the connection's IPv4 address
+            port: the connection's port
+            reconnection_status: the reconnection process' status
+        Returns:
+            Nothing
+        """
         NetworkCallback.processServerReconnectionData(self, ipAddress, port, reconnection_status)
         self.__reactor.processServerReconnectionData(ipAddress, reconnection_status)

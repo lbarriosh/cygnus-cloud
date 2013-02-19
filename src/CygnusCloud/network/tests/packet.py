@@ -15,7 +15,7 @@ class PacketTests(unittest.TestCase):
         p1 = _Packet(Packet_TYPE.DATA, 10)   
         p2 = _Packet()
         p2._setContent(10, '', Packet_TYPE.DATA)
-        self.assertEquals(p1, p2, "Two empty packages of the same type\
+        self.assertEquals(p1, p2, "Two empty packets of the same type\
             and with the same priority level must be equal")
         
     
@@ -24,7 +24,7 @@ class PacketTests(unittest.TestCase):
         p2 = _Packet()
         p1.writeString("It works")
         p2._setContent(10, str(_DATA_TYPE.STRING) + "$It works$")
-        self.assertEquals(p1, p2, "Two packages with the same type,\
+        self.assertEquals(p1, p2, "Two packets with the same type,\
             priority level and data must be equal")
     
         
@@ -39,7 +39,7 @@ class PacketTests(unittest.TestCase):
         p2._setContent(10, str(_DATA_TYPE.STRING) + "$It works$" + str(_DATA_TYPE.INT) + "$0$" +\
                        str(_DATA_TYPE.INT) + "$10$" + str(_DATA_TYPE.FLOAT) + "$3.14159264$" +\
                        str(_DATA_TYPE.LONG) + "$52$")
-        self.assertEquals(p1, p2, "Two packages with the same type,\
+        self.assertEquals(p1, p2, "Two packets with the same type,\
             priority level and data must be equal")
         
     def test_invalidWrites(self):
@@ -59,24 +59,24 @@ class PacketTests(unittest.TestCase):
         p1.writeBool(True)       
         p1.writeLong(52)
         result = p1._serialize()
-        expectedString = "_Packet(" + str(Packet_TYPE.DATA) + \
-                          ",10)<" + str(_DATA_TYPE.FLOAT) + "$3.14159264$" + str(_DATA_TYPE.STRING) + \
+        expectedString = "" + str(Packet_TYPE.DATA) + \
+                          ",10," + str(_DATA_TYPE.FLOAT) + "$3.14159264$" + str(_DATA_TYPE.STRING) + \
                           "$It works$" + str(_DATA_TYPE.INT) + "$10$" + str(_DATA_TYPE.INT) + "$1$" + \
-                          str(_DATA_TYPE.LONG) + "$52$>"
+                          str(_DATA_TYPE.LONG) + "$52$"
         self.assertEquals(result, expectedString, "The serialized strings must match")
          
     def test_deserialize(self):
-        rawdata = "_Packet(" + str(Packet_TYPE.DATA) + ", 10)<" + str(_DATA_TYPE.INT) + "$10$" + \
-            str(_DATA_TYPE.FLOAT) + "$3.14159264$>"
+        rawdata = "" + str(Packet_TYPE.DATA) + ",10," + str(_DATA_TYPE.INT) + "$10$" + \
+            str(_DATA_TYPE.FLOAT) + "$3.14159264$"
         p1 = _Packet._deserialize(rawdata)
         expected = _Packet(Packet_TYPE.DATA, 10)
         expected._setData(str(_DATA_TYPE.INT) + "$10$" + str(_DATA_TYPE.FLOAT) + "$3.14159264$")
         self.assertEquals(p1, expected, "The deserialized packets must be equals")
         
     def test_read(self):
-        rawdata = "_Packet(" + str(Packet_TYPE.DATA) + ", 10)<" + str(_DATA_TYPE.INT) + "$10$" + \
+        rawdata = "" + str(Packet_TYPE.DATA) + ",10," + str(_DATA_TYPE.INT) + "$10$" + \
             str(_DATA_TYPE.FLOAT) + "$3.14159264$" + str(_DATA_TYPE.STRING) + "$Hello, world!$" + \
-            str(_DATA_TYPE.INT) + "$0$" + str(_DATA_TYPE.LONG) + "$60$>"
+            str(_DATA_TYPE.INT) + "$0$" + str(_DATA_TYPE.LONG) + "$60$"
         p1 = _Packet._deserialize(rawdata)
         self.assertEquals(10, p1.readInt(), "The read integer must have the expected value")    
         self.assertEquals(3.14159264, p1.readFloat(), "The read float must have the expected value")   
@@ -86,25 +86,25 @@ class PacketTests(unittest.TestCase):
         self.assertFalse(p1.hasMoreData(), "The packet should be empty after reading all its data")
         
     def test_invalidReads(self):
-        rawdata = "_Packet(" + str(Packet_TYPE.DATA) + ", 10)<" + str(_DATA_TYPE.INT) + "$10$>"
+        rawdata = "" + str(Packet_TYPE.DATA) + ",10," + str(_DATA_TYPE.INT) + "$10$"
         p1 = _Packet._deserialize(rawdata)
         self.assertRaises(PacketException, p1.readFloat)
         self.assertRaises(PacketException, p1.readString)
         self.assertRaises(PacketException, p1.readLong)
         self.assertIsInstance(p1.readInt(), int, "The read value must be an integer")
         
-    def test_malformedPackages(self):
+    def test_malformedpackets(self):
         # Wrong header 1: empty string
         rawData = ""
         self.assertRaises(PacketException, _Packet._deserialize, (rawData))
         # Wrong header 2: unknown package type
-        rawData = "_Packet(-100, 0)<>"
+        rawData = "-100,0,"
         self.assertRaises(PacketException, _Packet._deserialize, (rawData))
         # Wrong header 3: crap priority
-        rawData = "_Packet(-100, 0.1)<>"
+        rawData = "-100,0.1"
         self.assertRaises(PacketException, _Packet._deserialize, (rawData))
         # Wrong data
-        rawData = "_Packet(0, 10)<" + str(_DATA_TYPE.INT) + "$hello, world!>"
+        rawData = "0,10," + str(_DATA_TYPE.INT) + "$hello, world!"
         p = _Packet._deserialize(rawData)
         self.assertRaises(PacketException, p.readInt)
 
