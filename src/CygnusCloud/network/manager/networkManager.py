@@ -45,8 +45,11 @@ class NetworkCallback(object):
         """
         if (reconnection_status == RECONNECTION_T.REESTABLISHED):
             string = "Connection reestablished" 
-        else:
+        elif (reconnection_status == RECONNECTION_T.TIMED_OUT):
             string = "Connection timed out"
+        else :
+            string = "Reconnecting"
+  
         print ipAddress + " " + str(port) + " " + string
 
 class NetworkManager():
@@ -247,22 +250,16 @@ class NetworkManager():
             Nothing
         Raises:
             NetworkManagerException: a NetworkManagerException will be raised if 
-            - there were errors while establishing the connection, or 
-            - if the connection was abnormally closed, or
-            - if the connection is a server connection and it's not ready yet, or
-            - if the supplied port is free
+            - the connection is a server connection and it's not ready yet, or
+            - the connection doesn't exist
         """
         if not self.__connectionPool.has_key((host, port)) :
             raise NetworkManagerException("There's nothing attached to the port " + str(port))
         connection = self.__connectionPool[(host, port)]
         self.__detectConnectionErrors(connection)
-        if not connection.isReady() :
-            if (connection.isServerConnection()) :
-                raise NetworkManagerException("No clients have connected to this port yet")
-            else :
-                raise NetworkManagerException("The connection is not ready yet")
-        connection.registerPacket()
-        self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet))
+        if connection.isReady() :
+            connection.registerPacket()
+            self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet))
         
     def createPacket(self, priority):
         """

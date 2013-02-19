@@ -13,6 +13,7 @@ from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SE
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 from time import sleep
 from clusterServer.loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
+from network.twistedInteraction.connection import RECONNECTION_T
 
 class WebPacketReactor(object):
     '''
@@ -139,7 +140,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         try :
             # Establish a connection
             self.__networkManager.connectTo(data["VMServerIP"], data["VMServerPort"], 
-                                                20, self.__vmServerCallback, True)
+                                                20, self.__vmServerCallback, True, True)
             # Register the server on the database
             self.__dbConnector.subscribeVMServer(data["VMServerName"], data["VMServerIP"], 
                                                     data["VMServerPort"])
@@ -213,7 +214,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             serverData = self.__dbConnector.getVMServerBasicData(serverId)
             # Connect to the virtual machine server
             self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 
-                                                20, self.__vmServerCallback, True)
+                                                20, self.__vmServerCallback, True, True)
             while not self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"]) :
                 sleep(0.1)
             # Change its status
@@ -319,6 +320,17 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendVMConnectionData(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_DATA) :
             self.__sendVNCConnectionData(packet)
+            
+    def processServerReconnectionData(self, ipAddress, reconnection_status) :
+        if (reconnection_status == RECONNECTION_T.RECONNECTING) : 
+            status = SERVER_STATE_T.RECONNECTING
+        elif (reconnection_status == RECONNECTION_T.REESTABLISHED) :
+            status = SERVER_STATE_T.READY
+        else :
+            status = SERVER_STATE_T.CONNECTION_TIMED_OUT
+        
+        serverID = self.__dbConnector.getVMServerID(ipAddress)
+        self.__dbConnector.updateVMServerStatus(serverID, status)
             
     def __sendVNCConnectionData(self, packet):
         """

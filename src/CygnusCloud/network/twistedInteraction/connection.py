@@ -17,7 +17,7 @@ from time import sleep
 # Connection status enum type
 CONNECTION_STATUS = enum("OPENING", "READY_WAIT", "READY", "CLOSING", "CLOSED", "ERROR", "RECONNECT")
 
-RECONNECTION_T = enum("REESTABLISHED", "TIMED_OUT") 
+RECONNECTION_T = enum("RECONNECTING", "REESTABLISHED", "TIMED_OUT") 
 
 class _ConnectionStatus(object):
     """
@@ -279,6 +279,7 @@ class _NetworkConnection(object):
                     self.__reconnections = 0
                     self.__status.set(CONNECTION_STATUS.RECONNECT)   
                     self.__closeTwistedConection()
+                    self.__callback.processServerReconnectionData(self.__ipAddr, self.__port, RECONNECTION_T.RECONNECTING)
                                  
         elif (self.__status.get() == CONNECTION_STATUS.RECONNECT) :
             self.__elapsedTicks += 1
@@ -286,7 +287,7 @@ class _NetworkConnection(object):
                 # Update the delay and the elapsed ticks
                 self.__elapsedTicks = 0
                 self.__reconnections += 1
-                if (self.__reconnections <= 10) :
+                if (self.__reconnections <= 5) :
                     self.__delay *= 2
                 # Try to reconnect to the server NOW 
                 if (self.__establishClientConnection(5)) :
@@ -294,7 +295,7 @@ class _NetworkConnection(object):
                     self.__status.set(CONNECTION_STATUS.READY)
                     # Warn the client code
                     self.__callback.processServerReconnectionData(self.__ipAddr, self.__port, RECONNECTION_T.REESTABLISHED) 
-                elif (self.__reconnections >= 15) :
+                elif (self.__reconnections >= 10) :
                     # Too many reconnection attempts => give up
                     self.__close()
                     # Warn the client code

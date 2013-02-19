@@ -3,7 +3,7 @@
 from ccutils.enums import enum
 from database.utils.connector import BasicDatabaseConnector
 
-SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN")
+SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN", "RECONNECTING", "CONNECTION_TIMED_OUT")
 
 class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     """

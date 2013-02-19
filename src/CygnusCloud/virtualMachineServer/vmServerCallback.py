@@ -18,7 +18,6 @@ from database.vmServer.runtimeData import RuntimeData
 from virtualNetwork.virtualNetworkManager import VirtualNetworkManager
 from time import sleep
 from ccutils.commands import runCommand, runCommandInBackground
-from ccutils.network_utils import sendPacket
 import os
 
 class VMServerCallbackException(Exception):
@@ -63,7 +62,7 @@ class VMServerCallback(NetworkCallback):
             userID = self.__runningImageData.getAssignedUserInDomain(domainName)
             sleep(0.1)
         packet = self.__packetManager.createVMConnectionParametersPacket(userID, ip, port + 1, password)
-        sendPacket(self.__networkManager, '', self.__listenningPort, packet)
+        self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):
         if self.__shuttingDown and (self.__connector.getNumberOfDomains() == 0):
@@ -123,13 +122,13 @@ class VMServerCallback(NetworkCallback):
             if (len(outgoingData) >= segmentSize) :
                 # Flush
                 packet = self.__packetManager.createActiveVMsDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
-                sendPacket(self.__networkManager, '', self.__listenningPort, packet)
+                self.__networkManager.sendPacket('', self.__listenningPort, packet)
                 outgoingData = []
                 segmentCounter += 1
         # Send the last segment
         if (sendLastSegment) :
             packet = self.__packetManager.createActiveVMsDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
-            sendPacket(self.__networkManager, '', self.__listenningPort, packet) 
+            self.__networkManager.sendPacket('', self.__listenningPort, packet) 
 
     def __createDomain(self, info):
         idVM = info["MachineID"]
@@ -191,7 +190,7 @@ class VMServerCallback(NetworkCallback):
     def __serverStatusRequest(self, packet):
         activeDomains = self.__connector.getNumberOfDomains()
         packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
-        sendPacket(self.__networkManager, '', self.__listenningPort, packet)
+        self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
     def __userFriendlyShutdown(self, packet):
         self.__shuttingDown = True

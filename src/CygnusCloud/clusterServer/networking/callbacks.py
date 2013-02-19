@@ -52,3 +52,7 @@ class VMServerCallback(NetworkCallback):
             Nothing
         """        
         self.__reactor.processVMServerIncomingPacket(packet)   
+        
+    def processServerReconnectionData(self, ipAddress, port, reconnection_status):
+        NetworkCallback.processServerReconnectionData(self, ipAddress, port, reconnection_status)
+        self.__reactor.processServerReconnectionData(ipAddress, reconnection_status)
