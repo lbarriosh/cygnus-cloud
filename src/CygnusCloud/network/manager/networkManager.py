@@ -8,12 +8,14 @@ from twisted.internet import reactor
 from ccutils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
 from ccutils.multithreadingDictionary import GenericThreadSafeDictionary
 from network.packets.packet import _Packet, Packet_TYPE
-from network.twistedInteraction.connection import _NetworkConnection
+from network.twistedInteraction.connection import _NetworkConnection, RECONNECTION_T
 from network.exceptions.networkManager import NetworkManagerException
 from network.exceptions.connection import ConnectionException
 from network.threads.dataProcessing import _IncomingDataThread, _OutgoingDataThread
 from network.threads.twistedReactor import _TwistedReactorThread
 from network.threads.connectionMonitoring import _ConnectionMonitoringThread
+from ccutils.enums import enum
+
         
 class NetworkCallback(object):
     """
@@ -30,6 +32,22 @@ class NetworkCallback(object):
         
         """
         raise NotImplementedError   
+    
+    def processServerReconnectionData(self, ipAddress, port, reconnection_status):
+        """
+        Processes a server reconnection error.
+        Args:
+            ipAddress: the server's IPv4 address
+            port: the server's port
+            reconnection_status: an enum value containing the reconnection status
+        Returns:
+            Nothing
+        """
+        if (reconnection_status == RECONNECTION_T.REESTABLISHED):
+            string = "Connection reestablished" 
+        else:
+            string = "Connection timed out"
+        print ipAddress + " " + str(port) + " " + string
 
 class NetworkManager():
     """
@@ -143,10 +161,10 @@ class NetworkManager():
         # Allocate the connection resources
         (queue, thread) = self.__allocateConnectionResources(callbackObject)   
         # Create the NetworkConnection object
-        connection = _NetworkConnection(False, useSSL, host, port, queue, thread, reconnect, callbackObject)
+        connection = _NetworkConnection(False, useSSL, self.__certificatesDirectory, host, port, queue, thread, reconnect, callbackObject)
         # Try to establish the connection
         try :
-            if (connection.establish(self.__certificatesDirectory, timeout)) :
+            if (connection.establish(timeout)) :
                 # The connection could be created => add it to the connection pool
                 self.__connectionPool[(host, port)] = connection
             else :
@@ -175,10 +193,10 @@ class NetworkManager():
         # Allocate the connection resources
         (queue, thread) = self.__allocateConnectionResources(callbackObject)    
         # Create the NetworkConnection object
-        connection = _NetworkConnection(True, useSSL, '', port, queue, thread, None, callbackObject)
+        connection = _NetworkConnection(True, useSSL, self.__certificatesDirectory, '', port, queue, thread, None, callbackObject)
         try :
             # Establish it
-            connection.establish(self.__certificatesDirectory)
+            connection.establish()
             # Register the new connection 
             self.__connectionPool[('', port)] = connection
         except ConnectionException as e:
