@@ -10,16 +10,16 @@ from network.tests.dummyCallback import DummyCallback
 from time import sleep
 
 if __name__ == "__main__" :
-    port = 8080
     networkManager = NetworkManager("/home/luis/Certificates")
     networkManager.startNetworkService()
-    networkManager.connectTo('127.0.0.1', port, 5, DummyCallback(), True)
+    networkManager.connectTo('127.0.0.1', 8080, 20, DummyCallback(), True, True)
     sleep(2)
     p = networkManager.createPacket(0)
     p.writeString("Greetings from a client")    
-    networkManager.sendPacket('127.0.0.1', port, p)
+    networkManager.sendPacket('127.0.0.1', 8080, p)
+    sleep(60)
     p = networkManager.createPacket(0)
     p.writeString("Greetings from a client 1")    
-    networkManager.sendPacket('127.0.0.1', port, p)
-    sleep(100)
+    networkManager.sendPacket('127.0.0.1', 8080, p)
+    sleep(200)
     networkManager.stopNetworkService()

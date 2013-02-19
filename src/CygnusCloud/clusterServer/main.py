@@ -9,7 +9,7 @@ from clusterServer.reactor.clusterServerReactor import ClusterServerReactor
 from time import sleep
 
 rootsPassword = ""
-dbName = "MainServerDB"
+dbName = "ClusterServerDB"
 dbUser ="cygnuscloud"
 dbPassword ="cygnuscloud"
 scriptPath = "../database/ClusterServerDB.sql"

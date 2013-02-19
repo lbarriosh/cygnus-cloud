@@ -3,7 +3,7 @@
 from ccutils.enums import enum
 from database.utils.connector import BasicDatabaseConnector
 
-SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN")
+SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN", "RECONNECTING", "CONNECTION_TIMED_OUT")
 
 class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     """
@@ -78,9 +78,9 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         d["ServerStatus"] = status
         d["ServerIP"] = ip
         d["ServerPort"] = port
-        return d        
+        return d         
         
-    def getVMServerStatistics(self, serverId):
+    def getVMServerStatistics(self, serverId) :
         '''
             Devuelve las estadísticas de un servidor de máquinas virtuales
             Argumentos:
@@ -136,7 +136,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         return serverIPs
         
         
-    def subscribeVMServer(self, name, IPAddress, port):
+    def registerVMServer(self, name, IPAddress, port):
         '''
             Permite registrar un Nuevo servidor de máquinas virtuales con el puerto, la IP y el número
              máximo de máquinas virtuales que se le pasan como argumento

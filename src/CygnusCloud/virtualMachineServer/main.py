@@ -2,11 +2,12 @@
 '''
 Punto de entrada del servidor de máquinas virtuales
 
-@author: luis
+@author: Luis Barrios Hernández
+@version: 1.0
 '''
 
 from database.utils.configuration import DBConfigurator
-from vmClient import VMClient
+from vmServerCallback import VMServerCallback
 from time import sleep
 from constantes import databaseName, databaseUserName, databasePassword, mysqlRootsPassword
 
@@ -18,7 +19,7 @@ if __name__ == "__main__" :
     # Crear un usuario y darle permisos
     configurator.addUser(databaseUserName, databasePassword, databaseName, True)
     # Crear el servidor de máquinas virtuales
-    vmServer = VMClient()
+    vmServer = VMServerCallback()
     # Dormir hasta que se apague
     while not vmServer.hasFinished():
         sleep(10)

@@ -203,7 +203,7 @@ class _Packet(object):
         Returns:
             A string with this packet's data, ready to be sent.
         """
-        return "_Packet(" + str(self.__packetType) + "," + str(self.__priority) + ")<" + self.__data + ">"
+        return str(self.__packetType) + "," + str(self.__priority) + "," + self.__data
     
     def _getPacketType(self):
         """
@@ -268,27 +268,22 @@ class _Packet(object):
         Raises:
             PacketException: If the packet header is corrupt, a PacketException will be raised.
         """            
-        # Read the packet header
-        (header, _openingpar, tail) = string.partition("(")
-        if (header != "_Packet"):
-            raise PacketException("Invalid packet string: Unknown header format")       
-        (packetType, _comma, tail) = tail.partition(",") 
+        # Read the packet header       
+        (packetType, _comma, tail) = string.partition(",") 
         try :            
             packetType = int(packetType)
             # Check if the packet type has an invalid value. If so, an exception will be raised.
             Packet_TYPE.reverse_mapping[packetType]
         except Exception :
             raise PacketException("Invalid packet string: Unknown packet type")
-        (priority, _closingpar, tail) = tail.partition(")")
+        (priority, _comma, tail) = tail.partition(",")
         try :
             priority = int(priority)
         except Exception :
             raise PacketException("Invalid packet string: packet priority must be an integer")
-        # Read the packet data
-        data = tail[1:-1]
         # Create the packet
         p = _Packet(packetType, priority)        
-        p._setData(data)
+        p._setData(tail)
         # Return the readable packet
         return p        
         
