@@ -88,7 +88,7 @@ class ClusterServerConnector(object):
         configurator = DBConfigurator(mysqlRootsPassword)
         configurator.runSQLScript(databaseName, sqlFilePath)
         # Register the website and the update users
-        configurator.addUser(websiteUser, websiteUserPassword, databaseName, True)
+        configurator.addUser(websiteUser, websiteUserPassword, databaseName, False)
         configurator.addUser(updateUser, updateUserPassword, databaseName, True)
         # Create the database connectors
         self.__writer = SystemStatusDatabaseWriter(updateUser, updateUserPassword, databaseName)
