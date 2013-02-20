@@ -187,7 +187,6 @@ class VMServerCallback(NetworkCallback):
         
     
     def __serverStatusRequest(self, packet):
-        print "Recibido"
         activeDomains = self.__connector.getNumberOfDomains()
         packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
 #        while not self.__networkManager.isConnectionReady('', self.__listenningPort) :

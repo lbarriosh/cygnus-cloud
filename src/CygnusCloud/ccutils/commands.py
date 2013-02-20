@@ -39,7 +39,6 @@ def runCommandInBackground(cmd):
     Returns:
         cmd's command
     """
-    print cmd
     p = Popen(cmd, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     return p.pid
 
