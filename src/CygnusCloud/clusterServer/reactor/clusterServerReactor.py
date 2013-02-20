@@ -43,17 +43,17 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__webCallback = WebCallback(self)
         self.__finished = False
         
-    def connectToDatabase(self, rootsPassword, dbName, dbUser, dbPassword, scriptPath):
+    def connectToDatabase(self, mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath):
         """
         Establishes a connection with the cluster server database.
         Args:
-            rootsPassword: MySQL root's password
+            mysqlRootsPassword: MySQL root's password
             dbName: the cluster server database's name
             dbUser: the cluster server database's user name
             dbPassword: the cluster server database's user password
             scriptPath: the cluster server database's initialization script path
         """
-        configurator = DBConfigurator(rootsPassword)
+        configurator = DBConfigurator(mysqlRootsPassword)
         configurator.runSQLScript(dbName, scriptPath)
         configurator.addUser(dbUser, dbPassword, dbName, True)
         self.__dbConnector = ClusterServerDatabaseConnector(dbUser, dbPassword, dbName)

@@ -8,7 +8,7 @@ Main server entry point
 from clusterServer.reactor.clusterServerReactor import ClusterServerReactor
 from time import sleep
 
-rootsPassword = ""
+mysqlRootsPassword = ""
 dbName = "ClusterServerDB"
 dbUser ="cygnuscloud"
 dbPassword ="cygnuscloud"
@@ -19,7 +19,7 @@ listeningPort = 9000
 
 if __name__ == "__main__":
     reactor = ClusterServerReactor()
-    reactor.connectToDatabase(rootsPassword, dbName, dbUser, dbPassword, scriptPath)
+    reactor.connectToDatabase(mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath)
     reactor.startListenning(certificatePath, 9000)
     while not reactor.hasFinished() :
         sleep(10)

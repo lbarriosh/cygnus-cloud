@@ -8,7 +8,6 @@ Main server connector definitions
 from databaseUpdateThread import StatusDatabaseUpdateThread, UpdateHandler
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from database.utils.configuration import DBConfigurator
-from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
 from database.systemStatusDB.systemStatusDBWriter import SystemStatusDatabaseWriter
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from time import sleep
@@ -57,110 +56,57 @@ class _ClusterServerConnectorUpdateHandler(UpdateHandler):
             Nothing
         """
         self.__connector._sendUpdateRequestPackets()
-        
-class GenericWebCallback(object):
-    """
-    This class defines the interface that the web server will implement to process events.
-    """
-    def handleVMServerBootUpError(self, vmServerNameOrIP, errorMessage) :
-        """
-        Handles a virtual machine server boot error.
-        Args:
-            vmServerNameOrIP: the virtual machine server's name or IP address.
-            errorMessage: an error message
-        Returns:
-            Nothing
-        """
-        print 'VM Server bootup error ' + vmServerNameOrIP + " " + errorMessage
-    def handleVMServerRegistrationError(self, vmServerNameOrIP, errorMessage) :
-        """
-        Handles a virtual machine server registration error.
-        Args:
-            vmServerNameOrIP: the virtual machine server's name or IP address.
-            errorMessage: an error message
-        Returns:
-            Nothing
-        """
-        print 'VM Server registration error ' + vmServerNameOrIP + " " + errorMessage
-    def handleVMBootFailure(self, vmID, userID, errorMessage) :
-        """
-        Handles a virtual machine boot error.
-        Args:
-            vmID: the virtual machine's unique identifier.
-            userID: the user's unique identifier.
-            errorMessage: an error message
-        Returns:
-            Nothing
-        """
-        print 'VM Boot failure ' + str(vmID) + " " + str(userID) + " " + errorMessage
-    def handleVMConnectionData(self, userID, vncSrvrIP, vncSrvrPort, vncSrvrPassword) :
-        """
-        Handles a virtual machine's VNC connection data
-        Args:
-            userID: the user's unique identifier.
-            vncSrvrIP: the VNC server's IP address
-            vncSrvrPort: the VNC server's port
-            vncSrvrPassword: the VNC server's password
-        Returns:
-            Nothing
-        """
-        print 'VM Connection data ' + str(userID) + " " + vncSrvrIP + " " + str(vncSrvrPort) + " " + vncSrvrPassword
 
 class ClusterServerConnector(object):  
     """
     These objects communicate a cluster server and the web server.
     """  
-    def __init__(self, callback):
+    def __init__(self):
         """
         Initializes the connector's state.
         Args:
             callback: a GenericWebCallback instance. This object will process the incoming packages.
         """
         self.__stopped = False
-        self.__callback = callback
     
-    def connectToDatabase(self, rootsPassword, databaseName, sqlFilePath, websiteUser, websiteUserPassword, 
+    def connectToDatabase(self, mysqlRootsPassword, databaseName, sqlFilePath, websiteUser, websiteUserPassword, 
                           updateUser, updateUserPassword):
         """
         Establishes a connection with the system status database.
         Args:
-            rootsPassword: MySQL root's password
+            mysqlRootsPassword: MySQL root's password
             databaseName: the status database name
             sqlFilePath: the database schema definition SQL file path
-            websiteUser: the website user's name. This user will just have SELECT privileges on the status database.
+            websiteUser: the website user's name. 
             websiteUserPassword: the website user's password
             updateUser: the update user's name. This user will have ALL privileges on the status database.
             updateUserPassword: the update user's password.
         """        
         # Create the status database
-        self.__rootsPassword = rootsPassword
+        self.__rootsPassword = mysqlRootsPassword
         self.__databaseName = databaseName
-        configurator = DBConfigurator(rootsPassword)
+        configurator = DBConfigurator(mysqlRootsPassword)
         configurator.runSQLScript(databaseName, sqlFilePath)
         # Register the website and the update users
-        configurator.addUser(websiteUser, websiteUserPassword, databaseName, False)
+        configurator.addUser(websiteUser, websiteUserPassword, databaseName, True)
         configurator.addUser(updateUser, updateUserPassword, databaseName, True)
         # Create the database connectors
-        self.__reader = SystemStatusDatabaseReader(websiteUser, websiteUserPassword, databaseName)
         self.__writer = SystemStatusDatabaseWriter(updateUser, updateUserPassword, databaseName)
         # Connect to the database
-        self.__reader.connect()
         self.__writer.connect()
         
-    def connectToClusterServer(self, certificatePath, createReactorThread, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval):
+    def connectToClusterServer(self, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval):
         """
         Establishes a connection with the cluster server.
         Args:
             certificatePath: the server.crt and server.key directory path.
-            createReactorThread: if true, a reactor thread will be created. Otherwise, somebody else will have to
-            create it.
             clusterServerIP: the cluster server's IPv4 address
             clusterServerListenningPort: the cluster server's listenning port.
             statusDBUpdateInterval: the status database update interval (in seconds)
         Returns:
             Nothing
         """
-        self.__manager = NetworkManager(certificatePath, createReactorThread)
+        self.__manager = NetworkManager(certificatePath)
         self.__manager.startNetworkService()
         callback = _ClusterServerConnectorCallback(self)
         # Connect to the main server
@@ -195,33 +141,12 @@ class ClusterServerConnector(object):
         # Stop the update request thread
         self.__updateRequestThread.stop()
         # Close the database connections
-        self.__reader.disconnect()
         self.__writer.disconnect()
         # Stop the network service
         self.__manager.stopNetworkService()
         # Delete the status database
         dbConfigurator = DBConfigurator(self.__rootsPassword)
         dbConfigurator.dropDatabase(self.__databaseName)
-        
-    def getVMServersData(self):
-        """
-        Returns the virtual machine servers' data
-        Args:
-            None
-        Returns:
-            A list of dictionaries containing all the virtual machine servers' data.
-        """
-        return self.__reader.getVMServersData()
-    
-    def getVMDistributionData(self):
-        """
-        Returns the virtual machines' distribution data
-        Args:
-            None
-        Returns:
-            A list of dictionaries containing the virtual machines' distribution data 
-        """
-        return self.__reader.getVMDistributionData()
     
     def registerVMServer(self, vmServerIP, vmServerPort, vmServerName):
         """
@@ -270,16 +195,6 @@ class ClusterServerConnector(object):
         """
         p = self.__pHandler.createVMServerUnregistrationOrShutdownPacket(vmServerNameOrIP, halt, True)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
-        
-    def getActiveVMsData(self):
-        """
-        Returns the active virtual machines data
-        Args:
-            None
-        Returns:
-            A list of dictionaries containing all the active virtual machines' data.
-        """
-        return self.__reader.getActiveVMsData()
         
     def bootUpVirtualMachine(self, vmID, userID):
         """
@@ -338,23 +253,24 @@ class ClusterServerConnector(object):
         p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         
+    def has_finished(self):
+        return self.__stopped
+        
 if __name__ == "__main__" :
-    connector = ClusterServerConnector(GenericWebCallback())
-    connector.connectToDatabase("","SystemStatusDB", "../../database/SystemStatusDB.sql", "websiteUser", 
-                                "cygnuscloud", "updateUser", "cygnuscloud")
-    connector.connectToClusterServer("/home/luis/Certificates", True, "127.0.0.1", 9000, 5)
-    sleep(10)
-    print connector.getVMServersData()
-    print connector.getVMDistributionData()
-    print connector.getActiveVMsData()
-    connector.bootUpVMServer("Server1")
-    sleep(10)
-    print connector.getVMServersData()
-    print connector.getActiveVMsData()
-    connector.bootUpVirtualMachine(1, 1)
-    sleep(10)
-    connector.shutdownVMServer("Server1", True)
-    sleep(10)
-    print connector.getVMServersData()
-    connector.disconnectFromClusterServer(True)
-    
+    connector = ClusterServerConnector()
+    mysqlRootsPassword = ""
+    databaseName ="SystemStatusDB"
+    sqlFilePath = "../../database/SystemStatusDB.sql"
+    websiteUser = "website"
+    websiteUserPassword = "CygnusCloud"
+    updateUser = "connector_user"
+    updateUserPassword = "CygnusCloud"
+    certificatePath = "/home/luis/Certificates"
+    clusterServerIP = "127.0.0.1"
+    clusterServerListenningPort = 9000
+    statusDBUpdateInterval = 10
+    connector.connectToDatabase(mysqlRootsPassword, databaseName, sqlFilePath, websiteUser, websiteUserPassword, 
+                                updateUser, updateUserPassword)
+    connector.connectToClusterServer(certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval)
+    while not connector.has_finished() :
+        sleep(1)
