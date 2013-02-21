@@ -150,11 +150,11 @@ class RuntimeData(BasicDatabaseConnector):
         #Creamos la consulta encargada de extraer los datos
         sql = "SELECT VNCPortAdress FROM ActualVM" 
         #Recogemos los resultado
-        results=self._executeQuery(sql, True)
+        results=self._executeQuery(sql, False)
         #Guardamos en una lista los ids resultantes
         ports = []
         for r in results:
-            ports.append(r[0])
+            ports.append(int(r[0]))
         #Devolvemos la lista resultado
         return ports
     
@@ -165,13 +165,13 @@ class RuntimeData(BasicDatabaseConnector):
                máquinas virtuales.
         ''' 
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT userId FROM ActualVM" 
+        sql = "SELECT DISTINCT userId FROM ActualVM;" 
         #Recogemos los resultado
-        results=self._executeQuery(sql, True)
+        results=self._executeQuery(sql, False)
         #Guardamos en una lista los ids resultantes
         users = []
         for r in results:
-            users.append(r[0])
+            users.append(int(r[0]))
         #Devolvemos la lista resultado
         return users
     
@@ -476,7 +476,19 @@ class RuntimeData(BasicDatabaseConnector):
             for row in results:
                 ac.append({"UserID" : int(row[0]), "VMID" : int(row[1]), "VMName": row[2], "VNCPort" : int(row[3]), "VNCPass" : row[4]})
             return ac
-                
+        
+    def addVMBootCommand(self, domainName, commandID):
+        update = "INSERT INTO VMBootCommand VALUES ('" + domainName + "', '" + commandID + "');"
+        self._executeUpdate(update)
+        
+    def getVMBootCommand(self, domainName):
+        query = "SELECT commandID FROM VMBootCommand WHERE domainName = '" + domainName + "';"
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        update = "DELETE FROM VMBootCommand WHERE domainName = '" + domainName + "';"
+        self._executeUpdate(update)
+        return result[0]
         
 def main():    
     #Instanciamos la clase
