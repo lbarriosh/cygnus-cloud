@@ -125,14 +125,17 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             haltVMServers: if True, all the active virtual machines will be destroyed and the virtual machine
             servers will be shut down. If false, the virtual machine servers will wait until there are no
             active virtual machines, and then they'll be shut down.
-        """
-        self.__finished = True    
-        haltVMServers = data["HaltVMServers"]          
+        """    
         vmServersConnectionData = self.__dbConnector.getActiveVMServersConnectionData()
         if (vmServersConnectionData != None) :
+            args = dict()
+            args["Halt"] = data["HaltVMServers"]
+            args["Unregister"] = False            
             for connectionData in vmServersConnectionData :
-                self.__unregisterOrShutdownVMServer(connectionData['ServerIP'], haltVMServers, False)  
-                
+                args["ServerNameOrIPAddress"] = connectionData["ServerIP"]
+                self.__unregisterOrShutdownVMServer(args)  
+        self.__finished = True   
+             
     def __registerVMServer(self, data):
         """
         Processes a virtual machine server registration packet.

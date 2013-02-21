@@ -52,7 +52,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         return False
     command = tokens.pop(0)
     if (command == "createvm") :
-        p = pHandler.createVMBootPacket(int(tokens.pop(0)), int(tokens.pop(0)))
+        userID = int(tokens.pop(0))
+        machineID = int(tokens.pop(0))
+        p = pHandler.createVMBootPacket(userID, machineID, "123")
         networkManager.sendPacket(ip_address, port, p)
         return False
     elif (command == "shutdown") :

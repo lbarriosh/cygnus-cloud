@@ -57,11 +57,14 @@ class VMServerCallback(NetworkCallback):
         port = domainInfo["VNCport"]
         password = domainInfo["VNCpassword"]
         domainName = domainInfo["name"]
+        commandID = None
+        while (commandID == None) :
+            commandID = self.__runningImageData.getVMBootCommand(domainName)
         userID = None
         while (userID == None) :
             userID = self.__runningImageData.getAssignedUserInDomain(domainName)
             sleep(0.1)
-        packet = self.__packetManager.createVMConnectionParametersPacket(userID, ip, port + 1, password)
+        packet = self.__packetManager.createVMConnectionParametersPacket(userID, ip, port + 1, password, commandID)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):
@@ -184,6 +187,7 @@ class VMServerCallback(NetworkCallback):
         
         # Actualizo la base de datos
         self.__runningImageData.registerVMResources(newName, newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
+        self.__runningImageData.addVMBootCommand(newName, info["CommandID"])
         
     
     def __serverStatusRequest(self, packet):

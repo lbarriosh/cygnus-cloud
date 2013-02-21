@@ -2,7 +2,7 @@
 '''
 Virtual machine server packet handler definitions.
 @author: Luis Barrios Hernández
-@version: 2.0
+@version: 2.1
 '''
 
 from ccutils.enums import enum
@@ -16,13 +16,14 @@ class VMServerPacketHandler(object):
     def __init__(self, networkManager):
         self.__packetCreator = networkManager
     
-    def createVMBootPacket(self, machineId, userId):
+    def createVMBootPacket(self, machineId, userId, commandID):
         """
         Creates a virtual machine boot packet
         Args:
             machineId: the virtual machine to boot unique identifier
             userId: the unique identifier of the user that requested
             the virtual machine to boot.
+            commandID: the boot command's unique identifier
         Returns:
             A packet with the specified data.
         """
@@ -30,15 +31,17 @@ class VMServerPacketHandler(object):
         p.writeInt(VM_SERVER_PACKET_T.CREATE_DOMAIN)
         p.writeInt(machineId)
         p.writeInt(userId)
+        p.writeString(commandID)
         return p
     
-    def createVMConnectionParametersPacket(self, userID, vncServerIP, vncServerPort, password):
+    def createVMConnectionParametersPacket(self, userID, vncServerIP, vncServerPort, password, commandID):
         """
         Creates a virtual machine connection parameters packet
         Args:
             vncServerIP: the VNC server's IP address
             vncServerPort: the VNC server's port
             password: the VNC server's password
+            commandID: the boot command's unique identifier
         Returns:
             A packet with the specified data
         """
@@ -48,6 +51,7 @@ class VMServerPacketHandler(object):
         p.writeString(vncServerIP)
         p.writeInt(vncServerPort)
         p.writeString(password)
+        p.writeString(commandID)
         return p
     
     def createVMServerDataRequestPacket(self, packet_type):
@@ -132,15 +136,16 @@ class VMServerPacketHandler(object):
         if (packet_type == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
             result["MachineID"] = p.readInt()
             result["UserID"] = p.readInt()
+            result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
             result["UserID"] = p.readInt()
             result["VNCServerIP"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
+            result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
             result["VMServerIP"] = p.readString()
             result["ActiveDomains"] = p.readInt()
         # Note that the connection data segments will be sent to the web server immediately.
         # Therefore, they don't need to be read in the main server or in the virtual machine server.        
         return result
-        
