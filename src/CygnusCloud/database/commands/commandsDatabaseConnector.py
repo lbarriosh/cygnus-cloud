@@ -13,17 +13,17 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
     These objects register and delete commands (and their outputs)
     in the commands database.
     """
-    def __init__(self, sqlUser, sqlPassword, databaseName, minCommandInterval):
+    def __init__(self, sqlUser, sqlPassword, statusDBName, minCommandInterval):
         """
         Initializes the connector's state
         Args:
             sqlUser: the mysql user to use
             sqlPassword: the mysql password to use
-            databaseName: the mysql database name
+            statusDBName: the mysql database name
             minCommandInterval: the time interval that separates two requests
             sent by the same user.
         """
-        BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
+        BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, statusDBName)
         self.__minCommandInterval = minCommandInterval
     
     def addCommand(self, userID, commandType, arguments):
@@ -63,6 +63,8 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         """
         query = "SELECT * FROM QueuedCommand WHERE time = (SELECT MIN(time) FROM QueuedCommand) LIMIT 1;"
         result = self._executeQuery(query, True)
+        if (result == None) :
+            return None     
         userID = int(result[0])
         update = "DELETE FROM QueuedCommand WHERE userID = {0} AND TIME = {1};".format(userID, result[1])
         self._executeUpdate(update)

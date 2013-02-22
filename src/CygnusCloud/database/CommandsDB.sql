@@ -25,4 +25,3 @@ CREATE TABLE RunCommandOutput(
 	commandOutput VARCHAR(100),
 	PRIMARY KEY(userID, time))
 	ENGINE=MEMORY;
-	 
