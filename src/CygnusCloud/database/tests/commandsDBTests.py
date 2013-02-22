@@ -1,7 +1,8 @@
+# -*- coding: UTF8 -*-
 '''
-Created on Feb 21, 2013
-
-@author: luis
+Commands database connector unit tests.
+@author: Luis Barrios Hernández
+@version: 1.1
 '''
 
 import unittest
@@ -12,13 +13,7 @@ from database.utils.configuration import DBConfigurator
 
 class CommandsDBTests(unittest.TestCase):
     
-    '''
-        This class runs the unit tests.
-    '''
     def setUp(self):
-        '''
-        This method will be ran before EVERY unit test.
-        '''
         # Create the database
         self.__dbConfigurator = DBConfigurator("")
         self.__dbConfigurator.runSQLScript("CommandsDBTest", "./CommandsDBTest.sql")
@@ -28,9 +23,6 @@ class CommandsDBTests(unittest.TestCase):
         self.__connector.connect()   
         
     def tearDown(self):
-        '''
-        This method will be ran after EVERY unit test.
-        '''
         self.__connector.disconnect()
         self.__dbConfigurator.dropDatabase("CommandsDBTest")
         
@@ -38,9 +30,9 @@ class CommandsDBTests(unittest.TestCase):
         self.__connector.addCommand(1, 0, "command arguments")
         result = self.__connector.popCommand()
         expectedResult = (1, 0, 'command arguments')
-        self.assertEquals(result[0], expectedResult[0], "either addCommand or popCommand does not work")
-        self.assertEquals(result[2], expectedResult[1], "either addCommand or popCommand does not work")
-        self.assertEquals(result[3], expectedResult[2], "either addCommand or popCommand does not work")
+        self.assertEquals(result[0][0], expectedResult[0], "either addCommand or popCommand does not work")
+        self.assertEquals(result[1], expectedResult[1], "either addCommand or popCommand does not work")
+        self.assertEquals(result[2], expectedResult[2], "either addCommand or popCommand does not work")
         self.__connector.addCommand(1, 0, "command1 arguments")
         self.__connector.addCommand(1, 1, "command2 arguments")
         self.__connector.addCommand(1, 3, "command3 arguments")
@@ -50,12 +42,12 @@ class CommandsDBTests(unittest.TestCase):
                            (2, 2, "command4 arguments"), (3, 3, "command5 arguments")]
         for expectedResult in expectedResults :
             result = self.__connector.popCommand()
-            self.assertEquals(result[0], expectedResult[0], "either addCommand or popCommand does not work")
-            self.assertEquals(result[2], expectedResult[1], "either addCommand or popCommand does not work")
-            self.assertEquals(result[3], expectedResult[2], "either addCommand or popCommand does not work")
+            self.assertEquals(result[0][0], expectedResult[0], "either addCommand or popCommand does not work")
+            self.assertEquals(result[1], expectedResult[1], "either addCommand or popCommand does not work")
+            self.assertEquals(result[2], expectedResult[2], "either addCommand or popCommand does not work")
             
     def test_addAndRemoveCommandOutputs(self):
-        self.__connector.addCommandOutput(1, 1, 0, "commandOutput")
+        self.__connector.addCommandOutput((1, 1), 0, "commandOutput")
         result = self.__connector.getCommandOutput((1, 1))
         expectedResult = (0, "commandOutput")
         self.assertEquals(result, expectedResult, "either addCommandOutput or getCommandOutput does not work")
