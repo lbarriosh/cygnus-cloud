@@ -1,0 +1,165 @@
+/*
+Template Design by TheWebhub.com
+http://www.thewebhub.com
+Released for free under a Creative Commons Attribution-Share Alike 3.0 Philippines
+*/
+
+/** Common Styles */
+
+
+body {
+    background: none repeat scroll 0 0 #EEEDED;
+    color: #757575;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 13px;
+    line-height: 1.6em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    padding: 0;
+    text-align: justify;
+    width: 950px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #F06C00;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+}
+
+ul {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+a {
+    color: #F06C00;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+/** TOPBAR */
+#topbar {
+    margin: 0 auto;
+}
+
+#language {
+    float: left;
+}
+
+#navbar {
+    float: right;
+}
+
+/** HEADER */
+#header {
+    background: url("../images/imagen_cabecera.png") no-repeat scroll left top transparent;
+    color: #FFFFFF;
+    font-family: Arial,Helvetica,sans-serif;
+    height: 200px;
+    margin: 0 auto;
+}
+#header h1 {
+    color: #FFFFFF;
+    float: left;
+    font-size: 38px;
+    margin: 0;
+    padding: 207px 0 0 50px;
+    text-transform: uppercase;
+}
+#header h2 {
+    color: #FFFFFF;
+    float: right;
+    margin: 0;
+    padding: 213px 40px 0 0;
+    text-transform: uppercase;
+}
+
+/** MENU */
+#menu {
+    background: url("../images/image02.jpg") no-repeat scroll left top transparent;
+    height: 50px;
+    margin: 0 auto;
+}
+#menu ul {
+    list-style: none outside none;
+    margin: 0;
+    padding: 0;
+}
+#menu li {
+    display: inline;
+}
+#menu a {
+    background: none repeat scroll 0 0 #A00C18;
+    color: #FFFFFF;
+    display: block;
+    float: left;
+    font-size: 11px;
+    font-weight: bold;
+    margin-right: 3px;
+    margin-top: 10px;
+    padding: 5px 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+#menu a:hover {
+    color: #FFFFFF;
+}
+
+/** CONTENT */
+#content-wrap {
+    background: url("../images/image03.jpg") repeat-y scroll left top transparent;
+    margin: 0 auto;
+}
+#content {
+    margin: 0 auto;
+    padding-top: 20px;
+}
+
+/** FOOTER */
+#footer {
+    background: url("../images/image04.jpg") no-repeat scroll left top transparent;
+    color: #000000;
+    font-size: 11px;
+    height: 70px;
+    margin: 0 auto;
+}
+#footer p {
+    margin: 0;
+    padding: 5px 10px;
+}
+#footer .copyright {
+    float: left;
+    margin: 50px 0 0 30px;
+    padding-left: 20px;
+    text-align: center;
+}
+#footer .links {
+    float: right;
+    margin: 50px 30px 0 0;
+    padding-right: 20px;
+    text-align: center;
+}
+#footer .css {
+    padding-left: 20px;
+}
+#footer .xhtml {
+    padding-left: 20px;
+}
+#footer a {
+}
+
+/** Arrancar máquinas */
+#descripcion {
+    display: inline-block;
+    position: fixed;
+}
+
+#maquinas {
+    display: inline-block;
+    width: 600px;
+}
