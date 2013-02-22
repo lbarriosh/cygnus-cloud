@@ -148,65 +148,7 @@ class ClusterServerConnector(object):
         dbConfigurator = DBConfigurator(self.__rootsPassword)
         dbConfigurator.dropDatabase(self.__databaseName)
     
-    def registerVMServer(self, vmServerIP, vmServerPort, vmServerName):
-        """
-        Registers a virtual machine server in the cluster server.
-        Args:
-            vmServerIP: the virtual machine server's IPv4 address
-            vmServerPort: the virtual machine server's listenning port
-            vmServerName: the virtual machine server's name.
-        Returns:
-            Nothing
-        """
-        p = self.__pHandler.createVMServerRegistrationPacket(vmServerIP, vmServerPort, vmServerName)
-        self.__manager.sendPacket(vmServerIP, self.__clusterServerPort, p)
-        
-    def unregisterVMServer(self, vmServerNameOrIP, halt):
-        """
-        Unregister a virtual machine server in the cluster server.
-        Args:
-            vmServerNameOrIP: the virtual machine server's name or IPv4 address
-            halt: if True, the virtual machine server will destroy all the active virtual machines and terminate.
-            If False, the virtual machine will wait for all the virtual machines to terminate, and then it will
-            shut down.
-        """
-        p = self.__pHandler.createVMServerUnregistrationOrShutdownPacket(vmServerNameOrIP, halt, False)
-        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
-        
-    def bootUpVMServer(self, vmServerNameOrIP):
-        """
-        Pairs a registered virtual machine server and the cluster server.
-        Args:
-            vmServerNameOrIP: the virtual machine server's name or IPv4 address.
-        Returns:
-            Nothing
-        """
-        p = self.__pHandler.createVMServerBootUpPacket(vmServerNameOrIP)
-        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
-        
-    def shutdownVMServer(self, vmServerNameOrIP, halt):
-        """
-        Shuts down a virtual machine server
-        Args:
-            vmServerNameOrIP: the virtual machine server's name or IPv4 address
-            halt: if True, the virtual machine server will destroy all the active virtual machines and terminate.
-            If False, the virtual machine will wait for all the virtual machines to terminate, and then it will
-            shut down.
-        """
-        p = self.__pHandler.createVMServerUnregistrationOrShutdownPacket(vmServerNameOrIP, halt, True)
-        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
-        
-    def bootUpVirtualMachine(self, vmID, userID):
-        """
-        Boots up a virtual machine.
-        Args:
-            vmID: the virtual machine's unique identifier.
-            userID: the user's unique identifier.
-        Returns:
-            Nothing
-        """
-        p = self.__pHandler.createVMBootRequestPacket(vmID, userID)
-        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+    
         
     def _processIncomingPacket(self, packet):
         """
@@ -225,15 +167,17 @@ class ClusterServerConnector(object):
             self.__writer.processVMDistributionSegment(data["Segment"], data["SequenceSize"], data["Data"])
         elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
             self.__writer.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])
-        elif (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
-            self.__callback.handleVMServerBootUpError(data["ServerNameOrIPAddress"], data["ErrorMessage"])
-        elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
-            self.__callback.handleVMServerRegistrationError(data["ServerNameOrIPAddress"], data["ErrorMessage"])  
-        elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE) :
-            self.__callback.handleVMBootFailure(data["VMID"], data["UserID"], data["ErrorMessage"])  
-        elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
-            self.__callback.handleVMConnectionData(data["UserID"], data["VNCServerIPAddress"], data["VNCServerPort"],
-                                                   data["VNCServerPassword"])
+        # TODO: process these packets
+        # I just have to serialize & add 'em to the commands database.
+#        elif (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
+#            self.__callback.handleVMServerBootUpError(data["ServerNameOrIPAddress"], data["ErrorMessage"])
+#        elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
+#            self.__callback.handleVMServerRegistrationError(data["ServerNameOrIPAddress"], data["ErrorMessage"])  
+#        elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE) :
+#            self.__callback.handleVMBootFailure(data["VMID"], data["UserID"], data["ErrorMessage"])  
+#        elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
+#            self.__callback.handleVMConnectionData(data["UserID"], data["VNCServerIPAddress"], data["VNCServerPort"],
+#                                                   data["VNCServerPassword"])
     
     def _sendUpdateRequestPackets(self):
         """
