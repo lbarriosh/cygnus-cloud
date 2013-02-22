@@ -1,6 +1,6 @@
 # -*- coding: UTF8 -*-
 '''
-Command handler definition.
+Command handler class definition.
 @author: Luis Barrios Hernández
 @version: 1.0
 '''
@@ -14,6 +14,9 @@ COMMAND_OUTPUT_TYPE = enum("VM_SERVER_REGISTRATION_ERROR", "VM_SERVER_BOOTUP_ERR
                            "VM_CONNECTION_DATA", "VM_BOOT_FAILURE")
 
 class CommandsHandler(object):
+    """
+    This class provides methods to serialize and deserialize commands and command outputs. 
+    """
     
     @staticmethod
     def createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName):
@@ -30,7 +33,7 @@ class CommandsHandler(object):
         return (COMMAND_TYPE.REGISTER_VM_SERVER, args)
     
     @staticmethod
-    def createVMServerUnregistrationCommand(unregister, vmServerNameOrIP, halt):
+    def createVMServerUnregistrationOrShutdownCommand(unregister, vmServerNameOrIP, halt):
         """
         Creates a virtual machine server unregistration or shutdown command
         Args:
@@ -81,7 +84,7 @@ class CommandsHandler(object):
         Returns:
             A tuple (command type, command arguments) containing the command type and its serialized arguments.
         """
-        return (COMMAND_TYPE.HALT, "")
+        return (COMMAND_TYPE.HALT, str(haltVMServers))
 
     @staticmethod
     def deserializeCommandArgs(commandType, commandArgs):
@@ -91,7 +94,7 @@ class CommandsHandler(object):
             commandType: the command's type.
             commandArgs: the command's args.
         Returns:
-            A tuple (command type, command arguments) containing the command type and its serialized arguments.    
+            a dictionary containing the command arguments.    
         """
         l = commandArgs.split("$")
         result = dict()
@@ -119,9 +122,11 @@ class CommandsHandler(object):
         Args:
             serverNameOrIPAddress: the virtual machine server's name or IP address
             errorMessage: an error message
+        Returns:
+            A tuple (command output type, command output) containing the command output's type and its serialized content.
         """
-        args = "{0}${1}".format(serverNameOrIPAddress, errorMessage)
-        return (COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR, args)
+        content = "{0}${1}".format(serverNameOrIPAddress, errorMessage)
+        return (COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR, content)
     
     @staticmethod
     def createVMServerRegistrationErrorOutput(serverNameOrIPAddress, errorMessage):
@@ -130,9 +135,11 @@ class CommandsHandler(object):
         Args:
             serverNameOrIPAddress: the virtual machine server's name or IP address
             errorMessage: an error message
+        Returns:
+            A tuple (command output type, command output) containing the command output's type and its serialized content.
         """
-        args = "{0}${1}".format(serverNameOrIPAddress, errorMessage)
-        return (COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR, args)
+        content = "{0}${1}".format(serverNameOrIPAddress, errorMessage)
+        return (COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR, content)
     
     @staticmethod
     def createVMBootFailureErrorOutput(vmID, userID, errorMessage):
@@ -141,16 +148,51 @@ class CommandsHandler(object):
         Args:
             serverNameOrIPAddress: the virtual machine server's name or IP address
             errorMessage: an error message
+        Returns:
+            A tuple (command output type, command output) containing the command output's type and its serialized content.
         """
-        args = "{0}${1}${2}".format(vmID, userID, errorMessage)
-        return (COMMAND_OUTPUT_TYPE.VM_BOOT_FAILURE, args)
+        content = "{0}${1}${2}".format(vmID, userID, errorMessage)
+        return (COMMAND_OUTPUT_TYPE.VM_BOOT_FAILURE, content)
     
     @staticmethod
-    #def createVMConnectionDataOutput():
-    # TODO: check if the vm connection data packets contain the user ID or not
-    # TODO. create the command output deserializer
-
-#          
-#         
-#            self.__callback.handleVMConnectionData(data["UserID"], data["VNCServerIPAddress"], data["VNCServerPort"],
-#                                                   data["VNCServerPassword"])
+    def createVMConnectionDataOutput(userID, vncServerIPAddress, vncServerPort, vncServerPassword):
+        """
+        Creates a virtual machine boot up command output that contains the connection parameters.
+        Args:
+            userID: the VM owner's unique identifier
+            vncServerIPAddress: the VNC server's IP address
+            vncServerPort: the VNC server's port
+            vncServerPassword: the VNC server's password
+        Returns:
+            A tuple (command output type, command output) containing the command output's type and its serialized content.
+        """
+        content = "{0}${1}${2}${3}".format(userID, vncServerIPAddress, vncServerPort, vncServerPassword)
+        return (COMMAND_OUTPUT_TYPE.VM_CONNECTION_DATA, content)
+    
+    @staticmethod
+    def deserializeCommandOutput(commandOutputType, content):
+        """
+        Deserializes a command's argument.
+        Args:
+            commandType: the command's type.
+            commandArgs: the command's args.
+        Returns:
+            A dictionary containing the command's output
+        """
+        l = content.split("$")
+        result = dict()
+        if (commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR or 
+            commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR) :
+            result["ServerNameOrIPAddress"] = l[0]
+            result["ErrorMessage"] = l[1]
+        elif (commandOutputType == COMMAND_OUTPUT_TYPE.VM_BOOT_FAILURE) :
+            result["VMID"] = int(l[0])
+            result["UserID"] = int(l[1])
+            result["ErrorMessage"] = l[2]
+        elif (commandOutputType == COMMAND_OUTPUT_TYPE.VM_CONNECTION_DATA): 
+            result["UserID"] = int(l[0])
+            result["VNCServerIPAddress"] = l[1]
+            result["VNCServerPort"] = int(l[2])
+            result["VNCServerPassword"] = l[3]
+            
+        return result

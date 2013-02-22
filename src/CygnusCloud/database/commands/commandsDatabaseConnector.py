@@ -13,15 +13,18 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
     These objects register and delete commands (and their outputs)
     in the commands database.
     """
-    def __init__(self, sqlUser, sqlPassword, databaseName):
+    def __init__(self, sqlUser, sqlPassword, databaseName, minCommandInterval):
         """
         Initializes the connector's state
         Args:
             sqlUser: the mysql user to use
             sqlPassword: the mysql password to use
             databaseName: the mysql database name
+            minCommandInterval: the time interval that separates two requests
+            sent by the same user.
         """
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
+        self.__minCommandInterval = minCommandInterval
     
     def addCommand(self, userID, commandType, arguments):
         """
@@ -30,17 +33,25 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
             userID: an user ID. This user has requested the execution of the new command.
             commandType: the new command's type.
             arguments: the new command's arguments.
-        Returns:
-            the command's ID. 
+        Returns: None if the command could not be scheduled, and the command's ID if everything
+        went OK. 
         @attention: DO NOT rely on the command ID's internal representation: it can change without
         prior notice.
         """
         # Get the current date
-        timestamp = long(time.time() * 1e6)
-        # Generate the query
-        query = "INSERT INTO Command VALUES ({0}, {1}, {2}, '{3}');".format(userID, timestamp, commandType, arguments)
-        self._executeUpdate(query)
-        return (userID, timestamp)
+        timestamp = int(time.time())
+        # Get the newest command that was submitted by the user
+        query = "SELECT MIN(time) FROM PendingCommand WHERE userID = {0};".format(userID)
+        result = self._executeQuery(query, True)[0]
+        if (result == None or (timestamp - result >= self.__minCommandInterval))  :
+            # Generate the updates
+            command = "INSERT INTO PendingCommand VALUES ({0}, {1})".format(userID, timestamp)
+            self._executeUpdate(command)
+            command = "INSERT INTO QueuedCommand VALUES ({0}, {1}, {2}, '{3}');".format(userID, timestamp, commandType, arguments)
+            self._executeUpdate(command)
+            return (userID, timestamp)
+        else :
+            return None
         
     def popCommand(self):
         """
@@ -50,10 +61,10 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         Returns:
             The tuple (commandID, commandType, commandArguments)
         """
-        query = "SELECT * FROM Command WHERE time = (SELECT MIN(time) FROM Command) LIMIT 1;"
+        query = "SELECT * FROM QueuedCommand WHERE time = (SELECT MIN(time) FROM QueuedCommand) LIMIT 1;"
         result = self._executeQuery(query, True)
         userID = int(result[0])
-        update = "DELETE FROM Command WHERE userID = {0} AND TIME = {1};".format(userID, result[1])
+        update = "DELETE FROM QueuedCommand WHERE userID = {0} AND TIME = {1};".format(userID, result[1])
         self._executeUpdate(update)
         return ((userID, result[1]), int(result[2]), result[3])
     
@@ -67,7 +78,9 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         Returns:
             Nothing
         """
-        update = "INSERT INTO CommandOutput VALUES ({0}, {1}, {2}, '{3}');".format(commandID[0], commandID[1], outputType, commandOutput)
+        update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
+        self._executeUpdate(update)
+        update = "INSERT INTO RunCommandOutput VALUES ({0}, {1}, {2}, '{3}');".format(commandID[0], commandID[1], outputType, commandOutput)
         self._executeUpdate(update)
             
     def getCommandOutput(self, commandID):
@@ -78,10 +91,10 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         Returns:
             A tuple (command output type, command ouput) containig the command's output type and its content.
         """
-        query = "SELECT outputType, commandOutput FROM CommandOutput WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
+        query = "SELECT outputType, commandOutput FROM RunCommandOutput WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         result = self._executeQuery(query, True)
         if (result != None) :
-            update = "DELETE FROM CommandOutput WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
+            update = "DELETE FROM RunCommandOutput WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
             self._executeUpdate(update)
             return (int(result[0]), result[1])
         else:

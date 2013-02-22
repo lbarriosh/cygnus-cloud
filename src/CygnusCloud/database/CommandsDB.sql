@@ -4,17 +4,23 @@ CREATE DATABASE CommandsDB;
 
 USE CommandsDB;
 
-CREATE TABLE Command(
+CREATE TABLE QueuedCommand(
 	userID INT,
-	time BIGINT UNSIGNED,
+	time INT UNSIGNED,
 	commandType TINYINT NOT NULL,
 	commandArgs VARCHAR(100),
 	PRIMARY KEY(userID, time))
 	ENGINE=MEMORY;
-	
-CREATE TABLE CommandOutput(
+
+CREATE TABLE PendingCommand(
 	userID INT,
-	time BIGINT UNSIGNED,
+	time INT UNSIGNED,
+	PRIMARY KEY(userID, time))
+	ENGINE=MEMORY;
+	
+CREATE TABLE RunCommandOutput(
+	userID INT,
+	time INT UNSIGNED,
 	outputType TINYINT NOT NULL,
 	commandOutput VARCHAR(100),
 	PRIMARY KEY(userID, time))
