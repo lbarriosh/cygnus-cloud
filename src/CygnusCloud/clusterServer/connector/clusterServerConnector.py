@@ -167,6 +167,14 @@ class ClusterServerConnector(object):
         Returns:
             None if the command output is not available. Otherwise, it will return a dictionary
             with it.
+            This dictionary will have the keys 
+            - ServerNameOrIPAddress and ErrorMessage if the command output is a 
+              virtual machine server boot up error.
+            - VMServerIP, VMServerPort, VMServerName and ErrorMessage if the command output
+              is a virtual machine server registration error.
+            - VMID and ErrorMessage if the command output is a virtual machine boot failure.
+            - VNCServerIPAddress, VNCServerPort and VNCServerPassword if the command otput
+              contains a virtual machine's connection data.
         """
         result = self.__commandsDBConnector.getCommandOutput(commandID)
         if (result != None) :
@@ -180,6 +188,14 @@ class ClusterServerConnector(object):
         Args:
             commandID: the command's ID
         Returns: A dictionary containing the command's output.
+        This dictionary will have the keys 
+            - ServerNameOrIPAddress and ErrorMessage if the command output is a 
+              virtual machine server boot up error.
+            - VMServerIP, VMServerPort, VMServerName and ErrorMessage if the command output
+              is a virtual machine server registration error.
+            - VMID and ErrorMessage if the command output is a virtual machine boot failure.
+            - VNCServerIPAddress, VNCServerPort and VNCServerPassword if the command otput
+              contains a virtual machine's connection data.
         @attention: This method will only return when the command output is available. If you prefer
         a non-blocking behavior, use getCommandOutput() instead.
         """
