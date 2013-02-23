@@ -61,10 +61,14 @@ class _ClusterServerEndpointUpdateHandler(UpdateHandler):
 
 class WebServerEndpoint(object):  
     """
-    These objects communicate a cluster server and the web server.
-    """
-    
+    These objects communicate a cluster server and the web connectors.
+    """    
     def __init__(self):
+        """
+        Initializes the endpoint's state
+        Args:
+            None
+        """
         self.__stopped = False
     
     def connectToDatabases(self, mysqlRootsPassword, statusDBName, commandsDBName, statusdbSQLFilePath, commandsDBSQLFilePath,
@@ -129,7 +133,7 @@ class WebServerEndpoint(object):
         
     def disconnectFromClusterServer(self):
         """
-        Closes the connection with the cluster server.
+        Closes the connection with the cluster server and drops the databases.
         Args:
             haltVMServers: if True, the virtual machine servers will be halted immediately. If false, they will be
             halted until all their virtual machines have been shut down.
@@ -189,6 +193,14 @@ class WebServerEndpoint(object):
             self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
             
     def processCommands(self):
+        """
+        Processes the commands sent from the web connectors.
+        Args:
+            None
+        Returns:
+            Nothing
+        @attention: This method will only finish after processing a halt command.
+        """
         while not self.__stopped :
             commandData = self.__commandsDBConnector.popCommand()
             if (commandData == None) :

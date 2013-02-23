@@ -34,7 +34,7 @@ class VMServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createVMConnectionParametersPacket(self, userID, vncServerIP, vncServerPort, password, commandID):
+    def createVMConnectionParametersPacket(self, vncServerIP, vncServerPort, password, commandID):
         """
         Creates a virtual machine connection parameters packet
         Args:

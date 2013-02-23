@@ -93,6 +93,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         Returns:
             A tuple (command output type, command ouput) containig the command's output type and its content.
         """
+        print commandID
         query = "SELECT outputType, commandOutput FROM RunCommandOutput WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         result = self._executeQuery(query, True)
         if (result != None) :
