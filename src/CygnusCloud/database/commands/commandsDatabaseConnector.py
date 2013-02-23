@@ -39,7 +39,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         prior notice.
         """
         # Get the current date
-        timestamp = int(time.time())
+        timestamp = time.time()
         # Get the newest command that was submitted by the user
         query = "SELECT MIN(time) FROM PendingCommand WHERE userID = {0};".format(userID)
         result = self._executeQuery(query, True)[0]

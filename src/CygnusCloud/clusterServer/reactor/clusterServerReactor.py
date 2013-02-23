@@ -194,12 +194,12 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             # Close the network connection
             self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])
-        if (unregister) :
+        if (not unregister) :
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
-            self.__dbConnector.deleteVMServerStatics(serverId)
+            self.__dbConnector.deleteVMServerStatistics(serverId)
         else :
             # Update the virtual machine server's state
-            self.__dbConnector.unsubscribeVMServer(key)   
+            self.__dbConnector.deleteVMServer(key)   
             
     def __updateVMServerStatus(self, data):
         """
@@ -320,7 +320,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         (serverID, errorMessage) = self.__loadBalancer.assignVMServer(vmID)
         if (errorMessage != None) :
             # Something went wrong => warn the user
-            p = self.__webPacketHandler.createVMBootFailurePacket(vmID, userID, errorMessage, data["CommandID"])
+            p = self.__webPacketHandler.createVMBootFailurePacket(vmID, errorMessage, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
         else :
             # Ask the virtual machine server to boot up the VM

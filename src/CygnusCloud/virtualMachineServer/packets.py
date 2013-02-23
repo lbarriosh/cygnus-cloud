@@ -47,7 +47,6 @@ class VMServerPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA)
-        p.writeInt(userID)
         p.writeString(vncServerIP)
         p.writeInt(vncServerPort)
         p.writeString(password)
@@ -138,7 +137,6 @@ class VMServerPacketHandler(object):
             result["UserID"] = p.readInt()
             result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
-            result["UserID"] = p.readInt()
             result["VNCServerIP"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()

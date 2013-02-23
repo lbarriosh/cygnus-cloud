@@ -36,7 +36,6 @@ class TesterCallback(NetworkCallback):
         elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE):
             print("Virtual machine boot failure")
             print("\tMachine ID: " + str(data["VMID"]))
-            print("\tUser ID: " + str(data["UserID"]))
             print("\tReason: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
             print("Virtual machine connection data")
@@ -79,10 +78,10 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "unregisterVMServer") :
-            p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), False, "")
+            p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), True, "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "shutdownVMServer") :
-            p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), True, "")
+            p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), False, "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "bootUpVMServer") :
             p = pHandler.createVMServerBootUpPacket(tokens.pop(0), "")

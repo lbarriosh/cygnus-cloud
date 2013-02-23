@@ -9,7 +9,6 @@ import unittest
 
 from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
 from database.utils.configuration import DBConfigurator
-from time import sleep
 
 class CommandsDBTests(unittest.TestCase):
     

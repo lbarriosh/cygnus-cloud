@@ -127,7 +127,7 @@ class WebServerEndpoint(object):
         # Start it
         self.__updateRequestThread.start()
         
-    def __disconnectFromClusterServer(self, haltVMServers):
+    def disconnectFromClusterServer(self):
         """
         Closes the connection with the cluster server.
         Args:
@@ -139,11 +139,12 @@ class WebServerEndpoint(object):
         your application will hang.
         """
         # Send a halt packet to the cluster server
-        p = self.__pHandler.createHaltPacket(haltVMServers)
+        p = self.__pHandler.createHaltPacket(self.__haltVMServers)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         # Stop the update request thread
         self.__updateRequestThread.stop()
         # Close the database connections
+        self.__commandsDBConnector.disconnect()
         self.__writer.disconnect()
         # Stop the network service
         self.__manager.stopNetworkService()
@@ -176,15 +177,15 @@ class WebServerEndpoint(object):
                     data["ServerNameOrIPAddress"], data["ErrorMessage"])
             elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
                 (outputType, outputContent) = CommandsHandler.createVMServerRegistrationErrorOutput(
-                    data["ServerNameOrIPAddress"], data["ErrorMessage"])
+                    data["VMServerIP"], data["VMServerPort"], data["VMServerName"], data["ErrorMessage"])
             elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE) :
                 (outputType, outputContent) = CommandsHandler.createVMBootFailureErrorOutput(
-                    data["VMID"], data["UserID"], data["ErrorMessage"])  
+                    data["VMID"], data["ErrorMessage"])  
             elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
                 (outputType, outputContent) = CommandsHandler.createVMConnectionDataOutput(
-                    data["UserID"], data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"])
-            l = data["CommandID"].split("$")
-            commandID = (int(l[0]), int(l[1]))
+                    data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"])
+            l = data["CommandID"].split("|")
+            commandID = (int(l[0]), float(l[1]))
             self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
             
     def processCommands(self):
@@ -194,22 +195,23 @@ class WebServerEndpoint(object):
                 sleep(0.1)
             else :
                 (commandID, commandType, commandArgs) = commandData
-                serializedCommandID = "{0}${1}".format(commandID[0], commandID[1])
                 parsedArgs = CommandsHandler.deserializeCommandArgs(commandType, commandArgs)
-                if (commandType == COMMAND_TYPE.BOOTUP_VM_SERVER) :                    
-                    packet = self.__pHandler.createVMServerBootUpPacket(parsedArgs["VMServerNameOrIP"], serializedCommandID)
-                elif (commandType == COMMAND_TYPE.HALT) :
-                    packet = self.__pHandler.createHaltPacket(parsedArgs["HaltVMServers"])
-                elif (commandType == COMMAND_TYPE.REGISTER_VM_SERVER) :
-                    packet = self.__pHandler.createVMServerRegistrationPacket(parsedArgs["VMServerIP"], 
-                        parsedArgs["VMServerPort"], parsedArgs["VMServerName"], serializedCommandID)
-                elif (commandType == COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
-                    packet = self.__pHandler.createVMServerUnregistrationOrShutdownPacket(parsedArgs["VMServerNameOrIP"], 
-                        parsedArgs["Halt"], parsedArgs["Unregister"], serializedCommandID)
-                elif (commandType == COMMAND_TYPE.VM_BOOT_REQUEST) :
-                    packet = self.__pHandler.createVMBootRequestPacket(parsedArgs["VMID"], parsedArgs["UserID"], serializedCommandID)
-                    
-                self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
+                if (commandType != COMMAND_TYPE.HALT) :
+                    serializedCommandID = "{0}|{1}".format(commandID[0], commandID[1])                    
+                    if (commandType == COMMAND_TYPE.BOOTUP_VM_SERVER) :                    
+                        packet = self.__pHandler.createVMServerBootUpPacket(parsedArgs["VMServerNameOrIP"], serializedCommandID)
+                    elif (commandType == COMMAND_TYPE.REGISTER_VM_SERVER) :
+                        packet = self.__pHandler.createVMServerRegistrationPacket(parsedArgs["VMServerIP"], 
+                            parsedArgs["VMServerPort"], parsedArgs["VMServerName"], serializedCommandID)
+                    elif (commandType == COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
+                        packet = self.__pHandler.createVMServerUnregistrationOrShutdownPacket(parsedArgs["VMServerNameOrIP"], 
+                            parsedArgs["Halt"], parsedArgs["Unregister"], serializedCommandID)
+                    elif (commandType == COMMAND_TYPE.VM_BOOT_REQUEST) :
+                        packet = self.__pHandler.createVMBootRequestPacket(parsedArgs["VMID"], parsedArgs["UserID"], serializedCommandID)
+                    self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
+                else :
+                    self.__stopped = True
+                    self.__haltVMServers = parsedArgs["HaltVMServers"]
     
     def _sendUpdateRequestPackets(self):
         """
@@ -249,3 +251,4 @@ if __name__ == "__main__" :
                                 endpointUser, endpointUserPassword)
     endpoint.connectToClusterServer(certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval)
     endpoint.processCommands()
+    endpoint.disconnectFromClusterServer()

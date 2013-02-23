@@ -62,8 +62,8 @@ class ClusterServerPacketHandler(object):
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(name)
+        p.writeString(reason)        
         p.writeString(commandID)
-        p.writeString(reason)
         return p
     
     def createDataRequestPacket(self, query):

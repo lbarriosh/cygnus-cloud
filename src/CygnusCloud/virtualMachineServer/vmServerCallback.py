@@ -60,11 +60,7 @@ class VMServerCallback(NetworkCallback):
         commandID = None
         while (commandID == None) :
             commandID = self.__runningImageData.getVMBootCommand(domainName)
-        userID = None
-        while (userID == None) :
-            userID = self.__runningImageData.getAssignedUserInDomain(domainName)
-            sleep(0.1)
-        packet = self.__packetManager.createVMConnectionParametersPacket(userID, ip, port + 1, password, commandID)
+        packet = self.__packetManager.createVMConnectionParametersPacket(ip, port + 1, password, commandID)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):

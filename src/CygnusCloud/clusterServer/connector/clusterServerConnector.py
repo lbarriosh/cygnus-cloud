@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 '''
-Cluster server class definitions.
+Cluster server connector definitions.
 @author: Luis Barrios Hernández
 @version: 2.0
 '''
@@ -29,10 +29,10 @@ class ClusterServerConnector(object):
         return self.__statusDBConnector.getActiveVMsData()
     
     def getVMDistributionData(self):
-        self.__statusDBConnector.getVMDistributionData()
+        return self.__statusDBConnector.getVMDistributionData()
         
     def getVMServersData(self):
-        self.__statusDBConnector.getVMServersData()
+        return self.__statusDBConnector.getVMServersData()
         
     def registerVMServer(self, vmServerIP, vmServerPort, vmServerName):
         (commandType, commandArgs) = CommandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName)
@@ -72,3 +72,28 @@ class ClusterServerConnector(object):
             if (result == None) :
                 sleep(0.1)
         return CommandsHandler.deserializeCommandOutput(result[0], result[1])
+    
+if __name__ == "__main__":
+    connector = ClusterServerConnector(1)
+    connector.connectToDatabases("SystemStatusDB", "website", "CygnusCloud", "CommandsDB", "website", "CygnusCloud")
+    sleep(3)
+    print connector.getVMServersData()
+    print connector.getVMDistributionData()
+    connector.bootUpVMServer("Server1")
+    sleep(15)
+    commandID = connector.bootUpVMServer("Foo")
+    print connector.waitForCommandOutput(commandID)
+    commandID = connector.registerVMServer("127.0.0.1", 10000, "Moo")
+    print connector.waitForCommandOutput(commandID)
+    sleep(15)
+    print connector.getVMServersData()
+    commandID = connector.bootUpVM(1, 1)
+    print connector.waitForCommandOutput(commandID)
+    sleep(15)
+    print connector.getActiveVMsData()
+    connector.unregisterVMServer("Server1", True)
+    sleep(15)
+    print connector.getVMServersData()
+    connector.halt(True)
+    connector.dispose()
+    

@@ -129,7 +129,7 @@ class CommandsHandler(object):
         return (COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR, content)
     
     @staticmethod
-    def createVMServerRegistrationErrorOutput(serverNameOrIPAddress, errorMessage):
+    def createVMServerRegistrationErrorOutput(vmServerIP, vmServerPort, vmServerName, errorMessage):
         """
         Creates a virtual machine server registration error command output.
         Args:
@@ -138,11 +138,11 @@ class CommandsHandler(object):
         Returns:
             A tuple (command output type, command output) containing the command output's type and its serialized content.
         """
-        content = "{0}${1}".format(serverNameOrIPAddress, errorMessage)
+        content = "{0}${1}${2}${3}".format(vmServerIP, vmServerPort, vmServerName, errorMessage)
         return (COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR, content)
     
     @staticmethod
-    def createVMBootFailureErrorOutput(vmID, userID, errorMessage):
+    def createVMBootFailureErrorOutput(vmID, errorMessage):
         """
         Creates a virtual machine boot up error command output.
         Args:
@@ -151,22 +151,21 @@ class CommandsHandler(object):
         Returns:
             A tuple (command output type, command output) containing the command output's type and its serialized content.
         """
-        content = "{0}${1}${2}".format(vmID, userID, errorMessage)
+        content = "{0}${1}".format(vmID, errorMessage)
         return (COMMAND_OUTPUT_TYPE.VM_BOOT_FAILURE, content)
     
     @staticmethod
-    def createVMConnectionDataOutput(userID, vncServerIPAddress, vncServerPort, vncServerPassword):
+    def createVMConnectionDataOutput(vncServerIPAddress, vncServerPort, vncServerPassword):
         """
         Creates a virtual machine boot up command output that contains the connection parameters.
         Args:
-            userID: the VM owner's unique identifier
             vncServerIPAddress: the VNC server's IP address
             vncServerPort: the VNC server's port
             vncServerPassword: the VNC server's password
         Returns:
             A tuple (command output type, command output) containing the command output's type and its serialized content.
         """
-        content = "{0}${1}${2}${3}".format(userID, vncServerIPAddress, vncServerPort, vncServerPassword)
+        content = "{0}${1}${2}".format(vncServerIPAddress, vncServerPort, vncServerPassword)
         return (COMMAND_OUTPUT_TYPE.VM_CONNECTION_DATA, content)
     
     @staticmethod
@@ -181,18 +180,20 @@ class CommandsHandler(object):
         """
         l = content.split("$")
         result = dict()
-        if (commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR or 
-            commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR) :
+        if (commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR) :
             result["ServerNameOrIPAddress"] = l[0]
             result["ErrorMessage"] = l[1]
+        elif (commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR) :
+            result["VMServerIP"] = l[0]
+            result["VMServerPort"] = l[1]
+            result["VMServerName"] = l[2]
+            result["ErrorMessage"] = l[3]
         elif (commandOutputType == COMMAND_OUTPUT_TYPE.VM_BOOT_FAILURE) :
             result["VMID"] = int(l[0])
-            result["UserID"] = int(l[1])
-            result["ErrorMessage"] = l[2]
+            result["ErrorMessage"] = l[1]
         elif (commandOutputType == COMMAND_OUTPUT_TYPE.VM_CONNECTION_DATA): 
-            result["UserID"] = int(l[0])
-            result["VNCServerIPAddress"] = l[1]
-            result["VNCServerPort"] = int(l[2])
-            result["VNCServerPassword"] = l[3]
+            result["VNCServerIPAddress"] = l[0]
+            result["VNCServerPort"] = int(l[1])
+            result["VNCServerPassword"] = l[2]
             
         return result

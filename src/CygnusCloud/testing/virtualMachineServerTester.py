@@ -21,8 +21,6 @@ class TesterCallback(NetworkCallback):
         packet_type = data["packet_type"]
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA) :
             print("Domain connection data: ")
-            print("User ID: " + str(data["UserID"]))
-            print("User ID: " + str(data["UserID"]))
             print("VNC server IP address: " + data["VNCServerIP"])
             print("VNC server port: " + str(data["VNCServerPort"]))
             print("VNC server password: " + data["VNCServerPassword"])
