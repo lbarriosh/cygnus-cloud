@@ -67,7 +67,8 @@ class DummyVMServer(NetworkCallback):
         userID = processedPacket["UserID"]
         # Generate the answer
         packetToSend = self.__packetHandler.createVMConnectionParametersPacket(userID, self.__dummyIP, 
-                                                                               12345, "dummy password")
+                                                                               12345, "dummy password", 
+                                                                               processedPacket["CommandID"])
         # Send it to the main server
         self.__packetSender(packetToSend)
         self.__dummyDomains += 1

@@ -115,7 +115,7 @@ class ImageManager(BasicDatabaseConnector):
         #  el resto de las tablas
         #Actualizamos la base de datos
  
-    def isImageExists(self,VMId):   
+    def doesImageExist(self,VMId):   
         '''
             Comprueba si una imagen existe
         '''

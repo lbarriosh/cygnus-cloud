@@ -44,27 +44,20 @@ class libvirtConnector():
         eventHandler[eventID](domain)
         
     def __definedHandler(self, domain):
-        print("__definedHandler " + domain.name())
         pass
     def __suspendedHandler(self, domain):
-        print("__suspendedHandler " + domain.name())
         pass
     def __resumedHandler(self, domain):
-        print("__resumedHandler " + domain.name())
         pass
     def __undefinedHandler(self, domain):
-        print("__undefinedHandler " + domain.name())
         pass
     def __stoppedHandler(self, domain):
-        print("__stoppedHandler " + domain.name())
         domainInfo = {"name" : domain.name()}
         self.__shutdownCallback(domainInfo)
         pass
     def __shutdownHandler(self, domain):
-        print("__shutdownHandler " + domain.name())
         pass
     def __startedHandler(self, domain):
-        print("__startedHandler " + domain.name())
         xml = ET.fromstring(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_SECURE))
         graphic_element = xml.find('.//graphics')
         port = graphic_element.attrib['port']
@@ -75,7 +68,6 @@ class libvirtConnector():
                       "VNCport" : int(port),
                       "VNCip" : ip,
                       "VNCpassword" : password}
-        print domainInfo["name"]
         self.__startCallback(domainInfo)
     
     def startDomain(self, xmlConfig):
@@ -92,8 +84,8 @@ class libvirtConnector():
         
     def stopAllDomain(self):
         idsMV = self.__connector.listDomainsID()
-        for id in idsMV:
-            domain = self.__connector.lookupByID(id)
+        for vmID in idsMV:
+            domain = self.__connector.lookupByID(vmID)
             domain.destroy()
     
     def getNumberOfDomains(self):

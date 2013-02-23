@@ -76,8 +76,8 @@ class ClusterServerDBTests(unittest.TestCase):
         '''
         Tests the deletion of a virtual machine server
         '''
-        self.__connector.unsubscribeVMServer('Server1')
-        self.__connector.unsubscribeVMServer('1.2.3.5')
+        self.__connector.deleteVMServer('Server1')
+        self.__connector.deleteVMServer('1.2.3.5')
         ids = self.__connector.getVMServerIDs()
         expectedIds = [3,4]
         self.assertEquals(ids, expectedIds, 'unregisterVMServer does not work')

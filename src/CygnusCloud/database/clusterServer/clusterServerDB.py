@@ -40,7 +40,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     #   no nos dice nada de esto.
     #===========================================================================
         
-    def deleteVMServerStatics(self, serverId):
+    def deleteVMServerStatistics(self, serverId):
         '''
         Borra las estadísticas de un servidor de máquinas virtuales
             Argumentos:
@@ -164,7 +164,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         #Lo devolvemos
         return serverId
     
-    def unsubscribeVMServer(self, serverNameOrIPAddress):
+    def deleteVMServer(self, serverNameOrIPAddress):
         '''
             Permite eliminar un determinado servidor de máquinas virtuales de la base de datos cuyo
              identificador se le pasa como argumento.
@@ -180,6 +180,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "DELETE FROM VMServer WHERE serverId = " + str(serverId) + ";"
         #Ejecutamos el comando
         self._executeUpdate(query)
+        self._writeChangesToDatabase()
         # Apaño. ON DELETE CASCADE no funciona cuando las tablas usan un motor de almacenamiento
         # distinto. Una usa INNODB (VMServer) y otra usa MEMORY (VMServerStatus, que es nueva)
         query = "DELETE From VMServerStatus WHERE serverId = " + str(serverId) + ";"
