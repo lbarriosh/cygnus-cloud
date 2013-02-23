@@ -4,10 +4,7 @@ from gluon import *
 
 from configuration import DBConfigurator
 from gluon.tools import Auth
-from serverConnector.constants import rootPassword
-from serverConnector.singletonServerConnector import Singleton
-from clusterServer.connector.clusterServerConnector import ClusterServerConnector
-from clusterServer.connector.clusterServerConnector import GenericWebCallback
+from webConstants import rootPassword
 import os
 
 print os.getcwd()

@@ -1,5 +1,6 @@
 # coding: utf8
-from time import sleep
+from clusterServer.connector.clusterServerConnector import ClusterServerConnector
+from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 
 @auth.requires_membership('Administrator')
 def runVM():
@@ -79,7 +80,8 @@ def runVM():
 def servers():
     createAdressBar()
     #Establecemos la conexión con el servidor principal
-    connector = Singleton.getInstance()
+    connector = ClusterServerConnector(auth.user_id)
+    connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
     
     if(request.args(0) == 'add_servers'):
         #Creamos el primer formulario
@@ -92,7 +94,7 @@ def servers():
             if(len(form.vars.name) > 0) and (len(form.vars.ipDir) > 0) and (len(form.vars.port) > 0):
                 #Registramos el servido
                 try:
-                       connector.registerVMServer(form.valevars.ipDir,int(form.vars.port),form.vars.name)
+                       connector.registerVMServer(form.vars.ipDir,int(form.vars.port),form.vars.name)
                 except ValueError:
                        response.flash = T('E puerto debe ser un entero.')
             #redireccinamos 
@@ -108,26 +110,27 @@ def servers():
         #        for s in servers],_onclick = "ajax('changeOption', ['server'], 'newInfo')"))
         i = 0
         select = SELECT(_name = 'server')
-        sleep(10)
         servers = connector.getVMServersData()
         print "Servers: " + str(servers)
         for s in servers:
             select.append(OPTION(T(str(s["VMServerName"])),_value = i ,_selected="selected"))
             i = i + 1    
         form1 = FORM(H4(T('Servidores')),select,BR(),INPUT(_type='submit',_name = 'search' ,_value=T('Buscar servidor')))
-        form2 = FORM(HR(),H2(T('Información del servidor')),DIV( T('Nombre: '),BR(),LABEL(infoServer[0],_name = 'name')),
+        form2 = FORM(HR(),H2(T('Información del servidor')),DIV( T('Nombre: '),BR(),LABEL(infoServer[0],_name = 'sName')),
                 DIV( T('Dirección IP: '),BR(),LABEL(infoServer[1])),
                 DIV( T('Puerto: '),BR(),LABEL(infoServer[2])),
                 HR(),CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor')))) 
                 
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:  
-            sInfo = connector.getVMServersData()[form1.vars.server]
-            redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [serversInfo["VMServerName"],\
-            serversInfo["VMServerIP"],serversInfo["VMServerListenningPort"]]) ))
+            sInfo = connector.getVMServersData()[int(form1.vars.server)]
+            print "Servers registrados:" + str(sInfo)
+            redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
+            sInfo["VMServerIP"],sInfo["VMServerListenningPort"]]) ))
             
         if form2.accepts(request.vars,keepvalues=True) and form2.vars.remove: 
              #Damos de baja el servidor
-             connector.unregisterVMServer(form2.var.name,False)
+             print infoServer[0] 
+             connector.unregisterVMServer(infoServer[0],False)
         
         return dict(form1 = form1,form2 = form2)
 

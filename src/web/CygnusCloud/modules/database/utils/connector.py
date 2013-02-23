@@ -70,7 +70,7 @@ class BasicDatabaseConnector(object):
         # Ejecutar la actualización
         self.__cursor.execute(command)
          
-    def writeChangesToDatabase(self):
+    def _writeChangesToDatabase(self):
         '''
         Fuerza la escritura de los cambios realizados a la base de datos
         '''

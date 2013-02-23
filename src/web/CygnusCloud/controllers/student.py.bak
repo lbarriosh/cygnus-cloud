@@ -1,4 +1,5 @@
 # coding: utf8
+from gluon import *
 
 #Método encargado de manejar la página de arranque de máquinas para el usuario
 @auth.requires_membership('Student')
@@ -18,6 +19,7 @@ def runVM():
     for table in tables:
         
         form.append(DIV(H4(T(userDB(userDB.Subjects.code == listSubjects[i].cod).select(userDB.Subjects.name)[0].name)),BR(),H5(table),BR()))
+        i = i +1
     form.append(DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))))
     
     if(form.accepts(request.vars)) and (form.vars.run):

@@ -1,1 +1,39 @@
-<iframe src="http://cygnusclouducm.wordpress.com/" scrolling="yes" width="100%" height="100%"></iframe>
+<!DOCTYPE html>
+<html>
+	<head>
+		
+		<title>Práctica 4 : Sentiment Analysis</title>
+        <link rel="stylesheet" type="text/css" href="/CygnusCloud/static/css/css_info.css">
+		<meta charset='UTF-8'/>
+	</head>
+    <body>
+        <h2>¿Quienes somos?</h2>
+        <p>CygnusCloud es un proyecto de fin de carrera desarrollado por los estudiantes de informática de la universidad complutense de Madrid Luis Barrios, Adrián Fernández y Samuel Guayerbas, bajo la supervisión de los profesores Jose Luis Vázquez-Poletti y José Antonio Martín. Con este proyecto se pretende ofrecer una alternativa a la actual gestión de los puestos de laboratorio con el fin de conseguir una mayor centralización y una reducción de gastos innecesarios, así como un aprovechamiento optimo de los puestos por parte de los alumnos.</p>
+        
+        <h2>¿Que ofrecemos?</h2>
+        <p>CygnusCloud se centra en resolver 4 aspectos fundamentales en la gestión de las aulas de informática de la Universidad Complutense de Madrid:
+            <ul type:"square">
+                <li> Aprovechar mejor las aulas de informática de la Universidad, de forma que casi todos los alumnos de todas las titulaciones puedan utilizarlas para realizar sus trabajos y prácticas.
+                <li> Facilitar la labor de los profesores, haciendo posible que instalen, desistalen o modifiquen la configuración de los programas que sus alumnos utilizan en cuestión de horas (y no de semanas o meses como ocurre ahora).
+                <li> Compartir licencias de software de pago entre las distintas facultades y escuelas universitarias.
+                <li> Alargar la vida útil y reducir el coste de renovación y el consumo energético de los equipos de las aulas de informática (gracias a que es posible utilizar PCs menos potentes).
+            </ul>
+        </p>
+        
+        <h2>CygnusCloud en la nube</h2>
+        <p> Para llevar a cabo el desarrollo de CygnusCloud ha sido necesario la utilización de la computación en la nube o Cloud Computing. Esta tecnología permite a los usuarios olvidarse del hardware con el que van a trabajar  , y por lo tanto de los costes derivados del mismo, y centrarse en los servicios que necesita para realizar su trabajo. Así el usuario solo debe preocuparse de que quiere hacer y no de como debe configurar todo  su entorno para conseguir lo que necesita. Gracias a esto, los usuarios podrán centrarse en utilizar nuestra aplicación sin preocuparse de las características del equipo que usarán para trabajar.
+        </p>
+        
+        <h2>Para más información</h2>
+    <a href="https://www.twitter.com/CygnusCloud" target="_blank"><img width='35' height='35' src="/CygnusCloud/static/images/twitter"/> @CygnusCloud</a><br>
+        <a href="http://www.cygnusclouducm.wordpress.com" target="_blank"><img width='35' height='35' src="/CygnusCloud/images/static/images/wordpress" /> cygnusclouducm</a><br/>
+        
+        <iframe height="80" width="100%" frameborder="0" scrolling="no" src='http://www.cadenaser.com/widget/audio.html?file=http://sermedia-f.akamaihd.net/cadenaser/2013/01/20130115csrcsrcul_8_Aes_LAU.mp4&vista=permantlink&audio_urlHTML5=&prog_rel=Radio-Madrid&duracion=2235&idDinamico=20130115csrcsrcul_8&url=/cultura/audios/noticias-madrid-charlamos-proyectos-universidad/serseremsmdr/20130115csrcsrcul_8/Aes/'>CygnusCloud en la Ser</iframe><br/>
+        
+        
+        <a href="http://www.cygnusclouducm.wordpress.com" target="_blank" class = 'qrCode'><img width='150' height='150' src="/CygnusCloud/static/images/qr" /></a>
+        
+    <div class= 'twitterButton'><a href="https://twitter.com/CygnusCloud" class="twitter-follow-button" data-show-count="false" data-lang="es" data-size="large" data-dnt="true">Seguir a @CygnusCloud</a></div>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+    
+    </body>
