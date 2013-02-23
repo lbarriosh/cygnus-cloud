@@ -21,8 +21,6 @@ class TesterCallback(NetworkCallback):
         packet_type = data["packet_type"]
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA) :
             print("Domain connection data: ")
-            print("User ID: " + str(data["UserID"]))
-            print("User ID: " + str(data["UserID"]))
             print("VNC server IP address: " + data["VNCServerIP"])
             print("VNC server port: " + str(data["VNCServerPort"]))
             print("VNC server password: " + data["VNCServerPassword"])
@@ -52,7 +50,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         return False
     command = tokens.pop(0)
     if (command == "createvm") :
-        p = pHandler.createVMBootPacket(int(tokens.pop(0)), int(tokens.pop(0)))
+        userID = int(tokens.pop(0))
+        machineID = int(tokens.pop(0))
+        p = pHandler.createVMBootPacket(userID, machineID, "123")
         networkManager.sendPacket(ip_address, port, p)
         return False
     elif (command == "shutdown") :

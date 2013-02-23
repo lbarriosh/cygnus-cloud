@@ -26,13 +26,14 @@ class ClusterServerPacketHandler(object):
         """
         self.__packetCreator = networkManager
             
-    def createVMServerRegistrationPacket(self, IPAddress, port, name):
+    def createVMServerRegistrationPacket(self, IPAddress, port, name, commandID):
         """
         Creates a virtual machine server registration packet
         Args:
             IPAddress: the virtual machine server's IPv4 address
             port: the virtual machine server's port
             name: the virtual machine server's desired name
+            commandID: the command's unique identifier
         Returns:
             a new virtual machine server registration packet containing the supplied data.
         """
@@ -41,15 +42,17 @@ class ClusterServerPacketHandler(object):
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(name)
+        p.writeString(commandID)
         return p
     
-    def createVMRegistrationErrorPacket(self, IPAddress, port, name, reason):
+    def createVMRegistrationErrorPacket(self, IPAddress, port, name, reason, commandID):
         """
         Creates a virtual machine server registration error packet
         Args:
             IPAddress: the virtual machine server's IPv4 address
             port: the virtual machine server's port
             name: the virtual machine server's desired name
+            commandID: the command's unique identifier
             reason: an error message
         Returns:
             a new virtual machine server registration error packet containing the supplied data.
@@ -59,7 +62,8 @@ class ClusterServerPacketHandler(object):
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(name)
-        p.writeString(reason)
+        p.writeString(reason)        
+        p.writeString(commandID)
         return p
     
     def createDataRequestPacket(self, query):
@@ -115,7 +119,7 @@ class ClusterServerPacketHandler(object):
             p.writeInt(row["VMID"])
         return p
     
-    def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, halt, unregister):
+    def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, halt, unregister, commandID):
         """
         Creates a virtual machine server unregistration request packet
         Args:
@@ -123,6 +127,7 @@ class ClusterServerPacketHandler(object):
             halt: True if the server must stop immediately, and false otherwise.
             unregister: True if the virtual machine server must be deleted from the cluster server's database,
             and false otherwise.
+            commandID: the command's unique identifier
         Returns:
             a new virtual machine server unregistration request packet containing the supplied data.
         """
@@ -131,27 +136,31 @@ class ClusterServerPacketHandler(object):
         p.writeString(serverNameOrIPAddress)
         p.writeBool(halt)
         p.writeBool(unregister)
+        p.writeString(commandID)
         return p
     
-    def createVMServerBootUpPacket(self, serverNameOrIPAddress):
+    def createVMServerBootUpPacket(self, serverNameOrIPAddress, commandID):
         """
         Creates a virtual machine server boot packet
         Args:
             serverNameOrIPAddress: the virtual machine server's name or IPv4 address
+            commandID: the command's unique identifier
         Returns:
             a new virtual machine server boot packet containing the supplied data.
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.BOOTUP_VM_SERVER)
         p.writeString(serverNameOrIPAddress)
+        p.writeString(commandID)
         return p
     
-    def createVMServerBootUpErrorPacket(self, serverNameOrIPAddress, reason):
+    def createVMServerBootUpErrorPacket(self, serverNameOrIPAddress, reason, commandID):
         """
         Creates a virtual machine server boot up error packet
         Args:
             serverNameOrIPAddress: the virtual machine server's name or IPv4 address
             reason: an error message
+            commandID: the command's unique identifier
         Returns:
             a new virtual machine server boot up error packet containing the supplied data.
         """
@@ -159,14 +168,16 @@ class ClusterServerPacketHandler(object):
         p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR)
         p.writeString(serverNameOrIPAddress)
         p.writeString(reason)
+        p.writeString(commandID)
         return p
     
-    def createVMBootRequestPacket(self, vmID, userID):
+    def createVMBootRequestPacket(self, vmID, userID, commandID):
         """
         Creates a virtual machine boot request packet
         Args:
             vmID: the virtual machine's ID
             userID: the virtual machine user's ID
+            commandID: the command's unique identifier
         Returns:
             a new virtual machine boot request packet containing the supplied data.
         """
@@ -174,42 +185,43 @@ class ClusterServerPacketHandler(object):
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST)
         p.writeInt(vmID)
         p.writeInt(userID)
+        p.writeString(commandID)
         return p
     
-    def createVMBootFailurePacket(self, vmID, userID, reason):
+    def createVMBootFailurePacket(self, vmID, reason, commandID):
         """
         Creates a virtual machine boot failure packet
         Args:
             vmID: the virtual machine's ID
-            userID: the virtual machine user's ID
             reason: an error message
+            commandID: the command's unique identifier
         Returns:
             a new virtual machine boot failure packet containing the supplied data.
         """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE)
         p.writeInt(vmID)
-        p.writeInt(userID)
         p.writeString(reason)
+        p.writeString(commandID)
         return p
     
-    def createVMConnectionDataPacket(self, userID, IPAddress, port, password):
+    def createVMConnectionDataPacket(self, IPAddress, port, password, commandID):
         """
         Creates a virtual machine connection data packet
         Args:
-            userID: the virtual machine user's ID
             IPAddress: the VNC server's IPv4 address
             port: the VNC server's port
             password: the VNC server's password
+            commandID: the command's unique identifier
         Returns:
             a new virtual machine connection request packet containing the supplied data.
         """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA)
-        p.writeInt(userID)
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(password)
+        p.writeString(commandID)
         return p
     
     def createActiveVMsDataPacket(self, packet):
@@ -276,11 +288,13 @@ class ClusterServerPacketHandler(object):
             result["VMServerIP"] = p.readString()
             result["VMServerPort"] = p.readInt()
             result["VMServerName"] = p.readString()
+            result["CommandID"] = p.readString()
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
             result["VMServerIP"] = p.readString()
             result["VMServerPort"] = p.readInt()
             result["VMServerName"] = p.readString()
-            result["ErrorMessage"] = p.readString()
+            result["ErrorMessage"] = p.readString()            
+            result["CommandID"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA) :
             result["Segment"] = p.readInt()
@@ -309,32 +323,34 @@ class ClusterServerPacketHandler(object):
                 
         elif (packet_type == MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
             result["ServerNameOrIPAddress"] = p.readString()
-            value = p.readBool()
-            result["Halt"] = value
-            value = p.readBool()
-            result["Unregister"] = value
+            result["Halt"] =  p.readBool()
+            result["Unregister"] = p.readBool()
+            result["CommandID"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.BOOTUP_VM_SERVER) :
             result["ServerNameOrIPAddress"] = p.readString()
+            result["CommandID"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR) :
             result["ServerNameOrIPAddress"] = p.readString()
             result["ErrorMessage"] = p.readString()
+            result["CommandID"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST):
             result["VMID"] = p.readInt()
             result["UserID"] = p.readInt()
+            result["CommandID"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE):
             result["VMID"] = p.readInt()
-            result["UserID"] = p.readInt()
             result["ErrorMessage"] = p.readString()
+            result["CommandID"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA):
-            result["UserID"] = p.readInt()
             result["VNCServerIPAddress"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
+            result["CommandID"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.HALT) :
             result["HaltVMServers"] = p.readBool()

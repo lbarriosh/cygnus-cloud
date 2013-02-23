@@ -19,6 +19,13 @@ CREATE TABLE IF NOT EXISTS ActualVM(domainName VARCHAR(30) PRIMARY KEY,VMId INTE
 	osImagePath  VARCHAR(100),macAdress VARCHAR(20),uuid VARCHAR(40), VNCPass VARCHAR(64),
 	FOREIGN KEY (VMId) REFERENCES VirtualMachine(VMId) ON DELETE CASCADE ON UPDATE CASCADE);
 
+DROP TABLE IF EXISTS VMBootCommand;
+
+CREATE TABLE VMBootCommand(domainName VARCHAR(30) PRIMARY KEY, commandID VARCHAR(70) NOT NULL,
+	FOREIGN KEY (domainName) REFERENCES ActualVM(domainName) ON DELETE CASCADE ON UPDATE CASCADE)
+	ENGINE=MEMORY;
+
+
 # Comenzamos a rellenar las tablas con los valores por defecto
 # ____________________________________________________________
 
@@ -33,3 +40,4 @@ INSERT IGNORE INTO ActualVM VALUES("VMName11",1,1,1,1,"./VMNameCopy1","./OSImage
 INSERT IGNORE INTO ActualVM VALUES("VMName22",1,2,1,2,"./VMNameCopy1","./OSImagePath2","2C:00:00:00:00:01","fce04938-5d6d-11e2-a3f0-001f16b99e1d","1234567890");
 INSERT IGNORE INTO ActualVM VALUES("VMName33",1,3,2,3,"./VMNameCopy2","./OSImagePath3","2C:00:00:00:00:02","fce0707c-5d6d-11e2-a3f0-001f16b99e1d","1234567890Test");
 INSERT IGNORE INTO ActualVM VALUES("VMName44",1,4,3,4,"./VMNameCopy3","./OSImagePath4","2C:00:00:00:00:03","fce083a2-5d6d-11e2-a3f0-001f16b99e1d","1234567890");
+INSERT IGNORE INTO VMBootCommand VALUES ("VMName44", "123");
