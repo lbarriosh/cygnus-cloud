@@ -277,17 +277,20 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             Nothing
         """        
         segmentSize = 5
-        segmentCounter = 1
         outgoingData = []
         serverIDs = self.__dbConnector.getVMServerIDs()
         if (len(serverIDs) == 0) :
             segmentCounter = 0
-        segmentNumber = (len(serverIDs) / segmentSize)
-        if (len(serverIDs) % segmentSize != 0) :
-            segmentNumber += 1
+            segmentNumber = 0
             sendLastSegment = True
         else :
-            sendLastSegment = False
+            segmentCounter = 1        
+            segmentNumber = (len(serverIDs) / segmentSize)
+            if (len(serverIDs) % segmentSize != 0) :
+                segmentNumber += 1
+                sendLastSegment = True
+            else :
+                sendLastSegment = False
         for serverID in serverIDs :
             row = queryMethod(serverID)
             if (isinstance(row, dict)) :
