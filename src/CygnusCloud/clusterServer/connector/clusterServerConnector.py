@@ -210,13 +210,14 @@ if __name__ == "__main__":
     connector = ClusterServerConnector(1)
     connector.connectToDatabases("SystemStatusDB", "CommandsDB", "website", "CygnusCloud")
     sleep(3)
-    print "Booting up VM server..."
-    connector.bootUpVMServer("Server1")
-    print "Booting up VM..."
-    commandID = connector.bootUpVM(1)
-    print connector.waitForCommandOutput(commandID)
-    sleep(15)
-    print connector.getActiveVMsData()
+    print connector.getVMServersData()
+    connector.unregisterVMServer("Server1", True)
+    sleep(5)
+    print connector.getVMServersData()
+    sleep(10)
+    connector.registerVMServer("127.0.0.1", 15800, "DummyVMServer")
+    sleep(5)
+    print connector.getVMServersData()
     connector.halt(True)
     connector.dispose()
     
