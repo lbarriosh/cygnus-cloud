@@ -32,14 +32,16 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         Returns:
             Nothing
         """
-        self.__vmServerSegments.append(data)
+        if (data != []) :
+            self.__vmServerSegments.append(data)
         if (len(self.__vmServerSegments) == segmentCount) :
             # Write changes to the database
             command = "DELETE FROM VirtualMachineServer;"
             self._executeUpdate(command)
-            command = "INSERT INTO VirtualMachineServer VALUES " + SystemStatusDatabaseWriter.__segmentsToSQLTuples(self.__vmServerSegments)
-            self.__vmServerSegments = []            
-            self._executeUpdate(command)
+            if (self.__vmServerSegments != []) :
+                command = "INSERT INTO VirtualMachineServer VALUES " + SystemStatusDatabaseWriter.__segmentsToSQLTuples(self.__vmServerSegments)
+                self.__vmServerSegments = []            
+                self._executeUpdate(command)
             
     def processVMDistributionSegment(self, segmentNumber, segmentCount, data):
         """
@@ -51,14 +53,16 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         Returns:
             Nothing
         """
-        self.__imageDistributionSegments.append(data)
+        if (data != []) :
+            self.__imageDistributionSegments.append(data)
         if (len(self.__imageDistributionSegments) == segmentCount) :
             # Write changes to the database
             command = "DELETE FROM VirtualMachineDistribution;"
             self._executeUpdate(command)
-            command = "INSERT INTO VirtualMachineDistribution VALUES " + SystemStatusDatabaseWriter.__segmentsToSQLTuples(self.__imageDistributionSegments)
-            self.__imageDistributionSegments = []            
-            self._executeUpdate(command)
+            if (self.__imageDistributionSegments != []) :
+                command = "INSERT INTO VirtualMachineDistribution VALUES " + SystemStatusDatabaseWriter.__segmentsToSQLTuples(self.__imageDistributionSegments)
+                self.__imageDistributionSegments = []            
+                self._executeUpdate(command)
             
     def processActiveVMSegment(self, segmentNumber, segmentCount, vmServerIP, data):
         """
@@ -73,16 +77,18 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         """
         if (not self.__activeVMSegments.has_key(vmServerIP)) :
             self.__activeVMSegments[vmServerIP] = []
-        self.__activeVMSegments[vmServerIP].append(data)
+        if (data != []) :
+            self.__activeVMSegments[vmServerIP].append(data)
         if (len(self.__activeVMSegments[vmServerIP]) == segmentCount) :
             # Fetch the virtual machine server's name
             serverName = self.__getVMServerName(vmServerIP)
             # Write changes to the database
             command = "DELETE FROM ActiveVirtualMachines WHERE serverName = '" + serverName + "';"
             self._executeUpdate(command)
-            command = "INSERT INTO ActiveVirtualMachines VALUES " + SystemStatusDatabaseWriter.__segmentsToSQLTuples(self.__activeVMSegments[vmServerIP], [serverName])
-            self.__activeVMSegments[vmServerIP] = []         
-            self._executeUpdate(command)
+            if (self.__activeVMSegments != None) :
+                command = "INSERT INTO ActiveVirtualMachines VALUES " + SystemStatusDatabaseWriter.__segmentsToSQLTuples(self.__activeVMSegments[vmServerIP], [serverName])
+                self.__activeVMSegments[vmServerIP] = []         
+                self._executeUpdate(command)
             
     def __getVMServerName(self, serverIP):
         """
