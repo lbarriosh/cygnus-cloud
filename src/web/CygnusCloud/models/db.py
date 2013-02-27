@@ -13,7 +13,7 @@ print os.getcwd()
 
 conf = DBConfigurator(rootPassword)
 conf.createDatabase('CygnusCloudUserDB')
-#conf.addUser('CygnusCloud','cygnuscloud2012', 'UserDB')
+conf.addUser('CygnusCloud','cygnuscloud2012', 'CygnusCloudUserDB')
 userDB = DAL('mysql://CygnusCloud:cygnuscloud2012@localhost/CygnusCloudUserDB',migrate_enabled=True, pool_size=0)
 
 

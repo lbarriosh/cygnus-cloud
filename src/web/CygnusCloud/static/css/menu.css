@@ -1,0 +1,68 @@
+ul.web2py-menu-vertical { 
+    position: relative; 
+    top: 40px; 
+    left: 0;
+    z-index: 30;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-decoration: none;
+    display: none;
+}
+
+.web2py-menu-expand:hover .web2py-menu-vertical
+{
+    display: block;
+}
+
+ul.web2py-menu-vertical li {
+ margin:0;
+ padding:0;
+ border:0;
+ width: 150px;
+ background: black;
+ text-align:left;
+}
+ul.web2py-menu-vertical li a {
+ margin:0;
+ padding: 1px 3px 1px 3px;
+ border:0;
+ width: 144px;
+ color: white;
+ font-size:12px;
+}
+div.flash {
+ position: fixed;
+ float: right;
+ padding: 10px;
+ top: 10px;
+ right: 30px;
+ opacity: 0.75;
+ margin: 10px 10px 10px 10px;
+ text-align: center;
+ clear: both;
+ color: #fff;
+ font-size: 11pt;
+ text-align: center;
+ vertical-align: middle;
+ cursor: pointer;
+ background: black;
+ border: 2px solid #fff;
+ -moz-border-radius: 5px;
+ -webkit-border-radius: 5px;
+ z-index: 2;
+ }
+div.error {
+ background-color: red;
+ color: white;
+ padding: 3px;
+ }
+.auth_navbar {
+ text-align:right;
+ z-index:20;
+ position: absolute;
+ top: 2px;
+ right:30px;
+ border:0;
+ padding:0 }
