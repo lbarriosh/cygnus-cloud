@@ -36,7 +36,7 @@ def runVM():
             i = i + 1
     pass
     #Creamos el segundo formulario
-    form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))))
+    form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))),_target='_blank')
         
     #Actuamos frente a la busqueda
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
@@ -123,6 +123,7 @@ def servers():
                 
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:  
             sInfo = connector.getVMServersData()[int(form1.vars.server)]
+            print "Servers registrados:" + str(sInfo)
             redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
             sInfo["VMServerIP"],sInfo["VMServerListenningPort"]]) ))
             

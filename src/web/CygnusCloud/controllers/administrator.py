@@ -36,7 +36,7 @@ def runVM():
             i = i + 1
     pass
     #Creamos el segundo formulario
-    form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))))
+    form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))),_target='_blank')
         
     #Actuamos frente a la busqueda
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
@@ -70,8 +70,10 @@ def runVM():
            if(form2.vars.selection != ""):
                #TODO: Configurar cliente VNC...
                #Abrimos una nueva pestaña
-               form2.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form2.vars.selection)[0], 
-               _href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))   
+               #form2.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form2.vars.selection)[0], 
+               #_href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))   
+               #
+               redirect(URL(c='vncClient',f = 'VNCPage'))
         
 
     return dict(form1=form1,form2=form2)
