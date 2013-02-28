@@ -56,7 +56,7 @@ def loginAccess(state):
     if(auth.has_membership(role='Student')):
         redirect(URL(c='student',f='runVM'))
     elif(auth.has_membership(role='Administrator')):
-        redirect(URL(c='administrator',f='runVM'))
+        redirect(URL(c='administrator',f='runVM',args = ['run']))
 
 @auth.requires_login()          
 def logoutUser():
