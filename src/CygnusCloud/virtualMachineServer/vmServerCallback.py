@@ -10,7 +10,7 @@ from network.interfaces.ipAddresses import get_ip_address
 from libvirtConnector import libvirtConnector
 from constantes import databaseName, databaseUserName, databasePassword, vncNetworkInterface, listenningPort, \
     vnName, gatewayIP, netMask, dhcpStartIP, dhcpEndIP, configFilePath, certificatePath, sourceImagePath, executionImagePath,\
-    passwordLength, websockifyPath
+    passwordLength, websockifyPath, createVirtualNetworkAsRoot
 from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from xmlEditor import ConfigurationFileEditor
 from database.vmServer.imageManager import ImageManager
@@ -28,16 +28,16 @@ class VMServerCallback(NetworkCallback):
         self.__shutDown = False
         self.__shuttingDown = False
         self.__connectToDatabases(databaseName, databaseUserName, databasePassword)
-        self.__connectToLibvirt()
+        self.__connectToLibvirt(createVirtualNetworkAsRoot)
         self.__startListenning(vncNetworkInterface, listenningPort)
         
     def __connectToDatabases(self, databaseName, user, password):
         self.__imageManager = ImageManager(user, password, databaseName)
         self.__runningImageData = RuntimeData(user, password, databaseName)
         
-    def __connectToLibvirt(self) :
+    def __connectToLibvirt(self, createVirtualNetworkAsRoot) :
         self.__connector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
-        self.__virtualNetworkManager = VirtualNetworkManager()
+        self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
         self.__virtualNetworkManager.createVirtualNetwork(vnName, gatewayIP, netMask,
                                     dhcpStartIP, dhcpEndIP)
             

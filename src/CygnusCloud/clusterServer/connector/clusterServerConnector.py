@@ -165,8 +165,8 @@ class ClusterServerConnector(object):
         Args:
             commandID: the command's ID
         Returns:
-            None if the command output is not available. Otherwise, it will return a dictionary
-            with it.
+            An empty tuple if the command is still running, and its ouput if it isn't.
+            Note that some command outputs can have None outputs.
             This dictionary will have the keys 
             - ServerNameOrIPAddress and ErrorMessage if the command output is a 
               virtual machine server boot up error.
@@ -176,18 +176,22 @@ class ClusterServerConnector(object):
             - VNCServerIPAddress, VNCServerPort and VNCServerPassword if the command otput
               contains a virtual machine's connection data.
         """
-        result = self.__commandsDBConnector.getCommandOutput(commandID)
-        if (result != None) :
-            (outputType, outputContent) = result
-            result = CommandsHandler.deserializeCommandOutput(outputType, outputContent)
-        return result
+        if (self.__commandsDBConnector.isRunning(commandID)) :
+            return ()
+        else :
+            result = self.__commandsDBConnector.getCommandOutput(commandID)
+            if (result != None) :
+                (outputType, outputContent) = result
+                result = CommandsHandler.deserializeCommandOutput(outputType, outputContent)
+            return result
     
     def waitForCommandOutput(self, commandID):
         """
         Returns a command's output
         Args:
             commandID: the command's ID
-        Returns: A dictionary containing the command's output.
+        Returns: None if the command has no output. Otherwise, a dictionary containing 
+        the command's output will be returned.
         This dictionary will have the keys 
             - ServerNameOrIPAddress and ErrorMessage if the command output is a 
               virtual machine server boot up error.
@@ -199,25 +203,23 @@ class ClusterServerConnector(object):
         @attention: This method will only return when the command output is available. If you prefer
         a non-blocking behavior, use getCommandOutput() instead.
         """
-        result = None
-        while (result == None) :
-            result = self.__commandsDBConnector.getCommandOutput(commandID)
-            if (result == None) :
+        while (self.__commandsDBConnector.isRunning(commandID)) :
                 sleep(0.1)
-        return CommandsHandler.deserializeCommandOutput(result[0], result[1])
+        result = self.__commandsDBConnector.getCommandOutput(commandID)
+        if result == None :
+            return None
+        else :
+            return CommandsHandler.deserializeCommandOutput(result[0], result[1])
     
 if __name__ == "__main__":
     connector = ClusterServerConnector(1)
     connector.connectToDatabases("SystemStatusDB", "CommandsDB", "website", "CygnusCloud")
     sleep(3)
     print connector.getVMServersData()
-    connector.unregisterVMServer("Server1", True)
+    commandID = connector.bootUpVMServer("Server1")
+    print connector.waitForCommandOutput(commandID)
+    print "**"
     sleep(5)
-    print connector.getVMServersData()
-    sleep(10)
-    connector.registerVMServer("127.0.0.1", 15800, "DummyVMServer")
-    sleep(5)
-    print connector.getVMServersData()
     connector.halt(True)
     connector.dispose()
     

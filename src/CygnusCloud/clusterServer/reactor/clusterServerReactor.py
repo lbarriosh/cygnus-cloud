@@ -2,7 +2,7 @@
 '''
 Main server reactor definitions.
 @author: Luis Barrios Hernández
-@version: 2.1
+@version: 3.1
 '''
 
 from clusterServer.networking.callbacks import VMServerCallback, WebCallback
@@ -164,11 +164,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             while not self.__networkManager.isConnectionReady(data["VMServerIP"], data["VMServerPort"]) :
                 sleep(0.1)
             self.__networkManager.sendPacket(data["VMServerIP"], data["VMServerPort"], p)
+            # Everything went fine
+            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
         except Exception as e:                
             p = self.__webPacketHandler.createVMRegistrationErrorPacket(data["VMServerIP"], 
                                                                             data["VMServerPort"], 
                                                                             data["VMServerName"], str(e), data["CommandID"])        
-            self.__networkManager.sendPacket('', self.__webPort, p)
+        self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __unregisterOrShutdownVMServer(self, data):
         """
@@ -243,9 +245,11 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Send the status request
             p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
+            # Everything went fine
+            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
         except Exception as e:
             p = self.__webPacketHandler.createVMServerBootUpErrorPacket(serverNameOrIPAddress, str(e), data["CommandID"])
-            self.__networkManager.sendPacket('', self.__webPort, p)
+        self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __sendVMServerStatusData(self):
         """
@@ -330,6 +334,10 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             p = self.__vmServerPacketHandler.createVMBootPacket(vmID, userID, data["CommandID"])
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
+            # TODO: change this
+            # Everything went fine
+            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, p)
     
     def processVMServerIncomingPacket(self, packet):
         """
