@@ -174,24 +174,27 @@ class WebServerEndpoint(object):
             self.__writer.processVMDistributionSegment(data["Segment"], data["SequenceSize"], data["Data"])
         elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
             self.__writer.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])
-        # Command outputs => serialize and add them to the commands database
         else :
-            if (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
-                (outputType, outputContent) = CommandsHandler.createVMServerBootUpErrorOutput(
-                    data["ServerNameOrIPAddress"], data["ErrorMessage"])
-            elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
-                (outputType, outputContent) = CommandsHandler.createVMServerRegistrationErrorOutput(
-                    data["VMServerIP"], data["VMServerPort"], data["VMServerName"], data["ErrorMessage"])
-            elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE) :
-                (outputType, outputContent) = CommandsHandler.createVMBootFailureErrorOutput(
-                    data["VMID"], data["ErrorMessage"])  
-            elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
-                (outputType, outputContent) = CommandsHandler.createVMConnectionDataOutput(
-                    data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"])
             l = data["CommandID"].split("|")
             commandID = (int(l[0]), float(l[1]))
-            self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
-            
+            if (data["packet_type"] == PACKET_T.COMMAND_EXECUTED) :
+                self.__commandsDBConnector.removeExecutedCommand(commandID)
+            else :           
+                # Command outputs => serialize and add them to the commands database 
+                if (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
+                    (outputType, outputContent) = CommandsHandler.createVMServerBootUpErrorOutput(
+                        data["ServerNameOrIPAddress"], data["ErrorMessage"])
+                elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
+                    (outputType, outputContent) = CommandsHandler.createVMServerRegistrationErrorOutput(
+                        data["VMServerIP"], data["VMServerPort"], data["VMServerName"], data["ErrorMessage"])
+                elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE) :
+                    (outputType, outputContent) = CommandsHandler.createVMBootFailureErrorOutput(
+                        data["VMID"], data["ErrorMessage"])  
+                elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
+                    (outputType, outputContent) = CommandsHandler.createVMConnectionDataOutput(
+                        data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"])
+                self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
+                
     def processCommands(self):
         """
         Processes the commands sent from the web connectors.

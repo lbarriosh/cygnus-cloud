@@ -12,7 +12,7 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "VM_SERVERS_STATUS_DATA", "QUERY_VM_DISTRIBUTION", "VM_DISTRIBUTION_DATA",
                             "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",
                             "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
-                            "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA")
+                            "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "COMMAND_EXECUTED")
 
 class ClusterServerPacketHandler(object):
     """
@@ -42,6 +42,12 @@ class ClusterServerPacketHandler(object):
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(name)
+        p.writeString(commandID)
+        return p
+    
+    def createCommandExecutedPacket(self, commandID):
+        p = self.__packetCreator.createPacket(3)
+        p.writeInt(MAIN_SERVER_PACKET_T.COMMAND_EXECUTED)
         p.writeString(commandID)
         return p
     
@@ -354,5 +360,8 @@ class ClusterServerPacketHandler(object):
             
         elif (packet_type == MAIN_SERVER_PACKET_T.HALT) :
             result["HaltVMServers"] = p.readBool()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.COMMAND_EXECUTED) :
+            result["CommandID"] = p.readString()
                       
         return result
