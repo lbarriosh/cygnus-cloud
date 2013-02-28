@@ -5,6 +5,8 @@ Created on 14/01/2013
 @author: saguma
 '''
 
+createVirtualNetworkAsRoot = True
+
 mysqlRootsPassword = ""
 databaseName = "VMServerDB"
 # Cuidado con esto: si está mal puesta, cascará al arrancar
