@@ -46,9 +46,11 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         if (result == None or (timestamp - result >= self.__minCommandInterval))  :
             # Generate the updates
             command = "INSERT INTO PendingCommand VALUES ({0}, {1})".format(userID, timestamp)
-            self._executeUpdate(command)
+            self._executeUpdate(command)            
+            self._writeChangesToDatabase()
             command = "INSERT INTO QueuedCommand VALUES ({0}, {1}, {2}, '{3}');".format(userID, timestamp, commandType, arguments)
             self._executeUpdate(command)
+            self._writeChangesToDatabase()
             return (userID, timestamp)
         else :
             return None
@@ -68,6 +70,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         userID = int(result[0])
         update = "DELETE FROM QueuedCommand WHERE userID = {0} AND TIME = {1};".format(userID, result[1])
         self._executeUpdate(update)
+        self._writeChangesToDatabase()
         return ((userID, result[1]), int(result[2]), result[3])
     
     def addCommandOutput(self, commandID, outputType, commandOutput):
@@ -82,12 +85,15 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         """
         update = "INSERT INTO RunCommandOutput VALUES ({0}, {1}, {2}, '{3}');".format(commandID[0], commandID[1], outputType, commandOutput)
         self._executeUpdate(update)
+        self._writeChangesToDatabase()
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)
+        self._writeChangesToDatabase()
     
     def removeExecutedCommand(self, commandID):
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)
+        self._writeChangesToDatabase()
             
     def getCommandOutput(self, commandID):
         """
@@ -102,6 +108,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         if (result != None) :
             update = "DELETE FROM RunCommandOutput WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
             self._executeUpdate(update)
+            self._writeChangesToDatabase()
             return (int(result[0]), result[1])
         else:
             return None

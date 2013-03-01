@@ -231,8 +231,9 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 lista con los identificadores de los servidores que tienen la imagen
         '''
         # Creamos la consulta
-        query = "SELECT serverName, imageId FROM VMServer, ImageOnServer " +\
-                 "WHERE VMServer.serverId = ImageOnServer.serverId;"
+        query = "SELECT VMServer.serverName, imageId FROM VMServer, ImageOnServer " +\
+                 "WHERE VMServer.serverId = ImageOnServer.serverId AND VMServer.serverID = {0};"\
+                 .format(serverID)
         #Recogemos los resultado
         results=self._executeQuery(query)
         #Guardamos en una lista los ids resultantes

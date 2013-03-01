@@ -78,6 +78,7 @@ class DummyVMServer(NetworkCallback):
         Sends this server's status to the main server
         """
         # Generate the answer and send it
+        print "***"
         packetToSend = self.__packetHandler.createVMServerStatusPacket(self.__dummyIP, self.__dummyDomains)
         self.__packetSender(packetToSend)
         

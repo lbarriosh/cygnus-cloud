@@ -36,7 +36,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             Nothing
         """
         if (data != []) :
-            self.__vmServerSegments.append(data)
+            self.__vmServerSegments += data
         if (len(self.__vmServerSegments) == segmentCount) :
             receivedData = SystemStatusDatabaseWriter.__getVMServersDictionary(self.__vmServerSegments)
             registeredIDs = self.__getKnownVMServerIDs()
@@ -51,9 +51,10 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
                 if (registeredIDs != None and ID in registeredIDs) :
                     self.__updateVMServerData(receivedData[ID])
                 else :
-                    inserts += receivedData[ID]
+                    inserts.append(receivedData[ID])
             # Step 3: write changes to the database
-            self.__insertVMServers(inserts)
+            if (inserts != []) :
+                self.__insertVMServers(inserts)
             self.__vmServerSegments = [] 
             
     def processVMDistributionSegment(self, segmentNumber, segmentCount, data):
@@ -72,6 +73,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             # Write changes to the database
             command = "DELETE FROM VirtualMachineDistribution;"
             self._executeUpdate(command)
+            self._writeChangesToDatabase()
             if (self.__imageDistributionSegments != []) :
                 command = "INSERT INTO VirtualMachineDistribution VALUES " + SystemStatusDatabaseWriter.__convertSegmentsToSQLTuples(self.__imageDistributionSegments)
                 self.__imageDistributionSegments = []            
@@ -106,7 +108,8 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
                 if (registeredIDs != None and not (ID in registeredIDs)) :
                     inserts.append(receivedData[ID])
             # Step 3: write changes to the database
-            self.__insertActiveVMData(self.__getVMServerName(vmServerIP), inserts)
+            if (inserts != []) :
+                self.__insertActiveVMData(self.__getVMServerName(vmServerIP), inserts)
             self.__activeVMSegments[vmServerIP] = []
         
     @staticmethod    
