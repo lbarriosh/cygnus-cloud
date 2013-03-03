@@ -80,9 +80,13 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         Returns:
             Nothing
         """
+        update = "INSERT INTO RunCommandOutput VALUES ({0}, {1}, {2}, '{3}');".format(commandID[0], commandID[1], outputType, commandOutput)
+        self._executeUpdate(update)
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)
-        update = "INSERT INTO RunCommandOutput VALUES ({0}, {1}, {2}, '{3}');".format(commandID[0], commandID[1], outputType, commandOutput)
+    
+    def removeExecutedCommand(self, commandID):
+        update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)
             
     def getCommandOutput(self, commandID):
@@ -93,7 +97,6 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         Returns:
             A tuple (command output type, command ouput) containig the command's output type and its content.
         """
-        print commandID
         query = "SELECT outputType, commandOutput FROM RunCommandOutput WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         result = self._executeQuery(query, True)
         if (result != None) :
@@ -102,3 +105,16 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
             return (int(result[0]), result[1])
         else:
             return None
+        
+    def isRunning(self, commandID):
+        """
+        Determines whether a command is running or not.
+        Args:
+            commandID: the command's unique identifier
+        Returns:
+            True if the command is still running, and false if it's not.
+        """
+        query = "SELECT * FROM PendingCommand WHERE userID = {0} AND time = {1};"\
+            .format(commandID[0], commandID[1])
+        result = self._executeQuery(query, True)
+        return result != None
