@@ -1,4 +1,11 @@
 {{extend 'layout.html'}}
+{{if(request.args(0) == 'run'):}}
 <h1>{{=T('Arrancar máquinas')}}</h1>
 {{=form1}}
 {{=form2}}
+{{pass}}
+{{if(request.args(0) == 'stop'):}}
+<h1>{{=T('Máquinas arrancadas')}}</h1>
+{{=form1}}
+{{=form2}}
+{{pass}}

@@ -14,7 +14,7 @@ def runVM():
         #Comprobamos si se ha tomado como una lista
             
         if(isinstance(listSubjectsAux,str)):
-            listSubjects = [eval(request.vars.subjectsFind)]
+            listSubjectsAux = [eval(request.vars.subjectsFind)]
         else:
             listSubjects = []
             for l in listSubjectsAux:
@@ -35,7 +35,7 @@ def runVM():
                 TD(LABEL(l[2])),
                 TD(LABEL(vm.name))))
                 i = i + 1
-        pass
+        
         #Creamos el segundo formulario
         form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))),_target='_blank')
             
@@ -83,39 +83,34 @@ def runVM():
                DIV( T('Usuario: '),BR(),INPUT(_name = 'userName')),
                INPUT(_type='submit',_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
         #Creamos el segundo formulario
-        listSubjectsAux = request.vars.subjectsFind or []
+        vmListAux = request.vars.vmList or []
         #Comprobamos si se ha tomado como una lista
             
-        if(isinstance(listSubjectsAux,str)):
-            listSubjects = [eval(request.vars.subjectsFind)]
+        if(isinstance(vmListAux,str)):
+            vmListAux = [eval(request.vars.vmList)]
         else:
-            listSubjects = []
-            for l in listSubjectsAux:
-                print l
-                listSubjects.append(eval(l))
-            #listSubjects.append(request.vars.subjectsFind)
-        print listSubjects
+            vmList = []
+            for l in vmListAux:
+                vmList.append(eval(l))
+            print vmList
         table = TABLE(_class='data', _name='table')
-        table.append(TR(TH('S.'),TH(T('Cod-Asignatura'),TH(T('Grupo')),TH(T('Nombre')))))
+        table.append(TR(TH('S.'),TH(T('Máquina virtual'),TH(T('Usuario')),TH(T('Servidor')),TH(T('Puerto')))))
         i = 0
-        for l in listSubjects:
-            for vm in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2]) \
-            & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
+        for vm in vmList:
                 table.append(TR(\
                 TD(INPUT(_type='radio',_name = 'selection',_value = [l[0] , l[2], i], \
                 _onclick = "ajax('selectRadioButton', ['selection'], 'newInfo')")),\
-                TD(LABEL(str(l[0]) + '-' + l[1]),_width = '50%'),
-                TD(LABEL(l[2])),
-                TD(LABEL(vm.name))))
-                i = i + 1
-        pass
+                TD(LABEL(vm.vmName),
+                TD(LABEL(vm.userName)),
+                TD(LABEL(vm.VMServerName)),
+                TD(LABEL(vm.VNCPort)))))
+
         #Creamos el segundo formulario
-        form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))),_target='_blank')
+        form2 = FORM(LABEL(H2(T('Resultados'))),table)
             
         #Actuamos frente a la busqueda
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
             if len(form1.vars.name) > 0 :
-                try:
                     #Establecemos la conexión con el servidor principal
                     connector = conectToServer()
                     #Extraemos la informacion
@@ -128,32 +123,17 @@ def runVM():
                         vmName = userDB(userDB.Images.VMId == vm.VMID).select(userDB.Images.name)
                         #Extraemos el nombre de usuario
                         userName = userDB(userDB.auth_user.id == vm.UserID).select(userDB.ath_user.email)
-                        
-                        #Comprobamos si el nombre coincide con el buscado
-                        
-                        
-                    listSubjectsAux = userDB((userDB.ClassGroup.cod == int(form1.vars.name)) & \
-                    (userDB.Subjects.code == userDB.ClassGroup.cod)).select(\
-                    userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name)
-                    print "Llega" + form1.vars.name
-                    listSubjects = [] 
-                    for l in listSubjectsAux : 
-                            listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
-                            
-                except ValueError:
-                    listSubjectsAux = userDB(userDB.Subjects.code == userDB.ClassGroup.cod).select( \
-                    userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name)
-                    listSubjects = [] 
-                    for l in listSubjectsAux :                  
-                        if(form1.vars.name != ""):
-                                if (form1.vars.name.lower() in l.Subjects.name.lower()):                    
-                                    listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
-                        else:
-                                listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
-                
-    
-                #redireccinamos con los resultados
-                redirect(URL(c='administrator',f='runVM',args = ['run'],vars = dict(subjectsFind=listSubjects) ))
+                        #Comprobamos si añadimos este elemento a la lista resultado
+                        toAdd = True
+                        if((form1.vars.vmName != 0) and not ( form1.vars.vmName.lower() in vmName.lower())):
+                            toAdd = False
+                        if((form1.vars.userName != 0) and not (form1.vars.userName.lower() in userName.lower())):
+                            toAdd = False
+                        if(toAdd):
+                            vmList.append([vmName,userName,vm.VMServerName,vm.VNCPort])
+
+                    #redireccinamos con los resultados
+                    redirect(URL(c='administrator',f='runVM',args = ['stop'],vars = dict(vmList=vmList) ))
         #Actuamos frente al arranque
         if(form2.accepts(request.vars)) and (form2.vars.run):
                if(form2.vars.selection != ""):
