@@ -87,23 +87,23 @@ def runVM():
         #Comprobamos si se ha tomado como una lista
             
         if(isinstance(vmListAux,str)):
-            vmListAux = [eval(request.vars.vmList)]
+            vmList = [eval(request.vars.vmList)]
         else:
             vmList = []
             for l in vmListAux:
                 vmList.append(eval(l))
-            print vmList
         table = TABLE(_class='data', _name='table')
         table.append(TR(TH('S.'),TH(T('Máquina virtual'),TH(T('Usuario')),TH(T('Servidor')),TH(T('Puerto')))))
         i = 0
         for vm in vmList:
+                
                 table.append(TR(\
-                TD(INPUT(_type='radio',_name = 'selection',_value = [l[0] , l[2], i], \
+                TD(INPUT(_type='radio',_name = 'selection', \
                 _onclick = "ajax('selectRadioButton', ['selection'], 'newInfo')")),\
-                TD(LABEL(vm.vmName),
-                TD(LABEL(vm.userName)),
-                TD(LABEL(vm.VMServerName)),
-                TD(LABEL(vm.VNCPort)))))
+                TD(LABEL(vm[0]),
+                TD(LABEL(vm[1])),
+                TD(LABEL(vm[2])),
+                TD(LABEL(vm[3])))))
 
         #Creamos el segundo formulario
         form2 = FORM(LABEL(H2(T('Resultados'))),table)
@@ -114,22 +114,23 @@ def runVM():
             connector = conectToServer()
             #Extraemos la informacion
             vmListAux = connector.getActiveVMsData()
+            print vmListAux
             #Inicializamos la lista de asignaturas
             vmList = [] 
             #Ejecutamos la busqueda
             for vm in vmListAux:
                 #Extraemos el nombre de la máquina
-                vmName = userDB(userDB.Images.VMId == vm.VMID).select(userDB.Images.name)
+                vmName = userDB(userDB.Images.VMId == vm['VMID']).select(userDB.Images.name)
                 #Extraemos el nombre de usuario
-                userName = userDB(userDB.auth_user.id == vm.UserID).select(userDB.ath_user.email)
+                userName = userDB(userDB.auth_user.id == vm['UserID']).select(userDB.auth_user.email)
                 #Comprobamos si añadimos este elemento a la lista resultado
                 toAdd = True
-                if((form1.vars.vmName != 0) and not ( form1.vars.vmName.lower() in vmName.lower())):
+                if((form1.vars.vmName != 0) and not ( form1.vars.vmName.lower() in vmName[0].name.lower())):
                     toAdd = False
-                if((form1.vars.userName != 0) and not (form1.vars.userName.lower() in userName.lower())):
+                if((form1.vars.userName != 0) and not (form1.vars.userName.lower() in userName[0].email.lower())):
                     toAdd = False
                 if(toAdd):
-                    vmList.append([vmName,userName,vm.VMServerName,vm.VNCPort])
+                    vmList.append([vmName[0].name,userName[0].email,vm['VMServerName'],vm['VNCPort']])
 
                 #redireccinamos con los resultados
                 redirect(URL(c='administrator',f='runVM',args = ['stop'],vars = dict(vmList=vmList) ))
@@ -185,9 +186,11 @@ def servers():
         form2 = FORM(HR(),H2(T('Información del servidor')),DIV( T('Nombre: '),BR(),LABEL(infoServer[0],_name = 'sName')),
                 DIV( T('Dirección IP: '),BR(),LABEL(infoServer[1])),
                 DIV( T('Puerto: '),BR(),LABEL(infoServer[2])),
-                HR(),CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor')))) 
-                
-        if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:  
+                HR(),CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor'))))        
+        if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
+           # connector.bootUpVMServer('Server1') 
+           # connector.bootUpVM(1) 
+           # connector.bootUpVM(2) 
             sInfo = connector.getVMServersData()[int(form1.vars.server)]
             print "Servers registrados:" + str(sInfo)
             redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
