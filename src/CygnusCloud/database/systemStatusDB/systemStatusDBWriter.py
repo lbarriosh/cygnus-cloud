@@ -73,7 +73,6 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             # Write changes to the database
             command = "DELETE FROM VirtualMachineDistribution;"
             self._executeUpdate(command)
-            self._writeChangesToDatabase()
             if (self.__imageDistributionSegments != []) :
                 command = "INSERT INTO VirtualMachineDistribution VALUES " + SystemStatusDatabaseWriter.__convertSegmentsToSQLTuples(self.__imageDistributionSegments)
                 self.__imageDistributionSegments = []            
