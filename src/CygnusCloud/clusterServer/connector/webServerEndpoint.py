@@ -260,7 +260,7 @@ if __name__ == "__main__" :
     certificatePath = "/home/luis/Certificates"
     clusterServerIP = "127.0.0.1"
     clusterServerListenningPort = 9000
-    statusDBUpdateInterval = 5
+    statusDBUpdateInterval = 2
     endpoint.connectToDatabases(mysqlRootsPassword, statusDBName, commandsDBName, statusdbSQLFilePath, commandsdbSQLFilePath,
                                websiteUser, websiteUserPassword, 
                                 endpointUser, endpointUserPassword)

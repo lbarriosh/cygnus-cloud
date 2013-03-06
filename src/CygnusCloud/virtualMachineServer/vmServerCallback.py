@@ -32,7 +32,7 @@ class VMServerCallback(NetworkCallback):
         self.__startListenning(vncNetworkInterface, listenningPort)
         
     def __connectToDatabases(self, databaseName, user, password):
-        self.__imageManager = ImageManager(user, password, databaseName)
+        self.__db = ImageManager(user, password, databaseName)
         self.__runningImageData = RuntimeData(user, password, databaseName)
         
     def __connectToLibvirt(self, createVirtualNetworkAsRoot) :
@@ -131,10 +131,10 @@ class VMServerCallback(NetworkCallback):
     def __createDomain(self, info):
         idVM = info["MachineID"]
         userID = info["UserID"]
-        configFile = configFilePath + self.__imageManager.getFileConfigPath(idVM)
-        originalName = self.__imageManager.getName(idVM)
-        dataPath = self.__imageManager.getImagePath(idVM)
-        osPath = self.__imageManager.getOsImagePath(idVM)
+        configFile = configFilePath + self.__db.getFileConfigPath(idVM)
+        originalName = self.__db.getName(idVM)
+        dataPath = self.__db.getImagePath(idVM)
+        osPath = self.__db.getOsImagePath(idVM)
         
         # Calculo los nuevos parametros
         newUUID, newMAC = self.__getNewMAC_UUID()

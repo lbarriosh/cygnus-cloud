@@ -38,8 +38,8 @@ class BasicDatabaseConnector(object):
             Devuelve:
                 Nada
         '''
-        self.__imageManager = MySQLdb.connect(host='localhost', user=self.__sqlUser, passwd=self.__sqlPassword)
-        self.__cursor = self.__imageManager.cursor()
+        self.__db = MySQLdb.connect(host='localhost', user=self.__sqlUser, passwd=self.__sqlPassword)
+        self.__cursor = self.__db.cursor()
         # Cambiamos a la base de datos correspondeinte
         sql = "USE " + self.__databaseName   
         self.__cursor.execute(sql)        
@@ -55,9 +55,9 @@ class BasicDatabaseConnector(object):
                 Nada
         '''
         # cerramos las conexiones
-        self.__imageManager.commit()
+        self.__db.commit()
         self.__cursor.close()
-        self.__imageManager.close()
+        self.__db.close()
         
     def _executeUpdate(self, command):
         '''
@@ -69,12 +69,13 @@ class BasicDatabaseConnector(object):
         '''
         # Ejecutar la actualización
         self.__cursor.execute(command)
+        self.__db.commit() 
          
-    def _writeChangesToDatabase(self):
-        '''
-        Fuerza la escritura de los cambios realizados a la base de datos
-        '''
-        self.__imageManager.commit() 
+#    def _writeChangesToDatabase(self):
+#        '''
+#        Fuerza la escritura de los cambios realizados a la base de datos
+#        '''
+#        self.__db.commit() 
         
     def _executeQuery(self, command, pickOneResult=False):
         '''
