@@ -180,7 +180,6 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "DELETE FROM VMServer WHERE serverId = " + str(serverId) + ";"
         #Ejecutamos el comando
         self._executeUpdate(query)
-        self._writeChangesToDatabase()
         # Apaño. ON DELETE CASCADE no funciona cuando las tablas usan un motor de almacenamiento
         # distinto. Una usa INNODB (VMServer) y otra usa MEMORY (VMServerStatus, que es nueva)
         query = "DELETE From VMServerStatus WHERE serverId = " + str(serverId) + ";"

@@ -7,7 +7,7 @@ Data processing threads definitions.
 from ccutils.threads import QueueProcessingThread
 from ccutils.multithreadingCounter import MultithreadingCounter
 
-class _IncomingDataThread(QueueProcessingThread):
+class IncomingDataThread(QueueProcessingThread):
     """
     Incoming packages thread class.
     This threads will process the incoming packages.
@@ -64,7 +64,7 @@ class _IncomingDataThread(QueueProcessingThread):
         """
         self.__callbackObject.processPacket(e)
         
-class _OutgoingDataThread(QueueProcessingThread):
+class OutgoingDataThread(QueueProcessingThread):
     
     def __init__(self, queue):
         QueueProcessingThread.__init__(self, "Outgoing data processing thread", queue)

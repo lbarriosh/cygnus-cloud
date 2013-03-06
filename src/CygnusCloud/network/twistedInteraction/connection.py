@@ -6,52 +6,22 @@ Network connection definitions
 '''
 
 from ccutils.enums import enum
-from network.exceptions.connection import ConnectionException
-from threading import BoundedSemaphore
-from protocols import _CygnusCloudProtocolFactory
+from connectionStatus import ConnectionStatus
+from protocols import CygnusCloudProtocolFactory
 from ccutils.multithreadingCounter import MultithreadingCounter
-from twisted.internet.endpoints import TCP4ClientEndpoint, TCP4ServerEndpoint, SSL4ServerEndpoint, SSL4ClientEndpoint
-from twisted.internet import reactor, ssl
-from time import sleep
 
 """
 Connection status enum type.
 """
 CONNECTION_STATUS = enum("OPENING", "READY_WAIT", "READY", "CLOSING", "CLOSED", "ERROR", "RECONNECT")
 
-"""
-Reconnection status enum type
-"""
-RECONNECTION_T = enum("RECONNECTING", "REESTABLISHED", "TIMED_OUT") 
 
-class _ConnectionStatus(object):
-    """
-    A class that stores a connection's status and allows its modification
-    in a thread-safe manner.
-    """
-    def __init__(self, status):
-        """
-        Initializes the status using its argument.
-        """
-        self.__status = status
-        self.__semaphore = BoundedSemaphore(1)
-    def get(self):
-        """
-        Returns the status value
-        """
-        return self.__status
-    def set(self, value):
-        """
-        Modifies the status.
-        """
-        with self.__semaphore :
-            self.__status = value
 
-class _NetworkConnection(object):
+class Connection(object):
     """
     A class that represents a network connection.
     """
-    def __init__(self, isServerConnection, useSSL, certificatesDirectory, ipAddr, port, queue, incomingDataThread, reconnect, callbackObject):
+    def __init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject):
         """
         Initializes the connection.
         Args:
@@ -64,22 +34,19 @@ class _NetworkConnection(object):
             This argument will be ignored if this is a server connection. 
             callbackObject: the callback object assigned to the connection     
         """
-        self.__status = _ConnectionStatus(CONNECTION_STATUS.OPENING)
-        self.__isServerConnection = isServerConnection
-        self.__useSSL = useSSL
-        self.__certificatesDirectory = certificatesDirectory
-        self.__ipAddr = ipAddr
-        self.__port = port
-        self.__factory = None
+        self._status = ConnectionStatus(CONNECTION_STATUS.OPENING)
+        self._useSSL = useSSL
+        self._certificatesDirectory = certificatesDirectory
+        self._port = port
+        self._factory = None
         self._queue = queue
-        self.__incomingDataThread = incomingDataThread        
-        self.__callback = callbackObject
-        self.__packagesToSend = MultithreadingCounter()
+        self._incomingDataThread = incomingDataThread        
+        self._callback = callbackObject
+        self._packagesToSend = MultithreadingCounter()
         self.__deferred = None
-        self.__listeningPort = None
-        self.__unexpectedlyClosed = False        
+        self._listeningPort = None
+        self._unexpectedlyClosed = False        
         self.__error = None
-        self.__reconnect = reconnect
         
     def establish(self, timeout=None):
         """
@@ -90,68 +57,7 @@ class _NetworkConnection(object):
         Returns:
             True if the connection could be established. Otherwise, it will return false.
         """
-        if self.__isServerConnection :
-            self.__establishServerConnection()
-            return True
-        else :
-            return self.__establishClientConnection(timeout)
-        
-    def __establishClientConnection(self, timeout):
-        """
-        Tries to establish a client connection.
-        Args:
-            timeout: the timeout in seconds
-        Returns:
-            True if the connection was established, and False if it wasn't.
-        """
-        # Create and configure the endpoint
-        self.__factory = _CygnusCloudProtocolFactory(self._queue)
-        if (not self.__useSSL) :
-            endpoint = TCP4ClientEndpoint(reactor, self.__ipAddr, self.__port, timeout, None)
-        else :
-            keyPath = self.__certificatesDirectory + "/" + "server.key"
-            certificatePath = self.__certificatesDirectory + "/" + "server.crt"
-            try :
-                endpoint = SSL4ClientEndpoint(reactor, self.__ipAddr, self.__port, ssl.DefaultOpenSSLContextFactory(keyPath, certificatePath))
-            except Exception:
-                raise ConnectionException("The key, the certificate or both were not found")
-        # Establish the connection
-        endpoint.connect(self.__factory)
-        # Wait until it's ready
-        time = 0
-        while self.__factory.isDisconnected() and time <= timeout:            
-            sleep(0.01)
-            time += 0.01
-        return not self.__factory.isDisconnected()
-    
-    def __establishServerConnection(self):
-        """
-        Establishes a server connection.
-        Args:
-            None
-        Returns:
-            Nothing
-        """
-        # Create and configure the endpoint
-        if (not self.__useSSL) :
-            endpoint = TCP4ServerEndpoint(reactor, self.__port)       
-        else :
-            keyPath = self.__certificatesDirectory + "/" + "server.key"
-            certificatePath = self.__certificatesDirectory + "/" + "server.crt"
-            try :
-                endpoint = SSL4ServerEndpoint(reactor, self.__port, ssl.DefaultOpenSSLContextFactory(keyPath, certificatePath))
-            except Exception:
-                raise ConnectionException("The key, the certificate or both were not found")
-        self.__factory = _CygnusCloudProtocolFactory(self._queue)   
-        # Establish the connection     
-        def _registerListeningPort(port):
-            self.__listeningPort = port
-        def _onError(failure):
-            self.setError(failure)
-        self.__deferred = endpoint.listen(self.__factory)
-        # Configure the deferred object
-        self.__deferred.addCallback(_registerListeningPort)
-        self.__deferred.addErrback(_onError)        
+        self._factory = CygnusCloudProtocolFactory(self._queue)      
         
     def getIPAddress(self):
         """
@@ -162,7 +68,7 @@ class _NetworkConnection(object):
             The server's IP address. If this machine is a server, then 127.0.0.1
             will be returned.
         """
-        return self.__ipAddr
+        raise NotImplementedError
         
     def getPort(self):
         """
@@ -172,7 +78,7 @@ class _NetworkConnection(object):
         Returns:
             The port assigned to this connection.
         """
-        return self.__port
+        return self._port
         
     def getQueue(self):
         """
@@ -192,7 +98,7 @@ class _NetworkConnection(object):
         Returns:
             The incoming data processing thread assigned to this connection
         """
-        return self.__incomingDataThread
+        return self._incomingDataThread
     
     def getCallback(self):
         """
@@ -202,7 +108,7 @@ class _NetworkConnection(object):
         Returns:
             The callback object assigned to this connection.
         """
-        return self.__callback    
+        return self._callback    
     
     def getStatus(self):
         """
@@ -212,7 +118,7 @@ class _NetworkConnection(object):
         Returns:
             The connection status
         """
-        return self.__status.get()
+        return self._status.get()
     
     def sendPacket(self, p):
         """
@@ -222,9 +128,9 @@ class _NetworkConnection(object):
         Returns:
             Nothing
         """
-        if (self.__status.get() == CONNECTION_STATUS.READY or self.__status.get() == CONNECTION_STATUS.CLOSING) :           
-            self.__factory.sendPacket(p)
-            self.__packagesToSend.decrement()
+        if (self._status.get() == CONNECTION_STATUS.READY or self._status.get() == CONNECTION_STATUS.CLOSING) :           
+            self._factory.sendPacket(p)
+            self._packagesToSend.decrement()
             return True
                 
     def registerPacket(self):
@@ -235,7 +141,7 @@ class _NetworkConnection(object):
         Returns:
             Nothing
         """
-        self.__packagesToSend.increment()
+        self._packagesToSend.increment()
     
     
     def isReady(self):
@@ -246,7 +152,7 @@ class _NetworkConnection(object):
         Returns:
             True if the connection is ready to send data, and false otherwise.
         """
-        return self.__status.get() == CONNECTION_STATUS.READY
+        return self._status.get() == CONNECTION_STATUS.READY
     
     def isServerConnection(self):
         """
@@ -266,74 +172,13 @@ class _NetworkConnection(object):
         Returns:
             Nothing
         """
-        if self.__status.get() == CONNECTION_STATUS.OPENING :
-            if (not self.__isServerConnection) :
-                if (not self.__factory.isDisconnected()) :
-                    # Client => we've got everything we need
-                    self.__status.set(CONNECTION_STATUS.READY)
-                    self.__incomingDataThread.start()
-            else :
-                if (self.__listeningPort != None): 
-                    # Server => the connection must also have a listening port before
-                    # it's ready.
-                    self.__status.set(CONNECTION_STATUS.READY_WAIT)
-                    self.__incomingDataThread.start()
-                
-        elif self.__status.get() == CONNECTION_STATUS.READY_WAIT :
-            if not self.__factory.isDisconnected() :
-                self.__status.set(CONNECTION_STATUS.READY)
-                
-        elif self.__status.get() == CONNECTION_STATUS.CLOSING :
-            if (self.__packagesToSend.read() == 0) :
-                # We can close the connection now
-                self.__close()   
-                
-        # Check what's happened to the factory
-        elif self.__status.get() == CONNECTION_STATUS.READY and self.__factory.isDisconnected() :
-            if (self.__isServerConnection) :
-                # There are no connected clients, but the connection has not been closed yet
-                # => accept new client connections
-                self.__status.set(CONNECTION_STATUS.READY_WAIT)
-            else :
-                if (not self.__reconnect) :
-                    # This connection must be closed *right* now
-                    self.__status.set(CONNECTION_STATUS.CLOSED)
-                    self.__unexpectedlyClosed = True
-                    self.__close()
-                else :
-                    # Try to reconnect to the server
-                    self.__elapsedTicks = 0
-                    self.__delay = 1
-                    self.__reconnections = 0
-                    self.__status.set(CONNECTION_STATUS.RECONNECT)   
-                    self.__destroyTwistedResources()
-                    self.__callback.processServerReconnectionData(self.__ipAddr, self.__port, RECONNECTION_T.RECONNECTING)
-                                 
-        elif (self.__status.get() == CONNECTION_STATUS.RECONNECT) :
-            self.__elapsedTicks += 1
-            if (self.__elapsedTicks >= self.__delay) :
-                # Update the delay and the elapsed ticks
-                self.__elapsedTicks = 0
-                self.__reconnections += 1
-                if (self.__reconnections <= 5) :
-                    self.__delay *= 2
-                # Try to reconnect to the server NOW 
-                if (self.__establishClientConnection(5)) :
-                    # We are now connected to the server
-                    self.__status.set(CONNECTION_STATUS.READY)
-                    # Warn the client code
-                    self.__callback.processServerReconnectionData(self.__ipAddr, self.__port, RECONNECTION_T.REESTABLISHED) 
-                elif (self.__reconnections >= 10) :
-                    # Too many reconnection attempts => give up
-                    self.__close()
-                    # Warn the client code
-                    self.__callback.processServerReconnectionData(self.__ipAddr, self.__port, RECONNECTION_T.TIMED_OUT) 
+        raise NotImplementedError
         
     def isInErrorState(self):
         """
         Checks if the connection is in an error state.
         """
-        return self.__status.get() == CONNECTION_STATUS.ERROR
+        return self._status.get() == CONNECTION_STATUS.ERROR
     
     def wasUnexpectedlyClosed(self):
         """
@@ -342,7 +187,7 @@ class _NetworkConnection(object):
             1) All the clients disconnect from a server.
             2) A server disconnects from all its clients.
         """
-        return self.__unexpectedlyClosed
+        return self._unexpectedlyClosed
         
     def getError(self):
         """
@@ -354,7 +199,7 @@ class _NetworkConnection(object):
         """
         Modifies the error message stored in this connection.
         """
-        self.__status.set(CONNECTION_STATUS.ERROR)
+        self._status.set(CONNECTION_STATUS.ERROR)
         self.__error = value
            
     def close(self):
@@ -365,9 +210,9 @@ class _NetworkConnection(object):
         Returns:
             Nothing
         """    
-        self.__status.set(CONNECTION_STATUS.CLOSING)
+        self._status.set(CONNECTION_STATUS.CLOSING)
         
-    def __destroyTwistedResources(self):
+    def _freeTwistedResources(self):
         """
         Destroys the twisted-related connection resources.
         Args:
@@ -375,16 +220,9 @@ class _NetworkConnection(object):
         Returns:
             Nothing
         """
-        if self.__isServerConnection :
-            if self.__listeningPort is None :                
-                self.__deferred.cancel()
-            else :
-                if not self.__factory.isDisconnected() :
-                    self.__listeningPort.loseConnection()
-        else :
-            self.__factory.disconnect()
+        self._factory.disconnect()
         
-    def __close(self):
+    def _close(self):
         """
         Closes this connection.
         Args:
@@ -392,7 +230,7 @@ class _NetworkConnection(object):
         Returns:
             Nothing
         """
-        self.__destroyTwistedResources()
         # Free the connection resources
-        self.__incomingDataThread.stop(True)
-        self.__status.set(CONNECTION_STATUS.CLOSED)
+        self._freeTwistedResources()
+        self._incomingDataThread.stop(True)
+        self._status.set(CONNECTION_STATUS.CLOSED)

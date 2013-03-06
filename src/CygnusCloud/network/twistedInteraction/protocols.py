@@ -9,7 +9,7 @@ from twisted.internet.protocol import Protocol, Factory
 from network.packets.packet import _Packet
 from ccutils.multithreadingList import GenericThreadSafeList
 
-class _CygnusCloudProtocol(Protocol):
+class CygnusCloudProtocol(Protocol):
     """
     Our custom network protocol.
     """
@@ -78,7 +78,7 @@ class _CygnusCloudProtocol(Protocol):
         self.__disconnected = True
         self.transport.loseConnection()
         
-class _CygnusCloudProtocolFactory(Factory):
+class CygnusCloudProtocolFactory(Factory):
     """
     Protocol factory. These objects are used to create protocol instances
     within the Twisted Framework, and store all the data shared by multiple
@@ -90,7 +90,7 @@ class _CygnusCloudProtocolFactory(Factory):
         Args:
             queue: the incoming data queue to use by all protocol instances
         """
-        self.protocol = _CygnusCloudProtocol
+        self.protocol = CygnusCloudProtocol
         self._queue = queue        
         self.__connections = GenericThreadSafeList()
     
@@ -99,7 +99,7 @@ class _CygnusCloudProtocolFactory(Factory):
         Builds a protocol, stores a pointer to it and finally returns it.
         This method is called inside Twisted code.
         """
-        instance = _CygnusCloudProtocol(self)        
+        instance = CygnusCloudProtocol(self)        
         self.__connections.append(instance)
         return instance   
         

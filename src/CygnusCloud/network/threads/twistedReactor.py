@@ -8,7 +8,7 @@ Twisted reactor thread definitions.
 from twisted.internet import reactor
 from threading import Thread
 
-class _TwistedReactorThread(Thread):
+class TwistedReactorThread(Thread):
     """
     These threads run the twisted reactor loop.
     @attention: Once the reactor is stopped, it won\'t be able to start again.
