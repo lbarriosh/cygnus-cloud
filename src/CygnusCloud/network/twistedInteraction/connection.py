@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 '''
-Network connection definitions
+Common connection definitions
 @author: Luis Barrios Hernández
-@version: 6.1
+@version: 7.0
 '''
 
 from ccutils.enums import enum
@@ -19,19 +19,17 @@ CONNECTION_STATUS = enum("OPENING", "READY_WAIT", "READY", "CLOSING", "CLOSED", 
 
 class Connection(object):
     """
-    A class that represents a network connection.
+    A class that represents a generic network connection.
     """
     def __init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject):
         """
         Initializes the connection.
         Args:
-            isServerConnection: True when this is a server connection or False otherwise.
-            ipAddr: the server's IP address
+            useSSL: if True, all the traffic will be protectd by SSLv4. If false, 
+            certificatesDirectory: the directory where the certificates are stored
             port: the port assigned to the connection.   
             queue: the incoming data queue assigned to the connection
             incomingDataThread: the incoming data thread assigned to the connection
-            reconnect: if True, the network subsystem will try to reestablish the unexpectedly closed client connection.
-            This argument will be ignored if this is a server connection. 
             callbackObject: the callback object assigned to the connection     
         """
         self._status = ConnectionStatus(CONNECTION_STATUS.OPENING)
@@ -58,14 +56,13 @@ class Connection(object):
         """
         self._factory = CygnusCloudProtocolFactory(self._queue)      
         
-    def getIPAddress(self):
+    def getHost(self):
         """
-        Returns the server's IP address
+        Returns the server's hostname or IPv4 address
         Args:
             None
         Returns:
-            The server's IP address. If this machine is a server, then 127.0.0.1
-            will be returned.
+            The server's IP address. 
         """
         raise NotImplementedError
         

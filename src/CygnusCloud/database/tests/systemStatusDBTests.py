@@ -36,8 +36,8 @@ class Test(unittest.TestCase):
         self.assertEquals(serversData, [], "processVMServerSegment does not work")
         self.__writer.processVMServerSegment(2, 2, segment2Data)
         serversData = self.__reader.getVMServersData()        
-        d1 = {"VMServerName":"Server2", "VMServerStatus":"Booting", "VMServerIP":"IP2", "VMServerListenningPort":1}
-        d2 = {"VMServerName":"Server1", "VMServerStatus":"Ready", "VMServerIP":"IP1", "VMServerListenningPort":1}
+        d2 = {"VMServerName":"Server2", "VMServerStatus":"Booting", "VMServerIP":"IP2", "VMServerListenningPort":1}
+        d1 = {"VMServerName":"Server1", "VMServerStatus":"Ready", "VMServerIP":"IP1", "VMServerListenningPort":1}
         self.assertEquals(serversData, [d1,d2], "processVMServerSegment does not work")
         segment3Data = [("Server3", "Ready", "IP3", 1)]
         self.__writer.processVMServerSegment(1, 1, segment3Data)
@@ -46,9 +46,8 @@ class Test(unittest.TestCase):
         self.assertEquals(serversData, [d3], "processVMServerSegment does not work")
         segment4Data =[("Server3", "Ready", "IP3", 1), ("Server4", "Ready", "IP4", 1)]
         self.__writer.processVMServerSegment(1, 1, segment4Data)
-        d4 = {"VMServerName":"Server4", "VMServerStatus":"Ready", "VMServerIP":"IP4", "VMServerListenningPort":1}        
         serversData = self.__reader.getVMServersData()
-        self.assertEquals(serversData, [d3, d4], "processVMServerSegment does not work")
+        self.assertEquals(serversData, [d3], "processVMServerSegment does not work")
         
     def testUpdateVMDistributionData(self):
         segment1Data = [('Server1', 1), ('Server1', 2), ('Server1', 3)]
@@ -78,12 +77,18 @@ class Test(unittest.TestCase):
         segment2Data = [(2, 1, 'Debian1', 15802, 'Password')]
         self.__writer.processActiveVMSegment(1, 2, 'IP1', segment1Data)
         self.__writer.processActiveVMSegment(2, 2, 'IP1', segment2Data)
-        result = self.__reader.getActiveVMsData()
+        result = self.__reader.getActiveVMsData(None)
         expectedResult = [
             {"VMServerName" : "Server1", "UserID" : 2, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15802, "VNCPassword" : "Password" },
             {"VMServerName" : "Server1", "UserID" : 1, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15800, "VNCPassword" : "Password" }
             ]
         self.assertEquals(result, expectedResult, "processVMServerSegment does not work")
+        result = self.__reader.getActiveVMsData(1)
+        expectedResult = [
+            {"VMServerName" : "Server1", "UserID" : 1, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15800, "VNCPassword" : "Password" }
+            ]
+            
+        self.assertEquals(result, expectedResult, "getActiveVMsData does not work")
         
 if __name__ == "__main__":
     unittest.main()

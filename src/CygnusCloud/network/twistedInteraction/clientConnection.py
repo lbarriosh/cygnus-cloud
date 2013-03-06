@@ -1,7 +1,8 @@
+# -*- coding: utf8 -*-
 '''
-Created on 06/03/2013
-
-@author: luis
+Client connection definitions
+@author: Luis Barrios Hernández
+@version: 7.0
 '''
 from connection import Connection, CONNECTION_STATUS
 from ccutils.enums import enum
@@ -15,11 +16,27 @@ Reconnection status enum type
 """
 RECONNECTION_T = enum("RECONNECTING", "REESTABLISHED", "TIMED_OUT") 
 
-class ClientConnection (Connection) : 
-    def __init__(self, useSSL, certificatesDirectory, ipAddr, port, queue, 
+class ClientConnection (Connection) :
+    """
+    This class represents a client connection
+    """ 
+    def __init__(self, useSSL, certificatesDirectory, host, port, queue, 
                  incomingDataThread, reconnect, callbackObject):
+        """
+        Initializes the connection's state
+        Args:
+            useSSL: if True, all the traffic will be protectd by SSLv4. If false, 
+            certificatesDirectory: the directory where the certificates are stored   
+            host: the server's hostname or IPv4 address
+            port: the port assigned to the connection.
+            queue: the incoming data queue assigned to the connection
+            incomingDataThread: the incoming data thread assigned to the connection
+            reconnect: if True, the network subsystem will try to reestablish the unexpectedly closed client connection.
+            callbackObject: the callback object assigned to the connection     
+            
+        """
         Connection.__init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject)
-        self.__ipAddr = ipAddr
+        self.__host = host
         self.__reconnect = reconnect
         
     def establish(self, timeout=None):
@@ -33,12 +50,12 @@ class ClientConnection (Connection) :
         Connection.establish(self, timeout)
         # Create and configure the endpoint
         if (not self._useSSL) :
-            endpoint = TCP4ClientEndpoint(reactor, self.__ipAddr, self._port, timeout, None)
+            endpoint = TCP4ClientEndpoint(reactor, self.__host, self._port, timeout, None)
         else :
             keyPath = self._certificatesDirectory + "/" + "server.key"
             certificatePath = self._certificatesDirectory + "/" + "server.crt"
             try :
-                endpoint = SSL4ClientEndpoint(reactor, self.__ipAddr, self._port, 
+                endpoint = SSL4ClientEndpoint(reactor, self.__host, self._port, 
                     ssl.DefaultOpenSSLContextFactory(keyPath, certificatePath), timeout)
             except Exception:
                 raise ConnectionException("The key, the certificate or both were not found")
@@ -57,10 +74,24 @@ class ClientConnection (Connection) :
             sleep(0.1)
         return self._error == None
      
-    def getIPAddress(self):
-        return self.__ipAddr
+    def getHost(self):
+        """
+        Returns the server's hostname or IPv4 address
+        Args:
+            None
+        Returns:
+            The server's IP address. 
+        """
+        return self.__host
     
     def refresh(self):
+        """
+        Updates the connection's status
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         if self._status.get() == CONNECTION_STATUS.OPENING :           
             if (not self._factory.isDisconnected()) :
                 # Client => we've got everything we need
@@ -86,7 +117,7 @@ class ClientConnection (Connection) :
                 self.__reconnections = 0
                 self._status.set(CONNECTION_STATUS.RECONNECT)   
                 self._freeTwistedResources()
-                self._callback.processServerReconnectionData(self.__ipAddr, self._port, RECONNECTION_T.RECONNECTING)
+                self._callback.processServerReconnectionData(self.__host, self._port, RECONNECTION_T.RECONNECTING)
                                  
         elif (self._status.get() == CONNECTION_STATUS.RECONNECT) :
             self.__elapsedTicks += 1
@@ -101,18 +132,32 @@ class ClientConnection (Connection) :
                     # We are now connected to the server
                     self._status.set(CONNECTION_STATUS.READY)
                     # Warn the client code
-                    self._callback.processServerReconnectionData(self.__ipAddr, self._port, RECONNECTION_T.REESTABLISHED) 
+                    self._callback.processServerReconnectionData(self.__host, self._port, RECONNECTION_T.REESTABLISHED) 
                 elif (self.__reconnections >= 10) :
                     # Too many reconnection attempts => give up
                     self._close()
                     # Warn the client code
-                    self._callback.processServerReconnectionData(self.__ipAddr, self._port, RECONNECTION_T.TIMED_OUT) 
+                    self._callback.processServerReconnectionData(self.__host, self._port, RECONNECTION_T.TIMED_OUT) 
                     
     def close(self):
+        """
+        Closes the connection.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         self.__reconnect = False
         Connection.close(self)
                     
     def _freeTwistedResources(self):
+        """
+        Destroys the twisted-related connection resources.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         if (self._factory.isDisconnected()) :
             self._deferred.cancel()
         Connection._freeTwistedResources(self)

@@ -2,7 +2,7 @@
 '''
 Protocol and protocol factory implementations.
 @author: Luis Barrios Hernández
-@version: 4.0
+@version: 5.0
 '''
 
 from twisted.internet.protocol import Protocol, Factory
@@ -56,7 +56,7 @@ class CygnusCloudProtocol(Protocol):
         """
         self.transport.abortConnection()
         self.__disconnected = True
-        self.__factory.removeConnection(self)
+        self.__factory.removeProtocol(self)
     
     def sendPacket(self, packet):
         """
@@ -94,7 +94,7 @@ class CygnusCloudProtocolFactory(Factory):
         """
         self.protocol = CygnusCloudProtocol
         self._queue = queue        
-        self.__connections = GenericThreadSafeList()
+        self.__protocolPool = GenericThreadSafeList()
     
     def buildProtocol(self, addr):
         """
@@ -102,14 +102,20 @@ class CygnusCloudProtocolFactory(Factory):
         This method is called inside Twisted code.
         """
         instance = CygnusCloudProtocol(self) 
-        self.__connections.append(instance)
+        self.__protocolPool.append(instance)
         return instance   
         
-    def removeConnection(self, connection):
-        self.__connections.remove(connection)
+    def removeProtocol(self, protocol):
+        """
+        Removes a protocol from the protocol pool
+        """
+        self.__protocolPool.remove(protocol)
         
     def isDisconnected(self):
-        return self.__connections.getSize() == 0
+        """
+        Determines if there are active connections or not.
+        """
+        return self.__protocolPool.getSize() == 0
 
     def sendPacket(self, packet):
         """
@@ -120,17 +126,24 @@ class CygnusCloudProtocolFactory(Factory):
             the last built protocol instance
         """
         i = 0
-        while (i < self.__connections.getSize()) :
-            self.__connections[i].sendPacket(packet)
+        while (i < self.__protocolPool.getSize()) :
+            self.__protocolPool[i].sendPacket(packet)
             i += 1
             
     def disconnect(self):
+        """
+        Asks Twisted to close the connection.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         i = 0
-        while i < self.__connections.getSize() :
-            p = self.__connections[i]
+        while i < self.__protocolPool.getSize() :
+            p = self.__protocolPool[i]
             p.disconnect()
             i += 1
-        while (self.__connections.getSize() != 0) :
+        while (self.__protocolPool.getSize() != 0) :
             sleep(0.1)
     
     def onPacketReceived(self, p):
