@@ -2,7 +2,7 @@
 '''
 Connection monitoring thread definitions.
 @author: Luis Barrios Hernández
-@version: 3.5
+@version: 3.6
 '''
 
 from ccutils.threads import BasicThread
@@ -32,5 +32,5 @@ class ConnectionMonitoringThread(BasicThread):
             for connection in connections :
                 connection.refresh()
                 if (connection.getStatus() == CONNECTION_STATUS.CLOSED) :
-                    self.__connectionPool.pop((connection.getIPAddress(), connection.getPort()))
+                    self.__connectionPool.pop((connection.getHost(), connection.getPort()))
             sleep(1)

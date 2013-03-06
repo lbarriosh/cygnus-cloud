@@ -1,7 +1,8 @@
+# -*- coding: utf8 -*-
 '''
-Created on 06/03/2013
-
-@author: luis
+Server connection definitions
+@author: Luis Barrios Hernández
+@version: 7.0
 '''
 from connection import Connection, CONNECTION_STATUS
 from twisted.internet.endpoints import TCP4ServerEndpoint, SSL4ServerEndpoint
@@ -10,6 +11,17 @@ from twisted.internet import reactor, ssl
 
 class ServerConnection(Connection):
     def __init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject) :
+        """
+        Initializes the connection's state
+        Args:
+            useSSL: if True, all the traffic will be protectd by SSLv4. If false, 
+            certificatesDirectory: the directory where the certificates are stored               
+            port: the port assigned to the connection.
+            queue: the incoming data queue assigned to the connection
+            incomingDataThread: the incoming data thread assigned to the connection
+            callbackObject: the callback object assigned to the connection     
+            
+        """
         Connection.__init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject)
         self.__listenningPort = None
 
@@ -17,7 +29,7 @@ class ServerConnection(Connection):
         """
         Establishes a server connection.
         Args:
-            None
+            timeout: this parameter will be ignored.
         Returns:
             Nothing
         """
@@ -42,10 +54,20 @@ class ServerConnection(Connection):
         self._deferred.addCallback(_registerListeningPort)
         self._deferred.addErrback(_onError)     
         
-    def getIPAddress(self):
+    def getHost(self):
+        """
+        Returns an emtpy string (this is a server connection. Therefore, this machine is its own host).
+        """
         return ''
     
     def refresh(self):
+        """
+        Updates the connection's status
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         if self._status.get() == CONNECTION_STATUS.OPENING :
             if (self.__listenningPort != None): 
                 # Server => the connection must also have a listening port before
@@ -69,6 +91,13 @@ class ServerConnection(Connection):
             self._status.set(CONNECTION_STATUS.READY_WAIT)
             
     def _freeTwistedResources(self):
+        """
+        Destroys the twisted-related connection resources.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         if self.__listenningPort is None :                
             self._deferred.cancel()
         else :
