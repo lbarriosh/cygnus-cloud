@@ -16,13 +16,10 @@ if __name__ == "__main__" :
     networkManager.listenIn(8080, DummyCallback(), True)
     print "The server is now ready"
     sleep(20)
-    networkManager.closeConnection('', 8080)
-    print "The server has closed the connetion"
-    networkManager.listenIn(8080, DummyCallback(), True)
-    p = networkManager.createPacket(10)
-    p.writeString("Hello, Client!")
+    p = networkManager.createPacket(1)
+    p.writeString("***")
     networkManager.sendPacket('', 8080, p)
-    p = networkManager.createPacket(10)
+    sleep(10)
     networkManager.stopNetworkService()
 
 

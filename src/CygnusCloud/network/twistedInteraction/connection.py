@@ -45,7 +45,7 @@ class Connection(object):
         self._packagesToSend = MultithreadingCounter()
         self._deferred = None
         self._unexpectedlyClosed = False        
-        self.__error = None
+        self._error = None
         
     def establish(self, timeout=None):
         """
@@ -192,14 +192,14 @@ class Connection(object):
         """
         Returns the error message stored in this connection.
         """
-        return self.__error
+        return self._error
     
     def _setError(self, value):
         """
         Modifies the error message stored in this connection.
         """
         self._status.set(CONNECTION_STATUS.ERROR)
-        self.__error = value
+        self._error = value
            
     def close(self):
         """

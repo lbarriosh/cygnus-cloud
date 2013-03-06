@@ -171,7 +171,7 @@ class NetworkManager():
                 self.__connectionPool[(host, port)] = connection
             else :
                 # Raise an exception
-                raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
+                raise NetworkManagerException("Error: " + connection.getError())
         except ConnectionException as e:
             raise NetworkManagerException(str(e))
         
@@ -199,8 +199,11 @@ class NetworkManager():
         try :
             # Establish it
             connection.establish(None)
-            # Register the new connection 
-            self.__connectionPool[('', port)] = connection
+            if (connection.getError() == None) :
+                # Register the new connection 
+                self.__connectionPool[('', port)] = connection
+            else :
+                raise ConnectionException(str(connection.getError()))
         except ConnectionException as e:
             raise NetworkManagerException(str(e))
                 

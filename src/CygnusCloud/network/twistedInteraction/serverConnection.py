@@ -11,7 +11,7 @@ from twisted.internet import reactor, ssl
 class ServerConnection(Connection):
     def __init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject) :
         Connection.__init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject)
-        self._listenningPort = None
+        self.__listenningPort = None
 
     def establish(self, timeout):
         """

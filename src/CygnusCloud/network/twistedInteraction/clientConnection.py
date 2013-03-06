@@ -55,7 +55,7 @@ class ClientConnection (Connection) :
         # Wait until it's ready
         while(self.__working) :
             sleep(0.1)
-        return not self._factory.isDisconnected()
+        return self._error == None
      
     def getIPAddress(self):
         return self.__ipAddr
@@ -97,7 +97,7 @@ class ClientConnection (Connection) :
                 if (self.__reconnections <= 5) :
                     self.__delay *= 2
                 # Try to reconnect to the server NOW 
-                if (self.__establishClientConnection(5)) :
+                if (self.establish(5)) :
                     # We are now connected to the server
                     self._status.set(CONNECTION_STATUS.READY)
                     # Warn the client code
@@ -107,6 +107,10 @@ class ClientConnection (Connection) :
                     self._close()
                     # Warn the client code
                     self._callback.processServerReconnectionData(self.__ipAddr, self._port, RECONNECTION_T.TIMED_OUT) 
+                    
+    def close(self):
+        self.__reconnect = False
+        Connection.close(self)
                     
     def _freeTwistedResources(self):
         if (self._factory.isDisconnected()) :

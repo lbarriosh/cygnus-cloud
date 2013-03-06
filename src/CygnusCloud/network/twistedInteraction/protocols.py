@@ -8,6 +8,7 @@ Protocol and protocol factory implementations.
 from twisted.internet.protocol import Protocol, Factory
 from network.packets.packet import _Packet
 from ccutils.multithreadingList import GenericThreadSafeList
+from time import sleep
 
 class CygnusCloudProtocol(Protocol):
     """
@@ -53,6 +54,7 @@ class CygnusCloudProtocol(Protocol):
         Returns:
             Nothing
         """
+        self.transport.abortConnection()
         self.__disconnected = True
         self.__factory.removeConnection(self)
     
@@ -128,6 +130,8 @@ class CygnusCloudProtocolFactory(Factory):
             p = self.__connections[i]
             p.disconnect()
             i += 1
+        while (self.__connections.getSize() != 0) :
+            sleep(0.1)
     
     def onPacketReceived(self, p):
         """
