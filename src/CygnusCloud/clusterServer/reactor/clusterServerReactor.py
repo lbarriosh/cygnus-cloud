@@ -13,7 +13,7 @@ from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SE
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 from time import sleep
 from clusterServer.loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
-from network.twistedInteraction.connection import RECONNECTION_T
+from network.twistedInteraction.clientConnection import RECONNECTION_T
 
 class WebPacketReactor(object):
     '''

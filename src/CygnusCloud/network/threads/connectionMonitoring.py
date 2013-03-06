@@ -9,7 +9,7 @@ from ccutils.threads import BasicThread
 from network.twistedInteraction.connection import CONNECTION_STATUS
 from time import sleep
 
-class _ConnectionMonitoringThread(BasicThread):
+class ConnectionMonitoringThread(BasicThread):
     """
     These threads will refresh all the network connections periodically
     and will remove the closed connections from the connection pool.

@@ -8,12 +8,13 @@ from twisted.internet import reactor
 from ccutils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
 from ccutils.multithreadingDictionary import GenericThreadSafeDictionary
 from network.packets.packet import _Packet, Packet_TYPE
-from network.twistedInteraction.connection import _NetworkConnection, RECONNECTION_T
+from network.twistedInteraction.clientConnection import ClientConnection, RECONNECTION_T
+from network.twistedInteraction.serverConnection import ServerConnection
 from network.exceptions.networkManager import NetworkManagerException
 from network.exceptions.connection import ConnectionException
-from network.threads.dataProcessing import _IncomingDataThread, _OutgoingDataThread
-from network.threads.twistedReactor import _TwistedReactorThread
-from network.threads.connectionMonitoring import _ConnectionMonitoringThread
+from network.threads.dataProcessing import IncomingDataThread, OutgoingDataThread
+from network.threads.twistedReactor import TwistedReactorThread
+from network.threads.connectionMonitoring import ConnectionMonitoringThread
         
 class NetworkCallback(object):
     """
@@ -67,11 +68,11 @@ class NetworkManager():
         self.__connectionPool = GenericThreadSafeDictionary()
         self.__outgoingDataQueue = GenericThreadSafePriorityQueue()
         if (not reactor.running) :
-            self.__networkThread = _TwistedReactorThread()    
+            self.__networkThread = TwistedReactorThread()    
         else :
             self.__networkThread = None    
-        self.__outgoingDataThread = _OutgoingDataThread(self.__outgoingDataQueue)
-        self.__connectionThread = _ConnectionMonitoringThread(self.__connectionPool)
+        self.__outgoingDataThread = OutgoingDataThread(self.__outgoingDataQueue)
+        self.__connectionThread = ConnectionMonitoringThread(self.__connectionPool)
         self.__certificatesDirectory = certificatesDirectory
         
     def startNetworkService(self):
@@ -131,7 +132,7 @@ class NetworkManager():
             return (c.getQueue(), c.getThread())
         else :
             queue = GenericThreadSafePriorityQueue()
-            thread = _IncomingDataThread(queue, callbackObject)
+            thread = IncomingDataThread(queue, callbackObject)
             return (queue, thread)  
                 
     def connectTo(self, host, port, timeout, callbackObject, useSSL=False, reconnect=False):
@@ -162,7 +163,7 @@ class NetworkManager():
         # Allocate the connection resources
         (queue, thread) = self.__allocateConnectionResources(callbackObject)   
         # Create the NetworkConnection object
-        connection = _NetworkConnection(False, useSSL, self.__certificatesDirectory, host, port, queue, thread, reconnect, callbackObject)
+        connection = ClientConnection(useSSL, self.__certificatesDirectory, host, port, queue, thread, reconnect, callbackObject)
         # Try to establish the connection
         try :
             if (connection.establish(timeout)) :
@@ -170,7 +171,7 @@ class NetworkManager():
                 self.__connectionPool[(host, port)] = connection
             else :
                 # Raise an exception
-                raise NetworkManagerException("The host " + host + ":" + str(port) +" seems to be unreachable")
+                raise NetworkManagerException("Error: " + connection.getError())
         except ConnectionException as e:
             raise NetworkManagerException(str(e))
         
@@ -194,12 +195,15 @@ class NetworkManager():
         # Allocate the connection resources
         (queue, thread) = self.__allocateConnectionResources(callbackObject)    
         # Create the NetworkConnection object
-        connection = _NetworkConnection(True, useSSL, self.__certificatesDirectory, '', port, queue, thread, None, callbackObject)
+        connection = ServerConnection(useSSL, self.__certificatesDirectory, port, queue, thread, callbackObject)
         try :
             # Establish it
-            connection.establish()
-            # Register the new connection 
-            self.__connectionPool[('', port)] = connection
+            connection.establish(None)
+            if (connection.getError() == None) :
+                # Register the new connection 
+                self.__connectionPool[('', port)] = connection
+            else :
+                raise ConnectionException(str(connection.getError()))
         except ConnectionException as e:
             raise NetworkManagerException(str(e))
                 
@@ -233,7 +237,7 @@ class NetworkManager():
         if connection.isInErrorState() :
             # Something bad has happened => close the connection, warn the user
             self.__connectionPool.pop((connection.getIPAddress(), connection.getPort()))
-            raise NetworkManagerException("Error: " + connection.getError())
+            raise NetworkManagerException("Error: " + str(connection.getError()))
         if (connection.wasUnexpectedlyClosed()):
             self.__connectionPool.pop((connection.getIPAddress(), connection.getPort()))
             raise NetworkManagerException("Error: " + "The connection was closed abnormally")
