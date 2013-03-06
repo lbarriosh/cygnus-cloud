@@ -46,7 +46,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         if (result == None or (timestamp - result >= self.__minCommandInterval))  :
             # Generate the updates
             command = "INSERT INTO PendingCommand VALUES ({0}, {1})".format(userID, timestamp)
-            self._executeUpdate(command)
+            self._executeUpdate(command)    
             command = "INSERT INTO QueuedCommand VALUES ({0}, {1}, {2}, '{3}');".format(userID, timestamp, commandType, arguments)
             self._executeUpdate(command)
             return (userID, timestamp)
@@ -84,7 +84,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         self._executeUpdate(update)
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)
-    
+        
     def removeExecutedCommand(self, commandID):
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)

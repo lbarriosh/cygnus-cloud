@@ -15,50 +15,50 @@ class DBWebServerTests(unittest.TestCase):
         self.__dbConfigurator = DBConfigurator("")
         self.__dbConfigurator.runSQLScript("VMServerDBTest", "./VMServerDBTest.sql")
         self.__dbConfigurator.addUser("CygnusCloud", "cygnuscloud2012", "VMServerDBTest", True)
-        self.__imageManager = ImageManager("CygnusCloud","cygnuscloud2012","VMServerDBTest")
+        self.__db = ImageManager("CygnusCloud","cygnuscloud2012","VMServerDBTest")
         self.__runtimeData = RuntimeData("CygnusCloud","cygnuscloud2012","VMServerDBTest") 
     
     def tearDown(self):
-        self.__imageManager.disconnect()
+        self.__db.disconnect()
         self.__runtimeData.disconnect()
         self.__dbConfigurator.dropDatabase("VMServerDBTest")
     
     def test_getImages(self):
         #Instanciamos la clase
-        l1 = self.__imageManager.getImages()
+        l1 = self.__db.getImages()
         l2 = [1,2,3,4]
         self.assertEquals(l1, l2, "Not same images")
         
     def test_getName(self):
         #Instanciamos la clase
-        n1 = self.__imageManager.getName(1)
+        n1 = self.__db.getName(1)
         n2 = "VMName1"
         self.assertEquals(n1, n2, "Not same image name")
         
     def test_getImagePath(self):
         #Instanciamos la clase
-        n1 = self.__imageManager.getImagePath(1)
+        n1 = self.__db.getImagePath(1)
         n2 = "./VMName1/"
         self.assertEquals(n1, n2, "Not same image path")   
         
     def test_getFileConfigPath(self):
         #Instanciamos la clase
-        n1 = self.__imageManager.getFileConfigPath(1)
+        n1 = self.__db.getFileConfigPath(1)
         n2 = "./VMName1/"
         self.assertEquals(n1, n2, "Not same image path")
 
     def test_setImagePath(self):
         #Instanciamos la clase
-        self.__imageManager.setImagePath(1,"./VMName1Test/")
-        n1 = self.__imageManager.getImagePath(1)
+        self.__db.setImagePath(1,"./VMName1Test/")
+        n1 = self.__db.getImagePath(1)
         n2 = "./VMName1Test/"
         self.assertEquals(n1, n2, "Not change image path")  
         
     def test_createImage(self):
         #Instanciamos la clase
-        imageId = self.__imageManager.createImage(123,"VMNameTest","./VMNameTest/","./OSImagePath1","./VMNameTest/")
-        self.assertTrue(self.__imageManager.doesImageExist(imageId), "Not image regist")  
-        self.__imageManager.deleteImage(imageId)    
+        imageId = self.__db.createImage(123,"VMNameTest","./VMNameTest/","./OSImagePath1","./VMNameTest/")
+        self.assertTrue(self.__db.doesImageExist(imageId), "Not image regist")  
+        self.__db.deleteImage(imageId)    
     
     def test_getRunningPorts(self):
         #Instanciamos la clase
