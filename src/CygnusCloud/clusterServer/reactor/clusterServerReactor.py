@@ -348,7 +348,6 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             Nothing
         """
         data = self.__vmServerPacketHandler.readPacket(packet)
-        print data
         if (data["packet_type"] == VMSRVR_PACKET_T.SERVER_STATUS) :
             self.__updateVMServerStatus(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.DOMAIN_CONNECTION_DATA) :
