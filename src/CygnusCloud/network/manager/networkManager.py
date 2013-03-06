@@ -104,7 +104,7 @@ class NetworkManager():
             Nothing
         """
         for connection in self.__connectionPool.values() :
-            self.closeConnection(connection.getIPAddress(), connection.getPort())
+            self.closeConnection(connection.getHost(), connection.getPort())
         self.__connectionThread.stop()
         self.__connectionThread.join()
         self.__outgoingDataThread.stop()
@@ -236,10 +236,10 @@ class NetworkManager():
         """
         if connection.isInErrorState() :
             # Something bad has happened => close the connection, warn the user
-            self.__connectionPool.pop((connection.getIPAddress(), connection.getPort()))
+            self.__connectionPool.pop((connection.getHost(), connection.getPort()))
             raise NetworkManagerException("Error: " + str(connection.getError()))
         if (connection.wasUnexpectedlyClosed()):
-            self.__connectionPool.pop((connection.getIPAddress(), connection.getPort()))
+            self.__connectionPool.pop((connection.getHost(), connection.getPort()))
             raise NetworkManagerException("Error: " + "The connection was closed abnormally")
         
     def sendPacket(self, host, port, packet):

@@ -2,7 +2,7 @@
 '''
 Twisted reactor thread definitions.
 @author: Luis Barrios Hernández
-@version: 1.5
+@version: 1.6
 '''
 
 from twisted.internet import reactor

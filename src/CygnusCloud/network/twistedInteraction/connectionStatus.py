@@ -1,9 +1,12 @@
+# -*- coding: utf8 -*-
 '''
-Created on 06/03/2013
+Connection status definitions
+@author: Luis Barrios Hernández
+@version: 3.1
+'''
 
-@author: luis
-'''
 from threading import BoundedSemaphore
+
 class ConnectionStatus(object):
     """
     A class that stores a connection's status and allows its modification
