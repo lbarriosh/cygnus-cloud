@@ -141,7 +141,7 @@ class VMServerPacketHandler(object):
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
             result["CommandID"] = p.readString()
-        elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
+        elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS and p.hasMoreData()) :
             result["VMServerIP"] = p.readString()
             result["ActiveDomains"] = p.readInt()
         # Note that the connection data segments will be sent to the web server immediately.

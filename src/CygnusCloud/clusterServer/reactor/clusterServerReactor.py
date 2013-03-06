@@ -156,13 +156,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Establish a connection
             self.__networkManager.connectTo(data["VMServerIP"], data["VMServerPort"], 
                                                 20, self.__vmServerCallback, True, True)
+            while not self.__networkManager.isConnectionReady(data["VMServerIP"], data["VMServerPort"]) :
+                sleep(0.1)
             # Register the server on the database
             self.__dbConnector.registerVMServer(data["VMServerName"], data["VMServerIP"], 
                                                     data["VMServerPort"])
             # Command the virtual machine server to tell us its state
             p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
-            while not self.__networkManager.isConnectionReady(data["VMServerIP"], data["VMServerPort"]) :
-                sleep(0.1)
             self.__networkManager.sendPacket(data["VMServerIP"], data["VMServerPort"], p)
             # Everything went fine
             p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
@@ -348,6 +348,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             Nothing
         """
         data = self.__vmServerPacketHandler.readPacket(packet)
+        print data
         if (data["packet_type"] == VMSRVR_PACKET_T.SERVER_STATUS) :
             self.__updateVMServerStatus(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.DOMAIN_CONNECTION_DATA) :

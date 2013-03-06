@@ -180,7 +180,6 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "DELETE FROM VMServer WHERE serverId = " + str(serverId) + ";"
         #Ejecutamos el comando
         self._executeUpdate(query)
-        self._writeChangesToDatabase()
         # Apaño. ON DELETE CASCADE no funciona cuando las tablas usan un motor de almacenamiento
         # distinto. Una usa INNODB (VMServer) y otra usa MEMORY (VMServerStatus, que es nueva)
         query = "DELETE From VMServerStatus WHERE serverId = " + str(serverId) + ";"
@@ -231,8 +230,9 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 lista con los identificadores de los servidores que tienen la imagen
         '''
         # Creamos la consulta
-        query = "SELECT serverName, imageId FROM VMServer, ImageOnServer " +\
-                 "WHERE VMServer.serverId = ImageOnServer.serverId;"
+        query = "SELECT VMServer.serverName, imageId FROM VMServer, ImageOnServer " +\
+                 "WHERE VMServer.serverId = ImageOnServer.serverId AND VMServer.serverID = {0};"\
+                 .format(serverID)
         #Recogemos los resultado
         results=self._executeQuery(query)
         #Guardamos en una lista los ids resultantes
