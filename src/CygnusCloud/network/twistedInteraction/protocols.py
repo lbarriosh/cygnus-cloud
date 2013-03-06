@@ -99,7 +99,7 @@ class CygnusCloudProtocolFactory(Factory):
         Builds a protocol, stores a pointer to it and finally returns it.
         This method is called inside Twisted code.
         """
-        instance = CygnusCloudProtocol(self)        
+        instance = CygnusCloudProtocol(self) 
         self.__connections.append(instance)
         return instance   
         

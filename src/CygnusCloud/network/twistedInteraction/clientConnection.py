@@ -38,18 +38,25 @@ class ClientConnection (Connection) :
             keyPath = self._certificatesDirectory + "/" + "server.key"
             certificatePath = self._certificatesDirectory + "/" + "server.crt"
             try :
-                endpoint = SSL4ClientEndpoint(reactor, self.__ipAddr, self._port, ssl.DefaultOpenSSLContextFactory(keyPath, certificatePath))
+                endpoint = SSL4ClientEndpoint(reactor, self.__ipAddr, self._port, 
+                    ssl.DefaultOpenSSLContextFactory(keyPath, certificatePath), timeout)
             except Exception:
                 raise ConnectionException("The key, the certificate or both were not found")
         # Establish the connection
-        print endpoint.connect(self._factory)
+        self._deferred = endpoint.connect(self._factory)
+        self.__working = True
+        def _handleError(error):
+            self.__working = False
+            self._setError(error)
+        def _handleConnection(error):
+            self.__working = False
+        self._deferred.addCallback(_handleConnection)
+        self._deferred.addErrback(_handleError)
         # Wait until it's ready
-        time = 0
-        while self._factory.isDisconnected() and time <= timeout:            
-            sleep(0.01)
-            time += 0.01
+        while(self.__working) :
+            sleep(0.1)
         return not self._factory.isDisconnected()
-    
+     
     def getIPAddress(self):
         return self.__ipAddr
     
@@ -100,3 +107,8 @@ class ClientConnection (Connection) :
                     self._close()
                     # Warn the client code
                     self._callback.processServerReconnectionData(self.__ipAddr, self._port, RECONNECTION_T.TIMED_OUT) 
+                    
+    def _freeTwistedResources(self):
+        if (self._factory.isDisconnected()) :
+            self._deferred.cancel()
+        Connection._freeTwistedResources(self)

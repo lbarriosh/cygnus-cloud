@@ -11,6 +11,7 @@ from twisted.internet import reactor, ssl
 class ServerConnection(Connection):
     def __init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject) :
         Connection.__init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject)
+        self._listenningPort = None
 
     def establish(self, timeout):
         """
@@ -33,20 +34,20 @@ class ServerConnection(Connection):
                 raise ConnectionException("The key, the certificate or both were not found")          
         # Establish the connection     
         def _registerListeningPort(port):
-            self._listeningPort = port
+            self.__listenningPort = port
         def _onError(failure):
-            self.setError(failure)
-        self.__deferred = endpoint.listen(self._factory)
+            self._setError(failure)
+        self._deferred = endpoint.listen(self._factory)
         # Configure the deferred object
-        self.__deferred.addCallback(_registerListeningPort)
-        self.__deferred.addErrback(_onError)     
+        self._deferred.addCallback(_registerListeningPort)
+        self._deferred.addErrback(_onError)     
         
     def getIPAddress(self):
         return ''
     
     def refresh(self):
         if self._status.get() == CONNECTION_STATUS.OPENING :
-            if (self._listeningPort != None): 
+            if (self.__listenningPort != None): 
                 # Server => the connection must also have a listening port before
                 # it's ready.
                 self._status.set(CONNECTION_STATUS.READY_WAIT)
@@ -68,8 +69,8 @@ class ServerConnection(Connection):
             self._status.set(CONNECTION_STATUS.READY_WAIT)
             
     def _freeTwistedResources(self):
-        if self._listeningPort is None :                
-            self.__deferred.cancel()
+        if self.__listenningPort is None :                
+            self._deferred.cancel()
         else :
-            self._listeningPort.stopListenning()
+            self.__listenningPort.loseConnection()
         Connection._freeTwistedResources(self)

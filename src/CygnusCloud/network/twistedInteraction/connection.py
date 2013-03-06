@@ -43,8 +43,7 @@ class Connection(object):
         self._incomingDataThread = incomingDataThread        
         self._callback = callbackObject
         self._packagesToSend = MultithreadingCounter()
-        self.__deferred = None
-        self._listeningPort = None
+        self._deferred = None
         self._unexpectedlyClosed = False        
         self.__error = None
         
@@ -195,7 +194,7 @@ class Connection(object):
         """
         return self.__error
     
-    def setError(self, value):
+    def _setError(self, value):
         """
         Modifies the error message stored in this connection.
         """

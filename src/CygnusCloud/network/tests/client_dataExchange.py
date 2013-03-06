@@ -21,5 +21,5 @@ if __name__ == "__main__" :
     p = networkManager.createPacket(0)
     p.writeString("Greetings from a client 1")    
     networkManager.sendPacket('127.0.0.1', port, p)
-    sleep(100)
+    sleep(60)
     networkManager.stopNetworkService()
