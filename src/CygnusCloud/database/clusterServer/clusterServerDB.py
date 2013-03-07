@@ -2,6 +2,7 @@
 
 from ccutils.enums import enum
 from database.utils.connector import BasicDatabaseConnector
+import time
 
 SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN", "RECONNECTING", "CONNECTION_TIMED_OUT")
 
@@ -339,3 +340,46 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             " WHERE  serverId = " + str(serverId) + ";"
         # Execute it
         self._executeUpdate(query)
+        
+    def registerVMBootCommand(self, commandID):
+        """
+        Registers a virtual machine boot command in the database.
+        Args:
+            commandID: the virtual machine boot command's unique identifier
+        Returns:
+            Nothing
+        """
+        timestamp = time.time()
+        update = "INSERT INTO VMBootCommand VALUES ('{0}', {1});".format(commandID, timestamp)
+        self._executeUpdate(update)
+        
+    def removeVMBootCommand(self, commandID):
+        """
+        Removes a virtual machine boot command from the database
+        Args:
+            commandID: the command's unique identifier
+        Returns:
+            Nothing
+        """
+        update = "DELETE FROM VMBootCommand WHERE commandID = '{0}';".format(commandID)        
+        self._executeUpdate(update)
+        
+    def getOldVMBootCommandID(self, timeout):
+        """
+        Removes an old virtual machine command id from the database and returns it.
+        Args:
+            the timeout. A command will be considered old when its timestamp plus timeout
+            is greater than or equal to the current time.
+        Returns:
+            If an old commandID is found, it will be returned. Otherwise, None will be returned
+        """
+        query = "SELECT * FROM VMBootCommand;"
+        results = self._executeQuery(query, False)
+        currentTime = time.time()
+        for row in results :
+            difference = currentTime - row[1]
+            if (difference >= timeout) :
+                update = "DELETE FROM VMBootCommand WHERE commandID = '{0}'".format(row[0])
+                self._executeUpdate(update)
+                return row[0] # Match! -> return it
+        return None
