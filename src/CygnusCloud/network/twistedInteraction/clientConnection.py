@@ -64,7 +64,7 @@ class ClientConnection (Connection) :
         self.__working = True
         def _handleError(error):
             self.__working = False
-            self._setError(error)
+            self._setError(Connection._prettyPrintTwistedError(error))
         def _handleConnection(error):
             self.__working = False
         self._deferred.addCallback(_handleConnection)

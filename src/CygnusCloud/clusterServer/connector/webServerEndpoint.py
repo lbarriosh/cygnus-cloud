@@ -181,9 +181,11 @@ class WebServerEndpoint(object):
                 self.__commandsDBConnector.removeExecutedCommand(commandID)
             else :           
                 # Command outputs => serialize and add them to the commands database 
-                if (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
-                    (outputType, outputContent) = CommandsHandler.createVMServerBootUpErrorOutput(
-                        data["ServerNameOrIPAddress"], data["ErrorMessage"])
+                if (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR or 
+                    data["packet_type"] == PACKET_T.VM_SERVER_UNREGISTRATION_ERROR or 
+                    data["packet_type"] == PACKET_T.VM_SERVER_SHUTDOWN_ERROR) :
+                    (outputType, outputContent) = CommandsHandler.createVMServerGenericErrorOutput(
+                        data["packet_type"], data["ServerNameOrIPAddress"], data["ErrorMessage"])
                 elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
                     (outputType, outputContent) = CommandsHandler.createVMServerRegistrationErrorOutput(
                         data["VMServerIP"], data["VMServerPort"], data["VMServerName"], data["ErrorMessage"])
