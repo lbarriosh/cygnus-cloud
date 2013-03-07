@@ -15,7 +15,7 @@ scriptPath = "../database/ClusterServerDB.sql"
 databaseName = "ClusterServerDB"
 certificatePath ="/home/luis/Certificates"
 listeningPort = 9000
-vmBootTimeout = 60
+vmBootTimeout = 10
 
 if __name__ == "__main__":
     reactor = ClusterServerReactor(vmBootTimeout)

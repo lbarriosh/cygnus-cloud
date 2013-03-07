@@ -98,7 +98,7 @@ if __name__ == "__main__" :
     print "Dummy virtual machine server - Version 1.0"
     ip = raw_input("IP address: ")
     port = int(raw_input("Port: "))
-    sendConnectionData = bool(raw_input("Send connection data? (empty string = no, something else = yes)"))
+    sendConnectionData = bool(raw_input("Send connection data? (empty string = no, anything else = yes) "))
     callback = DummyVMServer(nmanager, ip, port, sendConnectionData)
     nmanager.listenIn(port, callback, True)
     while (not callback.hasFinished()) :
