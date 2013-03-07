@@ -9,6 +9,7 @@ from ccutils.enums import enum
 from connectionStatus import ConnectionStatus
 from protocols import CygnusCloudProtocolFactory
 from ccutils.multithreadingCounter import MultithreadingCounter
+from twisted.internet.error import *
 
 """
 Connection status enum type.
@@ -44,6 +45,25 @@ class Connection(object):
         self._deferred = None
         self._unexpectedlyClosed = False        
         self._error = None
+        
+    @staticmethod
+    def _prettyPrintTwistedError(uglyTwistedError):
+        """
+        Puts an ugly twisted error in a human readable form
+        Args:
+            uglyTwistedError: the twisted error to pretty print
+        Returns:
+            A string containing the error message
+        """
+        errorStr = str(uglyTwistedError)
+        i = 0
+        while i < 3 :
+            (_head, _sep, errorMessage) = errorStr.partition(":")
+            errorStr = errorMessage
+            i += 1
+        (head, _sep, _errorMessage) = errorStr.partition(":")
+        return head
+        
         
     def establish(self, timeout=None):
         """

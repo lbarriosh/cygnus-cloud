@@ -47,8 +47,8 @@ class ServerConnection(Connection):
         # Establish the connection     
         def _registerListeningPort(port):
             self.__listenningPort = port
-        def _onError(failure):
-            self._setError(failure)
+        def _onError(error):
+            self._setError(Connection._prettyPrintTwistedError(error))
         self._deferred = endpoint.listen(self._factory)
         # Configure the deferred object
         self._deferred.addCallback(_registerListeningPort)

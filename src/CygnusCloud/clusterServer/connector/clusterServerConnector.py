@@ -168,6 +168,7 @@ class ClusterServerConnector(object):
             An empty tuple if the command is still running, and its ouput if it isn't.
             Note that some command outputs can have None outputs.
             This dictionary will have the keys 
+            - OutputType: contains the output type (i.e. connection data, registration error, and so on).
             - ServerNameOrIPAddress and ErrorMessage if the command output is a 
               virtual machine server boot up error.
             - VMServerIP, VMServerPort, VMServerName and ErrorMessage if the command output
@@ -215,20 +216,11 @@ if __name__ == "__main__":
     connector = ClusterServerConnector(1)
     connector.connectToDatabases("SystemStatusDB", "CommandsDB", "website", "CygnusCloud")
     sleep(3)
-    #connector.bootUpVMServer("Server1") 
-    #sleep(2)
-    connector.registerVMServer("192.168.0.5", 15900, "Server2")
-    sleep(5)
-    print connector.getVMServersData()
-#    connector.registerVMServer("192.168.0.5", 15900, "Server2")
-#    sleep(10)
-#    print connector.getVMServersData()
-#    connector.unregisterVMServer("Server1", True)
-#    sleep(10)
-#    print connector.getVMServersData()
-#    connector.unregisterVMServer("Server2", True)
-#    sleep(10)
-#    print connector.getVMServersData()    
-    #connector.halt(True)
+    commandID = connector.shutdownVMServer("Server2", True)
+    print connector.waitForCommandOutput(commandID)
+    commandID = connector.unregisterVMServer("Server2", True)
+    print connector.waitForCommandOutput(commandID)
+    commandID = connector.bootUpVMServer("Server1")
+    print connector.waitForCommandOutput(commandID)
     connector.dispose()
     

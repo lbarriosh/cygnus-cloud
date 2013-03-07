@@ -212,7 +212,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 packet_type = WEB_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR
             else :
                 packet_type = WEB_PACKET_T.VM_SERVER_SHUTDOWN_ERROR
-            errorMessage = "The virtual machine server with name or IP address '{0}' is not registered".format(key)
+            errorMessage = "The virtual machine server with name or IP address <<{0}>> is not registered".format(key)
             p = self.__webPacketHandler.createVMServerGenericErrorPacket(packet_type, key, errorMessage, commandID)
         self.__networkManager.sendPacket('', self.__webPort, p)   
             
