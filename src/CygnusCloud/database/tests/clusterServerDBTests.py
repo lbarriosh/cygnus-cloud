@@ -3,10 +3,11 @@
     Main server database unit tests.
     @author: Adrián Fernández Hernández
     @author: Luis Barrios Hernández
-    @version: 2.0
+    @version: 2.2
 '''
 import unittest
 
+from time import sleep
 from database.utils.configuration import DBConfigurator
 from database.clusterServer.clusterServerDB import SERVER_STATE_T, ClusterServerDatabaseConnector
 
@@ -67,7 +68,7 @@ class ClusterServerDBTests(unittest.TestCase):
         '''
         Tests the registration of a new virtual machine server
         '''
-        self.__connector.subscribeVMServer('A new server', '100.101.102.103', 89221)
+        self.__connector.registerVMServer('A new server', '100.101.102.103', 89221)
         ids = self.__connector.getVMServerIDs()
         expectedIds = [1,2,3,4, ids[len(ids) - 1]]
         self.assertEquals(ids, expectedIds, 'registerVMServer does not work')
@@ -143,6 +144,26 @@ class ClusterServerDBTests(unittest.TestCase):
         result = self.__connector.getVMServerStatistics(1)
         expectedResult = {'ActiveHosts': 1234}
         self.assertEquals(result, expectedResult, 'setVMServerStatistics does not work')
+        
+    def test_vmBootCommands(self):
+        result = self.__connector.getOldVMBootCommandID(1)
+        self.assertEquals(result, None, 'getOldVMBootCommand does not work')
+        self.__connector.registerVMBootCommand("Command1", 1)
+        sleep(2)
+        result = self.__connector.getOldVMBootCommandID(1)
+        self.assertEquals(result, ("Command1", 1), 'getOldVMBootCommand does not work')
+        self.__connector.registerVMBootCommand("Command1", 2)
+        sleep(1)
+        result = self.__connector.getOldVMBootCommandID(3)
+        self.assertEquals(result, None, 'getOldVMBootCommand does not work')
+        self.__connector.registerVMBootCommand("Command2",2)
+        self.__connector.registerVMBootCommand("Command3",3)
+        self.__connector.removeVMBootCommand("Command2")
+        sleep(5)           
+        result = self.__connector.getOldVMBootCommandID(3)        
+        self.assertEquals(result, ("Command1",2), 'getOldVMBootCommand does not work')
+        result = self.__connector.getOldVMBootCommandID(3)        
+        self.assertEquals(result, ("Command3",3), 'getOldVMBootCommand does not work')
         
 if __name__ == "__main__":
     unittest.main()

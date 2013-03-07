@@ -6,7 +6,6 @@ Main server entry point
 '''
 
 from clusterServer.reactor.clusterServerReactor import ClusterServerReactor
-from time import sleep
 
 mysqlRootsPassword = ""
 dbName = "ClusterServerDB"
@@ -16,11 +15,11 @@ scriptPath = "../database/ClusterServerDB.sql"
 databaseName = "ClusterServerDB"
 certificatePath ="/home/luis/Certificates"
 listeningPort = 9000
+vmBootTimeout = 10
 
 if __name__ == "__main__":
-    reactor = ClusterServerReactor()
+    reactor = ClusterServerReactor(vmBootTimeout)
     reactor.connectToDatabase(mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath)
     reactor.startListenning(certificatePath, 9000)
-    while not reactor.hasFinished() :
-        sleep(10)
+    reactor.monitorVMBootCommands()
     reactor.shutdown()

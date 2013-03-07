@@ -22,6 +22,11 @@ CREATE TABLE IF NOT EXISTS VMServerStatus(serverId INTEGER, hosts INTEGER,
 	PRIMARY KEY(serverId),
 	FOREIGN KEY(serverId) REFERENCES VMServer(serverId) ON DELETE CASCADE ON UPDATE CASCADE)
 	ENGINE=MEMORY;
+	
+DROP TABLE IF EXISTS VMBootCommand;
+
+CREATE TABLE VMBootCommand(commandID VARCHAR(70), dispatchTime double, VMID INT,
+    PRIMARY KEY(commandID)) ENGINE=MEMORY;
 
 INSERT IGNORE INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort) VALUES
     (1, 'Server1', 2, '127.0.0.1', 15800);
