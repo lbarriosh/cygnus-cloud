@@ -188,6 +188,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         if data.has_key("CommandID") :
             useCommandID = True 
             commandID = data["CommandID"]
+        else :
+            useCommandID = False
         # Shut down the server (if necessary)
         serverId = self.__dbConnector.getVMServerID(key)
         if (serverId != None) :

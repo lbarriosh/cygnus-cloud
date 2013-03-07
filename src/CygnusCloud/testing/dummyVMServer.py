@@ -3,7 +3,7 @@
 In this module, we define a dummy virtual machine server.
 This code will only be used for testing purposes.
 @author: Luis Barrios Hernández
-@version: 1.3
+@version: 2.0
 '''
 
 from network.manager.networkManager import NetworkCallback, NetworkManager
@@ -16,7 +16,7 @@ class DummyVMServer(NetworkCallback):
     A class that behaves like a virtual machine server
     """
     
-    def __init__(self, networkManager, dummyIP, port):
+    def __init__(self, networkManager, dummyIP, port, sendConnectionData):
         """
         Initializes the callback's state
         """
@@ -24,6 +24,7 @@ class DummyVMServer(NetworkCallback):
         self.__packetSender = lambda p : networkManager.sendPacket('', port, p)
         self.__dummyDomains = 0
         self.__dummyIP = dummyIP
+        self.__sendConnectionData = sendConnectionData
         self.__finished = False
    
     def processPacket(self, packet):
@@ -64,14 +65,15 @@ class DummyVMServer(NetworkCallback):
         """
         Creates a dummy domain and sends the connection data as an answer.
         """
+        if (not self.__sendConnectionData) :
+            return
         # Generate the answer
-#        packetToSend = self.__packetHandler.createVMConnectionParametersPacket(self.__dummyIP, 
-#                                                                               12345, "dummy password", 
-#                                                                               processedPacket["CommandID"])
-#        # Send it to the main server
-#        self.__packetSender(packetToSend)
-#        self.__dummyDomains += 1
-        pass
+        packetToSend = self.__packetHandler.createVMConnectionParametersPacket(self.__dummyIP, 
+                                                                               12345, "dummy password", 
+                                                                               processedPacket["CommandID"])
+        # Send it to the main server
+        self.__packetSender(packetToSend)
+        self.__dummyDomains += 1
         
     def __sendStatusData(self): 
         """
@@ -96,7 +98,8 @@ if __name__ == "__main__" :
     print "Dummy virtual machine server - Version 1.0"
     ip = raw_input("IP address: ")
     port = int(raw_input("Port: "))
-    callback = DummyVMServer(nmanager, ip, port)
+    sendConnectionData = bool(raw_input("Send connection data? (empty string = no, something else = yes)"))
+    callback = DummyVMServer(nmanager, ip, port, sendConnectionData)
     nmanager.listenIn(port, callback, True)
     while (not callback.hasFinished()) :
         sleep(1)
