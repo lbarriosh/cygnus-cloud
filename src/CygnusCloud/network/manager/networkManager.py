@@ -171,7 +171,7 @@ class NetworkManager():
                 self.__connectionPool[(host, port)] = connection
             else :
                 # Raise an exception
-                raise NetworkManagerException("Error: " + connection.getError())
+                raise NetworkManagerException("Error: " + str(connection.getError()))
         except ConnectionException as e:
             raise NetworkManagerException(str(e))
         
@@ -203,7 +203,7 @@ class NetworkManager():
                 # Register the new connection 
                 self.__connectionPool[('', port)] = connection
             else :
-                raise ConnectionException(str(connection.getError()))
+                raise ConnectionException("Error: " + str(connection.getError()))
         except ConnectionException as e:
             raise NetworkManagerException(str(e))
                 

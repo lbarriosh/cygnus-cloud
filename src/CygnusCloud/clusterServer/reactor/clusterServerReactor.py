@@ -2,7 +2,7 @@
 '''
 Main server reactor definitions.
 @author: Luis Barrios Hernández
-@version: 3.1
+@version: 3.3
 '''
 
 from clusterServer.networking.callbacks import VMServerCallback, WebCallback
@@ -167,7 +167,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Everything went fine
             p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
         except Exception as e:                
-            p = self.__webPacketHandler.createVMRegistrationErrorPacket(data["VMServerIP"], 
+            p = self.__webPacketHandler.createVMServerRegistrationErrorPacket(data["VMServerIP"], 
                                                                             data["VMServerPort"], 
                                                                             data["VMServerName"], str(e), data["CommandID"])        
         self.__networkManager.sendPacket('', self.__webPort, p)
@@ -184,24 +184,37 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         key = data["ServerNameOrIPAddress"] 
         halt = data["Halt"]
         unregister = data["Unregister"]
+        commandID = data["CommandID"]
         # Shut down the server (if necessary)
         serverId = self.__dbConnector.getVMServerID(key)
-        serverData = self.__dbConnector.getVMServerBasicData(serverId)
-        status = serverData["ServerStatus"]
-        if (status == SERVER_STATE_T.READY or status == SERVER_STATE_T.BOOTING) :
-            if not halt :
-                p = self.__vmServerPacketHandler.createVMServerShutdownPacket()
+        if (serverId != None) :
+            serverData = self.__dbConnector.getVMServerBasicData(serverId)
+            status = serverData["ServerStatus"]
+            if (status == SERVER_STATE_T.READY or status == SERVER_STATE_T.BOOTING) :
+                if not halt :
+                    p = self.__vmServerPacketHandler.createVMServerShutdownPacket()
+                else :
+                    p = self.__vmServerPacketHandler.createVMServerHaltPacket()
+                self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
+                # Close the network connection
+                self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])
+            if (not unregister) :
+                self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
+                self.__dbConnector.deleteVMServerStatistics(serverId)
             else :
-                p = self.__vmServerPacketHandler.createVMServerHaltPacket()
-            self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
-            # Close the network connection
-            self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])
-        if (not unregister) :
-            self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
-            self.__dbConnector.deleteVMServerStatistics(serverId)
+                # Update the virtual machine server's state
+                self.__dbConnector.deleteVMServer(key)
+            # Create a command executed packet and send it to the website
+            p = self.__webPacketHandler.createCommandExecutedPacket(commandID)
         else :
-            # Update the virtual machine server's state
-            self.__dbConnector.deleteVMServer(key)   
+            # Error
+            if (unregister) :
+                packet_type = WEB_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR
+            else :
+                packet_type = WEB_PACKET_T.VM_SERVER_SHUTDOWN_ERROR
+            errorMessage = "The virtual machine server with name or IP address <<{0}>> is not registered".format(key)
+            p = self.__webPacketHandler.createVMServerGenericErrorPacket(packet_type, key, errorMessage, commandID)
+        self.__networkManager.sendPacket('', self.__webPort, p)   
             
     def __updateVMServerStatus(self, data):
         """
@@ -248,7 +261,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Everything went fine
             p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
         except Exception as e:
-            p = self.__webPacketHandler.createVMServerBootUpErrorPacket(serverNameOrIPAddress, str(e), data["CommandID"])
+            p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.VM_SERVER_BOOTUP_ERROR, 
+                                                                         serverNameOrIPAddress, str(e), data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __sendVMServerStatusData(self):

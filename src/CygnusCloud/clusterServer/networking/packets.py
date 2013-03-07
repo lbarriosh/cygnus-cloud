@@ -2,7 +2,7 @@
 '''
 Main server packet handler definitions.
 @author: Luis Barrios Hernández
-@version: 1.0
+@version: 2.1
 '''
 
 from ccutils.enums import enum
@@ -12,7 +12,8 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "VM_SERVERS_STATUS_DATA", "QUERY_VM_DISTRIBUTION", "VM_DISTRIBUTION_DATA",
                             "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",
                             "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
-                            "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "COMMAND_EXECUTED")
+                            "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "COMMAND_EXECUTED", "VM_SERVER_SHUTDOWN_ERROR",
+                            "VM_SERVER_UNREGISTRATION_ERROR")
 
 class ClusterServerPacketHandler(object):
     """
@@ -51,7 +52,7 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createVMRegistrationErrorPacket(self, IPAddress, port, name, reason, commandID):
+    def createVMServerRegistrationErrorPacket(self, IPAddress, port, name, reason, commandID):
         """
         Creates a virtual machine server registration error packet
         Args:
@@ -70,7 +71,7 @@ class ClusterServerPacketHandler(object):
         p.writeString(name)
         p.writeString(reason)        
         p.writeString(commandID)
-        return p
+        return p        
     
     def createDataRequestPacket(self, query):
         """
@@ -160,18 +161,20 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createVMServerBootUpErrorPacket(self, serverNameOrIPAddress, reason, commandID):
+    def createVMServerGenericErrorPacket(self, packet_type, serverNameOrIPAddress, reason, commandID):
         """
-        Creates a virtual machine server boot up error packet
+        Creates a virtual machine server boot up, unregistration or shutdown error packet
         Args:
+            packet_type: the packet type
             serverNameOrIPAddress: the virtual machine server's name or IPv4 address
             reason: an error message
             commandID: the command's unique identifier
         Returns:
-            a new virtual machine server boot up error packet containing the supplied data.
+            a new virtual machine server boot up, unregistration or shutdown error packet 
+            containing the supplied data.
         """
         p = self.__packetCreator.createPacket(3)
-        p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR)
+        p.writeInt(packet_type)
         p.writeString(serverNameOrIPAddress)
         p.writeString(reason)
         p.writeString(commandID)
@@ -337,7 +340,9 @@ class ClusterServerPacketHandler(object):
             result["ServerNameOrIPAddress"] = p.readString()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR) :
+        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR or 
+              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR or 
+              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_SHUTDOWN_ERROR) :
             result["ServerNameOrIPAddress"] = p.readString()
             result["ErrorMessage"] = p.readString()
             result["CommandID"] = p.readString()

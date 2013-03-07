@@ -33,6 +33,14 @@ class TesterCallback(NetworkCallback):
             print("Virtual machine server bootup error")
             print("\tServer name or IP address: " + data["ServerNameOrIPAddress"])
             print("\tReason: " + data["ErrorMessage"])
+        elif (data["packet_type"] == PACKET_T.VM_SERVER_UNREGISTRATION_ERROR):
+            print("Virtual machine server unregistration error")
+            print("\tServer name or IP address: " + data["ServerNameOrIPAddress"])
+            print("\tReason: " + data["ErrorMessage"])
+        elif (data["packet_type"] == PACKET_T.VM_SERVER_SHUTDOWN_ERROR):
+            print("Virtual machine server shutdown error")
+            print("\tServer name or IP address: " + data["ServerNameOrIPAddress"])
+            print("\tReason: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE):
             print("Virtual machine boot failure")
             print("\tMachine ID: " + str(data["VMID"]))
