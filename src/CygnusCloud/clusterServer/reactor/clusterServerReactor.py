@@ -34,7 +34,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
     These objects react to packages received from the website or from
     a virtual machine server.
     '''
-    def __init__(self):
+    def __init__(self, timeout):
         """
         Initializes the reactor's state.
         Args:
@@ -42,6 +42,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         """
         self.__webCallback = WebCallback(self)
         self.__finished = False
+        self.__timeout = timeout
         
     def connectToDatabase(self, mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath):
         """
@@ -184,7 +185,9 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         key = data["ServerNameOrIPAddress"] 
         halt = data["Halt"]
         unregister = data["Unregister"]
-        commandID = data["CommandID"]
+        if data.has_key("CommandID") :
+            useCommandID = True 
+            commandID = data["CommandID"]
         # Shut down the server (if necessary)
         serverId = self.__dbConnector.getVMServerID(key)
         if (serverId != None) :
@@ -204,8 +207,10 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             else :
                 # Update the virtual machine server's state
                 self.__dbConnector.deleteVMServer(key)
-            # Create a command executed packet and send it to the website
-            p = self.__webPacketHandler.createCommandExecutedPacket(commandID)
+            if (useCommandID) :
+                # Create a command executed packet and send it to the website
+                p = self.__webPacketHandler.createCommandExecutedPacket(commandID)
+                self.__networkManager.sendPacket('', self.__webPort, p)
         else :
             # Error
             if (unregister) :
@@ -214,7 +219,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 packet_type = WEB_PACKET_T.VM_SERVER_SHUTDOWN_ERROR
             errorMessage = "The virtual machine server with name or IP address <<{0}>> is not registered".format(key)
             p = self.__webPacketHandler.createVMServerGenericErrorPacket(packet_type, key, errorMessage, commandID)
-        self.__networkManager.sendPacket('', self.__webPort, p)   
+            self.__networkManager.sendPacket('', self.__webPort, p)   
             
     def __updateVMServerStatus(self, data):
         """
@@ -344,14 +349,16 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             p = self.__webPacketHandler.createVMBootFailurePacket(vmID, errorMessage, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
         else :
+            
             # Ask the virtual machine server to boot up the VM
             p = self.__vmServerPacketHandler.createVMBootPacket(vmID, userID, data["CommandID"])
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
-            # TODO: change this
+            # Register the boot command
+            self.__dbConnector.registerVMBootCommand(data["CommandID"], data["VMID"])
             # Everything went fine
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
-            self.__networkManager.sendPacket('', self.__webPort, p)
+            #p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            #self.__networkManager.sendPacket('', self.__webPort, p)
     
     def processVMServerIncomingPacket(self, packet):
         """
@@ -408,9 +415,24 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Returns:
             Nothing
         """
+        # Delete the boot command from the database
+        self.__dbConnector.removeVMBootCommand(data["CommandID"])
         p = self.__webPacketHandler.createVMConnectionDataPacket(data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)        
+    
+    def monitorVMBootCommands(self):
+        errorMessage = "Could not boot up virtual machine (timeout error)"
+        while not self.__finished :
+            data = self.__dbConnector.getOldVMBootCommandID(self.__timeout)
+            if (not self.__finished and data == None) :
+                # Be careful with this: if MySQL server receives too many queries per second,
+                # the reactor's database connection will be closed.
+                sleep(1) 
+            else :
+                # Create a virtual machine boot error packet
+                p = self.__webPacketHandler.createVMBootFailurePacket(data[1], errorMessage, data[0])
+                self.__networkManager.sendPacket('', self.__webPort, p)
     
     def hasFinished(self):
         """

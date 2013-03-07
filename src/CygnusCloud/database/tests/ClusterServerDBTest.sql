@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS VMServerStatus(serverId INTEGER, hosts INTEGER,
 	
 DROP TABLE IF EXISTS VMBootCommand;
 
-CREATE TABLE VMBootCommand(commandID VARCHAR(70) NOT NULL, time double,
+CREATE TABLE VMBootCommand(commandID VARCHAR(70), dispatchTime double, VMID INT,
     PRIMARY KEY(commandID)) ENGINE=MEMORY;
 
 INSERT INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort) VALUES 

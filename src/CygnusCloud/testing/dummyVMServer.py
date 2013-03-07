@@ -3,7 +3,7 @@
 In this module, we define a dummy virtual machine server.
 This code will only be used for testing purposes.
 @author: Luis Barrios Hernández
-@version: 1.2
+@version: 1.3
 '''
 
 from network.manager.networkManager import NetworkCallback, NetworkManager
@@ -64,14 +64,14 @@ class DummyVMServer(NetworkCallback):
         """
         Creates a dummy domain and sends the connection data as an answer.
         """
-        userID = processedPacket["UserID"]
         # Generate the answer
-        packetToSend = self.__packetHandler.createVMConnectionParametersPacket(userID, self.__dummyIP, 
-                                                                               12345, "dummy password", 
-                                                                               processedPacket["CommandID"])
-        # Send it to the main server
-        self.__packetSender(packetToSend)
-        self.__dummyDomains += 1
+#        packetToSend = self.__packetHandler.createVMConnectionParametersPacket(self.__dummyIP, 
+#                                                                               12345, "dummy password", 
+#                                                                               processedPacket["CommandID"])
+#        # Send it to the main server
+#        self.__packetSender(packetToSend)
+#        self.__dummyDomains += 1
+        pass
         
     def __sendStatusData(self): 
         """

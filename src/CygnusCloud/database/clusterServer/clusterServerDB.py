@@ -341,7 +341,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         # Execute it
         self._executeUpdate(query)
         
-    def registerVMBootCommand(self, commandID):
+    def registerVMBootCommand(self, commandID, vmID):
         """
         Registers a virtual machine boot command in the database.
         Args:
@@ -350,7 +350,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             Nothing
         """
         timestamp = time.time()
-        update = "INSERT INTO VMBootCommand VALUES ('{0}', {1});".format(commandID, timestamp)
+        update = "INSERT INTO VMBootCommand VALUES ('{0}', {1}, {2});".format(commandID, timestamp, vmID)
         self._executeUpdate(update)
         
     def removeVMBootCommand(self, commandID):
@@ -381,5 +381,5 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             if (difference >= timeout) :
                 update = "DELETE FROM VMBootCommand WHERE commandID = '{0}'".format(row[0])
                 self._executeUpdate(update)
-                return row[0] # Match! -> return it
+                return (row[0], int(row[2])) # Match! -> return it
         return None
