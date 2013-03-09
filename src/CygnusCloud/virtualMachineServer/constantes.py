@@ -5,7 +5,7 @@ Created on 14/01/2013
 @author: saguma
 '''
 
-createVirtualNetworkAsRoot = True
+createVirtualNetworkAsRoot = False
 
 mysqlRootsPassword = ""
 databaseName = "VMServerDB"
