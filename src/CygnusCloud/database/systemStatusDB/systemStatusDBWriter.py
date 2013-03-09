@@ -3,7 +3,7 @@
 Web status database writer
 
 @author: Luis Barrios Hernández
-@version: 3.1
+@version: 3.2
 '''
 
 from database.utils.connector import BasicDatabaseConnector
@@ -21,9 +21,13 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         databaseName: the database's name
         """
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
-        self.__vmServerSegments = []
-        self.__imageDistributionSegments = []
+        self.__vmServerSegmentsData = []
+        self.__vmServerSegments = 0
+        self.__imageDistributionSegmentsData = []
+        self.__imageDistributionSegments = 0
+        self.__activeVMSegmentsData = dict()
         self.__activeVMSegments = dict()
+        
         
     def processVMServerSegment(self, segmentNumber, segmentCount, data):
         """
@@ -36,9 +40,10 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             Nothing
         """
         if (data != []) :
-            self.__vmServerSegments += data
-        if (len(self.__vmServerSegments) == segmentCount) :
-            receivedData = SystemStatusDatabaseWriter.__getVMServersDictionary(self.__vmServerSegments)
+            self.__vmServerSegmentsData += data
+            self.__vmServerSegments += 1
+        if (self.__vmServerSegments == segmentCount) :
+            receivedData = SystemStatusDatabaseWriter.__getVMServersDictionary(self.__vmServerSegmentsData)
             registeredIDs = self.__getKnownVMServerIDs()
             # Step 1: remove the nonexistent rows
             if (registeredIDs != None) :
@@ -55,7 +60,8 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             # Step 3: write changes to the database
             if (inserts != []) :
                 self.__insertVMServers(inserts)
-            self.__vmServerSegments = [] 
+            self.__vmServerSegmentsData = [] 
+            self.__vmServerSegments = 0
             
     def processVMDistributionSegment(self, segmentNumber, segmentCount, data):
         """
@@ -68,14 +74,16 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             Nothing
         """
         if (data != []) :
-            self.__imageDistributionSegments.append(data)
-        if (len(self.__imageDistributionSegments) == segmentCount) :
+            self.__imageDistributionSegmentsData.append(data)
+            self.__imageDistributionSegments += 1
+        if (self.__imageDistributionSegments == segmentCount) :
             # Write changes to the database
             command = "DELETE FROM VirtualMachineDistribution;"
             self._executeUpdate(command)
-            if (self.__imageDistributionSegments != []) :
-                command = "INSERT INTO VirtualMachineDistribution VALUES " + SystemStatusDatabaseWriter.__convertSegmentsToSQLTuples(self.__imageDistributionSegments)
-                self.__imageDistributionSegments = []            
+            if (self.__imageDistributionSegmentsData != []) :
+                command = "INSERT INTO VirtualMachineDistribution VALUES " + SystemStatusDatabaseWriter.__convertSegmentsToSQLTuples(self.__imageDistributionSegmentsData)
+                self.__imageDistributionSegmentsData = []   
+                self.__imageDistributionSegments = 0         
                 self._executeUpdate(command)
     
     def processActiveVMSegment(self, segmentNumber, segmentCount, vmServerIP, data):
@@ -89,12 +97,14 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         Returns:
             Nothing
         """
-        if (not self.__activeVMSegments.has_key(vmServerIP)) :
-            self.__activeVMSegments[vmServerIP] = []
+        if (not self.__activeVMSegmentsData.has_key(vmServerIP)) :
+            self.__activeVMSegmentsData[vmServerIP] = []
+            self.__activeVMSegments[vmServerIP] = 0
         if (data != []) :
-            self.__activeVMSegments[vmServerIP] += data
-        if (len(self.__activeVMSegments[vmServerIP]) == segmentCount) :
-            receivedData = SystemStatusDatabaseWriter.__getActiveVMsDictionary(self.__activeVMSegments[vmServerIP])
+            self.__activeVMSegmentsData[vmServerIP] += data
+            self.__activeVMSegments[vmServerIP] += 1
+        if (self.__activeVMSegments[vmServerIP] == segmentCount) :
+            receivedData = SystemStatusDatabaseWriter.__getActiveVMsDictionary(self.__activeVMSegmentsData[vmServerIP])
             registeredIDs = self.__getActiveVMIDs()
             # Step 1: remove the nonexistent rows
             if (registeredIDs != None) :
@@ -109,7 +119,8 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             # Step 3: write changes to the database
             if (inserts != []) :
                 self.__insertActiveVMData(self.__getVMServerName(vmServerIP), inserts)
-            self.__activeVMSegments[vmServerIP] = []
+            self.__activeVMSegmentsData[vmServerIP] = []
+            self.__activeVMSegments[vmServerIP] = 0
         
     @staticmethod    
     def __getVMServersDictionary(segmentList):
