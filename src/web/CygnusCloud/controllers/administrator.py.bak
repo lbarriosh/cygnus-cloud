@@ -5,10 +5,10 @@ from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 @auth.requires_membership('Administrator')
 def runVM():
     createAdressBar()
-    if(request.args(0) == 'run'): 
+    if(request.args(0) == 'run'):
         #Creamos el formulario de busqueda
         form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Asignatura: '),BR(),INPUT(_name = 'name')),
-               INPUT(_type='submit',_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
+               INPUT(_type='submit',_name = 'search',_value=T('Buscar')),HR())    
         #Creamos el segundo formulario
         listSubjectsAux = request.vars.subjectsFind or []
         #Comprobamos si se ha tomado como una lista
@@ -24,10 +24,11 @@ def runVM():
         print listSubjects
         table = TABLE(_class='data', _name='table')
         table.append(TR(TH('S.'),TH(T('Cod-Asignatura'),TH(T('Grupo')),TH(T('Nombre')))))
-        i = 0
         for l in listSubjects:
+            i = 0
+            print l[2]
             for vm in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2]) \
-            & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
+           & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
                 table.append(TR(\
                 TD(INPUT(_type='radio',_name = 'selection',_value = [l[0] , l[2], i], \
                 _onclick = "ajax('selectRadioButton', ['selection'], 'newInfo')")),\
@@ -132,8 +133,8 @@ def runVM():
                 if(toAdd):
                     vmList.append([vmName[0].name,userName[0].email,vm['VMServerName'],vm['VNCPort']])
 
-                #redireccinamos con los resultados
-                redirect(URL(c='administrator',f='runVM',args = ['stop'],vars = dict(vmList=vmList) ))
+            #redireccinamos con los resultados
+            redirect(URL(c='administrator',f='runVM',args = ['stop'],vars = dict(vmList=vmList) ))
         #Actuamos frente al arranque
         if(form2.accepts(request.vars)) and (form2.vars.run):
                if(form2.vars.selection != ""):
@@ -160,8 +161,9 @@ def servers():
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
             if(len(form.vars.name) > 0) and (len(form.vars.ipDir) > 0) and (len(form.vars.port) > 0):
                 #Registramos el servido
-                try:
-                       connector.registerVMServer(form.vars.ipDir,int(form.vars.port),form.vars.name)
+                try:                      
+                       commandID = connector.registerVMServer(form.vars.ipDir,int(form.vars.port),form.vars.name)
+                       connector.waitForCommandOutput(commandID)
                 except ValueError:
                        response.flash = T('E puerto debe ser un entero.')
             #redireccinamos 
@@ -188,9 +190,11 @@ def servers():
                 DIV( T('Puerto: '),BR(),LABEL(infoServer[2])),
                 HR(),CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor'))))        
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
-            connector.bootUpVMServer('Server1') 
-            connector.bootUpVM(1) 
-            connector.bootUpVM(2) 
+            # Borrar despues de las pruebas
+            commandID = connector.bootUpVMServer('Server1')
+            print connector.waitForCommandOutput(commandID) 
+            #connector.bootUpVM(1) 
+            # connector.bootUpVM(2) 
             sInfo = connector.getVMServersData()[int(form1.vars.server)]
             print "Servers registrados:" + str(sInfo)
             redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
@@ -199,7 +203,8 @@ def servers():
         if form2.accepts(request.vars,keepvalues=True) and form2.vars.remove: 
              #Damos de baja el servidor
              print infoServer[0] 
-             connector.unregisterVMServer(infoServer[0],False)
+             commandID = connector.unregisterVMServer(infoServer[0],False)
+             connector.waitForCommandOutput(commandID)
         
         return dict(form1 = form1,form2 = form2)
 
@@ -535,10 +540,12 @@ def createSubjectTable(listSubjects):
     return table
     
 def selectRadioButton():
+    print "desc:" 
     #Extraemos la descripcion actual
     descriptionAct = userDB((userDB.VMByGroup.cod == eval(request.vars.selection)[0]) & \
          (userDB.VMByGroup.curseGroup == eval(request.vars.selection)[1]) & \
         (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.description)[eval(request.vars.selection)[2]].description
+    print descriptionAct
     return descriptionAct
     
 def conectToServer():

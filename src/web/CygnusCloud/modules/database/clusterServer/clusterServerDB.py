@@ -2,8 +2,9 @@
 
 from ccutils.enums import enum
 from database.utils.connector import BasicDatabaseConnector
+import time
 
-SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN")
+SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN", "RECONNECTING", "CONNECTION_TIMED_OUT")
 
 class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     """
@@ -40,7 +41,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     #   no nos dice nada de esto.
     #===========================================================================
         
-    def deleteVMServerStatics(self, serverId):
+    def deleteVMServerStatistics(self, serverId):
         '''
         Borra las estadísticas de un servidor de máquinas virtuales
             Argumentos:
@@ -78,9 +79,9 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         d["ServerStatus"] = status
         d["ServerIP"] = ip
         d["ServerPort"] = port
-        return d        
+        return d         
         
-    def getVMServerStatistics(self, serverId):
+    def getVMServerStatistics(self, serverId) :
         '''
             Devuelve las estadísticas de un servidor de máquinas virtuales
             Argumentos:
@@ -136,7 +137,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         return serverIPs
         
         
-    def subscribeVMServer(self, name, IPAddress, port):
+    def registerVMServer(self, name, IPAddress, port):
         '''
             Permite registrar un Nuevo servidor de máquinas virtuales con el puerto, la IP y el número
              máximo de máquinas virtuales que se le pasan como argumento
@@ -164,7 +165,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         #Lo devolvemos
         return serverId
     
-    def unsubscribeVMServer(self, serverNameOrIPAddress):
+    def deleteVMServer(self, serverNameOrIPAddress):
         '''
             Permite eliminar un determinado servidor de máquinas virtuales de la base de datos cuyo
              identificador se le pasa como argumento.
@@ -230,8 +231,9 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 lista con los identificadores de los servidores que tienen la imagen
         '''
         # Creamos la consulta
-        query = "SELECT serverName, imageId FROM VMServer, ImageOnServer " +\
-                 "WHERE VMServer.serverId = ImageOnServer.serverId;"
+        query = "SELECT VMServer.serverName, imageId FROM VMServer, ImageOnServer " +\
+                 "WHERE VMServer.serverId = ImageOnServer.serverId AND VMServer.serverID = {0};"\
+                 .format(serverID)
         #Recogemos los resultado
         results=self._executeQuery(query)
         #Guardamos en una lista los ids resultantes
@@ -338,3 +340,46 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             " WHERE  serverId = " + str(serverId) + ";"
         # Execute it
         self._executeUpdate(query)
+        
+    def registerVMBootCommand(self, commandID, vmID):
+        """
+        Registers a virtual machine boot command in the database.
+        Args:
+            commandID: the virtual machine boot command's unique identifier
+        Returns:
+            Nothing
+        """
+        timestamp = time.time()
+        update = "INSERT INTO VMBootCommand VALUES ('{0}', {1}, {2});".format(commandID, timestamp, vmID)
+        self._executeUpdate(update)
+        
+    def removeVMBootCommand(self, commandID):
+        """
+        Removes a virtual machine boot command from the database
+        Args:
+            commandID: the command's unique identifier
+        Returns:
+            Nothing
+        """
+        update = "DELETE FROM VMBootCommand WHERE commandID = '{0}';".format(commandID)        
+        self._executeUpdate(update)
+        
+    def getOldVMBootCommandID(self, timeout):
+        """
+        Removes an old virtual machine command id from the database and returns it.
+        Args:
+            the timeout. A command will be considered old when its timestamp plus timeout
+            is greater than or equal to the current time.
+        Returns:
+            If an old commandID is found, it will be returned. Otherwise, None will be returned
+        """
+        query = "SELECT * FROM VMBootCommand;"
+        results = self._executeQuery(query, False)
+        currentTime = time.time()
+        for row in results :
+            difference = currentTime - row[1]
+            if (difference >= timeout) :
+                update = "DELETE FROM VMBootCommand WHERE commandID = '{0}'".format(row[0])
+                self._executeUpdate(update)
+                return (row[0], int(row[2])) # Match! -> return it
+        return None

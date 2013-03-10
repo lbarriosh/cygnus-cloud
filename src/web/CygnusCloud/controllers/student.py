@@ -23,6 +23,7 @@ def runVM():
         
     #form.append(DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))))
         divMaquinas.append(DIV(H4(T(userDB(userDB.Subjects.code == listSubjects[i].cod).select(userDB.Subjects.name)[0].name)),BR(),H5(table),BR()))
+        i = i + 1
     form.append(divMaquinas)
     form.append(DIV(H4(T('Descripcion:')), P(_id = 'newInfo'), INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')), _id = 'descripcion'))
     if(form.accepts(request.vars)) and (form.vars.run):

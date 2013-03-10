@@ -68,7 +68,7 @@ class QueueProcessingThread(BasicThread):
             queue: the queue to monitor.
         """
         BasicThread.__init__(self, threadName)        
-        self.__queue = queue     
+        self._queue = queue   
         
     def processElement(self, element):
         """
@@ -84,9 +84,9 @@ class QueueProcessingThread(BasicThread):
         """
         Processes the queue until it's empty and the thread is finish.
         """        
-        while not (self.finish() and self.__queue.isEmpty()):
-            while not self.__queue.isEmpty() :
-                element = self.__queue.dequeue()
+        while not (self.finish() and self._queue.isEmpty()):
+            while not self._queue.isEmpty() :
+                element = self._queue.dequeue()
                 self.processElement(element)      
             if (self.finish()) :
                 print "Empty queue!"    
