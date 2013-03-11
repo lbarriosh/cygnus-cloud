@@ -28,10 +28,9 @@ def runVM():
             i = 0
             for vm in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2]) \
            & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
-                print vm
                 table.append(TR(\
                 TD(INPUT(_type='radio',_name = 'selection',_value = [l[0] , l[2], i], \
-                _onclick = "ajax('selectRadioButton', ['selection'], 'newInfo')")),\
+                _onclick = "ajax('%s', ['selection'], 'newInfo')"% URL('administrator', 'selectRadioButton'))),\
                 TD(LABEL(str(l[0]) + '-' + l[1]),_width = '50%'),
                 TD(LABEL(l[2])),
                 TD(LABEL(vm.name))))
@@ -539,13 +538,11 @@ def createSubjectTable(listSubjects):
     pass
     return table
     
-def selectRadioButton():
-    print "desc:" 
+def selectRadioButton(): 
     #Extraemos la descripcion actual
     descriptionAct = userDB((userDB.VMByGroup.cod == eval(request.vars.selection)[0]) & \
          (userDB.VMByGroup.curseGroup == eval(request.vars.selection)[1]) & \
         (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.description)[eval(request.vars.selection)[2]].description
-    print descriptionAct
     return descriptionAct
     
 def conectToServer():
