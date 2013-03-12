@@ -1,0 +1,551 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Transferencia de imágenes
+\end_layout
+
+\begin_layout Section
+El repositorio de imágenes
+\end_layout
+
+\begin_layout Standard
+Se trata de un nuevo tipo de máquina, asociado a uno o más servidores de
+ cluster, que albergará la versión original de todas las imágenes que se
+ pueden utilizar en los servidores de máquinas virtuales.
+ Las principales ventajas que tiene el uso de este nuevo tipo de máquina
+ son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+es posible controlar el impacto que la transferencia de imágenes tendrá
+ sobre la infraestructura.
+ Por ejemplo, una imagen puede permanecer en el repositorio en los periodos
+ de alto uso del sistema, y transferirse a un servidor de máquinas virtuales
+ concreto en periodos de baja actividad.
+\end_layout
+
+\begin_layout Itemize
+proporciona una forma centralizada de manipular las imágenes: modificando
+ su contenido y replicándolo en los servidores de máquinas virtuales, resulta
+ sencillo incluir cambios en imágenes ya existentes.
+\end_layout
+
+\begin_layout Itemize
+facilita la descarga de las imágenes ya subidas.
+ Si las imágenes se descargaran directamente de un servidor de máquinas
+ virtuales, sería necesario
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+convertir las imágenes de disco al formato vdi o vmdk
+\end_layout
+
+\begin_layout Itemize
+generar el fichero de descripción de VirtualBox.
+\end_layout
+
+\begin_layout Itemize
+configurar un servidor HTTPS o FTP, que afectaría negativamente al rendimiento
+ de las máquinas virtuales activas.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+utilizando réplicas del repositorio, es posible aliviar el cuello de botella
+ que supone este almacén de imágenes.
+\end_layout
+
+\begin_layout Itemize
+permite transferir imágenes a un servidor de máquinas virtuales sin que
+ ello afecte al funcionamiento del resto.
+\end_layout
+
+\begin_layout Itemize
+el procesamiento de las imágenes se realiza en una máquina dedicada, por
+ lo que no degradará el rendimiento de las máquinas virtuales activas.
+ No sólo hay que recibir la imagen: como mínimo, también hay que convertirla
+ a qcow2, lo que requiere mucha CPU y E/S a disco.
+ Además, esto también nos permite comprimir las imágenes originales para
+ ahorrar espacio en disco.
+\end_layout
+
+\begin_layout Itemize
+se aprovecha más el ancho de banda de la red cuando se produce un error.
+ Por ejemplo, si se sube una imagen incorrecta al servidor de máquinas virtuales
+ el mismo enlace se está compartiendo para llevar tráfico VNC y los datos
+ de la imagen, lo que degradará el rendimiento.
+ Si usamos el repositorio de imágenes, sólo se usarán los enlaces de los
+ servidores de máquinas virtuales cuando haya que transmitir una imagen
+ correcta.
+\end_layout
+
+\begin_layout Section
+Categorías de imágenes
+\end_layout
+
+\begin_layout Standard
+Nuestra infraestructura soportará tres tipos de máquinas virtuales:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+small
+\series default
+: 1 GB de RAM, 1 CPU virtual, 5 GB de espacio en disco (datos).
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+medium
+\series default
+: 2 GB de RAM, 2 CPUs virtuales, 10 GB de espacio en disco (datos).
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+big
+\series default
+: 4 GB de RAM, 3 CPUs virtuales, 15 GB de espacio en disco (datos).
+\end_layout
+
+\begin_layout Standard
+Cada tipo de máquina tendrá una imagen vanilla distinta (debido al distinto
+ tamaño de la partición de datos).
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, cada servidor de máquinas virtuales podrá alojar cierto
+ número de instancias de cada tipo.
+ Por ejemplo, una máquina dual core con 4 GB de RAM podrá alojar 3 instancias
+ de tipo 
+\emph on
+small
+\emph default
+ y una de tipo 
+\emph on
+medium
+\emph default
+ y ninguna de tipo 
+\emph on
+big
+\emph default
+.
+ Estos valores se leerán desde un fichero de configuración existente en
+ el propio servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Además, a la hora de hacer el balanceado de carga, habrá que considerar
+ el número de máquinas de cada tipo presentes en el servidor, por lo que
+ se tendrá que intercambiar más información de estado con el servidor de
+ cluster: no basta con saber el número de 
+\emph on
+hosts
+\emph default
+ activos, sino que hay que saber el número de hosts activos de cada tipo
+ y el número máximo de hosts de cada tipo que puede alojar el servidor.
+\end_layout
+
+\begin_layout Section
+Transferencia de las imágenes
+\end_layout
+
+\begin_layout Subsection
+¿Qué suben y descargan los usuarios?
+\end_layout
+
+\begin_layout Standard
+Los usuarios subirán o descargarán un fichero comprimido en formato zip
+ o 7zip, que contendrá
+\end_layout
+
+\begin_layout Itemize
+dos ficheros vdi (imágenes de disco de VirtualBox) o vmdk (imágenes de disco
+ de VMWare), correspondientes a la imagen del SO y a la imagen de datos.
+\end_layout
+
+\begin_layout Itemize
+el fichero de definición de la máquina en VirtualBox (fichero .vbox)
+\end_layout
+
+\begin_layout Itemize
+un fichero de texto plano .ccsettings en el que se indicará, por ahora, el
+ tipo de instancia (
+\emph on
+small
+\emph default
+, 
+\emph on
+medium
+\emph default
+ o 
+\emph on
+big
+\emph default
+).
+\end_layout
+
+\begin_layout Standard
+Para utilizar la máquina en VirtualBox, basta con hacer doble clic sobre
+ el fichero .vbox.
+ 
+\end_layout
+
+\begin_layout Subsection
+Aspectos básicos
+\end_layout
+
+\begin_layout Standard
+Básicamente, existen tres alternativas que podemos considerar para transferir
+ las imágenes: http, https y ftp.
+ Tenemos que elegir la que más nos convenga.
+ En cualquier caso, utilizaremos ejecutables o librerías que realicen las
+ transferencias de ficheros, por lo que esto no debe preocuparnos.
+\end_layout
+
+\begin_layout Standard
+El principal problema que podemos tener es que los ficheros pueden subirse
+ mal, y eso hay que detectarlo para generar errores.
+ Por eso, lo más cómodo es calcular la suma MD5 del fichero a transferir
+ y enviarla al destino antes de transferirlo.
+ Así, se podrá comprobar que la subida ha sido correcta.
+\end_layout
+
+\begin_layout Subsection
+Base de datos de imágenes
+\end_layout
+
+\begin_layout Standard
+Toda la información relativa a las máquinas virtuales deberá estar almacenada
+ en la base de datos del repositorio de imágenes, no en la web.
+ De esta manera, en la web se realizará sólo el control de acceso, mientras
+ que en el repositorio se almacenarán, entre otras cosas, el identificador,
+ el nombre, la descripción, el tipo de imagen,...
+\end_layout
+
+\begin_layout Subsection
+Descarga de imágenes (
+\emph on
+vanilla
+\emph default
+ o modificadas)
+\end_layout
+
+\begin_layout Standard
+Para descargar una imagen, bastará con enviar una petición de descarga al
+ repositorio.
+ Los pasos a seguir son los siguientes:
+\end_layout
+
+\begin_layout Enumerate
+la web solicitará la descarga de la imagen 
+\family typewriter
+x
+\family default
+ al conector.
+\end_layout
+
+\begin_layout Enumerate
+el conector enviará la petición de descarga al repositorio.
+\end_layout
+
+\begin_layout Enumerate
+el repositorio de imágenes responderá, indicando error o suministrando los
+ datos necesarios para establecer la conexión.
+\end_layout
+
+\begin_layout Enumerate
+la web establece la conexión e inicia la transferencia del fichero.
+\end_layout
+
+\begin_layout Standard
+Para evitar que el conector se sature, utilizaremos un número fijo de 
+\emph on
+slots
+\emph default
+ y una cola de peticiones.
+ Cuando haya un 
+\emph on
+slot
+\emph default
+ libre, se sacará la primera petición que haya en la cola y se procesará.
+ Es decir, si 10 usuarios intentan descargar a la vez una imagen y hay sólo
+ 5 slots, 5 deberán esperar su turno.
+\end_layout
+
+\begin_layout Standard
+Evidentemente, cuantos más recursos hardware tenga el repositorio, mayor
+ número de 
+\emph on
+slots
+\emph default
+ de descarga podrá tener.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que la comunicación entre la web y el repositorio es
+ directa, sin pasar por el servidor de cluster.
+ Esto es así porque el servidor de cluster ya es un cuello de botella, y
+ cuanto más podamos aliviar su carga, mejor.
+\end_layout
+
+\begin_layout Subsection
+Subida de imágenes
+\end_layout
+
+\begin_layout Standard
+La subida de imágenes sigue un proceso bastante parecido:
+\end_layout
+
+\begin_layout Enumerate
+el usuario comprime la imagen en un fichero .zip o .7zip.
+\end_layout
+
+\begin_layout Enumerate
+la web envía una petición de subida al repositorio (a través del conector).
+\end_layout
+
+\begin_layout Enumerate
+el repositorio responderá, indicando error (por ejemplo, puede no tener
+ espacio en disco o haberse superado el número de imágenes permitidas del
+ usuario) o suministrando los datos necesarios para establecer la conexión.
+\end_layout
+
+\begin_layout Enumerate
+la web calcula la suma MD5 del fichero a enviar y se la proporciona al repositor
+io.
+\end_layout
+
+\begin_layout Enumerate
+la web envía el fichero comprimido al repositorio.
+\end_layout
+
+\begin_layout Enumerate
+tras recibirlo, el repositorio procesa ese fichero comprimido.
+\end_layout
+
+\begin_layout Enumerate
+si todo ha ido bien, el repositorio se pondrá en contacto con el servidor
+ de cluster para averiguar dónde colocar la imagen.
+\end_layout
+
+\begin_layout Enumerate
+el servidor de cluster suministrará al conector los datos del servidor de
+ máquinas virtuales escogido.
+ Si no se encuentra ninguno, la imagen se quedará congelada en el repositorio
+ hasta que los administradores le hagan hueco.
+\end_layout
+
+\begin_layout Enumerate
+el depósito transfiere la imagen al servidor de máquinas virtuales
+\end_layout
+
+\begin_layout Enumerate
+el depósito envía una notificación al usuario indicando que su máquina ya
+ se puede utilizar.
+\end_layout
+
+\begin_layout Standard
+Ahora, aclararé qué se hace en las fases que he descrito de forma genérica.
+\end_layout
+
+\begin_layout Subsubsection
+Subida de la imagen
+\end_layout
+
+\begin_layout Standard
+Aquí también utilizaremos 
+\emph on
+slots
+\emph default
+ y una cola de recepción.
+ Mientras la petición del usuario no tenga un slot asignado, este tendrá
+ que esperar.
+ 
+\end_layout
+
+\begin_layout Standard
+En cualquier caso, los ficheros se suben en formato comprimido para ahorrar
+ ancho de banda y para tenerlos almacenados.
+ La suma MD5 debería calcularse utilizando JavaScript u otra técnica equivalente.
+\end_layout
+
+\begin_layout Subsubsection
+Procesamiento de la imagen
+\end_layout
+
+\begin_layout Standard
+El procesamiento de la imagen incluye:
+\end_layout
+
+\begin_layout Enumerate
+calcular la suma MD5 del fichero que se ha recibido y contrastarla con la
+ esperada.
+\end_layout
+
+\begin_layout Enumerate
+descomprimir el fichero.
+ El tipo se detectará usando la extensión.
+\end_layout
+
+\begin_layout Enumerate
+convertir los ficheros .vmdk o .vdi al formato qcow2.
+\end_layout
+
+\begin_layout Standard
+Como todas estas operaciones requieren mucha entrada/salida, lo mejor es
+ ejecutarlas en secuencia.
+ En cualquier caso, cuando la imagen se reciba también se añadirá a una
+ cola y, tras llegar a la cima y encontrase un 
+\emph on
+slot 
+\emph default
+libre, se procesará.
+\end_layout
+
+\begin_layout Subsubsection
+Despliegue de la imagen
+\end_layout
+
+\begin_layout Standard
+Cuando la imagen se ha terminado de procesar, se añadirá a la cola de despliegue.
+ Como en el otro extremos sólo está el servidor de cluster, aquí no tiene
+ sentido utilizar 
+\emph on
+slots
+\emph default
+: las peticiones se procesarán una a una.
+ 
+\end_layout
+
+\begin_layout Standard
+Si la imagen no se puede transferir, se moverá al depósito de imágenes congelada
+s.
+ Si se puede transferir, se moverá a la cola de envío.
+\end_layout
+
+\begin_layout Subsubsection
+Envío de la imagen
+\end_layout
+
+\begin_layout Standard
+Cuando la imagen llegue a la cabecera de la cola y haya un 
+\emph on
+slot
+\emph default
+ libre, se iniciará su envío.
+ En este caso, hay que limitar el número de transferencias a cada servidor
+ de máquinas virtuales para no saturar el enlace.
+ De momento, para no complicarnos la vida podemos transferir las imágenes
+ a cada servidor de una en una.
+\end_layout
+
+\begin_layout Subsubsection
+Depósito de imágenes congeladas
+\end_layout
+
+\begin_layout Standard
+Como sólo tenemos una conexión con el servidor de cluster, debemos multiplexar
+ el procesamiento de esta cola y el de la de despliegue.
+ Por eso, cada X elementos desencolados de la cola de despliegue, se desencolará
+ uno del depósito de imágenes.
+ Si no se puede transferir al servidor de cluster, se volverá a insertar
+ al principio de la cola.
+\end_layout
+
+\begin_layout Standard
+De esta manera, el comportamiento es más justo: las imágenes que más tiempo
+ llevan esperando serán las que primero se desplieguen.
+\end_layout
+
+\begin_layout Subsection
+Envío de notificaciones
+\end_layout
+
+\begin_layout Standard
+El procesamiento de una imagen puede tardar mucho tiempo: de 10 minutos
+ a unas cuantas horas si hay que liberar espacio.
+ Por eso, la mejor forma de confirmar a los usuarios que ya pueden utilizar
+ su máquina es utilizando notificaciones.
+ 
+\end_layout
+
+\begin_layout Standard
+Lo ideal es que las notificaciones sean mensajes que los usuarios pueden
+ leer en la web.
+ Cuando una imagen se pueda utilizar, basta con insertar el mensaje correspondie
+nte en una tabla de la base de datos y consultarla desde la web.
+ 
+\end_layout
+
+\end_body
+\end_document
