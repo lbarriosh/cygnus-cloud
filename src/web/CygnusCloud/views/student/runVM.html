@@ -1,3 +1,22 @@
 {{extend 'layout.html'}}
 <h1>{{=T('Arranque de máquinas Virtuales')}}</h1>
 {{=form}}
+
+
+<script>
+jQuery(document).ready(function(){
+    var i;
+    var j;
+    for(i=0;i<{{=num}};i++){
+    	jQuery('#'+i).hide();
+       jQuery('#c' +i).change(function(){
+            for(j = 0 ; j < {{=num}} ; j++){
+                if(jQuery('#c' +j).attr('checked'))
+                    jQuery('#' +j).show("slow");
+                else jQuery('#' +j).hide("slow");
+           }
+       });
+
+        }
+});
+</script>

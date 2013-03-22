@@ -23,21 +23,26 @@ def runVM():
             #listSubjects.append(request.vars.subjectsFind)
         print listSubjects
         table = TABLE(_class='data', _name='table')
-        table.append(TR(TH('S.'),TH(T('Cod-Asignatura'),TH(T('Grupo')),TH(T('Nombre')))))
+        table.append(TR(TH('S.'),TH(T('Cod-Asignatura'),TH(T('Grupo')),TH(T('Nombre')),TH(T('Descripcion')))))
+        j = 0
         for l in listSubjects:
             i = 0
             for vm in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2]) \
            & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
+                descriptionAct = userDB((userDB.VMByGroup.cod == l[0]) & \
+                (userDB.VMByGroup.curseGroup == l[2]) & \
+                (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.description)[i].description
                 table.append(TR(\
-                TD(INPUT(_type='radio',_name = 'selection',_value = [l[0] , l[2], i], \
-                _onclick = "ajax('%s', ['selection'], 'newInfo')"% URL('administrator', 'selectRadioButton'))),\
+                TD(INPUT(_type='radio',_name = 'selection',_value = i + j ,_id = "c"+str(i + j))),\
                 TD(LABEL(str(l[0]) + '-' + l[1]),_width = '50%'),
                 TD(LABEL(l[2])),
-                TD(LABEL(vm.name))))
+                TD(LABEL(vm.name)),\
+                TD(DIV(P(descriptionAct),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar'))),_id = str(i + j)))))
                 i = i + 1
+                j = j + 1
         
         #Creamos el segundo formulario
-        form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))),_target='_blank')
+        form2 = FORM(LABEL(H2(T('Resultados'))),table,_target='_blank')
             
         #Actuamos frente a la busqueda
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
@@ -75,7 +80,7 @@ def runVM():
                    #_href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))   
                    #
                    redirect(URL(c='vncClient',f = 'VNCPage'))
-        return dict(form1=form1,form2=form2)
+        return dict(form1=form1,form2=form2,num = j)
         
     if(request.args(0) == 'stop'):
         #Creamos el formulario de busqueda

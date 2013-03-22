@@ -9,23 +9,19 @@ def runVM():
     #Creamos el formulario
     print request.vars.actualDescription
     listSubjects = userDB((userDB.UserGroup.userId == auth.user['email'])).select(userDB.UserGroup.cod,userDB.UserGroup.curseGroup)
-    
+    #Calculamos las tablas
     tables = []
+    j = 0
     for l in listSubjects:
-        tables.append(createTable(l))
+        [table,j] = createTable(l,j)
+        tables.append(table)
     #Creamos el formulario
     form = FORM(HR(),_target='_blank')
     i = 0
     divMaquinas = DIV(_id='maquinas')
     for table in tables:     
-        #form.append(DIV(H4(T(userDB(userDB.Subjects.code == listSubjects[i].cod).select(userDB.Subjects.name)[0].name)),BR(),H5(table),BR()))
-        #i = i + 1
-        
-    #form.append(DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))))
-        divMaquinas.append(DIV(H4(T(userDB(userDB.Subjects.code == listSubjects[i].cod).select(userDB.Subjects.name)[0].name)),BR(),H5(table),BR()))
+        form.append(DIV(H3(T(userDB(userDB.Subjects.code == listSubjects[i].cod).select(userDB.Subjects.name)[0].name)),BR(),H4(table),BR()))
         i = i + 1
-    form.append(divMaquinas)
-    form.append(DIV(H4(T('Descripcion:')), P(_id = 'newInfo'), INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')), _id = 'descripcion'))
     if(form.accepts(request.vars)) and (form.vars.run):
             if(form.vars.selection != ""):
                 #TODO: Configurar cliente VNC...
@@ -34,29 +30,24 @@ def runVM():
                 #_href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))
                 #form.append(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form.vars.selection)[0],_href=URL(c='vncClient', f = 'VNCPage'), _target='_blank',_select = 'selected'), _id = 'maquina'))
                  redirect(URL(c='vncClient', f = 'VNCPage'))
-    return dict(form = form)
+    return dict(form = form,num = j)
        
    
 def createAdressBar():
     response.menu=[[T('Arrancar máquina'),False,URL('runVM')]]
     
-def createTable(subject):
+def createTable(subject,j):
     table = TABLE(_class='data', _name='table')
-    table.append(TR(TH('S.'),TH(T('Nombre'))))
+    table.append(TR(TH('S.'),TH(T('Nombre'),TH('Descripcion'))))
     i = 0
     for l in userDB((userDB.VMByGroup.cod == subject.cod) & (userDB.VMByGroup.curseGroup == subject.curseGroup) & \
         (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
-        table.append(TR(\
-        TD(INPUT(_type='radio',_name = 'selection',_value = [subject.cod , subject.curseGroup, i], _onclick = "ajax('selectRadioButton', ['selection'], 'newInfo')")),\
-        TD(LABEL(l.name))))
+        descriptionAct = userDB((userDB.VMByGroup.cod == subject.cod) & \
+             (userDB.VMByGroup.curseGroup == subject.curseGroup) & \
+             (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.description)[i].description
+        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = i + j,_id = "c"+str(i + j),
+        ),TD(LABEL(l.name)),TD(DIV(P(descriptionAct),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar'))),_id = str(i + j))))))
         i = i + 1
+        
     pass
-    return table
-
-def selectRadioButton():
-    print "llego"
-    #Extraemos la descripcion actual
-    descriptionAct = userDB((userDB.VMByGroup.cod == eval(request.vars.selection)[0]) & \
-         (userDB.VMByGroup.curseGroup == eval(request.vars.selection)[1]) & \
-        (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.description)[eval(request.vars.selection)[2]].description
-    return descriptionAct
+    return [table,i + j]
