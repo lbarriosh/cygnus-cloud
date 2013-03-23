@@ -4,10 +4,7 @@ from gluon import *
 
 from configuration import DBConfigurator
 from gluon.tools import Auth
-from serverConnector.constants import rootPassword
-from serverConnector.singletonServerConnector import Singleton
-from clusterServer.connector.clusterServerConnector import ClusterServerConnector
-from clusterServer.connector.clusterServerConnector import GenericWebCallback
+from webConstants import rootPassword
 import os
 
 print os.getcwd()
@@ -16,7 +13,7 @@ print os.getcwd()
 
 conf = DBConfigurator(rootPassword)
 conf.createDatabase('CygnusCloudUserDB')
-#conf.addUser('CygnusCloud','cygnuscloud2012', 'UserDB')
+conf.addUser('CygnusCloud','cygnuscloud2012', 'UserDB')
 userDB = DAL('mysql://CygnusCloud:cygnuscloud2012@localhost/CygnusCloudUserDB',migrate_enabled=True, pool_size=0)
 
 

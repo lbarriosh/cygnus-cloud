@@ -46,14 +46,7 @@ def initValues():
         auth.add_membership('Student',u2)
         print userDB.tables
         
-def initMainServerConnection():
-    #instanciamos la clase
-    connector = MainServerConnector(WebCallback())
-    #conectamos con la base de datos
-    connector.connectToDatabase("170590ucm","SystemStatusDB", "websiteUser", "cygnuscloud", "updateUser", "cygnuscloud")
-    #conectamos con el servidor principal
-    connector.connectToMainServer("static/Certificados", ip, port)        
-        
+               
         
         
 @auth.requires_login()                                      
@@ -63,7 +56,7 @@ def loginAccess(state):
     if(auth.has_membership(role='Student')):
         redirect(URL(c='student',f='runVM'))
     elif(auth.has_membership(role='Administrator')):
-        redirect(URL(c='administrator',f='runVM'))
+        redirect(URL(c='administrator',f='runVM',args = ['run']))
 
 @auth.requires_login()          
 def logoutUser():

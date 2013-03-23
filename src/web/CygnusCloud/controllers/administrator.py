@@ -1,85 +1,172 @@
 # coding: utf8
-from time import sleep
+from clusterServer.connector.clusterServerConnector import ClusterServerConnector
+from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 
 @auth.requires_membership('Administrator')
 def runVM():
     createAdressBar()
-    #Creamos el formulario de busqueda
-    form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Asignatura: '),BR(),INPUT(_name = 'name')),
-           INPUT(_type='submit',_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
-    #Creamos el segundo formulario
-    listSubjectsAux = request.vars.subjectsFind or []
-    #Comprobamos si se ha tomado como una lista
-        
-    if(isinstance(listSubjectsAux,str)):
-        listSubjects = [eval(request.vars.subjectsFind)]
-    else:
-        listSubjects = []
-        for l in listSubjectsAux:
-            print l
-            listSubjects.append(eval(l))
-        #listSubjects.append(request.vars.subjectsFind)
-    print listSubjects
-    table = TABLE(_class='data', _name='table')
-    table.append(TR(TH('S.'),TH(T('Cod-Asignatura'),TH(T('Grupo')),TH(T('Nombre')))))
-    i = 0
-    for l in listSubjects:
-        for vm in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2]) \
-        & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
-            table.append(TR(\
-            TD(INPUT(_type='radio',_name = 'selection',_value = [l[0] , l[2], i], \
-            _onclick = "ajax('selectRadioButton', ['selection'], 'newInfo')")),\
-            TD(LABEL(str(l[0]) + '-' + l[1]),_width = '50%'),
-            TD(LABEL(l[2])),
-            TD(LABEL(vm.name))))
-            i = i + 1
-    pass
-    #Creamos el segundo formulario
-    form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))))
-        
-    #Actuamos frente a la busqueda
-    if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
-        if len(form1.vars.name) > 0 :
-            try:
-                
-                listSubjectsAux = userDB((userDB.ClassGroup.cod == int(form1.vars.name)) & \
-                (userDB.Subjects.code == userDB.ClassGroup.cod)).select(\
-                userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name)
-                print "Llega" + form1.vars.name
-                listSubjects = [] 
-                for l in listSubjectsAux : 
-                        listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
-                        
-            except ValueError:
-                listSubjectsAux = userDB(userDB.Subjects.code == userDB.ClassGroup.cod).select( \
-                userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name)
-                listSubjects = [] 
-                for l in listSubjectsAux :                  
-                    if(form1.vars.name != ""):
-                            if (form1.vars.name.lower() in l.Subjects.name.lower()):                    
-                                listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
-                    else:
-                            listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
+    if(request.args(0) == 'run'): 
+        #Creamos el formulario de busqueda
+        form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Asignatura: '),BR(),INPUT(_name = 'name')),
+               INPUT(_type='submit',_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
+        #Creamos el segundo formulario
+        listSubjectsAux = request.vars.subjectsFind or []
+        #Comprobamos si se ha tomado como una lista
             
-
-            #redireccinamos con los resultados
-            redirect(URL(c='administrator',f='runVM',vars = dict(subjectsFind=listSubjects) ))
-    #Actuamos frente al arranque
-    if(form2.accepts(request.vars)) and (form2.vars.run):
-           if(form2.vars.selection != ""):
-               #TODO: Configurar cliente VNC...
-               #Abrimos una nueva pestaña
-               form2.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form2.vars.selection)[0], 
-               _href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))   
-        
-
-    return dict(form1=form1,form2=form2)
+        if(isinstance(listSubjectsAux,str)):
+            listSubjects = [eval(request.vars.subjectsFind)]
+        else:
+            listSubjects = []
+            for l in listSubjectsAux:
+                print l
+                listSubjects.append(eval(l))
+            #listSubjects.append(request.vars.subjectsFind)
+        print listSubjects
+        table = TABLE(_class='data', _name='table')
+        table.append(TR(TH('S.'),TH(T('Cod-Asignatura'),TH(T('Grupo')),TH(T('Nombre')))))
+        i = 0
+        for l in listSubjects:
+            for vm in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2]) \
+            & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
+                table.append(TR(\
+                TD(INPUT(_type='radio',_name = 'selection',_value = [l[0] , l[2], i], \
+                _onclick = "ajax('selectRadioButton', ['selection'], 'newInfo')")),\
+                TD(LABEL(str(l[0]) + '-' + l[1]),_width = '50%'),
+                TD(LABEL(l[2])),
+                TD(LABEL(vm.name))))
+                i = i + 1
+        pass
+        #Creamos el segundo formulario
+        form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))),_target='_blank')
+            
+        #Actuamos frente a la busqueda
+        if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
+            if len(form1.vars.name) > 0 :
+                try:
+                    
+                    listSubjectsAux = userDB((userDB.ClassGroup.cod == int(form1.vars.name)) & \
+                    (userDB.Subjects.code == userDB.ClassGroup.cod)).select(\
+                    userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name)
+                    print "Llega" + form1.vars.name
+                    listSubjects = [] 
+                    for l in listSubjectsAux : 
+                            listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
+                            
+                except ValueError:
+                    listSubjectsAux = userDB(userDB.Subjects.code == userDB.ClassGroup.cod).select( \
+                    userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name)
+                    listSubjects = [] 
+                    for l in listSubjectsAux :                  
+                        if(form1.vars.name != ""):
+                                if (form1.vars.name.lower() in l.Subjects.name.lower()):                    
+                                    listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
+                        else:
+                                listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
+                
     
+                #redireccinamos con los resultados
+                redirect(URL(c='administrator',f='runVM',args = ['run'],vars = dict(subjectsFind=listSubjects) ))
+        #Actuamos frente al arranque
+        if(form2.accepts(request.vars)) and (form2.vars.run):
+               if(form2.vars.selection != ""):
+                   #TODO: Configurar cliente VNC...
+                   #Abrimos una nueva pestaña
+                   #form2.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form2.vars.selection)[0], 
+                   #_href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))   
+                   #
+                   redirect(URL(c='vncClient',f = 'VNCPage'))
+        return dict(form1=form1,form2=form2)
+        
+    if(request.args(0) == 'stop'):
+        #Creamos el formulario de busqueda
+        form1 = FORM(HR(),H2(T('Buscar una máquina o usuario')),DIV( T('Nombre de la máquina: '),BR(),INPUT(_name = 'vmName')),
+               DIV( T('Usuario: '),BR(),INPUT(_name = 'userName')),
+               INPUT(_type='submit',_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
+        #Creamos el segundo formulario
+        listSubjectsAux = request.vars.subjectsFind or []
+        #Comprobamos si se ha tomado como una lista
+            
+        if(isinstance(listSubjectsAux,str)):
+            listSubjects = [eval(request.vars.subjectsFind)]
+        else:
+            listSubjects = []
+            for l in listSubjectsAux:
+                print l
+                listSubjects.append(eval(l))
+            #listSubjects.append(request.vars.subjectsFind)
+        print listSubjects
+        table = TABLE(_class='data', _name='table')
+        table.append(TR(TH('S.'),TH(T('Cod-Asignatura'),TH(T('Grupo')),TH(T('Nombre')))))
+        i = 0
+        for l in listSubjects:
+            for vm in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2]) \
+            & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
+                table.append(TR(\
+                TD(INPUT(_type='radio',_name = 'selection',_value = [l[0] , l[2], i], \
+                _onclick = "ajax('selectRadioButton', ['selection'], 'newInfo')")),\
+                TD(LABEL(str(l[0]) + '-' + l[1]),_width = '50%'),
+                TD(LABEL(l[2])),
+                TD(LABEL(vm.name))))
+                i = i + 1
+        pass
+        #Creamos el segundo formulario
+        form2 = FORM(LABEL(H2(T('Resultados'))),table,DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))),_target='_blank')
+            
+        #Actuamos frente a la busqueda
+        if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
+            if len(form1.vars.name) > 0 :
+                try:
+                    #Establecemos la conexión con el servidor principal
+                    connector = conectToServer()
+                    #Extraemos la informacion
+                    vmListAux = connector.getActiveVMsData()
+                    #Inicializamos la lista de asignaturas
+                    vmList = [] 
+                    #Ejecutamos la busqueda
+                    for vm in vmListAux:
+                        #Extraemos el nombre de la máquina
+                        vmName = userDB(userDB.Images.VMId == vm.VMID).select(userDB.Images.name)
+                        #Extraemos el nombre de usuario
+                        userName = userDB(userDB.auth_user.id == vm.UserID).select(userDB.ath_user.email)
+                        #Comprobamos si añadimos este elemento a la lista resultado
+                        toAdd = True
+                        if((form1.vars.vmName != 0) and not ( form1.vars.vmName.lower() in vmName.lower())):
+                            toAdd = False
+                        if((form1.vars.userName != 0) and not (form1.vars.userName.lower() in userName.lower())):
+                            toAdd = False
+                        if(toAdd):
+                            vmList.append([vmName,userName,vm.VMServerName,vm.VNCPort])
+                    #TODO:: Seguir por aquí
+                            
+                except ValueError:
+                    listSubjectsAux = userDB(userDB.Subjects.code == userDB.ClassGroup.cod).select( \
+                    userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name)
+                    listSubjects = [] 
+                    for l in listSubjectsAux :                  
+                        if(form1.vars.name != ""):
+                                if (form1.vars.name.lower() in l.Subjects.name.lower()):                    
+                                    listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
+                        else:
+                                listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
+                
+    
+                #redireccinamos con los resultados
+                redirect(URL(c='administrator',f='runVM',args = ['run'],vars = dict(subjectsFind=listSubjects) ))
+        #Actuamos frente al arranque
+        if(form2.accepts(request.vars)) and (form2.vars.run):
+               if(form2.vars.selection != ""):
+                   #TODO: Configurar cliente VNC...
+                   #Abrimos una nueva pestaña
+                   #form2.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form2.vars.selection)[0], 
+                   #_href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))   
+                   #
+                   redirect(URL(c='vncClient',f = 'VNCPage'))
+        return dict(form1=form1,form2=form2)         
 @auth.requires_membership('Administrator')
 def servers():
     createAdressBar()
     #Establecemos la conexión con el servidor principal
-    connector = Singleton.getInstance()
+    connector = conectToServer()
     
     if(request.args(0) == 'add_servers'):
         #Creamos el primer formulario
@@ -92,7 +179,7 @@ def servers():
             if(len(form.vars.name) > 0) and (len(form.vars.ipDir) > 0) and (len(form.vars.port) > 0):
                 #Registramos el servido
                 try:
-                       connector.registerVMServer(form.valevars.ipDir,int(form.vars.port),form.vars.name)
+                       connector.registerVMServer(form.vars.ipDir,int(form.vars.port),form.vars.name)
                 except ValueError:
                        response.flash = T('E puerto debe ser un entero.')
             #redireccinamos 
@@ -108,26 +195,27 @@ def servers():
         #        for s in servers],_onclick = "ajax('changeOption', ['server'], 'newInfo')"))
         i = 0
         select = SELECT(_name = 'server')
-        sleep(10)
         servers = connector.getVMServersData()
         print "Servers: " + str(servers)
         for s in servers:
             select.append(OPTION(T(str(s["VMServerName"])),_value = i ,_selected="selected"))
             i = i + 1    
         form1 = FORM(H4(T('Servidores')),select,BR(),INPUT(_type='submit',_name = 'search' ,_value=T('Buscar servidor')))
-        form2 = FORM(HR(),H2(T('Información del servidor')),DIV( T('Nombre: '),BR(),LABEL(infoServer[0],_name = 'name')),
+        form2 = FORM(HR(),H2(T('Información del servidor')),DIV( T('Nombre: '),BR(),LABEL(infoServer[0],_name = 'sName')),
                 DIV( T('Dirección IP: '),BR(),LABEL(infoServer[1])),
                 DIV( T('Puerto: '),BR(),LABEL(infoServer[2])),
                 HR(),CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor')))) 
                 
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:  
-            sInfo = connector.getVMServersData()[form1.vars.server]
-            redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [serversInfo["VMServerName"],\
-            serversInfo["VMServerIP"],serversInfo["VMServerListenningPort"]]) ))
+            sInfo = connector.getVMServersData()[int(form1.vars.server)]
+            print "Servers registrados:" + str(sInfo)
+            redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
+            sInfo["VMServerIP"],sInfo["VMServerListenningPort"]]) ))
             
         if form2.accepts(request.vars,keepvalues=True) and form2.vars.remove: 
              #Damos de baja el servidor
-             connector.unregisterVMServer(form2.var.name,False)
+             print infoServer[0] 
+             connector.unregisterVMServer(infoServer[0],False)
         
         return dict(form1 = form1,form2 = form2)
 
@@ -341,7 +429,9 @@ def subjects():
     
 def createAdressBar():
  
-    response.menu=[[SPAN(T('Arrancar máquina'), _class='highlighted'), False,URL('runVM'),[]],
+    response.menu=[[SPAN(T('Máquinas virtuales'), _class='highlighted'), False,URL(f ='runVM',args = ['run']),[
+                        (T('Arrancar'),False,URL(f = 'runVM',args = ['run'])),
+                        (T('Detener'),False,URL(f = 'runVM',args = ['stop']))]],
                     [SPAN(T('Administrar servidores'), _class='highlighted'), False, URL(f = 'servers',args = ['add_servers']),[
                         (T('Añadir servidor'),False,URL(f = 'servers',args = ['add_servers'])),
                         (T('Eliminar servidor'),False,URL(f = 'servers',args = ['remove_servers']))]],
@@ -467,7 +557,8 @@ def selectRadioButton():
         (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.description)[eval(request.vars.selection)[2]].description
     return descriptionAct
     
-def changeOption():
-    #Extraemos la descripcion actual
-    print 'Entra'
-    return ['Server1','Ip1','Port1']
+def conectToServer():
+    #Establecemos la conexión con el servidor principal
+    connector = ClusterServerConnector(auth.user_id)
+    connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
+    return connector

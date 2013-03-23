@@ -1,4 +1,5 @@
 # coding: utf8
+from gluon import *
 # Método encargado de la página de inicio de sesión
 
 
@@ -45,14 +46,7 @@ def initValues():
         auth.add_membership('Student',u2)
         print userDB.tables
         
-def initMainServerConnection():
-    #instanciamos la clase
-    connector = MainServerConnector(WebCallback())
-    #conectamos con la base de datos
-    connector.connectToDatabase("170590ucm","SystemStatusDB", "websiteUser", "cygnuscloud", "updateUser", "cygnuscloud")
-    #conectamos con el servidor principal
-    connector.connectToMainServer("static/Certificados", ip, port)        
-        
+               
         
         
 @auth.requires_login()                                      

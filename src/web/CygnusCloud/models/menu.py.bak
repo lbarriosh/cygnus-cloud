@@ -5,7 +5,7 @@
 #########################################################################
 import translateMenu
 
-response.logo = A(IMG(src=URL('static','logo32.png'),_alt="My Logo"),XML('&trade;&nbsp;'),
+response.logo = A(IMG(src=URL('static','logo.png'),_alt="My Logo"),XML('&trade;&nbsp;'),
                   _class="brand",_href=URL('main','about'))
 response.title = ' '.join(
     word.capitalize() for word in request.application.split('_'))

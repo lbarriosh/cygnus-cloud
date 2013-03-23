@@ -14,19 +14,25 @@ def runVM():
     for l in listSubjects:
         tables.append(createTable(l))
     #Creamos el formulario
-    form = FORM(HR())
+    form = FORM(HR(),_target='_blank')
     i = 0
-    for table in tables:
+    divMaquinas = DIV(_id='maquinas')
+    for table in tables:     
+        #form.append(DIV(H4(T(userDB(userDB.Subjects.code == listSubjects[i].cod).select(userDB.Subjects.name)[0].name)),BR(),H5(table),BR()))
+        #i = i + 1
         
-        form.append(DIV(H4(T(userDB(userDB.Subjects.code == listSubjects[i].cod).select(userDB.Subjects.name)[0].name)),BR(),H5(table),BR()))
-    form.append(DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))))
-    
+    #form.append(DIV(CENTER(H4(T('Descripcion:'))),CENTER(DIV(_id = 'newInfo')),BR(),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')))))
+        divMaquinas.append(DIV(H4(T(userDB(userDB.Subjects.code == listSubjects[i].cod).select(userDB.Subjects.name)[0].name)),BR(),H5(table),BR()))
+    form.append(divMaquinas)
+    form.append(DIV(H4(T('Descripcion:')), P(_id = 'newInfo'), INPUT(_type='submit',_name = 'run',  _value = T('Arrancar')), _id = 'descripcion'))
     if(form.accepts(request.vars)) and (form.vars.run):
             if(form.vars.selection != ""):
                 #TODO: Configurar cliente VNC...
                 #Abrimos una nueva pestaña
-                form.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form.vars.selection)[0], 
-                _href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))
+                #form.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form.vars.selection)[0], 
+                #_href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))
+                #form.append(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form.vars.selection)[0],_href=URL(c='vncClient', f = 'VNCPage'), _target='_blank',_select = 'selected'), _id = 'maquina'))
+                 redirect(URL(c='vncClient', f = 'VNCPage'))
     return dict(form = form)
        
    

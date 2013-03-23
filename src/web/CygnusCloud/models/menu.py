@@ -3,7 +3,6 @@
 #########################################################################
 ## Customize your APP title, subtitle and menus here
 #########################################################################
-import translateMenu
 
 response.logo = A(IMG(src=URL('static','logo.png'),_alt="My Logo"),XML('&trade;&nbsp;'),
                   _class="brand",_href=URL('main','about'))
