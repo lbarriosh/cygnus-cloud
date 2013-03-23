@@ -1902,6 +1902,177 @@ framework
 web2py
 \end_layout
 
+\begin_layout Standard
+Web2py es una plataforma web de código abierto que permite un ágil desarrollo
+ de aplicaciones web seguras, gestionadas por medio de bases de datos.
+ Esta escrito y es programable en python y contiene todos los componentes
+ necesarios para construir aplicaciones completamente funcionales.
+\end_layout
+
+\begin_layout Standard
+Al ser un framework web, web2py ofrece un rígido diseño de cara a la seguridad.
+ Así, es capaz de resolver ciertas vulnerabilidades de forma automática
+ siguiendo unas prácticas bien establecidas.
+ Por ejemplo, web2py gestiona automáticamente el formateo de las entradas
+ y salidas, aplica acciones de encriptado en los ficheros subidos y controla
+ el área de maniobra de los desarrolladores de cara a la seguridad del sistema.
+\end_layout
+
+\begin_layout Standard
+Además web2py ofrece una capa de abstracción de base de datos (DAL por su
+ acrónimo inglés), que genera código SQL de forma transparente al modelo
+ de gestión de datos utilizado (SQLite, MySQL, PostgreSQL, Oracle ...).
+\end_layout
+
+\begin_layout Standard
+Web2py fuerza al desarrollador a utilizar unas buenas prácticas de ingeniería
+ del software, evitando la repetición de código en la medida de lo posible
+ y estandarizando la manera de hacer las cosas.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ello, este framework utiliza un modelo Vista-Controlador que incentiva
+ al desarrollador a separar la forma de representar los datos (la vista)
+ y el flujo de trabajo de la aplicación (el controlador).
+ Este modelo ofrece una estructura modular que permite aislar los posibles
+ errores en una sección de código concreta y trabajar en paralelo de forma
+ independiente, reduciendo así los posibles tiempos de espera en el desarrollo
+ de la web.
+\end_layout
+
+\begin_layout Standard
+El flujo de trabajo típico de una petición web2py viene representado en
+ el diagrama 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Referencia al diagrama.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: introducir diagrama de flujo de web2py
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En el diagrama podemos destacar los siguientes elementos:
+\end_layout
+
+\begin_layout Itemize
+El navegador, a partir del cual el usuario se conectará a la web.
+\end_layout
+
+\begin_layout Itemize
+El servidor, puede ser el servidor incluido en web2py o un servidor de terceros,
+ tal como Apache.
+\end_layout
+
+\begin_layout Itemize
+La aplicación principal, encargada de realizar todas las tareas comunes
+ tal y como la gestión de cookies, sesiones, transacciones y enrutamiento.
+\end_layout
+
+\begin_layout Itemize
+Los modelos, vistas y controladores que componen la aplicación del desarrollador.
+\end_layout
+
+\begin_layout Itemize
+La Base de datos que se encargará de almacenar la información utilizada
+ por la web.
+\end_layout
+
+\begin_layout Standard
+Es posible alojar varias aplicaciones en una misma instancia.
+ Todas las llamadas se encierran en una transacción.
+ Cualquier excepción no contemplada hace que la transacción se cancele.
+ 
+\end_layout
+
+\begin_layout Standard
+También es posible registrar tareas recurrentes para ejecutarse en horas
+ específicas y/o después de determinadas acciones.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Esto no se si irá aquí o se meterá en otro apartado
+\end_layout
+
+\begin_layout Plain Layout
+INICIO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Las principales razones por las cuales hemos decidido utilizar web2py frente
+ a otros frameworks web basados en python tales como Django o Grok son:
+\end_layout
+
+\begin_layout Itemize
+Ofrece una estructura sencilla que permite a los usuarios aprender sobre
+ el desarrollo web sin comprometer la funcionalidad del sistema.
+ Por esta razón, web2py no requiere instalación ni configuración, no tiene
+ dependencias, y expone la mayor parte de su funcionalidad a través de una
+ interfaz de navegador web.
+\end_layout
+
+\begin_layout Itemize
+Se ha mantenido estable desde el primer día, ofreciendo un diseño de arriba
+ a abajo que asegura una total compatibilidad con respecto a aplicaciones
+ que fueron realizadas utilizando versiones anteriores.
+\end_layout
+
+\begin_layout Itemize
+Ataca de manera pro activa las cuestiones de seguridad más relevantes en
+ las aplicaciones web modernas.
+\end_layout
+
+\begin_layout Itemize
+Es ligero.
+ Todas las librerías y código necesario para desarrollar aplicaciones ocupa
+ en torno a 2 MB.
+\end_layout
+
+\begin_layout Itemize
+Es rápido, ofreciendo una velocidad un 30% superior que un servidor Apache
+ medio.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+FIN
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 El paquete 
 \family typewriter
