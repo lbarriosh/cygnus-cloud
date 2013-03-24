@@ -1961,6 +1961,8 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/DiagramaSecuenciaWeb2py.png
 	scale 50
@@ -1975,14 +1977,13 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Diagrama se secuencia web2py.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Diagram-web2py"
 
 \end_inset
 
-
+Diagrama de secuencia web2py
 \end_layout
 
 \end_inset
@@ -2192,25 +2193,67 @@ Los módulos de este paquete proporcionan una interfaz que permite utilizar
 twisted
 \emph default
  a un alto nivel de abstracción.
- En esta sección expondremos detalladamente su diseño.
- 
+ Puesto que el diseño de esta parte del sistema está íntimamente relacionado
+ con el funcionamiento de la librería de red 
+\emph on
+twisted
+\emph default
+, es fundamental que el lector esté familiarizado con los conceptos básicos
+ de esta librería.
 \end_layout
 
 \begin_layout Standard
-Para ello, comenzaremos mostrando, en líneas generales, el funcionamiento
- de la librería de red 
+Por ello, comenzaremos mostrando, en líneas generales, cómo funciona la
+ librería de red 
 \emph on
 twisted
 \emph default
 .
- Posteriormente, presentaremos todas las clases de este paquete de menor
- a mayor nivel de abstracción.
+ Posteriormente, describiremos el contenido de este paquete en orden creciente
+ del nivel de abstracción, profundizando más en el funcionamiento de 
+\emph on
+twisted
+\emph default
+ cuando sea preciso.
+\end_layout
+
+\begin_layout Standard
+En cualquier caso, dado que 
+\emph on
+twisted
+\emph default
+ es una librería con muchas funciones, nos centraremos en mostrar su funcionamie
+nto más general.
+ Si el lector está interesado en ampliar la información que aquí le proporcionam
+os, le remitimos a la documentación oficial (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "TwistedCoreDocs"
+
+\end_inset
+
+) y al libro 
+\emph on
+Twisted Network Programming Essentials
+\emph default
+ (
+\begin_inset CommandInset citation
+LatexCommand cite
+key "TwistedBook"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Subsubsection
 La librería de red 
 \emph on
-twisted 
+twisted
+\emph default
+: visión general
+\emph on
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:La-librería-de-red-twisted"
@@ -2221,35 +2264,42 @@ name "sub:La-librería-de-red-twisted"
 \end_layout
 
 \begin_layout Standard
-En la sección 
+Tal y como adelantamos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Uso-de-twisted"
 
 \end_inset
 
- mostramos que 
-\emph on
-twisted 
-\emph default
-es una librería de red basada en eventos.
- Por ello, la recepción de datos, el establecimiento de conexiones, la detección
- de desconexiones,\SpecialChar \ldots{}
- son totalmente asíncronas.
-\end_layout
-
-\begin_layout Standard
-Para generar todos los eventos, esta librería hace uso del patrón 
-\emph on
-reactor
-\emph default
-.
- En líneas muy generales, el comportamiento de cualquier aplicación que
- utilice la librería de red 
+, 
 \emph on
 twisted
 \emph default
- es el siguiente:
+ es una librería de red totalmente basada en eventos.
+ Así, todas las tareas que realiza (como la recepción de datos, el establecimien
+to de conexiones, la detección de desconexiones,\SpecialChar \ldots{}
+) son totalmente asíncronas.
+\end_layout
+
+\begin_layout Standard
+Para generar los eventos, 
+\emph on
+twisted
+\emph default
+ utiliza el patrón 
+\emph on
+reactor
+\emph default
+, es decir, muestrea periódicamente el estado de los 
+\emph on
+sockets
+\emph default
+ y actúa en consecuencia.
+ De esta manera, todas las aplicaciones que utilizen 
+\emph on
+twisted
+\emph default
+ seguirán el siguiente esquema de comportamiento:
 \end_layout
 
 \begin_layout Enumerate
@@ -2257,29 +2307,35 @@ el código de la librería muestrea los
 \emph on
 sockets
 \emph default
- para detectar cambios.
+ abiertos por la aplicación para detectar cambios.
  
 \end_layout
 
 \begin_layout Enumerate
-cuando este código detecta un cambio, se genera un evento para informar
- del cambio al código del cliente.
+cuando se detecta un cambio, se genera un evento para informar del cambio
+ al código del cliente.
 \end_layout
 
 \begin_layout Enumerate
-el código del cliente trata el evento.
+el código del cliente utiliza la información asociada al evento y procesa
+ el cambio.
 \end_layout
 
 \begin_layout Enumerate
-cuando termina de tratar dicho evento, el código del cliente devuelve el
- control al código de la librería.
+cuando termina, el código del cliente devuelve el control al código de la
+ librería.
 \end_layout
 
 \begin_layout Standard
-Estas acciones tienen lugar en el 
-\series bold
-bucle del reactor
-\series default
+El muestreo de los 
+\emph on
+sockets
+\emph default
+ y el tratamiento de los cambios tiene lugar en un bucle que se ejecuta
+ permanentemente: el 
+\emph on
+bucle reactor
+\emph default
 .
  La figura 
 \begin_inset CommandInset ref
@@ -2288,14 +2344,15 @@ reference "fig:El-bucle-reactor"
 
 \end_inset
 
- muestra este procedimiento de forma gráfica.
+ resume de forma gráfica las ideas que acabamos de exponer.
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -2319,7 +2376,7 @@ name "fig:El-bucle-reactor"
 
 \end_inset
 
-El bucle del reactor de 
+Representación gráfica del funcionamiento de la librería 
 \emph on
 twisted
 \end_layout
@@ -2338,21 +2395,113 @@ twisted
 
 \end_layout
 
+\begin_layout Paragraph
+Protocolos y factorías de protocolos
+\end_layout
+
 \begin_layout Standard
-La librería 
+La forma en que se procesan los datos recibidos a través de la red varía
+ de unas aplicaciones a otras, e incluso puede variar en una misma aplicación.
+ Por ejemplo, en 
+\emph on
+CygnusCloud
+\emph default
+ algunos datos recibidos se escriben en una base de datos, otros se reenvían
+ y otros se le muestran directamente al usuario.
+ Por ello, es necesario que el proceso de generación y tratamiento del evento
+ no dependa de los datos concretos que manipula cada aplicación.
+ Para hacer esto posible, 
 \emph on
 twisted
 \emph default
- también impone tres restricciones:
+ define los 
+\emph on
+protocolos
+\emph default
+ y las 
+\emph on
+factorías de protocolos
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Un 
+\emph on
+protocolo
+\emph default
+ es una clase cuyos métodos tratan y generan eventos de red, tales como
+ la recepción de un segmento TCP, el envío de un segmento TCP y la detección
+ de desconexión.
+ Por su parte, las 
+\emph on
+factorías de protocolos
+\emph default
+ son objetos capaces de instanciar y configurar protocolos.
+ Los protocolos y las factorías de protocolos se manipulan siempre a través
+ de dos interfaces, que se definen en las clases abstractas 
+\family typewriter
+Protocol
+\family default
+ y 
+\family typewriter
+Factory
+\family default
+ respectivamente.
+ 
+\end_layout
+
+\begin_layout Paragraph
+El bucle reactor
+\end_layout
+
+\begin_layout Standard
+Su misión principal es muestrear periódicamente todos los 
+\emph on
+sockets
+\emph default
+ abiertos e invocar a las rutinas de tratamiento adecuados cuando se produzca
+ un evento.
+ Como ya hemos dicho, las rutinas de tratamiento se definen en instancias
+ de subclases concretas de 
+\family typewriter
+Protocol
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+En la librería 
+\emph on
+twisted
+\emph default
+ se definen varios bucles reactor, que se diferencian fundamentalmente por
+ la forma de realizar el muestreo periódico.
+ Nosotros utilizamos el que está definido en la clase 
+\family typewriter
+PollReactor
+\family default
+, que se limita a leer periódicamente todos los 
+\emph on
+sockets
+\emph default
+ para determinar si se han producido cambios.
+ 
+\end_layout
+
+\begin_layout Standard
+Para que el funcionamiento de la librería sea el correcto, deben cumplirse
+ dos restricciones:
 \end_layout
 
 \begin_layout Itemize
-cada aplicación puede tener un número arbitrario de conexiones activas,
- pero sólo 
+aunque en cada aplicación puede haber un número arbitrario de conexiones
+ activas, sólo puede existir 
 \emph on
-un 
+un
 \emph default
-bucle reactor.
+ único bucle reactor.
+ 
 \end_layout
 
 \begin_layout Itemize
@@ -2360,94 +2509,39 @@ una vez que se detiene el bucle reactor, este
 \emph on
 no
 \emph default
- puede reiniciarse.
- Por ello, este bucle sólo puede finalizar cuando la aplicación no va a
- utilizar más la red.
+ puede reiniciarse mientras la aplicación se siga ejecutando.
+ Por ello, sólo se puede salir de este bucle cuando la aplicación no va
+ a utilizar más la red.
 \end_layout
 
-\begin_layout Itemize
-puesto que los eventos se tratan en el propio bucle del reactor, es imprescindib
-le que estos se atiendan tan rápido como sea posible para garantizar la
- correcta respuesta del sistema.
+\begin_layout Standard
+Por otra parte, los eventos de red se tratan en el propio bucle del reactor.
+ Para garantizar un tiempo de respuesta adecuado, es imprescindible que
+ los métodos de tratamiento sean tan rápidos como sea posible.
+ 
 \end_layout
 
 \begin_layout Paragraph
-Procesamiento de los datos entrantes
+Procesamiento de datos entrantes
 \end_layout
 
 \begin_layout Standard
-Los datos recibidos se procesan siempre siguiendo un determinado criterio,
- que varía según la aplicación.
- Por ejemplo, algunos de los datos recibidos pueden almacenarse en un 
-\emph on
-log
-\emph default
-, y otros pueden requerir cierto procesamiento.
- Para definir qué hace cada aplicación con la información que recibe, la
- librería 
-\emph on
-twisted
-\emph default
- define una interfaz, que deberán implementar todos los objetos que procesan
- datos entrantes.
- Esta interfaz se define en la clase abstracta 
-\family typewriter
-Protocol
-\family default
-, e incluye métodos para procesar datos entrantes, conexiones, desconexiones,\SpecialChar \ldots{}
-
-\end_layout
-
-\begin_layout Standard
-Por otra parte, en el párrafo anterior ya hemos mostrado que, para procesar
- datos entrantes, se utiliza una instancia de 
-\family typewriter
-Protocol
-\family default
- en cada extremo de la comunicación.
- Por ello, siempre que se establece una conexión deben crearse dichos objetos,
- y cuando esta se cierra deben destruirse.
- Para realizar estas operaciones, se utiliza una factoría.
-\end_layout
-
-\begin_layout Standard
-Las factorías son instancias de la clase 
-\family typewriter
-Factory
-\family default
-, y disponen de métodos para instanciar y destruir objetos 
-\family typewriter
-Protocol
-\family default
-.
- Además, en 
-\emph on
-twisted
-\emph default
- tienen una finalidad adicional: almacenar información de estado compartida
- por todos los objetos 
-\family typewriter
-Protocol
-\family default
- que han instanciado.
-\end_layout
-
-\begin_layout Standard
-Para establecer las conexiones se utilizan instancias de la clase 
-\family typewriter
-Endpoint
-\family default
-.
- Estos objetos utilizan, entre otras cosas, una factoría de protocolos para
- crear las conexiones.
- Las relaciones entre todas estas clases aparecen en el diagrama de clases
- de la figura 
+El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Relaciones-protocolos-endpoints-factorías"
+reference "fig:Procesamiento-de-datos-entrantes-twisted"
 
 \end_inset
 
+ muestra cómo se procesan los eventos asociados a dos conexiones, cuyos
+ protocolos son instancias de las subclases de 
+\family typewriter
+Protocol Protocol1
+\family default
+ y 
+\family typewriter
+Protocol2
+\family default
 .
 \end_layout
 
@@ -2461,7 +2555,148 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Twisted_recepción.pdf
+	filename graficos/Arquitectura/Vista lógica/Procesamiento de datos entrantes (DS).pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Procesamiento-de-datos-entrantes-twisted"
+
+\end_inset
+
+Procesamiento de datos entrantes en 
+\emph on
+twisted
+\emph default
+: diagrama de secuencia
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En ambos casos, se muestrea el 
+\emph on
+socket
+\emph default
+, para posteriormente invocar al método correspondiente del protocolo: el
+ método de procesamiento de los datos entrantes en el primer caso, y el
+ método de procesamiento de una desconexión en el segundo.
+\end_layout
+
+\begin_layout Paragraph
+Establecimiento de conexiones
+\end_layout
+
+\begin_layout Standard
+Para establecer una conexión, es necesario tener en cuenta
+\end_layout
+
+\begin_layout Itemize
+el protocolo de transporte que hay que utilizar (TCP versión 4, SSL,\SpecialChar \ldots{}
+), y
+\end_layout
+
+\begin_layout Itemize
+el papel que desempeña la máquina en la conexión (cliente o servidor).
+\end_layout
+
+\begin_layout Standard
+Para eliminar en la medida de lo posible los detalles de bajo nivel de nuestro
+ código, hemos utilizado una función que se ha añadido recientemente a la
+ librería 
+\emph on
+twisted
+\emph default
+: los 
+\emph on
+endpoints
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Un 
+\emph on
+endpoint
+\emph default
+ sirve para configurar uno de los extremos de la conexión.
+ Todos los protocolos de transporte implementados en 
+\emph on
+twisted 
+\emph default
+definen dos: uno para la máquina servidor y otro para las máquinas cliente.
+ En el proceso de conexión, el 
+\emph on
+endpoint
+\emph default
+, que es una instancia de una subclase concreta de 
+\family typewriter
+Endpoint
+\family default
+, 
+\end_layout
+
+\begin_layout Itemize
+interactúa con el reactor para establecer la conexión.
+\end_layout
+
+\begin_layout Itemize
+suministra al reactor la factoría de protocolos.
+ Este la utilizará para instanciar protocolos cuando sea necesario.
+\end_layout
+
+\begin_layout Standard
+Las relaciones existentes entre la clase 
+\family typewriter
+Endpoint
+\family default
+ y el resto de clases principales de la librería 
+\emph on
+twisted
+\emph default
+ aparecen en el diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Relaciones-protocolos-endpoints-factorías"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Relaciones Endpoints.pdf
 	scale 80
 
 \end_inset
@@ -2489,7 +2724,94 @@ endpoints
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Todos los 
+\emph on
+endpoints
+\emph default
+ son instancias de alguna subclase concreta la clase 
+\family typewriter
+Endpoint
+\family default
+.
+ En el diagrama sólo aparecen las subclases de 
+\emph on
+endpoint
+\emph default
+ que utilizamos en el paquete 
+\family typewriter
+network
+\family default
+, correspondientes a los protocolos TCP versión 4 y SSL versión 4.
+ Por otra parte, los 
+\emph on
+endpoints
+\emph default
+ no manipulan directamente un PollReactor: para ello, utilizan las interfaces
+ que esta clase implementa.
+ Nos hemos tomado esta licencia para simplificar la explicación.
+\end_layout
+
+\begin_layout Standard
+Como ya hemos visto, los protocolos se crean al establecerse la conexión.
+ Además, puesto que siempre están ligados a una conexión, estos objetos
+ se destruyen cuando esta se cierra.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el diagrama de secuencia de la figura muestra la interacción
+ que tiene lugar al establecer dos conexiones TCP, una de tipo servidor
+ y otra de tipo cliente.
+ En ambos casos, los 
+\emph on
+endpoints
+\emph default
+ se limitan, en esencia, a solicitar al reactor al establecimiento de la
+ conexión y a suministrarle la factoría de protocolos que debe utilizar.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
 \begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Establecimiento conexión twisted (DS).pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Establecimiento-conexión-twisted"
+
+\end_inset
+
+Establecimiento de una conexión en 
+\emph on
+twisted
+\emph default
+: diagrama de secuencia
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -2499,23 +2821,20 @@ endpoints
 \end_layout
 
 \begin_layout Standard
-El diagrama de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Relaciones-protocolos-endpoints-factorías"
+Finalmente, los protocolos se usan de forma distinta en función del tipo
+ de conexión:
+\end_layout
 
-\end_inset
+\begin_layout Itemize
+en el caso de una conexión de tipo cliente, existirá un único protocolo,
+ que permitirá la comunicación bidireccional con el servidor.
+\end_layout
 
- muestra también que, en todas las conexiones, se sigue el modelo 
-\emph on
-cliente-servidor
-\emph default
-, y que en cada extremo de la comunicación se utiliza una subclase de 
-\family typewriter
-Endpoint
-\family default
- distinta en función del protocolo utilizado y del papel que desempeña la
- máquina en dicha comunicación.
+\begin_layout Itemize
+en el caso de una conexión de tipo servidor, existirán tantos protocolos
+ como clientes.
+ Cada uno de ellos permitirá la comunicación bidireccional entre el servidor
+ y un único cliente.
 \end_layout
 
 \begin_layout Paragraph
@@ -2523,33 +2842,25 @@ Envío de datos
 \end_layout
 
 \begin_layout Standard
-Para enviar datos se utilizan los objetos asignados a los extremos de la
- comunicación, es decir, instancias de la clase 
+Tal y como hemos mencionado, para enviar datos a través de la red se utilizan
+ instancias de subclases concretas de 
 \family typewriter
 Protocol
 \family default
 .
- 
+ El reactor nunca interviene a la hora de enviar datos: los 
+\emph on
+bytes
+\emph default
+ a enviar se escriben directamente en el 
+\emph on
+socket
+\emph default
+ correspondiente.
 \end_layout
 
 \begin_layout Standard
-La clase 
-\family typewriter
-Protocol
-\family default
- no define métodos para enviar datos, pero su atributo 
-\family typewriter
-transport
-\family default
- sí lo hace: llamando al método 
-\family typewriter
-transport.write()
-\family default
- es posible enviar datos a través de la conexión.
-\end_layout
-
-\begin_layout Standard
-La única restricción que impone la librería 
+En principio, la única restricción que impone librería 
 \emph on
 twisted
 \emph default
@@ -2567,21 +2878,12 @@ bytes
 \end_layout
 
 \begin_layout Standard
-Por otra parte, el número de 
+Es importante notar que el número de 
 \emph on
 bytes
 \emph default
  a enviar no está limitado.
- No obstante, para evitar los retardos derivados de la fragmentación, es
- altamente recomendable que la longitud total de los datos a enviar en 
-\emph on
-bytes
-\emph default
- no supere el MTU (
-\emph on
-Maximum Transfer Unit
-\emph default
-) de la red.
+ Por tanto, los segmentos se fragmentarán cuando sea preciso.
 \end_layout
 
 \begin_layout Subsubsection
@@ -3188,18 +3490,6 @@ CC
 wide false
 sideways false
 status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaClasesInteracciónTwisted.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
 
 \begin_layout Plain Layout
 \begin_inset Caption
