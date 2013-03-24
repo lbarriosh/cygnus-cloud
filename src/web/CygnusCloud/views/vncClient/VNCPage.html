@@ -1,3 +1,7 @@
 {{extend 'layout.html'}}
-<h1>{{=T('Página en desarrollo: Etorno de ejecución para el cliente VNC')}}</h1>
-{{=BEAUTIFY(response._vars)}}
+<script type="text/javascript">
+    vnc_ip = "192.168.1.3"
+    vnc_port = "15011"
+    vnc_password = "a"
+</script>
+{{include '../static/noVNC/vnc_simple.html'}}
