@@ -444,7 +444,7 @@ filename "ManualUsuario.lyx"
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 btprint "btPrintAll"
-bibfiles "ch01,ch02,ch03,ch04,ch05"
+bibfiles "intro,cloudcomputing,virtualizacion,arquitectura,resultados,manualusuario"
 options "alpha"
 
 \end_inset
