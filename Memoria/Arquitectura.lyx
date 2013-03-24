@@ -1903,8 +1903,9 @@ web2py
 \end_layout
 
 \begin_layout Standard
-Web2py es una plataforma web de código abierto que permite un ágil desarrollo
- de aplicaciones web seguras, gestionadas por medio de bases de datos.
+Web2py es una plataforma web de código abierto (licencia GPL versión 2)
+ que permite un ágil desarrollo de aplicaciones web seguras, gestionadas
+ por medio de bases de datos.
  Esta escrito y es programable en python y contiene todos los componentes
  necesarios para construir aplicaciones completamente funcionales.
 \end_layout
@@ -1944,11 +1945,44 @@ Por ello, este framework utiliza un modelo Vista-Controlador que incentiva
 \begin_layout Standard
 El flujo de trabajo típico de una petición web2py viene representado en
  el diagrama 
-\begin_inset Note Note
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagram-web2py"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-Referencia al diagrama.
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/DiagramaSecuenciaWeb2py.png
+	scale 50
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Diagrama se secuencia web2py.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagram-web2py"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1956,12 +1990,8 @@ Referencia al diagrama.
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
 \begin_layout Plain Layout
-TODO: introducir diagrama de flujo de web2py
+
 \end_layout
 
 \end_inset
@@ -2050,6 +2080,12 @@ Ataca de manera pro activa las cuestiones de seguridad más relevantes en
 \end_layout
 
 \begin_layout Itemize
+Ofrece interfaces administrativas para simplificar la creación y gestión
+ de las bases de datos (appAdmin) y la interacción de las diferentes vistas
+ y controladores.
+\end_layout
+
+\begin_layout Itemize
 Es ligero.
  Todas las librerías y código necesario para desarrollar aplicaciones ocupa
  en torno a 2 MB.
@@ -2066,6 +2102,70 @@ status open
 
 \begin_layout Plain Layout
 FIN
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Con respecto a la seguridad, web2py se centra en resolver los 10 principales
+ problemas de seguridad definidos por OWASP (Proyecto de Seguridad de Aplicacion
+es Web Abiertas), una comunidad mundial libre enfocada en la mejora de la
+ seguridad de aplicaciones de software.
+\end_layout
+
+\begin_layout Standard
+En términos generales, estos 10 problemas son:
+\end_layout
+
+\begin_layout Itemize
+Cross Site Scripting (XSS)
+\end_layout
+
+\begin_layout Itemize
+inyecciones SQL
+\end_layout
+
+\begin_layout Itemize
+Ejecución de archivos maliciosos
+\end_layout
+
+\begin_layout Itemize
+Referencia directa a objetos
+\end_layout
+
+\begin_layout Itemize
+Cross Site Request Forgery (CSRF)
+\end_layout
+
+\begin_layout Itemize
+Fugas de información y manejo de errores inapropiado
+\end_layout
+
+\begin_layout Itemize
+Administración de sesiones y autentificación rota
+\end_layout
+
+\begin_layout Itemize
+Almacenamiento criptográfico inseguro
+\end_layout
+
+\begin_layout Itemize
+Comunicaciones inseguras
+\end_layout
+
+\begin_layout Itemize
+Restricciones de acceso URL
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+*Referencia a OWASP
 \end_layout
 
 \end_inset
