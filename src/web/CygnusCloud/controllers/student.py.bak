@@ -1,5 +1,7 @@
 # coding: utf8
 from gluon import *
+from clusterServer.connector.clusterServerConnector import ClusterServerConnector
+from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 
 #Método encargado de manejar la página de arranque de máquinas para el usuario
 @auth.requires_membership('Student')
@@ -24,12 +26,14 @@ def runVM():
         i = i + 1
     if(form.accepts(request.vars)) and (form.vars.run):
             if(form.vars.selection != ""):
-                #TODO: Configurar cliente VNC...
-                #Abrimos una nueva pestaña
-                #form.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form.vars.selection)[0], 
-                #_href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))
-                #form.append(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form.vars.selection)[0],_href=URL(c='vncClient', f = 'VNCPage'), _target='_blank',_select = 'selected'), _id = 'maquina'))
-                 redirect(URL(c='vncClient', f = 'VNCPage'))
+                #Establecemos la conexión con el servidor 
+                connector = conectToServer()
+                #Mandamos la ejecución del cliente noVNC
+                commandId = connector.bootUpVM(form.vars.selection)
+                #Esperamos la contestacion
+                vncInfo = connector.waitForCommandOutput(commandId)
+                redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
+                 
     return dict(form = form,num = j)
        
    
@@ -42,12 +46,18 @@ def createTable(subject,j):
     i = 0
     for l in userDB((userDB.VMByGroup.cod == subject.cod) & (userDB.VMByGroup.curseGroup == subject.curseGroup) & \
         (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
-        descriptionAct = userDB((userDB.VMByGroup.cod == subject.cod) & \
+        descInfo = userDB((userDB.VMByGroup.cod == subject.cod) & \
              (userDB.VMByGroup.curseGroup == subject.curseGroup) & \
-             (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.description)[i].description
-        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = i + j,_id = "c"+str(i + j),
-        ),TD(LABEL(l.name)),TD(DIV(P(descriptionAct),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar'))),_id = str(i + j))))))
+             (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.VMId,userDB.Images.description)
+        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId,_id = "c"+str(i + j)
+        ),TD(LABEL(l.name)),TD(DIV(P(descInfo[i].description),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar'))),_id = str(i + j))))))
         i = i + 1
         
     pass
     return [table,i + j]
+    
+def conectToServer():
+    #Establecemos la conexión con el servidor principal
+    connector = ClusterServerConnector(auth.user_id)
+    connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
+    return connector

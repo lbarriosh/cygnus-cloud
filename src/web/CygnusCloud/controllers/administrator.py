@@ -14,14 +14,12 @@ def runVM():
         #Comprobamos si se ha tomado como una lista
             
         if(isinstance(listSubjectsAux,str)):
-            listSubjectsAux = [eval(request.vars.subjectsFind)]
+            listSubjects= [eval(request.vars.subjectsFind)]
         else:
             listSubjects = []
             for l in listSubjectsAux:
                 print l
                 listSubjects.append(eval(l))
-            #listSubjects.append(request.vars.subjectsFind)
-        print listSubjects
         table = TABLE(_class='data', _name='table')
         table.append(TR(TH('S.'),TH(T('Cod-Asignatura'),TH(T('Grupo')),TH(T('Nombre')),TH(T('Descripcion')))))
         j = 0
@@ -29,15 +27,15 @@ def runVM():
             i = 0
             for vm in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2]) \
            & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
-                descriptionAct = userDB((userDB.VMByGroup.cod == l[0]) & \
+                descInfo = userDB((userDB.VMByGroup.cod == l[0]) & \
                 (userDB.VMByGroup.curseGroup == l[2]) & \
-                (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.description)[i].description
+                (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.VMId,userDB.Images.description)
                 table.append(TR(\
-                TD(INPUT(_type='radio',_name = 'selection',_value = i + j ,_id = "c"+str(i + j))),\
+                TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId ,_id = "c"+str(i + j))),\
                 TD(LABEL(str(l[0]) + '-' + l[1]),_width = '50%'),
                 TD(LABEL(l[2])),
                 TD(LABEL(vm.name)),\
-                TD(DIV(P(descriptionAct),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar'))),_id = str(i + j)))))
+                TD(DIV(P(descInfo[i].description),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar'))),_id = str(i + j)))))
                 i = i + 1
                 j = j + 1
         
@@ -52,7 +50,6 @@ def runVM():
                     listSubjectsAux = userDB((userDB.ClassGroup.cod == int(form1.vars.name)) & \
                     (userDB.Subjects.code == userDB.ClassGroup.cod)).select(\
                     userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name)
-                    print "Llega" + form1.vars.name
                     listSubjects = [] 
                     for l in listSubjectsAux : 
                             listSubjects.append([l.ClassGroup.cod,l.Subjects.name,l.ClassGroup.curseGroup])
@@ -74,12 +71,14 @@ def runVM():
         #Actuamos frente al arranque
         if(form2.accepts(request.vars)) and (form2.vars.run):
                if(form2.vars.selection != ""):
-                   #TODO: Configurar cliente VNC...
-                   #Abrimos una nueva pestaña
-                   #form2.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form2.vars.selection)[0], 
-                   #_href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))   
-                   #
-                   redirect(URL(c='vncClient',f = 'VNCPage'))
+                    #Establecemos la conexión con el servidor 
+                    connector = conectToServer()
+                    #Mandamos la ejecución del cliente noVNC
+                    commandId = connector.bootUpVM(form2.vars.selection)
+                    #Esperamos la contestacion
+                    vncInfo = connector.waitForCommandOutput(commandId)
+                    redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
+                    
         return dict(form1=form1,form2=form2,num = j)
         
     if(request.args(0) == 'stop'):
@@ -103,8 +102,7 @@ def runVM():
         for vm in vmList:
                 
                 table.append(TR(\
-                TD(INPUT(_type='radio',_name = 'selection', \
-                _onclick = "ajax('selectRadioButton', ['selection'], 'newInfo')")),\
+                TD(INPUT(_type='radio',_name = 'selection')),\
                 TD(LABEL(vm[0]),
                 TD(LABEL(vm[1])),
                 TD(LABEL(vm[2])),
@@ -142,12 +140,15 @@ def runVM():
         #Actuamos frente al arranque
         if(form2.accepts(request.vars)) and (form2.vars.run):
                if(form2.vars.selection != ""):
-                   #TODO: Configurar cliente VNC...
-                   #Abrimos una nueva pestaña
-                   #form2.append(CENTER(DIV(T('Máquina arrancada disponible aquí: '),A(eval(form2.vars.selection)[0], 
-                   #_href=URL(c='vncClient',f = 'VNCPage'), _target='_blank',_select = 'selected'))))   
-                   #
-                   redirect(URL(c='vncClient',f = 'VNCPage'))
+                    #Establecemos la conexión con el servidor 
+                    connector = conectToServer()
+                    #Paramos la máquina virtual
+                    #TODO:
+                    #commandId = connector.bootUpVM(form2.vars.selection)
+                    #Esperamos la contestacion
+                    vncInfo = connector.waitForCommandOutput(commandId)
+                    redirect(URL(f = 'runVM',args = ['stop']))
+                    
         return dict(form1=form1,form2=form2)         
 @auth.requires_membership('Administrator')
 def servers():
@@ -164,14 +165,18 @@ def servers():
         
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
             if(len(form.vars.name) > 0) and (len(form.vars.ipDir) > 0) and (len(form.vars.port) > 0):
-                #Registramos el servido
+                #Registramos el servidor
                 try:                      
                        commandID = connector.registerVMServer(form.vars.ipDir,int(form.vars.port),form.vars.name)
-                       connector.waitForCommandOutput(commandID)
+                       errorInfo = connector.waitForCommandOutput(commandID)
+                       if(errorInfo != None):
+                           response.flash = T(errorInfo['ErrorMessage'])
+                       else:
+                           #redireccinamos 
+                           redirect(URL(c='administrator',f='servers',args = ['add_servers'] ))
                 except ValueError:
                        response.flash = T('E puerto debe ser un entero.')
-            #redireccinamos 
-            redirect(URL(c='administrator',f='servers',args = ['add_servers'] ))
+            
         #Devolvemos el formulario             
         return dict(form = form)
     elif(request.args(0) == 'remove_servers'): 
@@ -194,11 +199,6 @@ def servers():
                 DIV( T('Puerto: '),BR(),LABEL(infoServer[2])),
                 HR(),CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor'))))        
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
-            # Borrar despues de las pruebas
-            commandID = connector.bootUpVMServer('Server1')
-            print connector.waitForCommandOutput(commandID) 
-            #connector.bootUpVM(1) 
-            # connector.bootUpVM(2) 
             sInfo = connector.getVMServersData()[int(form1.vars.server)]
             print "Servers registrados:" + str(sInfo)
             redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
@@ -208,7 +208,9 @@ def servers():
              #Damos de baja el servidor
              print infoServer[0] 
              commandID = connector.unregisterVMServer(infoServer[0],False)
-             connector.waitForCommandOutput(commandID)
+             errorInfo = connector.waitForCommandOutput(commandID)
+             if(errorInfo != None):
+                 response.flash = T(errorInfo['ErrorMessage'])
         
         return dict(form1 = form1,form2 = form2)
 
