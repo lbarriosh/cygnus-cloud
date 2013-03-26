@@ -1900,6 +1900,13 @@ framework
  
 \emph on
 web2py
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-web2py"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1923,6 +1930,10 @@ Al ser un framework web, web2py ofrece un rígido diseño de cara a la seguridad
 Además web2py ofrece una capa de abstracción de base de datos (DAL por su
  acrónimo inglés), que genera código SQL de forma transparente al modelo
  de gestión de datos utilizado (SQLite, MySQL, PostgreSQL, Oracle ...).
+\end_layout
+
+\begin_layout Paragraph*
+Modelo Vista-Controlador
 \end_layout
 
 \begin_layout Standard
@@ -2028,15 +2039,27 @@ La Base de datos que se encargará de almacenar la información utilizada
 \end_layout
 
 \begin_layout Standard
-Es posible alojar varias aplicaciones en una misma instancia.
- Todas las llamadas se encierran en una transacción.
+Todas las llamadas se encierran en una transacción.
  Cualquier excepción no contemplada hace que la transacción se cancele.
  
 \end_layout
 
 \begin_layout Standard
-También es posible registrar tareas recurrentes para ejecutarse en horas
+Con web2py es posible registrar tareas recurrentes para ejecutarse en horas
  específicas y/o después de determinadas acciones.
+ También es posible alojar varias aplicaciones en una misma instancia.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Web2PyBook"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+Ventajas
 \end_layout
 
 \begin_layout Standard
@@ -2110,11 +2133,22 @@ FIN
 
 \end_layout
 
+\begin_layout Paragraph*
+Seguridad
+\end_layout
+
 \begin_layout Standard
 Con respecto a la seguridad, web2py se centra en resolver los 10 principales
  problemas de seguridad definidos por OWASP (Proyecto de Seguridad de Aplicacion
 es Web Abiertas), una comunidad mundial libre enfocada en la mejora de la
- seguridad de aplicaciones de software.
+ seguridad de aplicaciones de software
+\begin_inset CommandInset citation
+LatexCommand cite
+key "OWASP"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -2159,19 +2193,6 @@ Comunicaciones inseguras
 
 \begin_layout Itemize
 Restricciones de acceso URL
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-*Referencia a OWASP
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -4425,6 +4446,249 @@ clusterServer
 El paquete 
 \family typewriter
 webServer
+\end_layout
+
+\begin_layout Standard
+En este paquete se trata todo lo relacionado con la gestión de la web de
+ CygnusCloud.
+ Así en este paquete se incluyen todos los módulos encargados de gestionar
+ las funcionalidades de interacción con los usuarios a través de la web
+ y los ficheros html y css necesarios para la implementación de las páginas.
+ Para llevar a cabo el desarrollo de la web ha sido necesario la utilización
+ de un framework web que nos facilitase algunos aspectos y estructurase
+ el sistema de forma correcta.
+ Para ello, hemos optado por la utilización de Web2Py cuyas principales
+ características y funcionamiento explicamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-web2py"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Estructura de direcciones
+\end_layout
+
+\begin_layout Standard
+Con el fin de poder gestionar la web de la forma más modular posible y aprovecha
+ndo el flujo de direcciones usadas por web2py vamos a estructurar los diferentes
+ apartados de la web en forma de árbol de direcciones tal que cada uno de
+ sus nodos podrá realizar saltos a cualquier otro nodo del árbol según las
+ acciones realizadas por los usuarios.
+ Así el elemento principal será la aplicación en sí (/CygnusCloud).
+ A partir de esta dirección comenzarán a surgir las direcciones asociadas
+ a las páginas manteniendo la estructura de secciones y subsecciones correspondi
+entemente.
+ De esta forma, las diferentes URLs sobre las que trabajará la web son:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/login
+\begin_inset Quotes erd
+\end_inset
+
+ : Es la página de inicio de sesión donde el usuario introduce su nombre
+ y contraseña para iniciar la sesión.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/about
+\begin_inset Quotes erd
+\end_inset
+
+ : Es la página en la que se habla acerca de CygnusCloud y su finalidad.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/student/runVM
+\begin_inset Quotes erd
+\end_inset
+
+ : Es la página de arranque de máquinas virtuales para los usuarios.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/administrator/runVM/run
+\begin_inset Quotes erd
+\end_inset
+
+: Es la página de arranque de máquinas virtuales para los administradores.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/administrator/runVM/stop
+\begin_inset Quotes erd
+\end_inset
+
+: Es la página de detención de máquinas virtuales en ejecución para los
+ administradores.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/administrator/servers/add_servers
+\begin_inset Quotes erd
+\end_inset
+
+ : Es la página encargada de añadir nuevos servidores y borrar algún servidor
+ existente.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/administrator/servers/remove_servers
+\begin_inset Quotes erd
+\end_inset
+
+ : Es la página encargada de eliminar servidores de máquinas virtuales existente
+s.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/administrator/users/remove
+\begin_inset Quotes erd
+\end_inset
+
+ : Esta es la página encargada de eliminar a usuarios previamente creados.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/administrator/users/add
+\begin_inset Quotes erd
+\end_inset
+
+ : Es la página encargada de crear nuevos usuarios con las especificaciones
+ determinadas por el administrador.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/administrator/users/associate_subjects
+\begin_inset Quotes erd
+\end_inset
+
+ : Es la página encargada de establecer las relaciones entre un usuario
+ previamente creado y un grupo de asignatura.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/administrator/subjects/add
+\begin_inset Quotes erd
+\end_inset
+
+ : Esta es la página encargada de crear nuevos grupos de asignaturas con
+ la información introducida por el administrador.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/administrator/subjects/remove
+\begin_inset Quotes erd
+\end_inset
+
+ : Esta es la página encargada de eliminar algún grupo de asignatura existente.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+/CygnusCloud/vncClient/VNCPage
+\begin_inset Quotes erd
+\end_inset
+
+ : Página que contiene el escritorio de trabajo ejecutado por noVNC.
+\end_layout
+
+\begin_layout Standard
+La distribución de estas páginas con respecto a su estructura en el flujo
+ de direcciones viene representado en el diagrama de la figura 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insertar diagrama.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+La barra de direcciones
+\end_layout
+
+\begin_layout Standard
+Con el fin de permitir a los usuarios acceder a las diferentes páginas de
+ forma directa sin necesidad de utilizar redirecciones a páginas intermedias,
+ la web dispone de una barra de direcciones permanente que permite al usuario
+ redirigirse a cualquier página dentro de su rango de acción.
+ De esta forma dependiendo del tipo de usuarios dispondremos de las siguientes
+ barras:
+\end_layout
+
+\begin_layout Itemize
+barra de direcciones para páginas de acceso público.
+ En esta barra aparecen las páginas de inicio de sesión y de 
+\begin_inset Quotes eld
+\end_inset
+
+Acerca de
+\begin_inset Quotes erd
+\end_inset
+
+, a las cuales pueden acceder libremente cualquier usuario que entre en
+ la web.
+\end_layout
+
+\begin_layout Itemize
+barra de direcciones para alumnos.
+ Esta barra incluye la página de arranque de máquinas virtuales y está restringi
+da a usuarios de tipo alumno registrados en la web.
+\end_layout
+
+\begin_layout Itemize
+barra de direcciones para administradores.
+ Esta barra contiene todas las páginas de gestión de servidores, asignaturas
+ y usuarios.
+ Además contiene la página de arranque de máquinas virtuales.
+ Su acceso está restringido a usuarios de tipo administrador.
 \end_layout
 
 \begin_layout Section
