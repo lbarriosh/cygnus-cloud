@@ -4454,7 +4454,15 @@ En este paquete se trata todo lo relacionado con la gestión de la web de
  Así en este paquete se incluyen todos los módulos encargados de gestionar
  las funcionalidades de interacción con los usuarios a través de la web
  y los ficheros html y css necesarios para la implementación de las páginas.
- Para llevar a cabo el desarrollo de la web ha sido necesario la utilización
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Estructura general de la web
+\end_layout
+
+\begin_layout Standard
+Para llevar a cabo el desarrollo de la web ha sido necesario la utilización
  de un framework web que nos facilitase algunos aspectos y estructurase
  el sistema de forma correcta.
  Para ello, hemos optado por la utilización de Web2Py cuyas principales
@@ -4468,8 +4476,121 @@ reference "sub:Uso-web2py"
 .
 \end_layout
 
+\begin_layout Standard
+Como ya mencionamos en esa sección, web2py estructura las aplicaciones siguiendo
+ un modelo vista-controlador.
+ Por ello en CygnusCloud ha sido necesario estructurar el código de la web
+ en un grupo de control y un grupo de vista.
+ A parte de ambos grupos también se han añadido más grupos con ficheros
+ estáticos, css, módulos importados y en general todos los ficheros necesarios
+ para dar la funcionalidad y el aspecto requeridos en la web.
+\end_layout
+
+\begin_layout Standard
+Con todo esto, la web de CygnusCloud puede subdividirse en los siguientes
+ grupos según su finalidad y tipo:
+\end_layout
+
+\begin_layout Itemize
+Vistas : Este grupo incluye todos los ficheros de formato html encargados
+ de establecer el aspecto de los componentes, su posicionamiento en las
+ páginas y su comportamiento.
+ Entendemos por comportamiento de un componente, su capacidad para realizar
+ ciertas acciones que mejoren la interacción con los usuarios.
+ Según las restricciones de web2py será necesario disponer de un fichero
+ de vista por cada sección disponible en la web.
+ Cada uno de estos ficheros de vista reciben los componentes creados en
+ el controlador asociado, ajustan su aspecto al que se mostrará en la web,
+ y los posicionan en el lugar deseado.
+\end_layout
+
+\begin_layout Itemize
+Controladores : Este grupo incluye el conjunto de módulos python que aportan
+ todas las funcionalidades que serán gestionadas por la web.
+ CygnusCloud dispone de un módulo para cada uno de los tipos de usuarios
+ que pueden acceder a la web (alumnos, administradores y estudiantes), un
+ módulo para las páginas de acceso público, un módulo para la página que
+ contiene el cliente VNC y un módulo appAdmin creado automáticamente por
+ web2py para la gestión de las bases de datos.
+ Dentro de cada módulo encontramos una función asociada a cada una de las
+ secciones que forman la web.
+ Hablaremos más en profundidad sobre este tema en la sección 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+referencia a sección 
+\begin_inset Quotes eld
+\end_inset
+
+Secciones y subsecciones
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Modelos : Este grupo incluye dos módulos python encargados de la creación
+ de las bases de datos y las características generales de la aplicación.
+ Así, el módulo 
+\begin_inset Quotes eld
+\end_inset
+
+db.py
+\begin_inset Quotes erd
+\end_inset
+
+ crea las tablas de la base de datos encargada de la gestión de la información
+ en la web.
+ El módulo 
+\begin_inset Quotes eld
+\end_inset
+
+menu.py
+\begin_inset Quotes erd
+\end_inset
+
+ define las características generales de la aplicación web, tales como su
+ logo, su autor, sus tags de busqueda...
+ Este par de módulos son creados y exigidos por web2py.
+\end_layout
+
+\begin_layout Itemize
+Lenguajes : Este grupo incluye los diccionarios de traducción de las páginas
+ de la web.
+ Estos diccionarios deben ser rellenados por el desarrollador y son usados
+ internamente por web2py para traducir todas las palabras de la web que
+ aparezcan en los diccionarios.
+\end_layout
+
+\begin_layout Itemize
+Archivos estáticos : Este grupo incluye los ficheros css y js encargados
+ de definir la apariencia de la web, las imágenes y en general cualquier
+ fichero que defina algún componente externo que forma parte de la web.
+\end_layout
+
+\begin_layout Itemize
+Módulos : En este apartado se incluyen todos los módulos python secundarios
+ utilizados por los controladores.
+ Así, en este grupo se encuentra el conector que permite la interacción
+ entre el servidor web y el servidor de cluster.
+\end_layout
+
 \begin_layout Subsubsection
 Estructura de direcciones
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Estructura-de-direcciones"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4648,6 +4769,566 @@ Insertar diagrama.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Secciones y subsecciones
+\end_layout
+
+\begin_layout Standard
+Para poder hacer frente al elevado número de páginas que ofrece CygnusCloud,
+ hemos optado por estructurar estas páginas en un sistema de 3 niveles,
+ que permite filtrar y estructurar las páginas teniendo en cuenta los privilegio
+s de acceso y la finalidad e cada página.
+ 
+\end_layout
+
+\begin_layout Standard
+El primer nivel se centra en los privilegios de acceso asociados a cada
+ página.
+ CygnusCloud agrupa a los usuarios registrados en 3 tipos según los privilegios
+ de los que dispongan.
+ Estos privilegios dan acceso a unas u otras páginas.
+ En la web de CygnusCloud podemos encontrar los siguientes tipos de usuarios:
+\end_layout
+
+\begin_layout Itemize
+Alumnos : En este tipo se incluyen todos los alumnos que cursan alguna de
+ las asignaturas registradas en la web.
+ Este tipo de usuarios es el más restringido, dándole únicamente acceso
+ a la página de arranque de máquinas virtuales , asociadas a las asignaturas
+ matriculadas por el alumno, y a la página de visualización de máquinas
+ arrancadas.
+\end_layout
+
+\begin_layout Itemize
+Profesores : Este tipo incluye a todos los profesores que imparten alguna
+ de las asignaturas registradas en la web.
+ Dispone de unos privilegios de acceso mayores que el caso del alumno, pudiendo
+ acceder, además de las páginas de arranque de máquinas virtuales y gestión
+ de máquinas arrancadas, a páginas de creación, edición y borrado de máquinas
+ virtuales.
+\end_layout
+
+\begin_layout Itemize
+Administradores: Este tipo incluye a todos los técnicos y administradores
+ encargados de la gestión total de la página.
+ Es el tipo más privilegiado, teniendo acceso a las páginas de :
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Arranque de todas máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+Detención de máquinas virtuales arrancadas independientemente del usuarios
+ que las arrancó.
+\end_layout
+
+\begin_layout Itemize
+Gestión de usuarios.
+\end_layout
+
+\begin_layout Itemize
+Gestión de servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+Gestión de grupos de asignaturas, así como de las máquinas virtuales asociadas
+ a cada grupo.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Además de estos tipos de usuarios, CygnusCloud también ofrece acceso a ciertas
+ páginas públicas.
+ Estas páginas podrán ser vistas por cualquier usuarios que se conecte a
+ la página de CygnusCloud, aunque no se encuentre registrado.
+ 
+\end_layout
+
+\begin_layout Standard
+Como ya hemos dicho, cada uno de estos tipos del primer nivel concretan
+ el conjunto de páginas al cual se quiere acceder.
+ 
+\end_layout
+
+\begin_layout Standard
+En el segundo nivel las páginas se encuentran agrupadas por secciones.
+ Entendemos como una sección, el conjunto de páginas que abordan un aspecto
+ común para un tipo de usuario concreto.
+ Cada tipo de usuario tendrá acceso a unas secciones u otras.
+ Algunos ejemplos de secciones son la gestión de usuarios, el arranque de
+ máquinas virtuales o el inicio de sesión.
+ En la tabla 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tabla-rtipos-secciones"
+
+\end_inset
+
+puede verse el conjunto de secciones asociadas a cada tipo de usuario.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Tipo de usuario
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Secciones
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Main
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Login,About
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Student
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RunVM
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Teacher
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Administrator
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RunVM, Servers, Users, Subjects
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Tabla relación tipos de usuario y secciones.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Tabla-rtipos-secciones"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por último, en el tercer nivel, las páginas se encuentran definidas en subseccio
+nes.
+ Cada subsección es una página que contiene las funcionalidades relacionadas
+ con un aspecto concreto y más limitado que el de la sección que la incluye.
+ Existirán por tanto, tantas subsecciones como páginas creadas en la web.
+ En la tabla 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tabla-seccion-subseccion"
+
+\end_inset
+
+ pueden verse las diferentes subsecciones asociadas a cada sección.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sección
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Subsección
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Login
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+About
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RunVM
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Run, Stop
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Servers
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Add_servers,Remove_servers
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Users
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Add,Remove,Associate_subjects
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Subjects
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Add, Remove, AddVM
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Tabla relación secciones y subsecciones
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Tabla-seccion-subseccion"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La barra de secciones permanente en la web muestra la distribución de las
+ páginas en secciones y subsecciones.
+\end_layout
+
+\begin_layout Standard
+De cara a la implementación, es necesario ajustar esta estructura para que
+ siga el modelo definido por web2py.
+ Web2py gestiona sus direcciones con respecto a la estructura de los módulos
+ python que actúan como controladores.
+ El conjunto de controladores presentes en la web coincide con los tipos
+ de usuarios definidos en el primer nivel.
+ Así disponemos de 5 controladores:
+\end_layout
+
+\begin_layout Itemize
+Uno para las páginas de acceso público.
+\end_layout
+
+\begin_layout Itemize
+Uno para las páginas de los alumnos.
+\end_layout
+
+\begin_layout Itemize
+Uno para las páginas de los profesores.
+\end_layout
+
+\begin_layout Itemize
+Uno para las páginas de los administradores.
+\end_layout
+
+\begin_layout Itemize
+Uno para la página que mantendrá el cliente VNC.
+\end_layout
+
+\begin_layout Standard
+Este último controlador no corresponde a ningún tipo concreto de usuario
+ pero se define a parte ya que su uso es común para todos los usuarios.
+ 
+\end_layout
+
+\begin_layout Standard
+Dentro de cada controlador es necesario definir una función python para
+ cada una de las secciones del nivel 2 asociadas a este tipo de usuario.
+ Así todo el código presente en los controladores debe pertenecer a una
+ función, bien una función que defina una determinada sección o bien una
+ función auxiliar utilizada por alguna de las funciones principales.
+\end_layout
+
+\begin_layout Standard
+Por último cada una de las funciones python contendrán un variable que les
+ indique cual de las subsecciones del tercer nivel deben controlar en cada
+ momento.
+\end_layout
+
+\begin_layout Standard
+Con respecto a las vistas, el diseño de los niveles se simplifica bastante,
+ siendo necesario tener un fichero html para cada una de las secciones del
+ segundo nivel.
+ El nombre de estos ficheros html deben seguir la siguiente estructura:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Quotes eld
+\end_inset
+
+Nombre del controlador
+\begin_inset Quotes erd
+\end_inset
+
+/
+\begin_inset Quotes erd
+\end_inset
+
+nombre de la funcion
+\begin_inset Quotes erd
+\end_inset
+
+.html
+\end_layout
+
+\begin_layout Standard
+A modo de resumen, el esquema 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+referencia a esquema
+\end_layout
+
+\end_inset
+
+ muestra como CygnusCloud estructura sus páginas en estos 3 niveles.
+ Como podemos observar, las rutas de direcciones de las que hablamos en
+ la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Estructura-de-direcciones"
+
+\end_inset
+
+ coinciden con la estructura en los 3 niveles.
 \end_layout
 
 \begin_layout Subsubsection
