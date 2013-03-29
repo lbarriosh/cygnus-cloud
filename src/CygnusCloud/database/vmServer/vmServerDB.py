@@ -7,7 +7,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
          accesibles en el servidor de máquinas virtuales actual.
     '''
 
-    def __init__(self,sqlUser,sqlPass,databaseName):
+    def __init__(self, sqlUser, sqlPass, databaseName):
         '''
             Constructora de la clase
         '''
@@ -16,115 +16,115 @@ class VMServerDBConnector(BasicDatabaseConnector):
         self.generateMACsAndUUIDs()
         self.generateVNCPorts()
         
-    def getImages(self):
+    def getAvailableImageIDs(self):
         '''
              Devuelve una lista con todos los identificadores de imágenes que se 
               encuentran registradas en el servidor de máquinas virtuales.
         '''
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT VMId FROM VirtualMachine" 
-        #Recogemos los resultado
-        results=self._executeQuery(sql, False)
-        #Guardamos en una lista los ids resultantes
+        # Recogemos los resultado
+        results = self._executeQuery(sql, False)
+        # Guardamos en una lista los ids resultantes
         imageIds = []
         for r in results:
             imageIds.append(r[0])
-        #Devolvemos la lista resultado
+        # Devolvemos la lista resultado
         return imageIds
     
-    def getName(self,imageId):
+    def getDomainNameFromImageID(self, imageId):
         '''
             Devuelve el nombre de la imagen cuyo identificador se pasa como argumento. 
         '''
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT name FROM VirtualMachine WHERE VMId = " + str(imageId)   
-        #Recogemos los resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos los resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0]  
     
-    def getImagePath(self,imageId):
+    def getDataImagePathFromImageID(self, imageId):
         '''
             Devuelve la ruta donde se encuentra físicamente la imagen cuyo identificador 
              de imagen se pasa como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT imagePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
-        #Recogemos los resultado
-        result=self._executeQuery(sql, True)
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT dataImagePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
+        # Recogemos los resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0]
     
-    def getOsImagePathFromImageId(self,imageId):
+    def getOsImagePathFromImageId(self, imageId):
         '''
             Devuelve la ruta donde se encuentra físicamente la imagen del SO cuyo identificador 
              de imagen se pasa como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT osImagePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
-        #Recogemos los resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos los resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0]
     
-    def getFileConfigPath(self,imageId):
+    def getDefinitionFilePathFromVNCPort(self, imageId):
         '''
             Devuelve la ruta donde se encuentra el fichero de configuración asociado a 
              la imagen cuyo identificador se pasa como argumento
         '''
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT FileConfigPath FROM VirtualMachine WHERE VMId = " + str(imageId)   
-        #Recogemos los resultado
-        result=self._executeQuery(sql)
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT definitionFilePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
+        # Recogemos los resultado
+        result = self._executeQuery(sql)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
-        return result[0][0] # BUG aquí
+        # Devolvemos el resultado
+        return result[0][0]  # BUG aquí
     
-    def setImagePath(self,imageId,path):
+    def setDataImagePath(self, imageId, path):
         '''
             Permite cambiar la ruta de la imagen cuyo identificador se pasa como argumento.
         '''
-        #Creamos la consulta encargada de realizar la actualización
-        sql = "UPDATE VirtualMachine SET imagePath = '"  + path + "' WHERE VMId = " + str(imageId)
-        #Ejecutamos el comando
+        # Creamos la consulta encargada de realizar la actualización
+        sql = "UPDATE VirtualMachine SET dataImagePath = '" + path + "' WHERE VMId = " + str(imageId)
+        # Ejecutamos el comando
         self._executeUpdate(sql)
         
-    def createImage(self,imageId,name,imagePath,osImagePath,FileConfigPath):
+    def createImage(self, imageId, name, dataImagePath, osImagePath, definitionFilePath):
         '''
             Permite registrar en la base de datos una nueva imagen de máquina virtual. 
         '''
-        #Introducimos los datos en la base de datos
-        sql = "INSERT INTO VirtualMachine(VMId,name,imagePath,osImagePath,FileConfigPath) VALUES("  
-        sql+=    str(imageId) + ",'" + name + "','" + imagePath  +"','" + osImagePath + "','"+ FileConfigPath +"') "  
-        #Ejecutamos el comando
+        # Introducimos los datos en la base de datos
+        sql = "INSERT INTO VirtualMachine(VMId,name,dataImagePath,osImagePath,definitionFilePath) VALUES("  
+        sql += str(imageId) + ",'" + name + "','" + dataImagePath + "','" + osImagePath + "','" + definitionFilePath + "') "  
+        # Ejecutamos el comando
         self._executeUpdate(sql)  
-        #Devolvemos el id
+        # Devolvemos el id
         return imageId
     
-    def deleteImage(self,imageId):
-        #borramos el la MV
+    def deleteImage(self, imageId):
+        # borramos el la MV
         sql = "DELETE FROM VirtualMachine WHERE VMId =" + str(imageId) 
-        #Ejecutamos el comando
+        # Ejecutamos el comando
         self._executeUpdate(sql) 
         # Gracias al ON DELETE CASCADE debería borrarse sus referencias en
         #  el resto de las tablas
-        #Actualizamos la base de datos
+        # Actualizamos la base de datos
  
-    def doesImageExist(self,VMId):   
+    def doesImageExist(self, VMId):   
         '''
             Comprueba si una imagen existe
         '''
-        #Contamos el número de MV con el id dado    
+        # Contamos el número de MV con el id dado    
         sql = "SELECT COUNT(*) FROM VirtualMachine WHERE VMId =" + str(VMId)
-        #Recogemos los resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos los resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
         # Si el resultado es 1, la MV existe
@@ -134,26 +134,26 @@ class VMServerDBConnector(BasicDatabaseConnector):
         '''
             Función encargada de crear la tabla inicial de pares (UUID,MAC) libres
         '''
-        sql = "DROP TABLE IF EXISTS freeMacs" 
-        #Ejecutamos el comando
+        sql = "DROP TABLE IF EXISTS FreeMACs" 
+        # Ejecutamos el comando
         self._executeUpdate(sql)  
-        #Creamos la tabla necesaria
-        sql = "CREATE TABLE IF NOT EXISTS freeMacs(UUID VARCHAR(40) ,MAC VARCHAR(20),PRIMARY KEY(UUID,MAC)) ENGINE=MEMORY;"
-        #Ejecutamos el comando
+        # Creamos la tabla necesaria
+        sql = "CREATE TABLE IF NOT EXISTS FreeMACs(UUID VARCHAR(40) ,MAC VARCHAR(20),PRIMARY KEY(UUID,MAC)) ENGINE=MEMORY;"
+        # Ejecutamos el comando
         self._executeUpdate(sql)
-        #Generamos el relleno
+        # Generamos el relleno
         v = 0
-        #Generamos el bucle
+        # Generamos el bucle
         while v < 256 :
             x = str(hex(v))[2:].upper()
-            #Ajustamos al formato de 2 digitos cuando proceda
+            # Ajustamos al formato de 2 digitos cuando proceda
             if v < 16:
                 x = '0' + x
-            #Creamos la consulta   
-            sql = "INSERT INTO freeMacs VALUES (UUID(),'" + '2C:00:00:00:00:' +  x + "');"
-            #Ejecutamos el comando
+            # Creamos la consulta   
+            sql = "INSERT INTO FreeMACs VALUES (UUID(),'" + '2C:00:00:00:00:' + x + "');"
+            # Ejecutamos el comando
             self._executeUpdate(sql)
-            #incrementamos el contador
+            # incrementamos el contador
             v = v + 1
             
         
@@ -161,402 +161,388 @@ class VMServerDBConnector(BasicDatabaseConnector):
         '''
             Función encargada de crear la tabla inicial de pares (UUID,MAC) libres
         '''
-        sql = "DROP TABLE IF EXISTS freeVNCPorts;" 
-        #Ejecutamos el comando
+        sql = "DROP TABLE IF EXISTS FreeVNCPorts;" 
+        # Ejecutamos el comando
         self._executeUpdate(sql)  
-        #Creamos la tabla necesaria
-        sql = "CREATE TABLE IF NOT EXISTS freeVNCPorts(VNCPort INTEGER PRIMARY KEY) ENGINE=MEMORY;"
-        #Ejecutamos el comando
+        # Creamos la tabla necesaria
+        sql = "CREATE TABLE IF NOT EXISTS FreeVNCPorts(VNCPort INTEGER PRIMARY KEY) ENGINE=MEMORY;"
+        # Ejecutamos el comando
         self._executeUpdate(sql)
-        #Generamos el relleno
+        # Generamos el relleno
         p = 15000
         v = 0
-        #Generamos el bucle
+        # Generamos el bucle
         while v < 256 :
-            #Creamos la consulta   
-            sql = "INSERT INTO freeVNCPorts VALUES ('" + str(p) + "');"
-            #Ejecutamos el comando
+            # Creamos la consulta   
+            sql = "INSERT INTO FreeVNCPorts VALUES ('" + str(p) + "');"
+            # Ejecutamos el comando
             self._executeUpdate(sql)
-            #incrementamos el contador
+            # incrementamos el contador
             p = p + 2
             v = v + 1
         
-    def extractfreeMacAndUuid(self):
+    def extractFreeMACAndUUID(self):
         '''
             Función que devuelve la primera ocurrencia de la tabla de macs libres y
              la elimina de la tabla
         '''
-        #Creamos la cosulta
-        sql = "SELECT * FROM freeMacs"
-        #Nos quedamos con la primera ocurrencia
-        result=self._executeQuery(sql, True)
+        # Creamos la cosulta
+        sql = "SELECT * FROM FreeMACs"
+        # Nos quedamos con la primera ocurrencia
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None        
-        #Eliminamos este resultado de la tabla
-        sql = "DELETE FROM freeMacs WHERE UUID = '" + result[0] + "' AND MAC ='" + result[1] + "'"
-        #Ejecutamos el comando
+        # Eliminamos este resultado de la tabla
+        sql = "DELETE FROM FreeMACs WHERE UUID = '" + result[0] + "' AND MAC ='" + result[1] + "'"
+        # Ejecutamos el comando
         self._executeUpdate(sql)
-        #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
-        #Actualizamos la base de datos
+        # Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
+        # Actualizamos la base de datos
         
-        #Devolvemos una tupla con la UUID y la MAC
-        return (result[0],result[1])
+        # Devolvemos una tupla con la UUID y la MAC
+        return (result[0], result[1])
     
-    def insertfreeMacAndUuid(self,UUID,MAC):
+    def insertFreeMACAndUUID(self, UUID, MAC):
         '''
             Añade un nuevo par del tipo UUID , MAC a la tabla freeMAC
         '''
-        #Creamso la consulta
-        sql = "INSERT INTO freeMacs VALUES ('" + UUID +"','" + MAC + "')"
-        #Ejecutamos el comando
+        # Creamso la consulta
+        sql = "INSERT INTO FreeMACs VALUES ('" + UUID + "','" + MAC + "')"
+        # Ejecutamos el comando
         self._executeUpdate(sql)
         
-    def extractfreeVNCPort(self):
+    def extractFreeVNCPort(self):
         '''
             Función que devuelve la primera ocurrencia de la tabla de macs libres y
              la elimina de la tabla
         '''
-        #Creamos la cosulta
-        sql = "SELECT * FROM freeVNCPorts"
-        #Nos quedamos con la primera ocurrencia
-        result=self._executeQuery(sql, True)
+        # Creamos la cosulta
+        sql = "SELECT * FROM FreeVNCPorts"
+        # Nos quedamos con la primera ocurrencia
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Eliminamos este resultado de la tabla
-        sql = "DELETE FROM freeVNCPorts WHERE VNCPort = '" + str(result[0]) + "'"
-        #Ejecutamos el comando
+        # Eliminamos este resultado de la tabla
+        sql = "DELETE FROM FreeVNCPorts WHERE VNCPort = '" + str(result[0]) + "'"
+        # Ejecutamos el comando
         self._executeUpdate(sql)
-        #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
-        #Actualizamos la base de datos
+        # Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
+        # Actualizamos la base de datos
         
-        #Devolvemos el puerto
+        # Devolvemos el puerto
         return result[0]
     
-    def insertfreeVNCPort(self,VNCPort):
+    def insertFreeVNCPort(self, VNCPort):
         '''
             Añade un nuevo par del tipo UUID , MAC a la tabla freeMAC
         '''
-        #Creamso la consulta
-        sql = "INSERT INTO freeVNCPorts VALUES ('" + str(VNCPort) + "')"
-        #Ejecutamos el comando
-        self._executeUpdate(sql)
-        
-    def showVMs(self):
-        '''
-            Muestra el conjunto de MV registradas
-        '''
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT * FROM ActualVM" 
-        #Recogemos los resultado
-        results=self._executeQuery(sql, False)
-        #Mostramos los resultados
-        for r in results:
-            print(r)        
-        
+        # Creamso la consulta
+        sql = "INSERT INTO FreeVNCPorts VALUES ('" + str(VNCPort) + "')"
+        # Ejecutamos el comando
+        self._executeUpdate(sql)        
 
-    def getRunningPorts(self):
+    def getVNCPortsInUse(self):
         '''
             Devuelve una lista con los puertos VNC correspondientes a las máquinas 
              virtuales que se encuentran actualmente en ejecución.
         ''' 
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT VNCPortAdress FROM ActualVM" 
-        #Recogemos los resultado
-        results=self._executeQuery(sql, False)
-        #Guardamos en una lista los ids resultantes
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT VNCPort FROM ActualVM" 
+        # Recogemos los resultado
+        results = self._executeQuery(sql, False)
+        # Guardamos en una lista los ids resultantes
         ports = []
         for r in results:
             ports.append(int(r[0]))
-        #Devolvemos la lista resultado
+        # Devolvemos la lista resultado
         return ports
     
-    def getUsers(self):
+    def getUserIDs(self):
         '''
              Devuelve una lista con los identificadores de todos los usuarios que actualmente
                se encuentran ejecutando una determinada máquina virtual en este servidor de 
                máquinas virtuales.
         ''' 
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT DISTINCT userId FROM ActualVM;" 
-        #Recogemos los resultado
-        results=self._executeQuery(sql, False)
-        #Guardamos en una lista los ids resultantes
+        # Recogemos los resultado
+        results = self._executeQuery(sql, False)
+        # Guardamos en una lista los ids resultantes
         users = []
         for r in results:
             users.append(int(r[0]))
-        #Devolvemos la lista resultado
+        # Devolvemos la lista resultado
         return users
     
-    def getAssignedVM(self,vncPort):
+    def getVMIDFromVNCPort(self, vncPort):
         '''
             Devuelve el identificador de la máquina virtual que se encuentra en ejecución en el 
              puerto VNC pasado como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT VMId FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT VMId FROM ActualVM WHERE VNCPort = '" + str(vncPort) + "'" 
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
-    def getAssignedVMinDomain(self,domainName):
+    def getVMIDFromDomainName(self, domainName):
         '''
             Devuelve el identificador de la máquina virtual que se encuentra en ejecución en el 
             dominio pasado como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT VMId FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
-    def getAssignedVMName(self,vncPort):
+    def getVMNameFromVNCPort(self, vncPort):
         '''
             Devuelve el nombre de la máquina virtual que se encuentra en ejecución
              en  el puerto VNC pasado como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.VNCPortAdress = '" + str(vncPort) + "' AND "
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.VNCPort = '" + str(vncPort) + "' AND "
         sql += "vm.VMId = av.VMId " 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
-    def getAssignedVMNameinDomain(self,domainName):
+    def getVMNameFromDomainName(self, domainName):
         '''
             Devuelve el nombre de la máquina virtual que se encuentra en ejecución
              en  el puerto VNC pasado como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.domainName = '" + str(domainName) + "' AND "
         sql += "vm.VMId = av.VMId " 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
-    def getMachineDataPath(self,vncPort):
+    def getDataImagePathFromVNCPort(self, vncPort):
         '''
             Devuelve la ruta asociada a la copia de la imagen de la máquina virtual que se encuentra 
              en ejecución en el puertoVNC pasado como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT imageCopyPath FROM ActualVM  WHERE VNCPortAdress = '" + str(vncPort) + "'"
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT dataImagePath FROM ActualVM  WHERE VNCPort = '" + str(vncPort) + "'"
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
-    def getMachineDataPathinDomain(self,domainName):
+    def getDomainDataImagePathFromDomainName(self, domainName):
         '''
             Devuelve la ruta asociada a la copia de la imagen de la máquina virtual que se encuentra 
              en ejecución en el puertoVNC pasado como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT imageCopyPath FROM ActualVM  WHERE domainName = '" + str(domainName) + "'"
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT dataImagePath FROM ActualVM  WHERE domainName = '" + str(domainName) + "'"
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
-    def getMacAdress(self,vncPort):
+    def getMACAddressFromVNCPort(self, vncPort):
         '''
             Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT macAdress FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT macAddress FROM ActualVM WHERE VNCPort = '" + str(vncPort) + "'" 
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
-    def getMacAdressinDomain(self,domainName):
+    def getMACAddressFromDomainName(self, domainName):
         '''
             Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT macAdress FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT macAddress FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
-    def getUuidAdress(self,vncPort):
+    def getDomainUUIDFromVNCPort(self, vncPort):
         '''
             Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT uuid FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
-    def getUuidAdressInDomain(self,domainName):
+    def getDomainUUIDFromDomainName(self, domainName):
         '''
             Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT uuid FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
-    def getPassword(self,vncPort): 
+    def getVNCPasswordFromVNCPort(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT VNCPass FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT VNCPass FROM ActualVM WHERE VNCPort = '" + str(vncPort) + "'" 
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0]
     
-    def getPasswordinDomain(self,domainName): 
+    def getVNCPasswordFromDomainName(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT VNCPass FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0]
     
-    def getVMPid(self,vncPort): 
+    def getWebsockifyPIDFromVNCPort(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT VMPid FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT webSockifyPID FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0]
     
-    def getVMPidinDomain(self,domainName): 
+    def getWebsockifyPIDFromDomainName(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado el dominio que se le pasa como argumento.
         ''' 
-        #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT VMPid FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Creamos la consulta encargada de extraer los datos
+        sql = "SELECT webSockifyPID FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0] 
     
     
-    def getOsImagePathinDomain(self,domainName): 
+    def getOsImagePathFromDomainName(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado al dominio que se le pasa como argumento.
         ''' 
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT osImagePath FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0]    
     
-    def getDomainName(self,vncPort): 
+    def getDomainNameFromVNCPort(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT domainName FROM ActualVM WHERE VNCPortAdress = '" + str(vncPort) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return result[0]
     
-    def registerVMResources(self,domainName,vncPort,userId, VMId, VMPid, imageCopyPath,osImagePath,mac,uuid, password):
+    def registerVMResources(self, domainName, VMId, vncPort, vncPassword, userId, webSockifyPID, dataImagePath, osImagePath, mac, uuid):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
         '''
         
-        #CInsertamos los datos nuevos en la BD
-        sql = "INSERT INTO ActualVM VALUES('"  + domainName + "'," 
-        sql+=    str(VMId) + "," + str(vncPort)  +"," + str(userId) +"," + str(VMPid) + ",'"  # BUG: puerto e ID del usuario estaban intercambiados
-        sql +=  imageCopyPath + "','" + osImagePath + "','" + mac + "','" + uuid + "','"
-        sql +=  password + "')"  
-        #Ejecutamos el comando
+        # CInsertamos los datos nuevos en la BD
+        sql = "INSERT INTO ActualVM VALUES('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', '{7}', '{8}', '{9}')" \
+            .format(domainName, VMId, vncPort, vncPassword, userId, webSockifyPID,
+                    dataImagePath, osImagePath, mac, uuid);
+        # Ejecutamos el comando
         self._executeUpdate(sql)        
-        #devolvemos el puerto en el que ha sido creado
+        # devolvemos el puerto en el que ha sido creado
         return vncPort 
     
-    def unRegisterVMResources(self,domainName):
+    def unregisterVMResources(self, domainName):
         '''
             Da de baja en la base de datos el puerto VNC que se le pasa como argumento 
              y con él, todas las características asociadas al mismo.
         ''' 
-        #Borramos la máquina virtual
+        # Borramos la máquina virtual
         sql = "DELETE FROM ActualVM WHERE domainName = '" + str(domainName) + "'"
-        #Ejecutamos el comando
+        # Ejecutamos el comando
         self._executeUpdate(sql)
-        #Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
-        #Actualizamos la base de datos
+        # Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
+        # Actualizamos la base de datos
         
-    def doesVMExist(self,port):   
+    def doesVMExist(self, port):   
         '''
             Comprueba si una imagen existe
         '''
-        #Contamos el número de máquinas virtuales asociadas al puerto VNC dado     
-        sql = "SELECT COUNT(*) FROM ActualVM WHERE VNCPortAdress =" + str(port)
-        #Recogemos los resultado
-        result=self._executeQuery(sql, True)
+        # Contamos el número de máquinas virtuales asociadas al puerto VNC dado     
+        sql = "SELECT COUNT(*) FROM ActualVM WHERE VNCPort =" + str(port)
+        # Recogemos los resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Si el resultado es 1, la MV existirá
+        # Si el resultado es 1, la MV existirá
         return (result[0] == 1) 
     
-    def getAssignedUserInDomain(self,domainName):
+    def getUserIDFromDomainName(self, domainName):
         '''
             Devuelve el identificador del usuario asociado a la mv que se encuentra en ejecución en el 
             dominio pasado como argumento.
         '''
-        #Creamos la consulta encargada de extraer los datos
+        # Creamos la consulta encargada de extraer los datos
         sql = "SELECT userId FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        #Recogemos el resultado
-        result=self._executeQuery(sql, True)
+        # Recogemos el resultado
+        result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        #Devolvemos el resultado
+        # Devolvemos el resultado
         return int(result[0])
     
     def getVMsConnectionData(self):
@@ -567,7 +553,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         Devuelve:
             Lista de diccionarios con los datos de conexión a las máquinas virtuales
         '''
-        query = "SELECT userId, VMId, domainName, VNCPortAdress, VNCPass FROM ActualVM;"
+        query = "SELECT userId, VMId, domainName, VNCPort, VNCPass FROM ActualVM;"
         results = self._executeQuery(query, False)
         if (results == None) :
             return []
@@ -575,6 +561,24 @@ class VMServerDBConnector(BasicDatabaseConnector):
             ac = []
             for row in results:
                 ac.append({"UserID" : int(row[0]), "VMID" : int(row[1]), "VMName": row[2], "VNCPort" : int(row[3]), "VNCPass" : row[4]})
+            return ac
+        
+    def getRegisteredDomainNames(self):
+        """
+        Devuelve una lista con los nombres de los dominios activos.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Lisa de strings con los nombres de los dominios activos.
+        """
+        query = "SELECT domainName FROM ActualVM;"
+        results = self._executeQuery(query, False)
+        if (results == None) :
+            return []
+        else :
+            ac =  []
+            for row in results:
+                ac.append(row[0])
             return ac
         
     def addVMBootCommand(self, domainName, commandID):
@@ -589,3 +593,29 @@ class VMServerDBConnector(BasicDatabaseConnector):
         update = "DELETE FROM VMBootCommand WHERE domainName = '" + domainName + "';"
         self._executeUpdate(update)
         return result[0]
+    
+    def __getAssignedResources(self):
+        query = "SELECT macAddress, VNCPort FROM ActualVM;"
+        result = self._executeQuery(query, False)
+        assignedMACs, assignedVNCPorts = ([], [])
+        if (result != None) :
+            for row in result :
+                assignedMACs.append(row[0])
+                assignedVNCPorts.append(int(row[1]))
+                assignedVNCPorts.append(int(row[1]) + 1)
+        return (assignedMACs, assignedVNCPorts)      
+    
+    def __allocateMACAddressAndUUID(self, macAddr):
+        command = "DELETE FROM FreeMACs WHERE MAC ='{0}';".format(macAddr)    
+        self._executeUpdate(command)      
+        
+    def __allocatePort(self, port):
+        command = "DELETE FROM FreeVNCPorts WHERE VNCPort = {0};".format(port)
+        self._executeUpdate(command)
+    
+    def allocateAssignedResources(self):
+        assignedMACs, assignedVNCPorts = self.__getAssignedResources()
+        for macAddress in assignedMACs :
+            self.__allocateMACAddressAndUUID(macAddress)
+        for port in assignedVNCPorts :
+            self.__allocatePort(port)

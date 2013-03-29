@@ -7,6 +7,7 @@ Conector básico con una base de datos
 @version: 3.0
 '''
 import MySQLdb
+from threading import BoundedSemaphore
 
 class BasicDatabaseConnector(object):
     '''
@@ -26,6 +27,7 @@ class BasicDatabaseConnector(object):
         self.__sqlUser = sqlUser
         self.__sqlPassword = sqlPassword
         self.__databaseName = databaseName
+        self.__semaphore = BoundedSemaphore(1)
         # Nota: no nos conectamos a MySQL aquí: el código cliente llama a connect.    
         
     def connect(self):
@@ -36,11 +38,12 @@ class BasicDatabaseConnector(object):
             Devuelve:
                 Nada
         '''
-        self.__dbConnection = MySQLdb.connect(host='localhost', user=self.__sqlUser, passwd=self.__sqlPassword)
-        cursor = self.__dbConnection.cursor()
-        sql = "USE " + self.__databaseName   
-        cursor.execute(sql) 
-        cursor.close()               
+        with self.__semaphore :
+            self.__dbConnection = MySQLdb.connect(host='localhost', user=self.__sqlUser, passwd=self.__sqlPassword)
+            cursor = self.__dbConnection.cursor()
+            sql = "USE " + self.__databaseName   
+            cursor.execute(sql) 
+            cursor.close()               
     
     def disconnect(self):
         '''
@@ -50,8 +53,9 @@ class BasicDatabaseConnector(object):
             Devuelve:
                 Nada
         '''       
-        self.__dbConnection.commit()
-        self.__dbConnection.close()
+        with self.__semaphore :
+            self.__dbConnection.commit()
+            self.__dbConnection.close()
         
     def _executeUpdate(self, command):
         '''
@@ -61,9 +65,11 @@ class BasicDatabaseConnector(object):
         Devuelve:
             Nada
         '''       
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(command)
-        cursor.close()
+        with self.__semaphore :
+            cursor = self.__dbConnection.cursor()
+            cursor.execute(command)       
+            cursor.close()
+            self.__dbConnection.commit()
          
 #    def _writeChangesToDatabase(self):
 #        '''
@@ -81,14 +87,15 @@ class BasicDatabaseConnector(object):
         Devuelve:
             resultado o resultados obtenidos a partir de la consulta
         '''
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(command)        
-        if (pickOneResult) :
-            result =  cursor.fetchone()
-        else :
-            result = cursor.fetchall()
-        cursor.close()
-        return result
+        with self.__semaphore :
+            cursor = self.__dbConnection.cursor()
+            cursor.execute(command)        
+            if (pickOneResult) :
+                result =  cursor.fetchone()
+            else :
+                result = cursor.fetchall()
+            cursor.close()
+            return result
         
     def getLastRowId(self, command):
         '''
@@ -98,8 +105,9 @@ class BasicDatabaseConnector(object):
         Devuelve:
             ID de la última fila devuelta por la consulta
         '''
-        cursor = self.__dbConnection.cursor()
-        cursor.execute(command)
-        result = cursor.lastrowid         
-        cursor.close()
-        return result
+        with self.__semaphore :
+            cursor = self.__dbConnection.cursor()
+            cursor.execute(command)
+            result = cursor.lastrowid         
+            cursor.close()
+            return result

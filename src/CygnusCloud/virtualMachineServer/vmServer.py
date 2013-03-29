@@ -36,6 +36,7 @@ class VMServer(MainServerPacketReactor):
         self.__childProcessManager = ChildProcessManager()
         self.__connectToDatabases(databaseName, databaseUserName, databasePassword)
         self.__connectToLibvirt(createVirtualNetworkAsRoot)
+        self.__doInitialCleanup()
         self.__startListenning(vncNetworkInterface, listenningPort)
         
     def __connectToDatabases(self, databaseName, user, password) :
@@ -43,7 +44,7 @@ class VMServer(MainServerPacketReactor):
         
     def __connectToLibvirt(self, createVirtualNetworkAsRoot) :
         # Inicializo la librería libvirt y creo la red virtual que da acceso por red a las máquinas virtuales.
-        self.__connector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
+        self.__libvirtConnector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
         self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
         self.__virtualNetworkManager.createVirtualNetwork(vnName, gatewayIP, netMask,
                                     dhcpStartIP, dhcpEndIP)
@@ -75,23 +76,25 @@ class VMServer(MainServerPacketReactor):
         
     def __stoppedVM(self, domainInfo):
         # Se ha apagado una máquina virtual, borro sus datos
-        if self.__shuttingDown and (self.__connector.getNumberOfDomains() == 0):
+        if self.__shuttingDown and (self.__libvirtConnector.getNumberOfDomains() == 0):
             self.__shutDown = True
-
-        name = domainInfo["name"]
-        dataPath = self.__dbConnector.getMachineDataPathinDomain(name)
-        osPath = self.__dbConnector.getOsImagePathinDomain(name)
-        pidToKill = self.__dbConnector.getVMPidinDomain(name)
+        self.__freeDomainResources(domainInfo["name"])
         
-        # Delete the virtual machine images disk
+    def __freeDomainResources(self, domainName):
+        dataPath = self.__dbConnector.getDomainDataImagePathFromDomainName(domainName)
+        osPath = self.__dbConnector.getOsImagePathFromDomainName(domainName)
+        pidToKill = self.__dbConnector.getWebsockifyPIDFromDomainName(domainName)
+        
         ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
         ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
         
-        # Kill websockify process
-        ChildProcessManager.terminateProcess(pidToKill, VMServerException)
+        try :        
+            ChildProcessManager.terminateProcess(pidToKill, VMServerException)
+        except Exception as e :
+            print("Unable to terminate websockify process: " + str(e))
+                
+        self.__dbConnector.unregisterVMResources(domainName)
         
-        # Update the database
-        self.__dbConnector.unRegisterVMResources(name)
     
     def shutdown(self):
         # Cosas a hacer cuando se desea apagar el servidor.
@@ -146,12 +149,12 @@ class VMServer(MainServerPacketReactor):
             self.__networkManager.sendPacket('', self.__listenningPort, packet) 
 
     def __createDomain(self, info):
-        idVM = info["MachineID"]
+        vmID = info["MachineID"]
         userID = info["UserID"]
-        configFile = configFilePath + self.__dbConnector.getFileConfigPath(idVM)
-        originalName = self.__dbConnector.getName(idVM)
-        dataPath = self.__dbConnector.getImagePath(idVM)
-        osPath = self.__dbConnector.getOsImagePathFromImageId(idVM)
+        configFile = configFilePath + self.__dbConnector.getDefinitionFilePathFromVNCPort(vmID)
+        originalName = self.__dbConnector.getDomainNameFromImageID(vmID)
+        dataPath = self.__dbConnector.getDataImagePathFromImageID(vmID)
+        osPath = self.__dbConnector.getOsImagePathFromImageId(vmID)
         
         #Saco el nombre de los archivos (sin la extension)
         dataPathStripped = dataPath
@@ -200,7 +203,7 @@ class VMServer(MainServerPacketReactor):
         string = xmlFile.generateConfigurationString()
         
         # Arranco la máquina
-        self.__connector.startDomain(string)
+        self.__libvirtConnector.startDomain(string)
         
         # Inicio el websockify
         # Los puertos impares serán para el socket que proporciona el hipervisor 
@@ -210,15 +213,13 @@ class VMServer(MainServerPacketReactor):
                                     self.__vncServerIP + ":" + str(newPort + 1),
                                     self.__vncServerIP + ":" + str(newPort)])
         
-        self.__dbConnector.registerVMResources(newName, newPort, userID, idVM, webSockifyPID, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
+        self.__dbConnector.registerVMResources(newName, vmID, newPort, newPassword, userID, webSockifyPID, newDataDisk, newOSDisk, newMAC, newUUID)
         self.__dbConnector.addVMBootCommand(newName, info["CommandID"])
         
     
     def __serverStatusRequest(self, packet):
-        activeDomains = self.__connector.getNumberOfDomains()
+        activeDomains = self.__libvirtConnector.getNumberOfDomains()
         packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
-#        while not self.__networkManager.isConnectionReady('', self.__listenningPort) :
-#            sleep(1)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
     def __userFriendlyShutdown(self, packet):
@@ -226,17 +227,32 @@ class VMServer(MainServerPacketReactor):
     
     def __halt(self, packet):
         # Destruyo los dominios
-        self.__connector.stopAllDomain()
+        self.__libvirtConnector.stopAllDomains()
         self.__shutDown = True
     
     def __getNewMAC_UUID(self):
-        return self.__dbConnector.extractfreeMacAndUuid()
+        return self.__dbConnector.extractFreeMACAndUUID()
         
     def __getNewPort(self):
-        return self.__dbConnector.extractfreeVNCPort()
+        return self.__dbConnector.extractFreeVNCPort()
         
     def __getNewPassword(self):
         return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(passwordLength), VMServerException)
     
     def hasFinished(self):
         return self.__shutDown
+    
+    def __doInitialCleanup(self):
+        """
+        Deletes all the garbage that is stored in the temporary folders.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
+        activeDomainNames = self.__libvirtConnector.getActiveDomainNames()
+        registeredDomainNames = self.__dbConnector.getRegisteredDomainNames()
+        for domainName in registeredDomainNames :
+            if (not domainName in activeDomainNames) :
+                self.__freeDomainResources(domainName)
+        self.__dbConnector.allocateAssignedResources()
