@@ -9,4 +9,4 @@ class MainServerCallback(NetworkCallback):
         
     
     def processPacket(self, packet):
-        self.__processor.processMainServerIncomingPackets(packet)
+        self.__processor.processClusterServerIncomingPackets(packet)

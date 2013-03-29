@@ -24,7 +24,7 @@ class VMServerException(Exception):
 
 class MainServerPacketReactor():
     
-    def processMainServerIncomingPackets(self, packet):
+    def processClusterServerIncomingPackets(self, packet):
         raise NotImplementedError
 
 class VMServer(MainServerPacketReactor):
@@ -103,7 +103,7 @@ class VMServer(MainServerPacketReactor):
         self.__virtualNetworkManager.destroyVirtualNetwork(vnName)
         self.__networkManager.stopNetworkService()
         
-    def processMainServerIncomingPackets(self, packet):
+    def processClusterServerIncomingPackets(self, packet):
         data = self.__packetManager.readPacket(packet)
         if (data["packet_type"] == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
             self.__createDomain(data)
