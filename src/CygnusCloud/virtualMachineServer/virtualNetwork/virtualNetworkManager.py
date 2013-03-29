@@ -15,7 +15,7 @@ except ImportError:
         except ImportError:
             import xml.etree.ElementTree as ET
     
-from ccutils.commands import runCommand, runCommandAsRoot
+from ccutils.processes.childProcessManager import ChildProcessManager
 
 from time import sleep
     
@@ -69,9 +69,9 @@ class VirtualNetworkManager(object):
                                          gatewayIPAddress, netmask, dhcpStartIPAddress, dhcpEndIPAddress)
                 
         if (self.__runAsRoot) :
-            runMethod = runCommandAsRoot
+            runMethod = ChildProcessManager.runCommandInForegroundAsRoot
         else :
-            runMethod = runCommand
+            runMethod = ChildProcessManager.runCommandInForeground
         # Destroy the virtual network (if it already exists)
         try :
             runMethod("virsh net-destroy " + networkName, Exception)
@@ -89,7 +89,7 @@ class VirtualNetworkManager(object):
         runMethod("virsh net-start " + networkName, VirtualNetworkManagerException)
         
         # Delete the .xml file
-        runCommand("rm " + xmlFilePath, VirtualNetworkManagerException)
+        ChildProcessManager.runCommandInForeground("rm " + xmlFilePath, VirtualNetworkManagerException)
         
         # Register the new virtual network
         self.__networksByIP[gatewayIPAddress] = networkName
@@ -116,9 +116,9 @@ class VirtualNetworkManager(object):
             networkName = self.__networksByIP[nameOrIPAddress]        
         
         if (self.__runAsRoot) :
-            runMethod = runCommandAsRoot
+            runMethod = ChildProcessManager.runCommandInForegroundAsRoot
         else :
-            runMethod = runCommand
+            runMethod = ChildProcessManager.runCommandInForeground
         # Destroy the virtual network
         runMethod("virsh net-destroy " + networkName, VirtualNetworkManagerException)
         runMethod("virsh net-undefine " + networkName, VirtualNetworkManagerException)

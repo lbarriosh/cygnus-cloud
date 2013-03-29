@@ -16,7 +16,7 @@ from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from xmlEditor import ConfigurationFileEditor
 from database.vmServer.vmServerDB import VMServerDBConnector
 from virtualNetwork.virtualNetworkManager import VirtualNetworkManager
-from ccutils.commands import runCommand, runCommandInBackground
+from ccutils.processes.childProcessManager import ChildProcessManager 
 import os
 
 class VMServerException(Exception):
@@ -33,6 +33,7 @@ class VMServer(MainServerPacketReactor):
         self.__shutDown = False
         self.__shuttingDown = False
         self.__mainServerCallback = MainServerCallback(self)
+        self.__childProcessManager = ChildProcessManager()
         self.__connectToDatabases(databaseName, databaseUserName, databasePassword)
         self.__connectToLibvirt(createVirtualNetworkAsRoot)
         self.__startListenning(vncNetworkInterface, listenningPort)
@@ -83,11 +84,11 @@ class VMServer(MainServerPacketReactor):
         pidToKill = self.__dbConnector.getVMPidinDomain(name)
         
         # Delete the virtual machine images disk
-        runCommand("rm " + dataPath, VMServerException)
-        runCommand("rm " + osPath, VMServerException)
+        ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
+        ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
         
         # Kill websockify process
-        runCommand("kill -s TERM " + str(pidToKill), VMServerException)
+        ChildProcessManager.terminateProcess(pidToKill, VMServerException)
         
         # Update the database
         self.__dbConnector.unRegisterVMResources(name)
@@ -95,6 +96,7 @@ class VMServer(MainServerPacketReactor):
     def shutdown(self):
         # Cosas a hacer cuando se desea apagar el servidor.
         # Importante: esto debe llamarse desde el hilo principal
+        self.__childProcessManager.waitForBackgroundChildrenToTerminate()
         self.__virtualNetworkManager.destroyVirtualNetwork(vnName)
         self.__networkManager.stopNetworkService()
         
@@ -183,9 +185,9 @@ class VMServer(MainServerPacketReactor):
             print("The file " + newOSDisk + " already exists")
             return
         # Copio las imagenes
-        runCommand("cd " + sourceImagePath + ";" + "cp --parents "+ dataPath + " " + executionImagePath, VMServerException)
-        runCommand("mv " + executionImagePath + dataPath +" " + newDataDisk, VMServerException)
-        runCommand("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
+        ChildProcessManager.runCommandInForeground("cd " + sourceImagePath + ";" + "cp --parents "+ dataPath + " " + executionImagePath, VMServerException)
+        ChildProcessManager.runCommandInForeground("mv " + executionImagePath + dataPath +" " + newDataDisk, VMServerException)
+        ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
         #runCommand("chmod -R 777 " + executionImagePath, VMServerException)
         
         # Fichero de configuracion
@@ -202,13 +204,13 @@ class VMServer(MainServerPacketReactor):
         
         # Inicio el websockify
         # Los puertos impares serán para el socket que proporciona el hipervisor 
-        # y los pares los websockets generados por websockify
-        pidWS = runCommandInBackground([websockifyPath,
-                    self.__vncServerIP + ":" + str(newPort + 1),
-                    self.__vncServerIP + ":" + str(newPort)])
+        # y los pares los websockets generados por websockify        
         
-        # Actualizo la base de datos
-        self.__dbConnector.registerVMResources(newName, newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
+        webSockifyPID = self.__childProcessManager.runCommandInBackground([websockifyPath,
+                                    self.__vncServerIP + ":" + str(newPort + 1),
+                                    self.__vncServerIP + ":" + str(newPort)])
+        
+        self.__dbConnector.registerVMResources(newName, newPort, userID, idVM, webSockifyPID, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
         self.__dbConnector.addVMBootCommand(newName, info["CommandID"])
         
     
@@ -234,7 +236,7 @@ class VMServer(MainServerPacketReactor):
         return self.__dbConnector.extractfreeVNCPort()
         
     def __getNewPassword(self):
-        return runCommand("openssl rand -base64 " + str(passwordLength), VMServerException)
+        return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(passwordLength), VMServerException)
     
     def hasFinished(self):
         return self.__shutDown

@@ -3,7 +3,7 @@
 This module contains statements to connect to a virtual machine
 server and control it.
 @author: Luis Barrios Hernández
-@version: 1.0
+@version: 5.0
 '''
 from __future__ import print_function
 
@@ -95,7 +95,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     printLogo()
     print('Virtual Machine Server tester')
-    print('Version 1.0')
+    print('Version 5.0')
     print('*' * 80)
     print('*' * 80)
     print()
