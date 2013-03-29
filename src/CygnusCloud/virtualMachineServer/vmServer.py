@@ -14,11 +14,9 @@ from constantes import databaseName, databaseUserName, databasePassword, vncNetw
     passwordLength, websockifyPath, createVirtualNetworkAsRoot
 from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from xmlEditor import ConfigurationFileEditor
-from database.vmServer.imageManager import ImageManager
-from database.vmServer.runtimeData import RuntimeData
+from database.vmServer.vmServerDB import VMServerDBConnector
 from virtualNetwork.virtualNetworkManager import VirtualNetworkManager
-from time import sleep
-from ccutils.commands import runCommand, runCommandInBackground
+from ccutils.processes.childProcessManager import ChildProcessManager 
 import os
 
 class VMServerException(Exception):
@@ -26,7 +24,7 @@ class VMServerException(Exception):
 
 class MainServerPacketReactor():
     
-    def processMainServerIncomingPackets(self, packet):
+    def processClusterServerIncomingPackets(self, packet):
         raise NotImplementedError
 
 class VMServer(MainServerPacketReactor):
@@ -35,22 +33,18 @@ class VMServer(MainServerPacketReactor):
         self.__shutDown = False
         self.__shuttingDown = False
         self.__mainServerCallback = MainServerCallback(self)
+        self.__childProcessManager = ChildProcessManager()
         self.__connectToDatabases(databaseName, databaseUserName, databasePassword)
         self.__connectToLibvirt(createVirtualNetworkAsRoot)
+        self.__doInitialCleanup()
         self.__startListenning(vncNetworkInterface, listenningPort)
         
-    def __connectToDatabases(self, databaseName, user, password):
-        # Obtengo los conectores a las bases de datos
-        # Base de datos que guarda la información donde están los archivos de 
-        # las máquinas virtuales.
-        self.__imageManager = ImageManager(user, password, databaseName)
-        # Base de datos que guarda los datos de las máquinas virtuales 
-        # que están actualmente en ejecución        
-        self.__runningImageData = RuntimeData(user, password, databaseName)
+    def __connectToDatabases(self, databaseName, user, password) :
+        self.__dbConnector = VMServerDBConnector(user, password, databaseName)
         
     def __connectToLibvirt(self, createVirtualNetworkAsRoot) :
         # Inicializo la librería libvirt y creo la red virtual que da acceso por red a las máquinas virtuales.
-        self.__connector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
+        self.__libvirtConnector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
         self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
         self.__virtualNetworkManager.createVirtualNetwork(vnName, gatewayIP, netMask,
                                     dhcpStartIP, dhcpEndIP)
@@ -76,37 +70,40 @@ class VMServer(MainServerPacketReactor):
         domainName = domainInfo["name"]
         commandID = None
         while (commandID == None) :
-            commandID = self.__runningImageData.getVMBootCommand(domainName)
+            commandID = self.__dbConnector.getVMBootCommand(domainName)
         packet = self.__packetManager.createVMConnectionParametersPacket(ip, port + 1, password, commandID)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):
         # Se ha apagado una máquina virtual, borro sus datos
-        if self.__shuttingDown and (self.__connector.getNumberOfDomains() == 0):
+        if self.__shuttingDown and (self.__libvirtConnector.getNumberOfDomains() == 0):
             self.__shutDown = True
-
-        name = domainInfo["name"]
-        dataPath = self.__runningImageData.getMachineDataPathinDomain(name)
-        osPath = self.__runningImageData.getOsImagePathinDomain(name)
-        pidToKill = self.__runningImageData.getVMPidinDomain(name)
+        self.__freeDomainResources(domainInfo["name"])
         
-        # Delete the virtual machine images disk
-        runCommand("rm " + dataPath, VMServerException)
-        runCommand("rm " + osPath, VMServerException)
+    def __freeDomainResources(self, domainName):
+        dataPath = self.__dbConnector.getDomainDataImagePathFromDomainName(domainName)
+        osPath = self.__dbConnector.getOsImagePathFromDomainName(domainName)
+        pidToKill = self.__dbConnector.getWebsockifyPIDFromDomainName(domainName)
         
-        # Kill websockify process
-        runCommand("kill -s TERM " + str(pidToKill), VMServerException)
+        ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
+        ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
         
-        # Update the database
-        self.__runningImageData.unRegisterVMResources(name)
+        try :        
+            ChildProcessManager.terminateProcess(pidToKill, VMServerException)
+        except Exception as e :
+            print("Unable to terminate websockify process: " + str(e))
+                
+        self.__dbConnector.unregisterVMResources(domainName)
+        
     
     def shutdown(self):
         # Cosas a hacer cuando se desea apagar el servidor.
         # Importante: esto debe llamarse desde el hilo principal
+        self.__childProcessManager.waitForBackgroundChildrenToTerminate()
         self.__virtualNetworkManager.destroyVirtualNetwork(vnName)
         self.__networkManager.stopNetworkService()
         
-    def processMainServerIncomingPackets(self, packet):
+    def processClusterServerIncomingPackets(self, packet):
         data = self.__packetManager.readPacket(packet)
         if (data["packet_type"] == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
             self.__createDomain(data)
@@ -125,7 +122,7 @@ class VMServer(MainServerPacketReactor):
         que estén arrancadas
         '''
         # Extraer los datos de la base de datos
-        vncConnectionData = self.__runningImageData.getVMsConnectionData()
+        vncConnectionData = self.__dbConnector.getVMsConnectionData()
         # Generar los segmentos en los que se dividirá la información
         segmentSize = 5
         segmentCounter = 1
@@ -152,12 +149,12 @@ class VMServer(MainServerPacketReactor):
             self.__networkManager.sendPacket('', self.__listenningPort, packet) 
 
     def __createDomain(self, info):
-        idVM = info["MachineID"]
+        vmID = info["MachineID"]
         userID = info["UserID"]
-        configFile = configFilePath + self.__imageManager.getFileConfigPath(idVM)
-        originalName = self.__imageManager.getName(idVM)
-        dataPath = self.__imageManager.getImagePath(idVM)
-        osPath = self.__imageManager.getOsImagePath(idVM)
+        configFile = configFilePath + self.__dbConnector.getDefinitionFilePathFromVNCPort(vmID)
+        originalName = self.__dbConnector.getDomainNameFromImageID(vmID)
+        dataPath = self.__dbConnector.getDataImagePathFromImageID(vmID)
+        osPath = self.__dbConnector.getOsImagePathFromImageId(vmID)
         
         #Saco el nombre de los archivos (sin la extension)
         dataPathStripped = dataPath
@@ -191,9 +188,9 @@ class VMServer(MainServerPacketReactor):
             print("The file " + newOSDisk + " already exists")
             return
         # Copio las imagenes
-        runCommand("cd " + sourceImagePath + ";" + "cp --parents "+ dataPath + " " + executionImagePath, VMServerException)
-        runCommand("mv " + executionImagePath + dataPath +" " + newDataDisk, VMServerException)
-        runCommand("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
+        ChildProcessManager.runCommandInForeground("cd " + sourceImagePath + ";" + "cp --parents "+ dataPath + " " + executionImagePath, VMServerException)
+        ChildProcessManager.runCommandInForeground("mv " + executionImagePath + dataPath +" " + newDataDisk, VMServerException)
+        ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
         #runCommand("chmod -R 777 " + executionImagePath, VMServerException)
         
         # Fichero de configuracion
@@ -206,25 +203,23 @@ class VMServer(MainServerPacketReactor):
         string = xmlFile.generateConfigurationString()
         
         # Arranco la máquina
-        self.__connector.startDomain(string)
+        self.__libvirtConnector.startDomain(string)
         
         # Inicio el websockify
         # Los puertos impares serán para el socket que proporciona el hipervisor 
-        # y los pares los websockets generados por websockify
-        pidWS = runCommandInBackground([websockifyPath,
-                    self.__vncServerIP + ":" + str(newPort + 1),
-                    self.__vncServerIP + ":" + str(newPort)])
+        # y los pares los websockets generados por websockify        
         
-        # Actualizo la base de datos
-        self.__runningImageData.registerVMResources(newName, newPort, userID, idVM, pidWS, newDataDisk, newOSDisk, newMAC, newUUID, newPassword)
-        self.__runningImageData.addVMBootCommand(newName, info["CommandID"])
+        webSockifyPID = self.__childProcessManager.runCommandInBackground([websockifyPath,
+                                    self.__vncServerIP + ":" + str(newPort + 1),
+                                    self.__vncServerIP + ":" + str(newPort)])
+        
+        self.__dbConnector.registerVMResources(newName, vmID, newPort, newPassword, userID, webSockifyPID, newDataDisk, newOSDisk, newMAC, newUUID)
+        self.__dbConnector.addVMBootCommand(newName, info["CommandID"])
         
     
     def __serverStatusRequest(self, packet):
-        activeDomains = self.__connector.getNumberOfDomains()
+        activeDomains = self.__libvirtConnector.getNumberOfDomains()
         packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
-#        while not self.__networkManager.isConnectionReady('', self.__listenningPort) :
-#            sleep(1)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
     def __userFriendlyShutdown(self, packet):
@@ -232,17 +227,32 @@ class VMServer(MainServerPacketReactor):
     
     def __halt(self, packet):
         # Destruyo los dominios
-        self.__connector.stopAllDomain()
+        self.__libvirtConnector.stopAllDomains()
         self.__shutDown = True
     
     def __getNewMAC_UUID(self):
-        return self.__runningImageData.extractfreeMacAndUuid()
+        return self.__dbConnector.extractFreeMACAndUUID()
         
     def __getNewPort(self):
-        return self.__runningImageData.extractfreeVNCPort()
+        return self.__dbConnector.extractFreeVNCPort()
         
     def __getNewPassword(self):
-        return runCommand("openssl rand -base64 " + str(passwordLength), VMServerException)
+        return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(passwordLength), VMServerException)
     
     def hasFinished(self):
         return self.__shutDown
+    
+    def __doInitialCleanup(self):
+        """
+        Deletes all the garbage that is stored in the temporary folders.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
+        activeDomainNames = self.__libvirtConnector.getActiveDomainNames()
+        registeredDomainNames = self.__dbConnector.getRegisteredDomainNames()
+        for domainName in registeredDomainNames :
+            if (not domainName in activeDomainNames) :
+                self.__freeDomainResources(domainName)
+        self.__dbConnector.allocateAssignedResources()
