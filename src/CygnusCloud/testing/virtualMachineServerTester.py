@@ -48,43 +48,46 @@ def printLogo():
 def process_command(tokens, networkManager, pHandler, ip_address, port):
     if (len(tokens) == 0) :
         return False
-    command = tokens.pop(0)
-    if (command == "createvm") :
-        userID = int(tokens.pop(0))
-        machineID = int(tokens.pop(0))
-        p = pHandler.createVMBootPacket(userID, machineID, "123")
-        networkManager.sendPacket(ip_address, port, p)
-        return False
-    elif (command == "shutdown") :
-        p = pHandler.createVMServerShutdownPacket()
-        networkManager.sendPacket(ip_address, port, p)
-        return False
-    elif (command == "status") :
-        p = pHandler.createVMServerDataRequestPacket(VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST)
-        networkManager.sendPacket(ip_address, port, p)
-        return False
-    elif (command == "readConnectionData") :
-        p = pHandler.createVMServerDataRequestPacket(VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA)
-        networkManager.sendPacket(ip_address, port, p)
-        return False
-    elif (command == "halt" ) :
-        p = pHandler.createVMServerHaltPacket()
-        networkManager.sendPacket(ip_address, port, p)
-        return False
-    elif (command == "quit") :
-        return True
-    else :
-        if (command != "help") :
-            print("Error: unknown command")
-        print("Usage: ")
-        print("=====")
-        print("\tcreatevm <ID>: creates a virtual machine ")
-        print("\tshutdown: asks the virtual machine server to terminate")
-        print("\tstatus: asks the virtual machine server the number of active VMs")
-        print("\thalt: commands the virtual machine server to destroy all the virtual machines\n\t\t\
-            and exit immediately")
-        print("\thelp: prints the following help message")
-        print("\tquit: closes this application")
+    try :
+        command = tokens.pop(0)
+        if (command == "createvm") :
+            userID = int(tokens.pop(0))
+            machineID = int(tokens.pop(0))
+            p = pHandler.createVMBootPacket(userID, machineID, "123")
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "shutdown") :
+            p = pHandler.createVMServerShutdownPacket()
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "status") :
+            p = pHandler.createVMServerDataRequestPacket(VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST)
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "readConnectionData") :
+            p = pHandler.createVMServerDataRequestPacket(VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA)
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "halt" ) :
+            p = pHandler.createVMServerHaltPacket()
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "quit") :
+            return True
+        else :
+            if (command != "help") :
+                print("Error: unknown command")
+            print("Usage: ")
+            print("=====")
+            print("\tcreatevm <ID>: creates a virtual machine ")
+            print("\tshutdown: asks the virtual machine server to terminate")
+            print("\tstatus: asks the virtual machine server the number of active VMs")
+            print("\thalt: commands the virtual machine server to destroy all the virtual machines\n\t\t\
+                and exit immediately")
+            print("\thelp: prints the following help message")
+            print("\tquit: closes this application")
+    except Exception as e :
+        print("Error: " + str(e))
     
 
 if __name__ == "__main__" :

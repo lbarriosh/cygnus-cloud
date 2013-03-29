@@ -4,7 +4,7 @@
 Conector básico con una base de datos
 @author: Luis Barrios Hernández
 @author: Adrián Fernández Hernández
-@version: 1.0
+@version: 3.0
 '''
 import MySQLdb
 
@@ -23,12 +23,10 @@ class BasicDatabaseConnector(object):
             Devuelve:
                 Nada
         '''
-        # Guardamos los datos de conexión necesarios
         self.__sqlUser = sqlUser
         self.__sqlPassword = sqlPassword
         self.__databaseName = databaseName
-        # Nota: no nos conectamos a MySQL aquí: el código cliente llama a connect.
-    
+        # Nota: no nos conectamos a MySQL aquí: el código cliente llama a connect.    
         
     def connect(self):
         '''
@@ -38,13 +36,11 @@ class BasicDatabaseConnector(object):
             Devuelve:
                 Nada
         '''
-        self.__db = MySQLdb.connect(host='localhost', user=self.__sqlUser, passwd=self.__sqlPassword)
-        self.__cursor = self.__db.cursor()
-        # Cambiamos a la base de datos correspondeinte
+        self.__dbConnection = MySQLdb.connect(host='localhost', user=self.__sqlUser, passwd=self.__sqlPassword)
+        cursor = self.__dbConnection.cursor()
         sql = "USE " + self.__databaseName   
-        self.__cursor.execute(sql)        
-        # No hace falta devolver el cursor: ya lo tenemos guardado y listo para usar
-        
+        cursor.execute(sql) 
+        cursor.close()               
     
     def disconnect(self):
         '''
@@ -53,11 +49,9 @@ class BasicDatabaseConnector(object):
                 Ninguno
             Devuelve:
                 Nada
-        '''
-        # cerramos las conexiones
-        self.__db.commit()
-        self.__cursor.close()
-        self.__db.close()
+        '''       
+        self.__dbConnection.commit()
+        self.__dbConnection.close()
         
     def _executeUpdate(self, command):
         '''
@@ -66,16 +60,16 @@ class BasicDatabaseConnector(object):
             command: string con los comandos SQL a ejecutar
         Devuelve:
             Nada
-        '''
-        # Ejecutar la actualización
-        self.__cursor.execute(command)
-        self.__db.commit() 
+        '''       
+        cursor = self.__dbConnection.cursor()
+        cursor.execute(command)
+        cursor.close()
          
 #    def _writeChangesToDatabase(self):
 #        '''
 #        Fuerza la escritura de los cambios realizados a la base de datos
 #        '''
-#        self.__db.commit() 
+#        self.__dbConnection.commit() 
         
     def _executeQuery(self, command, pickOneResult=False):
         '''
@@ -87,12 +81,14 @@ class BasicDatabaseConnector(object):
         Devuelve:
             resultado o resultados obtenidos a partir de la consulta
         '''
-        self.__cursor.execute(command)
-        # Recogemos los resultado
+        cursor = self.__dbConnection.cursor()
+        cursor.execute(command)        
         if (pickOneResult) :
-            return self.__cursor.fetchone()
+            result =  cursor.fetchone()
         else :
-            return self.__cursor.fetchall()
+            result = cursor.fetchall()
+        cursor.close()
+        return result
         
     def getLastRowId(self, command):
         '''
@@ -102,5 +98,8 @@ class BasicDatabaseConnector(object):
         Devuelve:
             ID de la última fila devuelta por la consulta
         '''
-        self.__cursor.execute(command)
-        return self.__cursor.lastrowid
+        cursor = self.__dbConnection.cursor()
+        cursor.execute(command)
+        result = cursor.lastrowid         
+        cursor.close()
+        return result
