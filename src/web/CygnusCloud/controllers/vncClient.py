@@ -1,5 +1,4 @@
 # coding: utf8
-# intente algo como
 def VNCPage():
     #Devolvemos la información
     if (request.vars.has_key('ErrorMessage')):

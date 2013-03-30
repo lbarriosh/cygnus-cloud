@@ -181,7 +181,7 @@ def servers():
         return dict(form = form)
     elif(request.args(0) == 'remove_servers'): 
          
-        infoServer = request.vars.info or ['No info','No info','No info']
+        infoServer = request.vars.info or ['No info','No info','No info','No info']
         print infoServer 
         #servers = connector.getVMServersData()
         #form1 = FORM(T('Servidores'),SELECT(_name = 'server',*[OPTION(T(str(s.VMServerName)),_value = s.VMServerName,_selected="selected") 
@@ -197,12 +197,18 @@ def servers():
         form2 = FORM(HR(),H2(T('Información del servidor')),DIV( T('Nombre: '),BR(),LABEL(infoServer[0],_name = 'sName')),
                 DIV( T('Dirección IP: '),BR(),LABEL(infoServer[1])),
                 DIV( T('Puerto: '),BR(),LABEL(infoServer[2])),
-                HR(),CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor'))))        
+                HR(),CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor')))) 
+       
+        # Si no está arrancado, añadimos el botón de arrancar
+        if(infoServer[3] == "Shut down"):
+            form2.append(CENTER(INPUT(_type='submit',_name = 'run' ,_value=T('Arrancar servidor'))))
+            
+       
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
             sInfo = connector.getVMServersData()[int(form1.vars.server)]
             print "Servers registrados:" + str(sInfo)
             redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
-            sInfo["VMServerIP"],sInfo["VMServerListenningPort"]]) ))
+            sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"]]) ))
             
         if form2.accepts(request.vars,keepvalues=True) and form2.vars.remove: 
              #Damos de baja el servidor
@@ -211,6 +217,12 @@ def servers():
              errorInfo = connector.waitForCommandOutput(commandID)
              if(errorInfo != None):
                  response.flash = T(errorInfo['ErrorMessage'])
+        if form2.accepts(request.vars,keepvalues=True) and form2.vars.run:
+            #Arrancamos el servidor
+            commandID = connector.bootUpVMServer(infoServer[0])
+            errorInfo = connector.waitForCommandOutput(commandID)
+            if(errorInfo != None):
+                response.flash = T(errorInfo['ErrorMessage'])           
         
         return dict(form1 = form1,form2 = form2)
 
