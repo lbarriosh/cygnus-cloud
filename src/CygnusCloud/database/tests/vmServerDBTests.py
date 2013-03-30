@@ -89,7 +89,7 @@ class DBWebServerTests(unittest.TestCase):
  
     def test_getMACAddressInDomain(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getMACAddressInDomain(3)
+        n1 = self.__dbConnector.getMACAddress(3)
         n2 = "2C:00:00:00:00:02"
         self.assertEquals(n1, n2, "Not same VM MAC") 
         

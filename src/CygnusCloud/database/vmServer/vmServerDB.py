@@ -360,7 +360,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getMACAddressInDomain(self, vncPort):
+    def getMACAddress(self, vncPort):
         '''
             Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
         '''
@@ -373,7 +373,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getMACAddressFromDomainName(self, domainName):
+    def getMACAddressInDomain(self, domainName):
         '''
             Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
         '''
