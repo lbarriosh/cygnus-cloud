@@ -16,7 +16,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         self.generateMACsAndUUIDs()
         self.generateVNCPorts()
         
-    def getAvailableImageIDs(self):
+    def getImages(self):
         '''
              Devuelve una lista con todos los identificadores de imágenes que se 
               encuentran registradas en el servidor de máquinas virtuales.
@@ -32,7 +32,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos la lista resultado
         return imageIds
     
-    def getDomainNameFromImageID(self, imageId):
+    def getName(self, imageId):
         '''
             Devuelve el nombre de la imagen cuyo identificador se pasa como argumento. 
         '''
@@ -45,7 +45,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]  
     
-    def getDataImagePathFromImageID(self, imageId):
+    def getImagePath(self, imageId):
         '''
             Devuelve la ruta donde se encuentra físicamente la imagen cuyo identificador 
              de imagen se pasa como argumento.
@@ -59,7 +59,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getOsImagePathFromImageId(self, imageId):
+    def getOsImagePath(self, imageId):
         '''
             Devuelve la ruta donde se encuentra físicamente la imagen del SO cuyo identificador 
              de imagen se pasa como argumento.
@@ -73,7 +73,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getDefinitionFilePathFromVNCPort(self, imageId):
+    def getFileConfigPath(self, imageId):
         '''
             Devuelve la ruta donde se encuentra el fichero de configuración asociado a 
              la imagen cuyo identificador se pasa como argumento
@@ -87,7 +87,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0][0]  # BUG aquí
     
-    def setDataImagePath(self, imageId, path):
+    def setImageDataPath(self, imageId, path):
         '''
             Permite cambiar la ruta de la imagen cuyo identificador se pasa como argumento.
         '''
@@ -241,7 +241,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Ejecutamos el comando
         self._executeUpdate(sql)        
 
-    def getVNCPortsInUse(self):
+    def getRunningPorts(self):
         '''
             Devuelve una lista con los puertos VNC correspondientes a las máquinas 
              virtuales que se encuentran actualmente en ejecución.
@@ -257,7 +257,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos la lista resultado
         return ports
     
-    def getUserIDs(self):
+    def getUsers(self):
         '''
              Devuelve una lista con los identificadores de todos los usuarios que actualmente
                se encuentran ejecutando una determinada máquina virtual en este servidor de 
@@ -274,7 +274,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos la lista resultado
         return users
     
-    def getVMIDFromVNCPort(self, vncPort):
+    def getAssignedVM(self, vncPort):
         '''
             Devuelve el identificador de la máquina virtual que se encuentra en ejecución en el 
              puerto VNC pasado como argumento.
@@ -288,7 +288,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getVMIDFromDomainName(self, domainName):
+    def getVMID(self, domainName):
         '''
             Devuelve el identificador de la máquina virtual que se encuentra en ejecución en el 
             dominio pasado como argumento.
@@ -302,7 +302,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getVMNameFromVNCPort(self, vncPort):
+    def getAssignedVMNameInDomain(self, vncPort):
         '''
             Devuelve el nombre de la máquina virtual que se encuentra en ejecución
              en  el puerto VNC pasado como argumento.
@@ -317,7 +317,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getVMNameFromDomainName(self, domainName):
+    def getAssignedVMName(self, domainName):
         '''
             Devuelve el nombre de la máquina virtual que se encuentra en ejecución
              en  el puerto VNC pasado como argumento.
@@ -332,7 +332,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getDataImagePathFromVNCPort(self, vncPort):
+    def getMachineDataPath(self, vncPort):
         '''
             Devuelve la ruta asociada a la copia de la imagen de la máquina virtual que se encuentra 
              en ejecución en el puertoVNC pasado como argumento.
@@ -346,7 +346,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getDomainDataImagePathFromDomainName(self, domainName):
+    def getDomainImageDataPath(self, domainName):
         '''
             Devuelve la ruta asociada a la copia de la imagen de la máquina virtual que se encuentra 
              en ejecución en el puertoVNC pasado como argumento.
@@ -360,7 +360,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getMACAddressFromVNCPort(self, vncPort):
+    def getMACAddressInDomain(self, vncPort):
         '''
             Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
         '''
@@ -386,7 +386,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getDomainUUIDFromVNCPort(self, vncPort):
+    def getUUIDAddress(self, vncPort):
         '''
             Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
         '''
@@ -399,7 +399,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getDomainUUIDFromDomainName(self, domainName):
+    def getUUIDAddressInDomain(self, domainName):
         '''
             Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
         '''
@@ -412,7 +412,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getVNCPasswordFromVNCPort(self, vncPort): 
+    def getPassword(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -425,7 +425,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getVNCPasswordFromDomainName(self, domainName): 
+    def getPasswordInDomain(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -451,7 +451,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getWebsockifyPIDFromDomainName(self, domainName): 
+    def getVMPid(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado el dominio que se le pasa como argumento.
         ''' 
@@ -465,7 +465,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         return result[0] 
     
     
-    def getOsImagePathFromDomainName(self, domainName): 
+    def getOsImagePathInDomain(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado al dominio que se le pasa como argumento.
         ''' 
@@ -478,7 +478,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]    
     
-    def getDomainNameFromVNCPort(self, vncPort): 
+    def getDomainName(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -531,7 +531,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Si el resultado es 1, la MV existirá
         return (result[0] == 1) 
     
-    def getUserIDFromDomainName(self, domainName):
+    def getUser(self, domainName):
         '''
             Devuelve el identificador del usuario asociado a la mv que se encuentra en ejecución en el 
             dominio pasado como argumento.

@@ -81,9 +81,9 @@ class VMServer(MainServerPacketReactor):
         self.__freeDomainResources(domainInfo["name"])
         
     def __freeDomainResources(self, domainName):
-        dataPath = self.__dbConnector.getDomainDataImagePathFromDomainName(domainName)
-        osPath = self.__dbConnector.getOsImagePathFromDomainName(domainName)
-        pidToKill = self.__dbConnector.getWebsockifyPIDFromDomainName(domainName)
+        dataPath = self.__dbConnector.getDomainImageDataPath(domainName)
+        osPath = self.__dbConnector.getOsImagePathInDomain(domainName)
+        pidToKill = self.__dbConnector.getVMPid(domainName)
         
         ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
         ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
@@ -151,10 +151,10 @@ class VMServer(MainServerPacketReactor):
     def __createDomain(self, info):
         vmID = info["MachineID"]
         userID = info["UserID"]
-        configFile = configFilePath + self.__dbConnector.getDefinitionFilePathFromVNCPort(vmID)
-        originalName = self.__dbConnector.getDomainNameFromImageID(vmID)
-        dataPath = self.__dbConnector.getDataImagePathFromImageID(vmID)
-        osPath = self.__dbConnector.getOsImagePathFromImageId(vmID)
+        configFile = configFilePath + self.__dbConnector.getFileConfigPath(vmID)
+        originalName = self.__dbConnector.getName(vmID)
+        dataPath = self.__dbConnector.getImagePath(vmID)
+        osPath = self.__dbConnector.getOsImagePathInDomain(vmID)
         
         #Saco el nombre de los archivos (sin la extension)
         dataPathStripped = dataPath

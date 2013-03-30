@@ -20,34 +20,34 @@ class DBWebServerTests(unittest.TestCase):
         self.__dbConnector.disconnect()
         self.__dbConfigurator.dropDatabase("VMServerDBTest")
     
-    def test_getAvailableImageIDs(self):
+    def test_getImages(self):
         # Instanciamos la clase
-        l1 = self.__dbConnector.getAvailableImageIDs()
+        l1 = self.__dbConnector.getImages()
         l2 = [1, 2, 3, 4]
         self.assertEquals(l1, l2, "The image ID lists do not match")
         
-    def test_getDomainNameFromImageID(self):
+    def test_getName(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getDomainNameFromImageID(1)
+        n1 = self.__dbConnector.getName(1)
         n2 = "VMName1"
         self.assertEquals(n1, n2, "Not same image name")
         
-    def test_getDataImagePathFromImageID(self):
+    def test_getImagePath(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getDataImagePathFromImageID(1)
+        n1 = self.__dbConnector.getImagePath(1)
         n2 = "./VMName1/"
         self.assertEquals(n1, n2, "Not same image path")   
         
-    def test_getDefinitionFilePathFromVNCPort(self):
+    def test_getFileConfigPath(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getDefinitionFilePathFromVNCPort(1)
+        n1 = self.__dbConnector.getFileConfigPath(1)
         n2 = "./VMName1/"
         self.assertEquals(n1, n2, "Not same image path")
 
-    def test_setDataImagePath(self):
+    def test_setImageDataPath(self):
         # Instanciamos la clase
-        self.__dbConnector.setDataImagePath(1, "./VMName1Test/")
-        n1 = self.__dbConnector.getDataImagePathFromImageID(1)
+        self.__dbConnector.setImageDataPath(1, "./VMName1Test/")
+        n1 = self.__dbConnector.getImagePath(1)
         n2 = "./VMName1Test/"
         self.assertEquals(n1, n2, "Not change image path")  
         
@@ -57,45 +57,45 @@ class DBWebServerTests(unittest.TestCase):
         self.assertTrue(self.__dbConnector.doesImageExist(imageId), "Not image regist")  
         self.__dbConnector.deleteImage(imageId)    
     
-    def test_getVNCPortsInUse(self):
+    def test_getRunningPorts(self):
         # Instanciamos la clase
-        l1 = self.__dbConnector.getVNCPortsInUse()
+        l1 = self.__dbConnector.getRunningPorts()
         l2 = [1, 2, 3, 4]
         self.assertEquals(l1, l2, "Not same ports") 
         
-    def test_getUserIDs(self):
+    def test_getUsers(self):
         # Instanciamos la clase
-        l1 = self.__dbConnector.getUserIDs()
+        l1 = self.__dbConnector.getUsers()
         l2 = [1, 2, 3]
         self.assertEquals(l1, l2, "Not same users")
 
     def test_getAssignedVM(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getVMIDFromVNCPort(1)
+        n1 = self.__dbConnector.getAssignedVM(1)
         n2 = 1
         self.assertEquals(n1, n2, "Not same VM") 
         
-    def test_getVMNameFromVNCPort(self):
+    def test_getAssignedVMNameInDomain(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getVMNameFromVNCPort(2)
+        n1 = self.__dbConnector.getAssignedVMNameInDomain(2)
         n2 = "VMName1"
         self.assertEquals(n1, n2, "Not same VM Name")   
         
-    def test_getDataImagePathFromVNCPort(self):
+    def test_getMachineDataPath(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getDataImagePathFromVNCPort(2)
+        n1 = self.__dbConnector.getMachineDataPath(2)
         n2 = "./VMNameCopy1"
         self.assertEquals(n1, n2, "Not same VM path")
  
-    def test_getMACAddressFromVNCPort(self):
+    def test_getMACAddressInDomain(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getMACAddressFromVNCPort(3)
+        n1 = self.__dbConnector.getMACAddressInDomain(3)
         n2 = "2C:00:00:00:00:02"
         self.assertEquals(n1, n2, "Not same VM MAC") 
         
-    def test_getVNCPasswordFromVNCPort(self):
+    def test_getPasswordInDomain(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getVNCPasswordFromVNCPort(3)
+        n1 = self.__dbConnector.getPassword(3)
         n2 = "1234567890Test"
         self.assertEquals(n1, n2, "Not same VM Pass")
         
@@ -142,12 +142,12 @@ class DBWebServerTests(unittest.TestCase):
         self.assertEquals(result, "1234", "addVMBootCommand does not work")
         
     def test_getDomainImageDataPath(self):
-        result = self.__dbConnector.getDomainDataImagePathFromDomainName("VMName33")
+        result = self.__dbConnector.getDomainImageDataPath("VMName33")
         expectedResult = "./VMNameCopy2"
-        self.assertEquals(result, expectedResult, "getDomainDataImagePathFromDomainName does not work")
+        self.assertEquals(result, expectedResult, "getDomainImageDataPath does not work")
         
-    def test_getOSImagePathFromImageID(self):
-        result = self.__dbConnector.getOsImagePathFromImageId(1)
+    def test_getOSImagePath(self):
+        result = self.__dbConnector.getOsImagePath(1)
         expectedResult = "./VMName1/"
         self.assertEquals(result, expectedResult, "getOSImageDataPath does not work")  
         
