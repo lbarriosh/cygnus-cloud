@@ -1,0 +1,1924 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement h
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Transferencia de imágenes
+\end_layout
+
+\begin_layout Section
+Características de las imágenes Vanilla
+\end_layout
+
+\begin_layout Standard
+Para cada familia de sistemas operativos (es decir, Windows y Linux) definiremos
+ tres tamaños de imágenes 
+\emph on
+vanilla
+\emph default
+: pequeña (
+\emph on
+small
+\emph default
+), mediana (
+\emph on
+medium
+\emph default
+) y grande 
+\emph on
+(big
+\emph default
+).
+ A medida que aumenta el 
+\begin_inset Quotes eld
+\end_inset
+
+tamaño
+\begin_inset Quotes erd
+\end_inset
+
+ de una imagen, también lo harán el tamaño del disco y de la RAM y el número
+ de CPUs virtuales.
+\end_layout
+
+\begin_layout Standard
+Las características de estas imágenes se recogen en los cuadros 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Características-vanilla-win"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Características-vanilla-linux"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="6">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+vCPUs
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+RAM
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Disco
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Variante SO
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+SO y 
+\emph on
+software
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Datos / paginación
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+small
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+1 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+20 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2 GB / 2 GB (4 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+32 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+medium
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+30 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+4 GB / 4 GB (8 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+32 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+big
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+3 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+40 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+8 GB / 8 GB (16 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+64 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Características-vanilla-win"
+
+\end_inset
+
+Características de las imágenes 
+\emph on
+vanilla 
+\emph default
+Windows
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="6">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+vCPUs
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+RAM
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Disco
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Variante SO
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+SO y 
+\emph on
+software
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Datos / paginación
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+small
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+1 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+5 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2 GB / 1 GB (3 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+64 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+medium
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+10 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+4 GB / 2 GB (6 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+64 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+big
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+3 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+15 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+8 GB / 4 GB (12 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+64 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Características-vanilla-linux"
+
+\end_inset
+
+Características de las imágenes 
+\emph on
+vanilla 
+\emph default
+Linux
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para rellenar las tablas, he considerado estos aspectos:
+\end_layout
+
+\begin_layout Itemize
+en 
+\emph on
+Windows
+\emph default
+, el tamaño recomendado para el fichero de paginación es el doble del tamaño
+ de la RAM.
+\end_layout
+
+\begin_layout Itemize
+la versión 
+\emph on
+Professional
+\emph default
+ de Windows 7, una vez instalada y capada (eliminando los gadgets, característic
+as multimedia, componentes de Tablet PC y la compresión diferencial remota,
+ requiere el siguiente espacio en disco:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+11 GB para la versión de 32 bits
+\end_layout
+
+\begin_layout Itemize
+15 GB para la versión de 64 bits
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+para instalar un programa complejo y razonablemente actual (como 
+\emph on
+Visual Studio 
+\emph default
+o 
+\emph on
+Microsoft Office
+\emph default
+) en Windows se requiere en media unos 4 GB de espacio en disco.
+\end_layout
+
+\begin_layout Itemize
+una instalación de Linux con mucho 
+\emph on
+software 
+\emph default
+suele ocupar unos 7 GB (menos si se usa un entorno de escritorio ligero).
+\end_layout
+
+\begin_layout Itemize
+las versiones de Windows de 64 bits usan el doble de RAM que las de 32 bits
+ y ocupan mucho más disco duro.
+ Como el uso de un SO de 64 bits no está justificado en las imágenes 
+\emph on
+small
+\emph default
+ y 
+\emph on
+medium 
+\emph default
+(no se va a direccionar más de 2 GB de RAM), he optado por asignarles la
+ versión de 32 bits.
+ 
+\end_layout
+
+\begin_layout Itemize
+siempre que no se hagan cálculos muy complejos, el rendimiento de las dos
+ versiones de Windows es prácticamente el mismo.
+\end_layout
+
+\begin_layout Itemize
+las versiones de 64 bits de Linux usan la misma cantidad de RAM y espacio
+ en disco.
+ Para no complicarnos la vida, todas las máquinas Linux utilizarán un sistema
+ operativo de 64 bits.
+\end_layout
+
+\begin_layout Section
+Imágenes 
+\emph on
+vanilla
+\emph default
+ a crear
+\end_layout
+
+\begin_layout Standard
+De cara a junio, creo que lo más razonable es crear estas imágenes 
+\emph on
+vanilla
+\emph default
+:
+\end_layout
+
+\begin_layout Itemize
+Windows 7 Professional, versiones de 32 y de 64 bits.
+ 
+\end_layout
+
+\begin_layout Itemize
+Debian GNU/Linux estable, versión de 64 bits.
+\end_layout
+
+\begin_layout Itemize
+Xubuntu 12.04, versión de 64 bits.
+\end_layout
+
+\begin_layout Itemize
+openSUSE 12.3 (o cualquier distro no basada en Debian), versión de 64 bits.
+\end_layout
+
+\begin_layout Standard
+De momento, tenemos ya imágenes Linux e imágenes Windows, por lo que no
+ deberíamos crear ninguna otra para implementar la transferencia de imágenes.
+ 
+\end_layout
+
+\begin_layout Section
+El repositorio de imágenes
+\end_layout
+
+\begin_layout Subsection
+Introducción
+\end_layout
+
+\begin_layout Standard
+En una línea, el repositorio de imágenes se define así:
+\begin_inset Formula 
+\[
+\textrm{Repositorio de imágenes}=\textrm{servidor FTP}+\textrm{base de datos}+\textrm{controlador}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para hacer las transferencias de imágenes, utilizaremos el protocolo FTP
+ (o su variante sobre SSH, sFTP), que es el más simple y práctico que he
+ encontrado.
+ Si se os ocurre otro, lo comparamos con FTP/sFTP sin problema.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, en el repositorio hace falta saber, para cada imagen, dónde
+ está el fichero comprimido con los discos qcow2 y el documento xml, y también
+ hace falta a quién pertenece (es decir, la asignatura y el grupo).
+ Esta información de catalogación se guardará en una base de datos muy simple
+ (sólo tendrá una tabla).
+\end_layout
+
+\begin_layout Standard
+Finalmente, el repositorio deberá comunicarse con los servidores de máquinas
+ virtuales y el servidor de cluster a través de paquetes de red y actuar
+ en función de lo que reciba.
+ Esa es la misión del controlador.
+\end_layout
+
+\begin_layout Subsection
+Colas de transferencia y recepción
+\end_layout
+
+\begin_layout Standard
+El ancho de banda del enlace que conecta el repositorio a la red de la UCM
+ es limitado.
+ Así, no siempre será posible que 
+\end_layout
+
+\begin_layout Itemize
+un servidor de máquinas virtuales empiece a recibir una imagen tan pronto
+ como la solicita 
+\end_layout
+
+\begin_layout Itemize
+un servidor de máquinas virtuales suba una una imagen modificada tan pronto
+ como la tiene lista
+\end_layout
+
+\begin_layout Standard
+Para superar estas limitaciones, tenemos que conseguir que sea el repositorio
+ el que imponga el ritmo de las transferencias.
+ Por ejemplo, si el enlace basta para transmitir cinco imágenes a la vez
+ y ya se está usando al 100%, si un servidor de máquinas virtuales pide
+ otra imagen su petición tendrá que esperar.
+\end_layout
+
+\begin_layout Standard
+El mecanismo que hace esto posible es muy sencillo: tendremos que añadir
+\end_layout
+
+\begin_layout Itemize
+una cola de peticiones de transferencia (es decir, de datos que viajan del
+ repositorio al servidor de máquinas virtuales)
+\end_layout
+
+\begin_layout Itemize
+una cola de peticiones de recepción (es decir, de datos que viajan del servidor
+ de máquinas virtuales al repositorio)
+\end_layout
+
+\begin_layout Itemize
+cierto número de 
+\emph on
+slots
+\emph default
+ de transferencia
+\end_layout
+
+\begin_layout Itemize
+cierto número de 
+\emph on
+slots
+\emph default
+ de recepción
+\end_layout
+
+\begin_layout Standard
+Los 
+\emph on
+slots 
+\emph default
+nos permiten regular el número de transferencias y recepciones simultáneas.
+ Por ejemplo, si hay dos 
+\emph on
+slots 
+\emph default
+de transferencia, sólo se podrán transferir dos imágenes a la vez.
+ 
+\end_layout
+
+\begin_layout Standard
+Supongamos que llega una petición: el servidor de máquinas virtuales con
+ IP 
+\begin_inset Formula $X$
+\end_inset
+
+ y puerto 
+\begin_inset Formula $Y$
+\end_inset
+
+ pide la imagen vanilla Windows 
+\emph on
+small
+\emph default
+.
+ Ocurriría lo siguiente:
+\end_layout
+
+\begin_layout Enumerate
+el servidor de máquinas virtuales solicita al repositorio la imagen 
+\emph on
+vanilla.
+\end_layout
+
+\begin_layout Enumerate
+el repositorio añade la petición a la cola de transferencias y le contesta
+ indicando que ha recibido su petición.
+\end_layout
+
+\begin_layout Enumerate
+a medida que los 
+\emph on
+slots 
+\emph default
+van quedando libres, se sacan operaciones de la cola de transferencias y
+ se van procesando.
+\end_layout
+
+\begin_layout Enumerate
+cuando le llega el turno a la petición del servidor de máquinas virtuales,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se le asigna un 
+\emph on
+slot.
+\end_layout
+
+\begin_layout Enumerate
+el repositorio envía al servidor de máquinas virtuales los datos de conexión.
+\end_layout
+
+\begin_layout Enumerate
+el servidor de máquinas virtuales se conecta al servidor FTP y se descarga
+ el fichero.
+\end_layout
+
+\begin_layout Enumerate
+cuando termina, el servidor de máquinas virtuales indica al servidor que
+ tiene la imagen 
+\emph on
+vanilla
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+el 
+\emph on
+slot
+\emph default
+ se libera.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+El proceso de recepción funciona casi igual: lo único que cambia es que
+ el repositorio recibe datos y el servidor de máquinas virtuales los transmite.
+\end_layout
+
+\begin_layout Subsection
+Uso de ficheros comprimidos
+\end_layout
+
+\begin_layout Standard
+Para ahorrar espacio en disco y ancho de banda, nos interesa utilizar ficheros
+ comprimidos.
+ Los formatos libres que podemos considerar son estos:
+\end_layout
+
+\begin_layout Itemize
+7-zip
+\end_layout
+
+\begin_layout Itemize
+zip
+\end_layout
+
+\begin_layout Itemize
+tar
+\end_layout
+
+\begin_layout Itemize
+lzma
+\end_layout
+
+\begin_layout Itemize
+tar.gz
+\end_layout
+
+\begin_layout Itemize
+tar.bz2
+\end_layout
+
+\begin_layout Itemize
+tar.lzma
+\end_layout
+
+\begin_layout Itemize
+tar.xz
+\end_layout
+
+\begin_layout Standard
+Para decidir con criterio, he hecho un pequeño 
+\emph on
+benchmark
+\emph default
+: utilizar todos estos formatos para comprimir una imagen de disco de 
+\emph on
+CygnusCloud
+\emph default
+ de 4,1 GiB.
+ Además, para evitar que la implementación de los compresores y descompresores
+ favorezca a unos formatos frente a otros,
+\end_layout
+
+\begin_layout Itemize
+siempre se usa una CPU 
+\end_layout
+
+\begin_layout Itemize
+todas las pruebas se han hecho en la misma máquina y con el mismo kernel.
+\end_layout
+
+\begin_layout Itemize
+las mediciones consideran únicamente el tiempo de CPU, omitiendo los bloqueos
+ provocados por la E/S y por el planificador del SO.
+\end_layout
+
+\begin_layout Itemize
+todos los compresores utilizan un nivel de compresión medio.
+\end_layout
+
+\begin_layout Standard
+Los resultados de las pruebas aparecen en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Resultados-pruebas"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Gráficos/prueba tiempos.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Tiempos de compresión y descompresión
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Gráficos/prueba tamaños.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Tamaño del fichero comprimido
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Resultados-pruebas"
+
+\end_inset
+
+Resultados del mini-
+\emph on
+benchmark
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Podemos concluir que
+\end_layout
+
+\begin_layout Itemize
+el formato 7zip consigue la tasa de compresión más alta, aunque lo hace
+ a costa de aumentar muchísimo el tiempo de CPU.
+ Por eso, creo que deberíamos descartarlo.
+\end_layout
+
+\begin_layout Itemize
+los formatos zip y .tar.gz se comportan prácticamente igual (es lógico: los
+ dos usan el algoritmo de Lempel-Ziv).
+ 
+\end_layout
+
+\begin_layout Itemize
+los formatos lzma y xz son incluso dos veces más lentos que 7zip.
+ Por eso los formatos .lzma, .tar.lzma y .tar.xz no aparecen en las gráficas:
+ no vale la pena utilizarlos.
+\end_layout
+
+\begin_layout Itemize
+el formato tar es el más rápido comprimiendo, aunque eso tiene un efecto
+ importante sobre la tasa de compresión.
+ 
+\end_layout
+
+\begin_layout Standard
+Parece que lo más razonable es utilizar el formato zip para comprimir las
+ imágenes, permitiendo que en la implementación se pueda cambiar fácilmente
+ (creando una clase).
+\end_layout
+
+\begin_layout Section
+Procedimientos a seguir
+\end_layout
+
+\begin_layout Subsection
+Crear una nueva máquina virtual 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Crear-nueva-mv"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Este procedimiento determinará la arquitectura del sistema, por lo que tenemos
+ que implementarlo en primer lugar.
+ 
+\end_layout
+
+\begin_layout Standard
+Para crear una nueva máquina virtual, se seguirán estos pasos:
+\end_layout
+
+\begin_layout Enumerate
+En su petición, el usuario proporciona los datos de catalogación (es decir,
+ asignatura, grupo,\SpecialChar \ldots{}
+) y el código de la imagen 
+\emph on
+vanilla
+\emph default
+, que permite identificar el tipo de instancia (
+\emph on
+big
+\emph default
+, 
+\emph on
+medium
+\emph default
+ o 
+\emph on
+small
+\emph default
+) y el SO que tiene instalado (Windows, Debian, Xubuntu 12.04,\SpecialChar \ldots{}
+).
+\end_layout
+
+\begin_layout Enumerate
+El servidor de cluster busca un servidor de máquinas virtuales reservado
+ para (preferentemente) modificar imágenes 
+\emph on
+vanilla
+\emph default
+.
+ Para simplificar la explicación, de ahora en adelante lo llamaré 
+\series bold
+servidor 
+\emph on
+vanilla
+\series default
+\emph default
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Es importante notar que es un servidor de máquinas virtuales normal, que
+ tendrá tan poco uso como sea posible para poder modificar imágenes.
+ En cualquier caso, si el sistema se utiliza mucho, el servidor 
+\emph on
+vanilla
+\emph default
+ también se usará para albergar máquinas de los usuarios.
+\end_layout
+
+\begin_layout Standard
+Para comprobar si el servidor 
+\emph on
+vanilla
+\emph default
+ puede alojar la máquina virtual, el servidor de cluster tiene que considerar
+ el espacio de disco ocupado y disponible, el número total de CPUs y el
+ número total de CPUs virtuales, la cantidad de RAM ocupada y disponible,\SpecialChar \ldots{}
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+El servidor de cluster registra la imagen 
+\emph on
+vanilla
+\emph default
+ en su base de datos (como imagen en edición) y envía los datos de la petición
+ al servidor 
+\emph on
+vanilla
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+El servidor 
+\emph on
+vanilla
+\emph default
+ se pone en contacto con el repositorio para obtener los ficheros de disco
+ y el fichero .xml que define la máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+El servidor 
+\emph on
+vanilla
+\emph default
+ registra la nueva imagen en su base de datos y coloca sus ficheros convenientem
+ente.
+\end_layout
+
+\begin_layout Enumerate
+El servidor 
+\emph on
+vanilla
+\emph default
+ arranca la máquina y envía al usuario los datos de conexión.
+\end_layout
+
+\begin_layout Enumerate
+Cuando la máquina se apaga, el servidor 
+\emph on
+vanilla
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+comprime sus ficheros
+\end_layout
+
+\begin_layout Enumerate
+envía la imagen al repositorio
+\end_layout
+
+\begin_layout Enumerate
+borra los ficheros del disco y la entrada de la base de datos
+\end_layout
+
+\begin_layout Enumerate
+avisa al servidor de cluster
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+El servidor de cluster actualiza su base de datos
+\end_layout
+
+\begin_layout Standard
+Cuando el usuario nos confirma que ya ha terminado con la imagen,
+\end_layout
+
+\begin_layout Enumerate
+el servidor de cluster busca 
+\begin_inset Formula $x$
+\end_inset
+
+ servidores de máquinas virtuales en los que desplegarla.
+\end_layout
+
+\begin_layout Enumerate
+el servidor de cluster envía las órdenes de despliegue a los servidores
+ de máquinas virtuales que ha elegido.
+\end_layout
+
+\begin_layout Enumerate
+estas máquinas se ponen en contacto con el repositorio para recibir la imagen.
+ Cuando terminan, avisan al servidor de cluster.
+\end_layout
+
+\begin_layout Enumerate
+el servidor de cluster actualiza su base de datos.
+ A partir de este momento, cualquier alumno podrá arrancar la máquina virtual,
+ y la imagen deja de estar en estado de edición.
+\end_layout
+
+\begin_layout Subsection
+Borrar una máquina virtual
+\end_layout
+
+\begin_layout Standard
+Este caso es mucho más sencillo:
+\end_layout
+
+\begin_layout Enumerate
+el servidor de cluster solicita al repositorio que borre la imagen
+\end_layout
+
+\begin_layout Enumerate
+el servidor de cluster indica a los servidores de máquinas virtuales que
+ borren la imagen.
+ Hay que distinguir dos casos:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+si el servidor de máquinas virtuales está encendido, se le envía la petición
+\end_layout
+
+\begin_layout Itemize
+si está apagado, la petición se le enviará en su próximo arranque.
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Modificar una máquina virtual ya existente
+\end_layout
+
+\begin_layout Standard
+El proceso es muy parecido al del apartado 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Crear-nueva-mv"
+
+\end_inset
+
+, pero con algunas excepciones:
+\end_layout
+
+\begin_layout Itemize
+no hace falta registrar la imagen 
+\emph on
+vanilla
+\emph default
+ en el servidor de cluster: ya está registrada.
+\end_layout
+
+\begin_layout Itemize
+el repositorio enviará la imagen modificada, y no la imagen 
+\emph on
+vanilla
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Desplegar una imagen en más servidores de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+El proceso es muy parecido al del apartado 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Crear-nueva-mv"
+
+\end_inset
+
+, pero con algunas excepciones:
+\end_layout
+
+\begin_layout Itemize
+se indica el número de servidores a los que hay que enviar la imagen.
+ 
+\end_layout
+
+\begin_layout Itemize
+es posible indicar los servidores a los que hay que transferir la imagen
+ o utilizar un modo automático, en el que el sistema toma la decisión.
+\end_layout
+
+\begin_layout Section
+Orden de implementación
+\end_layout
+
+\begin_layout Standard
+El mejor orden para introducir los cambios es el siguiente:
+\end_layout
+
+\begin_layout Itemize
+apagado de máquinas virtuales (hay que tocar todas las bases de datos).
+\end_layout
+
+\begin_layout Itemize
+crear nuevas máquinas virtuales
+\end_layout
+
+\begin_layout Itemize
+borrar máquinas virtuales
+\end_layout
+
+\begin_layout Itemize
+modificar máquinas virtuales ya existentes
+\end_layout
+
+\begin_layout Itemize
+despliegue en más servidores de máquinas virtuales
+\end_layout
+
+\begin_layout Section
+Modificaciones a realizar
+\end_layout
+
+\begin_layout Enumerate
+Implementar el apagado de máquinas virtuales.
+ Es necesario
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+hacer que el identificador de la máquina sea el identificador del comando
+ que la crea
+\end_layout
+
+\begin_layout Itemize
+incluir una tabla en el servidor de cluster que indique en qué servidor
+ de máquinas virtuales está cada máquina activa
+\end_layout
+
+\begin_layout Itemize
+modificar los procedimientos de apagado de servidores de máquinas virtuales
+ para que actualicen esa tabla
+\end_layout
+
+\begin_layout Itemize
+modificar la tabla de la base de datos de estado que alberga los datos de
+ conexión para contemplar el nuevo ID de la máquina virtual
+\end_layout
+
+\begin_layout Itemize
+modificar los procedimientos de arranque para refrescar las nuevas tablas
+\end_layout
+
+\begin_layout Itemize
+definir dos nuevos formatos de paquete e implementar el apagado de máquinas
+ virtuales.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Implementar la recolección de información de estado detallada, que incluya
+ el número de CPUs virtuales utilizadas y el total de CPUs, la cantidad
+ de RAM usada/disponible, y la cantidad de disco usado/disponible.
+ Esto requiere:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+modificar los servidores de máquinas virtuales para que recolecten y envíen
+ esta información de estado
+\end_layout
+
+\begin_layout Itemize
+modificar el servidor de 
+\emph on
+cluster
+\emph default
+ para que reciba y almacene esta información en la base de datos de estado.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Incluir en la base de datos del servidor de cluster una tabla que albergue
+ las características de las imágenes vanilla (aparecen en los cuadros 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Características-vanilla-win"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Características-vanilla-linux"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Enumerate
+Modificar la base de datos del servidor de cluster para que asigne a cada
+ identificador de imagen una familia de SO y un tamaño (
+\emph on
+big
+\emph default
+, 
+\emph on
+medium
+\emph default
+ o 
+\emph on
+small
+\emph default
+).
+\end_layout
+
+\begin_layout Enumerate
+Modificar la base de datos del servidor de cluster y los procedimientos
+ de registro de servidores para marcar un servidor como de uso preferente
+ para modificar imágenes (es decir, como servidor 
+\emph on
+vanilla
+\emph default
+).
+\end_layout
+
+\begin_layout Enumerate
+Modificar el planificador del servidor de cluster para que considere la
+ nueva información de estado, los servidores vanilla y las características
+ de la imagen a arrancar.
+\end_layout
+
+\begin_layout Enumerate
+Implementar el repositorio: su base de datos, el servidor FTP y el controlador
+ (con todos los nuevos formatos de paquete, las colas de transferencia y
+ las de recepción).
+\end_layout
+
+\begin_layout Enumerate
+Modificar los servidores de máquinas virtuales para que compriman imágenes,
+ se conecten al repositorio, transfieran o reciban ficheros y registren
+ las nuevas imágenes 
+\emph on
+vanilla
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+Implementar la recepción, registro, arranque y transferencia de una imagen
+ 
+\emph on
+vanilla 
+\emph default
+en el repositorio.
+\end_layout
+
+\begin_layout Enumerate
+Crear un planificador dedicado para desplegar las imágenes 
+\emph on
+vanilla
+\emph default
+ en el servidor de cluster.
+\end_layout
+
+\begin_layout Enumerate
+Probar el funcionamiento de las nuevas características.
+\end_layout
+
+\begin_layout Enumerate
+Incorporar la gestión de errores.
+\end_layout
+
+\begin_layout Enumerate
+Implementar la modificación de una máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+Implementar el borrado de una máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+Implementar el despliegue de una imagen en servidores de máquinas virtuales
+ adicionales.
+\end_layout
+
+\begin_layout Enumerate
+Incorporar toda la funcionalidad a la web.
+\end_layout
+
+\end_body
+\end_document

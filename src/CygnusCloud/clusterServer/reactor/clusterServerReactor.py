@@ -59,6 +59,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         configurator.addUser(dbUser, dbPassword, dbName, True)
         self.__dbConnector = ClusterServerDatabaseConnector(dbUser, dbPassword, dbName)
         self.__dbConnector.connect()
+        self.__dbConnector.resetVMServersStatus()
         
     def startListenning(self, certificatePath, port):
         """
