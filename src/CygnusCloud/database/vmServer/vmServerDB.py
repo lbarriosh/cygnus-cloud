@@ -438,7 +438,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getWebsockifyPIDFromVNCPort(self, vncPort): 
+    def getVMPid(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -451,7 +451,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getVMPid(self, domainName): 
+    def getVMPidInDomain(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado el dominio que se le pasa como argumento.
         ''' 

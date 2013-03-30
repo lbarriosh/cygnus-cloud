@@ -83,7 +83,7 @@ class VMServer(MainServerPacketReactor):
     def __freeDomainResources(self, domainName):
         dataPath = self.__dbConnector.getDomainImageDataPath(domainName)
         osPath = self.__dbConnector.getOsImagePathInDomain(domainName)
-        pidToKill = self.__dbConnector.getVMPid(domainName)
+        pidToKill = self.__dbConnector.getVMPidInDomain(domainName)
         
         ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
         ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
