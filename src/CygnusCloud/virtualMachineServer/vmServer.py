@@ -154,7 +154,7 @@ class VMServer(MainServerPacketReactor):
         configFile = configFilePath + self.__dbConnector.getFileConfigPath(vmID)
         originalName = self.__dbConnector.getName(vmID)
         dataPath = self.__dbConnector.getImagePath(vmID)
-        osPath = self.__dbConnector.getOsImagePathInDomain(vmID)
+        osPath = self.__dbConnector.getOsImagePath(vmID)
         
         #Saco el nombre de los archivos (sin la extension)
         dataPathStripped = dataPath
