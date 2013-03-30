@@ -3,7 +3,7 @@
 Web status database reader definitions
 
 @author: Luis Barrios Hernández
-@version: 2.1
+@version: 2.2
 '''
 
 from database.utils.connector import BasicDatabaseConnector
@@ -56,15 +56,19 @@ class SystemStatusDatabaseReader(BasicDatabaseConnector):
             retrievedData.append(d)
         return retrievedData 
     
-    def getActiveVMsData(self):
+    def getActiveVMsData(self, userID):
         """
         Returns the active virtual machines' data.
         Args:
-            None
+            an userID. If it's None, all the active virtual machines' data will be returned.
         Returns: a list of dictionaries with the keys VMServerName, UserID, VMID, VMName, VNCPort
             and VNCPassword with their corresponding values.
         """
-        command = "SELECT * FROM ActiveVirtualMachines;"
+        if (userID == None) :
+            command = "SELECT * FROM ActiveVirtualMachines;"
+        else :
+            command = "SELECT * FROM ActiveVirtualMachines WHERE userID = {0};".format(userID)
+            
         results = self._executeQuery(command, False)
         retrievedData = []
         for row in results :

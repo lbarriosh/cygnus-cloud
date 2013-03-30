@@ -1,2 +1,42 @@
 {{extend 'layout.html'}}
-<h1>Esta es la plantilla student/runVM.html</h1>
+<h1>{{=T('Arranque de máquinas Virtuales')}}</h1>
+{{=form}}
+
+
+<script>
+jQuery(document).ready(function(){
+    var i;
+    var j;
+    for(i=0;i<{{=num}};i++){
+    	jQuery('#'+i).hide();
+       jQuery('#c' +i).change(function(){
+            for(j = 0 ; j < {{=num}} ; j++){
+                if(jQuery('#c' +j).attr('checked'))
+                    jQuery('#' +j).show("slow");
+                else jQuery('#' +j).hide("slow");
+           }
+       });
+
+        }
+});
+</script>
+
+<script type="text/javascript">
+    function changeDescription(desc,actual,m){
+        //Recorremos los elementos borrando las descripciones.
+        // y añadimos la descripción del objeto seleccionado
+       	
+        var d = document.createElement('div');
+        d.innerHTML = "Entra";
+        
+        for(i = 0 ; i < m ; i++){
+            if(i == actual){
+                form.getElementById(str(i)).innerHTML=desc;
+            }else{
+                form.getElementById(str(i)).innerHTML="";
+            }
+        
+        }
+
+    }
+</script>

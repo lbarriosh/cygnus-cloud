@@ -82,11 +82,21 @@ class libvirtConnector():
         '''
         self.__connector.createXML(xmlConfig, libvirt.VIR_DOMAIN_NONE)
         
-    def stopAllDomain(self):
+    def stopAllDomains(self):
         idsMV = self.__connector.listDomainsID()
         for vmID in idsMV:
             domain = self.__connector.lookupByID(vmID)
             domain.destroy()
+            
+    def getActiveDomainNames(self):
+        idsMV = self.__connector.listDomainsID()
+        result = []
+        for vmID in idsMV:
+            domain = self.__connector.lookupByID(vmID)
+            xml = ET.fromstring(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_SECURE))
+            domainName = xml.find('.//name').text
+            result.append(domainName)
+        return result
     
     def getNumberOfDomains(self):
         return self.__connector.numOfDomains()
@@ -100,12 +110,13 @@ class libvirtConnector():
     @staticmethod
     def virEventLoopNativeStart():
         libvirt.virEventRegisterDefaultImpl()
-        __eventLoopThread = threading.Thread(target=libvirtConnector.virEventLoopNativeRun, name="libvirtEventLoop")
+        __eventLoopThread = threading.Thread(target=libvirtConnector.virEventLoopNativeRun, name="libvirt event loop")
         __eventLoopThread.setDaemon(True)
         __eventLoopThread.start()
 
 def dummy(domain):
     pass
+
 if __name__ == "__main__" :
     libvirtConnector.virEventLoopNativeStart()
     con = libvirtConnector(libvirtConnector.KVM,dummy, dummy)

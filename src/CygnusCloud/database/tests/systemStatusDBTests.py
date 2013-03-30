@@ -77,13 +77,13 @@ class Test(unittest.TestCase):
         segment2Data = [(2, 1, 'Debian1', 15802, 'Password')]
         self.__writer.processActiveVMSegment(1, 2, 'IP1', segment1Data)
         self.__writer.processActiveVMSegment(2, 2, 'IP1', segment2Data)
-        result = self.__reader.getActiveVMsData(None)
+        result = self.__reader.getActiveVMsData(True)
         expectedResult = [
             {"VMServerName" : "Server1", "UserID" : 2, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15802, "VNCPassword" : "Password" },
             {"VMServerName" : "Server1", "UserID" : 1, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15800, "VNCPassword" : "Password" }
             ]
         self.assertEquals(result, expectedResult, "processVMServerSegment does not work")
-        result = self.__reader.getActiveVMsData(1)
+        result = self.__reader.getActiveVMsData(True)
         expectedResult = [
             {"VMServerName" : "Server1", "UserID" : 1, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15800, "VNCPassword" : "Password" }
             ]

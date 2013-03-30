@@ -1,3 +1,28 @@
 {{extend 'layout.html'}}
-<h1>Esta es la plantilla administrator/runVM.html</h1>
-{{=BEAUTIFY(response._vars)}}
+{{if(request.args(0) == 'run'):}}
+<h1>{{=T('Arrancar máquinas')}}</h1>
+{{=form1}}
+{{=form2}}
+{{pass}}
+{{if(request.args(0) == 'stop'):}}
+<h1>{{=T('Máquinas arrancadas')}}</h1>
+{{=form1}}
+{{=form2}}
+{{pass}}
+<script>
+jQuery(document).ready(function(){
+    var i;
+    var j;
+    for(i=0;i<{{=num}};i++){
+    	jQuery('#'+i).hide();
+       jQuery('#c' +i).change(function(){
+            for(j = 0 ; j < {{=num}} ; j++){
+                if(jQuery('#c' +j).attr('checked'))
+                    jQuery('#' +j).show("slow");
+                else jQuery('#' +j).hide("slow");
+           }
+       });
+
+        }
+});
+</script>

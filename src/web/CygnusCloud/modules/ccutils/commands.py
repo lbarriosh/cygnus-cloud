@@ -8,7 +8,7 @@ A module that contains useful functions to run commands
 
 from subprocess import Popen, PIPE, STDOUT
 
-from utils.rootPasswordHandler import RootPasswordHandler
+from ccutils.rootPasswordHandler import RootPasswordHandler
 
 def runCommand(cmd, ExceptionClass):
     """
@@ -39,7 +39,6 @@ def runCommandInBackground(cmd):
     Returns:
         cmd's command
     """
-    print cmd
     p = Popen(cmd, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     return p.pid
 

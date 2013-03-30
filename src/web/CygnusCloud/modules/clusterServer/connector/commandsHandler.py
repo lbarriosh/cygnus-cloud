@@ -11,7 +11,10 @@ COMMAND_TYPE = enum("REGISTER_VM_SERVER", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "B
                      "VM_BOOT_REQUEST", "HALT")
 
 COMMAND_OUTPUT_TYPE = enum("VM_SERVER_REGISTRATION_ERROR", "VM_SERVER_BOOTUP_ERROR", 
-                           "VM_CONNECTION_DATA", "VM_BOOT_FAILURE")
+                           "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", "VM_SERVER_UNREGISTRATION_ERROR",
+                           "VM_SERVER_SHUTDOWN_ERROR")
+
+from clusterServer.networking.packets import MAIN_SERVER_PACKET_T as PACKET_T
 
 class CommandsHandler(object):
     """
@@ -103,22 +106,22 @@ class CommandsHandler(object):
             result["VMServerPort"] = int(l[1])
             result["VMServerName"] = l[2]
         elif (commandType == COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
-            result["Unregister"] = bool(l[0])
+            result["Unregister"] = l[0] == 'True'
             result["VMServerNameOrIP"] = l[1]
-            result["Halt"] = bool(l[2])
+            result["Halt"] = l[2] == 'True'
         elif (commandType == COMMAND_TYPE.BOOTUP_VM_SERVER) :
             result["VMServerNameOrIP"] = l[0]
         elif (commandType == COMMAND_TYPE.VM_BOOT_REQUEST) :
             result["VMID"] = int(l[0])
             result["UserID"] = int(l[1])
         elif (commandType == COMMAND_TYPE.HALT) :
-            result["HaltVMServers"] = bool(l[0])
+            result["HaltVMServers"] = l[0] == 'True'
         return result
     
     @staticmethod
-    def createVMServerBootUpErrorOutput(serverNameOrIPAddress, errorMessage):
+    def createVMServerGenericErrorOutput(packet_type, serverNameOrIPAddress, errorMessage):
         """
-        Creates a virtual machine server boot up error command output.
+        Creates a virtual machine server boot up, unregistration or shutdown error command output.
         Args:
             serverNameOrIPAddress: the virtual machine server's name or IP address
             errorMessage: an error message
@@ -126,7 +129,13 @@ class CommandsHandler(object):
             A tuple (command output type, command output) containing the command output's type and its serialized content.
         """
         content = "{0}${1}".format(serverNameOrIPAddress, errorMessage)
-        return (COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR, content)
+        if (packet_type == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
+            outputType = COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR
+        elif (packet_type == PACKET_T.VM_SERVER_UNREGISTRATION_ERROR) :
+            outputType = COMMAND_OUTPUT_TYPE.VM_SERVER_UNREGISTRATION_ERROR
+        else :
+            outputType = COMMAND_OUTPUT_TYPE.VM_SERVER_SHUTDOWN_ERROR
+        return (outputType, content)
     
     @staticmethod
     def createVMServerRegistrationErrorOutput(vmServerIP, vmServerPort, vmServerName, errorMessage):
@@ -180,7 +189,10 @@ class CommandsHandler(object):
         """
         l = content.split("$")
         result = dict()
-        if (commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR) :
+        result["OutputType"] = commandOutputType
+        if (commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR or
+            commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_SHUTDOWN_ERROR or
+            commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_UNREGISTRATION_ERROR) :
             result["ServerNameOrIPAddress"] = l[0]
             result["ErrorMessage"] = l[1]
         elif (commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR) :

@@ -26,6 +26,10 @@ class GenericThreadSafeList :
         with self.__semaphore:
             return self.__data.count(value)
         
+    def isEmpty(self):
+        with self.__semaphore:
+            return len(self.__data) == 0
+        
     def index(self, value):
         with self.__semaphore:
             return self.__data.index(value)

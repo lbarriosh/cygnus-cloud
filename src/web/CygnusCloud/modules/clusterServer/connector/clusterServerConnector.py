@@ -2,7 +2,7 @@
 '''
 Cluster server connector definitions.
 @author: Luis Barrios Hernández
-@version: 2.2
+@version: 2.3
 '''
 from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
 from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
@@ -52,15 +52,15 @@ class ClusterServerConnector(object):
         self.__statusDBConnector.disconnect()
         self.__commandsDBConnector.disconnect()
         
-    def getActiveVMsData(self):
+    def getActiveVMsData(self, userID = None):
         """
         Returns the active virtual machines' data.
         Args:
-            None
+            userID: an userID. If it's None, all the active virtual machines' data will be displayed.
         Returns: a list of dictionaries with the keys VMServerName, UserID, VMID, VMName, VNCPort
             and VNCPassword with their corresponding values.
         """
-        return self.__statusDBConnector.getActiveVMsData()
+        return self.__statusDBConnector.getActiveVMsData(userID)
     
     def getVMDistributionData(self):
         """
@@ -165,9 +165,10 @@ class ClusterServerConnector(object):
         Args:
             commandID: the command's ID
         Returns:
-            None if the command output is not available. Otherwise, it will return a dictionary
-            with it.
+            An empty tuple if the command is still running, and its ouput if it isn't.
+            Note that some command outputs can have None outputs.
             This dictionary will have the keys 
+            - OutputType: contains the output type (i.e. connection data, registration error, and so on).
             - ServerNameOrIPAddress and ErrorMessage if the command output is a 
               virtual machine server boot up error.
             - VMServerIP, VMServerPort, VMServerName and ErrorMessage if the command output
@@ -176,18 +177,22 @@ class ClusterServerConnector(object):
             - VNCServerIPAddress, VNCServerPort and VNCServerPassword if the command otput
               contains a virtual machine's connection data.
         """
-        result = self.__commandsDBConnector.getCommandOutput(commandID)
-        if (result != None) :
-            (outputType, outputContent) = result
-            result = CommandsHandler.deserializeCommandOutput(outputType, outputContent)
-        return result
+        if (self.__commandsDBConnector.isRunning(commandID)) :
+            return ()
+        else :
+            result = self.__commandsDBConnector.getCommandOutput(commandID)
+            if (result != None) :
+                (outputType, outputContent) = result
+                result = CommandsHandler.deserializeCommandOutput(outputType, outputContent)
+            return result
     
     def waitForCommandOutput(self, commandID):
         """
         Returns a command's output
         Args:
             commandID: the command's ID
-        Returns: A dictionary containing the command's output.
+        Returns: None if the command has no output. Otherwise, a dictionary containing 
+        the command's output will be returned.
         This dictionary will have the keys 
             - ServerNameOrIPAddress and ErrorMessage if the command output is a 
               virtual machine server boot up error.
@@ -199,24 +204,22 @@ class ClusterServerConnector(object):
         @attention: This method will only return when the command output is available. If you prefer
         a non-blocking behavior, use getCommandOutput() instead.
         """
-        result = None
-        while (result == None) :
-            result = self.__commandsDBConnector.getCommandOutput(commandID)
-            if (result == None) :
+        while (self.__commandsDBConnector.isRunning(commandID)) :
                 sleep(0.1)
-        return CommandsHandler.deserializeCommandOutput(result[0], result[1])
+        result = self.__commandsDBConnector.getCommandOutput(commandID)
+        if result == None :
+            return None
+        else :
+            return CommandsHandler.deserializeCommandOutput(result[0], result[1])
     
 if __name__ == "__main__":
     connector = ClusterServerConnector(1)
     connector.connectToDatabases("SystemStatusDB", "CommandsDB", "website", "CygnusCloud")
     sleep(3)
-    print "Booting up VM server..."
-    connector.bootUpVMServer("Server1")
-    print "Booting up VM..."
-    commandID = connector.bootUpVM(1)
+    commandID = connector.registerVMServer("192.168.0.5", 15900, "Server2")
     print connector.waitForCommandOutput(commandID)
-    sleep(15)
-    print connector.getActiveVMsData()
+    sleep(4)
+    print connector.getVMServersData()
     connector.halt(True)
     connector.dispose()
     
