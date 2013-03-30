@@ -22,13 +22,13 @@ class DBWebServerTests(unittest.TestCase):
     
     def test_getImages(self):
         # Instanciamos la clase
-        l1 = self.__dbConnector.getImages()
+        l1 = self.__dbConnector.getImagesIDs()
         l2 = [1, 2, 3, 4]
         self.assertEquals(l1, l2, "The image ID lists do not match")
         
     def test_getName(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getName(1)
+        n1 = self.__dbConnector.getImageName(1)
         n2 = "VMName1"
         self.assertEquals(n1, n2, "Not same image name")
         
@@ -40,13 +40,13 @@ class DBWebServerTests(unittest.TestCase):
         
     def test_getFileConfigPath(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getFileConfigPath(1)
+        n1 = self.__dbConnector.getImgDefFilePath(1)
         n2 = "./VMName1/"
         self.assertEquals(n1, n2, "Not same image path")
 
     def test_setImageDataPath(self):
         # Instanciamos la clase
-        self.__dbConnector.setImageDataPath(1, "./VMName1Test/")
+        self.__dbConnector.setDataImagePath(1, "./VMName1Test/")
         n1 = self.__dbConnector.getImagePath(1)
         n2 = "./VMName1Test/"
         self.assertEquals(n1, n2, "Not change image path")  
@@ -65,19 +65,19 @@ class DBWebServerTests(unittest.TestCase):
         
     def test_getUsers(self):
         # Instanciamos la clase
-        l1 = self.__dbConnector.getUsers()
+        l1 = self.__dbConnector.getUserIDs()
         l2 = [1, 2, 3]
         self.assertEquals(l1, l2, "Not same users")
 
     def test_getAssignedVM(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getAssignedVM(1)
+        n1 = self.__dbConnector.getImgIDFromVNCPort(1)
         n2 = 1
         self.assertEquals(n1, n2, "Not same VM") 
         
     def test_getAssignedVMNameInDomain(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getAssignedVMNameInDomain(2)
+        n1 = self.__dbConnector.getImageNameFromDomainName(2)
         n2 = "VMName1"
         self.assertEquals(n1, n2, "Not same VM Name")   
         
@@ -87,15 +87,15 @@ class DBWebServerTests(unittest.TestCase):
         n2 = "./VMNameCopy1"
         self.assertEquals(n1, n2, "Not same VM path")
  
-    def test_getMACAddressInDomain(self):
+    def test_getMACAddressFromDomainName(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getMACAddress(3)
+        n1 = self.__dbConnector.getMACAddressFromVNCPort(3)
         n2 = "2C:00:00:00:00:02"
         self.assertEquals(n1, n2, "Not same VM MAC") 
         
     def test_getPasswordInDomain(self):
         # Instanciamos la clase
-        n1 = self.__dbConnector.getPassword(3)
+        n1 = self.__dbConnector.getVNCPassword(3)
         n2 = "1234567890Test"
         self.assertEquals(n1, n2, "Not same VM Pass")
         

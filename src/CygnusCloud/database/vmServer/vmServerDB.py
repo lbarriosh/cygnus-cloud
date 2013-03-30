@@ -16,7 +16,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         self.generateMACsAndUUIDs()
         self.generateVNCPorts()
         
-    def getImages(self):
+    def getImagesIDs(self):
         '''
              Devuelve una lista con todos los identificadores de imágenes que se 
               encuentran registradas en el servidor de máquinas virtuales.
@@ -32,7 +32,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos la lista resultado
         return imageIds
     
-    def getName(self, imageId):
+    def getImageName(self, imageId):
         '''
             Devuelve el nombre de la imagen cuyo identificador se pasa como argumento. 
         '''
@@ -73,7 +73,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getFileConfigPath(self, imageId):
+    def getImgDefFilePath(self, imageId):
         '''
             Devuelve la ruta donde se encuentra el fichero de configuración asociado a 
              la imagen cuyo identificador se pasa como argumento
@@ -87,7 +87,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0][0]  # BUG aquí
     
-    def setImageDataPath(self, imageId, path):
+    def setDataImagePath(self, imageId, path):
         '''
             Permite cambiar la ruta de la imagen cuyo identificador se pasa como argumento.
         '''
@@ -257,7 +257,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos la lista resultado
         return ports
     
-    def getUsers(self):
+    def getUserIDs(self):
         '''
              Devuelve una lista con los identificadores de todos los usuarios que actualmente
                se encuentran ejecutando una determinada máquina virtual en este servidor de 
@@ -274,7 +274,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos la lista resultado
         return users
     
-    def getAssignedVM(self, vncPort):
+    def getImgIDFromVNCPort(self, vncPort):
         '''
             Devuelve el identificador de la máquina virtual que se encuentra en ejecución en el 
              puerto VNC pasado como argumento.
@@ -302,7 +302,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getAssignedVMNameInDomain(self, vncPort):
+    def getImageNameFromDomainName(self, vncPort):
         '''
             Devuelve el nombre de la máquina virtual que se encuentra en ejecución
              en  el puerto VNC pasado como argumento.
@@ -360,7 +360,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getMACAddress(self, vncPort):
+    def getMACAddressFromVNCPort(self, vncPort):
         '''
             Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
         '''
@@ -386,7 +386,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getUUIDAddress(self, vncPort):
+    def getUUIDFromVNCPort(self, vncPort):
         '''
             Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
         '''
@@ -399,7 +399,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getUUIDAddressInDomain(self, domainName):
+    def getUUIDFromDomainName(self, domainName):
         '''
             Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
         '''
@@ -412,7 +412,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getPassword(self, vncPort): 
+    def getVNCPassword(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -425,7 +425,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getPasswordInDomain(self, domainName): 
+    def getVNCPasswordFromDomainName(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -438,7 +438,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getVMPid(self, vncPort): 
+    def getVMPID(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -451,7 +451,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getVMPidInDomain(self, domainName): 
+    def getVMPIDFromDomainName(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado el dominio que se le pasa como argumento.
         ''' 
@@ -465,7 +465,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         return result[0] 
     
     
-    def getOsImagePathInDomain(self, domainName): 
+    def getOsImagePathFromDomainName(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado al dominio que se le pasa como argumento.
         ''' 
@@ -478,7 +478,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]    
     
-    def getDomainName(self, vncPort): 
+    def getDomainNameFromVNCPort(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -531,7 +531,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Si el resultado es 1, la MV existirá
         return (result[0] == 1) 
     
-    def getUser(self, domainName):
+    def getUserIDFromDomain(self, domainName):
         '''
             Devuelve el identificador del usuario asociado a la mv que se encuentra en ejecución en el 
             dominio pasado como argumento.
