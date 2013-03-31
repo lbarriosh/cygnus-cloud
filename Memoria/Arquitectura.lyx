@@ -1314,16 +1314,45 @@ webServer
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: rellenar esto
+El paquete webServer se encuentra distribuido en un conjunto de paquetes
+ que hacen referencia a los diferentes tipos de elementos necesarios para
+ implementar la funcionalidad de la web.
+ Estos paquetes son:
 \end_layout
 
-\end_inset
+\begin_layout Itemize
+Vistas : Paquetes con el conjunto de vistas que definen la representación
+ de las páginas
+\end_layout
 
+\begin_layout Itemize
+Controladores : Paquete que contiene los módulos python encargados de manejar
+ las diferentes funcionalidades de la web.
+\end_layout
 
+\begin_layout Itemize
+Modelos : Incluye dos módulos python encargados de definir dos aspectos
+ importantes de la web.
+ El primer módulo, menu, introduce la información sobre la versión , las
+ palabras clave y todos los aspectos generales de la web.
+ El segundo, db, se encarga de crear las tablas necesarias que serán utilizadas
+ para almacenar la información manejada por la web.
+\end_layout
+
+\begin_layout Itemize
+Lenguajes : Incluye un conjunto de diccionarios que permiten traducir la
+ web a diferentes idiomas.
+\end_layout
+
+\begin_layout Itemize
+Archivos estáticos : Este paquete incluye las css , js e imagenes necesarias
+ para definir el aspecto de la web.
+ También incluye el controlador noVNC.
+\end_layout
+
+\begin_layout Itemize
+Módulos : En este paquete se encuentran todos los módulos python secundarios
+ que serán utilizados por los controladores.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1571,6 +1600,13 @@ Descomposición del sistema
 CygnusCloud
 \emph default
  en tres subsistemas
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Descomposición-del-sistema-3"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2199,6 +2235,100 @@ Restricciones de acceso URL
 El paquete 
 \family typewriter
 database
+\end_layout
+
+\begin_layout Standard
+Este paquete contiene los módulos y scripts sql necesarios para la gestión
+ de toda la información que es necesario almacenar y utilizar en CygnusCloud.
+ Cada uno de estos tipos de archivos tendrán una finalidad concreta en la
+ administración de información del sistema.
+\end_layout
+
+\begin_layout Standard
+Como ya se dijo en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Descomposición-del-sistema-3"
+
+\end_inset
+
+, CygnusCloud se encuentra dividido en tres grandes subsistema independientes,
+ capaces de ejecutarse en diferentes máquinas conectadas por la red.
+ Por ello, resulta necesario que la gestión de la información en cada uno
+ de estos subsistemas se haga de forma particular.
+ Así, será necesario una base de dato independiente para cada subsistema,
+ así como clases independientes para gestionar cada una de estas bases de
+ datos.
+ 
+\end_layout
+
+\begin_layout Standard
+En este apartado profundizaremos sobre estos aspectos del paquetes database.
+\end_layout
+
+\begin_layout Subsubsection
+Tipo de ficheros
+\end_layout
+
+\begin_layout Standard
+Como ya hemos mencionado, el paquete database no solo se encuentra compuesto
+ por un conjunto de módulos python, sino también por algunos scripts sql.
+ El uso de un tipo u otro de fichero dependerá del tipo de acción que se
+ quiera realizar.
+ Así:
+\end_layout
+
+\begin_layout Itemize
+Los fichero sql son los encargados de definir y crear la estructura completa
+ de las bases de datos.
+ Existe un fichero sql por cada una de las bases de datos que son necesarias.
+ Dentro de estos ficheros se incluyen la definición de las tablas que componen
+ la base de datos, así como la información por defecto introducidas en las
+ mismas.
+\end_layout
+
+\begin_layout Itemize
+Los módulos python son los encargados de introducir, borrar y actualizar
+ la información de las tablas definidas.
+ Así, estos módulos contienen funciones que permiten realizar acciones particula
+res con respecto a la base de datos concreta que debe manejar.
+ Además de los módulos encargados del tratamiento de la información, este
+ paquete también incluye algún módulo que permiten configurar las característica
+s básicas y establecer la conexión con el sistema de gestión de bases de
+ datos.
+\end_layout
+
+\begin_layout Subsubsection
+Uso de mySql
+\end_layout
+
+\begin_layout Standard
+Para poder realizar las consultas y actualizaciones en la base de datos
+ hemos optado por utilizar el sistema mySql, el cual nos ofrece una sintaxis
+ simple y con todas las instrucciones que necesitamos.
+ 
+\end_layout
+
+\begin_layout Standard
+Python no contempla este lenguaje por defecto, por lo que es necesario incorpora
+r una librería externa que nos permita enlazar los módulos python con la
+ sintaxis de mySql.
+ Con este fin, CygnusCloud utiliza MySQLdb, una librería muy simple y ligera
+ que nos proporciona funciones para conectarnos a mySql y enviar los comandos
+ con nuestras consultas.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Buscar info MySQLdb
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -5472,7 +5602,7 @@ En el caso de trasmitir información por el campo de argumentos, esta formará
  Así todos los argumentos que pasemos por este campo vendrán acoplados a
  la dirección de la página junto al nombre de la aplicación, el nombre del
  controlador y el nombre de la sección.
- Los valores en este campo son trasmitidos como una lista y serán accedidos
+ Los valores en este campo son trasmitidos como una lista y son accedidos
  desde la página destino por medio de la llamada a 
 \family typewriter
 request.args(i)
@@ -5579,7 +5709,7 @@ Una vez el usuario ha introducido su nombre, contraseña y ha pulsado el
  botón arrancar, el controlador envía una consulta a la base de datos para
  comprobar que el usuario existe y que su contraseña es correcta.
  Tras esto se mira el tipo de usuario y redirecciona a la página que sea
- necesario.
+ necesaria.
  En nuestro caso, al ser un alumno el que inicia la sesión, redirecciona
  a la sección 
 \family typewriter
@@ -5606,15 +5736,15 @@ runVM
 student
 \family default
 , la cual solo es accesible para alumnos registrados, se evalúa el argumento
- de entrada para comprobar que subsección debe ejecutarse.Tras esto, se extrae
- la lista de asignaturas asociadas a este alumno concreto.
+ de entrada para comprobar que subsección debe ejecutarse.
+ Tras esto, se extrae la lista de asignaturas asociadas a este alumno concreto.
  Para ello, se envía una petición a la base de datos preguntando por estos
  valores.
  Para cada una de las asignaturas encontradas se crea una tabla, cuyas filas
  corresponden a las máquinas virtuales que pueden arrancarse en esta asignatura.
  La información de las máquinas virtuales asociadas a cada asignaturas se
  extrae también a partir de consultas a la base de datos.
- Cada tabla creada se añade a un formulario que es devuelto por la función.
+ Cada tabla creada se añade al formulario que es devuelto por la función.
 \end_layout
 
 \begin_layout Itemize
@@ -5710,7 +5840,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Secuencia de arranque de una MV.
+Secuencia de arranque de una máquina virtual.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Secuencia-de-arranque"
