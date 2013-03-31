@@ -2,7 +2,7 @@
 '''
 Cluster server connector definitions.
 @author: Luis Barrios Hernández
-@version: 2.3
+@version: 3.0
 '''
 from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
 from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
@@ -52,7 +52,7 @@ class ClusterServerConnector(object):
         self.__statusDBConnector.disconnect()
         self.__commandsDBConnector.disconnect()
         
-    def getActiveVMsData(self, userID = None):
+    def getActiveVMsData(self, showAllVMs=False):
         """
         Returns the active virtual machines' data.
         Args:
@@ -60,6 +60,10 @@ class ClusterServerConnector(object):
         Returns: a list of dictionaries with the keys VMServerName, UserID, VMID, VMName, VNCPort
             and VNCPassword with their corresponding values.
         """
+        if not showAllVMs :
+            userID = self.__userID
+        else :
+            userID = None
         return self.__statusDBConnector.getActiveVMsData(userID)
     
     def getVMDistributionData(self):
@@ -216,10 +220,13 @@ if __name__ == "__main__":
     connector = ClusterServerConnector(1)
     connector.connectToDatabases("SystemStatusDB", "CommandsDB", "website", "CygnusCloud")
     sleep(3)
-    commandID = connector.registerVMServer("192.168.0.5", 15900, "Server2")
+    commandID = connector.bootUpVMServer("Server1")
     print connector.waitForCommandOutput(commandID)
     sleep(4)
     print connector.getVMServersData()
+    commandID = connector.bootUpVM(1)
+    sleep(4)
+    print connector.getActiveVMsData()
     connector.halt(True)
     connector.dispose()
     

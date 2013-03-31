@@ -221,6 +221,11 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         #Devolvemos la lista resultado
         return serverIds
     
+    def resetVMServersStatus(self):
+        vmServerIDs = self.getVMServerIDs()
+        for vmServerID in vmServerIDs :
+            self.updateVMServerStatus(vmServerID, SERVER_STATE_T.SHUT_DOWN)
+    
     def getHostedImages(self, serverID):
         '''
             Devuelve la lista de máquinas virtuales que puede albergar el servidor de máquinas virtuales
