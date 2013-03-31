@@ -4515,24 +4515,13 @@ Controladores : Este grupo incluye el conjunto de módulos python que aportan
  Dentro de cada módulo encontramos una función asociada a cada una de las
  secciones que forman la web.
  Hablaremos más en profundidad sobre este tema en la sección 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-referencia a sección 
-\begin_inset Quotes eld
-\end_inset
-
-Secciones y subsecciones
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Secciones-y-subsecciones"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Itemize
@@ -4773,23 +4762,29 @@ Insertar diagrama.
 
 \begin_layout Subsubsection
 Secciones y subsecciones
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Secciones-y-subsecciones"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 Para poder hacer frente al elevado número de páginas que ofrece CygnusCloud,
  hemos optado por estructurar estas páginas en un sistema de 3 niveles,
- que permite filtrar y estructurar las páginas teniendo en cuenta los privilegio
-s de acceso y la finalidad e cada página.
+ que permite filtrarlas teniendo en cuenta los privilegios de acceso y la
+ finalidad de cada página.
  
 \end_layout
 
 \begin_layout Standard
-El primer nivel se centra en los privilegios de acceso asociados a cada
- página.
+El primer nivel se centra en los privilegios de acceso.
  CygnusCloud agrupa a los usuarios registrados en 3 tipos según los privilegios
  de los que dispongan.
  Estos privilegios dan acceso a unas u otras páginas.
- En la web de CygnusCloud podemos encontrar los siguientes tipos de usuarios:
+ Podemos encontrar los siguientes tipos de usuarios:
 \end_layout
 
 \begin_layout Itemize
@@ -4844,7 +4839,7 @@ Gestión de grupos de asignaturas, así como de las máquinas virtuales asociada
 Además de estos tipos de usuarios, CygnusCloud también ofrece acceso a ciertas
  páginas públicas.
  Estas páginas podrán ser vistas por cualquier usuarios que se conecte a
- la página de CygnusCloud, aunque no se encuentre registrado.
+ la web de CygnusCloud, aunque no se encuentre registrado.
  
 \end_layout
 
@@ -5262,7 +5257,7 @@ Uno para la página que mantendrá el cliente VNC.
 
 \begin_layout Standard
 Este último controlador no corresponde a ningún tipo concreto de usuario
- pero se define a parte ya que su uso es común para todos los usuarios.
+ pero se define a parte ya que su uso es común para todos.
  
 \end_layout
 
@@ -5370,6 +5365,386 @@ barra de direcciones para administradores.
  y usuarios.
  Además contiene la página de arranque de máquinas virtuales.
  Su acceso está restringido a usuarios de tipo administrador.
+\end_layout
+
+\begin_layout Subsubsection
+Gestión de usuarios 
+\end_layout
+
+\begin_layout Standard
+Para llevar a cabo la gestión de usuarios hemos optado por utilizar una
+ de las librerías que Web2py nos ofrece.
+ Esta librería, de nombre Auth, contiene todas las funcionalidades necesarias
+ con respecto a la gestión de usuarios.
+ Auth contiene funciones para gestionar la creación de usuarios, los inicios
+ de sesión y las restricciones de acceso a diferentes páginas.
+ Además esta librería ofrece también funciones que devuelven los formularios
+ de inicio de sesión y cierre de la misma totalmente implementados para
+ ser directamente incorporados en nuestras páginas.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Referencia a Auth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Interacción entre páginas
+\end_layout
+
+\begin_layout Standard
+Aunque bien es cierto que cada página debe ser controlada y representada
+ por un controlador y una vista particulares, es posible que requiera de
+ cierta información proveniente de la página a partir de la cual se accedió
+ a ella.
+ 
+\end_layout
+
+\begin_layout Standard
+Por esta razón, nuestra web debe ser capaz de trasmitir argumentos entre
+ las diferentes páginas.
+ Como ya mencionamos en el apartado 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Secciones-y-subsecciones"
+
+\end_inset
+
+, las diferentes secciones que componen la web son interpretadas por parte
+ del controlador como simples funciones python sin argumentos.
+ Aunque a simple vista lo más lógico pueda parecer que la forma correcta
+ de trasmitir información entre páginas sea definiendo las funciones python
+ con tantos argumentos como datos de entrada deba recibir esto no sucede
+ así.
+ Las razones por las cuales el envío y recepción de datos entre páginas
+ no se dé de esta forma son básicamente dos:
+\end_layout
+
+\begin_layout Enumerate
+La redirección de una página a otra no puede darse llamando a la función
+ del controlador directamente.
+ Cuando el desarrollador quiera realizar una redirección, deberá llamar
+ a una función 
+\family typewriter
+redirect 
+\family default
+con el
+\family typewriter
+ 
+\family default
+nombre del controlador que la contiene, el nombre de la función de la sección
+ correspondiente, los argumentos necesarios y el conjunto de variables.
+ Una vez llamada a la función, es Web2py el encargado de llamar a la función
+ del controlador que corresponda y pasar los argumentos y variables.
+\end_layout
+
+\begin_layout Enumerate
+El número de argumentos no siempre es el mismo.
+ Dependiendo de la página a partir de la cual pueda realizarse la redirección,
+ es posible que la función de la sección correspondiente reciba más o menos
+ argumentos por lo que estos no pueden definirse como argumentos directos
+ en la definición de la sección.
+\end_layout
+
+\begin_layout Standard
+Por lo tanto la forma correcta de trasmitir información entre las diferentes
+ páginas será utilizando la función 
+\family typewriter
+redirect
+\family default
+.
+ Como podemos observar en la definición dada, esta función recibe además
+ del nombre del controlador y la sección, un campo argumentos y un campo
+ variables.
+ Ambos campos permite trasmitir información entre dos páginas con unas caracterí
+sticas particulares para cada uno de ellos.
+ 
+\end_layout
+
+\begin_layout Standard
+En el caso de trasmitir información por el campo de argumentos, esta formará
+ parte de la ruta de direcciones de la página destino.
+ Así todos los argumentos que pasemos por este campo vendrán acoplados a
+ la dirección de la página junto al nombre de la aplicación, el nombre del
+ controlador y el nombre de la sección.
+ Los valores en este campo son trasmitidos como una lista y serán accedidos
+ desde la página destino por medio de la llamada a 
+\family typewriter
+request.args(i)
+\family default
+ siendo 
+\family typewriter
+i
+\family default
+ la posición de la lista donde se encuentra el elemento deseado.
+\end_layout
+
+\begin_layout Standard
+El segundo campo nos permite transferir la información como variables y
+ no como argumentos.
+ En esta caso el nombre de la variable no formará parte de la dirección
+ destino.
+ Este campo recibe un diccionario con el nombre que se quiere dar a cada
+ una de estas variables y su contenido y será accedido desde la página destino
+ por medio de la llamada a 
+\family typewriter
+request.vars.x
+\family default
+ donde 
+\family typewriter
+x
+\family default
+ es el nombre que se le dió a la variable concreta a la que se quiere acceder.
+\end_layout
+
+\begin_layout Standard
+En el caso de CygnusCloud, el campo de argumentos se utiliza para retrasmitir
+ el nombre de la subsección que debe ejecutarse dentro de la sección correspondi
+ente.
+ El campo de variables se utiliza para trasmitir el resto de información
+ útil como por ejemplo los resultados de las búsquedas.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Revisar diferencias
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Flujo de ejecución de arranque de una máquina virtual
+\end_layout
+
+\begin_layout Standard
+Con la finalidad de dar una última explicación sobre el funcionamiento interno
+ de la web, vamos a ejemplificar de forma detallada cada una de las acciones
+ que debe realizar el sistema para atender la petición de arranque de una
+ máquina virtual por parte de un alumno que se conecte a nuestra web.
+\end_layout
+
+\begin_layout Standard
+Una vez el alumno haya pulsado el vinculo que le da acceso a la página de
+ CygnusCloud:
+\end_layout
+
+\begin_layout Itemize
+Se ejecuta la función 
+\family typewriter
+login
+\family default
+ dentro del controlador 
+\family typewriter
+Main
+\family default
+.
+ Esta función crea el formulario de inicio de sesión (utilizando la utilidad
+ 
+\family typewriter
+auth
+\family default
+ que se encarga de la gestión de usuarios) y lo devuelve.
+\end_layout
+
+\begin_layout Itemize
+Justamente después se ejecuta la vista asociada a esta función (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+main/login.html
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+), la cual recibe el formulario creado por el controlador, le aplica el
+ aspecto correspondiente y lo coloca en la página.
+\end_layout
+
+\begin_layout Itemize
+Una vez el usuario ha introducido su nombre, contraseña y ha pulsado el
+ botón arrancar, el controlador envía una consulta a la base de datos para
+ comprobar que el usuario existe y que su contraseña es correcta.
+ Tras esto se mira el tipo de usuario y redirecciona a la página que sea
+ necesario.
+ En nuestro caso, al ser un alumno el que inicia la sesión, redirecciona
+ a la sección 
+\family typewriter
+runVM
+\family default
+ del controlador 
+\family typewriter
+student
+\family default
+ con el argumento 
+\family typewriter
+run
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Una vez en la función 
+\family typewriter
+runVM
+\family default
+ del controlador 
+\family typewriter
+student
+\family default
+, la cual solo es accesible para alumnos registrados, se evalúa el argumento
+ de entrada para comprobar que subsección debe ejecutarse.Tras esto, se extrae
+ la lista de asignaturas asociadas a este alumno concreto.
+ Para ello, se envía una petición a la base de datos preguntando por estos
+ valores.
+ Para cada una de las asignaturas encontradas se crea una tabla, cuyas filas
+ corresponden a las máquinas virtuales que pueden arrancarse en esta asignatura.
+ La información de las máquinas virtuales asociadas a cada asignaturas se
+ extrae también a partir de consultas a la base de datos.
+ Cada tabla creada se añade a un formulario que es devuelto por la función.
+\end_layout
+
+\begin_layout Itemize
+A continuación se ejecuta la vista 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+student/runVM.html
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ la cual recibe el formulario, ajusta su aspecto y lo coloca en la página.
+ Además, esta vista, define un script que permite mostrar y ocultar la descripci
+ón de las diferentes máquinas virtuales según se encuentren seleccionadas
+ o no.
+\end_layout
+
+\begin_layout Itemize
+Una vez el usuario ha seleccionado alguna máquina virtual y ha pulsado el
+ botón de arrancar, el controlador extrae el identificador de la máquina
+ virtual y pide al conector que arranque dicha máquina.
+ El conector devuelve los parámetros de conexión, los cuales son enviados
+ como variable en la redirección a la página 
+\family typewriter
+vncPage
+\family default
+, la cual es creada en una nueva pestaña.
+\end_layout
+
+\begin_layout Itemize
+Llegados al controlador 
+\family typewriter
+vncClient
+\family default
+ y a su sección única 
+\family typewriter
+vncPage
+\family default
+, se extrae la variable con la información de conexión y se devuelve como
+ resultado de la función.
+\end_layout
+
+\begin_layout Itemize
+La vista asociada a este controlador (
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+vncClient/vncPage.html
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) recibe los datos de conexión y ejecuta noVNC, el cual se encarga de mostrar
+ el escritorio de trabajo por pantalla.
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Secuencia-de-arranque"
+
+\end_inset
+
+ muestra un diagrama de secuencia con todo este proceso.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/DiagramaSecuenciaArranqueMVWeb.pdf
+	scale 70
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Secuencia de arranque de una MV.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Secuencia-de-arranque"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Sección sobre el conector
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
