@@ -35,7 +35,7 @@ class SystemStatusDatabaseReader(BasicDatabaseConnector):
             d["VMServerName"] = row[0]
             d["VMServerStatus"] = row[1]
             d["VMServerIP"] = row[2]
-            d["VMServerListenningPort"] = row[3]
+            d["VMServerListenningPort"] = int(row[3])
             retrievedData.append(d)
         return retrievedData
     
@@ -54,23 +54,23 @@ class SystemStatusDatabaseReader(BasicDatabaseConnector):
         for row in results :
             d = dict()
             d["VMServerName"] = row[0]
-            d["VMID"] = row[1]
+            d["VMID"] = int(row[1])
             retrievedData.append(d)
         return retrievedData 
     
-    def getActiveVMsData(self, userID):
+    def getActiveVMsData(self, ownerID):
         """
         Devuelve los datos de las máquinas virtuales activas
         Argumentos:
-            userID: identificador del propietario de las máquinas. Si es None, se devolverán
+            ownerID: identificador del propietario de las máquinas. Si es None, se devolverán
             los datos de todas las máquinas virtuales.
         Devuelve: 
             una lista de diccionarios. Cada uno contiene los datos de una máquina
         """
-        if (userID == None) :
+        if (ownerID == None) :
             command = "SELECT * FROM ActiveVirtualMachines;"
         else :
-            command = "SELECT * FROM ActiveVirtualMachines WHERE userID = {0};".format(userID)
+            command = "SELECT * FROM ActiveVirtualMachines WHERE ownerID = {0};".format(ownerID)
             
         results = self._executeQuery(command, False)
         retrievedData = []
@@ -79,9 +79,9 @@ class SystemStatusDatabaseReader(BasicDatabaseConnector):
             d["VMServerName"] = row[0]
             d["DomainUID"] = row[1]
             d["UserID"] = row[2]
-            d["VMID"] = row[3]
+            d["VMID"] = int(row[3])            
             d["VMName"] = row[4]
-            d["VNCPort"] = row[5]
+            d["VNCPort"] = int(row[5])
             d["VNCPassword"] = row[6]
             retrievedData.append(d)
         return retrievedData 

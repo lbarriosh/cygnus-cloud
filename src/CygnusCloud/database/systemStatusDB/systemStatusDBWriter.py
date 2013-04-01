@@ -39,10 +39,13 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         Devuelve:
             Nada
         """
+        # Guardamos los datos del segmento (si los hay)
         if (data != []) :
             self.__vmServerSegmentsData += data
             self.__vmServerSegments += 1
+            
         if (self.__vmServerSegments == segmentCount) :
+            # Hemos recibido la secuencia completa => la procesamos
             receivedData = SystemStatusDatabaseWriter.__getVMServersDictionary(self.__vmServerSegmentsData)
             registeredIDs = self.__getKnownVMServerIDs()
             
@@ -218,7 +221,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         Returns:
             una lista con los identificadores únicos de las máquinas virtuales activas
         """
-        query = "SELECT serverName, userID, virtualMachineID FROM ActiveVirtualMachines;"
+        query = "SELECT serverName, ownerID, imageID FROM ActiveVirtualMachines;"
         results = self._executeQuery(query)
         output = set()
         for row in results :
@@ -246,7 +249,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         Devuelve:
             Nada
         """
-        update = "DELETE FROM ActiveVirtualMachines WHERE serverName='{0}' AND userID={1} AND virtualMachineID={2};"\
+        update = "DELETE FROM ActiveVirtualMachines WHERE serverName='{0}' AND ownerID={1} AND imageID={2};"\
             .format(machineID[0], machineID[1], machineID[2])
         self._executeUpdate(update)
             
