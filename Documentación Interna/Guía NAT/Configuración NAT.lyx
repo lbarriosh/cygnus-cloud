@@ -74,7 +74,142 @@
 \begin_body
 
 \begin_layout Title
-Uso de NAT con KVM
+Creación de una red virtual en modo NAT
+\end_layout
+
+\begin_layout Section*
+Licencia
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename /home/luis/Downloads/Gráficos licencia/cc.logo.large.png
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Usted es libre de
+\series default
+:
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+copiar, distribuir y comunicar públicamente la obra 
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+crear obras derivadas
+\end_layout
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Bajo las condiciones siguientes
+\series default
+:
+\end_layout
+
+\begin_layout Plain Layout
+
+\family sans
+\begin_inset Graphics
+	filename /home/luis/Downloads/Gráficos licencia/by.png
+	scale 30
+
+\end_inset
+
+ 
+\series bold
+Reconocimiento
+\series default
+.
+ Debe reconocer los créditos de la obra de la manera especificada por el
+ autor o el licenciador (pero no de una manera que sugiera que tiene su
+ apoyo o apoyan el uso que hace de su obra).
+\end_layout
+
+\begin_layout Plain Layout
+
+\family sans
+\begin_inset Graphics
+	filename /home/luis/Downloads/Gráficos licencia/nc.png
+	scale 30
+
+\end_inset
+
+ 
+\series bold
+No comercial
+\series default
+.
+ No puede utilizar esta obra para fines comerciales.
+\end_layout
+
+\begin_layout Plain Layout
+
+\family sans
+\begin_inset Graphics
+	filename /home/luis/Downloads/Gráficos licencia/sa.png
+	scale 30
+
+\end_inset
+
+ 
+\series bold
+Compartir bajo la misma licencia
+\series default
+.
+ Si altera o transforma esta obra, o genera una obra derivada, sólo puede
+ distribuir la obra generada bajo una licencia idéntica a ésta.
+\end_layout
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Para obtener más información
+\series default
+, visite 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://creativecommons.org/licenses/by-nc-sa/3.0/deed.es_ES"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
