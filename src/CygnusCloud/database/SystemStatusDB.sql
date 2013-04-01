@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS VirtualMachineDistribution(
 DELETE FROM VirtualMachineDistribution;
         
 CREATE TABLE IF NOT EXISTS ActiveVirtualMachines(
-	serverName VARCHAR(30), userID BIGINT, virtualMachineID INTEGER, virtualMachineName VARCHAR(30),
+	serverName VARCHAR(30), domainUID VARCHAR(70), userID BIGINT, virtualMachineID INTEGER, virtualMachineName VARCHAR(30),
 	port INTEGER, password VARCHAR(65),
 	PRIMARY KEY (serverName, userID, virtualMachineID)) ENGINE=MEMORY;
 	
