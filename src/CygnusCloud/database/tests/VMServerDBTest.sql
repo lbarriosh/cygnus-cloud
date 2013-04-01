@@ -26,8 +26,7 @@ CREATE TABLE IF NOT EXISTS ActualVM(domainName VARCHAR(30) PRIMARY KEY, VMId INT
 DROP TABLE IF EXISTS VMBootCommand;
 
 CREATE TABLE VMBootCommand(domainName VARCHAR(30) PRIMARY KEY, commandID VARCHAR(70) NOT NULL,
-	FOREIGN KEY (domainName) REFERENCES ActualVM(domainName) ON DELETE CASCADE ON UPDATE CASCADE)
-	ENGINE=MEMORY;
+	FOREIGN KEY (domainName) REFERENCES ActualVM(domainName) ON DELETE CASCADE ON UPDATE CASCADE);
 
 
 # Comenzamos a rellenar las tablas con los valores por defecto

@@ -88,6 +88,17 @@ class libvirtConnector():
             domain = self.__connector.lookupByID(vmID)
             domain.destroy()
             
+    def destroyDomain(self, domainName):
+        """
+        Destruye el dominio cuyo nombre se nos proporciona como argumento.
+        Argumentos:
+            domainName: el nombre del dominio a destruir
+        Devuelve:
+            Nada
+        """
+        targetDomain = self.__connector.lookupByName(domainName)
+        targetDomain.destroy()
+            
     def getActiveDomainNames(self):
         idsMV = self.__connector.listDomainsID()
         result = []

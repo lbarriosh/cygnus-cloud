@@ -7,7 +7,7 @@ Virtual machine server packet handler definitions.
 
 from ccutils.enums import enum
 
-VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
+VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
                           "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT")
 
@@ -32,6 +32,20 @@ class VMServerPacketHandler(object):
         p.writeInt(machineId)
         p.writeInt(userId)
         p.writeString(commandID)
+        return p
+    
+    def createVMShutdownPacket(self, vmID):
+        """
+        Crea un paquete para apagar una máquina virtual
+        Args:
+            vmID: el identificador único de la máquina virtual
+        Returns:
+            Un paquete que contiene los datos especificados
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.DESTROY_DOMAIN)
+        p.writeString(vmID) # vmID es el identificador del comando de arranque de la máquina. Por eso
+                            # es un string.
         return p
     
     def createVMConnectionParametersPacket(self, vncServerIP, vncServerPort, password, commandID):
@@ -136,6 +150,8 @@ class VMServerPacketHandler(object):
             result["MachineID"] = p.readInt()
             result["UserID"] = p.readInt()
             result["CommandID"] = p.readString()
+        elif (packet_type == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
+            result["VMID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
             result["VNCServerIP"] = p.readString()
             result["VNCServerPort"] = p.readInt()

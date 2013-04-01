@@ -511,12 +511,10 @@ class VMServerDBConnector(BasicDatabaseConnector):
             Da de baja en la base de datos el puerto VNC que se le pasa como argumento 
              y con él, todas las características asociadas al mismo.
         ''' 
-        # Borramos la máquina virtual
-        sql = "DELETE FROM ActualVM WHERE domainName = '" + str(domainName) + "'"
-        # Ejecutamos el comando
-        self._executeUpdate(sql)
-        # Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
-        # Actualizamos la base de datos
+        update = "DELETE FROM ActualVM WHERE domainName = '" + str(domainName) + "'"
+        self._executeUpdate(update)
+        # La sentencia ON UPDATE CASCADE nos garantiza que se borrará el identificador del comand
+        # de arranque.
         
     def doesVMExist(self, port):   
         '''
@@ -590,9 +588,16 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(query, True)
         if (result == None) :
             return None
-        update = "DELETE FROM VMBootCommand WHERE domainName = '" + domainName + "';"
-        self._executeUpdate(update)
-        return result[0]
+        else :
+            return result[0]
+        
+    def getDomainNameFromVMBootCommand(self, commandID):
+        query = "SELECT domainName FROM VMBootCommand WHERE commandID = '{0}';".format(commandID)
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else :
+            return result[0]
     
     def __getAssignedResources(self):
         query = "SELECT macAddress, VNCPort FROM ActualVM;"

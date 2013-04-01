@@ -3,7 +3,7 @@
 This module contains statements to connect to a virtual machine
 server and control it.
 @author: Luis Barrios Hernández
-@version: 5.0
+@version: 6.0
 '''
 from __future__ import print_function
 
@@ -53,7 +53,13 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         if (command == "createvm") :
             userID = int(tokens.pop(0))
             machineID = int(tokens.pop(0))
-            p = pHandler.createVMBootPacket(userID, machineID, "123")
+            commandID = tokens.pop(0)
+            p = pHandler.createVMBootPacket(userID, machineID, commandID)
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "destroyvm") :
+            machineID = tokens.pop(0)
+            p = pHandler.createVMShutdownPacket(machineID)
             networkManager.sendPacket(ip_address, port, p)
             return False
         elif (command == "shutdown") :
@@ -79,7 +85,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
                 print("Error: unknown command")
             print("Usage: ")
             print("=====")
-            print("\tcreatevm <ID>: creates a virtual machine ")
+            print("\tcreatevm <userID> <machineID> <commandID> : creates a virtual machine ")
             print("\tshutdown: asks the virtual machine server to terminate")
             print("\tstatus: asks the virtual machine server the number of active VMs")
             print("\thalt: commands the virtual machine server to destroy all the virtual machines\n\t\t\

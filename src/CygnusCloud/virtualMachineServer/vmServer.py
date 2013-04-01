@@ -80,13 +80,14 @@ class VMServer(MainServerPacketReactor):
             self.__shutDown = True
         self.__freeDomainResources(domainInfo["name"])
         
-    def __freeDomainResources(self, domainName):
+    def __freeDomainResources(self, domainName, deleteDiskImages=True):
         dataPath = self.__dbConnector.getDomainImageDataPath(domainName)
         osPath = self.__dbConnector.getOsImagePathFromDomainName(domainName)
         pidToKill = self.__dbConnector.getVMPIDFromDomainName(domainName)
         
-        ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
-        ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
+        if (deleteDiskImages) :
+            ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
+            ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
         
         try :        
             ChildProcessManager.terminateProcess(pidToKill, VMServerException)
@@ -115,6 +116,8 @@ class VMServer(MainServerPacketReactor):
             self.__halt(data)
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA) :
             self.__sendVNCConnectionData()
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
+            self.__destroyDomain(data)
         
     def __sendVNCConnectionData(self):
         '''
@@ -215,6 +218,24 @@ class VMServer(MainServerPacketReactor):
         
         self.__dbConnector.registerVMResources(newName, vmID, newPort, newPassword, userID, webSockifyPID, newDataDisk, newOSDisk, newMAC, newUUID)
         self.__dbConnector.addVMBootCommand(newName, info["CommandID"])
+        
+    def __destroyDomain(self, packet):
+        """
+        Destruye una máquina virtual por petición explícita de su propietario.
+        Argumentos:
+            packet: un diccionario con los datos del paquete de destrucción
+        Devuelve:
+            Nada
+        """
+        domainName = self.__dbConnector.getDomainNameFromVMBootCommand(packet["VMID"])
+        if (domainName == None) :
+            # No informamos del error: el servidor de máquinas virtuales siempre intenta
+            # hacer lo que se le pide, y si no puede, no lo hace y no se queja.
+            return 
+        self.__libvirtConnector.destroyDomain(domainName)
+        # Libvirt borra las imágenes de disco, por lo que sólo tenemos que encargarnos de actualizar
+        # las bases de datos.
+        self.__freeDomainResources(domainName, False)
         
     
     def __serverStatusRequest(self, packet):

@@ -136,6 +136,11 @@ class DBWebServerTests(unittest.TestCase):
         result = self.__dbConnector.getVMBootCommand("VMName33")
         self.assertEquals(result, None, "getVMBootCommand does not work")
         
+    def test_getDomainNameFromVMBootCommand(self):
+        result = self.__dbConnector.getDomainNameFromVMBootCommand("123")
+        expectedResult = "VMName44"
+        self.assertEquals(result, expectedResult, "getDomainNameFromVMBootCommand does not work")
+        
     def test_addVMBootCommand(self):
         self.__dbConnector.addVMBootCommand("VMName33", "1234")
         result = self.__dbConnector.getVMBootCommand("VMName33")
