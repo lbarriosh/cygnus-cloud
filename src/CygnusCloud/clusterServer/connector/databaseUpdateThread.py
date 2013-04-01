@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 '''
-Status database update thread definitions
+Definiciones del hilo de actualización periódica de la base de datos de estado
 @author: Luis Barrios Hernández
 @version: 1.1
 '''
@@ -11,31 +11,28 @@ from time import sleep
 
 class UpdateHandler(object):
     """
-    This class defines the interface used to perform the status database's
-    periodic update.
+    Interfaz utilizada para realizar la actualización de la base de datos de estado
     """
     def sendUpdateRequestPackets(self):
         """
-        Sends the update request packets to the virtual machine servers
-        Args:
-            None
-        Returns:
-            Nothing
+        Envía las peticiones de actualización al servidor de cluster
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
         """
         raise NotImplementedError
 
 class StatusDatabaseUpdateThread(BasicThread):
     """
-    These threads will send the update requests to all the virtual machine servers
-    periodically.
+    Estos hilos refrescan la base de datos de estado periódicamente.
     """
     def __init__(self, updateHandler, sleepTime):
         """
-        Initializes the thread's state
-        Args:
-            updateHandler: the object that will send the update request packets.
-            sleepTime: the number of seconds that will separate two consecutive
-            update requests.
+        Inicializa el estado
+        Argumentos:
+            updateHandler: el objeto que envía los paquetes para obtener la información
+            sleepTime: tiempo (en segundos) que separa dos actualizaciones consecutivas.
         """
         BasicThread.__init__(self, "Status database update thread")
         self.__handler = updateHandler
@@ -43,11 +40,11 @@ class StatusDatabaseUpdateThread(BasicThread):
         
     def run(self):
         """
-        Sends the update request packets when necessary.
-        Args:
-            None
-        Returns:
-            Nothing
+        Envía los paquetes de actualización del estado
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
         """
         while not self.finish() :
             self.__handler.sendUpdateRequestPackets()

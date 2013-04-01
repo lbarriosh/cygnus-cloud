@@ -1,8 +1,8 @@
 # -*- coding: UTF8 -*-
 '''
-Command handler class definition.
+Definiciones del gestor de comandos
 @author: Luis Barrios Hernández
-@version: 1.0
+@version: 1.5
 '''
 
 from ccutils.enums import enum
@@ -18,19 +18,19 @@ from clusterServer.networking.packets import MAIN_SERVER_PACKET_T as PACKET_T
 
 class CommandsHandler(object):
     """
-    This class provides methods to serialize and deserialize commands and command outputs. 
+    Esta clase define métodos estáticos que serializan y deserializan comandos y salidas de comandos
     """
     
     @staticmethod
     def createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName):
         """
-        Creates a virtual machine server registration command
+        Crea un comando de registro de un servidor de máquinas virtuales
         Args:
-            vmServerIP: the virtual machine server's IPv4 address
-            vmServerPort: the virtual machine server's listenning port
-            vmServerName: the virtual machine server's name.
-        Returns:
-            A tuple (command type, command arguments) containing the command type and its serialized arguments.
+            vmServerIP: la IP del servidor
+            vmServerPort: el puerto en el que escucha
+            vmServerName: el nombre del servidor
+        Devuelve:
+            Una tupla (tipo de comando, argumentos) con el tipo del comando y sus argumentos serializados
         """
         args = "{0}${1}${2}".format(vmServerIP, vmServerPort, vmServerName)
         return (COMMAND_TYPE.REGISTER_VM_SERVER, args)
@@ -38,16 +38,14 @@ class CommandsHandler(object):
     @staticmethod
     def createVMServerUnregistrationOrShutdownCommand(unregister, vmServerNameOrIP, halt):
         """
-        Creates a virtual machine server unregistration or shutdown command
+        Crea un comando de borrado o apagado de un servidor de máquinas virtuales
         Args:
-            unregister: if True, the virtual machine server will be deleted from the system.
-            If false, it will only be shut down.
-            vmServerNameOrIP: the virtual machine server's name or IPv4 address
-            halt: if True, the virtual machine server will destroy all the active virtual machines and terminate.
-            If False, the virtual machine will wait for all the virtual machines to terminate, and then it will
-            shut down.
-        Returns:
-            A tuple (command type, command arguments) containing the command type and its serialized arguments.
+            unregister: indica si hay que borrar o no el servidor de máquinas virtuales
+            vmServerNameOrIP: el nombre o la IP del servidor
+            halt: si es True, el servidor se cargará todas las máquinas de los usuarios en cuanto
+            reciba el paquete. Si es False, esperará a que los usuarios terminen con ellas.
+        Devuelve:
+            Una tupla (tipo de comando, argumentos) con el tipo del comando y sus argumentos serializados
         """
         args =  "{0}${1}${2}".format(unregister, vmServerNameOrIP, halt)
         return (COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER, args)
@@ -55,44 +53,44 @@ class CommandsHandler(object):
     @staticmethod
     def createVMServerBootCommand(vmServerNameOrIP):
         """
-        Creates a virtual machine server boot command
+        Crea un comando de arranque de un servidor de máquinas virtuales
         Args:
-            vmServerNameOrIP: the virtual machine server's name or IPv4 address.
-        Returns:
-            A tuple (command type, command arguments) containing the command type and its serialized arguments.
+            vmServerNameOrIP: el nombre o la IP del servidor
+        Devuelve:
+            Una tupla (tipo de comando, argumentos) con el tipo del comando y sus argumentos serializados
         """
         args = vmServerNameOrIP
         return (COMMAND_TYPE.BOOTUP_VM_SERVER, args)
     
     @staticmethod
-    def createVMBootCommand(vmID, userID):
+    def createVMBootCommand(imageID, ownerID):
         """
-        Creates a virtual machine boot command
+        Crea un comando de arranque de una máquina virtual
         Args:
-            vmID: the virtual machine's unique identifier.
-            userID: the user's unique identifier.
-        Returns:
-            A tuple (command type, command arguments) containing the command type and its serialized arguments.
+            imageID: el identificador único de la imagen
+            ownerID: el identificador único del propietario de la imagen
+        Devuelve:
+            Una tupla (tipo de comando, argumentos) con el tipo del comando y sus argumentos serializados
         """
-        args = "{0}${1}".format(vmID, userID)
+        args = "{0}${1}".format(imageID, ownerID)
         return (COMMAND_TYPE.VM_BOOT_REQUEST, args)
     
     @staticmethod
     def createHaltCommand(haltVMServers): 
         """
-        Creates an infrastructure HALT command
+        Crea un comando que para toda la infraestructura
         Args:
-            haltVMServers: if True, the virtual machine servers will be immediately shut down. If false,
-            they will be shut down when they'll have no active virtual machines.
-        Returns:
-            A tuple (command type, command arguments) containing the command type and its serialized arguments.
+            haltVMServers: si es True, el servidor se cargará todas las máquinas de los usuarios en cuanto
+            reciba el paquete. Si es False, esperará a que los usuarios terminen con ellas.
+        Devuelve:
+            Una tupla (tipo de comando, argumentos) con el tipo del comando y sus argumentos serializados
         """
         return (COMMAND_TYPE.HALT, str(haltVMServers))
     
     @staticmethod
     def createDomainDestructionCommand(domainID):
         """
-        Crea un comando de destrucción del dominio
+        Crea un comando de destrucción de un dominio
         Argumentos:
             domainID: el identificador único del dominio que hay que destruir
         Devuelve:
@@ -103,12 +101,12 @@ class CommandsHandler(object):
     @staticmethod
     def deserializeCommandArgs(commandType, commandArgs):
         """
-        Deserializes a command's argument.
+        Deserializa los argumentos de un comando
         Args:
-            commandType: the command's type.
-            commandArgs: the command's args.
+            commandType: tipo de comando
+            commandArgs: un string con los argumentos del comando
         Returns:
-            a dictionary containing the command arguments.    
+            un diccionario con los argumentos del comando (deserializados)
         """
         l = commandArgs.split("$")
         result = dict()
@@ -134,12 +132,13 @@ class CommandsHandler(object):
     @staticmethod
     def createVMServerGenericErrorOutput(packet_type, serverNameOrIPAddress, errorMessage):
         """
-        Creates a virtual machine server boot up, unregistration or shutdown error command output.
+        Crea salidas de error para los comandos de arranque, apagado y borrado
+        de servidores de máquinas virtuales
         Args:
-            serverNameOrIPAddress: the virtual machine server's name or IP address
-            errorMessage: an error message
-        Returns:
-            A tuple (command output type, command output) containing the command output's type and its serialized content.
+            serverNameOrIPAddress: el nomrbe o la IP del servidor
+            errorMessage: un mensaje de error
+        Devuelve:
+            Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
         """
         content = "{0}${1}".format(serverNameOrIPAddress, errorMessage)
         if (packet_type == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
@@ -153,39 +152,41 @@ class CommandsHandler(object):
     @staticmethod
     def createVMServerRegistrationErrorOutput(vmServerIP, vmServerPort, vmServerName, errorMessage):
         """
-        Creates a virtual machine server registration error command output.
+        Crea salidas de error para los comandos de registro de servidores de máquinas virtuales
         Args:
-            serverNameOrIPAddress: the virtual machine server's name or IP address
-            errorMessage: an error message
-        Returns:
-            A tuple (command output type, command output) containing the command output's type and its serialized content.
+            vmServeriP: la IP del servidor
+            vmServerPort: el puerto en el que el serivodr escucha
+            vmServerName: el nombre del servidor
+            errorMessage: un mensaje de error
+        Devuelve:
+            Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
         """
         content = "{0}${1}${2}${3}".format(vmServerIP, vmServerPort, vmServerName, errorMessage)
         return (COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR, content)
     
     @staticmethod
-    def createVMBootFailureErrorOutput(vmID, errorMessage):
+    def createVMBootFailureErrorOutput(imageID, errorMessage):
         """
-        Creates a virtual machine boot up error command output.
+        Crea salidas de error para los comandos de arranque de máquinas virtuales
         Args:
-            serverNameOrIPAddress: the virtual machine server's name or IP address
-            errorMessage: an error message
-        Returns:
-            A tuple (command output type, command output) containing the command output's type and its serialized content.
+            imageID: el identificador único de la imagen
+            errorMessage: un mensaje de error
+        Devuelve:
+            Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
         """
-        content = "{0}${1}".format(vmID, errorMessage)
+        content = "{0}${1}".format(imageID, errorMessage)
         return (COMMAND_OUTPUT_TYPE.VM_BOOT_FAILURE, content)
     
     @staticmethod
     def createVMConnectionDataOutput(vncServerIPAddress, vncServerPort, vncServerPassword):
         """
-        Creates a virtual machine boot up command output that contains the connection parameters.
+        Crea la salida normal para los comandos de arranque de una máquina virtual. Esta contiene los datos de conexión.
         Args:
-            vncServerIPAddress: the VNC server's IP address
-            vncServerPort: the VNC server's port
-            vncServerPassword: the VNC server's password
-        Returns:
-            A tuple (command output type, command output) containing the command output's type and its serialized content.
+            vncServerIPAddress: la IP del servidor VNC
+            vncServerPort: el puerto del servidor VNC
+            vncServerPassword: la contraseña del servidor VNC
+        Devuelve:
+            Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
         """
         content = "{0}${1}${2}".format(vncServerIPAddress, vncServerPort, vncServerPassword)
         return (COMMAND_OUTPUT_TYPE.VM_CONNECTION_DATA, content)
@@ -196,7 +197,7 @@ class CommandsHandler(object):
         Crea un mensaje de error asociado a la destrucción de una máquina virtual
         Argumentos:
             errorMessage: el mensaje de error
-        Devuelve
+        Devuelve:
             Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
         """
         return (COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR, errorMessage)
@@ -204,12 +205,12 @@ class CommandsHandler(object):
     @staticmethod
     def deserializeCommandOutput(commandOutputType, content):
         """
-        Deserializes a command's argument.
+        Deserializa la salida de un comando
         Args:
-            commandType: the command's type.
-            commandArgs: the command's args.
+            commandType: el tipo de la salida del comando.
+            commandArgs: la salida del comando serializada
         Returns:
-            A dictionary containing the command's output
+            Un diccionario con la salida del comando deserializada
         """
         l = content.split("$")
         result = dict()
