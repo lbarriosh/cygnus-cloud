@@ -173,7 +173,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket(data["VMServerIP"], data["VMServerPort"], p)
             
             # Indicar al endpoint de la web que el comando se ha ejecutado con éxito
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
         except Exception as e:                
             p = self.__webPacketHandler.createVMServerRegistrationErrorPacket(data["VMServerIP"], 
                                                                             data["VMServerPort"], 
@@ -199,9 +199,10 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         # Empezamos apagando el servidor si está arrancado
         serverId = self.__dbConnector.getVMServerID(key)
         if (serverId != None) :
-            # Las máquinas virtuales activas que alberga ese servidor se destruirán
+            # Las máquinas virtuales activas que alberga ese servidor se destruirán => las borramos
             self.__dbConnector.deleteHostedVMs(serverId)
             serverData = self.__dbConnector.getVMServerBasicData(serverId)
+            
             status = serverData["ServerStatus"]
             if (status == SERVER_STATE_T.READY or status == SERVER_STATE_T.BOOTING) :
                 if not halt :
@@ -219,7 +220,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 self.__dbConnector.deleteVMServer(key)
             if (useCommandID) :
                 # Hay que enviar una respuesta al servidor de máquinas virtuales
-                p = self.__webPacketHandler.createCommandExecutedPacket(commandID)
+                p = self.__webPacketHandler.createExecutedCommandPacket(commandID)
                 self.__networkManager.sendPacket('', self.__webPort, p)
         else :
             # Error
@@ -283,7 +284,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             
             # Indicar al endpoint que el comando se ha ejecutado con éxito
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
         except Exception as e:
             p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.VM_SERVER_BOOTUP_ERROR, 
                                                                          serverNameOrIPAddress, str(e), data["CommandID"])
@@ -467,7 +468,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 # Dormimos para no enviar demasiadas conexiones por segundo a MySQL
                 sleep(1) 
             else :
-                # Borramos la máquina activa
+                # Borramos la máquina activa (sabemos que no existe)
                 self.__dbConnector.deleteActiveVMLocation(data[0])
                 # Creamos el paquete de error y se lo enviamos al endpoint de la web
                 p = self.__webPacketHandler.createVMBootFailurePacket(data[1], errorMessage, data[0])

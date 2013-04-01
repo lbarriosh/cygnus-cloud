@@ -114,7 +114,7 @@ class VMServerPacketHandler(object):
     
     def createActiveVMsDataPacket(self, serverIPAddress, segment, sequenceSize, data):
         """
-        Creates an active virtual machines data packet
+        Creates an active virtual machines data data
         Args:
             serverIPAddress: the VNC server's IPv4 address
             segment: the data's segment number
