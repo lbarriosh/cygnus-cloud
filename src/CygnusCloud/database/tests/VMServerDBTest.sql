@@ -23,9 +23,7 @@ CREATE TABLE IF NOT EXISTS ActualVM(domainName VARCHAR(30) PRIMARY KEY, VMId INT
 	macAddress VARCHAR(20), uuid VARCHAR(40), 
 	FOREIGN KEY (VMId) REFERENCES VirtualMachine(VMId) ON DELETE CASCADE ON UPDATE CASCADE);
 
-DROP TABLE IF EXISTS VMBootCommand;
-
-CREATE TABLE VMBootCommand(domainName VARCHAR(30) PRIMARY KEY, commandID VARCHAR(70) NOT NULL,
+CREATE TABLE ActiveDomainUIDs(domainName VARCHAR(30) PRIMARY KEY, commandID VARCHAR(70) NOT NULL,
 	FOREIGN KEY (domainName) REFERENCES ActualVM(domainName) ON DELETE CASCADE ON UPDATE CASCADE);
 
 
@@ -60,5 +58,5 @@ INSERT IGNORE INTO ActualVM VALUES("VMName44",1,
 	"./VMNameCopy3","./OSImagePath4",
 	"2C:00:00:00:00:03","fce083a2-5d6d-11e2-a3f0-001f16b99e1d");
 	
-INSERT IGNORE INTO VMBootCommand VALUES ("VMName11", "Command1"), ("VMName22", "Command2"),
+INSERT IGNORE INTO ActiveDomainUIDs VALUES ("VMName11", "Command1"), ("VMName22", "Command2"),
 	("VMName33", "Command3"), ("VMName44", "Command4");

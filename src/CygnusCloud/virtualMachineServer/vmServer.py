@@ -118,6 +118,8 @@ class VMServer(MainServerPacketReactor):
             self.__sendActiveVMsVNCConnectionData()
         elif (data['packet_type'] == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
             self.__destroyDomain(data)
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS) :
+            self.__sendActiveDomainUIDs()
         
     def __sendActiveVMsVNCConnectionData(self):
         '''
@@ -259,6 +261,18 @@ class VMServer(MainServerPacketReactor):
         
     def __getNewPassword(self):
         return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(passwordLength), VMServerException)
+    
+    def __sendActiveDomainUIDs(self):
+        """
+        Envía los UIDs de los dominios activos al servidor de cluster
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
+        activeDomainUIDs = self.__dbConnector.getActiveDomainUIDs()
+        packet = self.__packetManager.createActiveDomainUIDsPacket(self.__vncServerIP, activeDomainUIDs)
+        self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
     def hasFinished(self):
         return self.__shutDown

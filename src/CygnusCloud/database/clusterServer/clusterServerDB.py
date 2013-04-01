@@ -427,3 +427,11 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         """
         update = "DELETE FROM ActiveVMDistribution WHERE serverID = {0};".format(serverID)
         self._executeUpdate(update)
+        
+    def registerHostedVMs(self, serverID, hostedVMs):
+        """
+        Registra un conjunto de máquinas virtuales almacenadas en un servidor
+        """
+        update = "INSERT INTO ActiveVMDistribution VALUES ('{0}',{1});"
+        for hostedDomainUID in hostedVMs :
+            self._executeUpdate(update.format(hostedDomainUID, serverID))

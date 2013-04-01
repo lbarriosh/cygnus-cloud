@@ -180,6 +180,12 @@ class ClusterServerDBTests(unittest.TestCase):
         result = self.__connector.getActiveVMHostID("machine3")
         expectedResult = None
         self.assertEquals(result, expectedResult, "registerActiveVMLocation or getActiveVMHostID do not work")
+        self.__connector.registerHostedVMs(3, ["machine4", "machine5"])
+        result = []
+        result.append(self.__connector.getActiveVMHostID("machine4"))
+        result.append(self.__connector.getActiveVMHostID("machine5"))
+        expectedResult = [3, 3]
+        self.assertEquals(result, expectedResult, "registerHostedVMs does not work")
         
         
 if __name__ == "__main__":

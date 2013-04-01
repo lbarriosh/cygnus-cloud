@@ -9,7 +9,7 @@ from ccutils.enums import enum
 
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
-                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT")
+                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS")
 
 class VMServerPacketHandler(object):
     
@@ -135,6 +135,22 @@ class VMServerPacketHandler(object):
             p.writeString(row["VNCPass"])
         return p    
     
+    def createActiveDomainUIDsPacket(self, vncServerIP, data):
+        """
+        Crea un paquete que contiene los identificadores únicos de todas las máquinas virtuales
+        Argumentos:
+            vncServerIP: la dirección IP del servidor VNC. Se usará para identificar de forma única a este servidor
+            data: lista con los identificadores únicos de las máquinas virtuales
+        Devuelve:
+            un paquete con los datos de los argumentos
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.ACTIVE_DOMAIN_UIDS)
+        p.writeString(vncServerIP)
+        for domain_uid in data :
+            p.writeString(domain_uid)
+        return p
+    
     def readPacket(self, p):
         """
         Reads the content of a virtual machine server packet
@@ -161,6 +177,13 @@ class VMServerPacketHandler(object):
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS and p.hasMoreData()) :
             result["VMServerIP"] = p.readString()
             result["ActiveDomains"] = p.readInt()
+        elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_DOMAIN_UIDS) :
+            ac = []
+            result["VMServerIP"] = p.readString()
+            while (p.hasMoreData()):
+                ac.append(p.readString())
+            result["Domain_UIDs"] = ac
+
         # Note that the connection data segments will be sent to the web server immediately.
         # Therefore, they don't need to be read in the main server or in the virtual machine server.        
         return result

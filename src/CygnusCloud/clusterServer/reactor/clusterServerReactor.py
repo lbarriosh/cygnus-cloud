@@ -171,8 +171,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__dbConnector.registerVMServer(data["VMServerName"], data["VMServerIP"], 
                                                     data["VMServerPort"])
             
-            p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
-            self.__networkManager.sendPacket(data["VMServerIP"], data["VMServerPort"], p)
+            self.__sendStatusRequestPackets(data["VMServerIP"], data["VMServerPort"])
+            
             
             # Indicar al endpoint de la web que el comando se ha ejecutado con éxito
             p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
@@ -181,6 +181,20 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                                                                             data["VMServerPort"], 
                                                                             data["VMServerName"], str(e), data["CommandID"])        
         self.__networkManager.sendPacket('', self.__webPort, p)
+        
+    def __sendStatusRequestPackets(self, vmServerIP, vmServerPort):
+        """
+        Envía los paquetes de solicitud de estado a un servidor de máquinas virtuales
+        Argumentos:
+            vmServerIP : la IP del servidor de máquinas virtuales
+            vmServerPort: el puerto del servidor de máquinas virtuales
+        Devuelve:
+            Nada
+        """
+        p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
+        self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
+        p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS)            
+        self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
             
     def __unregisterOrShutdownVMServer(self, data):
         """
@@ -282,8 +296,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)
             
-            p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
-            self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
+            self.__sendStatusRequestPackets(serverData["ServerIP"], serverData["ServerPort"])
             
             # Indicar al endpoint que el comando se ha ejecutado con éxito
             p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
@@ -430,6 +443,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendVMConnectionData(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_DATA) :
             self.__sendActiveVMsVNCConnectionData(packet)
+        elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_DOMAIN_UIDS) :
+            self.__processActiveDomainUIDs(data)
             
     def processServerReconnectionData(self, ipAddress, reconnection_status) :
         """
@@ -478,6 +493,10 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         p = self.__webPacketHandler.createVMConnectionDataPacket(data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)        
+        
+    def __processActiveDomainUIDs(self, data):
+        vmServerID = self.__dbConnector.getVMServerID(data["VMServerIP"])
+        self.__dbConnector.registerHostedVMs(vmServerID, data["Domain_UIDs"])
     
     def monitorVMBootCommands(self):
         """

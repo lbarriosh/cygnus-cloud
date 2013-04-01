@@ -162,5 +162,10 @@ class DBWebServerTests(unittest.TestCase):
         expectedResult = ["VMName11", "VMName22", "VMName33", "VMName44"]
         self.assertEquals(result, expectedResult, "getActiveDomainNames() does not work")      
         
+    def test_getActiveDomainUIDs(self):
+        result = self.__dbConnector.getActiveDomainUIDs()
+        expectedResult =  ["Command1", "Command2", "Command3", "Command4"]
+        self.assertEquals(result, expectedResult, "getActiveDomainUIDs() does not work")
+        
 if __name__ == "__main__":
     unittest.main()

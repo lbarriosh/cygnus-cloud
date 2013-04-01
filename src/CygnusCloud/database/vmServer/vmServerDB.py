@@ -551,8 +551,8 @@ class VMServerDBConnector(BasicDatabaseConnector):
         Devuelve:
             Lista de diccionarios con los datos de conexión a las máquinas virtuales
         '''
-        query = "SELECT VMBootCommand.commandID, ActualVM.userId, ActualVM.VMId, ActualVM.domainName, ActualVM.VNCPort, ActualVM.VNCPass\
-            FROM ActualVM, VMBootCommand WHERE ActualVM.domainName = VMBootCommand.domainName;"
+        query = "SELECT ActiveDomainUIDs.commandID, ActualVM.userId, ActualVM.VMId, ActualVM.domainName, ActualVM.VNCPort, ActualVM.VNCPass\
+            FROM ActualVM, ActiveDomainUIDs WHERE ActualVM.domainName = ActiveDomainUIDs.domainName;"
         results = self._executeQuery(query, False)
         if (results == None) :
             return []
@@ -581,11 +581,11 @@ class VMServerDBConnector(BasicDatabaseConnector):
             return ac
         
     def addVMBootCommand(self, domainName, commandID):
-        update = "INSERT INTO VMBootCommand VALUES ('" + domainName + "', '" + commandID + "');"
+        update = "INSERT INTO ActiveDomainUIDs VALUES ('" + domainName + "', '" + commandID + "');"
         self._executeUpdate(update)
         
     def getVMBootCommand(self, domainName):
-        query = "SELECT commandID FROM VMBootCommand WHERE domainName = '" + domainName + "';"
+        query = "SELECT commandID FROM ActiveDomainUIDs WHERE domainName = '" + domainName + "';"
         result = self._executeQuery(query, True)
         if (result == None) :
             return None
@@ -593,7 +593,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
             return result[0]
         
     def getDomainNameFromVMBootCommand(self, commandID):
-        query = "SELECT domainName FROM VMBootCommand WHERE commandID = '{0}';".format(commandID)
+        query = "SELECT domainName FROM ActiveDomainUIDs WHERE commandID = '{0}';".format(commandID)
         result = self._executeQuery(query, True)
         if (result == None) :
             return None
@@ -625,3 +625,18 @@ class VMServerDBConnector(BasicDatabaseConnector):
             self.__allocateMACAddressAndUUID(macAddress)
         for port in assignedVNCPorts :
             self.__allocatePort(port)
+            
+    def getActiveDomainUIDs(self):
+        """
+        Devuelve los identificadores únicos de las máquinas virtuales activas
+        Argumentos:
+            Ninguna
+        Devuelve:
+            Una lista con los identificadores únicos de las máquinas virtuales activas.
+        """
+        query = "SELECT CommandID FROM ActiveDomainUIDs;"
+        rows = self._executeQuery(query, False)
+        result = []
+        for row in rows :
+            result.append(row[0])
+        return result
