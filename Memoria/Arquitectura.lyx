@@ -425,7 +425,14 @@ frameworks
 \begin_layout Section
 Subsistemas de 
 \emph on
-CygnusCloud
+CygnusCloud 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Subsistemas-de-CygnusCloud"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2338,17 +2345,31 @@ network
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: meter diagrama UML definitivo para las conexiones tras explicar los
+ hilos de red
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Los módulos de este paquete proporcionan una interfaz que permite utilizar
  la librería de red 
-\emph on
+\family typewriter
 twisted
-\emph default
+\family default
  a un alto nivel de abstracción.
  Puesto que el diseño de esta parte del sistema está íntimamente relacionado
  con el funcionamiento de la librería de red 
-\emph on
+\family typewriter
 twisted
-\emph default
+\family default
 , es fundamental que el lector esté familiarizado con los conceptos básicos
  de esta librería.
 \end_layout
@@ -2356,25 +2377,29 @@ twisted
 \begin_layout Standard
 Por ello, comenzaremos mostrando, en líneas generales, cómo funciona la
  librería de red 
-\emph on
+\family typewriter
 twisted
-\emph default
+\family default
 .
  Posteriormente, describiremos el contenido de este paquete en orden creciente
  del nivel de abstracción, profundizando más en el funcionamiento de 
-\emph on
+\family typewriter
 twisted
-\emph default
+\family default
  cuando sea preciso.
 \end_layout
 
 \begin_layout Standard
 En cualquier caso, dado que 
-\emph on
+\family typewriter
 twisted
-\emph default
- es una librería con muchas funciones, nos centraremos en mostrar su funcionamie
-nto más general.
+\family default
+ es una librería con muchas funciones, sólo mostraremos los aspectos de
+ su funcionamiento más relacionados con el diseño del paquete 
+\family typewriter
+network
+\family default
+.
  Si el lector está interesado en ampliar la información que aquí le proporcionam
 os, le remitimos a la documentación oficial (
 \begin_inset CommandInset citation
@@ -2399,9 +2424,9 @@ key "TwistedBook"
 
 \begin_layout Subsubsection
 La librería de red 
-\emph on
+\family typewriter
 twisted
-\emph default
+\family default
 : visión general
 \emph on
  
@@ -2423,9 +2448,9 @@ reference "sub:Uso-de-twisted"
 \end_inset
 
 , 
-\emph on
+\family typewriter
 twisted
-\emph default
+\family default
  es una librería de red totalmente basada en eventos.
  Así, todas las tareas que realiza (como la recepción de datos, el establecimien
 to de conexiones, la detección de desconexiones,\SpecialChar \ldots{}
@@ -2434,9 +2459,9 @@ to de conexiones, la detección de desconexiones,\SpecialChar \ldots{}
 
 \begin_layout Standard
 Para generar los eventos, 
-\emph on
+\family typewriter
 twisted
-\emph default
+\family default
  utiliza el patrón 
 \emph on
 reactor
@@ -2447,9 +2472,9 @@ sockets
 \emph default
  y actúa en consecuencia.
  De esta manera, todas las aplicaciones que utilizen 
-\emph on
+\family typewriter
 twisted
-\emph default
+\family default
  seguirán el siguiente esquema de comportamiento:
 \end_layout
 
@@ -2509,7 +2534,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/gráfico_twisted.pdf
+	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/gráfico_twisted.pdf
 	scale 70
 
 \end_inset
@@ -2534,10 +2559,6 @@ twisted
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -2706,7 +2727,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Procesamiento de datos entrantes (DS).pdf
+	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Procesamiento de datos entrantes (DS).pdf
 	scale 80
 
 \end_inset
@@ -2733,10 +2754,6 @@ twisted
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -2847,7 +2864,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Relaciones Endpoints.pdf
+	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Relaciones Endpoints.pdf
 	scale 80
 
 \end_inset
@@ -2930,13 +2947,13 @@ endpoints
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Establecimiento conexión twisted (DS).pdf
+	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Establecimiento conexión twisted (DS).pdf
 	scale 80
 
 \end_inset
@@ -2989,7 +3006,7 @@ en el caso de una conexión de tipo servidor, existirán tantos protocolos
 \end_layout
 
 \begin_layout Paragraph
-Envío de datos
+Envío de datos 
 \end_layout
 
 \begin_layout Standard
@@ -3044,39 +3061,74 @@ Packet
 \end_layout
 
 \begin_layout Standard
-Para utilizar la librería de red 
-\emph on
-twisted
-\emph default
- a un mayor nivel de abstracción, es imprescindible hacer transparente al
- usuario la serialización y la deserialización de la información que circula
- a través de la red.
- Esta es la principal finalidad de la clase 
+Como ya hemos mencionado, el principal objetivo de las clases del paquete
+ 
 \family typewriter
-Packet
+network
 \family default
-.
+ es proporcionar una forma de utilizar la librería de red twisted a un elevado
+ nivel de abstracción.
+ Para ello, es necesario, como mínimo,
+\end_layout
+
+\begin_layout Itemize
+hacer totalmente transparentes al usuario los procesos de serialización
+ y de deserialización de la información que se envía y recibe, y
+\end_layout
+
+\begin_layout Itemize
+fijar la prioridad de los datos que circulan por la red.
+ Esto es fundamental para que el sistema pueda responder rápidamente ante
+ eventos de suma importancia como la caída de un servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-Por otra parte, no toda la información que circula por la red tiene la misma
- naturaleza o la misma importancia.
- Por ello, los paquetes también tienen asociado un tipo y una prioridad.
- Los valores que pueden tomar estos dos campos aparecen en el cuadro 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Tipos-prioridades-paquetes"
+La clase 
+\family typewriter
+Packet
+\family default
+ cubre estas dos necesidades.
+ Sus instancias representan paquetes de red, y tienen asociada la siguiente
+ información:
+\end_layout
 
-\end_inset
+\begin_layout Itemize
+un tipo.
+ Existen dos: uno para transportar datos de gestión de la red y otro para
+ transportar datos del cliente.
+ Los paquetes de gestión de la red son siempre más prioritarios que los
+ que transportan datos del cliente.
+\end_layout
 
-.
+\begin_layout Itemize
+una prioridad.
+ Se trata de un valor entero, positivo en el caso de los paquetes que contienen
+ datos de los usuarios y negativo en el caso de los paquetes de gestión
+ de la red.
+ Cuanto 
+\emph on
+menor
+\emph default
+ es la prioridad de un paquete, 
+\emph on
+más
+\emph default
+ prioritario será.
+\end_layout
+
+\begin_layout Itemize
+una secuencia de 
+\emph on
+bytes
+\emph default
+ con los datos del paquete.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -3094,7 +3146,7 @@ status open
 \begin_layout Plain Layout
 
 \series bold
-Tipo de paquete
+Tipo 
 \end_layout
 
 \end_inset
@@ -3116,7 +3168,7 @@ Rango de la prioridad
 \begin_layout Plain Layout
 
 \series bold
-¿Se usa en el código del cliente?
+Tamaño máximo (paquete completo)
 \end_layout
 
 \end_inset
@@ -3136,10 +3188,10 @@ Datos del cliente
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $[0,\infty]$
+\begin_inset Formula $[0,32767$
 \end_inset
 
-
+]
 \end_layout
 
 \end_inset
@@ -3148,7 +3200,7 @@ Datos del cliente
 \begin_inset Text
 
 \begin_layout Plain Layout
-Sí
+64 KB
 \end_layout
 
 \end_inset
@@ -3168,7 +3220,7 @@ Gestión de la red
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $[-\infty,-1]$
+\begin_inset Formula $[-32768,-1]$
 \end_inset
 
 
@@ -3180,7 +3232,7 @@ Gestión de la red
 \begin_inset Text
 
 \begin_layout Plain Layout
-No
+64 KB
 \end_layout
 
 \end_inset
@@ -3203,7 +3255,7 @@ name "tab:Tipos-prioridades-paquetes"
 
 \end_inset
 
-Tipos de paquetes y sus prioridades
+Características de los distintos tipos de paquete
 \end_layout
 
 \end_inset
@@ -3211,70 +3263,116 @@ Tipos de paquetes y sus prioridades
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-La prioridad de los paquetes es un valor entero, que toma valores positivos
- en el caso de los paquetes que utilizan los usuarios y valores negativos
- en el caso de los paquetes de gestión de la red.
- Cuanto menor sea el valor numérico que toma la prioridad de un paquete,
- más prioritario será.
- Nótese que los rangos de prioridad están escogidos de modo que los paquetes
- de gestión de la red siempre son más prioritarios que los paquetes que
- transportan los datos del cliente.
+El cuadro 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tipos-prioridades-paquetes"
+
+\end_inset
+
+ recoge las características de los dos tipos de paquete.
+ En ambos casos, el tamaño máximo del paquete completo (es decir, incluyendo
+ la cabecera con el tipo y la prioridad y los datos) no puede exceder los
+ 64 KB.
+ Esto nos permite
+\end_layout
+
+\begin_layout Itemize
+garantizar que no haya usuarios que acaparen el ancho de banda de la red
+ mediante el envío de paquetes de gran tamaño.
+\end_layout
+
+\begin_layout Itemize
+mantener el tiempo de respuesta de la red dentro de unos márgenes razonables.
+ Puesto que los paquetes de pequeño tamaño tardan menos en enviarse y en
+ ser recibidos, los paquetes más prioritarios podrán 
+\begin_inset Quotes eld
+\end_inset
+
+adelantar
+\begin_inset Quotes erd
+\end_inset
+
+ a los paquetes menos prioritarios que les preceden y llegar a su destino
+ tan rápido como sea posible.
+\end_layout
+
+\begin_layout Itemize
+reducir el tiempo de procesamiento de los paquetes que se van a redirigir.
+\end_layout
+
+\begin_layout Paragraph
+Serialización y deserialización de los datos 
 \end_layout
 
 \begin_layout Standard
-El tipo de paquete y su prioridad se almacenan en el encabezado del paquete.
- Para garantizar que siempre está bien construido (lo que es crítico para
- garantizar el correcto funcionamiento de la red), no se permite a los clientes
- instanciar objetos 
+Para hacer la serialización y deserialización de los datos totalmente transparen
+tes a los usuarios, la clase 
 \family typewriter
 Packet
 \family default
- directamente.
-\end_layout
-
-\begin_layout Standard
-Para serializar los datos, la clase 
-\family typewriter
-Packet
-\family default
- dispone de métodos de escritura que serializan 
+ dispone de métodos de lectura y escritura de 
 \emph on
 strings
 \emph default
 , valores enteros, valores booleanos y números en punto flotante.
- Los datos serializados se almacenaran en una estructura de datos intermedia,
- que se leerá a la hora de enviar el paquete para obtener la información
- serializada que hay que enviar.
 \end_layout
 
 \begin_layout Standard
-El formato de un paquete serializado es el siguiente:
-\end_layout
+Tal y como mencionamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:La-librería-de-red-twisted"
 
-\begin_layout Standard
-\noindent
-\align center
+\end_inset
 
+, la librería 
 \family typewriter
-_Packet(tipo, prioridad)<datos>
-\end_layout
-
-\begin_layout Standard
-La cadena 
-\family typewriter
-datos
+twisted
 \family default
- se construye de acuerdo a la siguiente expresión regular:
+ sólo es capaz de enviar y recibir 
+\emph on
+strings
+\emph default
+, por lo que 
+\end_layout
+
+\begin_layout Itemize
+los métodos de escritura convierten a 
+\emph on
+strings 
+\emph default
+los valores a escribir en el paquete y los añaden al final de una estructura
+ de datos intermedia, y
+\end_layout
+
+\begin_layout Itemize
+los métodos de lectura extraen 
+\emph on
+strings 
+\emph default
+de la estructura de datos intermedia y los convierten en valores del tipo
+ que el usuario quiere leer.
+ Todas las lecturas son destructivas, es decir, cada dato escrito en el
+ paquete sólo puede leerse una vez.
+\end_layout
+
+\begin_layout Standard
+La estructura de datos intermedia es un 
+\emph on
+string
+\emph default
+.
+ Para leer y escribir en ella se usan los métodos de extracción de subcadenas
+ y concatenación definidos en la librería estándar de Python.
+ El formato de los datos serializados viene dado por la siguiente expresión
+ regular:
 \end_layout
 
 \begin_layout Standard
@@ -3286,137 +3384,16 @@ datos
 \end_layout
 
 \begin_layout Standard
-Los códigos asignados a los tipos de paquete aparecen en el cuadro 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Códigos-asignados-tipos-paquete"
-
-\end_inset
-
-, y las etiquetas de tipo que pueden utilizarse aparecen en el cuadro 
+Los valores se serializan y deserializan con los métodos definidos en la
+ librería estándar de Python.
+ El cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Etiquetas-de-tipo-paquete"
 
 \end_inset
 
-.
- Para serializar los valores y la prioridad, se hace uso de los métodos
- de conversión a 
-\emph on
-string
-\emph default
- del lenguaje Python.
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float table
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="2">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Código
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Tipo de paquete
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Datos del cliente
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Gestión de la red
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Códigos-asignados-tipos-paquete"
-
-\end_inset
-
-Códigos asignados a los tipos de paquete
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+ contiene la codificación de las etiquetas de tipo de los paquetes.
 \end_layout
 
 \begin_layout Standard
@@ -3572,22 +3549,48 @@ Etiquetas de tipo que pueden aparecer en un paquete
 \end_layout
 
 \begin_layout Standard
-Por otro lado, la deserialización de los datos se realiza siempre bajo demanda
- del cliente y en forma de lectura destructiva: cuando el cliente lee un
- valor, se eliminan sus bytes de la estructura de datos intermedia y se
- devuelve el valor leído.
+También es necesario serializar la cabecera del paquete.
+ Su formato es el siguiente:
 \end_layout
 
 \begin_layout Standard
-Finalmente, en caso de que una operación de la clase 
+\noindent
+\align center
+
 \family typewriter
-Packet
-\family default
- falle, se lanzará una excepción de la clase 
+tipo,prioridad
+\end_layout
+
+\begin_layout Standard
+Nuevamente, tanto el tipo como la prioridad del paquete se serializan y
+ deserializan utilizando métodos de la librería estándar de Python.
+ El paquete serializado se obtiene concatenando la cabecera y los datos
+ serializados, y su formato viene descrito por esta expresión regular:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
 \family typewriter
-PacketException
-\family default
- conteniendo el correspondiente mensaje de error.
+tipo,prioridad(etiqueta de tipo$valor$)*
+\end_layout
+
+\begin_layout Standard
+Finalmente, los métodos de la clase Packet también garantizan que los paquetes
+ siempre están bien formados, es decir, que
+\end_layout
+
+\begin_layout Itemize
+la prioridad es la adecuada para el tipo de paquete
+\end_layout
+
+\begin_layout Itemize
+no se excede el tamaño máximo del paquete al escribir datos en él
+\end_layout
+
+\begin_layout Itemize
+los datos se leen del paquete en el mismo orden en que se escriben
 \end_layout
 
 \begin_layout Subsubsection
@@ -3595,32 +3598,60 @@ Envío y recepción de datos
 \end_layout
 
 \begin_layout Standard
-Para enviar y recibir datos mediante la librería 
-\emph on
+Como ya mencionamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:La-librería-de-red-twisted"
+
+\end_inset
+
+, para poder enviar y recibir información utilizando la librería 
+\family typewriter
 twisted
-\emph default
- utilizamos dos clases: una subclase de 
+\family default
+ es necesario definir dos clases:
+\end_layout
+
+\begin_layout Itemize
+una subclase de 
 \family typewriter
 Protocol
 \family default
- (
+, 
 \family typewriter
 CygnusCloudProtocol
 \family default
-) y una subclase de
+.
+ Sus instancias procesarán los datos recibidos a través de cada conexión.
+\end_layout
+
+\begin_layout Itemize
+una subclase de 
 \family typewriter
- Factory
+Factory
 \family default
- (
+, 
 \family typewriter
 CygnusCloudProtocolFactory
 \family default
-).
- Las relaciones de estas clases con las demás aparecen en el diagrama de
- clases de la figura 
+.
+ Sus instancias crearán objetos CygnusCloudProtocol cuando se establezcan
+ las conexiones.
+\end_layout
+
+\begin_layout Standard
+Las relaciones entre estas clases, la clase 
+\family typewriter
+Packet
+\family default
+ y las clases de la librería 
+\family typewriter
+twisted
+\family default
+ aparecen en el diagrama de clases de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Interacción-twisted-diagrama-clases"
+reference "fig:Interacción-con-twisted-nivel-inferior"
 
 \end_inset
 
@@ -3629,7 +3660,7 @@ reference "fig:Interacción-twisted-diagrama-clases"
 \family typewriter
 CygnusCloud
 \family default
- como 
+ utilizando las siglas 
 \family typewriter
 CC
 \family default
@@ -3640,7 +3671,19 @@ CC
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama clases interacción twisted.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
 
 \begin_layout Plain Layout
 \begin_inset Caption
@@ -3648,15 +3691,15 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Interacción-twisted-diagrama-clases"
+name "fig:Interacción-con-twisted-nivel-inferior"
 
 \end_inset
 
-Interacción con la librería
+Interacción con 
 \emph on
- twisted
+twisted
 \emph default
-: diagrama de clases
+ a muy bajo nivel de abstracción: diagrama de clases
 \end_layout
 
 \end_inset
@@ -3670,7 +3713,14 @@ Interacción con la librería
 \end_layout
 
 \begin_layout Standard
-La relación entre las clases 
+Lo primero que llama la atención en el diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Interacción-con-twisted-nivel-inferior"
+
+\end_inset
+
+ es la dependencia cíclica existente entre las clases 
 \family typewriter
 CygnusCloudProtocol
 \family default
@@ -3678,189 +3728,195 @@ CygnusCloudProtocol
 \family typewriter
 CygnusCloudProtocolFactory
 \family default
- es más compleja de lo que en principio cabría esperar.
- Tal y como dijimos en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Interacción-twisted-diagrama-clases"
-
+ .
+ Dicha dependencia está provocada por el funcionamiento de la librería 
+\family typewriter
+twisted
+\family default
+: cada par de máquinas conectadas se comunica siempre a través de una conexión
+ bidireccional.
+ Por ello, si 
+\begin_inset Formula $n$
 \end_inset
 
-, hay 
-\emph on
-una
-\emph default
- instancia de 
-\family typewriter
-Protocol
-\family default
- en cada extremo de la comunicación.
- Esto genera un problema: como las conexiones no tienen por qué ser bidirecciona
-les, en un extremo de la conexión puede haber 
-\emph on
-varios
-\emph default
- objetos 
-\family typewriter
-Protocol
-\family default
-.
- Por ejemplo, si siete clientes se conectan a un servidor, en dicho servidor
- habrá siete objetos 
-\family typewriter
-Protocol
-\family default
- asociados a esa conexión: uno para cada cliente.
+ clientes se conectan a un mismo servidor,
 \end_layout
 
-\begin_layout Standard
-Para resolver este problema, la clase 
-\family typewriter
-CygnusCloudProtocolFactory
-\family default
- define los métodos de envío de paquetes, de modo que estos se enviarán
- a través de todos los objetos 
-\family typewriter
-Protocol
-\family default
- asociados a la conexión.
- Asimismo, la clase 
-\family typewriter
-CygnusCloudProtocolFactory
-\family default
- tratará las notificaciones de conexión y desconexión que la librería 
-\emph on
-twisted
-\emph default
- envía a través de los objetos 
-\family typewriter
-Protocol
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-La recepción de paquetes es mucho más sencilla: cuando se reciben datos
- a través de cualquier objeto Protocol, se añaden a una cola de paquetes
- recibidos (que es una instancia de 
-\family typewriter
-MultithreadingPriorityQueue
-\family default
-).
- Como veremos más adelante, en principio cada conexión dispone de su propia
- cola de recepción de paquetes.
-\end_layout
-
-\begin_layout Standard
-Por otra parte, como ya hemos dicho la librería de red 
-\emph on
-twisted
-\emph default
- sólo puede enviar 
-\emph on
-strings
-\emph default
- y recibir 
-\emph on
-strings
-\emph default
-.
- Para serializar los datos antes de enviarlos y deserializarlos tras recibirlos,
- los objetos 
+\begin_layout Itemize
+en los clientes habrá un único objeto 
 \family typewriter
 CygnusCloudProtocol
 \family default
- manipulan objetos 
+, y
+\end_layout
+
+\begin_layout Itemize
+en el servidor habrá 
+\begin_inset Formula $n$
+\end_inset
+
+ objetos 
 \family typewriter
-Packet
+CygnusCloudProtocol
 \family default
-, que también se utilizan en el código del cliente para enviar y recibir
- información.
+, cada uno de los cuales permite al servidor comunicarse con un cliente
+ concreto.
 \end_layout
 
 \begin_layout Standard
-Finalmente, en el diagrama de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Interacción-twisted-diagrama-clases"
-
-\end_inset
-
- también aparecen las subclases de 
+Para simplificar la implementación de la red nos interesa que, en los niveles
+ de mayor nivel de abstracción, sólo sea necesario realizar la distinción
+ entre clientes y servidores a la hora de establecer las conexiones.
+ Lo más conveniente es extender la funcionalidad de la clase 
 \family typewriter
-Endpoint
+CygnusCloudProtocolFactory
 \family default
- que se utilizan en el paquete 
+ para que, además de instanciar objetos 
 \family typewriter
-network
+CygnusCloudProtocol
+\family default
+, sea capaz de:
+\end_layout
+
+\begin_layout Itemize
+mantener una lista de referencias a todos los objetos 
+\family typewriter
+CygnusCloudProtocol
+\family default
+ asociados a la conexión y actualizarla a medida que los clientes se conecten
+ y desconecten.
+\end_layout
+
+\begin_layout Itemize
+indicar si la conexión se puede utilizar, teniendo en cuenta que una conexión
+ no está lista cuando no tiene asociado ningún objeto 
+\family typewriter
+CygnusCloudProtocol
 \family default
 .
- Siempre que se crea una conexión de red, se instancia una subclase de 
+\end_layout
+
+\begin_layout Itemize
+serializar y enviar todos los paquetes del servidor a todos los clientes
+ conectados, utilizando para ello las referencias a los objetos 
 \family typewriter
-Endpoint
+CygnusCloudProtocol
 \family default
- distinta en función del protocolo escogido (TCP versión 4 o SSL versión
- 4) y del papel que desempeñará la máquina en la conexión (servidor o cliente).
+.
+ En caso de que no haya ninguna, los datos a enviar se descartarán.
+\end_layout
+
+\begin_layout Itemize
+procesar los datos recibidos a través de cualquier objeto 
+\family typewriter
+CygnusCloudProtocol
+\family default
+, deserializándolos para formar los paquetes y avisando a la capa superior.
+\end_layout
+
+\begin_layout Standard
+La recepción de paquetes es totalmente asíncrona.
+ Por motivos de eficiencia y para respetar el tipo y la prioridad de los
+ paquetes, los objetos 
+\family typewriter
+CygnusCloudProtocolFactory
+\family default
+ insertan todos los paquetes que reciben en una cola de prioridad, que es
+ una instancia de la clase 
+\family typewriter
+MultithreadingPriorityQueue
+\family default
+.
+ La capa superior extraerá de ella los paquetes de acuerdo a su tipo y prioridad.
 \end_layout
 
 \begin_layout Subsubsection
-Hilos de red 
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Hilos-de-red"
-
-\end_inset
-
-
+Conexiones de red
 \end_layout
 
 \begin_layout Standard
-Cuando en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:La-librería-de-red-twisted"
-
-\end_inset
-
- presentamos el funcionamiento de la librería de red 
-\emph on
+Con lo que hemos mostrado hasta ahora, ya podemos interactuar con 
+\family typewriter
 twisted
-\emph default
- mencionamos que, por tratarse de una librería de red basada en eventos,
- el procesamiento de los datos recibidos en el bucle del reactor debe ser
- tan rápido como sea posible.
+\family default
+ para enviar y recibir paquetes.
+ Pero antes es necesario establecer la conexión de red y también gestionar
+ los recursos que tiene asociados, entre los están, en principio,
+\end_layout
+
+\begin_layout Itemize
+su estado, es decir, si la conexión se está estableciendo, si ya se puede
+ utilizar, si se está intentando reestablecer, etcétera.
+\end_layout
+
+\begin_layout Itemize
+la cola de paquetes recibidos, de la que hablamos en la última sección.
+\end_layout
+
+\begin_layout Itemize
+la factoría de protocolos, que es, como vimos, una instancia de 
+\family typewriter
+CygnusCloudProtocolFactory
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+una dirección IP, un puerto y el protocolo a utilizar (TCP versión 4 o SSL).
+ Esta información sólo se utiliza para establecerla.
 \end_layout
 
 \begin_layout Standard
+Puesto que todos estos recursos están muy relacionados, lo más conveniente
+ es manipularlos de forma conjunta.
+ Esta es la finalidad de la clase 
+\family typewriter
+NetworkConnection
+\family default
+ y de sus dos subclases concretas: 
+\family typewriter
+ClientConnection
+\family default
+ y 
+\family typewriter
+ServerConnection
+\family default
+.
+\end_layout
 
-\emph on
-CygnusCloud
-\emph default
- está formado por subsistemas con características y tiempos de respuesta
- muy diferentes, por lo que es imprescindible garantizar que la red funcionará
- lo suficientemente rápido en todos ellos.
- Para ello, la mejor alternativa es utilizar varios hilos.
+\begin_layout Standard
+La clase abstracta 
+\family typewriter
+NetworkConnection
+\family default
+ define la interfaz que utilizará la capa superior para interactuar con
+ una conexión de red.
+ Sus dos subclases concretas, 
+\family typewriter
+ClientConnection
+\family default
+ y 
+\family typewriter
+ServerConnection
+\family default
+, se corresponden con los dos tipos de conexiones que es posible establecer:
+ las conexiones de tipo cliente y de tipo servidor respectivamente.
+ Estas dos clases comparten la mayor parte del código, y sólo difieren a
+ la hora de establecer la conexión y al actualizar su estado.
+ 
 \end_layout
 
 \begin_layout Standard
 El diagrama de clases de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Jerarquía-de-hilos-red"
+reference "fig:Diagrama-clases-conexiones"
 
 \end_inset
 
- muestra las clases de hilos que se utilizan en el paquete
-\emph on
- 
-\family typewriter
-\emph default
-network
-\family default
-\emph on
- 
-\emph default
-y sus relaciones.
+ recoge las relaciones más relevantes en las que intervienen estas tres
+ clases.
+ A lo largo de esta sección, las explicaremos en detalle.
 \end_layout
 
 \begin_layout Standard
@@ -3872,8 +3928,419 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
+
+\family typewriter
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaClasesJerarquíaHilosRed.pdf
+	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama Clases Conexiones.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-clases-conexiones"
+
+\end_inset
+
+Relaciones más relevantes en las que intervienen las clases 
+\family typewriter
+NetworkConnection
+\family default
+, 
+\family typewriter
+ClientConnection
+\family default
+ y 
+\family typewriter
+ServerConnection
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Establecimiento de una conexión
+\end_layout
+
+\begin_layout Standard
+Para establecer una conexión de tipo cliente, basta con escoger un protocolo
+ y el 
+\emph on
+endpoint
+\emph default
+ de tipo cliente que tiene asociado.
+ Como nosotros sólo utilizamos los protocolos TCP versión 4 y SSL versión
+ 4, estos 
+\emph on
+endpoints
+\emph default
+ serán 
+\family typewriter
+TCP4ClientEndpoint
+\family default
+ y 
+\family typewriter
+SSL4ClientEndpoint
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+En la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:La-librería-de-red-twisted"
+
+\end_inset
+
+ mostramos el intercambio de mensajes que tiene lugar durante el proceso
+ de conexión.
+ Por ahora, lo único que nos interesa del mismo es que, cuando el método
+ del 
+\emph on
+endpoint
+\emph default
+ correspondiente termina, la conexión ya está lista para ser utilizada.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, las conexiones de tipo servidor se establecen de forma similar,
+ pero utilizando los 
+\emph on
+endpoints 
+\family typewriter
+\emph default
+TCP4ServerEndpoint
+\family default
+ y 
+\family typewriter
+SSL4ServerEndpoint
+\family default
+.
+ Pero a diferencia del caso anterior, cuando el método del 
+\emph on
+endpoint
+\emph default
+ termina la conexión aún no está lista para ser utilizada: sólo lo estará
+ cuando se conecte el primer cliente.
+ Esto justifica el hecho de que el estado evolucione de forma distinta en
+ conexiones de tipo cliente y en conexiones de tipo servidor.
+\end_layout
+
+\begin_layout Standard
+Finalmente, los métodos de establecimiento de una conexión siempre devuelven
+ un objeto 
+\family typewriter
+Deferred
+\family default
+, que permite tratar los errores y, en el caso de conexiones de tipo servidor,
+ obtener algunos de sus recursos asociados (un objeto 
+\family typewriter
+IListenningPort
+\family default
+) y cancelar el establecimiento de las mismas.
+\end_layout
+
+\begin_layout Paragraph
+Envío y recepción de datos
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+NetworkConnection
+\family default
+ envía paquetes a través de su objeto 
+\family typewriter
+CygnusCloudProtocolFactory
+\family default
+, cuyos métodos permiten transmitir el paquete a enviar.
+ No obstante, los paquetes no se envían de forma instantánea, y sólo se
+ pueden enviar uno por uno.
+ Para que la capa superior pueda ignorar esta restricción, cada conexión
+ también tiene asociada una cola de prioridad que contiene los paquetes
+ a enviar.
+ 
+\end_layout
+
+\begin_layout Standard
+Esa cola será una instancia de la clase 
+\family typewriter
+MultithreadingPriorityQueue
+\family default
+.
+ Los paquetes a enviar siempre se insertan en esta cola, y se transmitirán
+ uno por uno y cuando llegue su turno.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, también es necesario procesar los paquetes que el objeto
+ 
+\family typewriter
+CygnusCloudProtocolFactory
+\family default
+ deposita en la cola de paquetes recibidos.
+ Puesto que el contenido de los paquetes que contienen datos del cliente
+ depende del dominio de la aplicación, estos deben procesarse en el código
+ del cliente, al que se invocará utilizando la interfaz definida por la
+ clase abstracta 
+\family typewriter
+NetworkCallback
+\family default
+.
+ Naturalmente, estos paquetes se borran tras ser procesados.
+\end_layout
+
+\begin_layout Paragraph
+Estado de las conexiones
+\end_layout
+
+\begin_layout Standard
+Dependiendo del tipo de conexión, el estado evoluciona de forma distinta.
+ Los diagramas de las figuras 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Evolución-del-estado-servidor"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Evolución-del-estado-cliente"
+
+\end_inset
+
+ muestran la evolución del estado de las conexiones de tipo servidor y de
+ tipo cliente respectivamente.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama estados conexión servidor.pdf
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Evolución-del-estado-servidor"
+
+\end_inset
+
+Evolución del estado de una conexión de tipo servidor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama estados conexión cliente.pdf
+	scale 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Evolución-del-estado-cliente"
+
+\end_inset
+
+Evolución del estado de una conexión de tipo cliente
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ambos diagramas comparten los estados 
+\family sans
+Opening
+\family default
+, 
+\family sans
+Ready
+\family default
+, 
+\family sans
+Closing
+\family default
+ y 
+\family sans
+Closed
+\family default
+.
+ Su significado es el siguiente:
+\end_layout
+
+\begin_layout Itemize
+en el estado 
+\family sans
+Opening
+\family default
+, la conexión está siendo establecida.
+ Aún no se dispone de todos sus recursos.
+\end_layout
+
+\begin_layout Itemize
+en el estado 
+\family sans
+Ready 
+\family default
+la conexión está lista para recibir y transmitir datos.
+ Por lo general, las conexiones permanecen en este estado durante la mayor
+ parte del tiempo.
+\end_layout
+
+\begin_layout Itemize
+en el estado 
+\family sans
+Closing
+\family default
+, el cliente ha solicitado el cierre de la conexión.
+ Este estado es imprescindible para garantizar que se envían los datos pendiente
+s.
+ En cualquier caso, es importante notar que se descartarán todos los paquetes
+ recibidos y todos los nuevos paquetes que se desee enviar.
+\end_layout
+
+\begin_layout Itemize
+en el estado 
+\family sans
+Closed
+\family default
+, la conexión está cerrada, y se han liberado todos sus recursos.
+\end_layout
+
+\begin_layout Standard
+Las diferencias están relacionadas con el establecimiento de la conexión
+ y las reconexiones.
+\end_layout
+
+\begin_layout Standard
+Como ya hemos mencionado, una conexión de tipo servidor sólo está lista
+ cuando uno o más clientes se conectan.
+ En el estado 
+\family sans
+Ready -- Wait to clients
+\family default
+, la conexión de tipo servidor está lista para aceptar conexiones entrantes,
+ pero al no haber clientes conectados no será posible enviar ni recibir
+ datos.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, las reconexiones sólo tienen sentido en conexiones de tipo
+ cliente.
+ Cuando la reconexión está habilitada, en el estado 
+\family sans
+Reconnect
+\family default
+ se intentará reestablecer la conexión con el servidor utilizando retroceso
+ exponencial binario truncado.
+ Si no se consigue tras quince intentos (suponen unos cinco minutos aproximadame
+nte), se asumirá que la conexión está cerrada.
+\end_layout
+
+\begin_layout Subsubsection
+Hilos de red 
+\end_layout
+
+\begin_layout Standard
+Utilizando lo que acabamos de contar, podemos crear y manipular conexiones
+ de red a un nivel de abstracción razonablemente elevado.
+ No obstante, hasta ahora hemos omitido, para facilitar la comprensión del
+ diseño, un aspecto fundamental: el rendimiento.
+\end_layout
+
+\begin_layout Standard
+En la librería de red 
+\family typewriter
+twisted
+\family default
+, todos los paquetes entrantes se procesarán en el bucle reactor.
+ Mientras tiene lugar el procesamiento del paquete, no se enviará ni se
+ recibirá nada.
+ Esto supone un problema, ya que en ocasiones los subsistemas de 
+\emph on
+CygnusCloud
+\emph default
+ tienen tiempos de respuesta muy elevados.
+ Por ejemplo, una petición de arranque de una máquina virtual tardará mucho
+ en procesarse por toda la entrada/salida que conlleva.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama clases Jerarquía hilos red.pdf
 	scale 80
 
 \end_inset
@@ -3891,15 +4358,11 @@ name "fig:Jerarquía-de-hilos-red"
 
 \end_inset
 
-Jerarquía de hilos de red
+Jerarquía de hilos de red y sus relaciones más importantes
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -3909,50 +4372,85 @@ Jerarquía de hilos de red
 \end_layout
 
 \begin_layout Standard
-Esencialmente, los hilos de la clase 
+Así pues, resulta inadmisible que las comunicaciones se bloqueen durante
+ el tiempo que tardan las peticiones en procesarse.
+ La única forma de evitar esta situación es repartir la ejecución de las
+ funciones de red entre varios hilos.
+ Hemos realizado la siguiente descomposición:
+\end_layout
+
+\begin_layout Itemize
+el bucle reactor de 
+\family typewriter
+twisted
+\family default
+ se ejecutará en un hilo independiente.
+ Esto permitirá a los usuarios utilizar el hilo principal de sus aplicaciones
+ de la forma que estimen oportuna.
+\end_layout
+
+\begin_layout Itemize
+cada conexión de red tendrá asociados un hilo de envío y un hilo de recepción
+ de paquetes.
+ El primero desencolará paquetes de la cola de envío y los transmitirá,
+ y el segundo extraerá paquetes de la cola de recepción e invocará al código
+ del cliente que los procesa.
+\end_layout
+
+\begin_layout Itemize
+por motivos de eficiencia, el estado de 
+\emph on
+todas
+\emph default
+ las conexiones de red se actualizará en un hilo independiente.
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Jerarquía-de-hilos-red"
+
+\end_inset
+
+ recoge las clases de la jerarquía de hilos de red y sus relaciones más
+ relevantes.
+\end_layout
+
+\begin_layout Standard
+La clase 
 \family typewriter
 BasicThread
 \family default
- se detienen cuando otros se lo solicitan, y los hilos de la clase 
+ añade a los hilos de Python la capacidad de detenerse cuando otros se lo
+ solicitan, y la clase 
 \family typewriter
 QueueProcessingThread
 \family default
- procesan los elementos de una cola.
- Dependiendo de su naturaleza, los hilos del paquete 
-\family typewriter
-network.threads
-\family default
- heredan de una clase o de otra.
- 
+ añade también la capacidad de procesar elementos de una cola mediante un
+ patrón 
+\emph on
+strategy
+\emph default
+.
 \end_layout
 
 \begin_layout Standard
-Las instancias de 
+Por convenciencia, el hilo que ejecutará el bucle reactor, 
 \family typewriter
 TwistedReactorThread
 \family default
- ejecutan, como su nombre indica, el bucle del reactor de la libreria 
-\emph on
-twisted
-\emph default
-.
- 
-\end_layout
-
-\begin_layout Standard
-Por otra parte, los hilos 
+, hereda directamente de 
+\family typewriter
+Thread
+\family default
+, la clase base de todos los hilos en Python.
+ Por otra parte, la clase 
 \family typewriter
 ConnectionMonitoringThread
 \family default
- actualizan periódicamente el estado de las conexiones.
- Esto es fundamental para determinar, entre otras cosas, cuándo una conexión
- puede empezar a utilizarse, cuándo se producen desconexiones,\SpecialChar \ldots{}
-
-\end_layout
-
-\begin_layout Standard
-Finalmente, para manipular los paquetes entrantes y los paquetes salientes
- se utilizan los hilos 
+ se corresponde con el hilo que actualizará el estado de todas las conexiones,
+ y las clases 
 \family typewriter
 IncomingDataThread
 \family default
@@ -3960,19 +4458,22 @@ IncomingDataThread
 \family typewriter
 OutgoingDataThread
 \family default
-.
- Para indicar al código del cliente que se ha recibido un nuevo paquete,
- se hace uso de la interfaz que define la clase 
-\family typewriter
-NetworkCallback
-\family default
-.
- 
+ se corresponden con los hilos de recepción y envío de paquetes.
 \end_layout
 
 \begin_layout Standard
-Es importante notar que todo el procesamiento de los paquetes entrantes
- tendrá lugar en un hilo 
+Es importante notar que:
+\end_layout
+
+\begin_layout Itemize
+es el hilo de recepción y no la conexión de red el que indica al cliente
+ la recepción de un nuevo paquete.
+ Para ello, se sigue utilizando la interfaz que define la clase NetworkCallback.
+\end_layout
+
+\begin_layout Itemize
+todo el procesamiento de los paquetes entrantes tendrá lugar en un hilo
+ 
 \family typewriter
 IncomingDataThread
 \family default
@@ -3984,347 +4485,129 @@ twisted
  adecuado independientemente del tiempo que tarde en procesarse el paquete.
 \end_layout
 
-\begin_layout Subsubsection
-La clase 
-\family typewriter
-NetworkConnection
-\end_layout
-
-\begin_layout Standard
-Como el lector habrá notado ya, una conexión de red tiene muchos recursos
- asociados:
-\end_layout
-
-\begin_layout Itemize
-su estado
-\end_layout
-
-\begin_layout Itemize
-una cola para almacenar los paquetes recibidos y otra cola para almacenar
- los paquetes a enviar
-\end_layout
-
-\begin_layout Itemize
-una factoría, es decir, una instancia de 
-\family typewriter
-CygnusCloudProtocolFactory
-\family default
-, que se utiliza para enviar y recibir paquetes.
-\end_layout
-
-\begin_layout Itemize
-un hilo que procesa los paquetes recibidos y otro que envía los paquetes
-\end_layout
-
-\begin_layout Itemize
-una dirección IP y un puerto, junto con el protocolo a utilizar (TCP versión
- 4 o SSL versión 4).
-\end_layout
-
-\begin_layout Standard
-Puesto que todos ellos están fuertemente relacionados, lo más conveniente
- es manipularlos de forma conjunta.
- Esta es la finalidad de la clase 
-\family typewriter
-NetworkConnection
-\family default
-.
- 
-\end_layout
-
-\begin_layout Paragraph
-Estado de la conexión
-\end_layout
-
-\begin_layout Standard
-El estado de una conexión evoluciona de acuerdo al diagrama de la figura
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Diagrama-de-estados-conexión"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagrama estados conexión.pdf
-	scale 85
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Diagrama-de-estados-conexión"
-
-\end_inset
-
-Diagrama de estados de una conexión
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Puesto que no tiene sentido enviar datos desde un servidor cuando todavía
- no hay clientes conectados, cuando una conexión de servidor se encuentra
- en el estado 
-\family sans
-Conexión lista, no hay clientes conectados 
-\family default
-no se puede utilizar.
- Por ello, si el código del cliente la cierra, esta pasará directamente
- al estado 
-\family sans
-Conexión cerrada
-\family default
-, ya que no hay paquetes recibidos por procesar ni paquetes pendientes de
- enviar.
-\end_layout
-
-\begin_layout Standard
-Las conexiones sólo puede utilizarse para enviar y recibir datos en el estado
- 
-\family sans
-Conexión lista
-\family default
-.
- Lo habitual es que la conexión permanezca en este estado mientras se está
- utilizando.
-\end_layout
-
-\begin_layout Standard
-Cuando una conexión se cierra normalmente, se envían los paquetes pendientes
- a su través y, posteriormente, se cierra.
- Esta es la finalidad del estado 
-\family sans
-Conexión cerrandose
-\family default
-.
- Por otra parte, si una conexión se cierra de forma inesperada no se podrá
- volver a utilizar.
- Por ello, en estos casos se pasa directamente al estado 
-\family sans
-Conexión cerrada
-\family default
-: no es posible enviar ni recibir ningún tipo de paquete.
-\end_layout
-
 \begin_layout Paragraph
 Control de la concurrencia
 \end_layout
 
 \begin_layout Standard
-En principio, cada conexión de red tiene asociados un hilo de envío de paquetes
- y un hilo de recepción de paquetes.
- Así,
+Si recapitulamos considerando todo lo que hemos visto, para poder comunicar
+ varias máquinas entre sí es necesario disponer de los siguientes hilos:
 \end_layout
 
 \begin_layout Itemize
-el tiempo que tardan los paquetes en procesarse no afecta al tiempo de respuesta
- de la red, y
+dos hilos, uno de envío y otro de recepción, para cada conexión.
 \end_layout
 
 \begin_layout Itemize
-el código del cliente no debe bloquearse hasta que se envían sus paquetes.
+un hilo para actualizar el estado de las conexiones
+\end_layout
+
+\begin_layout Itemize
+un hilo para ejecutar el bucle reactor
 \end_layout
 
 \begin_layout Standard
-No obstante, el número de CPUs de los computadores es siempre limitado.
- Y teniendo en cuenta que una misma máquina puede tener más de una conexión
- con otras, es fundamental proporcionar mecanismos que permitan acotar el
- número de hilos que utiliza la red.
+Además, para garantizar el correcto funcionamiento del sistema es necesario
+ utilizar secciones críticas, para lo que necesitamos mecanismos de sincronizaci
+ón y, por tanto, aún más recursos.
 \end_layout
 
 \begin_layout Standard
-En primer lugar, centrémonos en el hilo de envío de paquetes.
- Por muchas conexiones que haya, todos sus paquetes deberán enviarse a través
- de la misma interfaz de red.
- Por ello, estos datos se transferirán de forma multiplexada, con independencia
- del número de hilos que haya.
-\end_layout
-
-\begin_layout Standard
-Si bien esto es totalmente transparente al usuario gracias al uso de la
- librería de red 
+Si el número de conexiones de red de cada máquina es reducido, no habrá
+ problemas.
+ Pero existe un tipo de máquina en CygnusCloud que estará conectada a muchas
+ otras: el servidor de 
 \emph on
-twisted
+cluster
 \emph default
-, también es cierto que este comportamiento no es óptimo en todas las situacione
-s.
- Por ejemplo, si a través de tres conexiones deben enviarse los siguientes
- paquetes:
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-conexión 1
-\series default
-: un paquete de gestión de la red, tres paquetes con datos del cliente
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-conexión 2
-\series default
-: tres paquetes de gestión de la red
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-conexión 3
-\series default
-: tres paquetes con datos del cliente
-\end_layout
-
-\begin_layout Standard
-es posible que los paquetes de datos de la conexión 3 se envíen antes que
- los paquetes de gestión de la red de la conexión 2, lo cual no es nada
- deseable: los paquetes de gestión de la red son más prioritarios.
- 
-\end_layout
-
-\begin_layout Standard
-Este problema se resuelve de forma muy simple: si sólo hay una cola de paquetes
- salientes (y, por tanto, un único hilo de envío de paquetes), los paquetes
- más prioritarios se enviarán antes que los menos prioritarios.
- Además, esta solución también nos permite reducir el número de hilos activos:
- en cada máquina, sólo habrá un único hilo de envío de paquetes.
- 
-\end_layout
-
-\begin_layout Standard
-Por otra parte, los hilos de recepción de paquetes no pueden fusionarse
- de forma tan sencilla, ya que los módulos que procesan los paquetes recibidos
- desde cada conexión pueden ser totalmente diferentes.
-\end_layout
-
-\begin_layout Standard
-La solución en este caso pasa por el propio objeto que procesa los paquetes
- recibidos: una instancia de 
-\family sans
-NetworkCallback
-\family default
 .
- En caso de que un mismo objeto 
-\family sans
-NetworkCallback
-\family default
- esté procesando los paquetes recibidos a través de varias conexiones, podemos
- utilizar de forma segura un único hilo de recepción de paquetes (y, por
- tanto, una única cola de paquetes recibidos), compartido por todas esas
- conexiones.
-\end_layout
-
-\begin_layout Standard
-De esta manera, el número de hilos de recepción de paquetes que existen
- en un momento dado será el más reducido posible de acuerdo a las necesidades
- específicas de la aplicación.
-\end_layout
-
-\begin_layout Paragraph
-Relaciones de la clase 
-\family typewriter
-NetworkConnection
-\end_layout
-
-\begin_layout Standard
-La clase 
-\family typewriter
-NetworkConnection 
-\family default
-define una interfaz que permite manipular los recursos asignados a una conexión
- de red a un elevado nivel de abstracción.
- Las relaciones existentes entre la clase
-\family typewriter
- NetworkConnection
-\family default
- y el resto de clases del paquete 
-\family typewriter
-network
-\family default
- aparecen en el diagrama de clases de la figura 
+ En la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Relaciones-networkConnection"
+reference "sec:Subsistemas-de-CygnusCloud"
 
 \end_inset
 
-.
+ dijimos que su principal función es realizar el balanceado de carga entre
+ varios servidores de máquinas virtuales.
+ 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
+A medida que el número de servidores de máquinas virtuales crece, el peso
+ de los recursos asociados a los hilos y a los mecanismos de sincronización
+ también lo hará, reduciendo considerablemente la escalabilidad.
+ Por ejemplo, si el servidor de 
+\emph on
+cluster
+\emph default
+ está conectado a 10 servidores de máquinas virtuales, serán necesarios
+\end_layout
 
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaClasesNetworkConnection.pdf
-	scale 80
+\begin_layout Standard
+\begin_inset Formula 
+\[
+10\cdot2+1+1=22\textrm{ hilos de red}
+\]
 
 \end_inset
 
-
+junto con los mecanismos de sincronización correspondientes.
+ Aunque la CPU de la máquina pueda lidiar con este número de hilos, muchos
+ estarán compitiendo por entrar en las secciones críticas, lo que reduce
+ el rendimiento.
+ Por tanto, debemos reducir el número de hilos de la red.
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Relaciones-networkConnection"
-
-\end_inset
-
-Relaciones de la clase 
-\family typewriter
-NetworkConnection
+\begin_layout Standard
+Lo primero que debemos observar es que, con independencia del número de
+ conexiones de red que haya, todo el tráfico viajará por el mismo medio
+ físico.
+ Por ello, si hacemos que todas las conexiones compartan el mismo hilo de
+ envío (y, por tanto, la misma cola de envío) el rendimiento de la red no
+ se resentirá significativamente.
+ 
 \end_layout
 
-\end_inset
-
-
+\begin_layout Standard
+Además, esto tiene una ventaja adicional: el tráfico prioritario, sea de
+ la conexión que sea, siempre se enviará antes que el tráfico no prioritario.
+ Si se usan varios hilos de envío, el tráfico de las distintas conexiones
+ se mezclará en el bucle reactor, y no será posible garantizar este comportamien
+to.
 \end_layout
 
-\begin_layout Plain Layout
-
+\begin_layout Standard
+Con este cambio, el número de hilos de la red se reduce en casi un 50%,
+ pero aún tenemos margen de mejora.
+ En ocasiones, el código del cliente procesa los paquetes recibidos a través
+ de varias conexiones de red de forma idéntica.
+ Esto ocurriría si, por ejemplo, el servidor de 
+\emph on
+cluster
+\emph default
+ escribiese periódicamente el estado de todos los servidores de máquinas
+ virtuales en un 
+\emph on
+log
+\emph default
+.
+ 
 \end_layout
+
+\begin_layout Standard
+En estos casos, podemos reducir el número de hilos y evitar muchos problemas
+ de sincronización haciendo que las conexiones correspondientes compartan
+ el hilo de recepción de paquetes (y, por tanto, también la cola de recepción
+ de paquetes).
+ Esta segunda mejora permite que, en el ejemplo anterior, sólo haya
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+2+1+1=4\textrm{ hilos de red}
+\]
 
 \end_inset
 
@@ -4332,36 +4615,38 @@ NetworkConnection
 \end_layout
 
 \begin_layout Standard
-Para establecer una conexión, es necesario utilizar un objeto 
-\family typewriter
-Endpoint
-\family default
-.
- Dependiendo del tipo de conexión (cliente o servidor) y del protocolo utilizado
- (SSL o TCP versión 4), se utiliza una subclase distinta de 
-\family typewriter
-Endpoint
-\family default
-.
+en el servidor de 
+\emph on
+cluster
+\emph default
+, lo que incrementa la escalabilidad.
 \end_layout
 
 \begin_layout Standard
-Por otra parte, para realizar el envío de datos, el procesamiento de datos
- entrantes, la detección de desconexiones y el cierre ordenado de la conexión
- se utiliza un objeto 
-\family typewriter
-CygnusCloudProtocolFactory
-\family default
- en cada extremo de la comunicación.
+Para facilitar el uso de la red, lo más conveniente es detectar cuándo es
+ posible realizar esta optimización y aplicarla de forma totalmente transparente
+ para el usuario.
+ Aunque detectar estos casos puede parecer complicado, en realidad no lo
+ es: cuando el cliente utiliza el mismo objeto para procesar los paquetes
+ recibidos a través de varias conexiones (es decir, el mismo 
+\emph on
+callback
+\emph default
+), es posible aplicar la optimización de forma segura.
+ 
 \end_layout
 
 \begin_layout Standard
-Finalmente, cada conexión también tendrá asociado un hilo de procesamiento
- de los paquetes recibidos, que es una instancia de 
-\family typewriter
-IncomingDataThread
-\family default
-.
+En cambio, si el cliente utiliza objetos diferentes o varias instancias
+ de una misma clase, no es posible asegurar que estamos ante uno de estos
+ casos, por lo que la optimización no se aplica.
+\end_layout
+
+\begin_layout Standard
+Finalmente, puesto que los hilos y colas de recepción de paquetes se comparten,
+ no podemos limitarnos a destruirlos cuando se cierra la conexión.
+ Por ello, existe un contador de referencias para estos dos objetos, que
+ sólo cuando este llega a cero.
 \end_layout
 
 \begin_layout Subsubsection
@@ -4371,89 +4656,41 @@ NetworkManager
 \end_layout
 
 \begin_layout Standard
-La clase 
+A causa de las optimizaciones que hemos aplicado para reducir el número
+ de hilos de la red, crear conexiones de red no resulta sencillo.
+ Asimismo, tampoco resulta interesante mostrar la implementación de la red
+ a los clientes, ni tampoco permitir que estos puedan crear paquetes libremente.
+\end_layout
+
+\begin_layout Standard
+Para resolver estos problemas, hemos creado la clase 
 \family typewriter
-NetworkConnection
+NetworkManager
 \family default
- permite manipular los recursos asignados a una determinada conexión de
- red.
- Pero para poder comunicar dos máquinas no basta con utilizar objetos 
-\family typewriter
-NetworkConnection
-\family default
-: también es necesario disponer de
-\end_layout
-
-\begin_layout Itemize
-un hilo de envío de paquetes, que envíe todos los paquetes salientes a sus
- destinatarios a través de las conexiones.
-\end_layout
-
-\begin_layout Itemize
-un hilo que actualice periódicamente el estado de las conexiones, algo imprescin
-dible para establecerlas y detectar errores.
-\end_layout
-
-\begin_layout Itemize
-un hilo que ejecute el bucle reactor de 
-\emph on
-twisted
-\emph default
 .
+ Sus objetivos son los siguientes:
 \end_layout
 
 \begin_layout Itemize
-mecanismos que permitan construir paquetes que transportan datos del usuario
- de forma correcta (para evitar la aparición de errores relacionados con
- los tipos de paquete y sus prioridades)
+ocultar las optimizaciones que hemos realizado 
 \end_layout
 
 \begin_layout Itemize
-mecanismos que detecten el uso incorrecto de la red, que facilitarán la
- depuración del código del cliente.
+garantizar que todos los paquetes que envían los usuarios no comprometen
+ el correcto funcionamiento de la red
+\end_layout
+
+\begin_layout Itemize
+proporcionar una fachada que permite establecer, utilizar y cerrar conexiones
+ nivel a un elevado nivel de abstracción.
 \end_layout
 
 \begin_layout Standard
-La clase 
-\family typewriter
-NetworkManager
-\family default
- proporciona una fachada que permite comunicar dos o más máquinas entre
- sí a un nivel de abstracción razonablemente elevado.
- Entre otras cosas, permite a los clientes:
-\end_layout
-
-\begin_layout Itemize
-crear servidores o conectarse a ellos.
-\end_layout
-
-\begin_layout Itemize
-crear paquetes ocultando la existencia de los tipos de paquete reservados
- y sus prioridades.
-\end_layout
-
-\begin_layout Itemize
-intercambiar contenido arbitrario entre varias máquinas diferentes.
-\end_layout
-
-\begin_layout Itemize
-procesar los datos recibidos de acuerdo a las necesidades de la aplicación.
- 
-\end_layout
-
-\begin_layout Standard
-Las relaciones entre la clase 
-\family typewriter
-NetworkManager
-\family default
- y el resto de clases del paquete 
-\family typewriter
-Network
-\family default
- aparece en el diagrama de clases de la figura 
+Las relaciones más relevantes de la clase NetworkManager aparecen en el
+ diagrama de clases de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Relaciones-network-manager"
+reference "fig:Relaciones-más-importantes-networkmanager"
 
 \end_inset
 
@@ -4470,7 +4707,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaClasesNetworkManager.pdf
+	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama clases NetworkManager.pdf
 	scale 80
 
 \end_inset
@@ -4484,11 +4721,11 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Relaciones-network-manager"
+name "fig:Relaciones-más-importantes-networkmanager"
 
 \end_inset
 
-Relaciones de la clase 
+Relaciones más importantes de la clase 
 \family typewriter
 NetworkManager
 \end_layout
@@ -4498,66 +4735,19 @@ NetworkManager
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-El hilo de paquetes salientes, 
-\family typewriter
-OutgoingDataThread
-\family default
-, está compartido por todas las conexiones, y las utiliza para realizar
- el envío de los paquetes.
- Por su parte, el hilo de actualización del estado de las conexiones (
-\family typewriter
-ConnectionMonitoringThread
-\family default
-) llama periódicamente al método de actualización de estado de cada conexión.
-\end_layout
-
-\begin_layout Standard
-Por otra parte, el hilo 
-\family typewriter
-TwistedReactorThread 
-\family default
-no interactúa con ningún otro hilo.
- Su único cometido es ejecutar el bucle reactor de 
-\emph on
-twisted
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-Los objetos 
+En el diagrama anterior no aparecen los hilos de recepción ni las colas
+ de paquetes recibidos porque no están asociados a ningún objeto 
 \family typewriter
 NetworkManager
 \family default
- también disponen de métodos para crear paquetes que transportarán los datos
- de los usuarios, lo que nos permite garantizar que el encabezado de los
- paquetes que circulan por la red es siempre correcto, evitando así la aparición
- de comportamientos incorrectos provocados por una prioridad o un tipo de
- paquete incorrectos.
-\end_layout
-
-\begin_layout Standard
-Finalmente, siempre que se produzcan errores, los objetos 
-\family typewriter
-NetworkManager 
-\family default
-lanzarán excepciones del tipo 
-\family typewriter
-NetworkException
-\family default
-.
- Si se produce un error en una conexión, la excepción se lanzará al intentar
- utilizarla.
+: estos objetos están siempre asociados a una conexión de red, de la que
+ se tomarán en caso de que deban compartirse.
 \end_layout
 
 \begin_layout Subsection
