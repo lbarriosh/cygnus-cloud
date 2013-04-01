@@ -54,6 +54,8 @@ class TesterCallback(NetworkCallback):
             print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
             print("\tVNC server IP address: " + data["VMServerIP"])
             print("\t" + str(data["Data"]))
+        elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION_ERROR) :
+            print("Domain destruction error: " + data["ErrorMessage"])
 
 def printLogo():
     print('\t   _____                             _____ _                 _ ')
@@ -102,6 +104,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         elif (command == "obtainActiveVMsData") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
             networkManager.sendPacket(ip_address, port, p)
+        elif (command == "destroyDomain") :
+            p = pHandler.createDomainDestructionPacket(tokens.pop(0), "")
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True
         elif (command == "help") :
@@ -121,7 +126,8 @@ def displayHelpMessage():
     print("\tunregisterVMServer <Name or IP> <Halt?>: unregisters a virtual machine server")
     print("\tshutdownVMServer <Name or IP> <Halt?>: shuts down a virtual machine server")
     print("\tbootUpVMServer <Name or IP>: boots up a virtual machine server")
-    print("\tbootUpVM <ImageID> <UserID> <MachineID>: boots up a virtual machine")
+    print("\tbootUpVM <ImageID> <UserID> <DomainID>: boots up a virtual machine")
+    print("\tdestroyDomain <DomainID>: destroys a virtual machine")
     print("\tobtainActiveVMsData: obtains the active virtual machines' data")
     print("\tquit: closes this application")
     

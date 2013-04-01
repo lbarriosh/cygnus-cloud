@@ -108,6 +108,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendVMDistributionData()
         elif (data["packet_type"] == WEB_PACKET_T.QUERY_ACTIVE_VM_DATA) :
             self.__requestVNCConnectionData()
+        elif (data["packet_type"] == WEB_PACKET_T.DOMAIN_DESTRUCTION) :
+            self.__destroyDomain(data)
             
     def __requestVNCConnectionData(self):
         """
@@ -388,6 +390,30 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
             # Registrar el comando de arranque para controlar el tiempo de respuesta
             self.__dbConnector.registerVMBootCommand(data["CommandID"], data["VMID"])
+            
+    def __destroyDomain(self, data):
+        """
+        Destruye una máquina virtual activa
+        Argumentos:
+            data: diccionario con los datos del paquete correspondiente
+        Devuelve:
+            Nada
+        """
+        # Comprobar si la máquina existe
+        serverID = self.__dbConnector.getActiveVMHostID(data["DomainID"])
+        if (serverID == None) :
+            # Error
+            packet = self.__webPacketHandler.createDomainDestructionErrorPacket("The domain does not exist", data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, packet)
+        
+        # Averiguar los datos del servidor y pedirle que se la cargue
+        connectionData = self.__dbConnector.getVMServerBasicData(serverID)
+        packet = self.__vmServerPacketHandler.createVMShutdownPacket(data["DomainID"])
+        self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], packet)
+        
+        # Indicar al endpoint que todo fue bien
+        packet = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
+        self.__networkManager.sendPacket('', self.__webPort, packet)
     
     def processVMServerIncomingPacket(self, packet):
         """

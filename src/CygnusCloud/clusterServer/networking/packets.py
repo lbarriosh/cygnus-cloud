@@ -268,6 +268,36 @@ class ClusterServerPacketHandler(object):
         p.writeBool(haltServers)
         return p
     
+    def createDomainDestructionPacket(self, domainID, commandID):
+        """
+        Crea un paquete de destrucción de dominios
+        Argumentos:
+            domainID: el identificador único del dominio a destruir
+            commandID: el identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
+        """
+        p = self.__packetCreator.createPacket(4) # Todo lo que sea liberar carga es bueno. Por eso es ligeramente más prioritario que los otros
+        p.writeInt(MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION)
+        p.writeString(domainID)
+        p.writeString(commandID)
+        return p
+
+    def createDomainDestructionErrorPacket(self, errorMessage, commandID):
+        """
+        Crea un paquete de error asociado a la destrucción de un dominio.
+        Argumentos:
+            errorMessage: mensaje de error
+            commandID: identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR)
+        p.writeString(errorMessage)
+        p.writeString(commandID)
+        return p
+    
     @staticmethod
     def __vm_server_status_to_string(status):
         """
@@ -376,5 +406,13 @@ class ClusterServerPacketHandler(object):
             
         elif (packet_type == MAIN_SERVER_PACKET_T.COMMAND_EXECUTED) :
             result["CommandID"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION) :
+            result["DomainID"] = p.readString()
+            result["CommandID"] = p.readString()
+        
+        elif (packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR) :
+            result["ErrorMessage"] = p.readString()
+            result["CommandID"] = p.readString()        
                       
         return result
