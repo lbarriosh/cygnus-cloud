@@ -23,4 +23,4 @@ if __name__ == "__main__" :
     # Dormir hasta que se apague
     while not vmServer.hasFinished():
         sleep(10)        
-    vmServer.shutdown()
+    vmServer.closeNetworkConnections()

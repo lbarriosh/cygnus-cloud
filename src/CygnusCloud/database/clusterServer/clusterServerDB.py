@@ -429,7 +429,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         else :
             return result[0]
     
-    def deleteHostedVMsLocation(self, serverID):
+    def deleteHostedVMs(self, serverID):
         """
         Borra la ubicación de todas las máquinas virtuales activas registradas en un servidor
         de máquinas virtuales.

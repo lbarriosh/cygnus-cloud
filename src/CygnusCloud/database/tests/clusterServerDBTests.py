@@ -176,7 +176,7 @@ class ClusterServerDBTests(unittest.TestCase):
         result = self.__connector.getActiveVMHostID("machine1")
         expectedResult = None
         self.assertEquals(result, expectedResult, "registerActiveVMLocation or getActiveVMHostID do not work")
-        self.__connector.deleteHostedVMsLocation(2)
+        self.__connector.deleteHostedVMs(2)
         result = self.__connector.getActiveVMHostID("machine3")
         expectedResult = None
         self.assertEquals(result, expectedResult, "registerActiveVMLocation or getActiveVMHostID do not work")

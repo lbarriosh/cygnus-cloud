@@ -82,7 +82,7 @@ class VMServerCallback(NetworkCallback):
         # Update the database
         self.__runningImageData.unRegisterVMResources(name)
     
-    def shutdown(self):
+    def closeNetworkConnections(self):
         # Cosas a hacer cuando se desea apagar el servidor.
         # Importante: esto debe llamarse desde el hilo principal
         self.__virtualNetworkManager.destroyVirtualNetwork(vnName)
@@ -96,11 +96,11 @@ class VMServerCallback(NetworkCallback):
             VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN: self.__userFriendlyShutdown,
             VM_SERVER_PACKET_T.HALT: self.__halt}
         if (packetData['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA) :
-            self.__sendVNCConnectionData()
+            self.__sendActiveVMsVNCConnectionData()
         else :
             processPacket[packetData['packet_type']](packetData)
         
-    def __sendVNCConnectionData(self):
+    def __sendActiveVMsVNCConnectionData(self):
         # Extraer los datos de la base de datos
         vncConnectionData = self.__runningImageData.getVMsConnectionData()
         # Generar los segmentos

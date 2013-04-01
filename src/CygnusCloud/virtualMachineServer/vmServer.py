@@ -97,7 +97,7 @@ class VMServer(MainServerPacketReactor):
         self.__dbConnector.unregisterVMResources(domainName)
         
     
-    def shutdown(self):
+    def closeNetworkConnections(self):
         # Cosas a hacer cuando se desea apagar el servidor.
         # Importante: esto debe llamarse desde el hilo principal
         self.__childProcessManager.waitForBackgroundChildrenToTerminate()
@@ -115,11 +115,11 @@ class VMServer(MainServerPacketReactor):
         elif (data["packet_type"] == VM_SERVER_PACKET_T.HALT) :
             self.__halt(data)
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA) :
-            self.__sendVNCConnectionData()
+            self.__sendActiveVMsVNCConnectionData()
         elif (data['packet_type'] == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
             self.__destroyDomain(data)
         
-    def __sendVNCConnectionData(self):
+    def __sendActiveVMsVNCConnectionData(self):
         '''
         Envía la informacion de conexion de todas las máquinas virtuales
         que estén arrancadas

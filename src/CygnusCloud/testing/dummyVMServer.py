@@ -42,7 +42,7 @@ class DummyVMServer(NetworkCallback):
         if (packetType == PACKET_T.CREATE_DOMAIN) :
             self.__createDomain(processedPacket)            
         elif (packetType == PACKET_T.QUERY_ACTIVE_VM_DATA) :
-            self.__sendActiveVMsData()
+            self.__sendActiveVMsVNCConnectionData()
         elif (packetType == PACKET_T.HALT or packetType == PACKET_T.USER_FRIENDLY_SHUTDOWN) :
             print("The dummy virtual machine server is shutting down now")
             self.__finished = True
@@ -83,7 +83,7 @@ class DummyVMServer(NetworkCallback):
         packetToSend = self.__packetHandler.createVMServerStatusPacket(self.__dummyIP, self.__dummyDomains)
         self.__packetSender(packetToSend)
         
-    def __sendActiveVMsData(self):
+    def __sendActiveVMsVNCConnectionData(self):
         statusData = [
             {"VMServerName" : "Server1", "UserID" : 1, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15800, "VNCPass" : "Password" },
             {"VMServerName" : "Server1", "UserID" : 2, "VMID" : 1, "VMName" : "Debian1", "VNCPort" : 15802, "VNCPass" : "Password" }
