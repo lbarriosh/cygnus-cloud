@@ -12,6 +12,7 @@
  </head>
  <body>
   <!-- start header -->
+  {{if(request.controller != 'vncClient'):}}
   <div id="topbar">
       <div id=language>
           {{=plugin_translate()}}
@@ -36,6 +37,7 @@
       jQuery(document).ready(function(){jQuery('ul.web2py-menu').superfish({delay:400});});
     </script>-->
   </div>
+  {{pass}}
   <div id="content-wrap">
    <div id="content">
     <div class="flash">{{=response.flash or ''}}</div>

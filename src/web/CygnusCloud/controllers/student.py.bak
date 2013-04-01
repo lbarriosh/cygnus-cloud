@@ -29,6 +29,7 @@ def runVM():
                 #Establecemos la conexión con el servidor 
                 connector = conectToServer()
                 #Mandamos la ejecución del cliente noVNC
+                print form.vars.selection
                 commandId = connector.bootUpVM(form.vars.selection)
                 #Esperamos la contestacion
                 vncInfo = connector.waitForCommandOutput(commandId)

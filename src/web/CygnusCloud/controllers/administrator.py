@@ -187,7 +187,7 @@ def servers():
         #form1 = FORM(T('Servidores'),SELECT(_name = 'server',*[OPTION(T(str(s.VMServerName)),_value = s.VMServerName,_selected="selected") 
         #        for s in servers],_onclick = "ajax('changeOption', ['server'], 'newInfo')"))
         i = 0
-        select = SELECT(_name = 'server')
+        select = SELECT(_name = 'server',_id= 'sId')
         servers = connector.getVMServersData()
         print "Servers: " + str(servers)
         for s in servers:
@@ -197,8 +197,11 @@ def servers():
         form2 = FORM(HR(),H2(T('Información del servidor')),DIV( T('Nombre: '),BR(),LABEL(infoServer[0],_name = 'sName')),
                 DIV( T('Dirección IP: '),BR(),LABEL(infoServer[1])),
                 DIV( T('Puerto: '),BR(),LABEL(infoServer[2])),
-                HR(),CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor')))) 
+                HR()) 
        
+        # Solo mostramos el botón de detener si hay una máquina seleccionada
+        if(infoServer[0] != 'No info'):
+            form2.append(CENTER(INPUT(_type='submit',_name = 'remove' ,_value=T('Eliminar servidor'))))
         # Si no está arrancado, añadimos el botón de arrancar
         if(infoServer[3] == "Shut down"):
             form2.append(CENTER(INPUT(_type='submit',_name = 'run' ,_value=T('Arrancar servidor'))))

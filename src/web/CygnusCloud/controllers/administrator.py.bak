@@ -217,6 +217,12 @@ def servers():
              errorInfo = connector.waitForCommandOutput(commandID)
              if(errorInfo != None):
                  response.flash = T(errorInfo['ErrorMessage'])
+        if form2.accepts(request.vars,keepvalues=True) and form2.vars.run:
+            #Arrancamos el servidor
+            commandID = connector.bootUpVMServer(infoServer[0])
+            errorInfo = connector.waitForCommandOutput(commandID)
+            if(errorInfo != None):
+                response.flash = T(errorInfo['ErrorMessage'])           
         
         return dict(form1 = form1,form2 = form2)
 
