@@ -158,6 +158,17 @@ class ClusterServerConnector(object):
         """
         (commandType, commandArgs) = CommandsHandler.createHaltCommand(haltVMServers)
         self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+        
+    def destroyDomain(self, domainID):
+        """
+        Destruye una máquina virtual
+        Argumentos:
+            domainID: el identificador único de la máquina virtual a destruir
+        Devuelve:
+            Nada
+        """
+        (commandType, commandArgs) = CommandsHandler.createDomainDestructionCommand(domainID)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def getCommandOutput(self, commandID):
         """
@@ -207,7 +218,8 @@ if __name__ == "__main__":
     print connector.getVMServersData()
     commandID = connector.bootUpVM(1)
     sleep(4)
-    print connector.getActiveVMsData()
+    domainUID = connector.getActiveVMsData()[0]['DomainUID']
+    commandID = connector.destroyDomain(domainUID)
+    sleep(4)
     connector.halt(True)
-    connector.dispose()
-    
+    connector.dispose()    

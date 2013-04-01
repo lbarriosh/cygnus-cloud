@@ -8,11 +8,11 @@ Command handler class definition.
 from ccutils.enums import enum
 
 COMMAND_TYPE = enum("REGISTER_VM_SERVER", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER", 
-                     "VM_BOOT_REQUEST", "HALT")
+                     "VM_BOOT_REQUEST", "HALT", "DESTROY_DOMAIN")
 
 COMMAND_OUTPUT_TYPE = enum("VM_SERVER_REGISTRATION_ERROR", "VM_SERVER_BOOTUP_ERROR", 
                            "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", "VM_SERVER_UNREGISTRATION_ERROR",
-                           "VM_SERVER_SHUTDOWN_ERROR")
+                           "VM_SERVER_SHUTDOWN_ERROR", "DOMAIN_DESTRUCTION_ERROR")
 
 from clusterServer.networking.packets import MAIN_SERVER_PACKET_T as PACKET_T
 
@@ -88,6 +88,17 @@ class CommandsHandler(object):
             A tuple (command type, command arguments) containing the command type and its serialized arguments.
         """
         return (COMMAND_TYPE.HALT, str(haltVMServers))
+    
+    @staticmethod
+    def createDomainDestructionCommand(domainID):
+        """
+        Crea un comando de destrucción del dominio
+        Argumentos:
+            domainID: el identificador único del dominio que hay que destruir
+        Devuelve:
+            Una tupla (tipo de comando, argumentos) con el tipo del comando y sus argumentos serializados
+        """
+        return (COMMAND_TYPE.DESTROY_DOMAIN, domainID)
 
     @staticmethod
     def deserializeCommandArgs(commandType, commandArgs):
@@ -116,6 +127,8 @@ class CommandsHandler(object):
             result["UserID"] = int(l[1])
         elif (commandType == COMMAND_TYPE.HALT) :
             result["HaltVMServers"] = l[0] == 'True'
+        elif (commandType == COMMAND_TYPE.DESTROY_DOMAIN):
+            result["DomainID"] = l[0]
         return result
     
     @staticmethod
@@ -178,6 +191,17 @@ class CommandsHandler(object):
         return (COMMAND_OUTPUT_TYPE.VM_CONNECTION_DATA, content)
     
     @staticmethod
+    def createDomainDestructionErrorOutput(errorMessage):
+        """
+        Crea un mensaje de error asociado a la destrucción de una máquina virtual
+        Argumentos:
+            errorMessage: el mensaje de error
+        Devuelve
+            Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
+        """
+        return (COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR, errorMessage)
+    
+    @staticmethod
     def deserializeCommandOutput(commandOutputType, content):
         """
         Deserializes a command's argument.
@@ -207,5 +231,7 @@ class CommandsHandler(object):
             result["VNCServerIPAddress"] = l[0]
             result["VNCServerPort"] = int(l[1])
             result["VNCServerPassword"] = l[2]
+        elif (commandOutputType == COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR) :
+            result["ErrorMessage"] = l[0]
             
         return result

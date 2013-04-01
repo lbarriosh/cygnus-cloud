@@ -194,6 +194,8 @@ class WebServerEndpoint(object):
                 elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
                     (outputType, outputContent) = CommandsHandler.createVMConnectionDataOutput(
                         data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"])
+                elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION_ERROR):
+                    (outputType, outputContent) = CommandsHandler.createDomainDestructionErrorOutput(data["ErrorMessage"])
                 self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
                 
     def processCommands(self):
@@ -223,6 +225,8 @@ class WebServerEndpoint(object):
                             parsedArgs["Halt"], parsedArgs["Unregister"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.VM_BOOT_REQUEST) :
                         packet = self.__pHandler.createVMBootRequestPacket(parsedArgs["VMID"], parsedArgs["UserID"], serializedCommandID)
+                    elif (commandType == COMMAND_TYPE.DESTROY_DOMAIN):
+                        packet = self.__pHandler.createDomainDestructionPacket(parsedArgs["DomainID"], serializedCommandID)
                     self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
                 else :
                     self.__stopped = True

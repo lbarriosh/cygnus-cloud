@@ -418,6 +418,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Error
             packet = self.__webPacketHandler.createDomainDestructionErrorPacket("The domain does not exist", data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, packet)
+            return
         
         # Averiguar los datos del servidor y pedirle que se la cargue
         connectionData = self.__dbConnector.getVMServerBasicData(serverID)
