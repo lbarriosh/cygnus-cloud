@@ -5068,11 +5068,52 @@ s.
 \begin_layout Standard
 La distribución de estas páginas con respecto a su estructura en el flujo
  de direcciones viene representado en el diagrama de la figura 
-\begin_inset Note Note
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagrama-de-direcciones_Web"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-Insertar diagrama.
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/DireccionesWeb.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Diagrama de direcciones web2py.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-de-direcciones_Web"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -5625,12 +5666,9 @@ nombre de la funcion
 
 \begin_layout Standard
 A modo de resumen, el esquema 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-referencia a esquema
-\end_layout
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagrama-de-niveles-web"
 
 \end_inset
 
@@ -5644,6 +5682,50 @@ reference "sub:Estructura-de-direcciones"
 \end_inset
 
  coinciden con la estructura en los 3 niveles.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/NivelesWeb.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Diagrama de niveles de la web.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-de-niveles-web"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -5701,12 +5783,9 @@ Para llevar a cabo la gestión de usuarios hemos optado por utilizar una
  Además esta librería ofrece también funciones que devuelven los formularios
  de inicio de sesión y cierre de la misma totalmente implementados para
  ser directamente incorporados en nuestras páginas.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Referencia a Auth
-\end_layout
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ACWeb2PyBook"
 
 \end_inset
 
