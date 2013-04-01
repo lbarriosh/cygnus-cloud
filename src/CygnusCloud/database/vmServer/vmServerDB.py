@@ -551,14 +551,15 @@ class VMServerDBConnector(BasicDatabaseConnector):
         Devuelve:
             Lista de diccionarios con los datos de conexión a las máquinas virtuales
         '''
-        query = "SELECT userId, VMId, domainName, VNCPort, VNCPass FROM ActualVM;"
+        query = "SELECT VMBootCommand.commandID, ActualVM.userId, ActualVM.VMId, ActualVM.domainName, ActualVM.VNCPort, ActualVM.VNCPass\
+            FROM ActualVM, VMBootCommand WHERE ActualVM.domainName = VMBootCommand.domainName;"
         results = self._executeQuery(query, False)
         if (results == None) :
             return []
         else :
             ac = []
             for row in results:
-                ac.append({"UserID" : int(row[0]), "VMID" : int(row[1]), "VMName": row[2], "VNCPort" : int(row[3]), "VNCPass" : row[4]})
+                ac.append({"DomainID" : row[0], "UserID" : int(row[1]), "ImageID" : int(row[2]), "VMName": row[3], "VNCPort" : int(row[4]), "VNCPass" : row[5]})
             return ac
         
     def getRegisteredDomainNames(self):
@@ -574,7 +575,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         if (results == None) :
             return []
         else :
-            ac =  []
+            ac = []
             for row in results:
                 ac.append(row[0])
             return ac

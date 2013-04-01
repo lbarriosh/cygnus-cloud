@@ -60,4 +60,5 @@ INSERT IGNORE INTO ActualVM VALUES("VMName44",1,
 	"./VMNameCopy3","./OSImagePath4",
 	"2C:00:00:00:00:03","fce083a2-5d6d-11e2-a3f0-001f16b99e1d");
 	
-INSERT IGNORE INTO VMBootCommand VALUES ("VMName44", "123");
+INSERT IGNORE INTO VMBootCommand VALUES ("VMName11", "Command1"), ("VMName22", "Command2"),
+	("VMName33", "Command3"), ("VMName44", "Command4");

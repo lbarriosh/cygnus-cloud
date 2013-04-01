@@ -122,28 +122,29 @@ class DBWebServerTests(unittest.TestCase):
     def test_getVMsConnectionData(self):
         result = self.__dbConnector.getVMsConnectionData()
         expectedResult = [
-                          {"UserID": 1, "VMID": 1, "VMName" :"VMName11", "VNCPort" : 1, "VNCPass" : "1234567890"},
-                          {"UserID": 1, "VMID": 1, "VMName" :"VMName22", "VNCPort" : 2, "VNCPass" : "1234567890"},
-                          {"UserID": 2, "VMID": 1, "VMName" :"VMName33", "VNCPort" : 3, "VNCPass" : "1234567890Test"},
-                          {"UserID": 3, "VMID": 1, "VMName" :"VMName44", "VNCPort" : 4, "VNCPass" : "1234567890"}
+                          {"DomainID": "Command1", "UserID": 1, "ImageID": 1, "VMName" :"VMName11", "VNCPort" : 1, "VNCPass" : "12134567890"},
+                          {"DomainID": "Command2", "UserID": 1, "ImageID": 1, "VMName" :"VMName22", "VNCPort" : 2, "VNCPass" : "1234567890"},
+                          {"DomainID": "Command3", "UserID": 2, "ImageID": 1, "VMName" :"VMName33", "VNCPort" : 3, "VNCPass" : "1234567890Test"},
+                          {"DomainID": "Command4", "UserID": 3, "ImageID": 1, "VMName" :"VMName44", "VNCPort" : 4, "VNCPass" : "1234567890"}
                           ]
         self.assertEquals(result, expectedResult, "getVMsConnectionData does not work")
         
     def test_getVMBootCommand(self):
         result = self.__dbConnector.getVMBootCommand("VMName44")
-        expectedResult = "123"
+        expectedResult = "Command4"
         self.assertEquals(result, expectedResult, "getVMBootCommand does not work")
         result = self.__dbConnector.getVMBootCommand("VMName33")
-        self.assertEquals(result, None, "getVMBootCommand does not work")
+        self.assertEquals(result, "Command3", "getVMBootCommand does not work")
         
     def test_getDomainNameFromVMBootCommand(self):
-        result = self.__dbConnector.getDomainNameFromVMBootCommand("123")
+        result = self.__dbConnector.getDomainNameFromVMBootCommand("Command4")
         expectedResult = "VMName44"
         self.assertEquals(result, expectedResult, "getDomainNameFromVMBootCommand does not work")
         
     def test_addVMBootCommand(self):
-        self.__dbConnector.addVMBootCommand("VMName33", "1234")
-        result = self.__dbConnector.getVMBootCommand("VMName33")
+        self.__dbConnector.registerVMResources("VMName55", 1, 1, "123", 1, 1, "data", "os", "mac", "uuid")
+        self.__dbConnector.addVMBootCommand("VMName55", "1234")
+        result = self.__dbConnector.getVMBootCommand("VMName55")
         self.assertEquals(result, "1234", "addVMBootCommand does not work")
         
     def test_getDomainImageDataPath(self):

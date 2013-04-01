@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 '''
-Definiciones del reactor del servior de cluster
+Definiciones del reactor del servidor de cluster
 @author: Luis Barrios Hernández
 @version: 4.0
 '''

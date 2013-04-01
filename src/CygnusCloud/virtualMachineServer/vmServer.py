@@ -127,7 +127,7 @@ class VMServer(MainServerPacketReactor):
         # Extraer los datos de la base de datos
         vncConnectionData = self.__dbConnector.getVMsConnectionData()
         # Generar los segmentos en los que se dividirá la información
-        segmentSize = 5
+        segmentSize = 150
         segmentCounter = 1
         outgoingData = []
         if (len(vncConnectionData) == 0):
