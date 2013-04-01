@@ -388,3 +388,55 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 self._executeUpdate(update)
                 return (row[0], int(row[2])) # Match! -> return it
         return None
+    
+    def registerActiveVMLocation(self, vmID, serverID):
+        """
+        Registra la ubicación de una nueva máquina virtual activa
+        Argumentos:
+            vmID: el identificador único de la máquina virtual
+            serverID: el identificador único del servidor de máquinas virtuales
+            que la alberga.
+        Devuelve:
+            nada
+        """
+        update = "INSERT INTO ActiveVMDistribution VALUES ('{0}',{1});".format(vmID, serverID)
+        self._executeUpdate(update)
+        
+    def deleteActiveVMLocation(self, vmID):
+        """
+        Elimina la ubicación de una máquina virtual activa
+        Argumentos:
+            vmID: el identificador único de la máquina virtual
+        Devuelve:
+            nada
+        """
+        update = "DELETE FROM ActiveVMDistribution WHERE vmID = '{0}';".format(vmID);
+        self._executeUpdate(update)
+        
+    def getActiveVMHostID(self, vmID):
+        """
+        Devuelve la ubicación de una máquina virtual activa
+        Argumentos:
+            vmID: el identificador único de la máquina virtual
+        Devuelve:
+            El identificador único del servidor de máquinas virtuales 
+            que alberga la máquina virtual
+        """
+        query = "SELECT serverID FROM ActiveVMDistribution WHERE vmID = '{0}';".format(vmID)
+        result = self._executeQuery(query, True)
+        if result == None :
+            return None
+        else :
+            return result[0]
+    
+    def deleteHostedVMsLocation(self, serverID):
+        """
+        Borra la ubicación de todas las máquinas virtuales activas registradas en un servidor
+        de máquinas virtuales.
+        Argumentos:
+            serverID: el identificador único del servidor de máquinas virtuales
+        Devuelve:
+            Nada
+        """
+        update = "DELETE FROM ActiveVMDistribution WHERE serverID = {0};".format(serverID)
+        self._executeUpdate(update)
