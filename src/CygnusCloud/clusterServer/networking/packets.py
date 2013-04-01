@@ -335,7 +335,7 @@ class ClusterServerPacketHandler(object):
             result["VMServerIP"] = p.readString()
             data = []
             while (p.hasMoreData()) :
-                data.append((p.readInt(), p.readInt(), p.readString(), p.readInt(), p.readString()))
+                data.append((p.readString(), p.readInt(), p.readInt(), p.readString(), p.readInt(), p.readString()))
             result["Data"] = data
                 
         elif (packet_type == MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :

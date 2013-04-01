@@ -28,19 +28,6 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         '''
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         
-    #===========================================================================
-    # No aparecen aquí:
-    # - showServers. No hace falta imprimir los datos de los servidores.
-    # - el método main() con pruebas. Para eso están las unitarias.
-    # - el método getMaxVMNumber. Las estadísticas del servidor se guardan en otra
-    #   tabla, y lo que me parece más razonable es que sea el servidor el que nos informe
-    #   (al arrancar) de cuántas máquinas virtuales puede alojar.
-    #   De todas formas, el servidor de máquinas virtuales actual no hace eso,
-    #   por lo que esos datos no están en el esquema
-    # - el método getFreeVMNumber no aparece porque el servidor de máquinas virtuales
-    #   no nos dice nada de esto.
-    #===========================================================================
-        
     def deleteVMServerStatistics(self, serverId):
         '''
         Borra las estadísticas de un servidor de máquinas virtuales

@@ -127,8 +127,9 @@ class VMServerPacketHandler(object):
         p.writeInt(sequenceSize)
         p.writeString(serverIPAddress)
         for row in data :
+            p.writeString(row["DomainID"])
             p.writeInt(row["UserID"])
-            p.writeInt(row["VMID"])
+            p.writeInt(row["ImageID"])
             p.writeString(row["VMName"])
             p.writeInt(row["VNCPort"])
             p.writeString(row["VNCPass"])
