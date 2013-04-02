@@ -179,7 +179,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         except Exception as e:                
             p = self.__webPacketHandler.createVMServerRegistrationErrorPacket(data["VMServerIP"], 
                                                                             data["VMServerPort"], 
-                                                                            data["VMServerName"], str(e), data["CommandID"])        
+                                                                            data["VMServerName"], e.message, data["CommandID"])        
         self.__networkManager.sendPacket('', self.__webPort, p)
         
     def __sendStatusRequestPackets(self, vmServerIP, vmServerPort):
@@ -302,7 +302,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
         except Exception as e:
             p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.VM_SERVER_BOOTUP_ERROR, 
-                                                                         serverNameOrIPAddress, str(e), data["CommandID"])
+                                                                         serverNameOrIPAddress, e.message, data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __sendVMServerStatusData(self):

@@ -36,7 +36,7 @@ class VMServerCallback(NetworkCallback):
         self.__runningImageData = RuntimeData(user, password, databaseName)
         
     def __connectToLibvirt(self, createVirtualNetworkAsRoot) :
-        self.__connector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
+        self.__endpoint = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
         self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
         self.__virtualNetworkManager.createVirtualNetwork(vnName, gatewayIP, netMask,
                                     dhcpStartIP, dhcpEndIP)
@@ -64,7 +64,7 @@ class VMServerCallback(NetworkCallback):
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):
-        if self.__shuttingDown and (self.__connector.getNumberOfDomains() == 0):
+        if self.__shuttingDown and (self.__endpoint.getNumberOfDomains() == 0):
             self.__shutDown = True
 
         name = domainInfo["name"]
@@ -172,7 +172,7 @@ class VMServerCallback(NetworkCallback):
         string = xmlFile.generateConfigurationString()
         
         # Arranco la máquina
-        self.__connector.startDomain(string)
+        self.__endpoint.startDomain(string)
         
         # Inicio el websockify
         # Los puertos impares (por ejemplo) serán para KVM 
@@ -187,7 +187,7 @@ class VMServerCallback(NetworkCallback):
         
     
     def __serverStatusRequest(self, packet):
-        activeDomains = self.__connector.getNumberOfDomains()
+        activeDomains = self.__endpoint.getNumberOfDomains()
         packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
 #        while not self.__networkManager.isConnectionReady('', self.__listenningPort) :
 #            sleep(1)
@@ -198,7 +198,7 @@ class VMServerCallback(NetworkCallback):
     
     def __halt(self, packet):
         # Destruyo los dominios
-        self.__connector.stopAllDomain()
+        self.__endpoint.stopAllDomain()
         self.__shutDown = True
     
     def __getNewMAC_UUID(self):

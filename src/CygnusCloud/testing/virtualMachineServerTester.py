@@ -93,7 +93,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             print("\thelp: prints the following help message")
             print("\tquit: closes this application")
     except Exception as e :
-        print("Error: " + str(e))
+        print("Error: " + e.message)
     
 
 if __name__ == "__main__" :
@@ -124,7 +124,7 @@ if __name__ == "__main__" :
             end = process_command(tokens, networkManager, pHandler, ip_address, port)
     
     except NetworkManagerException as e:
-        print("Error: " + str(e))
+        print("Error: " + e.message)
     networkManager.stopNetworkService()
     
     

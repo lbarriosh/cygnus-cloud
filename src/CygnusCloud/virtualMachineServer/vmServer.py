@@ -92,7 +92,7 @@ class VMServer(MainServerPacketReactor):
         try :        
             ChildProcessManager.terminateProcess(pidToKill, VMServerException)
         except Exception as e :
-            print("Unable to terminate websockify process: " + str(e))
+            print("Unable to terminate websockify process: " + e.message)
                 
         self.__dbConnector.unregisterVMResources(domainName)
         

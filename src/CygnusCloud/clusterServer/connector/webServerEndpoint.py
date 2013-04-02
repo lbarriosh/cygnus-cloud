@@ -13,6 +13,8 @@ from network.manager.networkManager import NetworkManager, NetworkCallback
 from time import sleep
 from commandsHandler import CommandsHandler, COMMAND_TYPE
 from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
+from network.exceptions.networkManager import NetworkManagerException
+from endpointException import EndpointException
 
 class _ClusterServerEndpointCallback(NetworkCallback):
     """
@@ -24,7 +26,7 @@ class _ClusterServerEndpointCallback(NetworkCallback):
         Argumentos:
             endpoint: el endpoint que procesará los paquetes entrantes
         """
-        self.__connector = endpoint
+        self.__endpoint = endpoint
         
     def processPacket(self, packet):
         """
@@ -34,7 +36,7 @@ class _ClusterServerEndpointCallback(NetworkCallback):
         Devuelve: 
             Nada
         """
-        self.__connector._processIncomingPacket(packet)
+        self.__endpoint._processIncomingPacket(packet)
         
 class _ClusterServerEndpointUpdateHandler(UpdateHandler):
     """
@@ -46,7 +48,7 @@ class _ClusterServerEndpointUpdateHandler(UpdateHandler):
         Argumentos:
             endpoint: el endpoint que enviará los paquetes
         """
-        self.__connector = endpoint
+        self.__endpoint = endpoint
         
     def sendUpdateRequestPackets(self):
         """
@@ -56,7 +58,7 @@ class _ClusterServerEndpointUpdateHandler(UpdateHandler):
         Devuelve:
             Nada
         """
-        self.__connector._sendUpdateRequestPackets()
+        self.__endpoint._sendUpdateRequestPackets()
 
 class WebServerEndpoint(object):  
     """
@@ -114,6 +116,8 @@ class WebServerEndpoint(object):
             statusDBUpdateInterval: el periodo de actualización de la base de datos (en segundos)
         Devuelve:
             Nada
+        Lanza:
+            EnpointException: se lanza cuando no se puede establecer una conexión con el servidor web
         """
         self.__manager = NetworkManager(certificatePath)
         self.__manager.startNetworkService()
@@ -121,15 +125,20 @@ class WebServerEndpoint(object):
         # Establecer la conexión
         self.__clusterServerIP = clusterServerIP
         self.__clusterServerPort = clusterServerListenningPort
-        self.__manager.connectTo(clusterServerIP, clusterServerListenningPort, 5, callback, True)
-        while (not self.__manager.isConnectionReady(clusterServerIP, clusterServerListenningPort)) :
-            sleep(0.1)
-        # Preparar la recepción de paquetes y la actualización automática de la base de datos de estado
-        self.__pHandler = ClusterServerPacketHandler(self.__manager)
-        
-        self.__updateRequestThread = StatusDatabaseUpdateThread(_ClusterServerEndpointUpdateHandler(self), statusDBUpdateInterval)
-
-        self.__updateRequestThread.start()
+        try :
+            self.__manager.connectTo(clusterServerIP, clusterServerListenningPort, 5, callback, True)
+            while (not self.__manager.isConnectionReady(clusterServerIP, clusterServerListenningPort)) :
+                sleep(0.1)
+                    
+            # TODO: si esto falla, terminar.
+            # Preparar la recepción de paquetes y la actualización automática de la base de datos de estado
+            self.__pHandler = ClusterServerPacketHandler(self.__manager)
+            
+            self.__updateRequestThread = StatusDatabaseUpdateThread(_ClusterServerEndpointUpdateHandler(self), statusDBUpdateInterval)
+    
+            self.__updateRequestThread.start()
+        except NetworkManagerException as e :
+            raise EndpointException(e.message)
         
     def disconnectFromClusterServer(self):
         """
@@ -145,6 +154,18 @@ class WebServerEndpoint(object):
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         # Dejar de actualizar las bases de datos
         self.__updateRequestThread.stop()
+        
+        # Cerrar las conexiones con las bases de datos
+        self.closeDBConnections(self)
+        
+    def closeDBConnections(self):
+        """
+        Cierra las conexiones con las bases de datos
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
         # Cerrar las conexiones con las bases de datos
         self.__commandsDBConnector.disconnect()
         self.__writer.disconnect()
@@ -268,6 +289,10 @@ if __name__ == "__main__" :
     endpoint.connectToDatabases(mysqlRootsPassword, statusDBName, commandsDBName, statusdbSQLFilePath, commandsdbSQLFilePath,
                                websiteUser, websiteUserPassword, 
                                 endpointUser, endpointUserPassword)
-    endpoint.connectToClusterServer(certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval)
-    endpoint.processCommands()
-    endpoint.disconnectFromClusterServer()
+    try :
+        endpoint.connectToClusterServer(certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval)
+        endpoint.processCommands()
+        endpoint.disconnectFromClusterServer()
+    except EndpointException as e:
+        endpoint.closeDBConnections()
+        print "Error: " + e.message

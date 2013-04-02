@@ -171,9 +171,9 @@ class NetworkManager():
                 self.__connectionPool[(host, port)] = connection
             else :
                 # Raise an exception
-                raise NetworkManagerException("Error: " + str(connection.getError()))
+                raise NetworkManagerException(str(connection.getError()))
         except ConnectionException as e:
-            raise NetworkManagerException(str(e))
+            raise NetworkManagerException(e.message)
         
     def listenIn(self, port, callbackObject, useSSL=False):
         """
@@ -203,9 +203,9 @@ class NetworkManager():
                 # Register the new connection 
                 self.__connectionPool[('', port)] = connection
             else :
-                raise ConnectionException("Error: " + str(connection.getError()))
+                raise ConnectionException(str(connection.getError()))
         except ConnectionException as e:
-            raise NetworkManagerException(str(e))
+            raise NetworkManagerException(e.message)
                 
     def isConnectionReady(self, host, port):
         """
@@ -237,10 +237,10 @@ class NetworkManager():
         if connection.isInErrorState() :
             # Something bad has happened => close the connection, warn the user
             self.__connectionPool.pop((connection.getHost(), connection.getPort()))
-            raise NetworkManagerException("Error: " + str(connection.getError()))
+            raise NetworkManagerException(str(connection.getError()))
         if (connection.wasUnexpectedlyClosed()):
             self.__connectionPool.pop((connection.getHost(), connection.getPort()))
-            raise NetworkManagerException("Error: " + "The connection was closed abnormally")
+            raise NetworkManagerException("The connection was closed abnormally")
         
     def sendPacket(self, host, port, packet):
         """
