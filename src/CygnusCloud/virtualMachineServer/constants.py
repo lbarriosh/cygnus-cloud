@@ -8,8 +8,9 @@ Created on 14/01/2013
 from ccutils.configurationFiles.constantsManager import ConstantsManager
 
 class VMServerConstantsManager(ConstantsManager):
+    
     def __init__(self):
-        self._data = {}
+        ConstantsManager.__init__(self)
 
     def _specializeDataStructure(self):
         self._data["createVirtualNetworkAsRoot"] = self._data["createVirtualNetworkAsRoot"] == "Yes" or self._data["createVirtualNetworkAsRoot"] == "yes"
