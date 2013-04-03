@@ -8,7 +8,7 @@ Common connection definitions
 from ccutils.enums import enum
 from connectionStatus import ConnectionStatus
 from protocols import CygnusCloudProtocolFactory
-from ccutils.multithreadingCounter import MultithreadingCounter
+from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
 from twisted.internet.error import *
 
 """

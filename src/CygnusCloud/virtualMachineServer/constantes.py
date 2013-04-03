@@ -5,6 +5,8 @@ Created on 14/01/2013
 @author: saguma
 '''
 
+from ccutils.configurationFiles.configurationFileReader import ConfigurationFileReader
+
 createVirtualNetworkAsRoot = False
 
 mysqlRootsPassword = ""

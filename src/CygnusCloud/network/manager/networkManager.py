@@ -5,8 +5,8 @@ Network manager class definitions.
 @version: 7.1
 '''
 from twisted.internet import reactor
-from ccutils.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
-from ccutils.multithreadingDictionary import GenericThreadSafeDictionary
+from ccutils.dataStructures.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
+from ccutils.dataStructures.multithreadingDictionary import GenericThreadSafeDictionary
 from network.packets.packet import _Packet, Packet_TYPE
 from network.twistedInteraction.clientConnection import ClientConnection, RECONNECTION_T
 from network.twistedInteraction.serverConnection import ServerConnection
