@@ -66,7 +66,7 @@ class ConfigurationFileReader(object):
             
         except Exception as e :
             self.__parsedData = {}
-            raise InvalidConfigurationFileException(e.message)
+            raise InvalidConfigurationFileException(str(e))
         
     def getParsedData(self):
         """

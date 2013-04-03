@@ -9,9 +9,6 @@ from network.manager.networkManager import NetworkManager
 from virtualMachineServer.callback import MainServerCallback
 from network.interfaces.ipAddresses import get_ip_address 
 from libvirtConnector import libvirtConnector
-from constantes import databaseName, databaseUserName, databasePassword, vncNetworkInterface, listenningPort, \
-    vnName, gatewayIP, netMask, dhcpStartIP, dhcpEndIP, configFilePath, certificatePath, sourceImagePath, executionImagePath,\
-    passwordLength, websockifyPath, createVirtualNetworkAsRoot
 from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from xmlEditor import ConfigurationFileEditor
 from database.vmServer.vmServerDB import VMServerDBConnector
@@ -29,16 +26,17 @@ class MainServerPacketReactor():
         raise NotImplementedError
 
 class VMServer(MainServerPacketReactor):
-    def __init__(self):
+    def __init__(self, constantManager):
         # Inicializo las variables para saber cuando hay que apagarlo todo
         self.__shuttingDown = False
         self.__shuttingDown = False
+        self.__cManager = constantManager
         self.__mainServerCallback = MainServerCallback(self)
         self.__childProcessManager = ChildProcessManager()
-        self.__connectToDatabases(databaseName, databaseUserName, databasePassword)
-        self.__connectToLibvirt(createVirtualNetworkAsRoot)
+        self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
+        self.__connectToLibvirt(self.__cManager.getConstant("createVirtualNetworkAsRoot"))
         self.__doInitialCleanup()
-        self.__startListenning(vncNetworkInterface, listenningPort)
+        self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
         
     def __connectToDatabases(self, databaseName, user, password) :
         self.__dbConnector = VMServerDBConnector(user, password, databaseName)
@@ -47,15 +45,16 @@ class VMServer(MainServerPacketReactor):
         # Inicializo la librería libvirt y creo la red virtual que da acceso por red a las máquinas virtuales.
         self.__libvirtConnector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
         self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
-        self.__virtualNetworkManager.createVirtualNetwork(vnName, gatewayIP, netMask,
-                                    dhcpStartIP, dhcpEndIP)
+        self.__virtualNetworkManager.createVirtualNetwork(self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
+                                                          self.__cManager.getConstant("netMask"), self.__cManager.getConstant("dhcpStartIP"), 
+                                                          self.__cManager.getConstant("dhcpEndIP"))
             
     def __startListenning(self, networkInterface, listenningPort):
         # Inicializo la red que comunicará el servidor de máquinas virtuales
         # con el servidor principal
         self.__vncServerIP = get_ip_address(networkInterface)
         self.__listenningPort = listenningPort
-        self.__networkManager = NetworkManager(certificatePath)
+        self.__networkManager = NetworkManager(self.__cManager.getConstant("certificatePath"))
         self.__networkManager.startNetworkService()
         self.__packetManager = VMServerPacketHandler(self.__networkManager)
         self.__networkManager.listenIn(self.__listenningPort, self.__mainServerCallback, True)
@@ -111,7 +110,7 @@ class VMServer(MainServerPacketReactor):
                 sleep(0.5)
                 wait_time += 0.5
         self.__childProcessManager.waitForBackgroundChildrenToTerminate()
-        self.__virtualNetworkManager.destroyVirtualNetwork(vnName)        
+        self.__virtualNetworkManager.destroyVirtualNetwork(self.__cManager.getConstant("vnName"))        
         
     def processClusterServerIncomingPackets(self, packet):
         data = self.__packetManager.readPacket(packet)
@@ -165,7 +164,7 @@ class VMServer(MainServerPacketReactor):
     def __createDomain(self, info):
         vmID = info["MachineID"]
         userID = info["UserID"]
-        configFile = configFilePath + self.__dbConnector.getImgDefFilePath(vmID)
+        configFile = self.__cManager.getConstant("configFilePath") + self.__dbConnector.getImgDefFilePath(vmID)
         originalName = self.__dbConnector.getImageName(vmID)
         dataPath = self.__dbConnector.getImagePath(vmID)
         osPath = self.__dbConnector.getOsImagePath(vmID)
@@ -185,12 +184,12 @@ class VMServer(MainServerPacketReactor):
         newUUID, newMAC = self.__getNewMAC_UUID()
         newPort = self.__getNewPort()
         newName = originalName + str(newPort)
-        newDataDisk = executionImagePath + dataPathStripped + str(newPort) + ".qcow2"
-        newOSDisk = executionImagePath + osPathStripped + str(newPort) + ".qcow2"
+        newDataDisk = self.__cManager.getConstant("executionImagePath") + dataPathStripped + str(newPort) + ".qcow2"
+        newOSDisk = self.__cManager.getConstant("executionImagePath") + osPathStripped + str(newPort) + ".qcow2"
         newPassword = self.__getNewPassword()
         # Esta variable no se está utilizando
         #sourceDataDisk = sourceImagePath + dataPath
-        sourceOSDisk = sourceImagePath + osPath        
+        sourceOSDisk = self.__cManager.getConstant("sourceImagePath") + osPath        
         
         # Preparo los archivos
                 
@@ -202,8 +201,9 @@ class VMServer(MainServerPacketReactor):
             print("The file " + newOSDisk + " already exists")
             return
         # Copio las imagenes
-        ChildProcessManager.runCommandInForeground("cd " + sourceImagePath + ";" + "cp --parents "+ dataPath + " " + executionImagePath, VMServerException)
-        ChildProcessManager.runCommandInForeground("mv " + executionImagePath + dataPath +" " + newDataDisk, VMServerException)
+        ChildProcessManager.runCommandInForeground("cd " + self.__cManager.getConstant("sourceImagePath") + ";" + "cp --parents "+ dataPath + " " + 
+                                                   self.__cManager.getConstant("executionImagePath"), VMServerException)
+        ChildProcessManager.runCommandInForeground("mv " + self.__cManager.getConstant("executionImagePath") + dataPath +" " + newDataDisk, VMServerException)
         ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
         #runCommand("chmod -R 777 " + executionImagePath, VMServerException)
         
@@ -211,7 +211,7 @@ class VMServer(MainServerPacketReactor):
         xmlFile = ConfigurationFileEditor(configFile)
         xmlFile.setDomainIdentifiers(newName, newUUID)
         xmlFile.setImagePaths(newOSDisk, newDataDisk)
-        xmlFile.setNetworkConfiguration(vnName, newMAC)
+        xmlFile.setNetworkConfiguration(self.__cManager.getConstant("vnName"), newMAC)
         xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword)
         
         string = xmlFile.generateConfigurationString()
@@ -223,7 +223,7 @@ class VMServer(MainServerPacketReactor):
         # Los puertos impares serán para el socket que proporciona el hipervisor 
         # y los pares los websockets generados por websockify        
         
-        webSockifyPID = self.__childProcessManager.runCommandInBackground([websockifyPath,
+        webSockifyPID = self.__childProcessManager.runCommandInBackground([self.__cManager.getConstant("websockifyPath"),
                                     self.__vncServerIP + ":" + str(newPort + 1),
                                     self.__vncServerIP + ":" + str(newPort)])
         
@@ -269,7 +269,7 @@ class VMServer(MainServerPacketReactor):
         return self.__dbConnector.extractFreeVNCPort()
         
     def __getNewPassword(self):
-        return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(passwordLength), VMServerException)
+        return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(self.__cManager.getConstant("passwordLength")), VMServerException)
     
     def __sendActiveDomainUIDs(self):
         """
