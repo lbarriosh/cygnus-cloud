@@ -821,7 +821,7 @@ database
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -960,7 +960,7 @@ network
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1755,9 +1755,87 @@ CygnusCloud
 \end_layout
 
 \begin_layout Subsubsection
+Uso de la librería de virtualización 
+\emph on
+libvirt
+\emph default
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-de-libvirt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ya que 
+\emph on
+CygnusCloud
+\emph default
+ se basa en la virtualización, tanto de máquinas como de redes, por ello
+ necesitamos una forma de gestionar esto.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Libvirt
+\emph default
+ es la librería por excelencia, que nos permite no solo comunicarnos con
+ KVM, si no con muchos otros sistemas de virtualización
+\begin_inset CommandInset citation
+LatexCommand cite
+key "LibvirtSupported"
+
+\end_inset
+
+.
+ La comunicación nos permite las siguientes operaciones, tanto para las
+ máquinas como las redes y el almacenamiento virtual: configurar, encender
+ y apagar.
+ Las confguraciones nos permite hacerlas mediante un archivo XML y dado
+ lo extendida que está esta tecnología, nos permite modificarlo fácilmente,
+ para modificar los datos únicos de cada máquina.
+ Además esta librería avisa mediante eventos cuando una máquina cambia de
+ estado, esto es, se enciende, se apaga, se reinicia\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Standard
+Y por último, aunque 
+\emph on
+libvirt
+\emph default
+ está escrita en 
+\emph on
+C
+\emph default
+ hay 
+\emph on
+bindings
+\emph default
+ a muchos otros lenguajes entre los que se encuentra 
+\emph on
+Python
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "LibvirtBindings"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
 Uso de la librería de red 
 \emph on
-twisted 
+twisted
+\emph default
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Uso-de-twisted"
@@ -2453,7 +2531,7 @@ twisted
 \family default
  es una librería de red totalmente basada en eventos.
  Así, todas las tareas que realiza (como la recepción de datos, el establecimien
-to de conexiones, la detección de desconexiones,\SpecialChar \ldots{}
+to de conexiones, la detección de desconexiones, \SpecialChar \ldots{}
 ) son totalmente asíncronas.
 \end_layout
 
@@ -2471,7 +2549,7 @@ reactor
 sockets
 \emph default
  y actúa en consecuencia.
- De esta manera, todas las aplicaciones que utilizen 
+ De esta manera, todas las aplicaciones que utilicen 
 \family typewriter
 twisted
 \family default
@@ -2534,7 +2612,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/gráfico_twisted.pdf
+	filename graficos/Arquitectura/Vista lógica/gráfico_twisted.pdf
 	scale 70
 
 \end_inset
@@ -2727,7 +2805,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Procesamiento de datos entrantes (DS).pdf
+	filename graficos/Arquitectura/Vista lógica/Procesamiento de datos entrantes (DS).pdf
 	scale 80
 
 \end_inset
@@ -2858,13 +2936,13 @@ reference "fig:Relaciones-protocolos-endpoints-factorías"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Relaciones Endpoints.pdf
+	filename graficos/Arquitectura/Vista lógica/Relaciones Endpoints.pdf
 	scale 80
 
 \end_inset
@@ -2953,7 +3031,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Establecimiento conexión twisted (DS).pdf
+	filename graficos/Arquitectura/Vista lógica/Establecimiento conexión twisted (DS).pdf
 	scale 80
 
 \end_inset
@@ -3128,7 +3206,7 @@ bytes
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -3402,7 +3480,7 @@ reference "tab:Etiquetas-de-tipo-paquete"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -3671,13 +3749,13 @@ CC
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama clases interacción twisted.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagrama clases interacción twisted.pdf
 	scale 80
 
 \end_inset
@@ -3931,7 +4009,7 @@ status open
 
 \family typewriter
 \begin_inset Graphics
-	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama Clases Conexiones.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagrama Clases Conexiones.pdf
 	scale 80
 
 \end_inset
@@ -4134,13 +4212,13 @@ reference "fig:Evolución-del-estado-cliente"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama estados conexión servidor.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagrama estados conexión servidor.pdf
 	scale 90
 
 \end_inset
@@ -4175,13 +4253,13 @@ Evolución del estado de una conexión de tipo servidor
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama estados conexión cliente.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagrama estados conexión cliente.pdf
 	scale 90
 
 \end_inset
@@ -4334,13 +4412,13 @@ CygnusCloud
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama clases Jerarquía hilos red.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagrama clases Jerarquía hilos red.pdf
 	scale 80
 
 \end_inset
@@ -4707,7 +4785,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../../Documents/Memoria/graficos/Arquitectura/Vista lógica/Diagrama clases NetworkManager.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagrama clases NetworkManager.pdf
 	scale 80
 
 \end_inset
@@ -4754,6 +4832,33 @@ NetworkManager
 El paquete 
 \family typewriter
 virtualMachineServer
+\end_layout
+
+\begin_layout Standard
+Este paquete proporciona toda la funcionalidad referente a la gestión de
+ las máquinas virtuales.
+ Esto es gestión de las máquinas virtuales y datos para conectarse a ellas
+ a través de un cliente VNC
+\end_layout
+
+\begin_layout Subsubsection
+La librería 
+\family typewriter
+libvirt
+\end_layout
+
+\begin_layout Standard
+Como ya se ha comentado en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-de-libvirt"
+
+\end_inset
+
+, esta librería nos permite definir máquinas mediante un archivo XML, lo
+ que nos facilita su modificación, para que con el mismo archivo podamos
+ arrancar máquinas con distinta direccion MAC, distinto nombre y distinto
+ UUID.
 \end_layout
 
 \begin_layout Subsection
@@ -4812,7 +4917,7 @@ Con todo esto, la web de CygnusCloud puede subdividirse en los siguientes
 \end_layout
 
 \begin_layout Itemize
-Vistas : Este grupo incluye todos los ficheros de formato html encargados
+Vistas: Este grupo incluye todos los ficheros de formato html encargados
  de establecer el aspecto de los componentes, su posicionamiento en las
  páginas y su comportamiento.
  Entendemos por comportamiento de un componente, su capacidad para realizar
@@ -4825,7 +4930,7 @@ Vistas : Este grupo incluye todos los ficheros de formato html encargados
 \end_layout
 
 \begin_layout Itemize
-Controladores : Este grupo incluye el conjunto de módulos python que aportan
+Controladores: Este grupo incluye el conjunto de módulos python que aportan
  todas las funcionalidades que serán gestionadas por la web.
  CygnusCloud dispone de un módulo para cada uno de los tipos de usuarios
  que pueden acceder a la web (alumnos, administradores y estudiantes), un
@@ -4845,7 +4950,7 @@ reference "sub:Secciones-y-subsecciones"
 \end_layout
 
 \begin_layout Itemize
-Modelos : Este grupo incluye dos módulos python encargados de la creación
+Modelos: Este grupo incluye dos módulos python encargados de la creación
  de las bases de datos y las características generales de la aplicación.
  Así, el módulo 
 \begin_inset Quotes eld
@@ -4866,12 +4971,13 @@ menu.py
 \end_inset
 
  define las características generales de la aplicación web, tales como su
- logo, su autor, sus tags de busqueda...
- Este par de módulos son creados y exigidos por web2py.
+ logo, su autor, sus tags de busqueda\SpecialChar \ldots{}
+ Este par de módulos son creados y
+ exigidos por web2py.
 \end_layout
 
 \begin_layout Itemize
-Lenguajes : Este grupo incluye los diccionarios de traducción de las páginas
+Lenguajes: Este grupo incluye los diccionarios de traducción de las páginas
  de la web.
  Estos diccionarios deben ser rellenados por el desarrollador y son usados
  internamente por web2py para traducir todas las palabras de la web que
@@ -4879,13 +4985,13 @@ Lenguajes : Este grupo incluye los diccionarios de traducción de las páginas
 \end_layout
 
 \begin_layout Itemize
-Archivos estáticos : Este grupo incluye los ficheros css y js encargados
+Archivos estáticos: Este grupo incluye los ficheros css y js encargados
  de definir la apariencia de la web, las imágenes y en general cualquier
  fichero que defina algún componente externo que forma parte de la web.
 \end_layout
 
 \begin_layout Itemize
-Módulos : En este apartado se incluyen todos los módulos python secundarios
+Módulos: En este apartado se incluyen todos los módulos python secundarios
  utilizados por los controladores.
  Así, en este grupo se encuentra el conector que permite la interacción
  entre el servidor web y el servidor de cluster.
@@ -5084,6 +5190,8 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/DireccionesWeb.pdf
 	scale 70
@@ -5691,6 +5799,8 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/NivelesWeb.pdf
 	scale 70
@@ -6095,6 +6205,8 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/DiagramaSecuenciaArranqueMVWeb.pdf
 	scale 70
