@@ -270,29 +270,3 @@ class WebServerEndpoint(object):
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
         self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
-        
-if __name__ == "__main__" :
-    endpoint = WebServerEndpoint()
-    mysqlRootsPassword = ""
-    statusDBName ="SystemStatusDB"
-    commandsDBName = "CommandsDB"
-    statusdbSQLFilePath = "../../database/SystemStatusDB.sql"
-    commandsdbSQLFilePath = "../../database/CommandsDB.sql"
-    websiteUser = "website"
-    websiteUserPassword = "CygnusCloud"
-    endpointUser = "connector_user"
-    endpointUserPassword = "CygnusCloud"
-    certificatePath = "/home/luis/Certificates"
-    clusterServerIP = "127.0.0.1"
-    clusterServerListenningPort = 9000
-    statusDBUpdateInterval = 2
-    endpoint.connectToDatabases(mysqlRootsPassword, statusDBName, commandsDBName, statusdbSQLFilePath, commandsdbSQLFilePath,
-                               websiteUser, websiteUserPassword, 
-                                endpointUser, endpointUserPassword)
-    try :
-        endpoint.connectToClusterServer(certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval)
-        endpoint.processCommands()
-        endpoint.disconnectFromClusterServer()
-    except EndpointException as e:
-        endpoint.closeDBConnections()
-        print "Error: " + e.message
