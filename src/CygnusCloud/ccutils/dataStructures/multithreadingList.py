@@ -15,49 +15,49 @@ class GenericThreadSafeList :
     """
     def __init__(self):
         self.__semaphore = BoundedSemaphore(1)
-        self.__data = []
+        self._data = []
     
     def append(self, value):
         with self.__semaphore:
-            if self.__data.count(value) == 0:
-                self.__data.append(value)
+            if self._data.count(value) == 0:
+                self._data.append(value)
         
     def count(self, value):
         with self.__semaphore:
-            return self.__data.count(value)
+            return self._data.count(value)
         
     def isEmpty(self):
         with self.__semaphore:
-            return len(self.__data) == 0
+            return len(self._data) == 0
         
     def index(self, value):
         with self.__semaphore:
-            return self.__data.index(value)
+            return self._data.index(value)
         
     def insert(self, index, value):
         with self.__semaphore:
-            return self.__data.insert(index, value)
+            return self._data.insert(index, value)
         
     def pop(self, index):
         with self.__semaphore:
-            return self.__data.pop(index)
+            return self._data.pop(index)
         
     def remove(self, value):
         with self.__semaphore :
-            self.__data.remove(value)
+            self._data.remove(value)
             
     def reverse(self, value):
         with self.__semaphore :
-            self.__data.reverse()
+            self._data.reverse()
     
     def __getitem__(self, index):
         with self.__semaphore:
-            return self.__data.__getitem__(index)
+            return self._data.__getitem__(index)
         
     def __setitem__(self, index, value):
         with self.__semaphore:
-            return self.__data.__setitem__(index, value)
+            return self._data.__setitem__(index, value)
         
     def getSize(self):
         with self.__semaphore:
-            return len(self.__data)   
+            return len(self._data)   

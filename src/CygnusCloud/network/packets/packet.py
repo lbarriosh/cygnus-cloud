@@ -31,7 +31,7 @@ class _Packet(object):
         """
         self.__priority = priority
         self.__packetType = packetType
-        self.__data = ''
+        self._data = ''
         
     def _setContent(self, priority, data, packetType=Packet_TYPE.DATA):
         """
@@ -46,7 +46,7 @@ class _Packet(object):
         """
         self.__packetType = packetType
         self.__priority = priority
-        self.__data = data
+        self._data = data
         
     def writeInt(self, value):
         """
@@ -128,7 +128,7 @@ class _Packet(object):
         Returns:
             Nothing
         """
-        self.__data += packet._getData()
+        self._data += packet._getData()
         
     def readInt(self):
         """
@@ -203,7 +203,7 @@ class _Packet(object):
         Returns:
             A string with this packet's data, ready to be sent.
         """
-        return str(self.__packetType) + "," + str(self.__priority) + "," + self.__data
+        return str(self.__packetType) + "," + str(self.__priority) + "," + self._data
     
     def _getPacketType(self):
         """
@@ -233,7 +233,7 @@ class _Packet(object):
         Returns:
             Nothing
         """
-        self.__data = data
+        self._data = data
         
     def transferData(self, packet):
         """
@@ -243,7 +243,7 @@ class _Packet(object):
         Returns:
             Nothing
         """
-        self.__data = packet.__data
+        self._data = packet._data
         
     def _getData(self):
         """
@@ -255,7 +255,7 @@ class _Packet(object):
         @attention: This method must not be used from the client code, and will always be
         used with testing purposes.
         """
-        return self.__data
+        return self._data
     
     @staticmethod
     def _deserialize(string):  
@@ -292,7 +292,7 @@ class _Packet(object):
         if isinstance(other, _Packet):
             samePriority = self.__priority == other.__priority
             sameType = self.__packetType == other.__packetType
-            sameContent = self.__data == other.__data
+            sameContent = self._data == other._data
             return samePriority and sameType and sameContent
         else: 
             return False
@@ -317,7 +317,7 @@ class _Packet(object):
         Returns:
             True if the packet has more data to read or False otherwise.
         """
-        return self.__data != ''
+        return self._data != ''
     
     def __commonWriteCode(self, value, dataType, field, checkType):
         """
@@ -337,12 +337,12 @@ class _Packet(object):
         if checkType and not isinstance(value, dataType):            
             raise PacketException("The given value is not an " + self.__extractTypeName(str(dataType)) + " instance")
         dataToAdd = str(value)
-        newLength = len(self.__data) + len(str(field)) + len(dataToAdd) + 2
+        newLength = len(self._data) + len(str(field)) + len(dataToAdd) + 2
         if (newLength > 65000):
             # The maximum TCP segment length is 65536 bytes. 536 bytes are reserved for the packet header.
             raise PacketException("There\'s not enough space to hold a " + self.__extractTypeName(str(dataType))\
                                    + " value")
-        self.__data += str(field) + '$' + dataToAdd + '$'
+        self._data += str(field) + '$' + dataToAdd + '$'
         
     def __commonReadCode(self, typeLabel, returnType):
         """
@@ -356,7 +356,7 @@ class _Packet(object):
             PacketException: this exceptions will be raised when the packet's current value does not
             match with the type label and when the packet value and the type label do not match.
         """
-        (label,_dollar,tail) = self.__data.partition("$")
+        (label,_dollar,tail) = self._data.partition("$")
         if (typeLabel != int(label)) :
             raise PacketException("Can't read a " + self.__extractTypeName(returnType) + " value")
         (value,_dollar,tail) = tail.partition("$")
@@ -365,7 +365,7 @@ class _Packet(object):
         except Exception :
             raise PacketException("Invalid packet string: label and data types do not match")
         # Everything went OK => discard the read data
-        self.__data = tail
+        self._data = tail
         # Return the read value
         return returnValue
         

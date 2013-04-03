@@ -9,7 +9,7 @@ Punto de entrada del servidor de máquinas virtuales
 from database.utils.configuration import DBConfigurator
 from vmServer import VMServer
 from time import sleep
-from constants import ConstantsManager
+from constants import VMServerConstantsManager
 import sys
 
 if __name__ == "__main__" :
@@ -18,7 +18,7 @@ if __name__ == "__main__" :
         print "A configuration file path is needed"
         sys.exit()
     try :
-        cm = ConstantsManager()
+        cm = VMServerConstantsManager()
         cm.parseConfigurationFile(sys.argv[1])
     except Exception as e:
         print "Error: " + e.message

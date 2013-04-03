@@ -25,7 +25,7 @@ class GenericThreadSafePriorityQueue(object):
             Nothing
         """
         # We use this to speed up the queue operations
-        self.__data = dict()
+        self._data = dict()
         # We use a semaphore to avoid compilation problems in Python 3.x
         self.__semaphore = BoundedSemaphore(1) 
         self.__elements = 0
@@ -47,9 +47,9 @@ class GenericThreadSafePriorityQueue(object):
             raise GenericThreadSafePriorityQueueException("The priority must be an integer value")
         # Acquire semaphore, add data
         with self.__semaphore:
-            if not self.__data.has_key(priority) :
-                self.__data[priority] = []       
-            self.__data[priority].append(data)
+            if not self._data.has_key(priority) :
+                self._data[priority] = []       
+            self._data[priority].append(data)
             self.__elements += 1
             
     def dequeue(self):
@@ -65,13 +65,13 @@ class GenericThreadSafePriorityQueue(object):
         with self.__semaphore:
             if self.__elements == 0:
                 raise GenericThreadSafePriorityQueueException("The queue is empty")
-            keys = self.__data.keys()
+            keys = self._data.keys()
             keys.sort() # This is the little price to pay for an efficient queue operation. If the number of keys 
                         # remains constant, this operation has an O(1) time complexity.
             self.__elements -= 1
             for key in keys:
-                if not len(self.__data[key]) == 0 :
-                    return self.__data[key].pop(0)
+                if not len(self._data[key]) == 0 :
+                    return self._data[key].pop(0)
     
     def isEmpty(self):
         """
