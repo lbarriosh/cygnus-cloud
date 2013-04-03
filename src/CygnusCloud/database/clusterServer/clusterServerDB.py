@@ -28,19 +28,6 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         '''
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         
-    #===========================================================================
-    # No aparecen aquí:
-    # - showServers. No hace falta imprimir los datos de los servidores.
-    # - el método main() con pruebas. Para eso están las unitarias.
-    # - el método getMaxVMNumber. Las estadísticas del servidor se guardan en otra
-    #   tabla, y lo que me parece más razonable es que sea el servidor el que nos informe
-    #   (al arrancar) de cuántas máquinas virtuales puede alojar.
-    #   De todas formas, el servidor de máquinas virtuales actual no hace eso,
-    #   por lo que esos datos no están en el esquema
-    # - el método getFreeVMNumber no aparece porque el servidor de máquinas virtuales
-    #   no nos dice nada de esto.
-    #===========================================================================
-        
     def deleteVMServerStatistics(self, serverId):
         '''
         Borra las estadísticas de un servidor de máquinas virtuales
@@ -388,3 +375,63 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 self._executeUpdate(update)
                 return (row[0], int(row[2])) # Match! -> return it
         return None
+    
+    def registerActiveVMLocation(self, vmID, serverID):
+        """
+        Registra la ubicación de una nueva máquina virtual activa
+        Argumentos:
+            vmID: el identificador único de la máquina virtual
+            serverID: el identificador único del servidor de máquinas virtuales
+            que la alberga.
+        Devuelve:
+            nada
+        """
+        update = "INSERT INTO ActiveVMDistribution VALUES ('{0}',{1});".format(vmID, serverID)
+        self._executeUpdate(update)
+        
+    def deleteActiveVMLocation(self, vmID):
+        """
+        Elimina la ubicación de una máquina virtual activa
+        Argumentos:
+            vmID: el identificador único de la máquina virtual
+        Devuelve:
+            nada
+        """
+        update = "DELETE FROM ActiveVMDistribution WHERE vmID = '{0}';".format(vmID);
+        self._executeUpdate(update)
+        
+    def getActiveVMHostID(self, vmID):
+        """
+        Devuelve la ubicación de una máquina virtual activa
+        Argumentos:
+            vmID: el identificador único de la máquina virtual
+        Devuelve:
+            El identificador único del servidor de máquinas virtuales 
+            que alberga la máquina virtual
+        """
+        query = "SELECT serverID FROM ActiveVMDistribution WHERE vmID = '{0}';".format(vmID)
+        result = self._executeQuery(query, True)
+        if result == None :
+            return None
+        else :
+            return result[0]
+    
+    def deleteHostedVMs(self, serverID):
+        """
+        Borra la ubicación de todas las máquinas virtuales activas registradas en un servidor
+        de máquinas virtuales.
+        Argumentos:
+            serverID: el identificador único del servidor de máquinas virtuales
+        Devuelve:
+            Nada
+        """
+        update = "DELETE FROM ActiveVMDistribution WHERE serverID = {0};".format(serverID)
+        self._executeUpdate(update)
+        
+    def registerHostedVMs(self, serverID, hostedVMs):
+        """
+        Registra un conjunto de máquinas virtuales almacenadas en un servidor
+        """
+        update = "INSERT INTO ActiveVMDistribution VALUES ('{0}',{1});"
+        for hostedDomainUID in hostedVMs :
+            self._executeUpdate(update.format(hostedDomainUID, serverID))

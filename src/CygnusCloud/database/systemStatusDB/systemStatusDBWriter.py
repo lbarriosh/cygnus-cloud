@@ -1,24 +1,24 @@
 # -*- coding: UTF8 -*-
 '''
-Web status database writer
+Escritor de la base de datos de estado
 
 @author: Luis Barrios Hernández
-@version: 3.2
+@version: 3.5
 '''
 
 from database.utils.connector import BasicDatabaseConnector
 
 class SystemStatusDatabaseWriter(BasicDatabaseConnector):
     """
-    This objects update the system status database with the data sent from a cluster server.
+    Estos objetos actualizan la base de estado con la información que envía el servidor de cluster
     """
     def __init__(self, sqlUser, sqlPassword, databaseName):
         """
-        Initializes the writer's state
-        Args:
-        sqlUser: the SQL user to use
-        sqlPassword: the SQL user's password
-        databaseName: the database's name
+        Inicializa el estado del escritor
+        Argumentos:
+            sqlUser: usuario SQL a utilizaqr
+            sqlPassword: contraseña de ese usuario
+            databaseName: nombre de la base de datos de estado
         """
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         self.__vmServerSegmentsData = []
@@ -31,33 +31,39 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         
     def processVMServerSegment(self, segmentNumber, segmentCount, data):
         """
-        Processes a virtual machine server basic data segment.
-        Args:
-            segmentNumber: the segment's position in the sequence
-            segmentCount: the total number of segments in the sequence
-            data: the data to process
-        Returns:
-            Nothing
+        Procesa un segmento con datos de los servidores de máquinas virtuales
+        Argumentos:
+            segmentNumber: posición del segmento en la secuencia
+            segmentCount: número de segmentos de la secuencia
+            data: los datos del segmento
+        Devuelve:
+            Nada
         """
+        # Guardamos los datos del segmento (si los hay)
         if (data != []) :
             self.__vmServerSegmentsData += data
             self.__vmServerSegments += 1
+            
         if (self.__vmServerSegments == segmentCount) :
+            # Hemos recibido la secuencia completa => la procesamos
             receivedData = SystemStatusDatabaseWriter.__getVMServersDictionary(self.__vmServerSegmentsData)
             registeredIDs = self.__getKnownVMServerIDs()
-            # Step 1: remove the nonexistent rows
+            
+            # Quitar las filas que no existen
             if (registeredIDs != None) :
                 for ID in registeredIDs :
                     if not (receivedData.has_key(ID)) :
                         self.__deleteVMServer(ID)
-            # Step 2: classify the segment's data
+                        
+            # Determinar qué hay que insertar y qué hay que modificar
             inserts = []
             for ID in receivedData.keys() :
                 if (registeredIDs != None and ID in registeredIDs) :
                     self.__updateVMServerData(receivedData[ID])
                 else :
                     inserts.append(receivedData[ID])
-            # Step 3: write changes to the database
+                    
+            # Realizar las inserciones de golpe
             if (inserts != []) :
                 self.__insertVMServers(inserts)
             self.__vmServerSegmentsData = [] 
@@ -65,19 +71,19 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             
     def processVMDistributionSegment(self, segmentNumber, segmentCount, data):
         """
-        Processes a virtual machine distribution data segment.
-        Args:
-            segmentNumber: the segment's position in the sequence
-            segmentCount: the total number of segments in the sequence
-            data: the data to process
-        Returns:
-            Nothing
+        Procesa un segmento con datos de la distribución de las imágenes
+        Argumentos:
+            segmentNumber: posición del segmento en la secuencia
+            segmentCount: número de segmentos de la secuencia
+            data: los datos del segmento
+        Devuelve:
+            Nada
         """
         if (data != []) :
             self.__imageDistributionSegmentsData.append(data)
             self.__imageDistributionSegments += 1
-        if (self.__imageDistributionSegments == segmentCount) :
-            # Write changes to the database
+        if (self.__imageDistributionSegments == segmentCount) :            
+            # Borrar la tabla y volver a construirla
             command = "DELETE FROM VirtualMachineDistribution;"
             self._executeUpdate(command)
             if (self.__imageDistributionSegmentsData != []) :
@@ -88,14 +94,13 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
     
     def processActiveVMSegment(self, segmentNumber, segmentCount, vmServerIP, data):
         """
-        Processes an active virtual machine data segment.
-        Args:
-            segmentNumber: the segment's position in the sequence
-            segmentCount: the total number of segments in the sequence
-            vmServerIP: the host virtual machine server's IP
-            data: the data to process
-        Returns:
-            Nothing
+        Procesa un segmento con datos de las máquinas virtuales activas
+        Argumentos:
+            segmentNumber: posición del segmento en la secuencia
+            segmentCount: número de segmentos de la secuencia
+            data: los datos del segmento
+        Devuelve:
+            Nada
         """
         if (not self.__activeVMSegmentsData.has_key(vmServerIP)) :
             self.__activeVMSegmentsData[vmServerIP] = []
@@ -106,17 +111,20 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         if (self.__activeVMSegments[vmServerIP] == segmentCount) :
             receivedData = SystemStatusDatabaseWriter.__getActiveVMsDictionary(self.__activeVMSegmentsData[vmServerIP])
             registeredIDs = self.__getActiveVMIDs()
-            # Step 1: remove the nonexistent rows
+            
+            # Quitar las filas que haga falta
             if (registeredIDs != None) :
                 for ID in registeredIDs :
                     if not (receivedData.has_key(ID)) :
                         self.__deleteActiveVM(ID)
-            # Step 2: classify the segment's data
+                        
+            # Realizar las actualizaciones y preparar las inserciones
             inserts = []
             for ID in receivedData.keys() :
                 if (registeredIDs != None and not (ID in registeredIDs)) :
                     inserts.append(receivedData[ID])
-            # Step 3: write changes to the database
+                    
+            # Realizar las inserciones
             if (inserts != []) :
                 self.__insertActiveVMData(self.__getVMServerName(vmServerIP), inserts)
             self.__activeVMSegmentsData[vmServerIP] = []
@@ -125,12 +133,11 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
     @staticmethod    
     def __getVMServersDictionary(segmentList):
         """
-        Turns a list of virtual machine server tuples into a dictionary. Its keys
-        are the virtual machine servers' IDs, and its values are the matching tuples.
-        Args:
-            segmentList: a list of tuples with the virtual machine server's data.
-        Returns:
-            A dictionary <virtual machine server ID, tuple)
+        Genera un diccionario a partir de  una lista de tuplas con datos de los servidores de máquinas virtuales
+        Argumentos:
+            segmentList: la lista de tuplas que queremos convertir a diccionario
+        Devuelve:
+            Un diccionario de la forma <ID del servidor, tupla)
         """
         result = {}
         for segment in segmentList :
@@ -140,12 +147,12 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
     @staticmethod
     def __getActiveVMsDictionary(segmentList):
         """
-        Turns a list of active VMs into a dictionary. Its keys are the
-        VM's IDs, and its values are the matching tuples.
-        Args:
-            segmentList: a list of tuples with the virtual machine's data.
-        Returns:
-            A dictionary <VM ID, tuple)
+        Genera un diccionario a partir de  una lista de tuplas con datos de las máquinas virtuales
+        activas.
+        Argumentos:
+            segmentList: la lista de tuplas que queremos convertir a diccionario
+        Devuelve:
+            Un diccionario de la forma <ID de la máquina (usuario, imagen, servidor), tupla)
         """
         result = {}
         for segment in segmentList :
@@ -154,11 +161,11 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
                 
     def __getKnownVMServerIDs(self):
         """
-        Return the known (or registered) virtual machine server IDs.
-        Args:
-            None
-        Returns:
-            A list with the known VM server IDs.
+        Devuelve los identificadores de los servidores de máquinas virtuales conocidos.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Una lista con los identificadores de los servidores de máquinas virtuales conocidos.
         """
         query = "SELECT serverName FROM VirtualMachineServer;";
         result = set()
@@ -169,11 +176,11 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             
     def __insertVMServers(self, tupleList):
         """
-        Inserts virtual machine servers' data into the status database
-        Args:
-            tupleList: a list of tuples with the VM server's data
-        Returns:
-            Nothing
+        Inserta las tuplas con datos de los servidores de máquinas virtuales de una lista en la base de datos.
+        Argumentos:
+            tupleList: la lista de tuplas con los datos a insertar
+        Devuelve:
+            Nada
         """
         update = "INSERT INTO VirtualMachineServer VALUES {0};"\
             .format(SystemStatusDatabaseWriter.__convertTuplesToSQLStr(tupleList))
@@ -181,11 +188,11 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         
     def __updateVMServerData(self, data):
         """
-        Updates a virtual machine server's data.
-        Args: 
-            data: a tuple containing the new VM server's data
-        Returns:
-            Nothing            
+        Actualiza la información de un servidor de máquinas virtuales
+        Argumentos: 
+            data: tupla con la nueva información del servidor de máquinas virtuales
+        Devuelve:
+            Nada            
         """
         update = "UPDATE VirtualMachineServer SET serverStatus='{1}', serverIP='{2}', serverPort={3}\
             WHERE serverName='{0}'".format(data[0], data[1], data[2], data[3])
@@ -193,13 +200,14 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         
     def __deleteVMServer(self, serverID):
         """
-        Deletes a virtual machine server from the status database
-        Args:
-            serverID: the VM server's ID
-        Returns:
-            Nothing
+        Borra un servidor de máquinas virtuales de la base de datos de estado
+        Argumentos:
+            serverID: el identificador del servidor a borrar
+        Devuelve:
+            Nada
         """
-        # Workaround: ON DELETE CASCADE only works with MySQL's InnoDB engine.
+        # Importante: ON DELETE CASCADE NO funciona con las tablas alojadas en memoria, por lo que
+        # lo tenemos que implementar a mano.
         update = "DELETE FROM ActiveVirtualMachines WHERE serverName = '{0}';".format(serverID)
         self._executeUpdate(update)
         update = "DELETE FROM VirtualMachineServer WHERE serverName = '{0}'".format(serverID)
@@ -207,13 +215,13 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             
     def __getActiveVMIDs(self):
         """
-        Return the known active VM ID's
-        Args:
-            None
+        Devuelve los identificadores únicos de las máquinas virtuales activas (en su forma larga)
+        Argumentos:
+            Ninguno
         Returns:
-            A list with the known active VM ID's.
+            una lista con los identificadores únicos de las máquinas virtuales activas
         """
-        query = "SELECT serverName, userID, virtualMachineID FROM ActiveVirtualMachines;"
+        query = "SELECT serverName, ownerID, imageID FROM ActiveVirtualMachines;"
         results = self._executeQuery(query)
         output = set()
         for row in results :
@@ -222,12 +230,12 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
     
     def __insertActiveVMData(self, vmServerIP, data):
         """
-        Inserts some active VM's data into the status database.
-        Args:
-            vmServerIP: the host VM server's IP
-            data: a list with the new active VM's data
-        Returns:
-            Nothing
+        Inserta los datos de las máquinas alojadas en cierto servidor en la base de datos de estado
+        Argumentos:
+            vmServerIP: la IP del servidor de máquinas virtuales que aloja las máquinas
+            data: una lista con la información de esas máquinas
+        Devuelve:
+            Nada
         """
         update = "INSERT INTO ActiveVirtualMachines VALUES {0};"\
             .format(SystemStatusDatabaseWriter.__convertTuplesToSQLStr(data, [vmServerIP]))
@@ -235,23 +243,23 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         
     def __deleteActiveVM(self, machineID):
         """
-        Deletes an active VM.
-        Args:
-            machineID: the active VM's ID.
-        Returns:
-            Nothing
+        Borra los datos de una máquina virtual activa
+        Argumentos:
+            machineID: el identificador único de la máuqina virtual activa
+        Devuelve:
+            Nada
         """
-        update = "DELETE FROM ActiveVirtualMachines WHERE serverName='{0}' AND userID={1} AND virtualMachineID={2};"\
+        update = "DELETE FROM ActiveVirtualMachines WHERE serverName='{0}' AND ownerID={1} AND imageID={2};"\
             .format(machineID[0], machineID[1], machineID[2])
         self._executeUpdate(update)
             
     def __getVMServerName(self, serverIP):
         """
-        Returns the virtual machine server name that is linked to the given IP.
-        Args:
-            serverIP: a virtual machine server's IP
-        Returns:
-            the virtual machine server's name
+        Devuelve el nombre del servidor de máquinas virtuales asociado a una IP
+        Argumentos:
+            serverIP: la IP del servidord de máquinas virtuales
+        Devuelve:
+            el nombre del servidor de máquinas virtuales asociado a esa IP
         """
         query = "SELECT serverName FROM VirtualMachineServer WHERE serverIP = '" + serverIP + "';"
         result = self._executeQuery(query, True)
@@ -260,12 +268,12 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
     @staticmethod
     def __convertTuplesToSQLStr(tupleList, dataToAdd = []):
         """
-        Converts a list of tuples into a SQL data string.
-        Args:
-            tupleList: a list of tuples.
-            dataToAdd: a list of data to add to EVERY segment
-        Returns:
-            A SQL string with the supplied data.
+        Convierte una lista de tuplas en un string SQL
+        Argumentos:
+            tupleList: lista de tuplas a convertir
+            dataToAdd: lista con los datos a añadir al final de cada tupla
+        Devuelve:
+            Un string SQL con la información de los argumentos en forma de lista de tuplas
         """
         isFirstSegment = True
         command = ""
@@ -281,12 +289,12 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
     @staticmethod
     def __convertSegmentsToSQLTuples(segmentList):
         """
-        Converts a list of segments into a SQL data string.
-        Args:
-            segmentList: a list of segments.
-            dataToAdd: a list of data to add to EVERY segment
-        Returns:
-            A SQL string with the supplied data.
+        Convierte una lista de segmentos en un string SQL
+        Argumentos:
+            segmentList: lista de segmentos
+            dataToAdd: lista con los datos a añadir al final de cada tupla
+        Devuelve:
+            Un string SQL con la información de los argumentos en forma de lista de tuplas
         """
         isFirstSegment = True
         command = ""

@@ -1,9 +1,8 @@
 # -*- coding: utf8 -*-
 '''
-This module contains statements to connect to a virtual machine
-server and control it.
+Definiciones del tester del servidor de máquinas virtuales
 @author: Luis Barrios Hernández
-@version: 3.1
+@version: 4.0
 '''
 from __future__ import print_function
 
@@ -43,7 +42,7 @@ class TesterCallback(NetworkCallback):
             print("\tReason: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE):
             print("Virtual machine boot failure")
-            print("\tMachine ID: " + str(data["VMID"]))
+            print("\nImage ID: " + str(data["VMID"]))
             print("\tReason: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
             print("Virtual machine connection data")
@@ -55,6 +54,8 @@ class TesterCallback(NetworkCallback):
             print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
             print("\tVNC server IP address: " + data["VMServerIP"])
             print("\t" + str(data["Data"]))
+        elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION_ERROR) :
+            print("Domain destruction error: " + data["ErrorMessage"])
 
 def printLogo():
     print('\t   _____                             _____ _                 _ ')
@@ -76,7 +77,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             ip = tokens.pop(0)
             serverPort = int(tokens.pop(0))
             name = tokens.pop(0)
-            p = pHandler.createVMServerRegistrationPacket(ip, serverPort, name, "")
+            p = pHandler.createVMServerRegistrationPacket(ip, serverPort, name, tokens.pop(0))
             networkManager.sendPacket(ip_address, port, p)
             return False  
         elif (command == "obtainVMServerStatus") :
@@ -95,13 +96,16 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createVMServerBootUpPacket(tokens.pop(0), "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "bootUpVM") :
-            p = pHandler.createVMBootRequestPacket(int(tokens.pop(0)), int(tokens.pop(0)), "")
+            p = pHandler.createVMBootRequestPacket(int(tokens.pop(0)), int(tokens.pop(0)), tokens.pop(0))
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "halt") :
             p = pHandler.createHaltPacket(True)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "obtainActiveVMsData") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
+            networkManager.sendPacket(ip_address, port, p)
+        elif (command == "destroyDomain") :
+            p = pHandler.createDomainDestructionPacket(tokens.pop(0), "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True
@@ -122,7 +126,8 @@ def displayHelpMessage():
     print("\tunregisterVMServer <Name or IP> <Halt?>: unregisters a virtual machine server")
     print("\tshutdownVMServer <Name or IP> <Halt?>: shuts down a virtual machine server")
     print("\tbootUpVMServer <Name or IP>: boots up a virtual machine server")
-    print("\tbootUpVM <MachineID> <UserID>: boots up a virtual machine")
+    print("\tbootUpVM <ImageID> <UserID> <DomainID>: boots up a virtual machine")
+    print("\tdestroyDomain <DomainID>: destroys a virtual machine")
     print("\tobtainActiveVMsData: obtains the active virtual machines' data")
     print("\tquit: closes this application")
     
@@ -132,7 +137,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     printLogo()
     print('Cluster Server tester')
-    print('Version 3.1')
+    print('Version 4.0')
     print('*' * 80)
     print('*' * 80)
     print()
@@ -155,7 +160,7 @@ if __name__ == "__main__" :
             end = process_command(tokens, networkManager, pHandler, ip_address, port)
     
     except NetworkManagerException as e:
-        print("Error: " + str(e))
+        print("Error: " + e.message)
     networkManager.stopNetworkService()
     
     

@@ -27,8 +27,8 @@ class libvirtConnector():
         uri += "://"
         uri += "/system"
         # Connect to lbvirt and register the events
-        self.__connector = libvirt.open(uri)
-        self.__connector.domainEventRegisterAny(None, 
+        self.__endpoint = libvirt.open(uri)
+        self.__endpoint.domainEventRegisterAny(None, 
                                               libvirt.VIR_DOMAIN_EVENT_ID_LIFECYCLE, 
                                               self.__eventDomain, None)
 
@@ -80,26 +80,37 @@ class libvirtConnector():
         Raises:
             libvirtError: if an error ocurred defining or starting the domain
         '''
-        self.__connector.createXML(xmlConfig, libvirt.VIR_DOMAIN_NONE)
+        self.__endpoint.createXML(xmlConfig, libvirt.VIR_DOMAIN_NONE)
         
     def stopAllDomains(self):
-        idsMV = self.__connector.listDomainsID()
+        idsMV = self.__endpoint.listDomainsID()
         for vmID in idsMV:
-            domain = self.__connector.lookupByID(vmID)
+            domain = self.__endpoint.lookupByID(vmID)
             domain.destroy()
             
+    def destroyDomain(self, domainName):
+        """
+        Destruye el dominio cuyo nombre se nos proporciona como argumento.
+        Argumentos:
+            domainName: el nombre del dominio a destruir
+        Devuelve:
+            Nada
+        """
+        targetDomain = self.__endpoint.lookupByName(domainName)
+        targetDomain.destroy()
+            
     def getActiveDomainNames(self):
-        idsMV = self.__connector.listDomainsID()
+        idsMV = self.__endpoint.listDomainsID()
         result = []
         for vmID in idsMV:
-            domain = self.__connector.lookupByID(vmID)
+            domain = self.__endpoint.lookupByID(vmID)
             xml = ET.fromstring(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_SECURE))
             domainName = xml.find('.//name').text
             result.append(domainName)
         return result
     
     def getNumberOfDomains(self):
-        return self.__connector.numOfDomains()
+        return self.__endpoint.numOfDomains()
         
     @staticmethod
     def virEventLoopNativeRun():

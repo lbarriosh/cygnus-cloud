@@ -1,31 +1,31 @@
 # -*- coding: UTF8 -*-
 '''
-Web status database reader definitions
+Lector de la base de datos de estado
 
 @author: Luis Barrios Hernández
-@version: 2.2
+@version: 2.5
 '''
 
 from database.utils.connector import BasicDatabaseConnector
 
 class SystemStatusDatabaseReader(BasicDatabaseConnector):
     """
-    Initializes the reader's state
-    Args:
-        sqlUser: the SQL user to use
-        sqlPassword: the SQL user's password
-        databaseName: the database's name
+    Inicializa el estado del lector
+    Argumentos:
+        sqlUser: usuario SQL a utilizaqr
+        sqlPassword: contraseña de ese usuario
+        databaseName: nombre de la base de datos de estado
     """
     def __init__(self, sqlUser, sqlPassword, databaseName):
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
                   
     def getVMServersData(self):
         """
-        Returns the virtual machine server's basic data.
-        Args:
-            None
-        Returns: a list of dictionaries with the keys VMServerName, VMServerStatus, VMServerIP,
-            VMServerListenningPort and their corresponding values.
+        Devuelve los datos básicos de todos los servidores de máquinas virtuales
+        Argumentos:
+            Ninguno
+        Returns: una lista de diccionarios, cada uno de los cuales contiene los datos
+        de un servidor de máquinas virtuales
         """
         command = "SELECT * FROM VirtualMachineServer;"
         results = self._executeQuery(command, False)
@@ -35,16 +35,18 @@ class SystemStatusDatabaseReader(BasicDatabaseConnector):
             d["VMServerName"] = row[0]
             d["VMServerStatus"] = row[1]
             d["VMServerIP"] = row[2]
-            d["VMServerListenningPort"] = row[3]
+            d["VMServerListenningPort"] = int(row[3])
             retrievedData.append(d)
         return retrievedData
     
     def getVMDistributionData(self):
         """
-        Returns the image (a.k.a. available virtual machines) distribution data.
-        Args:
-            None
-        Returns: a list of dictionaries with the keys VMServerName, VMID and the corresponding values
+        Devuelve la distribución de todas las máquinas virtuales
+        Argumentos:
+            Ninguno
+        Devuelve: 
+            una lista de diccionarios. Cada uno contiene una ubicación de una
+            imagen.
         """
         command = "SELECT * FROM VirtualMachineDistribution;"
         results = self._executeQuery(command, False)
@@ -52,32 +54,34 @@ class SystemStatusDatabaseReader(BasicDatabaseConnector):
         for row in results :
             d = dict()
             d["VMServerName"] = row[0]
-            d["VMID"] = row[1]
+            d["VMID"] = int(row[1])
             retrievedData.append(d)
         return retrievedData 
     
-    def getActiveVMsData(self, userID):
+    def getActiveVMsData(self, ownerID):
         """
-        Returns the active virtual machines' data.
-        Args:
-            an userID. If it's None, all the active virtual machines' data will be returned.
-        Returns: a list of dictionaries with the keys VMServerName, UserID, VMID, VMName, VNCPort
-            and VNCPassword with their corresponding values.
+        Devuelve los datos de las máquinas virtuales activas
+        Argumentos:
+            ownerID: identificador del propietario de las máquinas. Si es None, se devolverán
+            los datos de todas las máquinas virtuales.
+        Devuelve: 
+            una lista de diccionarios. Cada uno contiene los datos de una máquina
         """
-        if (userID == None) :
+        if (ownerID == None) :
             command = "SELECT * FROM ActiveVirtualMachines;"
         else :
-            command = "SELECT * FROM ActiveVirtualMachines WHERE userID = {0};".format(userID)
+            command = "SELECT * FROM ActiveVirtualMachines WHERE ownerID = {0};".format(ownerID)
             
         results = self._executeQuery(command, False)
         retrievedData = []
         for row in results :
             d = dict()
             d["VMServerName"] = row[0]
-            d["UserID"] = row[1]
-            d["VMID"] = row[2]
-            d["VMName"] = row[3]
-            d["VNCPort"] = row[4]
-            d["VNCPassword"] = row[5]
+            d["DomainUID"] = row[1]
+            d["UserID"] = row[2]
+            d["VMID"] = int(row[3])            
+            d["VMName"] = row[4]
+            d["VNCPort"] = int(row[5])
+            d["VNCPassword"] = row[6]
             retrievedData.append(d)
         return retrievedData 

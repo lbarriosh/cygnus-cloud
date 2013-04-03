@@ -3,7 +3,7 @@
  Author: Luis Barrios Hernandez
  Version: 1.0
  */
-
+ 
 DROP DATABASE IF EXISTS SystemStatusDBTest;
 
 CREATE DATABASE SystemStatusDBTest;
@@ -18,16 +18,14 @@ DELETE FROM VirtualMachineServer;
 
 CREATE TABLE IF NOT EXISTS VirtualMachineDistribution(
     serverName VARCHAR(30),
-    virtualMachineID INTEGER,
-    PRIMARY KEY (serverName, virtualMachineID),
-    FOREIGN KEY (serverName) REFERENCES VirtualMachineServer(serverName)
-        ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=MEMORY;
-        
-DELETE FROM VirtualMachineDistribution;
+    imageID INTEGER,
+    PRIMARY KEY (serverName, imageID)) ENGINE=MEMORY;
 
+DELETE FROM VirtualMachineDistribution;
+        
 CREATE TABLE IF NOT EXISTS ActiveVirtualMachines(
-	serverName VARCHAR(30), userID BIGINT, virtualMachineID INTEGER, virtualMachineName VARCHAR(30),
+	serverName VARCHAR(30), domainUID VARCHAR(70) PRIMARY KEY, ownerID BIGINT, imageID INTEGER, virtualMachineName VARCHAR(30),
 	port INTEGER, password VARCHAR(65),
-	PRIMARY KEY (serverName, userID, virtualMachineID)) ENGINE=MEMORY;
+	UNIQUE (serverName, ownerID, imageID)) ENGINE=MEMORY;
 	
 DELETE FROM ActiveVirtualMachines;

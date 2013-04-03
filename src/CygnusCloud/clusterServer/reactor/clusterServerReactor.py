@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 '''
-Main server reactor definitions.
+Definiciones del reactor del servidor de cluster
 @author: Luis Barrios Hernández
-@version: 3.3
+@version: 4.0
 '''
 
 from clusterServer.networking.callbacks import VMServerCallback, WebCallback
@@ -17,28 +17,30 @@ from network.twistedInteraction.clientConnection import RECONNECTION_T
 
 class WebPacketReactor(object):
     '''
-    These objects react to packets received from a web server
+    Estos objetos procesarán los paquetes recibidos desde el endpoint de la web
     '''
     def processWebIncomingPacket(self, packet):
         raise NotImplementedError
     
 class VMServerPacketReactor(object):
     '''
-    These objects react to packets received from a virtual machine server
+    Estos objetos procesarán los paquetes recibidos desde un servidor de máquinas virtuales
     '''
     def processVMServerIncomingPacket(self, packet):
         raise NotImplementedError
 
 class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
     '''
-    These objects react to packages received from the website or from
-    a virtual machine server.
+    Estos objetos reaccionan a los paquetes recibidos desde los servidores de máquinas
+    virtuales y desde el endpoint de la web.
     '''
     def __init__(self, timeout):
         """
-        Initializes the reactor's state.
-        Args:
-            None
+        Inicializa el estado del reactor
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
         """
         self.__webCallback = WebCallback(self)
         self.__finished = False
@@ -46,13 +48,15 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         
     def connectToDatabase(self, mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath):
         """
-        Establishes a connection with the cluster server database.
-        Args:
-            mysqlRootsPassword: MySQL root's password
-            dbName: the cluster server database's name
-            dbUser: the cluster server database's user name
-            dbPassword: the cluster server database's user password
-            scriptPath: the cluster server database's initialization script path
+        Establece la conexión con la base de datos del servidor de cluster.
+        Argumentos:
+            mysqlRootsPassword: La contraseña de root de MySQL
+            dbName: nombre de la base de datos del servidor de cluster
+            dbUser: usuario a utilizar
+            dbPassword: contraseña del usuario a utilizar
+            scriptPath: ruta del script de inicialización de la base de datos
+        Devuelve:
+            Nada
         """
         configurator = DBConfigurator(mysqlRootsPassword)
         configurator.runSQLScript(dbName, scriptPath)
@@ -63,12 +67,12 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         
     def startListenning(self, certificatePath, port):
         """
-        Starts the network service and creates a server connection.
-        Args:
-            certificatePath: the server.crt and server.key files path
-            port: the listenning port
-        Returns:
-            Nothing
+        Hace que el reactor comience a escuchar las peticiones del endpoint.
+        Argumentos:
+            certificatePath: ruta de los ficheros server.crt y server.key
+            port: el puerto en el que se escuchará
+        Devuelve:
+            Nada
         """
         self.__loadBalancer = SimpleLoadBalancer(self.__dbConnector)
         self.__networkManager = NetworkManager(certificatePath)
@@ -81,11 +85,11 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         
     def processWebIncomingPacket(self, packet):
         """
-        Processes a packet received from the web server.
-        Args:
-            packet: the packet to process
-        Returns:
-            Nothing
+        Procesa un paquete enviado desd el endpoint de la web
+        Argumentos:
+            packet: el paquete que hay que procesar
+        Devuelve:
+            Nada
         """
         data = self.__webPacketHandler.readPacket(packet)
         if (data["packet_type"] == WEB_PACKET_T.REGISTER_VM_SERVER) :
@@ -104,29 +108,30 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendVMDistributionData()
         elif (data["packet_type"] == WEB_PACKET_T.QUERY_ACTIVE_VM_DATA) :
             self.__requestVNCConnectionData()
+        elif (data["packet_type"] == WEB_PACKET_T.DOMAIN_DESTRUCTION) :
+            self.__destroyDomain(data)
             
     def __requestVNCConnectionData(self):
         """
-        Sends a VNC connection data request packet to all the active virtual machine servers
-        Args:
-            None
-        Returns:
-            Nothing
+        Solicita los datos de conexión VNC a todos los servidores de máquinas virtuales.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
         """
-        # Create a VNC connection data packet
         p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_VM_DATA)
-        # Fetch the active virtual machine server's IP addresses and ports
+        
         connectionData = self.__dbConnector.getActiveVMServersConnectionData()
         for cd in connectionData :
             self.__networkManager.sendPacket(cd["ServerIP"], cd["ServerPort"], p)
             
     def __halt(self, data):
         """
-        Shuts down the cluster (including the virtual machine servers).
-        Args:
-            haltVMServers: if True, all the active virtual machines will be destroyed and the virtual machine
-            servers will be shut down. If false, the virtual machine servers will wait until there are no
-            active virtual machines, and then they'll be shut down.
+        Apaga TODAS las máquinas del cluster, incluyendo los servidores de máquinas virtuales.
+        Argumentos:
+            data: diccionario con los datos del paquete
+        Devuelve:
+            Nada
         """    
         vmServersConnectionData = self.__dbConnector.getActiveVMServersConnectionData()
         if (vmServersConnectionData != None) :
@@ -140,48 +145,64 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
              
     def __registerVMServer(self, data):
         """
-        Processes a virtual machine server registration packet.
-        Args:
-            data: the received virtual machine server registration packet.
-        Returns:
-            Nothing
+        Procesa un paquete de registro de un servidor de máquinas virtuales
+        Argumentos:
+            data: diccionario con los datos del paquete recibido
+        Devuelve:
+            Nada
         """
         try :
-            # Check if the IP address is assigned to another virtual machine server
+            # Comprobar si la IP y el nombre del servidor ya están en uso
             server_id = self.__dbConnector.getVMServerID(data["VMServerIP"])
             if (server_id != None) :
                 raise Exception("The IP address " + data["VMServerIP"] + " is assigned to another VM server")
-            # Check if the name is assigned to another virtual machine server
+          
             server_id = self.__dbConnector.getVMServerID(data["VMServerName"])
             if (server_id != None) :
                 raise Exception("The name " + data["VMServerName"] + " is assigned to another VM server")
-            # Establish a connection
+            
+            # Establecer la conexión
             self.__networkManager.connectTo(data["VMServerIP"], data["VMServerPort"], 
                                                 20, self.__vmServerCallback, True, True)
             while not self.__networkManager.isConnectionReady(data["VMServerIP"], data["VMServerPort"]) :
                 sleep(0.1)
-            # Register the server on the database
+                
+            # Registrar el nuevo servidor y pedirle su estado
             self.__dbConnector.registerVMServer(data["VMServerName"], data["VMServerIP"], 
                                                     data["VMServerPort"])
-            # Command the virtual machine server to tell us its state
-            p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
-            self.__networkManager.sendPacket(data["VMServerIP"], data["VMServerPort"], p)
-            # Everything went fine
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            
+            self.__sendStatusRequestPackets(data["VMServerIP"], data["VMServerPort"])
+            
+            
+            # Indicar al endpoint de la web que el comando se ha ejecutado con éxito
+            p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
         except Exception as e:                
             p = self.__webPacketHandler.createVMServerRegistrationErrorPacket(data["VMServerIP"], 
                                                                             data["VMServerPort"], 
-                                                                            data["VMServerName"], str(e), data["CommandID"])        
+                                                                            data["VMServerName"], e.message, data["CommandID"])        
         self.__networkManager.sendPacket('', self.__webPort, p)
+        
+    def __sendStatusRequestPackets(self, vmServerIP, vmServerPort):
+        """
+        Envía los paquetes de solicitud de estado a un servidor de máquinas virtuales
+        Argumentos:
+            vmServerIP : la IP del servidor de máquinas virtuales
+            vmServerPort: el puerto del servidor de máquinas virtuales
+        Devuelve:
+            Nada
+        """
+        p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
+        self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
+        p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS)            
+        self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
             
     def __unregisterOrShutdownVMServer(self, data):
         """
-        Processes a virtual machine server unregistration or shutdown packet.
-        Args:
-            key: the virtual machine server's IPv4 address or its name.
-            halt: if True, the virtual machine server will be shut down immediately. If false, it'll
-            wait until all the virtual machines are shut down, and then it will finally be shut down.
-            unregister: if True, the virtual machine server will be deleted from the cluster server's database. 
+        Procesa un paquete de apagado o borrado de un servidor de máquinas virtuales
+        Argumentos:
+            data: diccionario con los datos del paquete
+        Devuelve:
+            nada
         """
         key = data["ServerNameOrIPAddress"] 
         halt = data["Halt"]
@@ -191,10 +212,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             commandID = data["CommandID"]
         else :
             useCommandID = False
-        # Shut down the server (if necessary)
+        # Empezamos apagando el servidor si está arrancado
         serverId = self.__dbConnector.getVMServerID(key)
         if (serverId != None) :
+            # Las máquinas virtuales activas que alberga ese servidor se destruirán => las borramos
+            self.__dbConnector.deleteHostedVMs(serverId)
             serverData = self.__dbConnector.getVMServerBasicData(serverId)
+            
             status = serverData["ServerStatus"]
             if (status == SERVER_STATE_T.READY or status == SERVER_STATE_T.BOOTING) :
                 if not halt :
@@ -202,17 +226,17 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 else :
                     p = self.__vmServerPacketHandler.createVMServerHaltPacket()
                 self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
-                # Close the network connection
-                self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])
+                # Cerrar la conexión 
+                self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])            
             if (not unregister) :
                 self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
                 self.__dbConnector.deleteVMServerStatistics(serverId)
             else :
-                # Update the virtual machine server's state
+                # Actualizar el estado del servidor de máquinas virtuales
                 self.__dbConnector.deleteVMServer(key)
             if (useCommandID) :
-                # Create a command executed packet and send it to the website
-                p = self.__webPacketHandler.createCommandExecutedPacket(commandID)
+                # Hay que enviar una respuesta al servidor de máquinas virtuales
+                p = self.__webPacketHandler.createExecutedCommandPacket(commandID)
                 self.__networkManager.sendPacket('', self.__webPort, p)
         else :
             # Error
@@ -226,150 +250,192 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             
     def __updateVMServerStatus(self, data):
         """
-        Processes a virtual machine server's status packet.
-        Args:
-            data: the received packet
-        Returns:
-            Nothing
+        Procesa un paquete de estado enviado desde un servidor de máquinas virtuales
+        Argumentos:
+            data: diccionario con los datos del paquete recibido
+        Devuelve:
+            Nada
         """
-        # Fetch the virtual machine server's ID
+        # Identificar el servidor de máquinas virtuales y actualizar su estado en la base de datos.
+        
         serverID = None
         while (serverID == None) :
             serverID = self.__dbConnector.getVMServerID(data["VMServerIP"])
             if (serverID == None) :
                 sleep(0.1)
-        # Change its status
+                
         self.__dbConnector.updateVMServerStatus(serverID, SERVER_STATE_T.READY)
         self.__dbConnector.setVMServerStatistics(serverID, data["ActiveDomains"])
         
     def __bootUpVMServer(self, data):
         """
-        Processes a virtual machine server boot packet.
-        Args:
-            serverNameOrIPAddress: the virtual machine server's name or IPv4 address.
-        Returns:
-            Nothing
+        Procesa un paquete de arranque de un servidor de máquinas virtuales
+        Argumentos:
+            data: diccionario con los datos del paquete recibido
+        Devuelve:
+            Nada
         """
         try :
+            
+            # Comprobar si el servidor está registrado
+            
             serverNameOrIPAddress = data["ServerNameOrIPAddress"]
             serverId = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
             if (serverId == None) :
                 raise Exception("The virtual machine server is not registered")
             serverData = self.__dbConnector.getVMServerBasicData(serverId)
-            # Connect to the virtual machine server
+            
+            # Establecer la conexión
+            
             self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 
                                                 20, self.__vmServerCallback, True, True)
             while not self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"]) :
                 sleep(0.1)
-            # Change its status
+                
+            # Solicitar el estado al servidor de máquinas virtuales
+            
             self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)
-            # Send the status request
-            p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
-            self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
-            # Everything went fine
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            
+            self.__sendStatusRequestPackets(serverData["ServerIP"], serverData["ServerPort"])
+            
+            # Indicar al endpoint que el comando se ha ejecutado con éxito
+            p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
         except Exception as e:
             p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.VM_SERVER_BOOTUP_ERROR, 
-                                                                         serverNameOrIPAddress, str(e), data["CommandID"])
+                                                                         serverNameOrIPAddress, e.message, data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __sendVMServerStatusData(self):
         """
-        Processes a virtual machine server data request packet.
-        Args:
-            None
-        Returns:
-            Nothing
+        Envía el estado de los servidores de máquinas virtuales al endpoint de la web.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
         """
         self.__sendStatusData(self.__dbConnector.getVMServerBasicData, self.__webPacketHandler.createVMServerStatusPacket)
         
     def __sendVMDistributionData(self):
         """
-        Processes a virtual machine distribution data packet
-        Args:
-            None
-        Returns:
-            Nothing
+        Envía la distribución de las imágenes al endpoint de la web
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
         """    
         self.__sendStatusData(self.__dbConnector.getHostedImages, self.__webPacketHandler.createVMDistributionPacket)
         
     def __sendStatusData(self, queryMethod, packetCreationMethod):
         """
-        Processes a data request packet.
-        Args:
-            queryMethod: the method that extracts the data from the database
-            packetCreationMethod: the method that creates the packet
-        Returns:
-            Nothing
+        Envía información de estado al endpoint de la web
+        Argumentos:
+            queryMethod: el método que extraerá la información de estado de la base de datos
+            packetCreationMethod: el método que creará los paquetes de estado
+        Devuelve:
+            Nada
         """        
-        segmentSize = 5
+        # La información de las tablas se fragmenta en varios segmentos para no superar
+        # el tamaño máximo del paquete (64 KB)
+        
+        segmentSize = 200 # Cada segmento llevará 200 filas de la tabla
         outgoingData = []
         serverIDs = self.__dbConnector.getVMServerIDs()
         if (len(serverIDs) == 0) :
+            # No hay datos => responder con segmento vacío
             segmentCounter = 0
             segmentNumber = 0
             sendLastSegment = True
         else :
+            # Hay datos => calcular el número de segmentos que necesitamos
             segmentCounter = 1        
             segmentNumber = (len(serverIDs) / segmentSize)
             if (len(serverIDs) % segmentSize != 0) :
                 segmentNumber += 1
                 sendLastSegment = True
             else :
-                sendLastSegment = False
+                # Si la división no es exacta, hay que enviar un último segmento con lo que quede
+                sendLastSegment = False  
+                
+        # Crear los segmentos y enviarlos cuando estén llenos
         for serverID in serverIDs :
             row = queryMethod(serverID)
             if (isinstance(row, dict)) :
                 outgoingData.append(row)
             else :
                 outgoingData += row
+                
             if (len(outgoingData) >= segmentSize) :
-                # Flush
                 packet = packetCreationMethod(segmentCounter, segmentNumber, outgoingData)
                 self.__networkManager.sendPacket('', self.__webPort, packet)
                 outgoingData = []
                 segmentCounter += 1
-        # Send the last segment
+                
+        # Enviar un segmento con los datos que quedan (sólo si hace falta)
         if (sendLastSegment) :
             packet = packetCreationMethod(segmentCounter, segmentNumber, outgoingData)
             self.__networkManager.sendPacket('', self.__webPort, packet)             
                    
     def __bootUpVM(self, data):
         """
-        Processes a virtual machine boot request packet.
-        Args:
-            vmName: the virtual machine's ID
-            userID: the user's unique identifier
-        Returns:
-            Nothing
+        Procesa un paquete de arranque de máquina virtual
+        Argumentos:
+            data: diccionario con los datos del paquete
+        Devuelve:
+            Nada
         """
         vmID = data["VMID"]
         userID = data["UserID"]
-        # Choose the virtual machine server that will host the image
+        
+        # Escoger el servidor de máquinas virtuales que alojará la máquina
         (serverID, errorMessage) = self.__loadBalancer.assignVMServer(vmID)
         if (errorMessage != None) :
-            # Something went wrong => warn the user
+            # Error => avisar al usuario
             p = self.__webPacketHandler.createVMBootFailurePacket(vmID, errorMessage, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
         else :
-            
-            # Ask the virtual machine server to boot up the VM
+            # Guardar la ubicación de la nueva máquina virtual. 
+            # Importante: todas las máquinas virtuales se identifican de forma única con el ID
+            # del comando que las crea
+            self.__dbConnector.registerActiveVMLocation(data["CommandID"], serverID)
+            # Enviar la petición de arranque al servidor de máquinas virtuales
             p = self.__vmServerPacketHandler.createVMBootPacket(vmID, userID, data["CommandID"])
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
-            # Register the boot command
+            # Registrar el comando de arranque para controlar el tiempo de respuesta
             self.__dbConnector.registerVMBootCommand(data["CommandID"], data["VMID"])
-            # Everything went fine
-            #p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
-            #self.__networkManager.sendPacket('', self.__webPort, p)
+            
+    def __destroyDomain(self, data):
+        """
+        Destruye una máquina virtual activa
+        Argumentos:
+            data: diccionario con los datos del paquete correspondiente
+        Devuelve:
+            Nada
+        """
+        # Comprobar si la máquina existe
+        serverID = self.__dbConnector.getActiveVMHostID(data["DomainID"])
+        if (serverID == None) :
+            # Error
+            packet = self.__webPacketHandler.createDomainDestructionErrorPacket("The domain does not exist", data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, packet)
+            return
+        
+        # Averiguar los datos del servidor y pedirle que se la cargue
+        connectionData = self.__dbConnector.getVMServerBasicData(serverID)
+        packet = self.__vmServerPacketHandler.createVMShutdownPacket(data["DomainID"])
+        self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], packet)
+        
+        # Indicar al endpoint que todo fue bien
+        packet = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
+        self.__networkManager.sendPacket('', self.__webPort, packet)
     
     def processVMServerIncomingPacket(self, packet):
         """
-        Processes a packet sent from a virtual machine server.
-        Args:
-            packet: the packet to process
-        Returns:
-            Nothing
+        Procesa un paquete enviado desde un servidor de máquinas virtuales
+        Argumentos:
+            packet: el paquete a procesar
+        Devuelve:
+            Nada
         """
         data = self.__vmServerPacketHandler.readPacket(packet)
         if (data["packet_type"] == VMSRVR_PACKET_T.SERVER_STATUS) :
@@ -377,17 +443,19 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         elif (data["packet_type"] == VMSRVR_PACKET_T.DOMAIN_CONNECTION_DATA) :
             self.__sendVMConnectionData(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_DATA) :
-            self.__sendVNCConnectionData(packet)
+            self.__sendActiveVMsVNCConnectionData(packet)
+        elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_DOMAIN_UIDS) :
+            self.__processActiveDomainUIDs(data)
             
     def processServerReconnectionData(self, ipAddress, reconnection_status) :
         """
-        Processes a reconnection status event
-        Args:
-            ipAddress: the connection's IPv4 address
-            port: the connection's port
-            reconnection_status: the reconnection process' status
-        Returns:
-            Nothing
+        Procesa una reconexión con un servidor de máquinas virtuales
+        Argumentos:
+            ipAddress: la dirección IP del servidor de máquinas virtuales
+            port: el puerto en el que el servidor de máquinas virtuales está escuchando
+            reconnection_status: el estado del proceso de reconexión
+        Devuelve:
+            Nada
         """
         if (reconnection_status == RECONNECTION_T.RECONNECTING) : 
             status = SERVER_STATE_T.RECONNECTING
@@ -399,57 +467,77 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         serverID = self.__dbConnector.getVMServerID(ipAddress)
         self.__dbConnector.updateVMServerStatus(serverID, status)
             
-    def __sendVNCConnectionData(self, packet):
+    def __sendActiveVMsVNCConnectionData(self, packet):
         """
-        Processes a VNC connection data packet
-        Args:
-            packet: the packet to process
-        Returns:
-            Nothing
+        Envía al endpoint los datos de conexión VNC de todas las máquinas
+        virtuales activas del servidor de máquinas virtuales
+        Argumentos:
+            packet: diccionario con los datos a procesar
+        Devuelve:
+            Nada
         """
         p = self.__webPacketHandler.createActiveVMsDataPacket(packet)
         self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __sendVMConnectionData(self, data):
         """
-        Processes a virtual machine connection data packet.
-        Args:
-            data: the packet to process' data.
-        Returns:
-            Nothing
+        Envía al endpoint los datos de conexión VNC a UNA máquina
+        virtual que se acaba de crear.
+        Argumetnos:
+            data: diccionario con los datos del paquete
+        Devuelve:
+            Nada
         """
-        # Delete the boot command from the database
+        # El comando ya se ha ejecutado. No tenemos que seguir controlando el tiempo que tarda.
         self.__dbConnector.removeVMBootCommand(data["CommandID"])
+        
         p = self.__webPacketHandler.createVMConnectionDataPacket(data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)        
+        
+    def __processActiveDomainUIDs(self, data):
+        vmServerID = self.__dbConnector.getVMServerID(data["VMServerIP"])
+        self.__dbConnector.registerHostedVMs(vmServerID, data["Domain_UIDs"])
     
     def monitorVMBootCommands(self):
+        """
+        Elimina los comandos de arranque de máquinas virtuales que tardan demasiado tiempo en procesarse.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
         errorMessage = "Could not boot up virtual machine (timeout error)"
         while not self.__finished :
             data = self.__dbConnector.getOldVMBootCommandID(self.__timeout)
             if (not self.__finished and data == None) :
-                # Be careful with this: if MySQL server receives too many queries per second,
-                # the reactor's database connection will be closed.
+                # Dormimos para no enviar demasiadas conexiones por segundo a MySQL
                 sleep(1) 
             else :
-                # Create a virtual machine boot error packet
+                # Borramos la máquina activa (sabemos que no existe)
+                self.__dbConnector.deleteActiveVMLocation(data[0])
+                # Creamos el paquete de error y se lo enviamos al endpoint de la web
                 p = self.__webPacketHandler.createVMBootFailurePacket(data[1], errorMessage, data[0])
                 self.__networkManager.sendPacket('', self.__webPort, p)
     
     def hasFinished(self):
         """
-        Indicates if the cluster server has finished or not.
+        Indica al hilo principal si puede terminar o no.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            True si se puede terminar, y false en caso contrario.
         """
         return self.__finished
     
-    def shutdown(self):
+    def closeNetworkConnections(self):
         """
-        Shuts down the cluster server.
-        Args:
-            None
-        Returns:
-            Nothing
-        @attention: this method MUST NOT be called from a network thread. If you do so, the application will hang!
+        Cierra todas las conexiones de red del servidor de máquinas virtuales.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        @attention: este método JAMÁS debe llamarse desde un hilo de red. 
+        Si lo hacéis, la aplicación se colgará.
         """
         self.__networkManager.stopNetworkService()

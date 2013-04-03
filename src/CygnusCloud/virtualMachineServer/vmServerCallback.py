@@ -25,7 +25,7 @@ class VMServerCallbackException(Exception):
 
 class VMServerCallback(NetworkCallback):
     def __init__(self):
-        self.__shutDown = False
+        self.__shuttingDown = False
         self.__shuttingDown = False
         self.__connectToDatabases(databaseName, databaseUserName, databasePassword)
         self.__connectToLibvirt(createVirtualNetworkAsRoot)
@@ -36,7 +36,7 @@ class VMServerCallback(NetworkCallback):
         self.__runningImageData = RuntimeData(user, password, databaseName)
         
     def __connectToLibvirt(self, createVirtualNetworkAsRoot) :
-        self.__connector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
+        self.__endpoint = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
         self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
         self.__virtualNetworkManager.createVirtualNetwork(vnName, gatewayIP, netMask,
                                     dhcpStartIP, dhcpEndIP)
@@ -64,8 +64,8 @@ class VMServerCallback(NetworkCallback):
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
     def __stoppedVM(self, domainInfo):
-        if self.__shuttingDown and (self.__connector.getNumberOfDomains() == 0):
-            self.__shutDown = True
+        if self.__shuttingDown and (self.__endpoint.getNumberOfDomains() == 0):
+            self.__shuttingDown = True
 
         name = domainInfo["name"]
         dataPath = self.__runningImageData.getMachineDataPathinDomain(name)
@@ -96,11 +96,11 @@ class VMServerCallback(NetworkCallback):
             VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN: self.__userFriendlyShutdown,
             VM_SERVER_PACKET_T.HALT: self.__halt}
         if (packetData['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA) :
-            self.__sendVNCConnectionData()
+            self.__sendActiveVMsVNCConnectionData()
         else :
             processPacket[packetData['packet_type']](packetData)
         
-    def __sendVNCConnectionData(self):
+    def __sendActiveVMsVNCConnectionData(self):
         # Extraer los datos de la base de datos
         vncConnectionData = self.__runningImageData.getVMsConnectionData()
         # Generar los segmentos
@@ -172,7 +172,7 @@ class VMServerCallback(NetworkCallback):
         string = xmlFile.generateConfigurationString()
         
         # Arranco la máquina
-        self.__connector.startDomain(string)
+        self.__endpoint.startDomain(string)
         
         # Inicio el websockify
         # Los puertos impares (por ejemplo) serán para KVM 
@@ -187,7 +187,7 @@ class VMServerCallback(NetworkCallback):
         
     
     def __serverStatusRequest(self, packet):
-        activeDomains = self.__connector.getNumberOfDomains()
+        activeDomains = self.__endpoint.getNumberOfDomains()
         packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
 #        while not self.__networkManager.isConnectionReady('', self.__listenningPort) :
 #            sleep(1)
@@ -198,8 +198,8 @@ class VMServerCallback(NetworkCallback):
     
     def __halt(self, packet):
         # Destruyo los dominios
-        self.__connector.stopAllDomain()
-        self.__shutDown = True
+        self.__endpoint.stopAllDomain()
+        self.__shuttingDown = True
     
     def __getNewMAC_UUID(self):
         return self.__runningImageData.extractfreeMacAndUuid()
@@ -210,5 +210,5 @@ class VMServerCallback(NetworkCallback):
     def __getNewPassword(self):
         return runCommand("openssl rand -base64 " + str(passwordLength), VMServerCallbackException)
     
-    def hasFinished(self):
-        return self.__shutDown
+    def halt(self):
+        return self.__shuttingDown

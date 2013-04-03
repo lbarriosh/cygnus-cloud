@@ -6,20 +6,23 @@ Main server entry point
 '''
 
 from clusterServer.reactor.clusterServerReactor import ClusterServerReactor
-
-mysqlRootsPassword = ""
-dbName = "ClusterServerDB"
-dbUser ="cygnuscloud"
-dbPassword ="cygnuscloud"
-scriptPath = "../database/ClusterServerDB.sql"
-databaseName = "ClusterServerDB"
-certificatePath ="/home/luis/Certificates"
-listeningPort = 9000
-vmBootTimeout = 10
+import sys
+from constants import ClusterServerConstantsManager
 
 if __name__ == "__main__":
-    reactor = ClusterServerReactor(vmBootTimeout)
-    reactor.connectToDatabase(mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath)
-    reactor.startListenning(certificatePath, 9000)
+    # Parsear el fichero de configuración
+    if (len(sys.argv) != 2) :
+        print "A configuration file path is needed"
+        sys.exit()
+    try :
+        cm = ClusterServerConstantsManager()
+        cm.parseConfigurationFile(sys.argv[1])
+    except Exception as e:
+        print "Error: " + e.message
+        sys.exit()
+    reactor = ClusterServerReactor(cm.getConstant("vmBootTimeout"))
+    reactor.connectToDatabase(cm.getConstant("mysqlRootsPassword"), cm.getConstant("dbName"), 
+                              cm.getConstant("dbUser"), cm.getConstant("dbPassword"), cm.getConstant("scriptPath"))
+    reactor.startListenning(cm.getConstant("certificatePath"), cm.getConstant("listenningPort"))
     reactor.monitorVMBootCommands()
     reactor.shutdown()

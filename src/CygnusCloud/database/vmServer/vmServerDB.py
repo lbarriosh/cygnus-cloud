@@ -16,7 +16,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         self.generateMACsAndUUIDs()
         self.generateVNCPorts()
         
-    def getImages(self):
+    def getImagesIDs(self):
         '''
              Devuelve una lista con todos los identificadores de imágenes que se 
               encuentran registradas en el servidor de máquinas virtuales.
@@ -32,7 +32,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos la lista resultado
         return imageIds
     
-    def getName(self, imageId):
+    def getImageName(self, imageId):
         '''
             Devuelve el nombre de la imagen cuyo identificador se pasa como argumento. 
         '''
@@ -73,7 +73,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getFileConfigPath(self, imageId):
+    def getImgDefFilePath(self, imageId):
         '''
             Devuelve la ruta donde se encuentra el fichero de configuración asociado a 
              la imagen cuyo identificador se pasa como argumento
@@ -87,7 +87,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0][0]  # BUG aquí
     
-    def setImageDataPath(self, imageId, path):
+    def setDataImagePath(self, imageId, path):
         '''
             Permite cambiar la ruta de la imagen cuyo identificador se pasa como argumento.
         '''
@@ -257,7 +257,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos la lista resultado
         return ports
     
-    def getUsers(self):
+    def getUserIDs(self):
         '''
              Devuelve una lista con los identificadores de todos los usuarios que actualmente
                se encuentran ejecutando una determinada máquina virtual en este servidor de 
@@ -274,7 +274,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos la lista resultado
         return users
     
-    def getAssignedVM(self, vncPort):
+    def getImgIDFromVNCPort(self, vncPort):
         '''
             Devuelve el identificador de la máquina virtual que se encuentra en ejecución en el 
              puerto VNC pasado como argumento.
@@ -302,7 +302,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getAssignedVMNameInDomain(self, vncPort):
+    def getImageNameFromDomainName(self, vncPort):
         '''
             Devuelve el nombre de la máquina virtual que se encuentra en ejecución
              en  el puerto VNC pasado como argumento.
@@ -360,7 +360,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getMACAddress(self, vncPort):
+    def getMACAddressFromVNCPort(self, vncPort):
         '''
             Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
         '''
@@ -386,7 +386,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getUUIDAddress(self, vncPort):
+    def getUUIDFromVNCPort(self, vncPort):
         '''
             Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
         '''
@@ -399,7 +399,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getUUIDAddressInDomain(self, domainName):
+    def getUUIDFromDomainName(self, domainName):
         '''
             Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
         '''
@@ -412,7 +412,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getPassword(self, vncPort): 
+    def getVNCPassword(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -425,7 +425,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getPasswordInDomain(self, domainName): 
+    def getVNCPasswordFromDomainName(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -438,7 +438,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getVMPid(self, vncPort): 
+    def getVMPID(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -451,7 +451,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getVMPidInDomain(self, domainName): 
+    def getVMPIDFromDomainName(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado el dominio que se le pasa como argumento.
         ''' 
@@ -465,7 +465,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         return result[0] 
     
     
-    def getOsImagePathInDomain(self, domainName): 
+    def getOsImagePathFromDomainName(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado al dominio que se le pasa como argumento.
         ''' 
@@ -478,7 +478,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]    
     
-    def getDomainName(self, vncPort): 
+    def getDomainNameFromVNCPort(self, vncPort): 
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         ''' 
@@ -511,12 +511,10 @@ class VMServerDBConnector(BasicDatabaseConnector):
             Da de baja en la base de datos el puerto VNC que se le pasa como argumento 
              y con él, todas las características asociadas al mismo.
         ''' 
-        # Borramos la máquina virtual
-        sql = "DELETE FROM ActualVM WHERE domainName = '" + str(domainName) + "'"
-        # Ejecutamos el comando
-        self._executeUpdate(sql)
-        # Gracias al ON DELETE CASCADE se borrarán las imagenes registradas para este servidor
-        # Actualizamos la base de datos
+        update = "DELETE FROM ActualVM WHERE domainName = '" + str(domainName) + "'"
+        self._executeUpdate(update)
+        # La sentencia ON UPDATE CASCADE nos garantiza que se borrará el identificador del comand
+        # de arranque.
         
     def doesVMExist(self, port):   
         '''
@@ -531,7 +529,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Si el resultado es 1, la MV existirá
         return (result[0] == 1) 
     
-    def getUser(self, domainName):
+    def getUserIDFromDomain(self, domainName):
         '''
             Devuelve el identificador del usuario asociado a la mv que se encuentra en ejecución en el 
             dominio pasado como argumento.
@@ -553,14 +551,15 @@ class VMServerDBConnector(BasicDatabaseConnector):
         Devuelve:
             Lista de diccionarios con los datos de conexión a las máquinas virtuales
         '''
-        query = "SELECT userId, VMId, domainName, VNCPort, VNCPass FROM ActualVM;"
+        query = "SELECT ActiveDomainUIDs.commandID, ActualVM.userId, ActualVM.VMId, ActualVM.domainName, ActualVM.VNCPort, ActualVM.VNCPass\
+            FROM ActualVM, ActiveDomainUIDs WHERE ActualVM.domainName = ActiveDomainUIDs.domainName;"
         results = self._executeQuery(query, False)
         if (results == None) :
             return []
         else :
             ac = []
             for row in results:
-                ac.append({"UserID" : int(row[0]), "VMID" : int(row[1]), "VMName": row[2], "VNCPort" : int(row[3]), "VNCPass" : row[4]})
+                ac.append({"DomainID" : row[0], "UserID" : int(row[1]), "ImageID" : int(row[2]), "VMName": row[3], "VNCPort" : int(row[4]), "VNCPass" : row[5]})
             return ac
         
     def getRegisteredDomainNames(self):
@@ -576,23 +575,30 @@ class VMServerDBConnector(BasicDatabaseConnector):
         if (results == None) :
             return []
         else :
-            ac =  []
+            ac = []
             for row in results:
                 ac.append(row[0])
             return ac
         
     def addVMBootCommand(self, domainName, commandID):
-        update = "INSERT INTO VMBootCommand VALUES ('" + domainName + "', '" + commandID + "');"
+        update = "INSERT INTO ActiveDomainUIDs VALUES ('" + domainName + "', '" + commandID + "');"
         self._executeUpdate(update)
         
     def getVMBootCommand(self, domainName):
-        query = "SELECT commandID FROM VMBootCommand WHERE domainName = '" + domainName + "';"
+        query = "SELECT commandID FROM ActiveDomainUIDs WHERE domainName = '" + domainName + "';"
         result = self._executeQuery(query, True)
         if (result == None) :
             return None
-        update = "DELETE FROM VMBootCommand WHERE domainName = '" + domainName + "';"
-        self._executeUpdate(update)
-        return result[0]
+        else :
+            return result[0]
+        
+    def getDomainNameFromVMBootCommand(self, commandID):
+        query = "SELECT domainName FROM ActiveDomainUIDs WHERE commandID = '{0}';".format(commandID)
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else :
+            return result[0]
     
     def __getAssignedResources(self):
         query = "SELECT macAddress, VNCPort FROM ActualVM;"
@@ -619,3 +625,18 @@ class VMServerDBConnector(BasicDatabaseConnector):
             self.__allocateMACAddressAndUUID(macAddress)
         for port in assignedVNCPorts :
             self.__allocatePort(port)
+            
+    def getActiveDomainUIDs(self):
+        """
+        Devuelve los identificadores únicos de las máquinas virtuales activas
+        Argumentos:
+            Ninguna
+        Devuelve:
+            Una lista con los identificadores únicos de las máquinas virtuales activas.
+        """
+        query = "SELECT CommandID FROM ActiveDomainUIDs;"
+        rows = self._executeQuery(query, False)
+        result = []
+        for row in rows :
+            result.append(row[0])
+        return result
