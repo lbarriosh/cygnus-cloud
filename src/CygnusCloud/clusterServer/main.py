@@ -22,4 +22,4 @@ if __name__ == "__main__":
     reactor.connectToDatabase(mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath)
     reactor.startListenning(certificatePath, 9000)
     reactor.monitorVMBootCommands()
-    reactor.closeNetworkConnections()
+    reactor.shutdown()

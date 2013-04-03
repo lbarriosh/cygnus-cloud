@@ -19,8 +19,9 @@ if __name__ == "__main__" :
     # Crear un usuario y darle permisos
     configurator.addUser(databaseUserName, databasePassword, databaseName, True)
     # Crear el servidor de máquinas virtuales
-    vmServer = VMServer()
+    vmServer = VMServer()    
     # Dormir hasta que se apague
-    while not vmServer.hasFinished():
-        sleep(10)        
-    vmServer.closeNetworkConnections()
+    while not vmServer.halt():
+        sleep(10) 
+    vmServer.shutdown()       
+    

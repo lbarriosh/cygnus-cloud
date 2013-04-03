@@ -17,6 +17,7 @@ from xmlEditor import ConfigurationFileEditor
 from database.vmServer.vmServerDB import VMServerDBConnector
 from virtualNetwork.virtualNetworkManager import VirtualNetworkManager
 from ccutils.processes.childProcessManager import ChildProcessManager 
+from time import sleep
 import os
 
 class VMServerException(Exception):
@@ -30,7 +31,7 @@ class MainServerPacketReactor():
 class VMServer(MainServerPacketReactor):
     def __init__(self):
         # Inicializo las variables para saber cuando hay que apagarlo todo
-        self.__shutDown = False
+        self.__shuttingDown = False
         self.__shuttingDown = False
         self.__mainServerCallback = MainServerCallback(self)
         self.__childProcessManager = ChildProcessManager()
@@ -77,7 +78,7 @@ class VMServer(MainServerPacketReactor):
     def __stoppedVM(self, domainInfo):
         # Se ha apagado una máquina virtual, borro sus datos
         if self.__shuttingDown and (self.__libvirtConnector.getNumberOfDomains() == 0):
-            self.__shutDown = True
+            self.__shuttingDown = True
         self.__freeDomainResources(domainInfo["name"])
         
     def __freeDomainResources(self, domainName, deleteDiskImages=True):
@@ -97,12 +98,20 @@ class VMServer(MainServerPacketReactor):
         self.__dbConnector.unregisterVMResources(domainName)
         
     
-    def closeNetworkConnections(self):
+    def shutdown(self):
         # Cosas a hacer cuando se desea apagar el servidor.
         # Importante: esto debe llamarse desde el hilo principal
+        self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
+        timeout = 300 # 5 mins
+        if (self.__destroyDomains) :
+            self.__libvirtConnector.stopAllDomains()
+        else :
+            wait_time = 0
+            while (self.__libvirtConnector.getNumberOfDomains() != 0 and wait_time < timeout) :
+                sleep(0.5)
+                wait_time += 0.5
         self.__childProcessManager.waitForBackgroundChildrenToTerminate()
-        self.__virtualNetworkManager.destroyVirtualNetwork(vnName)
-        self.__networkManager.stopNetworkService()
+        self.__virtualNetworkManager.destroyVirtualNetwork(vnName)        
         
     def processClusterServerIncomingPackets(self, packet):
         data = self.__packetManager.readPacket(packet)
@@ -247,11 +256,11 @@ class VMServer(MainServerPacketReactor):
     
     def __userFriendlyShutdown(self, packet):
         self.__shuttingDown = True
+        self.__destroyDomains = False
     
     def __halt(self, packet):
-        # Destruyo los dominios
-        self.__libvirtConnector.stopAllDomains()
-        self.__shutDown = True
+        self.__shuttingDown = True      
+        self.__destroyDomains = True  
     
     def __getNewMAC_UUID(self):
         return self.__dbConnector.extractFreeMACAndUUID()
@@ -274,8 +283,8 @@ class VMServer(MainServerPacketReactor):
         packet = self.__packetManager.createActiveDomainUIDsPacket(self.__vncServerIP, activeDomainUIDs)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
-    def hasFinished(self):
-        return self.__shutDown
+    def halt(self):
+        return self.__shuttingDown
     
     def __doInitialCleanup(self):
         """

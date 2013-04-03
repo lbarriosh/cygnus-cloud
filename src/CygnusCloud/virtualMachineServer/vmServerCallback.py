@@ -25,7 +25,7 @@ class VMServerCallbackException(Exception):
 
 class VMServerCallback(NetworkCallback):
     def __init__(self):
-        self.__shutDown = False
+        self.__shuttingDown = False
         self.__shuttingDown = False
         self.__connectToDatabases(databaseName, databaseUserName, databasePassword)
         self.__connectToLibvirt(createVirtualNetworkAsRoot)
@@ -65,7 +65,7 @@ class VMServerCallback(NetworkCallback):
         
     def __stoppedVM(self, domainInfo):
         if self.__shuttingDown and (self.__endpoint.getNumberOfDomains() == 0):
-            self.__shutDown = True
+            self.__shuttingDown = True
 
         name = domainInfo["name"]
         dataPath = self.__runningImageData.getMachineDataPathinDomain(name)
@@ -82,7 +82,7 @@ class VMServerCallback(NetworkCallback):
         # Update the database
         self.__runningImageData.unRegisterVMResources(name)
     
-    def closeNetworkConnections(self):
+    def shutdown(self):
         # Cosas a hacer cuando se desea apagar el servidor.
         # Importante: esto debe llamarse desde el hilo principal
         self.__virtualNetworkManager.destroyVirtualNetwork(vnName)
@@ -199,7 +199,7 @@ class VMServerCallback(NetworkCallback):
     def __halt(self, packet):
         # Destruyo los dominios
         self.__endpoint.stopAllDomain()
-        self.__shutDown = True
+        self.__shuttingDown = True
     
     def __getNewMAC_UUID(self):
         return self.__runningImageData.extractfreeMacAndUuid()
@@ -210,5 +210,5 @@ class VMServerCallback(NetworkCallback):
     def __getNewPassword(self):
         return runCommand("openssl rand -base64 " + str(passwordLength), VMServerCallbackException)
     
-    def hasFinished(self):
-        return self.__shutDown
+    def halt(self):
+        return self.__shuttingDown
