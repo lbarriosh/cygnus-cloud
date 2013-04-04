@@ -25,4 +25,4 @@ if __name__ == "__main__":
                               cm.getConstant("dbUser"), cm.getConstant("dbPassword"), cm.getConstant("scriptPath"))
     reactor.startListenning(cm.getConstant("certificatePath"), cm.getConstant("listenningPort"))
     reactor.monitorVMBootCommands()
-    reactor.shutdown()
+    reactor.closeNetworkConnections()
