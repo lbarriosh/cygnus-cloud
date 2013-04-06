@@ -72,7 +72,7 @@ class VMServerPacketHandler(object):
         p.writeInt(packet_type)
         return p
     
-    def createVMServerStatusPacket(self, vncServerIP, activeDomains):
+    def createVMServerStatusPacket(self, vncServerIP, activeDomains, memoryUsage, memoryTotal, diskFree, vpcu, realCpu):
         """
         Creates a virtual machine server status packet
         Args:
@@ -86,6 +86,11 @@ class VMServerPacketHandler(object):
         p.writeInt(VM_SERVER_PACKET_T.SERVER_STATUS)
         p.writeString(vncServerIP)
         p.writeInt(activeDomains)
+        p.writeLong(memoryUsage)
+        p.writeLong(memoryTotal)
+        p.writeLong(diskFree)
+        p.writeInt(vpcu)
+        p.writeInt(realCpu)
         return p
     
     def createVMServerShutdownPacket(self):

@@ -27,7 +27,7 @@ class libvirtConnector():
         uri += "://"
         uri += "/system"
         # Connect to lbvirt and register the events
-        self.__endpoint = libvirt.open(uri)
+        self.__endpoint = libvirt.openReadOnly(uri)
         self.__endpoint.domainEventRegisterAny(None, 
                                               libvirt.VIR_DOMAIN_EVENT_ID_LIFECYCLE, 
                                               self.__eventDomain, None)
@@ -109,8 +109,24 @@ class libvirtConnector():
             result.append(domainName)
         return result
     
-    def getNumberOfDomains(self):
-        return self.__endpoint.numOfDomains()
+    def getStatusInfo(self):
+        """
+        Da información sobre los recursos usados por las máquinas virtuales
+        Devuelve:
+            - memory: El tamaño de memoria asignado a las máquinas virtuales en Kilobytes
+            - #cpu: Número total de cpus virtuales de las máquinas virtuales
+        """
+        idsMV = self.__endpoint.listDomainsID()
+        memory = 0
+        cpu = 0
+        for idVM in idsMV :
+            domain = self.__endpoint.lookupByID(idVM)
+            info = domain.info()
+            memory += info[1]
+            cpu += info[3]
+        return {"#domains" : self.__endpoint.numOfDomains(),
+                "memory" : memory,
+                "#cpu" : cpu}
         
     @staticmethod
     def virEventLoopNativeRun():
@@ -131,4 +147,6 @@ def dummy(domain):
 if __name__ == "__main__" :
     libvirtConnector.virEventLoopNativeStart()
     con = libvirtConnector(libvirtConnector.KVM,dummy, dummy)
+    raw_input()
+    con.getStatusInfo()
     raw_input()

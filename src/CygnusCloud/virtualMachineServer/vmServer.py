@@ -16,6 +16,7 @@ from virtualNetwork.virtualNetworkManager import VirtualNetworkManager
 from ccutils.processes.childProcessManager import ChildProcessManager 
 from time import sleep
 import os
+import multiprocessing
 
 class VMServerException(Exception):
     pass
@@ -250,8 +251,11 @@ class VMServer(MainServerPacketReactor):
         
     
     def __serverStatusRequest(self, packet):
-        activeDomains = self.__libvirtConnector.getNumberOfDomains()
-        packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, activeDomains)
+        info = self.__libvirtConnector.getStatusInfo()
+        realCPUNumber = multiprocessing.cpu_count()
+        diskStats = os.statvfs("/")
+        freeDiskSpace = diskStats.f_bavail * diskStats.f_frsize
+        packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, info["#domains"], info["memory"], -1, freeDiskSpace, info["#cpu"], realCPUNumber)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
     def __userFriendlyShutdown(self, packet):
