@@ -106,7 +106,7 @@ Requisitos mínimos
 \end_layout
 
 \begin_layout Standard
-La infraestructura de CygnusCloud utiliza tres tipos de máquina: los servidores
+La infraestructura de CygnusCloud utiliza tres tipos de máquinas: los servidores
  de máquinas virtuales, los servidores de 
 \emph on
 cluster

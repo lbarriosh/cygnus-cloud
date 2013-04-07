@@ -77,6 +77,11 @@
 \end_preamble
 \options a4paper
 \use_default_options true
+\begin_modules
+tabs-within-sections
+figs-within-sections
+fixltx2e
+\end_modules
 \maintain_unincluded_children false
 \language spanish
 \language_package auto
@@ -107,7 +112,7 @@
 \pdf_bookmarksnumbered false
 \pdf_bookmarksopen false
 \pdf_bookmarksopenlevel 1
-\pdf_breaklinks false
+\pdf_breaklinks true
 \pdf_pdfborder true
 \pdf_colorlinks true
 \pdf_backref false

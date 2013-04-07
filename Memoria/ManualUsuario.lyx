@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass memoir
+\begin_preamble
+ \DisemulatePackage{moreverb}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language spanish
@@ -63,6 +66,3391 @@
 
 \begin_layout Chapter
 Manual de usuario
+\end_layout
+
+\begin_layout Section
+Requisitos mínimos
+\end_layout
+
+\begin_layout Standard
+Cada máquina de la infraestructura de CygnusCloud desempeña uno de estos
+ papeles:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+servidor de máquinas virtuales
+\series default
+.
+ Estos equipos alojan las máquinas virtuales activas de los usuarios.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+servidor de 
+\emph on
+cluster
+\series default
+\emph default
+.
+ Estas máquinas realizan el balanceado de carga entre varios servidores
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+servidor web
+\series default
+.
+ Estas máquinas proporcionan una interfaz web que permite a los usuarios
+ enviar peticiones a los servidores de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+En esta sección, empezaremos mostrando los requisitos mínimos que debe cumplir
+ el 
+\emph on
+hardware
+\emph default
+ de cada una de estas máquinas, para posteriormente mostrar los requisitos
+ 
+\emph on
+software
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Requisitos 
+\emph on
+hardware
+\end_layout
+
+\begin_layout Standard
+El 
+\emph on
+hardware
+\emph default
+ de los servidores de cluster y de los servidores web debe cumplir los siguiente
+s requisitos mínimos:
+\end_layout
+
+\begin_layout Itemize
+CPU Intel Pentium 4 a 2,4 GHz
+\end_layout
+
+\begin_layout Itemize
+un mínimo de 512 
+\emph on
+megabytes
+\emph default
+ de memoria RAM.
+ Se recomienda 1 GB para un funcionamiento óptimo.
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+gigabyte
+\emph default
+ de espacio en disco
+\end_layout
+
+\begin_layout Itemize
+tarjeta de red 
+\emph on
+fast ethernet
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los requisitos mínimos que debe cumplir el 
+\emph on
+hardware
+\emph default
+ de los servidores de máquinas virtuales son los siguientes:
+\end_layout
+
+\begin_layout Itemize
+CPU Intel Core 2 Duo E4400
+\end_layout
+
+\begin_layout Itemize
+un mínimo de 2 
+\emph on
+gigabytes
+\emph default
+ de memoria RAM.
+ Se recomienda 4 GB para un funcionamiento óptimo.
+\end_layout
+
+\begin_layout Itemize
+un mínimo de 30 
+\emph on
+gigabytes
+\emph default
+ de espacio en disco si sólo se desea alojar máquinas virtuales GNU/Linux.
+ Si también se pretende alojar máquinas virtuales Windows, se requiere un
+ mínimo de 60 
+\emph on
+gigabytes 
+\emph default
+de espacio en disco.
+\end_layout
+
+\begin_layout Itemize
+tarjeta de red 
+\emph on
+fast ethernet
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Finalmente, todas las máquinas de la infraestructura deben estar conectadas
+ a una misma red de área local, que deberá soportar, como mínimo, una tasa
+ de 100 
+\emph on
+megabits
+\emph default
+ por segundo.
+\end_layout
+
+\begin_layout Subsection
+Requisitos 
+\emph on
+software
+\end_layout
+
+\begin_layout Standard
+Todas las máquinas de la infraestructura deben tener instalado un sistema
+ operativo GNU/Linux.
+ En principio, el funcionamiento debería ser correcto en cualquier máquina
+ con una distribución de la misma época o posterior a Ubuntu 12.04 LTS, aunque
+ por falta de tiempo sólo podemos garantizar que el funcionamiento es correcto
+ en Ubuntu 12.04 LTS.
+\end_layout
+
+\begin_layout Standard
+En todas las máquinas de la infraestructura, debe estar instalados, además
+ del sistema operativo, 
+\end_layout
+
+\begin_layout Itemize
+una versión de la rama 2.7 del intérprete de Python, igual o superior a la
+ 2.7.3.
+\end_layout
+
+\begin_layout Itemize
+la librería de red 
+\emph on
+twisted
+\emph default
+, versión 12.1.0 o superior.
+\end_layout
+
+\begin_layout Itemize
+el gestor de bases de datos MySQL, versión 5.5.29 o superior.
+\end_layout
+
+\begin_layout Itemize
+el conector de MySQL MySQLdb, versión 1.2.3 o superior.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\end_layout
+
+\begin_layout Itemize
+a causa de las limitaciones impuestas por libvirt y por la librería twisted,
+ 
+\emph on
+no
+\emph default
+ es posible utilizar un intérprete de Python de la rama 3.x.
+\end_layout
+
+\begin_layout Itemize
+la última versión de la librería 
+\emph on
+twisted
+\emph default
+, 13.0.1, provoca errores cuando se hacen pruebas en local utilizando el adaptador
+ 
+\emph on
+loopback
+\emph default
+.
+ Por ello, le recomendamos el uso del paquete que forma parte de su distribución
+ GNU/Linux.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por otra parte, en los servidores de máquinas virtuales debe estar instalado
+ el siguiente 
+\emph on
+software
+\emph default
+ adicional:
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+kernel
+\emph default
+ de la versión 3.2.0 o superior.
+\end_layout
+
+\begin_layout Itemize
+el hipervisor de KVM correspondiente a la versión del 
+\emph on
+kernel
+\emph default
+ que se encuentra instalada.
+\end_layout
+
+\begin_layout Itemize
+el sistema de virtualización QEMU, versión 2.0 o superior
+\end_layout
+
+\begin_layout Itemize
+la librería libvirt, versión 0.9.8 o superior
+\end_layout
+
+\begin_layout Section
+Instrucciones de instalación y configuración en Ubuntu 12.04
+\end_layout
+
+\begin_layout Subsection
+Pasos comunes
+\end_layout
+
+\begin_layout Standard
+Con independencia del papel que desempeñe la máquina en la infraestructura,
+ siempre es necesario instalar la librería 
+\emph on
+twisted
+\emph default
+, el gestor de bases de datos MySQL y el conector MySQLdb.
+ Para ello, debemos ejecutar la orden
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo apt-get install python-twisted mysql-server python-mysqldb
+\end_layout
+
+\begin_layout Subsection
+Servidores de máquinas virtuales
+\end_layout
+
+\begin_layout Subsubsection
+Instalación y configuración de KVM
+\end_layout
+
+\begin_layout Standard
+Una vez instalados los paquetes comunes, debemos instalar el hipervisor
+ KVM, la librería 
+\emph on
+libvirt 
+\emph default
+y el sistema de virtualización QEMU.
+ Para ello, ejecutamos la orden
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder bridge-utils
+\end_layout
+
+\begin_layout Standard
+Tras instalar estos paquetes, es necesario añadir el usuario que vamos a
+ utilizar a los grupos 
+\family typewriter
+libvirtd
+\family default
+ y 
+\family typewriter
+kvm
+\family default
+.
+ Para ello, ejecutamos las órdenes
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo addgroup <nombre de nuestro usuario> libvirtd
+\end_layout
+
+\begin_layout Standard
+y
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo addgroup <nombre de nuestro usuario> kvm
+\end_layout
+
+\begin_layout Standard
+Además, debemos configurar libvirt para que nos permita crear máquinas y
+ redes virtuales sin necesidad de ser 
+\emph on
+root
+\emph default
+.
+ Para ello, descomentamos las siguientes líneas del fichero 
+\family typewriter
+/etc/libvirt/libvirtd.conf
+\family default
+:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+unix_sock_group = "libvirtd"
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+unix_sock_ro_perms = "0777" 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+unix_sock_rw_perms = "0770"
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+auth_unix_ro = "none"
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+auth_unix_rw = "none" 
+\end_layout
+
+\begin_layout Standard
+Finalmente, reiniciamos libvirt mediante el comando
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo service libvirtd restart
+\end_layout
+
+\begin_layout Standard
+y reiniciamos nuestra sesión.
+ A partir de este momento, podremos crear máquinas virtuales con nuestro
+ usuario.
+\end_layout
+
+\begin_layout Subsubsection
+Instalación del módulo de 
+\emph on
+CygnusCloud 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Instalación-del-módulo-servidor-vms"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los pasos a seguir son los siguientes:
+\end_layout
+
+\begin_layout Enumerate
+descomprimimos el fichero 
+\family typewriter
+VirtualMachineServer.tar.gz
+\family default
+ en el directorio de instalación.
+ Para ello, ejecutamos la orden
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+tar xvzf VirtualMachineServer.tar.gz -C <ruta del directorio de instalación>
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+tomamos posesión de todos los ficheros extraídos.
+ Para ello, ejecutamos la orden
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo chown -R <nuestro usuario>:<nuestro usuario> <ruta del directorio de
+ instalación>
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+ejecutamos el 
+\emph on
+script
+\emph default
+ build.py, ubicado en la raíz del directorio de instalación.
+ Para ello, utilizamos el comando
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+python build.py
+\end_layout
+
+\begin_layout Standard
+o el comando
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sh build.py
+\end_layout
+
+\begin_layout Standard
+El 
+\emph on
+script
+\emph default
+ comprobará que se satisfacen todas las dependencias e informará de los
+ errores que detecte.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+si se satisfacen las dependencias, el 
+\emph on
+script 
+\emph default
+generará el fichero 
+\family typewriter
+virtualMachineServer.sh
+\family default
+.
+ Este fichero es el 
+\emph on
+script
+\emph default
+ de arranque del módulo servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Subsubsection
+Configuración del módulo de 
+\emph on
+CygnusCloud 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Configuración-del-módulo-servidor-mvs"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Si intenta ejecutar el módulo sin haber rellenado previamente el fichero
+ de configuración, se producirán errores.
+\end_layout
+
+\begin_layout Standard
+En el caso del servidor de máquinas virtuales, el fichero de configuración,
+ 
+\family typewriter
+VMServer_settings.conf
+\family default
+, también se encuentra en la raíz del directorio de instalación.
+ Su contenido inicial es el siguiente:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Virtual machine server configuration file 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Version 1.5 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# File format: 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# - if nothing appears after =, the value will be the empty string 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# - multiline string values start with " and end with " 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# - the lines starting with # are line comments.
+ Inline comments ARE NOT # supported.
+ #
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Delete the following line after editing this file
+\color green
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+uninitializedFile
+\color inherit
+ = Yes
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Database configuration
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+mysqlRootsPassword
+\color inherit
+ = 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+databaseUserName
+\color inherit
+ = cygnuscloud 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+databasePassword
+\color inherit
+ = cygnuscloud
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Virtual network setup
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+createVirtualNetworkAsRoot
+\color inherit
+ = No
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+vnName
+\color inherit
+ = ccnet 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+gatewayIP 
+\color inherit
+= 192.168.77.1 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+netMask
+\color inherit
+ = 255.255.255.0 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+dhcpStartIP
+\color inherit
+ = 192.168.77.2 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+dhcpEndIP
+\color inherit
+ = 192.168.77.254
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# VNC server settings
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+vncNetworkInterface
+\color inherit
+ = lo 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+passwordLength 
+\color inherit
+= 46 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Server settings
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+listenningPort 
+\color inherit
+= 15800 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+configFilePath
+\color inherit
+ = /home/luis/VirtualMachineServer/configuraciones/ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+sourceImagePath 
+\color inherit
+= /home/luis/VirtualMachineServer/imagenes/ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+executionImagePath 
+\color inherit
+= /home/luis/VirtualMachineServer/imagenes_en_ejecucion/ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tal y como indica el encabezado del fichero,
+\end_layout
+
+\begin_layout Itemize
+todas las líneas que empiezan por almohadilla (
+\family typewriter
+#
+\family default
+) son comentarios.
+ 
+\end_layout
+
+\begin_layout Itemize
+todos los valores que aparecen a la derecha del símbolo 
+\family typewriter
+=
+\family default
+ son cadenas de caracteres.
+ 
+\emph on
+No
+\emph default
+ pueden contener espacios.
+ Si no aparece nada a la derecha del símbolo 
+\family typewriter
+=
+\family default
+, el valor será la cadena vacía.
+\end_layout
+
+\begin_layout Itemize
+es posible que una misma cadena de caracteres ocupe varias líneas, siempre
+ que se delimite con comillas dobles (
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+
+\family default
+).
+ En cualquier caso, estas cadenas 
+\emph on
+tampoco
+\emph default
+ pueden contener espacios.
+\end_layout
+
+\begin_layout Standard
+La primera línea del fichero indica que este no ha sido modificado, y debe
+ borrarse tras terminar de editarlo.
+ Tras ella, aparecen cuatro grupos de parámetros:
+\end_layout
+
+\begin_layout Itemize
+el primer grupo especifica la configuración de la base de datos del servidor
+ de máquinas virtuales.
+ Además de la contraseña de 
+\emph on
+root
+\emph default
+, imprescindible para poderla crear, hay que suministrar el el nombre y
+ la contraseña del usuario que se utilizará para manipularla.
+\end_layout
+
+\begin_layout Itemize
+el segundo grupo especifica la configuración de la red virtual: su nombre,
+ la IP de la puerta de enlace, la máscara y las direcciones inicial y final
+ del rango que manipulará el servidor DHCP.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+La primera línea de este grupo indica si se debe crear la red virtual como
+ 
+\emph on
+root
+\emph default
+ o no.
+ Esto no es necesario en Ubuntu 12.04, pero sí en distros derivadas de RedHat.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+el tercer grupo especifica la configuración del servidor VNC: la interfaz
+ en la que escuchará y la longitud de la contraseña.
+\end_layout
+
+\begin_layout Itemize
+el cuarto grupo especifica el puerto en el que el servidor escuchará, y
+ también
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+la ruta del directorio en el que están los ficheros .xml de definición de
+ las máquinas virtuales (
+\family typewriter
+configFilePath
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+la ruta del directorio donde están las imágenes de disco de las máquinas
+ que se pueden arrancar (
+\family typewriter
+sourceImagePath
+\family default
+)
+\end_layout
+
+\begin_layout Itemize
+la ruta de directorio donde están las imágenes de disco de las máquinas
+ activas (
+\family typewriter
+executionImagePath
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Todos los directorios deben estar en un sistema de ficheros tipo UNIX.
+ Además, el usuario actual debe tener permisos de lectura en los dos primeros,
+ y de lectura y escritura en el último.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\end_layout
+
+\begin_layout Itemize
+Si tiene configurado un 
+\emph on
+firewall
+\emph default
+ en su equipo o red, asegúrese de que el puerto de escucha que ha escogido
+ y los puertos TCP del 15000 al 15507 están abiertos.
+\end_layout
+
+\begin_layout Itemize
+Puesto que la funcionalidad de modificación de imágenes está en desarrollo,
+ las pruebas, por defecto, sólo pueden hacerse en local.
+ Por ello, el servidor VNC debe escuchar en el adaptador 
+\emph on
+loopback
+\emph default
+, y el servidor de máquinas virtuales, en el puerto 15800.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Plain Layout
+Esta
+\emph on
+ 
+\emph default
+limitación puede superarse registrando manualmente los servidores de máquinas
+ virtuales en el sistema, cosa que enseñaremos a hacer en la siguiente sección.
+\end_layout
+
+\end_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Servidores de cluster
+\end_layout
+
+\begin_layout Subsubsection
+Instalación del módulo de 
+\emph on
+CygnusCloud
+\end_layout
+
+\begin_layout Standard
+La instalación del módulo es totalmente análoga a la de la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Instalación-del-módulo-servidor-vms"
+
+\end_inset
+
+, aunque en este caso
+\end_layout
+
+\begin_layout Itemize
+el fichero 
+\family typewriter
+.tar.gz
+\family default
+ se llama 
+\family typewriter
+ClusterServer.tar.gz
+\end_layout
+
+\begin_layout Itemize
+el 
+\emph on
+script 
+\family typewriter
+\emph default
+build.py
+\family default
+ genera el fichero 
+\family typewriter
+clusterServer.sh
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Configuración del módulo de 
+\emph on
+CygnusCloud
+\end_layout
+
+\begin_layout Standard
+Nuevamente, es necesario configurar el módulo para poder utilizarlo.
+ Para ello, se utiliza el fichero 
+\family typewriter
+ClusterServer_settings.conf
+\family default
+, también ubicado en la raíz del directorio de instalación.
+ Su contenido inicial es el siguiente:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Cluster server configuration file 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Version 2.0 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# File format: 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# - if nothing appears after =, the value will be the empty string 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# - multiline string values start with " and end with " 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# - the lines starting with # are line comments.
+ Inline comments ARE NOT # supported.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Delete the following line after editing this file
+\color green
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+uninitializedFile
+\color inherit
+ = Yes
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Database configuration 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+mysqlRootsPassword
+\color inherit
+ = 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+dbUser
+\color inherit
+ = cygnuscloud 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+dbPassword
+\color inherit
+ = cygnuscloud 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Listenning port 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+listenningPort
+\color inherit
+ = 9000
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Virtual machine boot timeout (in seconds) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+vmBootTimeout
+\color inherit
+ = 30
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El formato de este fichero es el mismo que el de la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Configuración-del-módulo-servidor-mvs"
+
+\end_inset
+
+.
+ En este caso, distinguimos tres grupos:
+\end_layout
+
+\begin_layout Itemize
+en el primero se configura la base de datos, introduciendo nuevamente la
+ contraseña de 
+\emph on
+root
+\emph default
+, el nombre de usuario y la contraseña a utilizar para manipularla.
+\end_layout
+
+\begin_layout Itemize
+en el segundo se indica el puerto en el que el servidor de 
+\emph on
+cluster
+\emph default
+ escuchará.
+\end_layout
+
+\begin_layout Itemize
+en el tercero se indica (en segundos) el 
+\emph on
+timeout
+\emph default
+ considerado al arrancar máquinas virtuales.
+ Cuando se supere ese tiempo, el proceso de arranque se abortará, y se asumirá
+ que ha fallado.
+\end_layout
+
+\begin_layout Standard
+Finalmente, también es necesario borrar la primera línea del fichero tras
+ editar este fichero de configuración.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\end_layout
+
+\begin_layout Itemize
+Si su equipo o red de área local utilizan un 
+\emph on
+firewall
+\emph default
+, asegúrese de que, además de los puertos en los que escuchan los servidores
+ de máquinas virtuales, el puerto TCP 9000 está abierto.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Servidor web
+\end_layout
+
+\begin_layout Section
+Creación de imágenes 
+\end_layout
+
+\begin_layout Standard
+Para poder crear máquinas virtuales, es necesario disponer previamente de
+ algunas imágenes de disco en formato qcow2.
+ En esta sección mostraremos cómo crearlas de forma sencilla utilizando
+ 
+\family typewriter
+virt-manager
+\family default
+ e importarlas en 
+\emph on
+CygnusCloud
+\emph default
+.
+ Naturalmente, también es posible importar a 
+\emph on
+CygnusCloud
+\emph default
+ imágenes creadas manualmente.
+ No obstante, por simplicidad, en este manual 
+\emph on
+no
+\emph default
+ mostraremos cómo crear una imagen manualmente.
+\end_layout
+
+\begin_layout Subsection
+Creación de nuevas imágenes en 
+\family typewriter
+virt-manager
+\end_layout
+
+\begin_layout Subsubsection
+Pasos básicos 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Pasos-básicos-virt-manager"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Antes de utilizar 
+\family typewriter
+virt-manager
+\family default
+, es necesario instalarlo.
+ Asumiendo que utilizamos Ubuntu 12.04, basta con ejecutar la orden
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo apt-get install virt-manager
+\end_layout
+
+\begin_layout Standard
+Acto seguido, lo ejecutamos.
+ Aparecerá la pantalla inicial de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Pantalla-inicial-virt-manager"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Pantalla inicial.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Pantalla-inicial-virt-manager"
+
+\end_inset
+
+Pantalla inicial de 
+\family typewriter
+virt-manager
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para empezar a crear una máquina, hacemos clic sobre el botón 
+\family sans
+Create a new virtual machine
+\family default
+.
+ Aparecerá la primera ventana de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Pasos-1-y-2-asistente-crear-mv"
+
+\end_inset
+
+.
+ En todos los casos, avanzamos al paso siguiente haciendo clic sobre 
+\family sans
+Forward
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Botón crear máquina.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Ubicación del botón 
+\family sans
+create a new virtual machine
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los pasos a seguir son los siguientes:
+\end_layout
+
+\begin_layout Enumerate
+Introducimos el nombre de la máquina virtual.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Aparecerá la segunda ventana de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Pasos-1-y-2-asistente-crear-mv"
+
+\end_inset
+
+, en la que tendremos que seleccionar 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+la ubicación del medio de instalación del sistema operativo
+\end_layout
+
+\begin_layout Itemize
+el tipo del sistema operativo (
+\family sans
+Windows
+\family default
+, 
+\family sans
+Linux
+\family default
+,\SpecialChar \ldots{}
+) y su versión
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Aparecerá la primera ventana de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Pasos-3-y-4-asistente-crear-mv"
+
+\end_inset
+
+, en la que tendremos que introducir el tamaño de la RAM y el número de
+ CPUs virtuales de la máquina.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Desmarcamos la casilla 
+\family sans
+Enable storage for this virtual machine
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+En la ventana final del asistente, que aparece en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Paso-5-asistente-creación-máquinas-virtuales"
+
+\end_inset
+
+, marcamos la casilla 
+\family sans
+Customize configuration before install
+\family default
+, y hacemos clic en 
+\family sans
+Finish
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Asistente-1.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Asistente-2.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Pasos-1-y-2-asistente-crear-mv"
+
+\end_inset
+
+Pasos 1 y 2 del asistente de creación de máquinas virtuales
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Asistente-3.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Asistente-4.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Pasos-3-y-4-asistente-crear-mv"
+
+\end_inset
+
+Pasos 3 y 4 del asistente de creación de máquinas virtuales
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Asistente-5.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Paso-5-asistente-creación-máquinas-virtuales"
+
+\end_inset
+
+Paso 5 del asistente de creación de máquinas virtuales
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Configuración de la máquina virtual
+\end_layout
+
+\begin_layout Standard
+Con los pasos de la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Pasos-básicos-virt-manager"
+
+\end_inset
+
+, 
+\family typewriter
+virt-manager
+\family default
+ ya ha generado casi todo el fichero de definición de la máquina.
+ No obstante, todavía debemos configurar
+\end_layout
+
+\begin_layout Itemize
+las características de la CPU de la máquina virtual
+\end_layout
+
+\begin_layout Itemize
+los discos duros virtuales
+\end_layout
+
+\begin_layout Itemize
+los periféricos de entrada
+\end_layout
+
+\begin_layout Itemize
+la tarjeta de vídeo
+\end_layout
+
+\begin_layout Standard
+Tras salir del asistente, aparecerá la ventana de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diálogo-de-configuración-máquina"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Configuración máquina virtual.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diálogo-de-configuración-máquina"
+
+\end_inset
+
+Diálogo de configuración de la máquina virtual
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Empezaremos configurando la CPU de la máquina.
+ Para ello, hacemos clic sobre 
+\family sans
+Processor
+\family default
+.
+ Tras expandir el apartado 
+\family sans
+Configuration
+\family default
+, seleccionamos 
+\family sans
+Core2Duo
+\family default
+ como modelo.
+ Todo debería quedar configurado como en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Configuración-CPU-MV"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+A continuación, crearemos las imágenes de disco qcow2 que utilizará la máquina.
+ Tenemos que crear dos: 
+\end_layout
+
+\begin_layout Itemize
+una que contendrá el sistema operativo y los programas instalados
+\end_layout
+
+\begin_layout Itemize
+otra que contendrá los datos del usuario y el fichero de paginación
+\end_layout
+
+\begin_layout Standard
+Para crearlas, hacemos clic sobre el botón 
+\family sans
+Add Hardware
+\family default
+ y seleccionamos 
+\family sans
+Storage
+\family default
+.
+ El diálogo que aparece se muestra en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Creación-imágenes-disco"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+.
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Configuración CPU.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Configuración-CPU-MV"
+
+\end_inset
+
+Configuración del procesador de la máquina virtual
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Imágenes disco.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Creación-imágenes-disco"
+
+\end_inset
+
+Creación de las imágenes de disco
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A la hora de especificar el tamaño, hay que tener en cuenta que
+\end_layout
+
+\begin_layout Itemize
+la imagen del SO debe tener un tamaño adecuado para lo que queremos instalar
+ en ella.
+ Para un sistema GNU/Linux, basta con 10 GB, pero un sistema Windows requiere
+ un mínimo de 25 GB.
+\end_layout
+
+\begin_layout Itemize
+en GNU/Linux, la partición swap debe tener el mismo tamaño que la RAM.
+ En Windows, se recomienda que el fichero de paginación sea dos veces más
+ grande que la RAM.
+\end_layout
+
+\begin_layout Standard
+Para crear las dos imágenes de disco, debemos seleccionar 
+\family sans
+Virtio disk
+\family default
+ en 
+\family sans
+Device type
+\family default
+ y 
+\family typewriter
+qcow2
+\family default
+ en 
+\family sans
+Storage format
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, para configurar la tarjeta de vídeo hacemos clic sobre 
+\family sans
+Video
+\family default
+, y en 
+\family sans
+Model
+\family default
+ seleccionamos 
+\family sans
+vga
+\family default
+.
+ Esto se muestra en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Configuración-tarjeta-vídeo"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Configuración tarjeta vídeo.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Configuración-tarjeta-vídeo"
+
+\end_inset
+
+Configuración de la tarjeta de vídeo
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\end_layout
+
+\begin_layout Plain Layout
+Debido a un 
+\emph on
+bug
+\emph default
+ en el cargador de arranque, todas las distribuciones derivadas de Debian
+ GNU/Linux 6 (
+\emph on
+squeeze
+\emph default
+) no pueden arrancar con la tarjeta de vídeo 
+\family sans
+vmvga
+\family default
+.
+ En estos casos, es necesario seleccionar la tarjeta de vídeo 
+\family sans
+vga
+\family default
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Lo último que nos falta es añadir una tableta gráfica para que el servidor
+ VNC siga adecuadamente los movimientos del ratón.
+ Para ello, hacemos clic sobre 
+\family sans
+Add Hardware
+\family default
+, seleccionamos 
+\family sans
+Input
+\family default
+, seleccionamos 
+\family sans
+EvTouch USB Graphics Tablet
+\family default
+ y hacemos clic sobre 
+\family sans
+Finish
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Configuración tableta.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Configuración-periféricos-entrada"
+
+\end_inset
+
+Configuración de los periféricos de entrada
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para empezar la instalación del sistema operativo, hacemos clic sobre 
+\family sans
+Begin installation
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\end_layout
+
+\begin_layout Plain Layout
+Para poder instalar un sistema operativo Windows, hay que suministrar al
+ instalador los drivers VirtIO.
+ Mostraremos cómo hacer esto en la siguiente sección.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Instalación de los 
+\emph on
+drivers
+\emph default
+ en Windows
+\end_layout
+
+\begin_layout Standard
+Para que el instalador pueda acceder a los discos duros virtuales, hay que
+ suministrarle los controladores VirtIO.
+ Los pasos a seguir son estos:
+\end_layout
+
+\begin_layout Enumerate
+Descargamos la imagen ISO correspondiente a la última versión desde
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+target "http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+A la hora de configurar la máquina, creamos otra unidad 
+\family sans
+CD-ROM IDE
+\family default
+.
+ Para ello, basta con hacer clic sobre 
+\family sans
+Add hardware
+\family default
+, seleccionar 
+\family sans
+Storage
+\family default
+ y
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+marcar la casilla 
+\family sans
+Select managed or other existing storage
+\family default
+, e introducir la ruta de la imagen ISO que hemos descargado.
+\end_layout
+
+\begin_layout Enumerate
+seleccionar 
+\family sans
+IDE cdrom
+\family default
+ en 
+\family sans
+Device type.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+En ocasiones, 
+\family typewriter
+virt-manager
+\family default
+ selecciona la nueva unidad de CD-ROM (y no la que tiene el medio de instalación
+ de Windows) para arrancar.
+ Si eso ocurre, basta con volver a abrir el diálogo de configuración de
+ la máquina (hacemos clic derecho sobre la máquina en la ventana principal
+ de 
+\family typewriter
+virt-manager
+\family default
+, seleccionamos 
+\family sans
+Open
+\family default
+ y accedemos al menú 
+\family sans
+View \SpecialChar \menuseparator
+ Details
+\family default
+ de la nueva ventana que aparece), seleccionar 
+\family sans
+Boot options
+\family default
+, marcar la casilla 
+\family sans
+Enable boot menu
+\family default
+ y seleccionar la unidad correcta al arrancar la máquina.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Drivers VirtIO.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Configuración-del-CD-ROM-VirtIO"
+
+\end_inset
+
+Configuración del CD-ROM con los drivers VirtIO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/virt-manager/Corrección bug arranque virt-manager.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Corrección-problemas-arranque-Windows"
+
+\end_inset
+
+Corrección de los problemas de arranque en instalaciones Windows
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Importar máquinas virtuales existentes a 
+\family typewriter
+virt-manager
+\end_layout
+
+\begin_layout Standard
+Siempre que una máquina virtual tenga instalado un sistema GNU/Linux y utilice
+ una única imagen de disco podrá utilizarse en 
+\emph on
+CygnusCloud
+\emph default
+.
+ Los pasos a seguir son los siguientes:
+\end_layout
+
+\begin_layout Enumerate
+Convertir las imágenes de disco a un formato soportado por QEMU: 
+\family typewriter
+raw
+\family default
+, 
+\family typewriter
+vmdk
+\family default
+ , 
+\family typewriter
+qcow2
+\family default
+ o 
+\family typewriter
+qcow2
+\family default
+.
+ Por ejemplo, en el caso de una imagen de VirtualBox, habría que ejecutar
+ el comando 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+VBoxManage clonehd <fichero fuente>.vdi <fichero destino>.vmdk --format VMDK
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Convertir las imágenes al formato qcow2.
+ Para ello, ejecutaríamos la orden
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+qemu-img convert <fichero fuente>.vmdk -O qcow2 <fichero destino>.qcow2
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+En lugar de crear una nueva imagen para el sistema operativo, en el diálogo
+ se importa la existente seleccionando la casilla 
+\family sans
+Select managed or other existing storage
+\family default
+ e indicando su ruta.
+\end_layout
+
+\begin_layout Enumerate
+Creamos una imagen de disco para almacenar los datos del usuario y el fichero
+ de paginación.
+\end_layout
+
+\begin_layout Enumerate
+Movemos el fichero de paginación y los datos del usuario a la imagen correspondi
+ente.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\series default
+\color inherit
+: este procedimiento puede no funcionar en sistemas operativos Windows.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Uso de 
+\emph on
+samba
+\emph default
+ para configurar las máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+Para configurar el entorno de la máquina virtual, no sólo es posible descargar
+ 
+\emph on
+software 
+\emph default
+de internet: también es posible, utilizando 
+\emph on
+samba
+\emph default
+, acceder desde la máquina virtual a los recursos de la máquina anfitrión
+ o de cualquier otro PC conectado a la misma red de área local que en la
+ máquina anfitrión.
+\end_layout
+
+\begin_layout Standard
+En esta sección mostraremos cómo instalar y configurar samba para que esto
+ sea posible.
+ Distinguiremos cuatro casos
+\end_layout
+
+\begin_layout Itemize
+El PC y la máquina virtual tienen instalado un sistema operativo Windows.
+ Llamaremos a este caso 
+\series bold
+compartición Windows a Windows
+\series default
+.
+\end_layout
+
+\begin_layout Itemize
+El PC tiene instalado un sistema operativo Windows, y la máquina virtual
+ tiene instalado un sistema operativo Linux.
+ Llamaremos a este caso
+\series bold
+ compartición Windows a Linux
+\series default
+.
+\end_layout
+
+\begin_layout Itemize
+El PC tiene instalado un sistema operativo Linux, y la máquina virtual tiene
+ instalado un sistema operativo Windows.
+ Llamaremos a este caso 
+\series bold
+compartición Linux a Windows
+\series default
+.
+\end_layout
+
+\begin_layout Itemize
+El PC tiene instalado un sistema operativo Linux, y la máquina virtual tiene
+ instalado un sistema operativo Linux.
+ Llamaremos a este caso 
+\series bold
+compartición Linux a Linux
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+Antes de empezar, mostraremos qué hace falta instalar en máquinas Linux
+ (con distros derivadas de Debian o Ubuntu).
+ En Windows, no es necesario instalar nada.
+\end_layout
+
+\begin_layout Subsubsection
+Prerrequisitos (sólo en Linux)
+\end_layout
+
+\begin_layout Paragraph
+Máquina virtual
+\end_layout
+
+\begin_layout Standard
+Si la máquina virtual utiliza un sistema operativo Linux, habrá que instalar
+ todo lo necesario para que se convierta en un cliente Samba.
+ Para ello, basta con ejecutar la orden
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo apt-get install smbclient smbfs
+\end_layout
+
+\begin_layout Standard
+Con esto, es suficiente.
+\end_layout
+
+\begin_layout Paragraph
+PC
+\end_layout
+
+\begin_layout Standard
+Si el PC tiene instalado un sistema operativo Linux, habrá que instalar
+ todo lo necesario para que se convierta en un servidor Samba.
+ Para ello, ejecutaremos la orden
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo apt-get install samba
+\end_layout
+
+\begin_layout Standard
+Después, editamos el fichero 
+\family typewriter
+/etc/samba/smb.conf
+\family default
+, descomentando las líneas
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+security = user
+\end_layout
+
+\begin_layout Standard
+y
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+workgroup = WORKGROUP
+\end_layout
+
+\begin_layout Standard
+Para terminar, definimos una contraseña para nuestro usuario.
+ Samba no nos obliga a utilizar nuestro propio usuario: podemos crear a
+ propósito un usuario para samba.
+ De todas formas, lo más sencillo es utilizar el que ya tenemos.
+ El comando que tenemos que escribir es
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo smbpasswd -a <nuestro nombre de usuario>
+\end_layout
+
+\begin_layout Standard
+Esta orden nos pedirá la nueva contraseña.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\series default
+\color inherit
+: si omitimos este paso, no será posible montar ninguna carpeta compartida.
+ Este error es muy difícil de ver.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Compartición de Windows a Windows 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Compartición-Windows-a-Windows"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Configuración del PC
+\end_layout
+
+\begin_layout Standard
+Para compartir una carpeta en Windows, basta con seguir estos pasos:
+\end_layout
+
+\begin_layout Enumerate
+Hacemos clic derecho sobre la carpeta que queremos compartir y seleccionamos
+ 
+\family sans
+Propiedades
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+Vamos a la pestaña 
+\family sans
+Compartir
+\family default
+ y hacemos clic sobre el botón 
+\family sans
+Uso compartido avanzado
+\end_layout
+
+\begin_layout Enumerate
+Marcamos la casilla 
+\family sans
+Compartir esta carpeta
+\family default
+.
+ Por defecto, sólo se permite leer de ella.
+ En la parte superior del diálogo, aparecerá un nombre de la forma
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+
+\backslash
+
+\backslash
+nombre-del-pc
+\backslash
+
+\color blue
+nombre-del-recurso
+\end_layout
+
+\begin_layout Standard
+Recordad el nombre del recurso: os hará falta más adelante.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Si queremos escribir en la carpeta desde otra máquina, basta con hacer clic
+ sobre 
+\family sans
+Permisos
+\family default
+ y marcar la casilla 
+\family sans
+Control total
+\family default
+.
+\end_layout
+
+\begin_layout Paragraph
+Configuración de la máquina virtual
+\end_layout
+
+\begin_layout Standard
+Para conectarnos a la carpeta compartida desde la máquina virtual, seguimos
+ estos pasos:
+\end_layout
+
+\begin_layout Enumerate
+Hacemos clic sobre 
+\family sans
+Equipo
+\family default
+, y seleccionamos 
+\family sans
+Conectar a unidad de red
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+En el diálogo que aparece, metemos este nombre para la máquina:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+
+\backslash
+
+\backslash
+ip-del-pc
+\backslash
+nombre-del-recurso
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Confirmamos los cambios.
+ A partir de este momento, la carpeta compartida aparecerá montada en 
+\family sans
+Equipo
+\family default
+ como una unidad de red.
+\end_layout
+
+\begin_layout Subsubsection
+Compartición de Linux a Linux 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Compartición-Linux-a-Linux"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Configuración del PC
+\end_layout
+
+\begin_layout Standard
+Para compartir la carpeta, seguimos los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+Añadimos una entrada como la siguiente 
+\emph on
+al final
+\emph default
+ del fichero /etc/samba/smb.conf:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "40col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+tabson[4]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Plain Layout
+
+[nombre-del-recurso]         
+\end_layout
+
+\begin_layout Plain Layout
+
+	comment = <comentario>         
+\end_layout
+
+\begin_layout Plain Layout
+
+	read only = yes | no         
+\end_layout
+
+\begin_layout Plain Layout
+
+	guest ok = yes | no  
+\end_layout
+
+\begin_layout Plain Layout
+
+	browsable = yes         
+\end_layout
+
+\begin_layout Plain Layout
+
+	force user = <nuestro usuario>        
+\end_layout
+
+\begin_layout Plain Layout
+
+	path = <ruta de la carpeta compartida> 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+donde
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+nombre-del-recurso
+\family default
+ es el nombre que queremos asignar a la carpeta compartida (como 
+\family typewriter
+home
+\family default
+, 
+\family typewriter
+mis_datos
+\family default
+,...).
+ Por seguridad, 
+\emph on
+no
+\emph default
+ metáis aquí espacios ni caracteres especiales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+comment
+\family default
+ contiene una descripción de la carpeta compartida.
+ Si está vacío, no aparece nada a la derecha del símbolo 
+\family typewriter
+=
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+read only
+\family default
+ fija los permisos de lectura y escritura.
+ Cuando toma el valor 
+\family typewriter
+yes
+\family default
+, no se podrá escribir en la carpeta desde la máquina virtual.
+ Cuando toma el valor 
+\family typewriter
+no
+\family default
+, sí.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+guest ok
+\family default
+ determina el comportamiento para los usuarios no autenticados.
+ Cuando toma el valor 
+\family typewriter
+yes
+\family default
+, cualquiera podrá leer de la carpeta.
+ Cuando toma el valor 
+\family typewriter
+no
+\family default
+, sólo los usuarios que se autentiquen podrán leer la carpeta.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Reiniciamos el servidor Samba.
+ Para ello, ejecutamos la orden
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo /etc/init.d/smbd restart
+\end_layout
+
+\begin_layout Paragraph
+Configuración de la máquina virtual
+\end_layout
+
+\begin_layout Standard
+Para montar la carpeta compartida en la máquina virtual, seguimos los siguientes
+ pasos:
+\end_layout
+
+\begin_layout Enumerate
+Creamos el punto de montaje.
+ Por ejemplo, si queremos montar la carpeta en /mnt/smbshare, ejecutaremos
+ el comando 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo mkdir /mnt/smbshare
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Montamos la carpeta utilizando el comando 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo mount -t cifs -o username=<nombre de usuario>,password=<contraseña>
+ //ip-del-pc/nombre-del-recurso <punto de montaje>
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Para desconectarnos de la carpeta compartida, basta con ejecutar el comando
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo umount --force <punto de montaje>
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+Compartición de Windows a Linux
+\end_layout
+
+\begin_layout Standard
+Para configurar el PC, seguimos las instrucciones de la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Compartición-Windows-a-Windows"
+
+\end_inset
+
+.
+ Para configurar la máquina virtual, seguimos las instrucciones de la sección
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Compartición-Linux-a-Linux"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Compartición de Linux a Windows
+\end_layout
+
+\begin_layout Standard
+Para configurar el PC, seguimos las instrucciones de la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Compartición-Linux-a-Linux"
+
+\end_inset
+
+.
+ Para configurar la máquina virtual, seguimos las instrucciones de la sección
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Compartición-Windows-a-Windows"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Importar máquinas virtuales a 
+\emph on
+CygnusCloud
+\end_layout
+
+\begin_layout Standard
+Una vez preparadas las máquinas virtuales, tenemos que borrar las unidades
+ de CD-ROM que hemos utilizado para realizar la instalación del sistema
+ operativo, y también la tarjeta de sonido.
+ Los pasos a seguir son los siguientes:
+\end_layout
+
+\begin_layout Enumerate
+accedemos al diálogo de configuración de la máquina.
+ Para ello, hacemos clic derecho sobre la máquina en la ventana principal
+ de 
+\family sans
+virt-manager
+\family default
+, seleccionamos 
+\family sans
+Open
+\family default
+ y accedemos al menú 
+\family sans
+View \SpecialChar \menuseparator
+ Details
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+hacemos clic derecho sobre las unidades de CD-ROM y seleccionamos 
+\family sans
+Remove hardware
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+hacemos lo mismo con la tarjeta de sonido, que aparece en la sección 
+\family sans
+sound: ich6
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Una vez hecho esto, 
+\end_layout
+
+\begin_layout Enumerate
+copiamos el fichero de definición de la máquina, ubicado en 
+\family typewriter
+/etc/libvirt/qemu
+\family default
+, al directorio 
+\family typewriter
+configFilePath
+\family default
+ que especificamos en el fichero de configuración.
+\end_layout
+
+\begin_layout Enumerate
+copiamos las imágenes de disco de la máquina al directorio 
+\family typewriter
+sourceImagePath
+\family default
+ que especificamos en el fichero de configuración.
+\end_layout
+
+\begin_layout Enumerate
+registramos la máquina virtual en el servidor de máquinas virtuales.
+ Para ello, editamos el fichero 
+\family typewriter
+bin/database/VMServerDB.sql
+\family default
+, añadiendo al final las líneas
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+INSERT IGNORE INTO VirtualMachine VALUES (<id de la máquina>, '<Nombre de
+ la máquina>', '<ruta imagen datos>', '<ruta imagen SO>', '<ruta fichero
+ definición>');
+\end_layout
+
+\begin_layout Standard
+Las tres rutas son relativas.
+ Por ejemplo, si 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+sourceImagePath
+\family default
+ es 
+\family typewriter
+/home/luis
+\family default
+ 
+\end_layout
+
+\begin_layout Itemize
+la imagen del sistema operativo se llama 
+\family typewriter
+OS.qcow2
+\family default
+, y está en 
+\family typewriter
+/home/luis/Debian
+\end_layout
+
+\begin_layout Itemize
+la imagen con los datos del usuario y el fichero de paginación se llama
+ 
+\family typewriter
+Data.qcow2 
+\family default
+y está en 
+\family typewriter
+/home/luis/Debian
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+configFilePath 
+\family default
+es 
+\family typewriter
+/home/luis
+\end_layout
+
+\begin_layout Itemize
+el fichero de definición se llama 
+\family typewriter
+debian.xml
+\family default
+ y está en 
+\family typewriter
+/home/luis/Debian
+\end_layout
+
+\begin_layout Itemize
+hay ya dos máquinas virtuales, con IDs 
+\family typewriter
+1
+\family default
+ y 
+\family typewriter
+2
+\end_layout
+
+\begin_layout Itemize
+la máquina se llamará 
+\family typewriter
+Debian
+\end_layout
+
+\begin_layout Standard
+la línea a añadir sería
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+INSERT IGNORE INTO VirtualMachine VALUES (3, 'Debian', 'Debian/Data.qcow2',
+ 'OS.qcow2', 'Debian/Debian.xml');
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+registramos la máquina virtual en el servidor de 
+\emph on
+cluster
+\emph default
+.
+ Asumiendo que la colocaremos en el servidor 
+\family typewriter
+1
+\family default
+, editamos el fichero 
+\family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
+bin/database/VMServerDB.sql
+\family default
+, añadiendo la siguientes línea:
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+INSERT IGNORE INTO ImageOnServer VALUES (1, 3);
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+reiniciamos la infraestructura.
+ A partir de este momento, la nueva máquina podrá utilizarse.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\series default
+\color inherit
+: este procedimiento es sólo provisional, y se automatizará completamente
+ en la versión 2.0.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Uso de la página web
 \end_layout
 
 \end_body
