@@ -17,6 +17,14 @@ CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT,
 CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER,
 	PRIMARY KEY(serverId,imageId),
 	FOREIGN KEY(serverId) REFERENCES VMServer(serverId) ON DELETE CASCADE ON UPDATE CASCADE);
+
+
+CREATE TABLE IF NOT EXISTS VanillaImageFamilies(familyID SMALLINT PRIMARY KEY, 
+    RAMSize INTEGER, vCPUs BYTE, OSDiskSize INTEGER, dataDiskSize INTEGER);
+    
+CREATE TABLE IF NOT EXISTS VMfromVanilla(familyID SMALLINT, VMID INTEGER,
+	PRIMARY KEY(familyID, VMID),
+	FOREIGN KEY(familyID) REFERENCES VanillaImageFamilies(familyID));
 	
 CREATE TABLE IF NOT EXISTS VMServerStatus(serverId INTEGER, hosts INTEGER,
 	PRIMARY KEY(serverId),
@@ -38,3 +46,13 @@ INSERT IGNORE INTO VMServer(serverId, serverName, serverStatus, serverIP, server
 
 INSERT IGNORE INTO ImageOnServer VALUES
 	(1, 1);
+	
+/*
+ * Datos de las imagenes vanillas
+ */
+INSERT IGNORE INTO VanillaImageFamilies(1, 1, 1, 20, 4)
+INSERT IGNORE INTO VanillaImageFamilies(2, 2, 2, 30, 8)
+INSERT IGNORE INTO VanillaImageFamilies(3, 3, 4, 40, 16)
+INSERT IGNORE INTO VanillaImageFamilies(4, 1, 1, 5, 3)
+INSERT IGNORE INTO VanillaImageFamilies(5, 2, 2, 10, 6)
+INSERT IGNORE INTO VanillaImageFamilies(6, 3, 4, 15, 12)

@@ -435,3 +435,57 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         update = "INSERT INTO ActiveVMDistribution VALUES ('{0}',{1});"
         for hostedDomainUID in hostedVMs :
             self._executeUpdate(update.format(hostedDomainUID, serverID))
+            
+    def getVanillaImageData(self, vanillaID):
+        """
+        Devuelve los datos de una imagen vanilla
+        Argumentos:
+            vanillaID: ID de la imagen vanilla
+        Devuelve:
+            Un diccionario con los datos de la imagen, con las siguientes claves:
+                RAM
+                vCPUs
+                OSDiskSize
+                dataDiskSize
+        """
+        query = "SELECT * FROM VanillaImageFamilies WHERE familyID = {0}".format(vanillaID)
+        # Ejecutamos la consulta
+        results=self._executeQuery(query)
+        if (results == ()) : 
+            return None
+        (id, ram, vCPUs, OSDiskSize, dataDiskSize) = results[0]
+        # Creamos el diccionario con los datos
+        d = dict() 
+        d["RAM"] = ram
+        d["vCPUs"] = vCPUs
+        d["OSDiskSize"] = OSDiskSize
+        d["dataDiskSize"] = dataDiskSize
+        return d
+    
+    def getVMResources(self, VMID):
+        """
+        Devuelve los recursos de una imagen
+        Argumentos:
+            VMID: ID de la imagen
+        Devuelve:
+            Un diccionario con los datos de la imagen, con las siguientes claves:
+                RAM
+                vCPUs
+                OSDiskSize
+                dataDiskSize
+        """
+        # Conseguimos el ID de la imagen vanilla en la que está basada
+        query = "SELECT * FROM VMfromVanilla WHERE familyID = {0}".format(VMID)
+        # Ejecutamos la consulta
+        results=self._executeQuery(query)
+        if (results == ()) : 
+            return None
+        (vanillaID, VMID) = results[0] 
+        return self.getVanillaImageData(vanillaID)
+    
+    def setVanillaImageToVM(self, VanillaID, VMID):
+        """
+        """
+        query = "INSERT INTO VMfromVanilla VALUES ({0}, {1})".format(VanillaID, VMID)
+        self._executeQuery(query)
+        
