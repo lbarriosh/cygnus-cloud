@@ -24,13 +24,13 @@ if __name__ == "__main__" :
         
     endpoint = WebServerEndpoint()
     
-    endpoint.connectToDatabases(cm.getConstant("mysqlRootsPassword"), cm.getConstant("statusDBName"), 
-                                cm.getConstant("commandsDBName"), cm.getConstant("statusdbSQLFilePath"), 
+    endpoint.connectToDatabases(cm.getConstant("mysqlRootsPassword"), "SystemStatusDB", 
+                                "CommandsDB", cm.getConstant("statusdbSQLFilePath"), 
                                 cm.getConstant("commandsdbSQLFilePath"), cm.getConstant("websiteUser"), 
                                 cm.getConstant("websiteUserPassword"),  cm.getConstant("endpointUser"), 
                                 cm.getConstant("endpointUserPassword"))
     try :
-        endpoint.connectToClusterServer(cm.getConstant("certificatePath"), cm.getConstant("clusterServerIP"), 
+        endpoint.connectToClusterServer("../../../Certificates", cm.getConstant("clusterServerIP"), 
                                         cm.getConstant("clusterServerListenningPort"), cm.getConstant("statusDBUpdateInterval"))
         endpoint.processCommands()
         endpoint.disconnectFromClusterServer()

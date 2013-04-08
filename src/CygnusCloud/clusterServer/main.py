@@ -21,8 +21,8 @@ if __name__ == "__main__":
         print "Error: " + e.message
         sys.exit()
     reactor = ClusterServerReactor(cm.getConstant("vmBootTimeout"))
-    reactor.connectToDatabase(cm.getConstant("mysqlRootsPassword"), cm.getConstant("dbName"), 
+    reactor.connectToDatabase(cm.getConstant("mysqlRootsPassword"), "ClusterServerDB", 
                               cm.getConstant("dbUser"), cm.getConstant("dbPassword"), cm.getConstant("scriptPath"))
-    reactor.startListenning(cm.getConstant("certificatePath"), cm.getConstant("listenningPort"))
+    reactor.startListenning("../../Certificates", cm.getConstant("listenningPort"))
     reactor.monitorVMBootCommands()
     reactor.closeNetworkConnections()

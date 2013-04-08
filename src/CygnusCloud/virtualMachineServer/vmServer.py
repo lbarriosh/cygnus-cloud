@@ -54,7 +54,7 @@ class VMServer(MainServerPacketReactor):
         # con el servidor principal
         self.__vncServerIP = get_ip_address(networkInterface)
         self.__listenningPort = listenningPort
-        self.__networkManager = NetworkManager(self.__cManager.getConstant("certificatePath"))
+        self.__networkManager = NetworkManager("../../Certificates")
         self.__networkManager.startNetworkService()
         self.__packetManager = VMServerPacketHandler(self.__networkManager)
         self.__networkManager.listenIn(self.__listenningPort, self.__mainServerCallback, True)
