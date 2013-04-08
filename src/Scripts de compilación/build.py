@@ -11,11 +11,11 @@ import sys
 from subprocess import call
 
 dependencies = ["MySQLdb", "twisted"]
-binary = "Web server endpoint"
+binary = "Virtual machine server endpoint"
 version = "1.0+"
-entryPointPath = "clusterServer/connector"
-entryPointFileName = "webServerEndpoint.py"
-targetScript = "webServerEndpoint.sh"
+entryPointPath = "virtualMachineServer"
+entryPointFileName = "main.py"
+targetScript = "vmServer.sh"
 
 if __name__ == "__main__" :
     
@@ -46,7 +46,7 @@ if __name__ == "__main__" :
     f.write("\n")
     f.write("export PYTHONPATH=$(pwd)/bin\n")
     f.write("cd $(pwd)/bin/" + entryPointPath + "\n")
-    f.write("python " + entryPointFileName + "\n")
+    f.write("python -OO " + entryPointFileName + " ../../VMServer_settings.conf\n")
     f.close()
     call("chmod +x " + targetScript, shell=True)
     
