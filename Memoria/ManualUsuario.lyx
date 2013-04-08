@@ -1362,6 +1362,408 @@ firewall
 
 \begin_layout Subsection
 Servidor web
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Instalacion-Servidor-web"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Instalación del módulo de 
+\emph on
+CygnusCloud
+\end_layout
+
+\begin_layout Standard
+Al igual que en los casos anteriores, la instalación del servidor web viene
+ detallada en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Instalación-del-módulo-servidor-vms"
+
+\end_inset
+
+, aunque en este caso
+\end_layout
+
+\begin_layout Itemize
+el fichero 
+\family typewriter
+.tar.gz
+\family default
+ se llama 
+\family typewriter
+WebServer.tar.gz
+\end_layout
+
+\begin_layout Itemize
+el 
+\emph on
+script 
+\family typewriter
+\emph default
+build.py
+\family default
+ genera dos ficheros, webServerEndPoint.sh y webServer.sh
+\end_layout
+
+\begin_layout Standard
+En este caso es necesario ejecutar ambos script en procesos separadas.
+ El script webServerEndPoint.sh lanza el servidor endPoint que establece
+ la comunicación entre el servidor de cluster y el servidor web.
+ Por su parte, el script webServer.sh lanza el servidor web.
+\end_layout
+
+\begin_layout Subsubsection
+Configuración del módulo de 
+\emph on
+CygnusCloud
+\end_layout
+
+\begin_layout Standard
+En este caso será necesario editar dos ficheros de configuración.
+\end_layout
+
+\begin_layout Standard
+El fichero Endpoint_settings.conf contiene los datos de configuración del
+ servidor endPoint.
+ Se encuentra en la raíz del directorio de instalación y su contenido inicial
+ es
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Cluster server endpoint configuration file 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Version 1.3 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+#
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# File format: 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# - if nothing appears after =, the value will be the empty string 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# - multiline string values start with " and end with " 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# - the lines starting with # are line comments.
+ Inline comments ARE NOT # supported.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+#
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Delete the following line after editing this file
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Database configuration parameters
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+mysqlRootsPassword
+\color inherit
+ = 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+statusdbSQLFilePath
+\color inherit
+ = ../../database/SystemStatusDB.sql
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+commandsdbSQLFilePath
+\color inherit
+ = ../../database/CommandsDB.sql
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+websiteUser
+\color inherit
+ = website
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+websiteUserPassword
+\color inherit
+ = CygnusCloud
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+endpointUser
+\color inherit
+ = connector_user
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+endpointUserPassword
+\color inherit
+ = CygnusCloud
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Network parameters
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+clusterServerIP
+\color inherit
+ = 127.0.0.1
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+clusterServerListenningPort
+\color inherit
+ = 9000 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+statusDBUpdateInterval
+\color inherit
+ = 2 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El formato de este fichero es el mismo que el de la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Configuración-del-módulo-servidor-mvs"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte el fichero userInputConstants.py contiene los datos de configuraci
+ón para el servidor web.
+ Al igual que el anterior se encuentra en la raíz del directorio de instalación
+ y su contenido por defecto es 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+#
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Web server configuration file 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Version 1.2 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+#
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+# Database configuration parameters
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+rootPassword
+\color inherit
+ = '170590ucm'
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color red
+#Network parameters
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+serverIp
+\color inherit
+ = "127.0.0.1"
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+serverPort
+\color inherit
+ = 9000
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+statusInterval
+\color inherit
+ = 5
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En ambos ficheros, distinguimos dos grupos:
+\end_layout
+
+\begin_layout Itemize
+en el primero se configura la base de datos, introduciendo la contraseña
+ de 
+\emph on
+root
+\emph default
+, la ruta de los ficheros con la estructura de la base de datos y el nombre
+ y contraseña para los usuarios encargados de gestionar ambos servidores.
+\end_layout
+
+\begin_layout Itemize
+en el segundo se indica el puerto y la ip para la conexión con el servidor
+ de cluster o el servidor endPoint según corresponda, así como el intervalo
+ de actualización de la información del servidor de cluster accesible al
+ servidor web.
 \end_layout
 
 \begin_layout Section
@@ -3451,6 +3853,627 @@ Importante
 
 \begin_layout Section
 Uso de la página web
+\end_layout
+
+\begin_layout Subsection
+Instalación y uso del framework web2py
+\end_layout
+
+\begin_layout Standard
+El servidor web se encuentra desarrollado utilizando el framework web2py.
+ 
+\end_layout
+
+\begin_layout Standard
+Para poder utilizar este framework no es necesario realizar ningún tipo
+ de instalación adicional a la indicada en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Instalacion-Servidor-web"
+
+\end_inset
+
+.
+ El fichero 
+\family typewriter
+.tar.gz 
+\family default
+ya incluye la última versión estable de web2py(2.4.5) y el la aplicación web
+ de CygnusCloud integrada.
+ No obstante si se quiere descargar una versión diferentes será necesario
+ seguir los siguientes pasos:
+\end_layout
+
+\begin_layout Itemize
+Conectarse a 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.web2py.com/init/default/download
+\end_layout
+
+\end_inset
+
+ y descargar la versión deseada.
+ Es posible descargar versiones tanto para linux como para windows o Macintosh,
+ aunque para la gestión de CygnusCloud solo puede usarse la versión de linux.
+ También es posible elegir 3 posibles tipos de descargas de cara a el uso
+ de web2py que queramos hacer.
+ En nuestro caso, usaremos la opción 
+\begin_inset Quotes eld
+\end_inset
+
+For Normal Users
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Copia el directorio 
+\begin_inset Quotes eld
+\end_inset
+
+web2py/applications/CygnusCloud
+\begin_inset Quotes erd
+\end_inset
+
+ de la raíz del directorio de instalación que aportamos a el mismo directorio
+ dentro de la versión de web2py descargada.
+\end_layout
+
+\begin_layout Itemize
+Copiar el directorio bin y certificates, así como el script build.py y los
+ ficheros de configuración al directorio donde se haya descargado la versión
+ de web2py (que contendrá un directorio con el nombre web2py).
+\end_layout
+
+\begin_layout Itemize
+Proceder a la instalación tal y como se menciona en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Instalacion-Servidor-web"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Es importante volver a mencionar que el fichero de instalación que aportamos
+ ya incluye una versión de web2py estable y configurada para ser utilizada
+ y que solo tendrán que realizar los pasos anteriores aquellos usuarios
+ que quieran utilizar una versión diferente del framework.
+\end_layout
+
+\begin_layout Standard
+Web2py ofrece una interfaz para el desarrollo de aplicaciones accesible
+ desde cualquier navegador.
+ Así, una vez realizada la instalación y ejecutado el script webServer.sh
+ podremos acceder a la administración de web2py siguiendo los siguientes
+ pasos
+\end_layout
+
+\begin_layout Itemize
+introducimos la url 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://127.0.0.1:8000/
+\end_layout
+
+\end_inset
+
+ en el navegador web que deseemos.
+ 
+\end_layout
+
+\begin_layout Itemize
+Aparece una ventana con título 
+\family sans
+Welcome
+\family default
+.
+ A la derecha de esta ventana hay un botón 
+\family sans
+Administrative Interface
+\family default
+ que debemos pulsar.
+\end_layout
+
+\begin_layout Itemize
+A continuación aparece una nueva ventana que nos pregunta por la contraseña
+ de administrador.
+ Escribimos 
+\family sans
+cygnuscloud
+\family default
+ y pulsamos el botón de inicio de sesión.
+\end_layout
+
+\begin_layout Itemize
+Llegados a este punto nos aparece un escritorio como el que se muestra en
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Escritorio-de-aplicaciones-web2py"
+
+\end_inset
+
+, con el nombre de las aplicaciones que podemos gestionar desde web2py.
+ Junto al nombre 
+\family sans
+CygnusCloud
+\family default
+ aparece un menú desplegable 
+\family sans
+Manage
+\family default
+.
+ Pulsamos sobre él y elegimos la opción 
+\family sans
+editar.
+\end_layout
+
+\begin_layout Itemize
+Una vez hecho esto, en el navegador aparece una página con el título 
+\family sans
+Editar aplicación 
+\begin_inset Quotes eld
+\end_inset
+
+CygnusCloud
+\begin_inset Quotes erd
+\end_inset
+
+ .
+ 
+\family default
+En esta página podemos ver los diferentes ficheros de código organizados
+ en secciones según su finalidad (Modelos, controladores, vistas, lenguajes,
+ ficheros estáticos, módulos secundarios, ficheros privados y plugins).
+ 
+\end_layout
+
+\begin_layout Itemize
+A la izquierda de cada fichero hay un botón 
+\family sans
+editar 
+\family default
+que nos permite modificar el fichero de código correspondiente.
+ Igualmente si queremos visualizar el contenido del fichero sin editarlo
+ podemos pulsar directamente sobre su nombre.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/Web2pyAdmin1.png
+	scale 50
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Escritorio de aplicaciones de web2py.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Escritorio-de-aplicaciones-web2py"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Uso de la web
+\end_layout
+
+\begin_layout Standard
+En esta sección, vamos a explicar como podemos acceder a la página de inicio
+ de CygnusCloud y como movernos una vez que estemos en ella.
+ 
+\end_layout
+
+\begin_layout Standard
+Una vez instalado el servidor web y ejecutado los scripts del servidor web
+ y el endPoint, podemos acceder a la página de inicio de CygnusCloud introducien
+do la url 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://127.0.0.1:8000/CygnusCloud/main/login
+\end_layout
+
+\end_inset
+
+ en el navegador que queramos.
+ La página de inicio de CygnusCloud se muestra en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-inicio-CygnusCloud"
+
+\end_inset
+
+.
+ en ella, podemos introducir el correo electrónico y la contraseña del usuario
+ que va a iniciar sesión.
+ También podemos acceder desde el menú superior a la página 
+\family sans
+Acerca de
+\family default
+ con información sobre CygnusCloud.
+\end_layout
+
+\begin_layout Standard
+Por defecto, existen dos usuarios de prueba registrados en el sistema, un
+ estudiante con correo electrónico 
+\family sans
+Student1@ucm.es
+\family default
+ y contraseña 1234, y un administrador con correo electrónico 
+\family sans
+Admin1@ucm.es
+\family default
+ y contraseña 1234.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaInicioCygnusCloud.png
+	scale 50
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página de inicio de CygnusCloud.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Página-de-inicio-CygnusCloud"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Al acceder como estudiante, la web nos muestra una página con las asignaturas
+ asociadas a dicho estudiante y la lista de máquinas virtuales disponibles
+ para dicha asignatura.
+ Al lado del nombre de cada asignatura aparece un recuadro de selección
+ que nos permite ver la descripción de la máquina virtual, así como el botón
+ para arrancar dicha máquina.
+ la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-arranque-Web"
+
+\end_inset
+
+muestra una página de arranque de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/ArranqueMaquinasWeb.png
+	scale 50
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página de arranque de máquinas virtuales para estudiantes.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Página-de-arranque-Web"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Una vez pulsado el botón arrancar de alguna máquina virtual, se abrirá una
+ nueva pestaña como la que se muestra en con el escritorio para dicha máquina
+ virtual en ejecución.
+ Para poder iniciar una máquina virtual registrada es necesario que el servidor
+ de máquinas virtuales que contiene dicha máquina virtual haya sido arrancado
+ previamente por algún administrador.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/MáquinaArrancada.png
+	scale 50
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página con máquina virtual arrancada.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Página-con-máquina-arrancada"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Al acceder como administrador, la web nos muestra una página de arranque
+ de máquinas virtuales bastante similar a la anterior pero con un cuadro
+ de búsqueda adicional.
+ Existen varios cuadros de búsquedas distribuidos a lo largo de las páginas
+ del administrador que nos permiten filtrar la información que debe mostrarse
+ por pantalla.
+ Esto resulta útil ya que el administrador tendrá acceso a absolutamente
+ toda la información gestionada por la web.
+ 
+\end_layout
+
+\begin_layout Standard
+En la parte superior de las páginas del administrador hay una barra de menú
+ que nos permite acceder a las diferentes secciones dentro de su alcance.
+ Si desplazamos el puntero del ratón por dicha barra surgen los diferentes
+ submenús con las páginas disponibles.
+ Explicamos brevemente el modo de uso de cada página
+\end_layout
+
+\begin_layout Itemize
+La página 
+\family sans
+Arrancar
+\family default
+ dentro del menú 
+\family sans
+Máquinas virtuales
+\family default
+ permite buscar y arrancar las diferentes máquinas virtuales registradas
+ en algún servidor.
+ Para ello, podemos introducir el nombre, o parte del mismo, de alguna de
+ las asignaturas registradas en el sistema y pulsar el botón 
+\family sans
+Buscar
+\family default
+.
+ Una vez hecho esto, aparece la lista de máquinas virtuales asociadas a
+ dicho criterio de búsqueda.
+\end_layout
+
+\begin_layout Itemize
+La página 
+\family sans
+Detener
+\family default
+ dentro del menú 
+\family sans
+Máquinas virtuales
+\family default
+ nos permite buscar una máquina virtual de forma similar al caso anterior
+ y darla de baja.
+\end_layout
+
+\begin_layout Itemize
+La página 
+\family sans
+Añadir
+\family default
+ servidor dentro del menú 
+\family sans
+Administrar servidores
+\family default
+ nos permite añadir un nuevo servidor de máquinas virtuales al sistema,
+ indicando el nombre, la ip y el puerto asociado a dicho servidor.
+\end_layout
+
+\begin_layout Itemize
+La página 
+\family sans
+Eliminar
+\family default
+ servidor dentro del menú 
+\family sans
+Administrar servidores
+\family default
+ nos permite análogamente dar de baja un servidor registrado o arrancarlo.
+ Para ello cuenta con un menú desplegable donde se encuentran el nombre
+ de todos los servidores registrados hasta el momento.
+ Una vez seleccionado el servidor deseado y pulsado el botón Buscar servidor
+ aparecerá la información de dicho servidor junto a los botones correspondientes.
+\end_layout
+
+\begin_layout Itemize
+La página 
+\family sans
+Eliminar
+\family default
+ del menú 
+\family sans
+Administrar usuarios
+\family default
+ permite eliminar un usuario registrado en la web.
+ Para ello, existe un cuadro de búsqueda que nos permite indicar parte del
+ correo electrónico del usuario/s a buscar, así como el tipo de usuario
+ del que se trata.
+\end_layout
+
+\begin_layout Itemize
+La página 
+\family sans
+Añadir
+\family default
+ del menú 
+\family sans
+Administrar usuarios
+\family default
+ permite añadir una nuevo usuario indicando su correo electrónico, su contraseña
+ y el tipo de usuario.
+\end_layout
+
+\begin_layout Itemize
+La página 
+\family sans
+Asociar asignaturas
+\family default
+ dentro del menú 
+\family sans
+Administrar usuarios
+\family default
+, nos permite buscar los usuarios registrados en la web por medio del cuadro
+ de búsqueda.
+ Una vez realizada la búsqueda, el cuadro para añadir usuarios nos permite
+ seleccionar alguno de los usuarios encontrados en la búsqueda y asociarle
+ una determinada asignatura registrada en el sistema.
+\end_layout
+
+\begin_layout Itemize
+La página 
+\family sans
+Añadir
+\family default
+ dentro del menú 
+\family sans
+Administrar asignaturas
+\family default
+, nos permite añadir una nueva asignatura indicando su código, su nombre,
+ el año en el que se cursa, el curso y el grupo de clase asociado a dicha
+ asignatura.
+\end_layout
+
+\begin_layout Itemize
+La página 
+\family sans
+Eliminar
+\family default
+ dentro del menú 
+\family sans
+Administrar asignaturas
+\family default
+ nos permite buscar las asignaturas que cumplan los criterios de código,
+ nombre, año o grupo introducidos.
+ Una vez mostradas las posibles asignaturas, el sistema nos permite seleccionar
+ y eliminar la que deseemos.
+\end_layout
+
+\begin_layout Standard
+Además, independientemente del tipo usuario logueado, en la parte superior
+ derecha de la web, aparece un vínculo 
+\family sans
+Salir
+\family default
+ que nos permite cerrar la sesión actual y regresar a la página de inicio.
 \end_layout
 
 \end_body
