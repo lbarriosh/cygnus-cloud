@@ -33,7 +33,7 @@ class VMServer(MainServerPacketReactor):
         self.__cManager = constantManager
         self.__mainServerCallback = MainServerCallback(self)
         self.__childProcessManager = ChildProcessManager()
-        self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
+        self.__connectToDatabases("VMServerDB", self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
         self.__connectToLibvirt(self.__cManager.getConstant("createVirtualNetworkAsRoot"))
         self.__doInitialCleanup()
         self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
@@ -223,7 +223,7 @@ class VMServer(MainServerPacketReactor):
         # Los puertos impares serán para el socket que proporciona el hipervisor 
         # y los pares los websockets generados por websockify        
         
-        webSockifyPID = self.__childProcessManager.runCommandInBackground([self.__cManager.getConstant("websockifyPath"),
+        webSockifyPID = self.__childProcessManager.runCommandInBackground(["../../utils/websockify",
                                     self.__vncServerIP + ":" + str(newPort + 1),
                                     self.__vncServerIP + ":" + str(newPort)])
         

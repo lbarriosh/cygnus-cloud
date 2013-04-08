@@ -26,9 +26,9 @@ if __name__ == "__main__" :
         
     # Crear la base de datos (si es necesario)
     configurator = DBConfigurator(cm.getConstant("mysqlRootsPassword"))
-    configurator.runSQLScript(cm.getConstant("databaseName"), "../database/VMServerDB.sql")
+    configurator.runSQLScript("VMServerDB", "../database/VMServerDB.sql")
     # Crear un usuario y darle permisos
-    configurator.addUser(cm.getConstant("databaseUserName"), cm.getConstant("databasePassword"), cm.getConstant("databaseName"), True)
+    configurator.addUser(cm.getConstant("databaseUserName"), cm.getConstant("databasePassword"), "VMServerDB", True)
     # Crear el servidor de máquinas virtuales
     vmServer = VMServer(cm)    
     # Dormir hasta que se apague
