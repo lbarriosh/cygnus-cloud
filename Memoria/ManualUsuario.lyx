@@ -73,8 +73,11 @@ Requisitos mínimos
 \end_layout
 
 \begin_layout Standard
-Cada máquina de la infraestructura de CygnusCloud desempeña uno de estos
- papeles:
+Cada máquina de la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+ desempeña uno de estos papeles:
 \end_layout
 
 \begin_layout Itemize
@@ -1378,8 +1381,8 @@ CygnusCloud
 \end_layout
 
 \begin_layout Standard
-Al igual que en los casos anteriores, la instalación del servidor web viene
- detallada en la sección 
+Al igual que en los casos anteriores, la instalación del servidor web es
+ análoga a la de la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Instalación-del-módulo-servidor-vms"
@@ -1397,6 +1400,8 @@ el fichero
  se llama 
 \family typewriter
 WebServer.tar.gz
+\family default
+, y
 \end_layout
 
 \begin_layout Itemize
@@ -1407,14 +1412,27 @@ script
 \emph default
 build.py
 \family default
- genera dos ficheros, webServerEndPoint.sh y webServer.sh
+ genera dos ficheros, 
+\family typewriter
+webServerEndpoint.sh
+\family default
+ y 
+\family typewriter
+webServer.sh
 \end_layout
 
 \begin_layout Standard
-En este caso es necesario ejecutar ambos script en procesos separadas.
- El script webServerEndPoint.sh lanza el servidor endPoint que establece
- la comunicación entre el servidor de cluster y el servidor web.
- Por su parte, el script webServer.sh lanza el servidor web.
+Para arrancar el servidor web, hay que ejecutar cada uno de ellos en un
+ proceso independiente.
+ El primero, 
+\family typewriter
+webServerEndpoint.sh
+\family default
+, lanza el demonio que comunica la aplicación web2py y el servidor de 
+\emph on
+cluster
+\emph default
+, y el segundo lanza el servidor web que aloja la aplicación web2py.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1425,13 +1443,18 @@ CygnusCloud
 
 \begin_layout Standard
 En este caso será necesario editar dos ficheros de configuración.
+ 
 \end_layout
 
 \begin_layout Standard
-El fichero Endpoint_settings.conf contiene los datos de configuración del
- servidor endPoint.
- Se encuentra en la raíz del directorio de instalación y su contenido inicial
- es
+El primero, 
+\family typewriter
+Endpoint_settings.conf
+\family default
+, contiene los datos de configuración del proceso que comunica la aplicación
+ web2py y el servidor de cluster.
+ Este fichero se encuentra en la raíz del directorio de instalación y su
+ contenido inicial es el siguiente:
 \end_layout
 
 \begin_layout Standard
@@ -1518,6 +1541,15 @@ status open
 \family typewriter
 \color red
 # Delete the following line after editing this file
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+uninitializedFile
+\color inherit
+ = Yes
 \end_layout
 
 \begin_layout Plain Layout
@@ -1630,22 +1662,33 @@ statusDBUpdateInterval
 \end_layout
 
 \begin_layout Standard
-El formato de este fichero es el mismo que el de la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Configuración-del-módulo-servidor-mvs"
+En este fichero, , distinguimos dos grupos:
+\end_layout
 
-\end_inset
+\begin_layout Itemize
+en el primero se configura la base de datos, introduciendo la contraseña
+ de 
+\emph on
+root
+\emph default
+, la ruta de los ficheros con la estructura de la base de datos y el nombre
+ y contraseña para los usuarios encargados de gestionar ambos servidores.
+\end_layout
 
-.
- 
+\begin_layout Itemize
+en el segundo se indica el puerto y la ip para la conexión con el servidor
+ de cluster, así como el intervalo de actualización de la información del
+ servidor de cluster accesible al servidor web (en segundos).
 \end_layout
 
 \begin_layout Standard
-Por otra parte el fichero userInputConstants.py contiene los datos de configuraci
-ón para el servidor web.
- Al igual que el anterior se encuentra en la raíz del directorio de instalación
- y su contenido por defecto es 
+Por otra parte, el fichero 
+\family typewriter
+userInputConstants.py
+\family default
+ contiene los datos de configuración del servidor web.
+ Nuevamente, este fichero se encuentra en la raíz del directorio de instalación
+ y su contenido por defecto es el siguiente:
 \end_layout
 
 \begin_layout Standard
@@ -1703,7 +1746,7 @@ status open
 \color blue
 rootPassword
 \color inherit
- = '170590ucm'
+ = ''
 \end_layout
 
 \begin_layout Plain Layout
@@ -1731,39 +1774,14 @@ serverPort
  = 9000
 \end_layout
 
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-statusInterval
-\color inherit
- = 5
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-En ambos ficheros, distinguimos dos grupos:
-\end_layout
-
-\begin_layout Itemize
-en el primero se configura la base de datos, introduciendo la contraseña
- de 
-\emph on
-root
-\emph default
-, la ruta de los ficheros con la estructura de la base de datos y el nombre
- y contraseña para los usuarios encargados de gestionar ambos servidores.
-\end_layout
-
-\begin_layout Itemize
-en el segundo se indica el puerto y la ip para la conexión con el servidor
- de cluster o el servidor endPoint según corresponda, así como el intervalo
- de actualización de la información del servidor de cluster accesible al
- servidor web.
+En este fichero, debemos introducir la contraseña del usuario root de MySQL
+ y la IP y el puerto en los que estará disponible el endPoint.
 \end_layout
 
 \begin_layout Section
@@ -1852,7 +1870,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Pantalla inicial.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Pantalla inicial.png
 	scale 60
 
 \end_inset
@@ -1877,10 +1895,6 @@ virt-manager
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -1921,7 +1935,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Botón crear máquina.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Botón crear máquina.png
 	scale 60
 
 \end_inset
@@ -2038,14 +2052,14 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Asistente-1.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Asistente-1.png
 	scale 60
 
 \end_inset
 
 
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Asistente-2.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Asistente-2.png
 	scale 60
 
 \end_inset
@@ -2071,10 +2085,6 @@ Pasos 1 y 2 del asistente de creación de máquinas virtuales
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -2090,14 +2100,14 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Asistente-3.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Asistente-3.png
 	scale 60
 
 \end_inset
 
 
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Asistente-4.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Asistente-4.png
 	scale 60
 
 \end_inset
@@ -2138,7 +2148,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Asistente-5.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Asistente-5.png
 	scale 60
 
 \end_inset
@@ -2161,10 +2171,6 @@ Paso 5 del asistente de creación de máquinas virtuales
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -2237,7 +2243,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Configuración máquina virtual.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Configuración máquina virtual.png
 	scale 60
 
 \end_inset
@@ -2260,10 +2266,6 @@ Diálogo de configuración de la máquina virtual
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -2342,7 +2344,7 @@ status collapsed
 \align center
 .
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Configuración CPU.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Configuración CPU.png
 	scale 60
 
 \end_inset
@@ -2383,7 +2385,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Imágenes disco.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Imágenes disco.png
 	scale 60
 
 \end_inset
@@ -2406,10 +2408,6 @@ Creación de las imágenes de disco
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -2489,7 +2487,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Configuración tarjeta vídeo.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Configuración tarjeta vídeo.png
 	scale 60
 
 \end_inset
@@ -2512,10 +2510,6 @@ Configuración de la tarjeta de vídeo
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -2604,7 +2598,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Configuración tableta.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Configuración tableta.png
 	scale 60
 
 \end_inset
@@ -2627,10 +2621,6 @@ Configuración de los periféricos de entrada
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -2788,7 +2778,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Drivers VirtIO.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Drivers VirtIO.png
 	scale 60
 
 \end_inset
@@ -2829,7 +2819,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/virt-manager/Corrección bug arranque virt-manager.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Corrección bug arranque virt-manager.png
 	scale 60
 
 \end_inset
@@ -2852,10 +2842,6 @@ Corrección de los problemas de arranque en instalaciones Windows
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -3328,7 +3314,11 @@ Añadimos una entrada como la siguiente
 \emph on
 al final
 \emph default
- del fichero /etc/samba/smb.conf:
+ del fichero 
+\family typewriter
+/etc/samba/smb.conf
+\family default
+:
 \end_layout
 
 \begin_deeper
@@ -3356,14 +3346,7 @@ status open
 
 
 \backslash
-tabson[4]
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{verbatim}
+begin{verbatimtab}[4]
 \end_layout
 
 \begin_layout Plain Layout
@@ -3405,7 +3388,7 @@ begin{verbatim}
 
 
 \backslash
-end{verbatim}
+end{verbatimtab}
 \end_layout
 
 \end_inset
@@ -3861,12 +3844,12 @@ Instalación y uso del framework web2py
 
 \begin_layout Standard
 El servidor web se encuentra desarrollado utilizando el framework web2py.
- 
-\end_layout
-
-\begin_layout Standard
-Para poder utilizar este framework no es necesario realizar ningún tipo
- de instalación adicional a la indicada en la sección 
+ Para poder utilizar este 
+\emph on
+framework
+\emph default
+ no es necesario realizar ningún tipo de instalación adicional a la indicada
+ en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Instalacion-Servidor-web"
@@ -3878,14 +3861,18 @@ reference "sub:Instalacion-Servidor-web"
 \family typewriter
 .tar.gz 
 \family default
-ya incluye la última versión estable de web2py(2.4.5) y el la aplicación web
- de CygnusCloud integrada.
- No obstante si se quiere descargar una versión diferentes será necesario
+ya incluye la última versión estable de web2py (2.4.5) y la aplicación web
+ de 
+\emph on
+CygnusCloud 
+\emph default
+integrada.
+ No obstante, si se quiere descargar una versión diferente será necesario
  seguir los siguientes pasos:
 \end_layout
 
-\begin_layout Itemize
-Conectarse a 
+\begin_layout Enumerate
+Nos conectamos a 
 \begin_inset Flex URL
 status collapsed
 
@@ -3896,43 +3883,58 @@ http://www.web2py.com/init/default/download
 
 \end_inset
 
- y descargar la versión deseada.
- Es posible descargar versiones tanto para linux como para windows o Macintosh,
- aunque para la gestión de CygnusCloud solo puede usarse la versión de linux.
- También es posible elegir 3 posibles tipos de descargas de cara a el uso
- de web2py que queramos hacer.
+ y descargamos la versión deseada.
+ Es posible descargar versiones para Linux, Windows o Mac OS, aunque para
+ 
+\emph on
+CygnusCloud 
+\emph default
+sólo puede usarse la versión de Linux.
+ También es posible elegir tres posibles tipos de descargas de cara a el
+ uso de web2py que vayamos a hacer.
  En nuestro caso, usaremos la opción 
-\begin_inset Quotes eld
-\end_inset
-
+\family sans
 For Normal Users
-\begin_inset Quotes erd
-\end_inset
-
-
+\family default
+.
 \end_layout
 
-\begin_layout Itemize
-Copia el directorio 
-\begin_inset Quotes eld
-\end_inset
+\begin_layout Enumerate
+descomprimimos el fichero descargado y lo copiamos al directorio de instalación
+ que queramos.
+\end_layout
 
+\begin_layout Enumerate
+copiamos el directorio 
+\family typewriter
 web2py/applications/CygnusCloud
-\begin_inset Quotes erd
-\end_inset
-
- de la raíz del directorio de instalación que aportamos a el mismo directorio
- dentro de la versión de web2py descargada.
+\family default
+ del 
+\emph on
+tarball que aportamos
+\emph default
+ al directorio de instalación de web2py.
 \end_layout
 
-\begin_layout Itemize
-Copiar el directorio bin y certificates, así como el script build.py y los
- ficheros de configuración al directorio donde se haya descargado la versión
- de web2py (que contendrá un directorio con el nombre web2py).
+\begin_layout Enumerate
+copiamos los directorios 
+\family typewriter
+bin
+\family default
+ y 
+\family typewriter
+certificates
+\family default
+, el script 
+\family typewriter
+build.py
+\family default
+ y los ficheros de configuración al directorio donde se haya descomprimido
+ la versión de web2py (que contendrá un directorio con el nombre web2py).
 \end_layout
 
-\begin_layout Itemize
-Proceder a la instalación tal y como se menciona en la sección 
+\begin_layout Enumerate
+realizamos la instalación tal y como se menciona en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Instalacion-Servidor-web"
@@ -3943,22 +3945,57 @@ reference "sub:Instalacion-Servidor-web"
 \end_layout
 
 \begin_layout Standard
-Es importante volver a mencionar que el fichero de instalación que aportamos
- ya incluye una versión de web2py estable y configurada para ser utilizada
- y que solo tendrán que realizar los pasos anteriores aquellos usuarios
- que quieran utilizar una versión diferente del framework.
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\end_layout
+
+\begin_layout Plain Layout
+el 
+\emph on
+tarball 
+\emph default
+que hemos publicado ya incluye una versión de web2py estable y configurada.
+ Sólo tendrán que seguir este procedimiento aquellos usuarios que quieran
+ utilizar una versión diferente del 
+\emph on
+framework
+\emph default
+ web2py.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Web2py ofrece una interfaz para el desarrollo de aplicaciones accesible
- desde cualquier navegador.
- Así, una vez realizada la instalación y ejecutado el script webServer.sh
- podremos acceder a la administración de web2py siguiendo los siguientes
- pasos
+Web2py ofrece una interfaz para el desarrollo de aplicaciones web accesible
+ desde cualquier navegador .
+ Tras realizar la instalación y ejecutar el script 
+\family typewriter
+webServer.sh
+\family default
+ podremos utilizarla siguiendo estos pasos:
 \end_layout
 
-\begin_layout Itemize
-introducimos la url 
+\begin_layout Enumerate
+introducimos la URL 
 \begin_inset Flex URL
 status collapsed
 
@@ -3969,34 +4006,33 @@ http://127.0.0.1:8000/
 
 \end_inset
 
- en el navegador web que deseemos.
+ en un navegador web.
  
 \end_layout
 
-\begin_layout Itemize
-Aparece una ventana con título 
+\begin_layout Enumerate
+Se cargará una página con el título 
 \family sans
 Welcome
 \family default
 .
- A la derecha de esta ventana hay un botón 
+ Hacemos clic sobre el botón 
 \family sans
 Administrative Interface
 \family default
- que debemos pulsar.
+, situado a la derecha de esta ventana.
+ 
 \end_layout
 
-\begin_layout Itemize
-A continuación aparece una nueva ventana que nos pregunta por la contraseña
- de administrador.
- Escribimos 
-\family sans
+\begin_layout Enumerate
+En la siguiente página, escribiremos la contraseña de administrador (
+\family typewriter
 cygnuscloud
 \family default
- y pulsamos el botón de inicio de sesión.
+) y pulsaremos el botón de inicio de sesión.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Llegados a este punto nos aparece un escritorio como el que se muestra en
  
 \begin_inset CommandInset ref
@@ -4006,22 +4042,18 @@ reference "fig:Escritorio-de-aplicaciones-web2py"
 \end_inset
 
 , con el nombre de las aplicaciones que podemos gestionar desde web2py.
- Junto al nombre 
+ Sobre 
 \family sans
 CygnusCloud
 \family default
- aparece un menú desplegable 
+, seleccionamos la opción 
 \family sans
-Manage
-\family default
-.
- Pulsamos sobre él y elegimos la opción 
-\family sans
-editar.
+Manage \SpecialChar \menuseparator
+ editar.
 \end_layout
 
-\begin_layout Itemize
-Una vez hecho esto, en el navegador aparece una página con el título 
+\begin_layout Enumerate
+se cargará una página con el título 
 \family sans
 Editar aplicación 
 \begin_inset Quotes eld
@@ -4034,13 +4066,20 @@ CygnusCloud
  .
  
 \family default
-En esta página podemos ver los diferentes ficheros de código organizados
- en secciones según su finalidad (Modelos, controladores, vistas, lenguajes,
- ficheros estáticos, módulos secundarios, ficheros privados y plugins).
+En esta página podemos ver todo el código fuente de la web de 
+\emph on
+CygnusCloud
+\emph default
+ organizado en secciones según su finalidad: modelos, controladores, vistas,
+ lenguajes, ficheros estáticos, módulos secundarios, ficheros privados y
  
+\emph on
+plugins
+\emph default
+.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 A la izquierda de cada fichero hay un botón 
 \family sans
 editar 
@@ -4057,8 +4096,10 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/webServer/Web2pyAdmin1.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/webServer/Web2pyAdmin1.png
 	scale 50
 	rotateOrigin center
 
@@ -4071,22 +4112,17 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Escritorio de aplicaciones de web2py.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Escritorio-de-aplicaciones-web2py"
 
 \end_inset
 
-
+Interfaz administrativa de web2py
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -4099,16 +4135,25 @@ name "fig:Escritorio-de-aplicaciones-web2py"
 Uso de la web
 \end_layout
 
-\begin_layout Standard
-En esta sección, vamos a explicar como podemos acceder a la página de inicio
- de CygnusCloud y como movernos una vez que estemos en ella.
- 
+\begin_layout Subsubsection
+Acceso
 \end_layout
 
 \begin_layout Standard
-Una vez instalado el servidor web y ejecutado los scripts del servidor web
- y el endPoint, podemos acceder a la página de inicio de CygnusCloud introducien
-do la url 
+Tras instalar el 
+\emph on
+tarball
+\emph default
+ y ejecutar los 
+\emph on
+scripts 
+\emph default
+de arranque del servidor web y del endpoint, podemos acceder a la página
+ de inicio de sesión de 
+\emph on
+CygnusCloud
+\emph default
+ introduciendo la URL 
 \begin_inset Flex URL
 status collapsed
 
@@ -4119,35 +4164,64 @@ http://127.0.0.1:8000/CygnusCloud/main/login
 
 \end_inset
 
- en el navegador que queramos.
- La página de inicio de CygnusCloud se muestra en la figura 
+ en cualquier navegador web.
+ La figura
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Página-de-inicio-CygnusCloud"
 
 \end_inset
 
-.
- en ella, podemos introducir el correo electrónico y la contraseña del usuario
+ muestra una captura de pantalla de esta página.
+ 
+\end_layout
+
+\begin_layout Standard
+En ella, podemos introducir el correo electrónico y la contraseña del usuario
  que va a iniciar sesión.
  También podemos acceder desde el menú superior a la página 
 \family sans
 Acerca de
 \family default
- con información sobre CygnusCloud.
+ con información general del proyecto.
 \end_layout
 
 \begin_layout Standard
-Por defecto, existen dos usuarios de prueba registrados en el sistema, un
- estudiante con correo electrónico 
+Por defecto, existen dos usuarios de prueba registrados en el sistema:
+\end_layout
+
+\begin_layout Itemize
+un estudiante con correo electrónico 
 \family sans
 Student1@ucm.es
 \family default
- y contraseña 1234, y un administrador con correo electrónico 
+ y contraseña 
+\family typewriter
+1234
+\family default
+, y
+\end_layout
+
+\begin_layout Itemize
+un administrador con correo electrónico 
 \family sans
 Admin1@ucm.es
 \family default
- y contraseña 1234.
+ y contraseña 
+\family typewriter
+1234
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Independientemente del tipo de usuario que ha iniciado sesión, en la parte
+ superior derecha aparece un vínculo 
+\family sans
+Salir
+\family default
+ que nos permite cerrar la sesión actual y regresar a la página de inicio
+ de sesión.
 \end_layout
 
 \begin_layout Standard
@@ -4157,8 +4231,10 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/webServer/PaginaInicioCygnusCloud.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/webServer/PaginaInicioCygnusCloud.png
 	scale 50
 	rotateOrigin center
 
@@ -4171,7 +4247,11 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Página de inicio de CygnusCloud.
+Página de inicio de 
+\emph on
+CygnusCloud
+\emph default
+
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Página-de-inicio-CygnusCloud"
@@ -4186,30 +4266,9 @@ name "fig:Página-de-inicio-CygnusCloud"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Al acceder como estudiante, la web nos muestra una página con las asignaturas
- asociadas a dicho estudiante y la lista de máquinas virtuales disponibles
- para dicha asignatura.
- Al lado del nombre de cada asignatura aparece un recuadro de selección
- que nos permite ver la descripción de la máquina virtual, así como el botón
- para arrancar dicha máquina.
- la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Página-de-arranque-Web"
-
-\end_inset
-
-muestra una página de arranque de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
@@ -4219,8 +4278,10 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/webServer/ArranqueMaquinasWeb.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/webServer/ArranqueMaquinasWeb.png
 	scale 50
 	rotateOrigin center
 
@@ -4233,7 +4294,7 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Página de arranque de máquinas virtuales para estudiantes.
+Página de arranque de máquinas virtuales para estudiantes
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Página-de-arranque-Web"
@@ -4248,22 +4309,9 @@ name "fig:Página-de-arranque-Web"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Una vez pulsado el botón arrancar de alguna máquina virtual, se abrirá una
- nueva pestaña como la que se muestra en con el escritorio para dicha máquina
- virtual en ejecución.
- Para poder iniciar una máquina virtual registrada es necesario que el servidor
- de máquinas virtuales que contiene dicha máquina virtual haya sido arrancado
- previamente por algún administrador.
 \end_layout
 
 \begin_layout Standard
@@ -4273,8 +4321,10 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/webServer/MáquinaArrancada.png
+	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/webServer/MáquinaArrancada.png
 	scale 50
 	rotateOrigin center
 
@@ -4287,13 +4337,17 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Página con máquina virtual arrancada.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Página-con-máquina-arrancada"
 
 \end_inset
 
+Visor de escritorio remoto para una máquina virtual arrancada
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -4301,14 +4355,104 @@ name "fig:Página-con-máquina-arrancada"
 
 
 \end_layout
+
+\begin_layout Subsubsection
+Opciones disponibles para los estudiantes
+\end_layout
+
+\begin_layout Standard
+Tras iniciar sesión como un estudiante, la web nos muestra una página como
+ la de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-arranque-Web"
+
+\end_inset
+
+, en la que aparecen con las asignaturas matriculadas y la lista de máquinas
+ virtuales disponibles para cada asignatura.
+ 
+\end_layout
+
+\begin_layout Standard
+Para cada máquina virtual, se muestra una casilla de selección que nos permite
+ ver la descripción de la máquina virtual y habilitar su arranque.
+ 
+\end_layout
+
+\begin_layout Standard
+Si se hace clic sobre el botón 
+\family typewriter
+Arrancar
+\family default
+ de alguna máquina virtual, se abrirá una nueva pestaña como la que se muestra
+ en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-con-máquina-arrancada"
+
+\end_inset
+
+.
+ Esa pestaña permite trabajar con la máquina mediante el protocolo de escritorio
+ remoto VNC.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
 
 \begin_layout Plain Layout
 
+\series bold
+\color red
+Importante
+\end_layout
+
+\begin_layout Itemize
+para poder arrancar una máquina virtual, un administrador debe arrancar
+ previamente al menos uno de los servidores de máquinas virtuales en los
+ que se encuentra.
+\end_layout
+
+\begin_layout Itemize
+para que el rendimiento del visor de escritorio remoto sea adecuado, es
+ imprescindible utilizar la última versión de 
+\emph on
+Internet Explorer
+\emph default
+, 
+\emph on
+Safari
+\emph default
+, 
+\emph on
+Mozilla Firefox 
+\emph default
+o 
+\emph on
+Google Chrome
+\emph default
+.
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Opciones disponibles para los administradores
 \end_layout
 
 \begin_layout Standard
@@ -4334,11 +4478,12 @@ En la parte superior de las páginas del administrador hay una barra de menú
 \begin_layout Itemize
 La página 
 \family sans
-Arrancar
+Máquinas virtuales \SpecialChar \menuseparator
+
 \family default
- dentro del menú 
+ 
 \family sans
-Máquinas virtuales
+Arrancar
 \family default
  permite buscar y arrancar las diferentes máquinas virtuales registradas
  en algún servidor.
@@ -4355,11 +4500,8 @@ Buscar
 \begin_layout Itemize
 La página 
 \family sans
-Detener
-\family default
- dentro del menú 
-\family sans
-Máquinas virtuales
+Máquinas virtuales \SpecialChar \menuseparator
+ Detener
 \family default
  nos permite buscar una máquina virtual de forma similar al caso anterior
  y darla de baja.
@@ -4368,11 +4510,8 @@ Máquinas virtuales
 \begin_layout Itemize
 La página 
 \family sans
+Administrar servidores \SpecialChar \menuseparator
 Añadir
-\family default
- servidor dentro del menú 
-\family sans
-Administrar servidores
 \family default
  nos permite añadir un nuevo servidor de máquinas virtuales al sistema,
  indicando el nombre, la ip y el puerto asociado a dicho servidor.
@@ -4381,11 +4520,12 @@ Administrar servidores
 \begin_layout Itemize
 La página 
 \family sans
+Administrar servidores \SpecialChar \menuseparator
 Eliminar
 \family default
- servidor dentro del menú 
+ 
 \family sans
-Administrar servidores
+servidor
 \family default
  nos permite análogamente dar de baja un servidor registrado o arrancarlo.
  Para ello cuenta con un menú desplegable donde se encuentran el nombre
@@ -4397,11 +4537,8 @@ Administrar servidores
 \begin_layout Itemize
 La página 
 \family sans
-Eliminar
-\family default
- del menú 
-\family sans
-Administrar usuarios
+Administrar usuarios \SpecialChar \menuseparator
+ Eliminar
 \family default
  permite eliminar un usuario registrado en la web.
  Para ello, existe un cuadro de búsqueda que nos permite indicar parte del
@@ -4412,11 +4549,12 @@ Administrar usuarios
 \begin_layout Itemize
 La página 
 \family sans
-Añadir
-\family default
- del menú 
-\family sans
 Administrar usuarios
+\family default
+ \SpecialChar \menuseparator
+ 
+\family sans
+Añadir
 \family default
  permite añadir una nuevo usuario indicando su correo electrónico, su contraseña
  y el tipo de usuario.
@@ -4425,13 +4563,10 @@ Administrar usuarios
 \begin_layout Itemize
 La página 
 \family sans
-Asociar asignaturas
+Administrar usuarios \SpecialChar \menuseparator
+ Asociar asignaturas
 \family default
- dentro del menú 
-\family sans
-Administrar usuarios
-\family default
-, nos permite buscar los usuarios registrados en la web por medio del cuadro
+ , nos permite buscar los usuarios registrados en la web por medio del cuadro
  de búsqueda.
  Una vez realizada la búsqueda, el cuadro para añadir usuarios nos permite
  seleccionar alguno de los usuarios encontrados en la búsqueda y asociarle
@@ -4441,13 +4576,10 @@ Administrar usuarios
 \begin_layout Itemize
 La página 
 \family sans
-Añadir
+Administrar asignaturas \SpecialChar \menuseparator
+ Añadir
 \family default
- dentro del menú 
-\family sans
-Administrar asignaturas
-\family default
-, nos permite añadir una nueva asignatura indicando su código, su nombre,
+ nos permite añadir una nueva asignatura indicando su código, su nombre,
  el año en el que se cursa, el curso y el grupo de clase asociado a dicha
  asignatura.
 \end_layout
@@ -4455,25 +4587,13 @@ Administrar asignaturas
 \begin_layout Itemize
 La página 
 \family sans
-Eliminar
+Administrar asignaturas \SpecialChar \menuseparator
+ Eliminar
 \family default
- dentro del menú 
-\family sans
-Administrar asignaturas
-\family default
- nos permite buscar las asignaturas que cumplan los criterios de código,
- nombre, año o grupo introducidos.
+ dentro del menú nos permite buscar las asignaturas que cumplan los criterios
+ de código, nombre, año o grupo introducidos.
  Una vez mostradas las posibles asignaturas, el sistema nos permite seleccionar
  y eliminar la que deseemos.
-\end_layout
-
-\begin_layout Standard
-Además, independientemente del tipo usuario logueado, en la parte superior
- derecha de la web, aparece un vínculo 
-\family sans
-Salir
-\family default
- que nos permite cerrar la sesión actual y regresar a la página de inicio.
 \end_layout
 
 \end_body
