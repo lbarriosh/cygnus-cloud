@@ -253,8 +253,9 @@ class VMServer(MainServerPacketReactor):
     def __serverStatusRequest(self, packet):
         info = self.__libvirtConnector.getStatusInfo()
         realCPUNumber = multiprocessing.cpu_count()
-        diskStats = os.statvfs("/")
-        freeData = ChildProcessManager.runCommandInForeground("free -b")
+        diskStats_storage = os.statvfs(self.__cManager.getConstant("sourceImagePath"))
+        diskStats_temporaryData = os.statvfs(self.__cManager.getConstant("executionImagePath"))
+        freeOutput = ChildProcessManager.runCommandInForeground("free -k", VMServerException)
         '''
         free devuelve el siguiente formato:
                      total       used       free     shared    buffers     cached
@@ -262,11 +263,18 @@ class VMServer(MainServerPacketReactor):
         -/+ buffers/cache: 2597556224 1549152256
         Swap:   2046816256   42455040 2004361216
         
-        Asi que cojo la segunda línea el segundo dato (separado por un blanco)
-        '''
-        totalMemory = long(freeData.readlines()[1].split()[1])
-        freeDiskSpace = diskStats.f_bavail * diskStats.f_frsize
-        packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, info["#domains"], info["memory"], totalMemory, freeDiskSpace, info["#cpu"], realCPUNumber)
+        Cogemos la tercera línea
+        '''       
+        availableMemory = int(freeOutput.split("\n")[1].split()[1])
+        freeMemory = int(freeOutput.split("\n")[2].split()[2])
+        freeStorageSpace = diskStats_storage.f_bfree * diskStats_storage.f_frsize / 1024
+        availableStorageSpace = diskStats_storage.f_bavail * diskStats_storage.f_frsize / 1024
+        freeTemporaryStorage = diskStats_temporaryData.f_bfree * diskStats_temporaryData.f_frsize / 1024
+        availableTemporaryStorage = diskStats_temporaryData.f_bavail * diskStats_temporaryData.f_frsize / 1024
+        packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, info["#domains"], freeMemory, availableMemory, 
+                                                                 freeStorageSpace, availableStorageSpace, 
+                                                                 freeTemporaryStorage, availableTemporaryStorage,
+                                                                 info["#vcpus"], realCPUNumber)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
     def __userFriendlyShutdown(self, packet):

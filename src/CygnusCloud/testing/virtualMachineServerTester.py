@@ -3,7 +3,7 @@
 This module contains statements to connect to a virtual machine
 server and control it.
 @author: Luis Barrios Hernández
-@version: 6.0
+@version: 6.3
 '''
 from __future__ import print_function
 
@@ -25,8 +25,13 @@ class TesterCallback(NetworkCallback):
             print("VNC server port: " + str(data["VNCServerPort"]))
             print("VNC server password: " + data["VNCServerPassword"])
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS) :
-            print("Virtual machine server " +  " status: ")
-            print(str(data["ActiveDomains"]) +  " active VMs")
+            print("Virtual machine server status:")
+            print("Active VMs: " + str(data["ActiveDomains"]))
+            print("RAM: " + str(data["RAMInUse"]) +  "KB of " + str(data["RAMSize"]) + "KB in use")
+            print("Storage space: " + str(data["FreeStorageSpace"]) +  "KB of " + str(data["AvailableStorageSpace"]) + "KB available")
+            print("Temporary space: " + str(data["FreeTemporarySpace"]) +  "KB of " + str(data["AvailableTemporarySpace"]) + "KB available")
+            print("Active VCPUs: " + str(data["ActiveVCPUs"]))
+            print("Real CPUs: " + str(data["RealCPUs"]))
         elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_VM_DATA) :
             print("Virtual machines' connection data")
             print(packet._getData())
@@ -101,7 +106,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     printLogo()
     print('Virtual Machine Server tester')
-    print('Version 5.0')
+    print('Version 6.3')
     print('*' * 80)
     print('*' * 80)
     print()

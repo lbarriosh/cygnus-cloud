@@ -72,7 +72,8 @@ class VMServerPacketHandler(object):
         p.writeInt(packet_type)
         return p
     
-    def createVMServerStatusPacket(self, vncServerIP, activeDomains, memoryUsage, memoryTotal, diskFree, vpcu, realCpu):
+    def createVMServerStatusPacket(self, vncServerIP, activeDomains, ramInUse, availableRAM, freeStorageSpace, availableStorageSpace, 
+                                   freeTemporarySpace, availableTemporarySpace, activeVCPUs, realCPUs):
         """
         Creates a virtual machine server status packet
         Args:
@@ -86,11 +87,14 @@ class VMServerPacketHandler(object):
         p.writeInt(VM_SERVER_PACKET_T.SERVER_STATUS)
         p.writeString(vncServerIP)
         p.writeInt(activeDomains)
-        p.writeLong(memoryUsage)
-        p.writeLong(memoryTotal)
-        p.writeLong(diskFree)
-        p.writeInt(vpcu)
-        p.writeInt(realCpu)
+        p.writeInt(ramInUse)
+        p.writeInt(availableRAM)
+        p.writeInt(freeStorageSpace)
+        p.writeInt(availableStorageSpace)
+        p.writeInt(freeTemporarySpace)
+        p.writeInt(availableTemporarySpace)
+        p.writeInt(activeVCPUs)
+        p.writeInt(realCPUs)
         return p
     
     def createVMServerShutdownPacket(self):
@@ -182,6 +186,14 @@ class VMServerPacketHandler(object):
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS and p.hasMoreData()) :
             result["VMServerIP"] = p.readString()
             result["ActiveDomains"] = p.readInt()
+            result["RAMInUse"] = p.readInt()
+            result["RAMSize"] = p.readInt()
+            result["FreeStorageSpace"] = p.readInt()
+            result["AvailableStorageSpace"] = p.readInt()
+            result["FreeTemporarySpace"] = p.readInt()
+            result["AvailableTemporarySpace"] = p.readInt()
+            result["ActiveVCPUs"] = p.readInt()
+            result["RealCPUs"] = p.readInt()
         elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_DOMAIN_UIDS) :
             ac = []
             result["VMServerIP"] = p.readString()

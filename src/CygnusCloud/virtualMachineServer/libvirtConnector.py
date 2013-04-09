@@ -114,19 +114,16 @@ class libvirtConnector():
         Da información sobre los recursos usados por las máquinas virtuales
         Devuelve:
             - memory: El tamaño de memoria asignado a las máquinas virtuales en Kilobytes
-            - #cpu: Número total de cpus virtuales de las máquinas virtuales
+            - #vcpus: Número total de cpus virtuales de las máquinas virtuales
         """
         idsMV = self.__endpoint.listDomainsID()
-        memory = 0
-        cpu = 0
+        vcpus = 0
         for idVM in idsMV :
             domain = self.__endpoint.lookupByID(idVM)
             info = domain.info()
-            memory += info[1]
-            cpu += info[3]
+            vcpus += info[3]
         return {"#domains" : self.__endpoint.numOfDomains(),
-                "memory" : memory,
-                "#cpu" : cpu}
+                "#vcpus" : vcpus}
         
     @staticmethod
     def virEventLoopNativeRun():
