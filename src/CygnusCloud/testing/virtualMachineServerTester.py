@@ -90,7 +90,8 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
                 print("Error: unknown command")
             print("Usage: ")
             print("=====")
-            print("\tcreatevm <userID> <machineID> <commandID> : creates a virtual machine ")
+            print("\tcreatevm <userID> <imageID> <machineID> : creates a virtual machine ")
+            print("\tdestroyvm <machineID>: destroys an active virtual machine")
             print("\tshutdown: asks the virtual machine server to terminate")
             print("\tstatus: asks the virtual machine server the number of active VMs")
             print("\thalt: commands the virtual machine server to destroy all the virtual machines\n\t\t\

@@ -95,6 +95,13 @@ class VMServer(MainServerPacketReactor):
         if (deleteDiskImages) :
             ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
             ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
+            dataDirectory = os.path.dirname(dataPath)
+            osDirectory = os.path.dirname(osPath)
+            print dataDirectory
+            if (os.listdir(dataDirectory) == []) :
+                ChildProcessManager.runCommandInForeground("rm -rf " + dataDirectory, VMServerException)
+            if (osDirectory != dataDirectory and os.listdir(osDirectory) == []) :
+                ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, VMServerException)
         
         try :        
             ChildProcessManager.terminateProcess(pidToKill, VMServerException)
