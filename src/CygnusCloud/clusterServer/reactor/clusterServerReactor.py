@@ -265,7 +265,9 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 sleep(0.1)
                 
         self.__dbConnector.updateVMServerStatus(serverID, SERVER_STATE_T.READY)
-        self.__dbConnector.setVMServerStatistics(serverID, data["ActiveDomains"])
+        self.__dbConnector.setVMServerStatistics(serverID, data["ActiveDomains"], data["RAMInUse"], data["RAMSize"], 
+                                                 data["FreeStorageSpace"], data["AvailableStorageSpace"], data["FreeTemporarySpace"],
+                                                 data["AvailableTemporarySpace"], data["ActiveVCPUs"], data["PhysicalCPUs"])
         
     def __bootUpVMServer(self, data):
         """

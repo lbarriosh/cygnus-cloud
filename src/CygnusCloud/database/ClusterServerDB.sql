@@ -43,7 +43,7 @@ CREATE TABLE ActiveVMDistribution(vmID VARCHAR(70) PRIMARY KEY, serverID INTEGER
 	FOREIGN KEY(serverID) REFERENCES VMServer(serverID) ON DELETE CASCADE ON UPDATE CASCADE);
 
 INSERT IGNORE INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort) VALUES
-    (1, 'Server1', 2, '192.168.1.2', 15800);
+    (1, 'Server1', 2, '192.168.0.4', 15800);
 
 /*
  * Características de las familias de imágenes vanilla
