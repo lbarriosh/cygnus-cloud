@@ -249,20 +249,21 @@ class NetworkManager():
             port: The port assigned to the connection that will be used to send the packet.
             packet: The packet to send.
         Returns:
-            Nothing
+            None if the packet was successfully sent and an error message if it wasn't.
         Raises:
-            NetworkManagerException: a NetworkManagerException will be raised if 
-            - the connection is a server connection and it's not ready yet, or
-            - the connection doesn't exist
-        @attention: If the connection is not ready, the packet will be discarded.
+            Nothing
+        @attention: If the connection is not ready, the packet will not be sent.
         To avoid this, you must check the connection's availability BEFORE using it.
         """
         if not self.__connectionPool.has_key((host, port)) :
-            raise NetworkManagerException("There's nothing attached to the port " + str(port))
+            return "There's nothing attached to the port " + str(port)
         connection = self.__connectionPool[(host, port)]
         if connection.isReady() :
             connection.registerPacket()
             self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet))
+            return None
+        else :
+            return "The connection is not ready yet"
         
     def createPacket(self, priority):
         """
