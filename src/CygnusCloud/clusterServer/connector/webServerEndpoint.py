@@ -156,7 +156,7 @@ class WebServerEndpoint(object):
         self.__updateRequestThread.stop()
         
         # Cerrar las conexiones con las bases de datos
-        self.closeDBConnections(self)
+        self.closeDBConnections()
         
     def closeDBConnections(self):
         """
@@ -240,7 +240,7 @@ class WebServerEndpoint(object):
                         packet = self.__pHandler.createVMServerBootUpPacket(parsedArgs["VMServerNameOrIP"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.REGISTER_VM_SERVER) :
                         packet = self.__pHandler.createVMServerRegistrationPacket(parsedArgs["VMServerIP"], 
-                            parsedArgs["VMServerPort"], parsedArgs["VMServerName"], serializedCommandID)
+                            parsedArgs["VMServerPort"], parsedArgs["VMServerName"], parsedArgs["IsVanillaServer"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
                         packet = self.__pHandler.createVMServerUnregistrationOrShutdownPacket(parsedArgs["VMServerNameOrIP"], 
                             parsedArgs["Halt"], parsedArgs["Unregister"], serializedCommandID)

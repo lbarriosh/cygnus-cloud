@@ -81,18 +81,20 @@ class ClusterServerConnector(object):
         """
         return self.__statusDBConnector.getVMServersData()
         
-    def registerVMServer(self, vmServerIP, vmServerPort, vmServerName):
+    def registerVMServer(self, vmServerIP, vmServerPort, vmServerName, isVanillaServer):
         """
         Registra un servidor de máquinas virtuales
         Argumentos:
             vmServerIP: la IP del servidor de máquinas virtuales
             vmServerPort: el puerto en el que escucha
             vmServerName: el nombre del servidor de máquinas virtuales
+            isVanillaServer: indica si el servidor de máquinas virtuales se usará preferentemente
+                para editar imágenes vanilla o no.
         Devuelve:
             El identificador único del comando.
             @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName)
+        (commandType, commandArgs) = CommandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isVanillaServer)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
         
     def unregisterVMServer(self, vmServerNameOrIP, halt):
@@ -212,14 +214,11 @@ if __name__ == "__main__":
     connector = ClusterServerConnector(1)
     connector.connectToDatabases("SystemStatusDB", "CommandsDB", "website", "CygnusCloud")
     sleep(3)
-    commandID = connector.bootUpVMServer("Server1")
+    commandID = connector.unregisterVMServer("Server1", True)
     print connector.waitForCommandOutput(commandID)
     sleep(4)
-    print connector.getVMServersData()
-    commandID = connector.bootUpVM(1)
-    sleep(4)
-    domainUID = connector.getActiveVMsData()[0]['DomainUID']
-    commandID = connector.destroyDomain(domainUID)
+    commandID = connector.registerVMServer("192.168.0.4", 15800, "Server", True)    
+    print connector.waitForCommandOutput(commandID)
     sleep(4)
     connector.halt(True)
     connector.dispose()    

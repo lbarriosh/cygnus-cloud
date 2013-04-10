@@ -22,17 +22,19 @@ class CommandsHandler(object):
     """
     
     @staticmethod
-    def createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName):
+    def createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isVanillaServer):
         """
         Crea un comando de registro de un servidor de máquinas virtuales
         Args:
             vmServerIP: la IP del servidor
             vmServerPort: el puerto en el que escucha
             vmServerName: el nombre del servidor
+            isVanillaServer: indica si el servidor se usará preferentemente para editar imágenes vanilla
+                o no.
         Devuelve:
             Una tupla (tipo de comando, argumentos) con el tipo del comando y sus argumentos serializados
         """
-        args = "{0}${1}${2}".format(vmServerIP, vmServerPort, vmServerName)
+        args = "{0}${1}${2}${3}".format(vmServerIP, vmServerPort, vmServerName, isVanillaServer)
         return (COMMAND_TYPE.REGISTER_VM_SERVER, args)
     
     @staticmethod
@@ -114,6 +116,7 @@ class CommandsHandler(object):
             result["VMServerIP"] = l[0]
             result["VMServerPort"] = int(l[1])
             result["VMServerName"] = l[2]
+            result["IsVanillaServer"] = l[3] == "True"
         elif (commandType == COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
             result["Unregister"] = l[0] == 'True'
             result["VMServerNameOrIP"] = l[1]
