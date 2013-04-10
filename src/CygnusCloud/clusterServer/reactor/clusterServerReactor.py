@@ -126,7 +126,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         connectionData = self.__dbConnector.getActiveVMServersConnectionData()
         for cd in connectionData :            
             errorMessage = self.__networkManager.sendPacket(cd["ServerIP"], cd["ServerPort"], p)
-            ClusterServerReactor.printConnectionWarningIfNecessary(cd["ServerIP"], cd["ServerPort"], "VNC connection data request", errorMessage)
+            NetworkManager.printConnectionWarningIfNecessary(cd["ServerIP"], cd["ServerPort"], "VNC connection data request", errorMessage)
             
     def __halt(self, data):
         """
@@ -196,10 +196,10 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         """
         p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
         errorMessage = self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
-        ClusterServerReactor.printConnectionWarningIfNecessary(vmServerIP, vmServerPort, "status request", errorMessage)
+        NetworkManager.printConnectionWarningIfNecessary(vmServerIP, vmServerPort, "status request", errorMessage)
         p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS)            
         errorMessage = self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
-        ClusterServerReactor.printConnectionWarningIfNecessary(vmServerIP, vmServerPort, "active domain UIDs request", errorMessage)
+        NetworkManager.printConnectionWarningIfNecessary(vmServerIP, vmServerPort, "active domain UIDs request", errorMessage)
             
     def __unregisterOrShutdownVMServer(self, data):
         """
@@ -628,10 +628,4 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         @attention: este método JAMÁS debe llamarse desde un hilo de red. 
         Si lo hacéis, la aplicación se colgará.
         """
-        self.__networkManager.stopNetworkService()
-        
-    @staticmethod
-    def printConnectionWarningIfNecessary(ip, port, packet_type, errorMessage):
-        if (errorMessage != None) :
-                print "Warning: unable to send {2} to {0}:{1}.".format(ip, port, packet_type)
-                print "\t" + errorMessage
+        self.__networkManager.stopNetworkService()    

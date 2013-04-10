@@ -296,3 +296,9 @@ class NetworkManager():
         connection = self.__connectionPool[(host, port)]     
         # Ask the connection to close
         connection.close()
+        
+    @staticmethod
+    def printConnectionWarningIfNecessary(ip, port, packet_type, errorMessage):
+        if (errorMessage != None) :
+                print "Warning: unable to send {2} to {0}:{1}.".format(ip, port, packet_type)
+                print "\t" + errorMessage

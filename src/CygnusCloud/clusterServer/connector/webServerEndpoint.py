@@ -151,7 +151,9 @@ class WebServerEndpoint(object):
         """
         # Apagar el servidor de cluster
         p = self.__pHandler.createHaltPacket(self.__haltVMServers)
-        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Cluster server halt", 
+                                                         errorMessage)
         # Dejar de actualizar las bases de datos
         self.__updateRequestThread.stop()
         
@@ -254,7 +256,12 @@ class WebServerEndpoint(object):
                         packet = self.__pHandler.createVMServerConfigurationChangePacket(parsedArgs["VMServerNameOrIPAddress"],  parsedArgs["NewServerName"],
                                                                                          parsedArgs["NewServerIPAddress"], parsedArgs["NewServerPort"],
                                                                                          parsedArgs["NewVanillaImageEditionBehavior"], serializedCommandID)
-                    self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
+                    errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
+                    if (errorMessage != None) :
+                        # Error al enviar el paquete => el comando no se podrá ejecutar => avisar a la web
+                        (outputType, outputContent) = CommandsHandler.createConnectionErrorOutput()
+                        self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
+                        
                 else :
                     self.__stopped = True
                     self.__haltVMServers = parsedArgs["HaltVMServers"]
@@ -271,8 +278,13 @@ class WebServerEndpoint(object):
             return
         # Enviamos paquetes para obtener los tres tipos de información que necesitamos para actualizar la base de datos de estado
         p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
-        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)        
+        errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)          
+        NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Virtual machine servers status", errorMessage)     
+        
         p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
-        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)        
+        NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Virtual machine distribution", errorMessage)
+        
         p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
-        self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Active virtual machines data", errorMessage)

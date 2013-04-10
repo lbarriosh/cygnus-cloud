@@ -12,7 +12,8 @@ COMMAND_TYPE = enum("REGISTER_VM_SERVER", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "B
 
 COMMAND_OUTPUT_TYPE = enum("VM_SERVER_REGISTRATION_ERROR", "VM_SERVER_BOOTUP_ERROR", 
                            "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", "VM_SERVER_UNREGISTRATION_ERROR",
-                           "VM_SERVER_SHUTDOWN_ERROR", "DOMAIN_DESTRUCTION_ERROR", "VM_SERVER_CONFIGURATION_CHANGE_ERROR")
+                           "VM_SERVER_SHUTDOWN_ERROR", "DOMAIN_DESTRUCTION_ERROR", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
+                           "CONNECTION_ERROR")
 
 from clusterServer.networking.packets import MAIN_SERVER_PACKET_T as PACKET_T
 
@@ -221,6 +222,10 @@ class CommandsHandler(object):
         return (COMMAND_OUTPUT_TYPE.VM_SERVER_CONFIGURATION_CHANGE_ERROR, reason)
     
     @staticmethod
+    def createConnectionErrorOutput():
+        return (COMMAND_OUTPUT_TYPE.CONNECTION_ERROR, "The connection was lost")
+    
+    @staticmethod
     def deserializeCommandOutput(commandOutputType, content):
         """
         Deserializa la salida de un comando
@@ -251,7 +256,8 @@ class CommandsHandler(object):
             result["VNCServerPort"] = int(l[1])
             result["VNCServerPassword"] = l[2]
         elif (commandOutputType == COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR or
-              commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
+              commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_CONFIGURATION_CHANGE_ERROR or
+              commandOutputType == COMMAND_OUTPUT_TYPE.CONNECTION_ERROR) :
             result["ErrorMessage"] = l[0]
             
         return result

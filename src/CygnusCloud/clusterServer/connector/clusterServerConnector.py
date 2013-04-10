@@ -219,7 +219,7 @@ class ClusterServerConnector(object):
 if __name__ == "__main__":
     connector = ClusterServerConnector(1)
     connector.connectToDatabases("SystemStatusDB", "CommandsDB", "website", "CygnusCloud")
-    sleep(3)
+    sleep(10)
     commandID = connector.changeVMServerConfiguration("Server2", "Foo", "192.168.0.1", 15900, 
                                     True)
     print connector.waitForCommandOutput(commandID)
