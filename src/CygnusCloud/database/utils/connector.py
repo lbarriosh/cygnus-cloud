@@ -97,7 +97,7 @@ class BasicDatabaseConnector(object):
             cursor.close()
             return result
         
-    def getLastRowId(self, command):
+    def _getLastRowId(self, command):
         '''
         Ejecuta una consulta en la base de datos, devolviendo el ID de la ultima fila
         Argumentos:

@@ -53,19 +53,20 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 y quitar cosas a devolver.
         '''
         #Creamos la consulta encargada de extraer los datos
-        query = "SELECT serverName, serverStatus, serverIP, serverPort FROM VMServer"\
-            + " WHERE serverId = " + str(serverId) + ";"
+        query = "SELECT serverName, serverStatus, serverIP, serverPort, isVanillaServer FROM VMServer"\
+            + " WHERE serverId = '{0}';".format(serverId)
         # Recogemos los resultados
-        results=self._executeQuery(query)
-        if (results == ()) : 
+        result = self._executeQuery(query, True)
+        if (result == None) : 
             return None
         d = dict()
-        (name, status, ip, port) = results[0]
+        (name, status, ip, port, isVanillaServer) = result
         # Devolvemos el resultado 
         d["ServerName"] = name
         d["ServerStatus"] = status
         d["ServerIP"] = ip
         d["ServerPort"] = port
+        d["IsVanillaServer"] = isVanillaServer == 1
         return d         
         
     def getVMServerStatistics(self, serverId) :
@@ -133,7 +134,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         return serverIPs
         
         
-    def registerVMServer(self, name, IPAddress, port):
+    def registerVMServer(self, name, IPAddress, port, isVanillaServer):
         '''
             Permite registrar un Nuevo servidor de máquinas virtuales con el puerto, la IP y el número
              máximo de máquinas virtuales que se le pasan como argumento
@@ -141,24 +142,23 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 name: nombre del nuevo servidor
                 IPAddress: la IP del nuevo servidor
                 port: el puerto del nuevo servidor
+                isVanillaServer: True si el servidor de máquinas virtuales se usará preferentemente
+                    para albergar imágenes vanilla, y false en caso contrario.
             Returns:
                 El identificador del nuevo servidor.
             Nota: creo que es mejor el nombre registerVMServer. subscribe significa suscribir,
             ratificar algo.
         '''
-        #Creamos la consulta encargada de insertar los valores en la base de datos
-        query = "INSERT INTO VMServer(serverStatus, serverName, serverIP, serverPort) VALUES (" + \
-            str(SERVER_STATE_T.BOOTING) + ", '" + name + "', '" + IPAddress + "'," + str(port) +");"
-        #Ejecutamos el comando
-        self._executeUpdate(query)      
-        #Extraemos el id del servidor recien creado
-        query = "SELECT serverId FROM VMServer WHERE serverIP ='" + IPAddress + "';"
-        # Nota: con coger una columna que identifique de forma única al servidor, basta.
-        # Cuantas menos condiciones se evalúen, menos costoso es esto.
-        # Revisé esto porque me cargué una columna, el máximo número de máquinas virtuales.
-        #Cogemos el utlimo
-        serverId = self.getLastRowId(query)
-        #Lo devolvemos
+        if (isVanillaServer) :
+            vanillaValue = 1
+        else :
+            vanillaValue = 0
+        
+        update = "INSERT INTO VMServer(serverStatus, serverName, serverIP, serverPort, isVanillaServer) VALUES ({0}, '{1}', '{2}', {3}, {4});"\
+            .format(SERVER_STATE_T.BOOTING, name, IPAddress, port, vanillaValue)
+        self._executeUpdate(update)      
+        update = "SELECT serverId FROM VMServer WHERE serverIP ='" + IPAddress + "';"
+        serverId = self._getLastRowId(update)
         return serverId
     
     def deleteVMServer(self, serverNameOrIPAddress):
@@ -190,7 +190,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             imageIDs.append(r[0])
         return imageIDs
         
-    def getImageServers(self, imageId):
+    def getHosts(self, imageId):
         '''
             Devuelve una lista con todos los identificadores de servidores que pueden dar acceso a la
              imagen cuyo identificador se pasa como argumento.
@@ -334,7 +334,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             
             
         
-    def setServerBasicData(self, serverId, name, status, IPAddress, port):
+    def setServerBasicData(self, serverId, name, status, IPAddress, port, isVanillaServer):
         '''
             Modifica los datos básicos de un servidor de máquinas virtuales
             Argumentos:
@@ -342,14 +342,16 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 status: nuevo estado del servidor
                 IPAddress: nueva IP del servidor
                 port: nuevo puerto del servidor
+                isVanillaServer: indica si el servidor se usará preferentemente para editar imágenes o no
             Devuelve:
                 Nada
         '''
-        # Create the query
-        query = "UPDATE VMServer SET serverName = '" + name + "', serverIP = '" + IPAddress + "', "+\
-            "serverPort = " + str(port) + ", serverStatus = " + str(status) +\
-            " WHERE  serverId = " + str(serverId) + ";"
-        # Execute it
+        if (isVanillaServer) : vanillaValue = 1
+        else : vanillaValue = 0
+        
+        query = "UPDATE VMServer SET serverName = '{0}', serverIP = '{1}', serverPort = {2}, serverStatus = {3}, isVanillaServer = {4}\
+            WHERE serverID = {5};".format(name, IPAddress, port, status, vanillaValue, serverId);
+        
         self._executeUpdate(query)
         
     def registerVMBootCommand(self, commandID, vmID):

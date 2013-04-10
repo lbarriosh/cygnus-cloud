@@ -41,7 +41,7 @@ class ClusterServerDBTests(unittest.TestCase):
         '''
         result = self.__connector.getVMServerBasicData(1)
         expectedResult = {'ServerName':'Server1', 'ServerStatus':SERVER_STATE_T.BOOTING, 
-                          'ServerIP':'1.2.3.4', 'ServerPort':8080}
+                          'ServerIP':'1.2.3.4', 'ServerPort':8080, 'IsVanillaServer' : True}
         self.assertEquals(result, expectedResult, 'getVMServerBasicData does not work')
          
      
@@ -70,7 +70,7 @@ class ClusterServerDBTests(unittest.TestCase):
         '''
         Tests the registration of a new virtual machine server
         '''
-        self.__connector.registerVMServer('A new server', '100.101.102.103', 89221)
+        self.__connector.registerVMServer('A new server', '100.101.102.103', 89221, True)
         ids = self.__connector.getVMServerIDs()
         expectedIds = [1,2,3,4, ids[len(ids) - 1]]
         self.assertEquals(ids, expectedIds, 'registerVMServer does not work')
@@ -89,7 +89,7 @@ class ClusterServerDBTests(unittest.TestCase):
         '''
         Tries to retrieve the virtual machine servers that can host an image.
         '''
-        result = self.__connector.getImageServers(1)
+        result = self.__connector.getHosts(1)
         expectedResult = [2,3]
         self.assertEquals(result, expectedResult, 'getAvailableVMServers does not work')
           
@@ -114,7 +114,7 @@ class ClusterServerDBTests(unittest.TestCase):
         Tries to assign an image to a virtual machine server
         '''
         self.__connector.assignImageToServer(4, 2)
-        result = self.__connector.getImageServers(2)
+        result = self.__connector.getHosts(2)
         expectedResult = [2,4]
         self.assertEquals(result, expectedResult, 'assignImageToServer does not work')
                  
@@ -122,10 +122,10 @@ class ClusterServerDBTests(unittest.TestCase):
         '''
         Tries to modify a virtual machine server's data
         '''
-        self.__connector.setServerBasicData(1, 'Foo', SERVER_STATE_T.BOOTING, '192.168.1.1', 9000)
+        self.__connector.setServerBasicData(1, 'Foo', SERVER_STATE_T.BOOTING, '192.168.1.1', 9000, False)
         result = self.__connector.getVMServerBasicData(1)
         expectedResult = {'ServerName':'Foo', 'ServerStatus':SERVER_STATE_T.BOOTING, 
-                          'ServerIP':'192.168.1.1', 'ServerPort':9000}
+                          'ServerIP':'192.168.1.1', 'ServerPort':9000, 'IsVanillaServer' : False}
         self.assertEquals(result, expectedResult, 'setServerBasicData does not work')
           
     def test_getServerID(self):

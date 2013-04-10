@@ -10,8 +10,8 @@ CREATE DATABASE IF NOT EXISTS ClusterServerDB;
 USE ClusterServerDB;
 
 CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT, 
-	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER, 
-	UNIQUE(serverName), UNIQUE(serverIP, serverPort));
+	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER,
+	isVanillaServer TINYINT, UNIQUE(serverName), UNIQUE(serverIP, serverPort));
 
 CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER,
 	PRIMARY KEY(serverId,imageId),

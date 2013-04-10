@@ -11,8 +11,8 @@ CREATE DATABASE ClusterServerDBTest;
 USE ClusterServerDBTest;
 
 CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT, 
-	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER, 
-	UNIQUE(serverName), UNIQUE(serverIP, serverPort));
+	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER,
+	isVanillaServer TINYINT, UNIQUE(serverName), UNIQUE(serverIP, serverPort));
 
 CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER,
 	PRIMARY KEY(serverId,imageId),
@@ -57,11 +57,11 @@ INSERT IGNORE INTO VanillaImageFamily VALUES (6, 'Linux-Big', 3, 4, 15, 12);
  * Servidores de máquinas virtuales
  */
 
-INSERT INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort) VALUES 
-	(1, 'Server1', 0, '1.2.3.4', 8080),	
-	(2, 'Server2', 1, '1.2.3.5', 8080),
-	(3, 'Server3', 1, '1.2.3.6', 8080),
-	(4, 'Server4', 1, '1.2.3.7', 8080);
+INSERT INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort, isVanillaServer) VALUES 
+	(1, 'Server1', 0, '1.2.3.4', 8080, 1),	
+	(2, 'Server2', 1, '1.2.3.5', 8080, 0),
+	(3, 'Server3', 1, '1.2.3.6', 8080, 0),
+	(4, 'Server4', 1, '1.2.3.7', 8080, 0);
 	
 INSERT INTO ImageOnServer VALUES
 	(1, 1),
