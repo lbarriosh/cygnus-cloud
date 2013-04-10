@@ -124,8 +124,9 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_VM_DATA)
         
         connectionData = self.__dbConnector.getActiveVMServersConnectionData()
-        for cd in connectionData :
-            self.__networkManager.sendPacket(cd["ServerIP"], cd["ServerPort"], p)
+        for cd in connectionData :            
+            errorMessage = self.__networkManager.sendPacket(cd["ServerIP"], cd["ServerPort"], p)
+            ClusterServerReactor.printConnectionWarningIfNecessary(cd["ServerIP"], cd["ServerPort"], "VNC connection data request", errorMessage)
             
     def __halt(self, data):
         """
@@ -194,9 +195,11 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             Nada
         """
         p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.SERVER_STATUS_REQUEST)
-        self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
+        errorMessage = self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
+        ClusterServerReactor.printConnectionWarningIfNecessary(vmServerIP, vmServerPort, "status request", errorMessage)
         p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS)            
-        self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
+        errorMessage = self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
+        ClusterServerReactor.printConnectionWarningIfNecessary(vmServerIP, vmServerPort, "active domain UIDs request", errorMessage)
             
     def __unregisterOrShutdownVMServer(self, data):
         """
@@ -207,48 +210,90 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             nada
         """
         key = data["ServerNameOrIPAddress"] 
-        isShutDown = data["Halt"]
+        haltServer = data["Halt"]
         unregister = data["Unregister"]
+        
         if data.has_key("CommandID") :
             useCommandID = True 
             commandID = data["CommandID"]
         else :
             useCommandID = False
-        # Empezamos apagando el servidor si está arrancado
-        serverId = self.__dbConnector.getVMServerID(key)
-        if (serverId != None) :
-            # Las máquinas virtuales activas que alberga ese servidor se destruirán => las borramos
-            self.__dbConnector.deleteHostedVMs(serverId)
-            serverData = self.__dbConnector.getVMServerBasicData(serverId)
             
+        connectionError = False
+        statusError = False
+        # Comprobar si el servidor existe y está arrancado
+        serverId = self.__dbConnector.getVMServerID(key)
+                
+        if (serverId != None) :        
+               
+            serverData = self.__dbConnector.getVMServerBasicData(serverId)            
             status = serverData["ServerStatus"]
+            
             if (status == SERVER_STATE_T.READY or status == SERVER_STATE_T.BOOTING) :
-                if not isShutDown :
-                    p = self.__vmServerPacketHandler.createVMServerShutdownPacket()
+                # El servidor está activo => comprobar si la conexión está bien y enviar el paquete
+                errorMessage = None
+                try :
+                    connectionReady = self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"])
+                except Exception as e :
+                    connectionReady = False
+                    errorMessage = e.message
+                    
+                # Si la conexión no está lista, enviamos un paquete de error. El estado ya habrá cambiado a Reconnecting
+                # cuando nos haya avisado la red
+                
+                if (connectionReady) : 
+                    
+                    # La conexión está lista => todo va igual que antes
+                    
+                    # Las máquinas virtuales activas que alberga ese servidor se destruirán => las borramos
+                    self.__dbConnector.deleteHostedVMs(serverId)
+                                       
+                    if not haltServer :
+                        p = self.__vmServerPacketHandler.createVMServerShutdownPacket()
+                    else :
+                        p = self.__vmServerPacketHandler.createVMServerHaltPacket()
+                    errorMessage = self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
+                    # Cerrar la conexión 
+                    self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])                       
+                         
+                    if (not unregister) :
+                        self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
+                        self.__dbConnector.deleteVMServerStatistics(serverId)
+                    else :
+                        # Actualizar el estado del servidor de máquinas virtuales
+                        self.__dbConnector.deleteVMServer(key)
+                    if (useCommandID) :
+                        # Hay que enviar una respuesta al servidor de máquinas virtuales
+                        p = self.__webPacketHandler.createExecutedCommandPacket(commandID)
+                        self.__networkManager.sendPacket('', self.__webPort, p)
+                    
+                    return  
+                
                 else :
-                    p = self.__vmServerPacketHandler.createVMServerHaltPacket()
-                self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
-                # Cerrar la conexión 
-                self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])            
-            if (not unregister) :
-                self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.SHUT_DOWN)
-                self.__dbConnector.deleteVMServerStatistics(serverId)
+                    connectionError = True     
             else :
-                # Actualizar el estado del servidor de máquinas virtuales
-                self.__dbConnector.deleteVMServer(key)
-            if (useCommandID) :
-                # Hay que enviar una respuesta al servidor de máquinas virtuales
-                p = self.__webPacketHandler.createExecutedCommandPacket(commandID)
-                self.__networkManager.sendPacket('', self.__webPort, p)
+                statusError = True
+                if (status == SERVER_STATE_T.SHUT_DOWN) :
+                    errorMessage = "The virtual machine server is already shut down"
+                else :
+                    errorMessage = "The connection is not ready"
+                    
+        
+        # Enviar mensaje de error
+        if (unregister) :
+            packet_type = WEB_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR
         else :
-            # Error
-            if (unregister) :
-                packet_type = WEB_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR
-            else :
-                packet_type = WEB_PACKET_T.VM_SERVER_SHUTDOWN_ERROR
-            errorMessage = "The virtual machine server with name or IP address <<{0}>> is not registered".format(key)
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(packet_type, key, errorMessage, commandID)
-            self.__networkManager.sendPacket('', self.__webPort, p)   
+            packet_type = WEB_PACKET_T.VM_SERVER_SHUTDOWN_ERROR
+            
+        if (connectionError) :
+            if (errorMessage == None) :
+                errorMessage = "The connection is being reestablished"
+        else :            
+            if (not statusError) :
+                errorMessage = "The virtual machine server with name or IP address <<{0}>> is not registered".format(key)
+            
+        p = self.__webPacketHandler.createVMServerGenericErrorPacket(packet_type, key, errorMessage, commandID)
+        self.__networkManager.sendPacket('', self.__webPort, p)   
             
     def __updateVMServerStatus(self, data):
         """
@@ -396,15 +441,19 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Error => avisar al usuario
             p = self.__webPacketHandler.createVMBootFailurePacket(vmID, errorMessage, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
-        else :
+        else :           
+            # Enviar la petición de arranque al servidor de máquinas virtuales
+            p = self.__vmServerPacketHandler.createVMBootPacket(vmID, userID, data["CommandID"])
+            serverData = self.__dbConnector.getVMServerBasicData(serverID)
+            errorMessage = self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
+            if (errorMessage != None) :
+                p = self.__webPacketHandler.createVMBootFailurePacket(vmID, "The virtual machine server connection was lost", data["CommandID"])
+                self.__networkManager.sendPacket('', self.__webPort, p)
+                return              
             # Guardar la ubicación de la nueva máquina virtual. 
             # Importante: todas las máquinas virtuales se identifican de forma única con el ID
             # del comando que las crea
             self.__dbConnector.registerActiveVMLocation(data["CommandID"], serverID)
-            # Enviar la petición de arranque al servidor de máquinas virtuales
-            p = self.__vmServerPacketHandler.createVMBootPacket(vmID, userID, data["CommandID"])
-            serverData = self.__dbConnector.getVMServerBasicData(serverID)
-            self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
             # Registrar el comando de arranque para controlar el tiempo de respuesta
             self.__dbConnector.registerVMBootCommand(data["CommandID"], data["VMID"])
             
@@ -422,16 +471,21 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Error
             packet = self.__webPacketHandler.createDomainDestructionErrorPacket("The domain does not exist", data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, packet)
-            return
+            return       
         
         # Averiguar los datos del servidor y pedirle que se la cargue
         connectionData = self.__dbConnector.getVMServerBasicData(serverID)
         packet = self.__vmServerPacketHandler.createVMShutdownPacket(data["DomainID"])
-        self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], packet)
-        
-        # Indicar al endpoint que todo fue bien
-        packet = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
-        self.__networkManager.sendPacket('', self.__webPort, packet)
+        errorMessage = self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], packet)
+        if (errorMessage != None) :
+            packet = self.__webPacketHandler.createDomainDestructionErrorPacket("The connection was lost", data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, packet)
+        else :
+            # Borrar la máquina virtual de la base de datos           
+            self.__dbConnector.deleteActiveVMLocation(data["CommandID"])         
+            # Indicar al endpoint que todo fue bien
+            packet = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, packet)
         
     def __changeVMServerConfiguration(self, data):
         serverID = self.__dbConnector.getVMServerID(data["ServerNameOrIPAddress"])
@@ -575,3 +629,9 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Si lo hacéis, la aplicación se colgará.
         """
         self.__networkManager.stopNetworkService()
+        
+    @staticmethod
+    def printConnectionWarningIfNecessary(ip, port, packet_type, errorMessage):
+        if (errorMessage != None) :
+                print "Warning: unable to send {2} to {0}:{1}.".format(ip, port, packet_type)
+                print "\t" + errorMessage
