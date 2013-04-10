@@ -149,6 +149,13 @@ class ClusterServerDBTests(unittest.TestCase):
                           "AvailableStorageSpace" : 250, "FreeTemporarySpace" : 50, 
                           "AvailableTemporarySpace" : 100, "ActiveVCPUs" : 5, "PhysicalCPUs": 10}
         self.assertEquals(result, expectedResult, 'setVMServerStatistics does not work')
+        self.__connector.setVMServerStatistics(1000, 1234, 100, 150, 200,
+                              250, 50, 100, 5, 10)
+        result = self.__connector.getVMServerStatistics(1000)
+        expectedResult = {'ActiveHosts': 1234, "RAMInUse" : 100, "RAMSize": 150, "FreeStorageSpace" : 200,
+                          "AvailableStorageSpace" : 250, "FreeTemporarySpace" : 50, 
+                          "AvailableTemporarySpace" : 100, "ActiveVCPUs" : 5, "PhysicalCPUs": 10}
+        self.assertEquals(result, expectedResult, 'setVMServerStatistics does not work')
          
     def test_vmBootCommands(self):
         result = self.__connector.getOldVMBootCommandID(1)
@@ -191,6 +198,17 @@ class ClusterServerDBTests(unittest.TestCase):
         result.append(self.__connector.getActiveVMHostID("machine5"))
         expectedResult = [3, 3]
         self.assertEquals(result, expectedResult, "registerHostedVMs does not work")
+        
+    def test_getVanillaImageFamilyFeatures(self):
+        result = self.__connector.getVanillaImageFamilyFeatures(3)
+        expectedResult = {"RAMSize" : 3, "vCPUs": 4, "osDiskSize" : 40, "dataDiskSize": 16}
+        self.assertEquals(result, expectedResult, "getVanillaImageFamilyFeatures error")
+        
+    def test_addVanillaImageFamily(self):
+        self.__connector.addVanillaImageFamily("foo", 1, 2, 3, 4)
+        result = self.__connector.getVanillaImageFamilyFeatures(self.__connector.getVanillaImageFamilyID("foo"))
+        expectedResult = {"RAMSize" : 1, "vCPUs": 2, "osDiskSize" : 3, "dataDiskSize": 4}
+        self.assertEquals(result, expectedResult, "addVanillaImageFamily error")
         
         
 if __name__ == "__main__":

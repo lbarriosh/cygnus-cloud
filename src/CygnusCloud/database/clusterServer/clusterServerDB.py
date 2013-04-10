@@ -455,11 +455,11 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         for hostedDomainUID in hostedVMs :
             self._executeUpdate(update.format(hostedDomainUID, serverID))
             
-    def getVanillaImageData(self, imageID):
+    def getVanillaImageFamilyFeatures(self, family):
         """
         Devuelve los datos de una imagen vanilla
         Argumentos:
-            imageID: ID de la imagen vanilla
+    family imageID: ID de la imagen vanilla
         Devuelve:
             Un diccionario con los datos de la imagen, con las siguientes claves:
                 RAM
@@ -467,7 +467,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 OSDiskSize
                 dataDiskSize
         """
-        query = "SELECT ramSize, vCPUs, osDiskSize, dataDiskSize FROM VanillaImageFamily WHERE familyID = {0}".format(imageID)
+        query = "SELECT ramSize, vCPUs, osDiskSize, dataDiskSize FROM VanillaImageFamily WHERE familyID = {0}".format(family)
         # Ejecutamos la consulta
         results=self._executeQuery(query)
         if (results == ()) : 
@@ -480,6 +480,23 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         d["osDiskSize"] = OSDiskSize
         d["dataDiskSize"] = dataDiskSize
         return d
+    
+    def addVanillaImageFamily(self, familyName, RAMSize, vCPUs, osDiskSize, dataDiskSize):
+        update = "INSERT INTO VanillaImageFamily(familyName, ramSize, vCPUs, osDiskSize, dataDiskSize) VALUES ('{0}', {1}, {2}, {3}, {4});"\
+            .format(familyName, RAMSize, vCPUs, osDiskSize, dataDiskSize)
+        self._executeUpdate(update)
+        
+    def getVanillaImageFamilyID(self, familyName):
+        query = "SELECT familyID FROM VanillaImageFamily WHERE familyName = '{0}';".format(familyName)
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else :
+            return int(result[0])
+        
+    def deleteVanillaImageFamilies(self):
+        update = "DELETE FROM VanillaImageFamily;"
+        self._executeUpdate(update)
     
     def getVMResources(self, VMID):
         """
@@ -500,7 +517,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         if (results == ()) : 
             return None
         (vanillaID, VMID) = results[0] 
-        return self.getVanillaImageData(vanillaID)
+        return self.getVanillaImageFamilyFeatures(vanillaID)
     
     def setVanillaImageToVM(self, VanillaID, VMID):
         """
