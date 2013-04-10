@@ -193,9 +193,9 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             data: tupla con la nueva información del servidor de máquinas virtuales
         Devuelve:
             Nada            
-        """
-        update = "UPDATE VirtualMachineServer SET serverStatus='{1}', serverIP='{2}', serverPort={3}\
-            WHERE serverName='{0}'".format(data[0], data[1], data[2], data[3])
+        """        
+        update = "UPDATE VirtualMachineServer SET serverStatus='{1}', serverIP='{2}', serverPort={3},\
+            isVanillaServer = {4} WHERE serverName='{0}'".format(data[0], data[1], data[2], data[3], data[4])
         self._executeUpdate(update)
         
     def __deleteVMServer(self, serverID):

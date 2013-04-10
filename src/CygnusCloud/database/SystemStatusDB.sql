@@ -12,7 +12,7 @@ USE SystemStatusDB;
  
 CREATE TABLE IF NOT EXISTS VirtualMachineServer(serverName VARCHAR(30) PRIMARY KEY NOT NULL, 
     serverStatus VARCHAR(20) NOT NULL, serverIP VARCHAR(15) NOT NULL,
-    serverPort INTEGER NOT NULL, UNIQUE(serverIP, serverPort)) ENGINE=MEMORY;
+    serverPort INTEGER NOT NULL, isVanillaServer TINYINT, UNIQUE(serverIP, serverPort)) ENGINE=MEMORY;
     
 DELETE FROM VirtualMachineServer;
 

@@ -36,6 +36,7 @@ class SystemStatusDatabaseReader(BasicDatabaseConnector):
             d["VMServerStatus"] = row[1]
             d["VMServerIP"] = row[2]
             d["VMServerListenningPort"] = int(row[3])
+            d["IsVanillaServer"] = int(row[4]) == 1
             retrievedData.append(d)
         return retrievedData
     
