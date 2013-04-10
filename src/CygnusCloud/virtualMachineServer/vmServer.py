@@ -17,6 +17,7 @@ from ccutils.processes.childProcessManager import ChildProcessManager
 from time import sleep
 import os
 import multiprocessing
+import sys
 
 class VMServerException(Exception):
     pass
@@ -30,14 +31,19 @@ class VMServer(MainServerPacketReactor):
     def __init__(self, constantManager):
         # Inicializo las variables para saber cuando hay que apagarlo todo
         self.__shuttingDown = False
-        self.__shuttingDown = False
+        self.__emergencyStop = False
         self.__cManager = constantManager
         self.__mainServerCallback = MainServerCallback(self)
         self.__childProcessManager = ChildProcessManager()
         self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
         self.__connectToLibvirt(self.__cManager.getConstant("createVirtualNetworkAsRoot"))
         self.__doInitialCleanup()
-        self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
+        try :
+            self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
+        except Exception:
+            print "Error: the network interface '{0}' is not ready. Exiting now".format(self.__cManager.getConstant("vncNetworkInterface"))
+            self.__emergencyStop = True
+            self.__shuttingDown = True
         
     def __connectToDatabases(self, databaseName, user, password) :
         self.__dbConnector = VMServerDBConnector(user, password, databaseName)
@@ -101,17 +107,20 @@ class VMServer(MainServerPacketReactor):
     def shutdown(self):
         # Cosas a hacer cuando se desea apagar el servidor.
         # Importante: esto debe llamarse desde el hilo principal
-        self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
-        timeout = 300 # 5 mins
-        if (self.__destroyDomains) :
-            self.__libvirtConnector.stopAllDomains()
-        else :
-            wait_time = 0
-            while (self.__libvirtConnector.getNumberOfDomains() != 0 and wait_time < timeout) :
-                sleep(0.5)
-                wait_time += 0.5
+        if (not self.__emergencyStop) :
+            self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
+            timeout = 300 # 5 mins
+            if (self.__destroyDomains) :
+                self.__libvirtConnector.stopAllDomains()
+            else :
+                wait_time = 0
+                while (self.__libvirtConnector.getNumberOfDomains() != 0 and wait_time < timeout) :
+                    sleep(0.5)
+                    wait_time += 0.5
         self.__childProcessManager.waitForBackgroundChildrenToTerminate()
-        self.__virtualNetworkManager.destroyVirtualNetwork(self.__cManager.getConstant("vnName"))        
+        self.__virtualNetworkManager.destroyVirtualNetwork(self.__cManager.getConstant("vnName"))  
+        sys.exit()   
+           
         
     def processClusterServerIncomingPackets(self, packet):
         data = self.__packetManager.readPacket(packet)
@@ -306,7 +315,7 @@ class VMServer(MainServerPacketReactor):
         packet = self.__packetManager.createActiveDomainUIDsPacket(self.__vncServerIP, activeDomainUIDs)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
-    def halt(self):
+    def isShutDown(self):
         return self.__shuttingDown
     
     def __doInitialCleanup(self):

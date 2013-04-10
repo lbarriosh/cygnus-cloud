@@ -139,12 +139,12 @@ class ClusterServerPacketHandler(object):
             p.writeInt(row["VMID"])
         return p
     
-    def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, halt, unregister, commandID):
+    def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, isShutDown, unregister, commandID):
         """
         Crea un paquete de apagado o borrado de un servidor de máquinas virtuales
         Argumentos:
             serverNameOrIPAddress: el nombre del servidor o su dirección IP
-            halt: Si es True, los dominios se destuirán inmediatamente. Si es False, se esparará a que
+            isShutDown: Si es True, los dominios se destuirán inmediatamente. Si es False, se esparará a que
             los usuarios los apaguen. 
             unregister: Si es True el servidor se borrará; si es False sólo se apagará
             commandID: el identificador único del comando
@@ -154,7 +154,7 @@ class ClusterServerPacketHandler(object):
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER)
         p.writeString(serverNameOrIPAddress)
-        p.writeBool(halt)
+        p.writeBool(isShutDown)
         p.writeBool(unregister)
         p.writeString(commandID)
         return p

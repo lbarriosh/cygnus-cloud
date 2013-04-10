@@ -207,7 +207,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             nada
         """
         key = data["ServerNameOrIPAddress"] 
-        halt = data["Halt"]
+        isShutDown = data["Halt"]
         unregister = data["Unregister"]
         if data.has_key("CommandID") :
             useCommandID = True 
@@ -223,7 +223,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             
             status = serverData["ServerStatus"]
             if (status == SERVER_STATE_T.READY or status == SERVER_STATE_T.BOOTING) :
-                if not halt :
+                if not isShutDown :
                     p = self.__vmServerPacketHandler.createVMServerShutdownPacket()
                 else :
                     p = self.__vmServerPacketHandler.createVMServerHaltPacket()

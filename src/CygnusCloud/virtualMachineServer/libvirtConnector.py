@@ -1,4 +1,4 @@
-#coding=utf-8
+# coding=utf-8
 
 import threading
 import libvirt
@@ -28,8 +28,8 @@ class libvirtConnector():
         uri += "/system"
         # Connect to lbvirt and register the events
         self.__endpoint = libvirt.open(uri)
-        self.__endpoint.domainEventRegisterAny(None, 
-                                              libvirt.VIR_DOMAIN_EVENT_ID_LIFECYCLE, 
+        self.__endpoint.domainEventRegisterAny(None,
+                                              libvirt.VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                               self.__eventDomain, None)
 
     def __eventDomain(self, conn, domain, eventID, detail, data):
@@ -45,18 +45,24 @@ class libvirtConnector():
         
     def __definedHandler(self, domain):
         pass
+    
     def __suspendedHandler(self, domain):
         pass
+    
     def __resumedHandler(self, domain):
         pass
+    
     def __undefinedHandler(self, domain):
         pass
+    
     def __stoppedHandler(self, domain):
         domainInfo = {"name" : domain.name()}
         self.__shutdownCallback(domainInfo)
         pass
+    
     def __shutdownHandler(self, domain):
         pass
+    
     def __startedHandler(self, domain):
         xml = ET.fromstring(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_SECURE))
         graphic_element = xml.find('.//graphics')
@@ -109,6 +115,9 @@ class libvirtConnector():
             result.append(domainName)
         return result
     
+    def getNumberOfDomains(self):
+        return self.__endpoint.numOfDomains()
+    
     def getStatusInfo(self):
         """
         Da información sobre los recursos usados por las máquinas virtuales
@@ -140,10 +149,3 @@ class libvirtConnector():
 
 def dummy(domain):
     pass
-
-if __name__ == "__main__" :
-    libvirtConnector.virEventLoopNativeStart()
-    con = libvirtConnector(libvirtConnector.KVM,dummy, dummy)
-    raw_input()
-    con.getStatusInfo()
-    raw_input()

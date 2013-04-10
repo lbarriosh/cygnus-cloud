@@ -97,32 +97,32 @@ class ClusterServerConnector(object):
         (commandType, commandArgs) = CommandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isVanillaServer)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
         
-    def unregisterVMServer(self, vmServerNameOrIP, halt):
+    def unregisterVMServer(self, vmServerNameOrIP, isShutDown):
         """
         Borra un servidor de máquinas virtuales
         Argumentos:
             vmServerNameOrIP: el nombre o la IP del servidor a borrar
-            halt: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
+            isShutDown: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
             máquinas virtuales.
         Devuelve:
             El identificador único del comando.
             @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMServerUnregistrationOrShutdownCommand(True, vmServerNameOrIP, halt)
+        (commandType, commandArgs) = CommandsHandler.createVMServerUnregistrationOrShutdownCommand(True, vmServerNameOrIP, isShutDown)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def shutdownVMServer(self, vmServerNameOrIP, halt):
+    def shutdownVMServer(self, vmServerNameOrIP, isShutDown):
         """
         Apaga un servidor de máquinas virtuales
         Argumentos:
             vmServerNameOrIP: el nombre o la IP del servidor a borrar
-            halt: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
+            isShutDown: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
             máquinas virtuales.
         Devuelve:
             El identificador único del comando.
             @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMServerUnregistrationOrShutdownCommand(False, vmServerNameOrIP, halt)
+        (commandType, commandArgs) = CommandsHandler.createVMServerUnregistrationOrShutdownCommand(False, vmServerNameOrIP, isShutDown)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def bootUpVMServer(self, vmServerNameOrIP):
@@ -149,7 +149,7 @@ class ClusterServerConnector(object):
         (commandType, commandArgs) = CommandsHandler.createVMBootCommand(imageID, self.__userID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def halt(self, haltVMServers):
+    def isShutDown(self, haltVMServers):
         """
         Apaga toda la infraestructura
         Argumentos:
@@ -225,5 +225,5 @@ if __name__ == "__main__":
     print connector.waitForCommandOutput(commandID)
     sleep(4)
     print connector.getVMServersData()
-    connector.halt(True)
+    connector.isShutDown(True)
     connector.dispose()    

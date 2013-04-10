@@ -38,18 +38,18 @@ class CommandsHandler(object):
         return (COMMAND_TYPE.REGISTER_VM_SERVER, args)
     
     @staticmethod
-    def createVMServerUnregistrationOrShutdownCommand(unregister, vmServerNameOrIP, halt):
+    def createVMServerUnregistrationOrShutdownCommand(unregister, vmServerNameOrIP, isShutDown):
         """
         Crea un comando de borrado o apagado de un servidor de máquinas virtuales
         Args:
             unregister: indica si hay que borrar o no el servidor de máquinas virtuales
             vmServerNameOrIP: el nombre o la IP del servidor
-            halt: si es True, el servidor se cargará todas las máquinas de los usuarios en cuanto
+            isShutDown: si es True, el servidor se cargará todas las máquinas de los usuarios en cuanto
             reciba el paquete. Si es False, esperará a que los usuarios terminen con ellas.
         Devuelve:
             Una tupla (tipo de comando, argumentos) con el tipo del comando y sus argumentos serializados
         """
-        args =  "{0}${1}${2}".format(unregister, vmServerNameOrIP, halt)
+        args =  "{0}${1}${2}".format(unregister, vmServerNameOrIP, isShutDown)
         return (COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER, args)
     
     @staticmethod
