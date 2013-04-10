@@ -438,16 +438,18 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         
         if (serverID == None) :
             packet = self.__webPacketHandler.createVMServerConfigurationChangeErrorPacket(
-                "The virtual machine server with name or IP address '{0}' is not registered".format(data["ServerNameOrIPAddress"]), data["CommandID"])
+                "The virtual machine server with name or IP address <<{0}>> is not registered".format(data["ServerNameOrIPAddress"]), data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, packet)
+            return
         
         status = self.__dbConnector.getVMServerBasicData(serverID)["ServerStatus"]
         
         if (status == SERVER_STATE_T.BOOTING or status == SERVER_STATE_T.READY) :
             packet = self.__webPacketHandler.createVMServerConfigurationChangeErrorPacket(
-                "The virtual machine server with name or IP address '{0}' is active. You must shut it down before proceeding."
+                "The virtual machine server with name or IP address <<{0}>> is active. You must shut it down before proceeding."
                     .format(data["ServerNameOrIPAddress"]), data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, packet)
+            return
             
         try :
             self.__dbConnector.setServerBasicData(serverID, data["NewVMServerName"], SERVER_STATE_T.SHUT_DOWN, 
@@ -456,7 +458,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         
         except Exception :
             packet = self.__webPacketHandler.createVMServerConfigurationChangeErrorPacket(
-                "The new virtual machine server name ('{0}') or IP address and port ('{1}:{2}' are already in use."\
+                "The new virtual machine server name (<<{0}>>) or IP address and port (<<{1}:{2}>> are already in use."\
                 .format(data["NewVMServerName"], data["NewVMServerIPAddress"], data["NewVMServerPort"]), data["CommandID"])
             
         self.__networkManager.sendPacket('', self.__webPort, packet)    

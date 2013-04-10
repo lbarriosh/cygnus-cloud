@@ -8,11 +8,11 @@ Definiciones del gestor de comandos
 from ccutils.enums import enum
 
 COMMAND_TYPE = enum("REGISTER_VM_SERVER", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER", 
-                     "VM_BOOT_REQUEST", "HALT", "DESTROY_DOMAIN")
+                     "VM_BOOT_REQUEST", "HALT", "DESTROY_DOMAIN", "VM_SERVER_CONFIGURATION_CHANGE")
 
 COMMAND_OUTPUT_TYPE = enum("VM_SERVER_REGISTRATION_ERROR", "VM_SERVER_BOOTUP_ERROR", 
                            "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", "VM_SERVER_UNREGISTRATION_ERROR",
-                           "VM_SERVER_SHUTDOWN_ERROR", "DOMAIN_DESTRUCTION_ERROR")
+                           "VM_SERVER_SHUTDOWN_ERROR", "DOMAIN_DESTRUCTION_ERROR", "VM_SERVER_CONFIGURATION_CHANGE_ERROR")
 
 from clusterServer.networking.packets import MAIN_SERVER_PACKET_T as PACKET_T
 
@@ -51,6 +51,11 @@ class CommandsHandler(object):
         """
         args =  "{0}${1}${2}".format(unregister, vmServerNameOrIP, halt)
         return (COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER, args)
+    
+    @staticmethod
+    def createVMServerConfigurationChangeCommand(serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior):
+        args = "{0}${1}${2}${3}${4}".format(serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior)
+        return (COMMAND_TYPE.VM_SERVER_CONFIGURATION_CHANGE, args)
     
     @staticmethod
     def createVMServerBootCommand(vmServerNameOrIP):
@@ -130,6 +135,12 @@ class CommandsHandler(object):
             result["HaltVMServers"] = l[0] == 'True'
         elif (commandType == COMMAND_TYPE.DESTROY_DOMAIN):
             result["DomainID"] = l[0]
+        elif (commandType == COMMAND_TYPE.VM_SERVER_CONFIGURATION_CHANGE) :
+            result["VMServerNameOrIPAddress"] = l[0]
+            result["NewServerName"] = l[1]
+            result["NewServerIPAddress"] = l[2]
+            result["NewServerPort"] = int(l[3])
+            result["NewVanillaImageEditionBehavior"] = l[4] == "True"
         return result
     
     @staticmethod
@@ -206,6 +217,10 @@ class CommandsHandler(object):
         return (COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR, errorMessage)
     
     @staticmethod
+    def createVMServerConfigurationChangeErrorOutput(reason):
+        return (COMMAND_OUTPUT_TYPE.VM_SERVER_CONFIGURATION_CHANGE_ERROR, reason)
+    
+    @staticmethod
     def deserializeCommandOutput(commandOutputType, content):
         """
         Deserializa la salida de un comando
@@ -235,7 +250,8 @@ class CommandsHandler(object):
             result["VNCServerIPAddress"] = l[0]
             result["VNCServerPort"] = int(l[1])
             result["VNCServerPassword"] = l[2]
-        elif (commandOutputType == COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR) :
+        elif (commandOutputType == COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR or
+              commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
             result["ErrorMessage"] = l[0]
             
         return result

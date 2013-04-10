@@ -217,6 +217,8 @@ class WebServerEndpoint(object):
                         data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"])
                 elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION_ERROR):
                     (outputType, outputContent) = CommandsHandler.createDomainDestructionErrorOutput(data["ErrorMessage"])
+                elif (data["packet_type"] == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
+                    (outputType, outputContent) = CommandsHandler.createVMServerConfigurationChangeErrorOutput(data["ErrorMessage"])
                 self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
                 
     def processCommands(self):
@@ -248,6 +250,10 @@ class WebServerEndpoint(object):
                         packet = self.__pHandler.createVMBootRequestPacket(parsedArgs["VMID"], parsedArgs["UserID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.DESTROY_DOMAIN):
                         packet = self.__pHandler.createDomainDestructionPacket(parsedArgs["DomainID"], serializedCommandID)
+                    elif (commandType == COMMAND_TYPE.VM_SERVER_CONFIGURATION_CHANGE) :
+                        packet = self.__pHandler.createVMServerConfigurationChangePacket(parsedArgs["VMServerNameOrIPAddress"],  parsedArgs["NewServerName"],
+                                                                                         parsedArgs["NewServerIPAddress"], parsedArgs["NewServerPort"],
+                                                                                         parsedArgs["NewVanillaImageEditionBehavior"], serializedCommandID)
                     self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
                 else :
                     self.__stopped = True

@@ -172,6 +172,12 @@ class ClusterServerConnector(object):
         (commandType, commandArgs) = CommandsHandler.createDomainDestructionCommand(domainID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
+    def changeVMServerConfiguration(self, serverNameOrIPAddress, newName, newIPAddress, newPort, 
+                                    newVanillaImageEditionBehavior):
+        (commandType, commandArgs) = CommandsHandler.createVMServerConfigurationChangeCommand(serverNameOrIPAddress, 
+            newName, newIPAddress, newPort, newVanillaImageEditionBehavior)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+    
     def getCommandOutput(self, commandID):
         """
         Devuelve la salida de un comando
@@ -214,11 +220,10 @@ if __name__ == "__main__":
     connector = ClusterServerConnector(1)
     connector.connectToDatabases("SystemStatusDB", "CommandsDB", "website", "CygnusCloud")
     sleep(3)
-    commandID = connector.unregisterVMServer("Server1", True)
+    commandID = connector.changeVMServerConfiguration("Server2", "Foo", "192.168.0.1", 15900, 
+                                    True)
     print connector.waitForCommandOutput(commandID)
     sleep(4)
-    commandID = connector.registerVMServer("192.168.0.4", 15800, "Server", True)    
-    print connector.waitForCommandOutput(commandID)
-    sleep(4)
+    print connector.getVMServersData()
     connector.halt(True)
     connector.dispose()    
