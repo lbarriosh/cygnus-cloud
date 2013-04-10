@@ -110,6 +110,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__requestVNCConnectionData()
         elif (data["packet_type"] == WEB_PACKET_T.DOMAIN_DESTRUCTION) :
             self.__destroyDomain(data)
+        elif (data["packet_type"] == WEB_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE):
+            self.__changeVMServerConfiguration(data)
             
     def __requestVNCConnectionData(self):
         """
@@ -169,7 +171,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 
             # Registrar el nuevo servidor y pedirle su estado
             self.__dbConnector.registerVMServer(data["VMServerName"], data["VMServerIP"], 
-                                                    data["VMServerPort"])
+                                                    data["VMServerPort"], data["IsVanillaServer"])
             
             self.__sendStatusRequestPackets(data["VMServerIP"], data["VMServerPort"])
             
@@ -430,6 +432,34 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         # Indicar al endpoint que todo fue bien
         packet = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, packet)
+        
+    def __changeVMServerConfiguration(self, data):
+        serverID = self.__dbConnector.getVMServerID(data["ServerNameOrIPAddress"])
+        
+        if (serverID == None) :
+            packet = self.__webPacketHandler.createVMServerConfigurationChangeErrorPacket(
+                "The virtual machine server with name or IP address '{0}' is not registered".format(data["ServerNameOrIPAddress"]), data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, packet)
+        
+        status = self.__dbConnector.getVMServerBasicData(serverID)["ServerStatus"]
+        
+        if (status == SERVER_STATE_T.BOOTING or status == SERVER_STATE_T.READY) :
+            packet = self.__webPacketHandler.createVMServerConfigurationChangeErrorPacket(
+                "The virtual machine server with name or IP address '{0}' is active. You must shut it down before proceeding."
+                    .format(data["ServerNameOrIPAddress"]), data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, packet)
+            
+        try :
+            self.__dbConnector.setServerBasicData(serverID, data["NewVMServerName"], SERVER_STATE_T.SHUT_DOWN, 
+                                                  data["NewVMServerIPAddress"], data["NewVMServerPort"], data["NewVanillaImageEditionBehavior"])
+            packet = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
+        
+        except Exception :
+            packet = self.__webPacketHandler.createVMServerConfigurationChangeErrorPacket(
+                "The new virtual machine server name ('{0}') or IP address and port ('{1}:{2}' are already in use."\
+                .format(data["NewVMServerName"], data["NewVMServerIPAddress"], data["NewVMServerPort"]), data["CommandID"])
+            
+        self.__networkManager.sendPacket('', self.__webPort, packet)    
     
     def processVMServerIncomingPacket(self, packet):
         """

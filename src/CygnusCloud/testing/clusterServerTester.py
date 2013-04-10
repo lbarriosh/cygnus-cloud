@@ -2,7 +2,7 @@
 '''
 Definiciones del tester del servidor de máquinas virtuales
 @author: Luis Barrios Hernández
-@version: 4.0
+@version: 6.0
 '''
 from __future__ import print_function
 
@@ -56,6 +56,8 @@ class TesterCallback(NetworkCallback):
             print("\t" + str(data["Data"]))
         elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION_ERROR) :
             print("Domain destruction error: " + data["ErrorMessage"])
+        elif (data["packet_type"] == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
+            print("Virtual machine configuration change error: " + data["ErrorMessage"])
 
 def printLogo():
     print('\t   _____                             _____ _                 _ ')
@@ -77,7 +79,8 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             ip = tokens.pop(0)
             serverPort = int(tokens.pop(0))
             name = tokens.pop(0)
-            p = pHandler.createVMServerRegistrationPacket(ip, serverPort, name, tokens.pop(0))
+            isVanillaServer = tokens.pop(0) == "True"
+            p = pHandler.createVMServerRegistrationPacket(ip, serverPort, name, isVanillaServer, '')
             networkManager.sendPacket(ip_address, port, p)
             return False  
         elif (command == "obtainVMServerStatus") :
@@ -97,6 +100,10 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "bootUpVM") :
             p = pHandler.createVMBootRequestPacket(int(tokens.pop(0)), int(tokens.pop(0)), tokens.pop(0))
+            networkManager.sendPacket(ip_address, port, p)
+        elif (command == "changeVMServerConfiguration") :
+            p = pHandler.createVMServerConfigurationChangePacket(tokens.pop(0), tokens.pop(0), tokens.pop(0), 
+                                                                 int(tokens.pop(0)), tokens.pop(0) == "True", '')
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "halt") :
             p = pHandler.createHaltPacket(True)
@@ -120,7 +127,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
 def displayHelpMessage():
     print("Usage: ")
     print("=====")
-    print("\tregisterVMServer <IP> <Port> <Name>: registers a virtual machine server")
+    print("\tregisterVMServer <IP> <Port> <Name <IsVanillaServer>: registers a virtual machine server")
     print("\tobtainVMServerStatus: obtains all the virtual machine server's status")
     print("\tobtainVMDistributionData: obtains the virtual machines' distribution data")
     print("\tunregisterVMServer <Name or IP> <Halt?>: unregisters a virtual machine server")
@@ -129,6 +136,7 @@ def displayHelpMessage():
     print("\tbootUpVM <ImageID> <UserID> <DomainID>: boots up a virtual machine")
     print("\tdestroyDomain <DomainID>: destroys a virtual machine")
     print("\tobtainActiveVMsData: obtains the active virtual machines' data")
+    print("\tchangeVMServerConfiguration <Name or IP> <New Name> <New IP> <New Port> <New vanilla image behavior>")
     print("\tquit: closes this application")
     
 
@@ -137,7 +145,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     printLogo()
     print('Cluster Server tester')
-    print('Version 4.0')
+    print('Version 6.0')
     print('*' * 80)
     print('*' * 80)
     print()

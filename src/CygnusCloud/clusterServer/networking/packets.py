@@ -13,7 +13,8 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",
                             "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
                             "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "COMMAND_EXECUTED", "VM_SERVER_SHUTDOWN_ERROR",
-                            "VM_SERVER_UNREGISTRATION_ERROR", "DOMAIN_DESTRUCTION", "DOMAIN_DESTRUCTION_ERROR")
+                            "VM_SERVER_UNREGISTRATION_ERROR", "DOMAIN_DESTRUCTION", "DOMAIN_DESTRUCTION_ERROR", 
+                            "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR")
 
 class ClusterServerPacketHandler(object):
     """
@@ -28,13 +29,15 @@ class ClusterServerPacketHandler(object):
         """
         self.__packetCreator = networkManager
             
-    def createVMServerRegistrationPacket(self, IPAddress, port, name, commandID):
+    def createVMServerRegistrationPacket(self, IPAddress, port, name, isVanillaServer, commandID):
         """
         Crea un paquete de registro de una máquina virtual
         Argumentos:
             IPAddress: la dirección IP del servidor
             port: su puerto
             name: el nombre del servidor de máquinas virtuales
+            isVanillaServer: indica si el servidor de máquinas virtuales se utilizará preferentemente
+            para editar imágenes o no.
             commandID: el identificador único del comando de arranque
         Devuelve:
             un paquete con los datos de los argumentos
@@ -44,6 +47,7 @@ class ClusterServerPacketHandler(object):
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(name)
+        p.writeBool(isVanillaServer)
         p.writeString(commandID)
         return p
     
@@ -112,7 +116,8 @@ class ClusterServerPacketHandler(object):
             p.writeString(row["ServerName"])
             p.writeString(ClusterServerPacketHandler.__vm_server_status_to_string(row["ServerStatus"]))
             p.writeString(row["ServerIP"])
-            p.writeInt(int(row["ServerPort"]))            
+            p.writeInt(int(row["ServerPort"]))   
+            p.writeBool(int(row["IsVanillaServer"]) == 1)         
         return p
     
     def createVMDistributionPacket(self, segment, sequenceSize, data):
@@ -318,6 +323,24 @@ class ClusterServerPacketHandler(object):
         else :
             return "Connection lost"
         
+    def createVMServerConfigurationChangePacket(self, serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior, commandID):
+        p = self.__packetCreator.createPacket(2)
+        p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE)
+        p.writeString(serverNameOrIPAddress)
+        p.writeString(newName)
+        p.writeString(newIPAddress)
+        p.writeInt(newPort)
+        p.writeBool(newVanillaImageEditionBehavior)
+        p.writeString(commandID)
+        return p
+    
+    def createVMServerConfigurationChangeErrorPacket(self, reason, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR)        
+        p.writeString(reason)
+        p.writeString(commandID)
+        return p
+        
     
     def readPacket(self, p):
         """
@@ -335,6 +358,7 @@ class ClusterServerPacketHandler(object):
             result["VMServerIP"] = p.readString()
             result["VMServerPort"] = p.readInt()
             result["VMServerName"] = p.readString()
+            result["IsVanillaServer"] = p.readBool()
             result["CommandID"] = p.readString()
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
             result["VMServerIP"] = p.readString()
@@ -348,7 +372,7 @@ class ClusterServerPacketHandler(object):
             result["SequenceSize"] = p.readInt()
             data = []
             while (p.hasMoreData()) :
-                data.append((p.readString(), p.readString(), p.readString(), p.readInt()))
+                data.append((p.readString(), p.readString(), p.readString(), p.readInt(), p.readBool()))
             result["Data"] = data
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_DISTRIBUTION_DATA) :
@@ -413,6 +437,18 @@ class ClusterServerPacketHandler(object):
         
         elif (packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR) :
             result["ErrorMessage"] = p.readString()
-            result["CommandID"] = p.readString()        
+            result["CommandID"] = p.readString()    
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE): 
+            result["ServerNameOrIPAddress"] = p.readString()    
+            result["NewVMServerName"] = p.readString()
+            result["NewVMServerIPAddress"] = p.readString()
+            result["NewVMServerPort"] = p.readInt()
+            result["NewVanillaImageEditionBehavior"] = p.readBool()
+            result["CommandID"] = p.readString() 
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
+            result["ErrorMessage"] = p.readString()
+            result["CommandID"] = p.readString()            
                       
         return result
