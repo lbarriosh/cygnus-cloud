@@ -519,9 +519,11 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         (vanillaID, VMID) = results[0] 
         return self.getVanillaImageFamilyFeatures(vanillaID)
     
-    def setVanillaImageToVM(self, VanillaID, VMID):
-        """
-        """
-        query = "INSERT INTO VMfromVanilla VALUES ({0}, {1})".format(VanillaID, VMID)
-        self._executeQuery(query)
+    def getFamilyID(self, imageID):
+        query = "SELECT familyID FROM VanillaImageFamilyOf WHERE imageID = {0};".format(imageID)
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else :
+            return int(result[0])
         

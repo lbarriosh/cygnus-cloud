@@ -210,6 +210,13 @@ class ClusterServerDBTests(unittest.TestCase):
         expectedResult = {"RAMSize" : 1, "vCPUs": 2, "osDiskSize" : 3, "dataDiskSize": 4}
         self.assertEquals(result, expectedResult, "addVanillaImageFamily error")
         
+    def test_getFamilyID(self):
+        result = self.__connector.getFamilyID(123454)
+        expectedResult = None
+        self.assertEquals(result, expectedResult, "getFamilyID error")
+        result = self.__connector.getFamilyID(1)
+        expectedResult = 3
+        self.assertEquals(result, expectedResult, "getFamilyID error")        
         
 if __name__ == "__main__":
     unittest.main()
