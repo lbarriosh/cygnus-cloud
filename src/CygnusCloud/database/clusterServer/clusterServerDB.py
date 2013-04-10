@@ -77,13 +77,22 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 Diccionario con las estadísticas del servidor.
         '''
         #Creamos la consulta encargada de extraer los datos
-        query = "SELECT hosts FROM VMServerStatus WHERE serverId = " + str(serverId) + ";"
-        results=self._executeQuery(query)
-        if (results == ()) : 
+        query = "SELECT hosts, ramInUse, ramSize, freeStorageSpace, availableStorageSpace,\
+            freeTemporarySpace, availableTemporarySpace, activeVCPUs, physicalCPUs FROM VMServerStatus WHERE serverId = " + str(serverId) + ";"
+        result = self._executeQuery(query, True)
+        if (result == None) : 
             return None
         d = dict()        
-        activeHosts = results[0][0]
-        d["ActiveHosts"] = activeHosts
+        d["ActiveHosts"] = int(result[0])
+        d["RAMInUse"] = int(result[1])
+        d["RAMSize"] = int(result[2])
+        d["FreeStorageSpace"] = int(result[3])
+        d["AvailableStorageSpace"] = int(result[4])
+        d["FreeTemporarySpace"] = int(result[5])
+        d["AvailableTemporarySpace"] = int(result[6])
+        d["ActiveVCPUs"] = int(result[7])
+        d["PhysicalCPUs"] = int(result[8])
+        
         # Devolvemos los resultados
         return d
     
@@ -303,17 +312,27 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "INSERT INTO ImageOnServer VALUES(" + str(serverID)+ "," + str(imageID)  +") "  
         self._executeUpdate(query)
         
-    def setVMServerStatistics(self, serverID, runningHosts):
+    def setVMServerStatistics(self, serverID, runningHosts, ramInUse, ramSize, freeStorageSpace,
+                              availableStorageSpace, freeTemporarySpace, availableTemporarySpace,
+                              activeVCPUs, physicalCPUs):
         '''
         Actualiza las estadísticas de un servidor de máquinas virtuales.
+        Argumentos
         '''
-        query = "INSERT INTO VMServerStatus VALUES(" + str(serverID) + ", " + str(runningHosts) + ");"
+        query = "INSERT INTO VMServerStatus VALUES({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9});".format(serverID, runningHosts, 
+            ramInUse, ramSize, freeStorageSpace, availableStorageSpace, freeTemporarySpace, availableTemporarySpace,
+                              activeVCPUs, physicalCPUs)
         try :
             self._executeUpdate(query)
         except Exception :
-            query = "UPDATE VMServerStatus SET hosts = " + str(runningHosts) + " WHERE serverId = "\
-                + str(serverID) + ";"
+            query = "UPDATE VMServerStatus SET hosts = {0}, ramInUse = {1}, ramSize = {2}, freeStorageSpace = {3},\
+                availableStorageSpace = {4}, freeTemporarySpace = {5}, availableTemporarySpace = {6},\
+                activeVCPUs = {7}, physicalCPUs = {8}  WHERE serverId = {9};".format(runningHosts, ramInUse, ramSize, freeStorageSpace,
+                              availableStorageSpace, freeTemporarySpace, availableTemporarySpace,
+                              activeVCPUs, physicalCPUs, serverID)
             self._executeUpdate(query)
+            
+            
         
     def setServerBasicData(self, serverId, name, status, IPAddress, port):
         '''
@@ -436,11 +455,11 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         for hostedDomainUID in hostedVMs :
             self._executeUpdate(update.format(hostedDomainUID, serverID))
             
-    def getVanillaImageData(self, vanillaID):
+    def getVanillaImageData(self, imageID):
         """
         Devuelve los datos de una imagen vanilla
         Argumentos:
-            vanillaID: ID de la imagen vanilla
+            imageID: ID de la imagen vanilla
         Devuelve:
             Un diccionario con los datos de la imagen, con las siguientes claves:
                 RAM
@@ -448,17 +467,17 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 OSDiskSize
                 dataDiskSize
         """
-        query = "SELECT * FROM VanillaImageFamilies WHERE familyID = {0}".format(vanillaID)
+        query = "SELECT ramSize, vCPUs, osDiskSize, dataDiskSize FROM VanillaImageFamily WHERE familyID = {0}".format(imageID)
         # Ejecutamos la consulta
         results=self._executeQuery(query)
         if (results == ()) : 
             return None
-        (id, ram, vCPUs, OSDiskSize, dataDiskSize) = results[0]
+        (ram, vCPUs, OSDiskSize, dataDiskSize) = results[0]
         # Creamos el diccionario con los datos
         d = dict() 
-        d["RAM"] = ram
+        d["RAMSize"] = ram
         d["vCPUs"] = vCPUs
-        d["OSDiskSize"] = OSDiskSize
+        d["osDiskSize"] = OSDiskSize
         d["dataDiskSize"] = dataDiskSize
         return d
     

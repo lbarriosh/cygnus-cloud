@@ -30,8 +30,8 @@ class TesterCallback(NetworkCallback):
             print("RAM: " + str(data["RAMInUse"]) +  "KB of " + str(data["RAMSize"]) + "KB in use")
             print("Storage space: " + str(data["FreeStorageSpace"]) +  "KB of " + str(data["AvailableStorageSpace"]) + "KB available")
             print("Temporary space: " + str(data["FreeTemporarySpace"]) +  "KB of " + str(data["AvailableTemporarySpace"]) + "KB available")
-            print("Active VCPUs: " + str(data["ActiveVCPUs"]))
-            print("Real CPUs: " + str(data["RealCPUs"]))
+            print("Active CPUs: " + str(data["ActiveVCPUs"]))
+            print("Physical CPUs: " + str(data["PhysicalCPUs"]))
         elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_VM_DATA) :
             print("Virtual machines' connection data")
             print(packet._getData())

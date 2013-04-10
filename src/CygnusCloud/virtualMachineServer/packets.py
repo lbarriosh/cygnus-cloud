@@ -193,7 +193,7 @@ class VMServerPacketHandler(object):
             result["FreeTemporarySpace"] = p.readInt()
             result["AvailableTemporarySpace"] = p.readInt()
             result["ActiveVCPUs"] = p.readInt()
-            result["RealCPUs"] = p.readInt()
+            result["PhysicalCPUs"] = p.readInt()
         elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_DOMAIN_UIDS) :
             ac = []
             result["VMServerIP"] = p.readString()
