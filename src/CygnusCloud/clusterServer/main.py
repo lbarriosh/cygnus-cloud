@@ -23,6 +23,6 @@ if __name__ == "__main__":
     reactor = ClusterServerReactor(cm.getConstant("vmBootTimeout"))
     reactor.connectToDatabase(cm.getConstant("mysqlRootsPassword"), cm.getConstant("dbName"), 
                               cm.getConstant("dbUser"), cm.getConstant("dbPassword"), cm.getConstant("scriptPath"))
-    reactor.startListenning(cm.getConstant("certificatePath"), cm.getConstant("listenningPort"))
+    reactor.startListenning(cm.getConstant("certificatePath"), cm.getConstant("listenningPort"), cm.getConstant("statusUpdateInterval"))
     reactor.monitorVMBootCommands()
     reactor.closeNetworkConnections()

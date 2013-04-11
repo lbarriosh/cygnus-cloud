@@ -34,7 +34,7 @@ class SimpleLoadBalancer(LoadBalancer):
         # Buscar servidores candidatos. Si hay más de uno, la imagen se colocará en el que menos
         # máquinas virtuales activas tenga.
         
-        availableServers = self._dbConnector.getImageServers(imageId)
+        availableServers = self._dbConnector.getHosts(imageId)
         if (len(availableServers) == 0) :
             return (0, 'The image is not available')
         

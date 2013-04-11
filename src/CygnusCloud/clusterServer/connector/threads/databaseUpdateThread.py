@@ -23,7 +23,7 @@ class UpdateHandler(object):
         """
         raise NotImplementedError
 
-class StatusDatabaseUpdateThread(BasicThread):
+class VMServerMonitoringThread(BasicThread):
     """
     Estos hilos refrescan la base de datos de estado periódicamente.
     """

@@ -5,7 +5,7 @@ Definiciones del endpoint de la web
 @version: 3.5
 '''
 
-from clusterServer.connector.threads.databaseUpdateThread import StatusDatabaseUpdateThread, UpdateHandler
+from clusterServer.connector.threads.databaseUpdateThread import VMServerMonitoringThread, UpdateHandler
 from clusterServer.connector.threads.commandMonitoringThread import CommandMonitoringThread
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from database.utils.configuration import DBConfigurator
@@ -136,7 +136,7 @@ class WebServerEndpoint(object):
             # Preparar la recepción de paquetes y la actualización automática de la base de datos de estado
             self.__pHandler = ClusterServerPacketHandler(self.__manager)
             
-            self.__updateRequestThread = StatusDatabaseUpdateThread(_ClusterServerEndpointUpdateHandler(self), statusDBUpdateInterval)
+            self.__updateRequestThread = VMServerMonitoringThread(_ClusterServerEndpointUpdateHandler(self), statusDBUpdateInterval)
             self.__updateRequestThread.start()            
             self.__commandMonitoringThread = CommandMonitoringThread(self.__commandsDBConnector, commandTimeout, commandTimeoutCheckInterval)
             self.__commandMonitoringThread.start()

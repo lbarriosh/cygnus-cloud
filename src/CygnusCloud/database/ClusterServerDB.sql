@@ -40,7 +40,7 @@ CREATE TABLE VMBootCommand(commandID VARCHAR(70), dispatchTime double, VMID INT,
 DROP TABLE IF EXISTS ActiveVMDistribution;
     
 CREATE TABLE ActiveVMDistribution(vmID VARCHAR(70) PRIMARY KEY, serverID INTEGER,
-	FOREIGN KEY(serverID) REFERENCES VMServer(serverID) ON DELETE CASCADE ON UPDATE CASCADE);
+	FOREIGN KEY(serverID) REFERENCES VMServer(serverID) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=MEMORY;
 
 INSERT IGNORE INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort) VALUES
     (1, 'Server1', 2, '192.168.0.4', 15800);

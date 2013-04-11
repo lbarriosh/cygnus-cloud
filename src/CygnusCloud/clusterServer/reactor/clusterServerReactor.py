@@ -6,6 +6,7 @@ Definiciones del reactor del servidor de cluster
 '''
 
 from clusterServer.networking.callbacks import VMServerCallback, WebCallback
+from clusterServer.threads.vmServerMonitoringThread import VMServerMonitoringThread
 from database.utils.configuration import DBConfigurator
 from database.clusterServer.clusterServerDB import ClusterServerDatabaseConnector, SERVER_STATE_T
 from network.manager.networkManager import NetworkManager
@@ -65,7 +66,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__dbConnector.connect()
         self.__dbConnector.resetVMServersStatus()
         
-    def startListenning(self, certificatePath, port):
+    def startListenning(self, certificatePath, port, vmServerStatusUpdateInterval):
         """
         Hace que el reactor comience a escuchar las peticiones del endpoint.
         Argumentos:
@@ -82,6 +83,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__vmServerPacketHandler = VMServerPacketHandler(self.__networkManager)
         self.__networkManager.listenIn(port, self.__webCallback, True)
         self.__vmServerCallback = VMServerCallback(self)
+        self.__vmServerStatusUpdateThread = VMServerMonitoringThread(self, vmServerStatusUpdateInterval)
+        self.__vmServerStatusUpdateThread.run()
         
     def processWebIncomingPacket(self, packet):
         """
@@ -136,6 +139,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Devuelve:
             Nada
         """    
+        self.__vmServerStatusUpdateThread.stop()
         vmServersConnectionData = self.__dbConnector.getActiveVMServersConnectionData()
         if (vmServersConnectionData != None) :
             args = dict()
@@ -200,6 +204,14 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS)            
         errorMessage = self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
         NetworkManager.printConnectionWarningIfNecessary(vmServerIP, vmServerPort, "active domain UIDs request", errorMessage)
+        
+    def sendStatusRequestPacketsToActiveVMServers(self):
+        for serverID in self.__dbConnector.getVMServerIDs() :
+            serverData = self.__dbConnector.getVMServerBasicData(serverID)
+            if (serverData["ServerStatus"] == SERVER_STATE_T.READY) :
+                self.__sendStatusRequestPackets(serverData["ServerIP"], serverData["ServerPort"])
+            
+            
             
     def __unregisterOrShutdownVMServer(self, data):
         """
