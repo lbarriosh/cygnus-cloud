@@ -5,13 +5,13 @@ Definiciones del endpoint de la web
 @version: 3.5
 '''
 
-from databaseUpdateThread import StatusDatabaseUpdateThread, UpdateHandler
+from clusterServer.connector.threads.databaseUpdateThread import StatusDatabaseUpdateThread, UpdateHandler
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from database.utils.configuration import DBConfigurator
 from database.systemStatusDB.systemStatusDBWriter import SystemStatusDatabaseWriter
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from time import sleep
-from commandsHandler import CommandsHandler, COMMAND_TYPE
+from clusterServer.connector.commands.commandsHandler import CommandsHandler, COMMAND_TYPE
 from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
 from network.exceptions.networkManager import NetworkManagerException
 from endpointException import EndpointException

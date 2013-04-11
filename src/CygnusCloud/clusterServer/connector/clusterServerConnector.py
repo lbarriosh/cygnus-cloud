@@ -6,7 +6,7 @@ Conector que usará la web para interactuar con el sistema
 '''
 from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
 from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
-from clusterServer.connector.commandsHandler import CommandsHandler
+from clusterServer.connector.commands.commandsHandler import CommandsHandler
 from time import sleep
 
 class ClusterServerConnector(object):

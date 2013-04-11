@@ -7,8 +7,7 @@ Created on Apr 3, 2013
 
 import sys
 from constants import WebServerEndpointConstantsManager
-from webServerEndpoint import WebServerEndpoint
-from endpointException import EndpointException
+from clusterServer.connector.endpoint.webServerEndpoint import WebServerEndpoint, EndpointException
 
 if __name__ == "__main__" :
     # Parsear el fichero de configuración

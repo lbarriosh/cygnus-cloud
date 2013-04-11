@@ -49,6 +49,3 @@ class StatusDatabaseUpdateThread(BasicThread):
         while not self.finish() :
             self.__handler.sendUpdateRequestPackets()
             sleep(self.__sleepTime)
-        
-
-
