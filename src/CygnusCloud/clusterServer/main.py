@@ -20,7 +20,13 @@ if __name__ == "__main__":
     except Exception as e:
         print "Error: " + e.message
         sys.exit()
-    reactor = ClusterServerReactor(cm.getConstant("vmBootTimeout"))
+    if (cm.getConstant("loadBalancingAlgorithm") == "penalty-based"):
+        loadBalancerSettings = ["penalty-based", cm.getConstant("vCPUsWeight"), cm.getConstant("vCPUsExcessThreshold"),
+                                cm.getConstant("ramWeight"), cm.getConstant("storageSpaceWeight"),
+                                cm.getConstant("temporarySpaceWeight")]
+    else :
+        loadBalancerSettings = ["simple"]
+    reactor = ClusterServerReactor(loadBalancerSettings, cm.getConstant("vmBootTimeout"))
     reactor.connectToDatabase(cm.getConstant("mysqlRootsPassword"), cm.getConstant("dbName"), 
                               cm.getConstant("dbUser"), cm.getConstant("dbPassword"), cm.getConstant("scriptPath"))
     reactor.startListenning(cm.getConstant("certificatePath"), cm.getConstant("listenningPort"), cm.getConstant("statusUpdateInterval"))

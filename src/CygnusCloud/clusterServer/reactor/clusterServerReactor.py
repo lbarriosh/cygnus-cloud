@@ -15,6 +15,7 @@ from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET
 from time import sleep
 from clusterServer.loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
 from network.twistedInteraction.clientConnection import RECONNECTION_T
+from clusterServer.loadBalancing.penaltyBasedLoadBalancer import PenaltyBasedLoadBalancer
 
 class WebPacketReactor(object):
     '''
@@ -35,7 +36,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
     Estos objetos reaccionan a los paquetes recibidos desde los servidores de máquinas
     virtuales y desde el endpoint de la web.
     '''
-    def __init__(self, timeout):
+    def __init__(self, loadBalancerSettings, timeout):
         """
         Inicializa el estado del reactor
         Argumentos:
@@ -45,6 +46,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         """
         self.__webCallback = WebCallback(self)
         self.__finished = False
+        self.__loadBalancerSettings = loadBalancerSettings
         self.__timeout = timeout
         
     def connectToDatabase(self, mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath):
@@ -75,7 +77,12 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Devuelve:
             Nada
         """
-        self.__loadBalancer = SimpleLoadBalancer(self.__dbConnector)
+        if (self.__loadBalancerSettings[0] == "penalty-based") :
+            self.__loadBalancer = PenaltyBasedLoadBalancer(self.__dbConnector, self.__loadBalancerSettings[1], 
+                self.__loadBalancerSettings[2], self.__loadBalancerSettings[3], self.__loadBalancerSettings[4], 
+                self.__loadBalancerSettings[5])
+        else :
+            self.__loadBalancer = SimpleLoadBalancer(self.__dbConnector)
         self.__networkManager = NetworkManager(certificatePath)
         self.__webPort = port
         self.__networkManager.startNetworkService()        
