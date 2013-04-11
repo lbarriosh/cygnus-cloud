@@ -49,8 +49,7 @@ class CommandsDBTests(unittest.TestCase):
         self.__connector.addCommandOutput(commandID, 0, "commandOutput")
         result = self.__connector.getCommandOutput(commandID)
         expectedResult = (0, "commandOutput")
-        self.assertEquals(result, expectedResult, "either addCommandOutput or getCommandOutput does not work")
-       
+        self.assertEquals(result, expectedResult, "either addCommandOutput or getCommandOutput does not work")       
     
 if __name__ == "__main__" :
     unittest.main()

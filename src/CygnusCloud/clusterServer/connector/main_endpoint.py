@@ -27,10 +27,11 @@ if __name__ == "__main__" :
                                 cm.getConstant("commandsDBName"), cm.getConstant("statusdbSQLFilePath"), 
                                 cm.getConstant("commandsdbSQLFilePath"), cm.getConstant("websiteUser"), 
                                 cm.getConstant("websiteUserPassword"),  cm.getConstant("endpointUser"), 
-                                cm.getConstant("endpointUserPassword"))
+                                cm.getConstant("endpointUserPassword"), cm.getConstant("minCommandInterval"))
     try :
         endpoint.connectToClusterServer(cm.getConstant("certificatePath"), cm.getConstant("clusterServerIP"), 
-                                        cm.getConstant("clusterServerListenningPort"), cm.getConstant("statusDBUpdateInterval"))
+                                        cm.getConstant("clusterServerListenningPort"), cm.getConstant("statusDBUpdateInterval"),
+                                        cm.getConstant("commandTimeout"), cm.getConstant("commandTimeoutCheckInterval"))
         endpoint.processCommands()
         endpoint.disconnectFromClusterServer()
     except EndpointException as e:

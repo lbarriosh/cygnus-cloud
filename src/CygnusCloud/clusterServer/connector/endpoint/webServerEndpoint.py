@@ -6,6 +6,7 @@ Definiciones del endpoint de la web
 '''
 
 from clusterServer.connector.threads.databaseUpdateThread import StatusDatabaseUpdateThread, UpdateHandler
+from clusterServer.connector.threads.commandMonitoringThread import CommandMonitoringThread
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from database.utils.configuration import DBConfigurator
 from database.systemStatusDB.systemStatusDBWriter import SystemStatusDatabaseWriter
@@ -73,7 +74,7 @@ class WebServerEndpoint(object):
         self.__stopped = False
     
     def connectToDatabases(self, mysqlRootsPassword, statusDBName, commandsDBName, statusdbSQLFilePath, commandsDBSQLFilePath,
-                           websiteUser, websiteUserPassword, endpointUser, endpointUserPassword):
+                           websiteUser, websiteUserPassword, endpointUser, endpointUserPassword, minCommandInterval):
         """
         Establece la conexión con la base de datos de estado y con la base de datos de comandos.
         Argumentos:
@@ -100,13 +101,14 @@ class WebServerEndpoint(object):
         configurator.addUser(endpointUser, endpointUserPassword, commandsDBName, True)
         # Crear los conectores
         self.__commandsDBConnector = CommandsDatabaseConnector(endpointUser, endpointUserPassword, 
-                                                               commandsDBName, 1) 
+                                                               commandsDBName, minCommandInterval) 
         self.__writer = SystemStatusDatabaseWriter(endpointUser, endpointUserPassword, statusDBName)
         # Establecer las conexiones con MySQL
         self.__writer.connect()
         self.__commandsDBConnector.connect()
         
-    def connectToClusterServer(self, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval):
+    def connectToClusterServer(self, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval,
+                               commandTimeout, commandTimeoutCheckInterval):
         """
         Establece la conexión con el servidor de cluster
         Argumentos:
@@ -135,8 +137,9 @@ class WebServerEndpoint(object):
             self.__pHandler = ClusterServerPacketHandler(self.__manager)
             
             self.__updateRequestThread = StatusDatabaseUpdateThread(_ClusterServerEndpointUpdateHandler(self), statusDBUpdateInterval)
-    
-            self.__updateRequestThread.start()
+            self.__updateRequestThread.start()            
+            self.__commandMonitoringThread = CommandMonitoringThread(self.__commandsDBConnector, commandTimeout, commandTimeoutCheckInterval)
+            self.__commandMonitoringThread.start()
         except NetworkManagerException as e :
             raise EndpointException(e.message)
         
@@ -156,6 +159,9 @@ class WebServerEndpoint(object):
                                                          errorMessage)
         # Dejar de actualizar las bases de datos
         self.__updateRequestThread.stop()
+        
+        # Dejar de monitorizar los comandos
+        self.__commandMonitoringThread.stop()
         
         # Cerrar las conexiones con las bases de datos
         self.closeDBConnections()
