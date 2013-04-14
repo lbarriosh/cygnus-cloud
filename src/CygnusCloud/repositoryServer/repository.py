@@ -1,5 +1,7 @@
 #coding=utf-8
+
 from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
+from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
 from ccutils.threads import QueueProcessingThread
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T
@@ -8,6 +10,7 @@ from database.repository.repositoryDB import RepositoryDatabaseConnector
 from repositoryServer.packet import RepositoryPacketHandler
 from ftplib import FTP
 import os
+from time import sleep
 
 class ClusterServerPacketProcessor(NetworkCallback):
     def __init__(self, processor):
@@ -22,12 +25,17 @@ class VMServerPacketProcessor(NetworkCallback):
         self.__processor.processVMServerIncomingPacket(packet)
 
 class SendThread(QueueProcessingThread):
-    def __init__(self, name, queue, networkManager):
+    
+    def __init__(self, name, queue, networkManager, maxFiles):
         QueueProcessingThread.__init__(self, name, queue)
+        self.__counter = MultithreadingCounter()
+        self.__maxTransferFile = maxFiles
         self.__networkManager = networkManager
         self.__repositoryPacketHandler = RepositoryPacketHandler(self.__networkManager)
 
     def processElement(self, element):
+        while (not self.__counter.incrementIfLessThan(self.__maxTransferFile)) :
+            sleep(10)
         # Enviamos el archivo
         compressFile = open(element["compressImagePath"], "r")
         ftp = FTP(element["host"])
@@ -35,8 +43,7 @@ class SendThread(QueueProcessingThread):
         ftp.storbinary("STOR " + compressFile.filename, compressFile)
         compressFile.close()
         
-        # Borramos el archivo y avisamos al servidor de máquinas virtuales
-        os.remove(element["compressImagePath"])
+        # Avisamos al servidor de máquinas virtuales
         self.__repositoryPacketHandler.createImageSendPacket(element["SendID"])
 
 class Repository(ClusterServerPacketProcessor, VMServerPacketProcessor):
@@ -56,7 +63,8 @@ class Repository(ClusterServerPacketProcessor, VMServerPacketProcessor):
         self.__networkManager = NetworkManager(self.__configurator.getConstant("certificatePath"))
         
         self.__sendThread = SendThread("sendThread", self.__sendQueue, 
-                                           self.__networkManager)
+                                           self.__networkManager, 
+                                           self.__configurator.getConstant("maxFiles"))
         
         self.__listenPort = self.__configurator.getConstant("listenningPort")
         self.__networkManager.startNetworkService()
@@ -81,6 +89,7 @@ class Repository(ClusterServerPacketProcessor, VMServerPacketProcessor):
         imageID = data["ImageID"]
         imageInfo = self.__dbConnector.getImage(imageID)
         compressImagePath = self.__configurator.getConstant("compressFilesPath") + imageInfo["compressImagePath"]
+        self.__dbConnector.removeImage(imageID)
         os.remove(compressImagePath)
 
     def __sendImage(self, data):
@@ -92,7 +101,7 @@ class Repository(ClusterServerPacketProcessor, VMServerPacketProcessor):
         self.__sendQueue.append(dataSend)
 
     def __recievedImage(self, data):
-        self.__dbConnector.addImage(data["ImageID"], data["compressFile"], data["groupID"])
+        self.__dbConnector.addImage(data["ImageID"], data["Filename"], data["GroupID"])
         
         
         

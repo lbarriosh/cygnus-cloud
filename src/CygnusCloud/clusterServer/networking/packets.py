@@ -14,7 +14,8 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
                             "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "COMMAND_EXECUTED", "VM_SERVER_SHUTDOWN_ERROR",
                             "VM_SERVER_UNREGISTRATION_ERROR", "DOMAIN_DESTRUCTION", "DOMAIN_DESTRUCTION_ERROR", 
-                            "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR")
+                            "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
+                            "DELETE_IMAGE")
 
 class ClusterServerPacketHandler(object):
     """
@@ -340,6 +341,12 @@ class ClusterServerPacketHandler(object):
         p.writeString(reason)
         p.writeString(commandID)
         return p
+    
+    def createDeleteImagePacket(self, imageID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.DELETE_IMAGE)        
+        p.writeInt(imageID)
+        return p
         
     
     def readPacket(self, p):
@@ -450,5 +457,8 @@ class ClusterServerPacketHandler(object):
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
             result["ErrorMessage"] = p.readString()
             result["CommandID"] = p.readString()            
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE) :
+            result["ImageID"] = p.readInt()
                       
         return result
