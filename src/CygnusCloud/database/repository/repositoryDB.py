@@ -22,3 +22,8 @@ class RepositoryDatabaseConnector(BasicDatabaseConnector):
         
         sqlQuery = "INSERT INTO Images(imageID, compressImagePath, groupID) VALUES (" + str(imageID) + ", '" + compressImagePath + "', " + str(groupID)
         self._executeUpdate(sqlQuery)
+    
+    def removeImage(self, imageID):
+        
+        sqlQuery = "DELETE FROM Images WHERE imageID = " + str(imageID)
+        self._executeUpdate(sqlQuery)
