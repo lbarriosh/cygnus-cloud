@@ -24,28 +24,6 @@ class VMServerPacketProcessor(NetworkCallback):
     def processVMServerIncomingPacket(self, packet):
         self.__processor.processVMServerIncomingPacket(packet)
 
-class SendThread(QueueProcessingThread):
-    
-    def __init__(self, name, queue, networkManager, maxFiles):
-        QueueProcessingThread.__init__(self, name, queue)
-        self.__counter = MultithreadingCounter()
-        self.__maxTransferFile = maxFiles
-        self.__networkManager = networkManager
-        self.__repositoryPacketHandler = RepositoryPacketHandler(self.__networkManager)
-
-    def processElement(self, element):
-        while (not self.__counter.incrementIfLessThan(self.__maxTransferFile)) :
-            sleep(10)
-        # Enviamos el archivo
-        compressFile = open(element["compressImagePath"], "r")
-        ftp = FTP(element["host"])
-        ftp.login()
-        ftp.storbinary("STOR " + compressFile.filename, compressFile)
-        compressFile.close()
-        
-        # Avisamos al servidor de máquinas virtuales
-        self.__repositoryPacketHandler.createImageSendPacket(element["SendID"])
-
 class Repository(ClusterServerPacketProcessor, VMServerPacketProcessor):
     
     def __init__(self, configurator):
@@ -61,10 +39,6 @@ class Repository(ClusterServerPacketProcessor, VMServerPacketProcessor):
 
     def startListenning(self, certificatePath, port):
         self.__networkManager = NetworkManager(self.__configurator.getConstant("certificatePath"))
-        
-        self.__sendThread = SendThread("sendThread", self.__sendQueue, 
-                                           self.__networkManager, 
-                                           self.__configurator.getConstant("maxFiles"))
         
         self.__listenPort = self.__configurator.getConstant("listenningPort")
         self.__networkManager.startNetworkService()
