@@ -37,6 +37,15 @@ class GenericThreadSafeDictionary :
         with self.__semaphore:
             return self.__dict.pop(key)
         
+    def removeElement(self, value):
+        with self.__semaphore:
+            targetKey = None
+            for key in self.__dict.keys():
+                if self.__dict[key] == value :
+                    targetKey = key
+                    break
+            self.__dict.pop(targetKey)    
+        
     def values(self):
         with self.__semaphore:
             return self.__dict.values()
@@ -44,6 +53,10 @@ class GenericThreadSafeDictionary :
     def isEmpty(self):
         with self.__semaphore:
             return len(self.__dict) == 0
+        
+    def getSize(self):
+        with self.__semaphore:
+            return len(self.__dict)
         
     def __getitem__(self, index):
         with self.__semaphore:

@@ -17,7 +17,6 @@ class MultithreadingCounter(object):
         Args:
             None
         """
-        print "Created Multithread Counter"
         self.__semaphore = BoundedSemaphore(1)
         self.__counter = 0
         

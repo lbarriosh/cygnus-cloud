@@ -16,8 +16,6 @@ Connection status enum type.
 """
 CONNECTION_STATUS = enum("OPENING", "READY_WAIT", "READY", "CLOSING", "CLOSED", "ERROR", "RECONNECT")
 
-
-
 class Connection(object):
     """
     A class that represents a generic network connection.

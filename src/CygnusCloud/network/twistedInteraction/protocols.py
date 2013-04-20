@@ -7,7 +7,7 @@ Protocol and protocol factory implementations.
 
 from twisted.internet.protocol import Protocol, Factory
 from network.packets.packet import _Packet
-from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
+from ccutils.dataStructures.multithreadingDictionary import GenericThreadSafeDictionary
 from time import sleep
 
 class CygnusCloudProtocol(Protocol):
@@ -94,7 +94,8 @@ class CygnusCloudProtocolFactory(Factory):
         """
         self.protocol = CygnusCloudProtocol
         self._queue = queue        
-        self.__protocolPool = GenericThreadSafeList()
+        self.__broadcastMode = True
+        self.__protocolPool = GenericThreadSafeDictionary()
     
     def buildProtocol(self, addr):
         """
@@ -102,22 +103,22 @@ class CygnusCloudProtocolFactory(Factory):
         This method is called inside Twisted code.
         """
         instance = CygnusCloudProtocol(self) 
-        self.__protocolPool.append(instance)
+        self.__protocolPool[(addr.host, addr.port)] = instance
         return instance   
         
     def removeProtocol(self, protocol):
         """
         Removes a protocol from the protocol pool
         """
-        self.__protocolPool.remove(protocol)
+        self.__protocolPool.removeElement(protocol)
         
     def isDisconnected(self):
         """
         Determines if there are active connections or not.
         """
-        return self.__protocolPool.getSize() == 0
+        return self.__protocolPool.isEmpty()
 
-    def sendPacket(self, packet):
+    def sendPacket(self, packet, ip=None, port=None):
         """
         Returns the last built instance
         Args:
@@ -125,10 +126,11 @@ class CygnusCloudProtocolFactory(Factory):
         Returns:
             the last built protocol instance
         """
-        i = 0
-        while (i < self.__protocolPool.getSize()) :
-            self.__protocolPool[i].sendPacket(packet)
-            i += 1
+        if (self.__broadcastMode) :
+            for key in self.__protocolPool.keys():
+                self.__protocolPool[key].sendPacket(packet)        
+        else :
+            self.__protocolPool[(ip, port)].sendPacket(packet)    
             
     def disconnect(self):
         """
@@ -138,12 +140,10 @@ class CygnusCloudProtocolFactory(Factory):
         Returns:
             Nothing
         """
-        i = 0
-        while i < self.__protocolPool.getSize() :
-            p = self.__protocolPool[i]
-            p.disconnect()
-            i += 1
-        while (self.__protocolPool.getSize() != 0) :
+        for key in self.__protocolPool.keys() :
+            self.__protocolPool[key].disconnect()         
+        
+        while (not self.__protocolPool.isEmpty()) :
             sleep(0.1)
     
     def onPacketReceived(self, p):
@@ -156,3 +156,6 @@ class CygnusCloudProtocolFactory(Factory):
         """
         p = _Packet._deserialize(p)
         self._queue.queue(p.getPriority(), p)
+        
+    def toggleBroadcastMode(self):
+        self.__broadcastMode = not self.__broadcastMode
