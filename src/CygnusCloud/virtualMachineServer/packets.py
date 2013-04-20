@@ -9,8 +9,7 @@ from ccutils.enums import enum
 
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
-                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS",
-                          "GET_IMAGE", "SET_IMAGE")
+                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS")
 
 class VMServerPacketHandler(object):
     
@@ -161,36 +160,6 @@ class VMServerPacketHandler(object):
             p.writeString(domain_uid)
         return p
     
-    def createGetImagePacket(self, imageID):
-        """
-        Crea un paquete para pedirle al repositorio que le envíe una imagen
-        Argumentos:
-            imageID: ID de la imagen que quiere recibir
-        Devuelve:
-            un paquete con los datos de los argumentos
-        """
-        p = self.__packetCreator.createPacket(5)
-        p.writeInt(VM_SERVER_PACKET_T.GET_IMAGE)
-        p.writeInt(imageID)
-        p.writeString(self.__packetCreator.getIP())
-        return p
-    
-    def createSetImagePacket(self, imageID, filename, groupID):
-        """
-        Crea un paquete para decirle al repositorio que le ha enviado una imagen, 
-        para que la guarde
-        Argumentos:
-            sendID: ID del envío
-        Devuelve:
-            un paquete con los datos de los argumentos
-        """
-        p = self.__packetCreator.createPacket(5)
-        p.writeInt(VM_SERVER_PACKET_T.SET_IMAGE)
-        p.writeInt(imageID)
-        p.writeString(filename)
-        p.writeInt(groupID)
-        return p
-    
     def readPacket(self, p):
         """
         Reads the content of a virtual machine server packet
@@ -231,14 +200,7 @@ class VMServerPacketHandler(object):
             while (p.hasMoreData()):
                 ac.append(p.readString())
             result["Domain_UIDs"] = ac
-        elif (packet_type == VM_SERVER_PACKET_T.GET_IMAGE) :
-            result["ImageID"] = p.readInt()
-            result["Host"] = p.readString()
-        elif (packet_type == VM_SERVER_PACKET_T.SET_IMAGE) :
-            result["ImageID"] = p.readInt()
-            result["Filename"] = p.readString()
-            result["GroupID"] = p.readInt()
-
+        
         # Note that the connection data segments will be sent to the web server immediately.
         # Therefore, they don't need to be read in the main server or in the virtual machine server.        
         return result

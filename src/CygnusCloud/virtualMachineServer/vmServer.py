@@ -13,7 +13,7 @@ from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from xmlEditor import ConfigurationFileEditor
 from database.vmServer.vmServerDB import VMServerDBConnector
 from virtualNetwork.virtualNetworkManager import VirtualNetworkManager
-from ccutils.processes.childProcessManager import ChildProcessManager 
+from ccutils.processes.childProcessManager import ChildProcessManager
 from time import sleep
 import os
 import multiprocessing
@@ -145,6 +145,8 @@ class VMServer(MainServerPacketReactor):
             self.__destroyDomain(data)
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS) :
             self.__sendActiveDomainUIDs()
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.GET_IMAGE) :
+            self.__getImage(data)
         
     def __sendActiveVMsVNCConnectionData(self):
         '''

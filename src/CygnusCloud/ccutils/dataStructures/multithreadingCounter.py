@@ -17,6 +17,7 @@ class MultithreadingCounter(object):
         Args:
             None
         """
+        print "Created Multithread Counter"
         self.__semaphore = BoundedSemaphore(1)
         self.__counter = 0
         
@@ -51,3 +52,63 @@ class MultithreadingCounter(object):
         """
         with self.__semaphore:
             self.__counter -= 1
+    
+    def incrementIfGreaterThan(self, n):
+        """
+        Increments the counter if is greater than a value.
+        Args:
+            n : value to test
+        Returns:
+            If the counter has been modified
+        """
+        with self.__semaphore:
+            if (self.__counter > n):
+                self.__counter += 1
+                return True
+            else :
+                return False
+            
+    def decrementIfGreaterThan(self, n):
+        """
+        Decrements the counter if is greater than a value.
+        Args:
+            n : value to test
+        Returns:
+            If the counter has been modified
+        """
+        with self.__semaphore:
+            if (self.__counter > n):
+                self.__counter -= 1
+                return True
+            else :
+                return False
+    
+    def incrementIfLessThan(self, n):
+        """
+        Increments the counter if is less than a value.
+        Args:
+            n : value to test
+        Returns:
+            If the counter has been modified
+        """
+        with self.__semaphore:
+            if (self.__counter < n):
+                self.__counter += 1
+                return True
+            else :
+                return False
+            
+    def decrementIfLessThan(self, n):
+        """
+        Decrements the counter if is less than a value.
+        Args:
+            n : value to test
+        Returns:
+            If the counter has been modified
+        """
+        with self.__semaphore:
+            if (self.__counter > n):
+                self.__counter -= 1
+                return True
+            else :
+                return False

@@ -1,30 +1,19 @@
 #coding=utf-8
 
 from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
-from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
-from ccutils.threads import QueueProcessingThread
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T
 from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T
 from database.repository.repositoryDB import RepositoryDatabaseConnector
-from repositoryServer.packet import RepositoryPacketHandler
-from ftplib import FTP
 import os
-from time import sleep
 
 class ClusterServerPacketProcessor(NetworkCallback):
     def __init__(self, processor):
         self.__processor = processor
     def processClusterServerIncomingPacket(self, packet):
         self.__processor.processVMServerIncomingPacket(packet)
-    
-class VMServerPacketProcessor(NetworkCallback):
-    def __init__(self, processor):
-        self.__processor = processor
-    def processVMServerIncomingPacket(self, packet):
-        self.__processor.processVMServerIncomingPacket(packet)
 
-class Repository(ClusterServerPacketProcessor, VMServerPacketProcessor):
+class Repository(ClusterServerPacketProcessor):
     
     def __init__(self, configurator):
         self.__sendQueue = GenericThreadSafeList()
@@ -51,11 +40,6 @@ class Repository(ClusterServerPacketProcessor, VMServerPacketProcessor):
         dataPacket = self.__clusterServerPacketHandler.readPacket(packet)
         if (dataPacket["packet_type"] == MAIN_SERVER_PACKET_T.DELETE_IMAGE) :
             self.__deleteImage(dataPacket)
-
-    def processVMServerIncomingPacket(self, packet):
-        dataPacket = self.__vmServerPacketHandler.readPacket(packet)
-        if (dataPacket["packet_type"] == VM_SERVER_PACKET_T.GET_IMAGE) :
-            self.__sendImage(dataPacket)
         elif (dataPacket["packet_type"] == VM_SERVER_PACKET_T.SET_IMAGE) :
             self.__recievedImage(dataPacket)
 
@@ -65,14 +49,6 @@ class Repository(ClusterServerPacketProcessor, VMServerPacketProcessor):
         compressImagePath = self.__configurator.getConstant("compressFilesPath") + imageInfo["compressImagePath"]
         self.__dbConnector.removeImage(imageID)
         os.remove(compressImagePath)
-
-    def __sendImage(self, data):
-        imageID = data["ImageID"]
-        imageInfo = self.__dbConnector.getImage(imageID)
-        dataSend = dict()
-        dataSend["SendID"] = data["SendID"]
-        dataSend["compressImagePath"] = self.__configurator.getConstant("compressFilesPath") + imageInfo["compressImagePath"]
-        self.__sendQueue.append(dataSend)
 
     def __recievedImage(self, data):
         self.__dbConnector.addImage(data["ImageID"], data["Filename"], data["GroupID"])

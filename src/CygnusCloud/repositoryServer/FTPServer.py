@@ -16,17 +16,25 @@ class FTPLimited(ftp.FTP):
     __upTransfers = MultithreadingCounter()
     
     def ftp_STOR(self, path):
+        def recieved(result):
+            FTPLimited.__upTransfers.decrement()
+            print "Transferido. Quedan " + str(FTPLimited.maxUp - FTPLimited.__upTransfers.read()) + " huecos."
+        def failRecieved(result):
+            pass
         if (FTPLimited.__upTransfers.incrementIfLessThan(FTPLimited.maxUp)):
             print "Transfiriendo. Quedan " + str(FTPLimited.maxUp - FTPLimited.__upTransfers.read()) + " huecos."
-            response = ftp.FTP.ftp_STOR(self, path)
+            response = ftp.FTP.ftp_STOR(self, path).addCallbacks(recieved, failRecieved)
             return response
         else:
             return ftp.defer.fail(MaxConnectionsExceed("Exceed max upload connection"))
         
     def ftp_RETR(self, path):
+        def send(result):
+            FTPLimited.__downTransfers.decrement()
+            print "Transferido. Quedan " + str(FTPLimited.maxUp - FTPLimited.__upTransfers.read()) + " huecos."
         if (FTPLimited.__downTransfers.incrementIfLessThan(FTPLimited.maxDown)):
             print "Transfiriendo. Quedan " + str(FTPLimited.maxDown - FTPLimited.__downTransfers.read()) + " huecos."
-            response = ftp.FTP.ftp_RETR(self, path)
+            response = ftp.FTP.ftp_RETR(self, path).addCallbacks(send, send)
             return response
         else:
             return ftp.defer.fail(MaxConnectionsExceed("Exceed max download connection"))
