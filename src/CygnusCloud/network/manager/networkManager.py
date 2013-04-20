@@ -242,12 +242,15 @@ class NetworkManager():
             self.__connectionPool.pop((connection.getHost(), connection.getPort()))
             raise NetworkManagerException("The connection was closed abnormally")
         
-    def sendPacket(self, host, port, packet):
+    def sendPacket(self, host, port, packet, client_IP = None, client_port = None):
         """
         Sends a packet through the specified port and IP address.
         Args:
             port: The port assigned to the connection that will be used to send the packet.
             packet: The packet to send.
+            client_IP: the client's ipv4 address
+            client_port: the client's listenning port
+            @attention: The last two parameters will only be used with 
         Returns:
             None if the packet was successfully sent and an error message if it wasn't.
         Raises:
@@ -260,10 +263,24 @@ class NetworkManager():
         connection = self.__connectionPool[(host, port)]
         if connection.isReady() :
             connection.registerPacket()
-            self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet))
+            self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet, client_IP, client_port))
             return None
         else :
             return "The connection is not ready yet"
+        
+    def toggleBroadcastMode(self, port):
+        """
+        Switches between the unicast and broadcast modes in a server connection
+        Args:
+            port: the server connection's port
+        Returns:
+            Nothing
+        Raises:
+            NetworkManagerException
+        """
+        if (not self.__connectionPool.has_key(('', port))):
+            raise NetworkManagerException("The connection with the listenning port {0} is not a server connection".format(port))
+        self.__connectionPool[('', port)].toggleBroadcastMode()
         
     def createPacket(self, priority):
         """
