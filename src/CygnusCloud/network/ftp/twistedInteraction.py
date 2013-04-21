@@ -12,7 +12,6 @@ class MaxConnectionsExceed(ftp.FTPCmdError):
 class FTPProtocol(ftp.FTP):   
         
     def __init__(self, downloadTransfersCounter, uploadTransfersCounter):
-        print "Creating Protocol"
         self.__downloadTransfersCounter = downloadTransfersCounter
         self.__uploadTransfersCounter = uploadTransfersCounter
     
@@ -23,24 +22,24 @@ class FTPProtocol(ftp.FTP):
         def failRecieved(result):
             pass
         print "Huecos subida = "+str(self.__uploadTransfersCounter.read())
-        if (self.__uploadTransfersCounter.incrementIfLessThan(self.__uploadTransfersCounter.getMaxValue())):
+        if (self.__uploadTransfersCounter.incrementIfLessThanLimit()):
             print "Transfiriendo. Quedan " + str(self.__uploadTransfersCounter.getMaxValue() - self.__uploadTransfersCounter.read()) + " huecos."
             response = ftp.FTP.ftp_STOR(self, path).addCallbacks(recieved, failRecieved)
             return response
         else:
-            return ftp.defer.fail(MaxConnectionsExceed("Exceeded max upload connection"))
+            return ftp.defer.fail(MaxConnectionsExceed("The upload transfers limit has been reached"))
         
     def ftp_RETR(self, path):
         print "Huecos bajada = "+str(self.__downloadTransfersCounter.read())
         def send(result):
             self.__downloadTransfersCounter.decrement()
             print "Transferido. Quedan " + str(self.__downloadTransfersCounter.getMaxValue() - self.__downloadTransfersCounter.read()) + " huecos."
-        if (self.__downloadTransfersCounter.incrementIfLessThan(self.__downloadTransfersCounter.getMaxValue())):
+        if (self.__downloadTransfersCounter.incrementIfLessThanLimit()):
             print "Transfiriendo. Quedan " + str(self.__downloadTransfersCounter.getMaxValue() - self.__downloadTransfersCounter.read()) + " huecos."
             response = ftp.FTP.ftp_RETR(self, path).addCallbacks(send, send)
             return response
         else:
-            return ftp.defer.fail(MaxConnectionsExceed("Exceeded max download connection"))
+            return ftp.defer.fail(MaxConnectionsExceed("The download transfers limit has been reached"))
 
     def getFreeUpSlot(self):
         return self.__uploadTransfersCounter.getMaxValue() - self.__uploadTransfersCounter.read()

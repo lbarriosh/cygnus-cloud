@@ -90,7 +90,7 @@ class MultithreadingCounter(object):
             else :
                 return False
     
-    def incrementIfLessThan(self, n):
+    def incrementIfLessThanLimit(self):
         """
         Increments the counter if is less than a value.
         Args:
@@ -99,7 +99,7 @@ class MultithreadingCounter(object):
             If the counter has been modified
         """
         with self.__semaphore:
-            if (self.__counter < n):
+            if (self.__counter < self.__maxValue):
                 self.__counter += 1
                 return True
             else :
