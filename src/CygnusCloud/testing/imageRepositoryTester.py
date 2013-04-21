@@ -1,0 +1,89 @@
+# -*- coding: utf8 -*-
+'''
+This module contains statements to connect to a virtual machine
+server and control it.
+@author: Luis Barrios Hernández
+@version: 6.3
+'''
+from __future__ import print_function
+
+from network.manager.networkManager import NetworkManager, NetworkCallback
+from network.exceptions.networkManager import NetworkManagerException
+from imageRepository.packets import ImageRepositoryPacketHandler
+from time import sleep
+
+class TesterCallback(NetworkCallback):
+    def __init__(self, packetHandler):
+        self.__pHandler = packetHandler
+        
+    def processPacket(self, packet):
+        data = self.__pHandler.readPacket(packet)
+        print("Error: a packet from an unexpected type has been received " + data['packet_type'])
+       
+
+def printLogo():
+    print('\t   _____                             _____ _                 _ ')
+    print('\t  / ____|                           / ____| |               | |')
+    print('\t | |    _   _  __ _ _ __  _   _ ___| |    | | ___  _   _  __| |')
+    print('\t | |   | | | |/ _` | \'_ \| | | / __| |    | |/ _ \| | | |/ _` |')
+    print('\t | |___| |_| | (_| | | | | |_| \__ \ |____| | (_) | |_| | (_| |')
+    print('\t  \_____\__, |\__, |_| |_|\__,_|___/\_____|_|\___/ \__,_|\__,_|')
+    print('\t         __/ | __/ |                                           ')
+    print('\t        |___/ |___/ ')
+    print()
+    
+def process_command(tokens, networkManager, pHandler, ip_address, port):
+    if (len(tokens) == 0) :
+        return False
+    try :
+        command = tokens.pop(0)
+        if (command == "halt" ) :
+            p = pHandler.createHaltPacket()
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "quit") :
+            return True
+        else :
+            if (command != "help") :
+                print("Error: unknown command")
+            print("Usage: ")
+            print("=====")           
+            print("\thalt: shuts down the image repository")
+            print("\thelp: prints the following help message")
+            print("\tquit: closes this application")
+    except Exception as e :
+        print("Error: " + e.message)
+    
+
+if __name__ == "__main__" :
+    print('*' * 80)
+    print('*' * 80)
+    printLogo()
+    print('Image repository tester')
+    print('Version 1.0')
+    print('*' * 80)
+    print('*' * 80)
+    print()
+    networkManager = NetworkManager("/home/luis/Certificates")
+    networkManager.startNetworkService()
+    # Create the packet handler
+    pHandler = ImageRepositoryPacketHandler(networkManager)
+    # Ask for the port and the IP address
+    ip_address = raw_input("Repository IP address: ")
+    port = raw_input("Repository commands port: ")
+    try :
+        port = int(port)
+        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
+        while not networkManager.isConnectionReady(ip_address, port) :
+            sleep(0.1)
+        end = False
+        while not end :
+            command = raw_input('>')
+            tokens = command.split()
+            end = process_command(tokens, networkManager, pHandler, ip_address, port)
+    
+    except NetworkManagerException as e:
+        print("Error: " + e.message)
+    networkManager.stopNetworkService()
+    
+    

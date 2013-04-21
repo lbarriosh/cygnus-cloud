@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 '''
 Created on Apr 21, 2013
 
@@ -8,6 +9,7 @@ import sys
 from constants import ImageRepositoryConstantsManager
 from database.utils.configuration import DBConfigurator
 from imageRepository import ImageRepository
+from time import sleep
 
 if __name__ == "__main__" :
     
@@ -28,5 +30,7 @@ if __name__ == "__main__" :
     imageRepository = ImageRepository(cm.getConstant('workingDirectory'), cm.getConstant('maxUploadSlots'), cm.getConstant('maxDownloadSlots'))
     imageRepository.connectToDatabases("ImageRepositoryDB", cm.getConstant("dbUser"), cm.getConstant("dbUserPassword"))
     imageRepository.startListenning(cm.getConstant("certificatePath"), cm.getConstant("commandsPort"), cm.getConstant("dataPort"))
+    while (not imageRepository.hasFinished()) :
+        sleep(1)
     imageRepository.stopListenning()
     

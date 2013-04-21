@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 '''
 Created on Apr 21, 2013
 
@@ -6,9 +7,9 @@ Created on Apr 21, 2013
 
 from ccutils.enums import enum
 
-PACKET_T = enum("STORE_REQUEST", "READY_TO_STORE", "STORE_REQUEST_RECEIVED", "")
+PACKET_T = enum("STORE_REQUEST", "READY_TO_STORE", "STORE_REQUEST_RECEIVED", "HALT")
 
-class RepositoryPacketHandler(object):
+class ImageRepositoryPacketHandler(object):
     def __init__(self, packetCreator):
         self.__packetCreator = packetCreator
         
@@ -19,6 +20,16 @@ class RepositoryPacketHandler(object):
         p.writeInt(client_port)
         return p
     
+    def createReplyPacket(self, packet_T):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(packet_T)
+        return p
+    
+    def createHaltPacket(self):
+        p = self.__packetCreator.createPacket(1)
+        p.writeInt(PACKET_T.HALT)
+        return p
+    
     def readPacket(self, p):
         data = dict()
         packet_type = p.readInt()
@@ -26,7 +37,4 @@ class RepositoryPacketHandler(object):
         if (packet_type == PACKET_T.STORE_REQUEST):
             data['client_ip'] = p.readString()
             data['client_port'] = p.readInt()
-        return data
-    
-    def createReplyPacket(self, packet_T):
-        
+        return data 
