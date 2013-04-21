@@ -1,26 +1,32 @@
-#coding=utf-8
+'''
+Created on Apr 21, 2013
 
-from repositoryServer.constans import RepositoryConstantsManager
-from repositoryServer.repository import Repository
-from database.utils.configuration import DBConfigurator
+@author: luis
+'''
+
 import sys
+from constants import ImageRepositoryConstantsManager
+from database.utils.configuration import DBConfigurator
+from imageRepository import ImageRepository
 
-if __name__ == "__main__":
-    # Parsear el fichero de configuración
+if __name__ == "__main__" :
+    
     if (len(sys.argv) != 2) :
         print "A configuration file path is needed"
         sys.exit()
     try :
-        cm = RepositoryConstantsManager()
+        cm = ImageRepositoryConstantsManager()
         cm.parseConfigurationFile(sys.argv[1])
     except Exception as e:
         print "Error: " + e.message
         sys.exit()
-    configurator = DBConfigurator(cm.getConstant("mysqlRootsPassword"))
-    configurator.runSQLScript(cm.getConstant("databaseName"), "../database/RepositoryDB.sql")
-    # Crear un usuario y darle permisos
-    configurator.addUser(cm.getConstant("databaseUserName"), cm.getConstant("databasePassword"), cm.getConstant("databaseName"), True)
     
-    repository = Repository(cm)
-    repository.startListenning(cm.getConstant("certificatePath"),cm.getConstant("listenningPort"))
+    dbConfigurator = DBConfigurator(cm.getConstant('mysqlRootsPassword'))
+    dbConfigurator.runSQLScript("ImageRepositoryDB", cm.getConstant('scriptPath'))
+    dbConfigurator.addUser(cm.getConstant('dbUser'), cm.getConstant('dbUserPassword'), "ImageRepositoryDB")
+    
+    imageRepository = ImageRepository(cm.getConstant('workingDirectory'), cm.getConstant('maxUploadSlots'), cm.getConstant('maxDownloadSlots'))
+    imageRepository.connectToDatabases("ImageRepositoryDB", cm.getConstant("dbUser"), cm.getConstant("dbUserPassword"))
+    imageRepository.startListenning(cm.getConstant("certificatePath"), cm.getConstant("commandsPort"), cm.getConstant("dataPort"))
+    imageRepository.stopListenning()
     
