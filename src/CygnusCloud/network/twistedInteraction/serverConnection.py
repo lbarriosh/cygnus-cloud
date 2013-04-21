@@ -90,17 +90,6 @@ class ServerConnection(Connection):
             # => accept new client connections
             self._status.set(CONNECTION_STATUS.READY_WAIT)
             
-    def toggleBroadcastMode(self):
-        """
-        Switches between unicast and broadcast modes. This functionality
-        is only available in server connections.
-        Args:
-            None
-        Returns:
-            Nothing
-        """
-        self._factory.toggleBroadcastMode()
-            
     def _freeTwistedResources(self):
         """
         Destroys the twisted-related connection resources.

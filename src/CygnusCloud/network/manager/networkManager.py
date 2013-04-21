@@ -266,21 +266,7 @@ class NetworkManager():
             self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet, client_IP, client_port))
             return None
         else :
-            return "The connection is not ready yet"
-        
-    def toggleBroadcastMode(self, port):
-        """
-        Switches between the unicast and broadcast modes in a server connection
-        Args:
-            port: the server connection's port
-        Returns:
-            Nothing
-        Raises:
-            NetworkManagerException
-        """
-        if (not self.__connectionPool.has_key(('', port))):
-            raise NetworkManagerException("The connection with the listenning port {0} is not a server connection".format(port))
-        self.__connectionPool[('', port)].toggleBroadcastMode()
+            return "The connection is not ready yet" 
         
     def createPacket(self, priority):
         """

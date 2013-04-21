@@ -239,17 +239,6 @@ class Connection(object):
         """
         self._factory.disconnect()
         
-    def toggleBroadcastMode(self):
-        """
-        Switches between unicast and broadcast modes. This functionality
-        is only available in server connections.
-        Args:
-            None
-        Returns:
-            Nothing
-        """
-        raise NotImplementedError
-        
     def _close(self):
         """
         Closes this connection.

@@ -94,7 +94,6 @@ class CygnusCloudProtocolFactory(Factory):
         """
         self.protocol = CygnusCloudProtocol
         self._queue = queue        
-        self.__broadcastMode = True
         self.__protocolPool = GenericThreadSafeDictionary()
     
     def buildProtocol(self, addr):
@@ -126,7 +125,7 @@ class CygnusCloudProtocolFactory(Factory):
         Returns:
             the last built protocol instance
         """
-        if (self.__broadcastMode) :
+        if (ip == None and port == None) :
             for key in self.__protocolPool.keys():
                 self.__protocolPool[key].sendPacket(packet)        
         else :
@@ -156,6 +155,3 @@ class CygnusCloudProtocolFactory(Factory):
         """
         p = _Packet._deserialize(p)
         self._queue.queue(p.getPriority(), p)
-        
-    def toggleBroadcastMode(self):
-        self.__broadcastMode = not self.__broadcastMode
