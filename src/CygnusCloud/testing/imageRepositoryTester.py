@@ -9,8 +9,9 @@ from __future__ import print_function
 
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
-from imageRepository.packets import ImageRepositoryPacketHandler
+from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T
 from time import sleep
+from network.interfaces.ipAddresses import get_ip_address
 
 class TesterCallback(NetworkCallback):
     def __init__(self, packetHandler):
@@ -18,7 +19,10 @@ class TesterCallback(NetworkCallback):
         
     def processPacket(self, packet):
         data = self.__pHandler.readPacket(packet)
-        print("Error: a packet from an unexpected type has been received " + data['packet_type'])
+        if (data['packet_type'] == PACKET_T.ADDED_IMAGE_ID) :
+            print("Added image ID: {0}".format(data['addedImageID']))
+        else:
+            print("Error: a packet from an unexpected type has been received " + data['packet_type'])
        
 
 def printLogo():
@@ -33,6 +37,7 @@ def printLogo():
     print()
     
 def process_command(tokens, networkManager, pHandler, ip_address, port):
+    my_ip_address = get_ip_address("lo")
     if (len(tokens) == 0) :
         return False
     try :
@@ -43,6 +48,10 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             return False
         elif (command == "quit") :
             return True
+        elif (command == "createImage"):
+            p = pHandler.createAddImagePacket(int(tokens.pop(0)), my_ip_address)
+            networkManager.sendPacket(ip_address, port, p)
+            return False
         else :
             if (command != "help") :
                 print("Error: unknown command")

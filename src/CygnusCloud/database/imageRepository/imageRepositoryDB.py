@@ -22,11 +22,12 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
         result["groupID"] = int(groupId)
         return result
     
-    def addImage(self, compressedFilePath, groupID):        
-        update = "INSERT INTO Image(compressedFilePath, imageStatus, groupID) VALUES ('{0}', {1}, '{2}');".format(compressedFilePath, IMAGE_STATUS_T.NOT_RECEIVED, groupID)
+    def addImage(self, groupID):        
+        update = "INSERT INTO Image(compressedFilePath, imageStatus, groupID) VALUES ('{0}', {1}, '{2}');".format("undefined", IMAGE_STATUS_T.NOT_RECEIVED, groupID)
         self._executeUpdate(update)
-        query = "SELECT imageID FROM Image WHERE compressedFilePath = '{0}' AND imageStatus = {1} AND groupID = '{2}';".format(compressedFilePath, IMAGE_STATUS_T.NOT_RECEIVED, groupID)
-        return self._executeQuery(query, True)[0]
+        query = "SELECT imageID FROM Image;"
+        results = self._executeQuery(query, False)
+        return int(results[len(results) - 1][0])
         
     def removeImage(self, imageID):        
         sqlQuery = "DELETE FROM Image WHERE imageID = " + str(imageID)

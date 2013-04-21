@@ -102,7 +102,7 @@ class CygnusCloudProtocolFactory(Factory):
         This method is called inside Twisted code.
         """
         instance = CygnusCloudProtocol(self) 
-        self.__protocolPool[(addr.host, addr.port)] = instance
+        self.__protocolPool[addr.host] = instance
         return instance   
         
     def removeProtocol(self, protocol):
@@ -117,7 +117,7 @@ class CygnusCloudProtocolFactory(Factory):
         """
         return self.__protocolPool.isEmpty()
 
-    def sendPacket(self, packet, ip=None, port=None):
+    def sendPacket(self, packet, ip=None):
         """
         Returns the last built instance
         Args:
@@ -125,11 +125,11 @@ class CygnusCloudProtocolFactory(Factory):
         Returns:
             the last built protocol instance
         """
-        if (ip == None and port == None) :
+        if (ip == None) :
             for key in self.__protocolPool.keys():
                 self.__protocolPool[key].sendPacket(packet)        
         else :
-            self.__protocolPool[(ip, port)].sendPacket(packet)    
+            self.__protocolPool[ip].sendPacket(packet)    
             
     def disconnect(self):
         """

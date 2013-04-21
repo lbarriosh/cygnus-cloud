@@ -7,17 +7,21 @@ Created on Apr 21, 2013
 
 from ccutils.enums import enum
 
-PACKET_T = enum("STORE_REQUEST", "READY_TO_STORE", "STORE_REQUEST_RECEIVED", "HALT")
+PACKET_T = enum("STORE_REQUEST", "READY_TO_STORE", "STORE_REQUEST_RECEIVED", "HALT", "ADD_IMAGE", "ADDED_IMAGE_ID")
 
 class ImageRepositoryPacketHandler(object):
     def __init__(self, packetCreator):
         self.__packetCreator = packetCreator
-        
-    def createStoreRequestPacket(self, client_ip, client_port):
+            
+    def createHaltPacket(self):
+        p = self.__packetCreator.createPacket(1)
+        p.writeInt(PACKET_T.HALT)
+        return p
+    
+    def createStoreRequestPacket(self, client_ip):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.STORE_REQUEST)
         p.writeString(client_ip)
-        p.writeInt(client_port)
         return p
     
     def createReplyPacket(self, packet_T):
@@ -25,16 +29,26 @@ class ImageRepositoryPacketHandler(object):
         p.writeInt(packet_T)
         return p
     
-    def createHaltPacket(self):
-        p = self.__packetCreator.createPacket(1)
-        p.writeInt(PACKET_T.HALT)
+    def createAddImagePacket(self, groupID, client_ip):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(PACKET_T.ADD_IMAGE)
+        p.writeInt(groupID)
+        p.writeString(client_ip)
+        return p
+    
+    def createAddedImagePacket(self, imageID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(PACKET_T.ADDED_IMAGE_ID)
+        p.writeInt(imageID)
         return p
     
     def readPacket(self, p):
         data = dict()
         packet_type = p.readInt()
         data['packet_type'] = packet_type
-        if (packet_type == PACKET_T.STORE_REQUEST):
-            data['client_ip'] = p.readString()
-            data['client_port'] = p.readInt()
+        if (packet_type == PACKET_T.ADD_IMAGE):
+            data['groupID'] = p.readInt()
+            data['clientIP'] = p.readString()
+        if (packet_type == PACKET_T.ADDED_IMAGE_ID):
+            data['addedImageID'] = p.readInt()
         return data 

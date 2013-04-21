@@ -27,9 +27,10 @@ if __name__ == "__main__" :
     dbConfigurator.runSQLScript("ImageRepositoryDB", cm.getConstant('scriptPath'))
     dbConfigurator.addUser(cm.getConstant('dbUser'), cm.getConstant('dbUserPassword'), "ImageRepositoryDB")
     
-    imageRepository = ImageRepository(cm.getConstant('workingDirectory'), cm.getConstant('maxUploadSlots'), cm.getConstant('maxDownloadSlots'))
+    imageRepository = ImageRepository(cm.getConstant('workingDirectory'))
     imageRepository.connectToDatabases("ImageRepositoryDB", cm.getConstant("dbUser"), cm.getConstant("dbUserPassword"))
-    imageRepository.startListenning(cm.getConstant("certificatePath"), cm.getConstant("commandsPort"), cm.getConstant("dataPort"))
+    imageRepository.startListenning(cm.getConstant("certificatePath"), cm.getConstant("commandsPort"), 
+                                    cm.getConstant("dataPort"), cm.getConstant('maxUploadSlots'), cm.getConstant('maxDownloadSlots'))
     while (not imageRepository.hasFinished()) :
         sleep(1)
     imageRepository.stopListenning()

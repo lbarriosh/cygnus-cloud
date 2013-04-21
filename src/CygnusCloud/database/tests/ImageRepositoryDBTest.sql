@@ -13,4 +13,4 @@ CREATE TABLE Image(
 	imageID INTEGER PRIMARY KEY AUTO_INCREMENT, 
 	compressedFilePath VARCHAR(100),
 	imageStatus TINYINT, 
-	groupId INTEGER, UNIQUE(compressedFilePath));
+	groupId INTEGER);

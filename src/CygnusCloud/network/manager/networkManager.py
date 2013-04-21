@@ -242,15 +242,14 @@ class NetworkManager():
             self.__connectionPool.pop((connection.getHost(), connection.getPort()))
             raise NetworkManagerException("The connection was closed abnormally")
         
-    def sendPacket(self, host, port, packet, client_IP = None, client_port = None):
+    def sendPacket(self, host, port, packet, client_IP = None):
         """
         Sends a packet through the specified port and IP address.
         Args:
             port: The port assigned to the connection that will be used to send the packet.
             packet: The packet to send.
             client_IP: the client's ipv4 address
-            client_port: the client's listenning port
-            @attention: The last two parameters will only be used with 
+            @attention: The last parameter will only be used in server connections working in UNICAST mode.
         Returns:
             None if the packet was successfully sent and an error message if it wasn't.
         Raises:
@@ -263,7 +262,7 @@ class NetworkManager():
         connection = self.__connectionPool[(host, port)]
         if connection.isReady() :
             connection.registerPacket()
-            self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet, client_IP, client_port))
+            self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet, client_IP))
             return None
         else :
             return "The connection is not ready yet" 
