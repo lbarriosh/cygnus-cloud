@@ -148,6 +148,14 @@ class VMServer(MainServerPacketReactor):
         elif (data['packet_type'] == VM_SERVER_PACKET_T.GET_IMAGE) :
             self.__getImage(data)
         
+    def __getImage(self, data):
+        '''
+        data diccionario con:
+            - IP del servidor FTP
+            - puerto del servidor FTP
+            - imagen que tiene que pedir
+            
+        '''
     def __sendActiveVMsVNCConnectionData(self):
         '''
         Envía la informacion de conexion de todas las máquinas virtuales

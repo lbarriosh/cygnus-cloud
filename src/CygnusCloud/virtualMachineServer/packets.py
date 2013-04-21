@@ -9,7 +9,8 @@ from ccutils.enums import enum
 
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
-                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS")
+                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS",
+                          "REQUEST_DOWNLOAD_SLOT", "REQUEST_UPLOAD_SLOT")
 
 class VMServerPacketHandler(object):
     
@@ -160,6 +161,29 @@ class VMServerPacketHandler(object):
             p.writeString(domain_uid)
         return p
     
+    def createRequestDownloadSlotPacket(self, serverIP, port, requestID):
+        """
+        Crea un paquete para pedir un hueco al repositorio para bajarse un imagen
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.REQUEST_DOWNLOAD_SLOT)
+        p.writeString(serverIP)
+        p.writeInt(port)
+        p.writeInt(requestID)
+        return p
+    
+    def createRequestUploadSlotPacket(self, serverIP, port, requestID):
+        """
+        Crea un paquete para pedir un hueco al repositorio para subir una imagen
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.REQUEST_UPLOAD_SLOT)
+        p.writeString(serverIP)
+        p.writeInt(port)
+        p.writeInt(requestID)
+        return p
+    
+    
     def readPacket(self, p):
         """
         Reads the content of a virtual machine server packet
@@ -200,6 +224,11 @@ class VMServerPacketHandler(object):
             while (p.hasMoreData()):
                 ac.append(p.readString())
             result["Domain_UIDs"] = ac
+        elif (packet_type == VM_SERVER_PACKET_T.REQUEST_DOWNLOAD_SLOT or
+              packet_type == VM_SERVER_PACKET_T.REQUEST_UPLOAD_SLOT) :
+            result["IP"] = p.readString()
+            result["port"] = p.readInt()
+            result["requestID"] = p.readInt()
         
         # Note that the connection data segments will be sent to the web server immediately.
         # Therefore, they don't need to be read in the main server or in the virtual machine server.        

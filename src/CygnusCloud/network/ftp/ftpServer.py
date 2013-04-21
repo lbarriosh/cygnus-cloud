@@ -38,5 +38,6 @@ class FTPServer(object):
 if __name__ == '__main__' :
     ftpServer = FTPServer('eth0', 2121, '/tmp', {'cygnuscloud' : '12345'}, 1, 1)
     ftpServer.startListenning()
-    sleep(1000)
+    while (True) :
+        sleep(1000)
     ftpServer.stopListenning()

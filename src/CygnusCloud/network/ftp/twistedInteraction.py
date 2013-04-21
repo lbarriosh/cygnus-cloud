@@ -62,12 +62,24 @@ class FTPServerFactory(ftp.FTPFactory):
         self.__uploadTransfers = MultithreadingCounter(settings["maxUploadTransfers"])
         
         self.allowAnonymous = False
-        self.protocol = FTPProtocol  
+        self.protocol = FTPProtocol
         
     def buildProtocol(self, addr):
         return self.protocol(self.__downloadTransfers, self.__uploadTransfers)
         
     def doStart(self):
         pass
+
+class FTPClientFactory(ftp._PassiveConnectionFactory):
+
+    def __init__(self, settings):
+        print("Initializing FTP Client")
+        self.__user = settings['user']
+        self.__password = settings['password']
+        self.protocol = ftp.FTPClient
         
-# TODO: crear factoria para los clientes FTP
+    def buildProtocol(self, addr):
+        return self.protocol(self.__user, self.__password)
+        
+    def doStart(self):
+        pass
