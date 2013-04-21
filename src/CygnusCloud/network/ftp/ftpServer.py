@@ -36,7 +36,7 @@ class FTPServer(object):
             self.__reactorThread.stop()
 
 if __name__ == '__main__' :
-    ftpServer = FTPServer('eth0', 2121, '/tmp', {'cygnuscloud' : '12345'}, 1, 1)
+    ftpServer = FTPServer('eth0', 2121, '/home', {'cygnuscloud' : '12345'}, 1, 1)
     ftpServer.startListenning()
     while (True) :
         sleep(1000)

@@ -12,33 +12,41 @@ class MaxConnectionsExceed(ftp.FTPCmdError):
 class FTPProtocol(ftp.FTP):   
         
     def __init__(self, downloadTransfersCounter, uploadTransfersCounter):
+        print "Creating Protocol"
         self.__downloadTransfersCounter = downloadTransfersCounter
         self.__uploadTransfersCounter = uploadTransfersCounter
     
     def ftp_STOR(self, path):
         def recieved(result):
-            self.__uploadTransfers.decrement()
-            print "Transferido. Quedan " + str(self.__uploadTransfers.getMaxValue() - self.__uploadTransfers.read()) + " huecos."
+            self.__uploadTransfersCounter.decrement()
+            print "Transferido. Quedan " + str(self.__uploadTransfersCounter.getMaxValue() - self.__uploadTransfersCounter.read()) + " huecos."
         def failRecieved(result):
             pass
-        if (self.__uploadTransfers.incrementIfLessThan(self.maxUploadTransfers)):
-            print "Transfiriendo. Quedan " + str(self.__uploadTransfers.getMaxValue() - self.__uploadTransfers.read()) + " huecos."
+        print "Huecos subida = "+str(self.__uploadTransfersCounter.read())
+        if (self.__uploadTransfersCounter.incrementIfLessThan(self.__uploadTransfersCounter.getMaxValue())):
+            print "Transfiriendo. Quedan " + str(self.__uploadTransfersCounter.getMaxValue() - self.__uploadTransfersCounter.read()) + " huecos."
             response = ftp.FTP.ftp_STOR(self, path).addCallbacks(recieved, failRecieved)
             return response
         else:
             return ftp.defer.fail(MaxConnectionsExceed("Exceeded max upload connection"))
         
     def ftp_RETR(self, path):
+        print "Huecos bajada = "+str(self.__downloadTransfersCounter.read())
         def send(result):
-            self.__downloadTransfers.decrement()
-            print "Transferido. Quedan " + str(self.__downloadTransfersCounter.getMaxValue() - self.__uploadTransfers.read()) + " huecos."
-        if (self.__downloadTransfers.incrementIfLessThan(self.__downloadTransfersCounter.getMaxValue())):
-            print "Transfiriendo. Quedan " + str(self.__downloadTransfersCounter.getMaxValue() - self.__downloadTransfers.read()) + " huecos."
+            self.__downloadTransfersCounter.decrement()
+            print "Transferido. Quedan " + str(self.__downloadTransfersCounter.getMaxValue() - self.__downloadTransfersCounter.read()) + " huecos."
+        if (self.__downloadTransfersCounter.incrementIfLessThan(self.__downloadTransfersCounter.getMaxValue())):
+            print "Transfiriendo. Quedan " + str(self.__downloadTransfersCounter.getMaxValue() - self.__downloadTransfersCounter.read()) + " huecos."
             response = ftp.FTP.ftp_RETR(self, path).addCallbacks(send, send)
             return response
         else:
             return ftp.defer.fail(MaxConnectionsExceed("Exceeded max download connection"))
 
+    def getFreeUpSlot(self):
+        return self.__uploadTransfersCounter.getMaxValue() - self.__uploadTransfersCounter.read()
+    def getFreeDownSlot(self):
+        return self.__downloadTransfersCounter.getMaxValue() - self.__downloadTransfersCounter.read()
+        
 
 class FTPRealmPath(ftp.FTPRealm):
     
@@ -63,6 +71,8 @@ class FTPServerFactory(ftp.FTPFactory):
         
         self.allowAnonymous = False
         self.protocol = FTPProtocol
+        self.protocol.factory = self
+        self.protocol.portal = p
         
     def buildProtocol(self, addr):
         return self.protocol(self.__downloadTransfers, self.__uploadTransfers)
@@ -79,7 +89,11 @@ class FTPClientFactory(ftp._PassiveConnectionFactory):
         self.protocol = ftp.FTPClient
         
     def buildProtocol(self, addr):
-        return self.protocol(self.__user, self.__password)
+        self.__protocolInstace = self.protocol(self.__user, self.__password)
+        return self.__protocolInstances
         
     def doStart(self):
         pass
+    
+    def getClient(self):
+        return self.__protocolInstace

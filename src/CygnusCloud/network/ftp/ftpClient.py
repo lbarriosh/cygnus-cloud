@@ -18,13 +18,14 @@ class FTPClient(object):
             self.__reactorThread = TwistedReactorThread()
             self.__reactorThread.start()
         self.__iListeningPort = reactor.connectTCP(self.__serverIP, self.__serverPort, self.__factory)
+        return self.__factory.getClient()
         
     def disconnect(self):
         self.__factory.stopFactory()
 
 if __name__ == '__main__' :
-    ftpServer = FTPClient('192.168.1.3', 2121, 'cygnuscloud' , '12345')
-    ftpServer.connect()
+    ftpClient = FTPClient('192.168.1.3', 2121, 'cygnuscloud' , '12345')
+    ftpClient.connect()
     while (True) :
         sleep(1000)
-    ftpServer.disconnect()
+    ftpClient.disconnect()

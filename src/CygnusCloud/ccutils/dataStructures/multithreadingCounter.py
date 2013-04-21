@@ -19,7 +19,7 @@ class MultithreadingCounter(object):
         """
         self.__semaphore = BoundedSemaphore(1)
         self.__counter = 0
-        self.__maxValue = 0
+        self.__maxValue = maxValue
         
     def setMaxValue(self, newValue):
         with self.__semaphore:
