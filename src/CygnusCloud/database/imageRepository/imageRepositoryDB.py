@@ -31,3 +31,7 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
     def removeImage(self, imageID):        
         sqlQuery = "DELETE FROM Image WHERE imageID = " + str(imageID)
         self._executeUpdate(sqlQuery)
+        
+    def changeImageStatus(self, imageID, newStatus):
+        update = "UPDATE Image SET imageStatus = {1} WHERE imageID = {0};".format(imageID, newStatus)
+        self._executeUpdate(update)

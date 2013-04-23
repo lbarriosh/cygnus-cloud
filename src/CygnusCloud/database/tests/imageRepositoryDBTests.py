@@ -47,5 +47,12 @@ class ClusterServerDBTests(unittest.TestCase):
         expectedResult = None
         self.assertEquals(result, expectedResult, "removeImage() error")
         
+    def test_changeImageStatus(self):
+        imageID = self.__connector.addImage()
+        self.__connector.changeImageStatus(imageID, IMAGE_STATUS_T.READY)
+        result = self.__connector.getImageData(imageID)
+        expectedResult = {"compressedFilePath" : "undefined", "imageStatus" : IMAGE_STATUS_T.READY}
+        self.assertEquals(result, expectedResult, "changeImageStatus() error")
+        
 if __name__ == "__main__":
     unittest.main()

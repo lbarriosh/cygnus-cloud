@@ -9,6 +9,7 @@ from network.manager.networkManager import NetworkCallback, NetworkManager
 from database.imageRepository.imageRepositoryDB import ImageRepositoryDBConnector, IMAGE_STATUS_T
 from packets import ImageRepositoryPacketHandler, PACKET_T
 from network.ftp.ftpServer import ConfigurableFTPServer, FTPCallback
+from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
 
 class ImageRepository(object):
     
@@ -24,7 +25,10 @@ class ImageRepository(object):
         self.__networkManager = NetworkManager(certificatesDirectory)
         pHandler = ImageRepositoryPacketHandler(self.__networkManager)
         
-        self.__commandsCallback = CommandsCallback(self.__workingDirectory, self.__networkManager, pHandler, commandsListenningPort, self.__dbConnector)        
+        self.__retrieveQueue = GenericThreadSafeList()
+        
+        self.__commandsCallback = CommandsCallback(self.__workingDirectory, self.__networkManager, pHandler, commandsListenningPort, self.__dbConnector,
+                                                   self.__retrieveQueue)        
         
         self.__networkManager.startNetworkService()
         self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, True)
@@ -42,13 +46,14 @@ class ImageRepository(object):
         return self.__commandsCallback.finish()
         
 class CommandsCallback(NetworkCallback):
-    def __init__(self, workingDirectory, networkManager, pHandler, commandsListenningPort, dbConnector):
+    def __init__(self, workingDirectory, networkManager, pHandler, commandsListenningPort, dbConnector, retrieveQueue):
         self.__networkManager = networkManager
         self.__pHandler = pHandler
         self.__commandsListenningPort = commandsListenningPort
         self.__workingDirectory = workingDirectory    
         self.__dbConnector = dbConnector    
         self.__finish = False
+        self.__retrieveQueue = retrieveQueue
         
     def processPacket(self, packet):
         data = self.__pHandler.readPacket(packet)
@@ -77,8 +82,9 @@ class CommandsCallback(NetworkCallback):
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else:
             p = self.__pHandler.createImageRequestReceivedPacket(PACKET_T.RETR_REQUEST_RECVD)
-            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
-            # TODO: encolar
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
+            self.__retrieveQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))
+            self.__dbConnector.changeImageStatus(data["imageID"], IMAGE_STATUS_T.EDITION)
         
 class DataCallback(FTPCallback):
     def on_disconnect(self):

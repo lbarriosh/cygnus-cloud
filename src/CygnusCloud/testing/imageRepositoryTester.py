@@ -23,7 +23,7 @@ class TesterCallback(NetworkCallback):
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_ERROR) :
             print("Retrieve error: " + data['errorMessage'])
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_RECVD) :
-            print("Retrieve request received")
+            print("The image repository says: retrieve request received")
         else:
             print("Error: a packet from an unexpected type has been received " + data['packet_type'])
        
