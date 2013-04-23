@@ -1,9 +1,11 @@
 from pyftpdlib.authorizers import DummyAuthorizer
-from pyftpdlib.handlers import FTPHandler
+from pyftpdlib.handlers import FTPHandler, ThrottledDTPHandler
 from pyftpdlib.servers import FTPServer
 from network.interfaces.ipAddresses import get_ip_address
 from threading import Thread, Lock, Event
-        
+from ccutils.processes.childProcessManager import ChildProcessManager
+from re import sub    
+    
 from time import sleep
         
 class FTPServerThread(Thread):
@@ -63,11 +65,17 @@ class ConfigurableFTPServer(object):
         self.__banner = banner 
         self.__thread = None
         
-    def startListenning(self, networkInterface, port, maxConnections, maxConnectionsPerIP):
+    def startListenning(self, networkInterface, port, maxConnections, maxConnectionsPerIP, downloadBandwidthRatio=0.8, uploadBandwitdhRatio=0.8):
         ip_address = get_ip_address(networkInterface)
         handler = FTPHandler
         handler.authorizer = self.__authorizer
-        handler.banner = self.__banner
+        handler.banner = self.__banner  
+        link_bandwidth = ChildProcessManager.runCommandInForeground("ethtool eth0 | grep -i Speed | cut -b 9-", Exception)
+        link_bandwidth = int(sub('[^0-9]', '', link_bandwidth))
+        dtp_handler = ThrottledDTPHandler
+        dtp_handler.read_limit = link_bandwidth * downloadBandwidthRatio * 1024 * 1024
+        dtp_handler.write_limit = link_bandwidth * uploadBandwitdhRatio * 1024 * 1024 
+        handler.dtp_handler = dtp_handler
         address = (ip_address, port)
         self.__ftpServer = FTPServer(address, handler)
         self.__ftpServer.max_cons = maxConnections
@@ -102,7 +110,7 @@ class ConfigurableFTPServer(object):
         
 if __name__ == "__main__" :
     ftpServer = ConfigurableFTPServer("Welcome to the image repository FTP server!")
-    ftpServer.startListenning("eth0", 2121, 5, 1)
+    ftpServer.startListenning("eth0", 2121, 5, 1, 80)
     ftpServer.addUser("cygnuscloud", "cygnuscloud", "/home/luis/FTPTests", "elradfmwM")
     sleep(5)
     ftpServer.stopListenning()
