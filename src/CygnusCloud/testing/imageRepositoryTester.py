@@ -31,7 +31,7 @@ class TesterCallback(NetworkCallback):
             print("Initializing transfer...")
             ftpClient = FTPClient()
             ftpClient.connect(self.__ip_address, data['FTPServerPort'], 100, data['username'], data['password'])
-            ftpClient.retrieveFile(data['fileName'], "/home/luis", None) 
+            ftpClient.retrieveFile(data['fileName'], "/home/luis", data['serverDirectory']) 
             print("Transfer completed")
         else:
             print("Error: a packet from an unexpected type has been received " + data['packet_type'])

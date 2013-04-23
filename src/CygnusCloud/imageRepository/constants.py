@@ -14,3 +14,4 @@ class ImageRepositoryConstantsManager(ConstantsManager):
         self._data["maxConnectionsPerIP"] = int(self._data["maxConnectionsPerIP"])
         self._data["uploadBandwidthRatio"] = float(self._data["uploadBandwidthRatio"])
         self._data["downloadBandwidthRatio"] = float(self._data["downloadBandwidthRatio"])
+        self._data["FTPPasswordLength"] = int(self._data["FTPPasswordLength"])

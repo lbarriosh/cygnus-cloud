@@ -26,12 +26,13 @@ if __name__ == "__main__" :
     dbConfigurator.runSQLScript("ImageRepositoryDB", cm.getConstant('scriptPath'))
     dbConfigurator.addUser(cm.getConstant('dbUser'), cm.getConstant('dbUserPassword'), "ImageRepositoryDB")
     
-    imageRepository = ImageRepository(cm.getConstant('workingDirectory'))
-    imageRepository.connectToDatabases("ImageRepositoryDB", cm.getConstant("dbUser"), cm.getConstant("dbUserPassword"))
+    imageRepository = ImageRepository(cm.getConstant('FTPRootDirectory'))
+    imageRepository.connectToDatabase("ImageRepositoryDB", cm.getConstant("dbUser"), cm.getConstant("dbUserPassword"))
     
     imageRepository.startListenning(cm.getConstant("FTPListenningInterface"), cm.getConstant("certificatePath"), cm.getConstant("commandsPort"), 
                                     cm.getConstant("FTPPort"), cm.getConstant('maxConnections'), cm.getConstant('maxConnectionsPerIP'),
-                                    cm.getConstant("uploadBandwidthRatio"), cm.getConstant("downloadBandwidthRatio"))
+                                    cm.getConstant("uploadBandwidthRatio"), cm.getConstant("downloadBandwidthRatio"), cm.getConstant("FTPUserName"),
+                                    cm.getConstant("FTPPasswordLength"))
     imageRepository.doTransfers()
     imageRepository.stopListenning()
     

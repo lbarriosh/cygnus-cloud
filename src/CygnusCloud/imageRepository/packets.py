@@ -30,13 +30,14 @@ class ImageRepositoryPacketHandler(object):
         p.writeInt(packet_t)
         return p
     
-    def createTransferEnabledPacket(self, packet_t, imageID, FTPServerPort, username, password, fileName):
+    def createTransferEnabledPacket(self, packet_t, imageID, FTPServerPort, username, password, serverDirectory, fileName):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_t)
         p.writeInt(imageID)
         p.writeInt(FTPServerPort)
         p.writeString(username)
         p.writeString(password)
+        p.writeString(serverDirectory)
         p.writeString(fileName)
         return p
     
@@ -74,5 +75,6 @@ class ImageRepositoryPacketHandler(object):
             data['FTPServerPort'] = p.readInt()
             data['username'] = p.readString()
             data['password'] = p.readString()
+            data['serverDirectory'] = p.readString()
             data['fileName'] = p.readString()
         return data 
