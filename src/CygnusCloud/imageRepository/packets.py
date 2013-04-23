@@ -7,7 +7,7 @@ Created on Apr 21, 2013
 
 from ccutils.enums import enum
 
-PACKET_T = enum("HALT", "ADD_IMAGE", "ADDED_IMAGE_ID", "RETR_REQUEST", "RETR_REQUEST_RECVD", "RETR_REQUEST_ERROR")
+PACKET_T = enum("HALT", "ADD_IMAGE", "ADDED_IMAGE_ID", "RETR_REQUEST", "RETR_REQUEST_RECVD", "RETR_REQUEST_ERROR", "RETR_START")
 
 class ImageRepositoryPacketHandler(object):
     def __init__(self, packetCreator):
@@ -18,15 +18,26 @@ class ImageRepositoryPacketHandler(object):
         p.writeInt(PACKET_T.HALT)
         return p
     
-    def createImageRequestPacket(self, packet_t, imageID):
+    def createImageRequestPacket(self, packet_t, imageID, modify):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_t)
         p.writeInt(imageID)
+        p.writeBool(modify)
         return p
     
     def createImageRequestReceivedPacket(self, packet_t):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_t)
+        return p
+    
+    def createTransferEnabledPacket(self, packet_t, imageID, FTPServerPort, username, password, fileName):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(packet_t)
+        p.writeInt(imageID)
+        p.writeInt(FTPServerPort)
+        p.writeString(username)
+        p.writeString(password)
+        p.writeString(fileName)
         return p
     
     def createErrorPacket(self, packet_t, errorMessage):
@@ -55,6 +66,13 @@ class ImageRepositoryPacketHandler(object):
             data['addedImageID'] = p.readInt()
         elif (packet_type == PACKET_T.RETR_REQUEST) :
             data['imageID'] = p.readInt()
+            data['modify'] = p.readBool()
         elif (packet_type == PACKET_T.RETR_REQUEST_ERROR) :
             data['errorMessage'] = p.readString()
+        elif (packet_type == PACKET_T.RETR_START) :
+            data['imageID'] = p.readInt()
+            data['FTPServerPort'] = p.readInt()
+            data['username'] = p.readString()
+            data['password'] = p.readString()
+            data['fileName'] = p.readString()
         return data 

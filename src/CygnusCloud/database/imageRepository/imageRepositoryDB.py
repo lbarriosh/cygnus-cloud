@@ -1,6 +1,6 @@
 
 from database.utils.connector import BasicDatabaseConnector
-
+from re import sub
 from ccutils.enums import enum
 
 IMAGE_STATUS_T = enum("NOT_RECEIVED", "READY", "EDITION")
@@ -27,6 +27,10 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
         query = "SELECT imageID FROM Image;"
         results = self._executeQuery(query, False)
         return int(results[len(results) - 1][0])
+    
+    def addVanillaImage(self, compressedFilePath):
+        update = "INSERT INTO Image(compressedFilePath, imageStatus) VALUES ('{0}', {1});".format("undefined", IMAGE_STATUS_T.READY)
+        self._executeUpdate(update)
         
     def removeImage(self, imageID):        
         sqlQuery = "DELETE FROM Image WHERE imageID = " + str(imageID)
@@ -34,4 +38,9 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
         
     def changeImageStatus(self, imageID, newStatus):
         update = "UPDATE Image SET imageStatus = {1} WHERE imageID = {0};".format(imageID, newStatus)
+        self._executeUpdate(update)
+        
+    def processFinishedTransfer(self, fileName):
+        imageID = sub("[^0-9]", "", fileName)
+        update = "UPDATE Image SET imageStatus = {1}, compressedImagePath = '{2}' WHERE imageID = {0};".format(imageID, IMAGE_STATUS_T.READY, fileName)
         self._executeUpdate(update)

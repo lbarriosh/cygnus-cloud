@@ -11,10 +11,13 @@ from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
 from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T
 from time import sleep
+from network.ftp.ftpClient import FTPClient
+
 
 class TesterCallback(NetworkCallback):
-    def __init__(self, packetHandler):
+    def __init__(self, packetHandler, ip_address):
         self.__pHandler = packetHandler
+        self.__ip_address = ip_address
         
     def processPacket(self, packet):
         data = self.__pHandler.readPacket(packet)
@@ -24,6 +27,12 @@ class TesterCallback(NetworkCallback):
             print("Retrieve error: " + data['errorMessage'])
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_RECVD) :
             print("The image repository says: retrieve request received")
+        elif (data['packet_type'] == PACKET_T.RETR_START) :
+            print("Initializing transfer...")
+            ftpClient = FTPClient()
+            ftpClient.connect(self.__ip_address, data['FTPServerPort'], 100, data['username'], data['password'])
+            ftpClient.retrieveFile(data['fileName'], "/home/luis", None) 
+            print("Transfer completed")
         else:
             print("Error: a packet from an unexpected type has been received " + data['packet_type'])
        
@@ -55,7 +64,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
             return False
         elif (command == "retrieveImage"):
-            p = pHandler.createImageRequestPacket(PACKET_T.RETR_REQUEST, int(tokens.pop(0)))
+            p = pHandler.createImageRequestPacket(PACKET_T.RETR_REQUEST, int(tokens.pop(0)), True)
             networkManager.sendPacket(ip_address, port, p)
             return False
         else :
@@ -88,7 +97,7 @@ if __name__ == "__main__" :
     port = raw_input("Repository commands port: ")
     try :
         port = int(port)
-        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
+        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler, ip_address), True)
         while not networkManager.isConnectionReady(ip_address, port) :
             sleep(0.1)
         end = False
@@ -100,5 +109,3 @@ if __name__ == "__main__" :
     except NetworkManagerException as e:
         print("Error: " + e.message)
     networkManager.stopNetworkService()
-    
-    

@@ -9,7 +9,6 @@ import sys
 from constants import ImageRepositoryConstantsManager
 from database.utils.configuration import DBConfigurator
 from imageRepository import ImageRepository
-from time import sleep
 
 if __name__ == "__main__" :
     
@@ -33,7 +32,6 @@ if __name__ == "__main__" :
     imageRepository.startListenning(cm.getConstant("FTPListenningInterface"), cm.getConstant("certificatePath"), cm.getConstant("commandsPort"), 
                                     cm.getConstant("FTPPort"), cm.getConstant('maxConnections'), cm.getConstant('maxConnectionsPerIP'),
                                     cm.getConstant("uploadBandwidthRatio"), cm.getConstant("downloadBandwidthRatio"))
-    while (not imageRepository.hasFinished()) :
-        sleep(1)
+    imageRepository.doTransfers()
     imageRepository.stopListenning()
     

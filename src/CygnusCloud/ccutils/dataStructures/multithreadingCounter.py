@@ -11,7 +11,7 @@ class MultithreadingCounter(object):
     """
     A thred-safe counter.
     """
-    def __init__(self, maxValue = 0):
+    def __init__(self):
         """
         Initializes the counter.
         Args:
@@ -19,14 +19,6 @@ class MultithreadingCounter(object):
         """
         self.__semaphore = BoundedSemaphore(1)
         self.__counter = 0
-        self.__maxValue = maxValue
-        
-    def setMaxValue(self, newValue):
-        with self.__semaphore:
-            self.__maxValue = newValue
-            
-    def getMaxValue(self):
-        return self.__maxValue
         
     def read(self):
         """
@@ -89,21 +81,6 @@ class MultithreadingCounter(object):
                 return True
             else :
                 return False
-    
-    def incrementIfLessThanLimit(self):
-        """
-        Increments the counter if is less than a value.
-        Args:
-            n : value to test
-        Returns:
-            If the counter has been modified
-        """
-        with self.__semaphore:
-            if (self.__counter < self.__maxValue):
-                self.__counter += 1
-                return True
-            else :
-                return False
             
     def decrementIfLessThan(self, n):
         """
@@ -114,7 +91,7 @@ class MultithreadingCounter(object):
             If the counter has been modified
         """
         with self.__semaphore:
-            if (self.__counter > n):
+            if (self.__counter < n):
                 self.__counter -= 1
                 return True
             else :

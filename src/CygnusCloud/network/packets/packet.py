@@ -36,8 +36,8 @@ class _Packet(object):
         self.__sender_port = None
         
     def setSenderData(self, sender_ip, sender_port):
-        self.__sender_ip = None
-        self.__sender_port = None
+        self.__sender_ip = sender_ip
+        self.__sender_port = sender_port
         
     def getSenderData(self):
         return (self.__sender_ip, self.__sender_port)
