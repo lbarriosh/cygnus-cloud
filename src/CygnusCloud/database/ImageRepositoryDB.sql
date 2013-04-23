@@ -10,5 +10,4 @@ USE ImageRepositoryDB;
 CREATE TABLE IF NOT EXISTS Image(
 	imageID INTEGER PRIMARY KEY AUTO_INCREMENT, 
 	compressedFilePath VARCHAR(100),
-	imageStatus TINYINT, 
-	groupId INTEGER);
+	imageStatus TINYINT);

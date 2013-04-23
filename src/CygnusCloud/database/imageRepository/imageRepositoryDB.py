@@ -15,15 +15,14 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
         row = self._executeQuery(sqlQuery, False)
         if (row == ()) :
             return None
-        (imageID, compressedFilePath, imageStatus, groupId) = row[0]
+        (imageID, compressedFilePath, imageStatus) = row[0]
         result = dict()
         result["compressedFilePath"] = compressedFilePath
         result["imageStatus"] = imageStatus
-        result["groupID"] = int(groupId)
         return result
     
-    def addImage(self, groupID):        
-        update = "INSERT INTO Image(compressedFilePath, imageStatus, groupID) VALUES ('{0}', {1}, '{2}');".format("undefined", IMAGE_STATUS_T.NOT_RECEIVED, groupID)
+    def addImage(self):        
+        update = "INSERT INTO Image(compressedFilePath, imageStatus) VALUES ('{0}', {1});".format("undefined", IMAGE_STATUS_T.NOT_RECEIVED)
         self._executeUpdate(update)
         query = "SELECT imageID FROM Image;"
         results = self._executeQuery(query, False)

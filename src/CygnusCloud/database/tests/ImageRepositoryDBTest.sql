@@ -12,5 +12,4 @@ DROP TABLE IF EXISTS Image;
 CREATE TABLE Image(
 	imageID INTEGER PRIMARY KEY AUTO_INCREMENT, 
 	compressedFilePath VARCHAR(100),
-	imageStatus TINYINT, 
-	groupId INTEGER);
+	imageStatus TINYINT);

@@ -35,13 +35,13 @@ class ClusterServerDBTests(unittest.TestCase):
         dbConfigurator.dropDatabase("ImageRepositoryDBTest")
         
     def test_addImage(self):
-        imageID = self.__connector.addImage(1)
+        imageID = self.__connector.addImage()
         result = self.__connector.getImageData(imageID)
-        expectedResult = {"compressedFilePath" : "undefined", "imageStatus" : IMAGE_STATUS_T.NOT_RECEIVED, "groupID":1}
+        expectedResult = {"compressedFilePath" : "undefined", "imageStatus" : IMAGE_STATUS_T.NOT_RECEIVED}
         self.assertEquals(result, expectedResult, "addImage() error")
         
     def test_removeImage(self):
-        imageID = self.__connector.addImage(1)
+        imageID = self.__connector.addImage()
         self.__connector.removeImage(imageID)
         result = self.__connector.getImageData(imageID)
         expectedResult = None

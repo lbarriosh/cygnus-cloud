@@ -18,10 +18,9 @@ class ImageRepositoryPacketHandler(object):
         p.writeInt(PACKET_T.HALT)
         return p
     
-    def createStoreRequestPacket(self, client_ip):
+    def createStoreRequestPacket(self):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.STORE_REQUEST)
-        p.writeString(client_ip)
         return p
     
     def createReplyPacket(self, packet_T):
@@ -48,7 +47,6 @@ class ImageRepositoryPacketHandler(object):
         data['packet_type'] = packet_type
         if (packet_type == PACKET_T.ADD_IMAGE):
             data['groupID'] = p.readInt()
-            data['clientIP'] = p.readString()
         if (packet_type == PACKET_T.ADDED_IMAGE_ID):
             data['addedImageID'] = p.readInt()
         return data 
