@@ -128,10 +128,14 @@ class ConfigurableFTPServer(object):
         handler.authorizer = self.__authorizer
         handler.banner = self.__banner  
         link_bandwidth = ChildProcessManager.runCommandInForeground("ethtool eth0 | grep -i Speed | cut -b 9-", Exception)
+        if ("Mb/s" in link_bandwidth) :
+            power = 1024 ** 2
+        else :
+            power = 1024 ** 3
         link_bandwidth = int(sub('[^0-9]', '', link_bandwidth))
         dtp_handler = ThrottledDTPHandler
-        dtp_handler.read_limit = link_bandwidth * downloadBandwidthRatio * 1024 * 1024
-        dtp_handler.write_limit = link_bandwidth * uploadBandwitdhRatio * 1024 * 1024 
+        dtp_handler.read_limit = link_bandwidth * downloadBandwidthRatio * power
+        dtp_handler.write_limit = link_bandwidth * uploadBandwitdhRatio * power 
         handler.dtp_handler = dtp_handler
         address = (ip_address, port)
         self.__ftpServer = FTPServer(address, handler)
