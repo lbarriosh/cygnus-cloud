@@ -28,11 +28,9 @@ class ImageRepositoryPacketHandler(object):
         p.writeInt(packet_T)
         return p
     
-    def createAddImagePacket(self, groupID, client_ip):
+    def createAddImagePacket(self):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.ADD_IMAGE)
-        p.writeInt(groupID)
-        p.writeString(client_ip)
         return p
     
     def createAddedImagePacket(self, imageID):
@@ -45,8 +43,7 @@ class ImageRepositoryPacketHandler(object):
         data = dict()
         packet_type = p.readInt()
         data['packet_type'] = packet_type
-        if (packet_type == PACKET_T.ADD_IMAGE):
-            data['groupID'] = p.readInt()
+        (data['clientIP'], data['clientPort']) = p.getSenderData()
         if (packet_type == PACKET_T.ADDED_IMAGE_ID):
             data['addedImageID'] = p.readInt()
         return data 

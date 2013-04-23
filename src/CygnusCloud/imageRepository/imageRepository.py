@@ -56,9 +56,9 @@ class CommandsCallback(NetworkCallback):
         return self.__finish
     
     def __addNewImage(self, data):
-        imageID = self.__dbConnector.addImage(data['groupID'])
+        imageID = self.__dbConnector.addImage()
         p = self.__pHandler.createAddedImagePacket(imageID)
-        self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'])
+        self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
     
 class DataCallback(NetworkCallback):
     def __init__(self, workingDirectory):

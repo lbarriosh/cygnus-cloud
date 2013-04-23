@@ -11,7 +11,6 @@ from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
 from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T
 from time import sleep
-from network.interfaces.ipAddresses import get_ip_address
 
 class TesterCallback(NetworkCallback):
     def __init__(self, packetHandler):
@@ -37,7 +36,6 @@ def printLogo():
     print()
     
 def process_command(tokens, networkManager, pHandler, ip_address, port):
-    my_ip_address = get_ip_address("lo")
     if (len(tokens) == 0) :
         return False
     try :
@@ -49,7 +47,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         elif (command == "quit") :
             return True
         elif (command == "createImage"):
-            p = pHandler.createAddImagePacket(int(tokens.pop(0)), my_ip_address)
+            p = pHandler.createAddImagePacket()
             networkManager.sendPacket(ip_address, port, p)
             return False
         else :
