@@ -80,5 +80,5 @@ class OutgoingDataThread(QueueProcessingThread):
         Returns:
             Nothing
         """
-        (connection, packet, client_ip) = e
-        connection.sendPacket(packet, client_ip)
+        (connection, packet, client_ip, client_port) = e
+        connection.sendPacket(packet, client_ip, client_port)

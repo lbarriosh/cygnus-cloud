@@ -242,7 +242,7 @@ class NetworkManager():
             self.__connectionPool.pop((connection.getHost(), connection.getPort()))
             raise NetworkManagerException("The connection was closed abnormally")
         
-    def sendPacket(self, host, port, packet, client_IP = None):
+    def sendPacket(self, host, port, packet, client_IP = None, client_port = None):
         """
         Sends a packet through the specified port and IP address.
         Args:
@@ -262,7 +262,7 @@ class NetworkManager():
         connection = self.__connectionPool[(host, port)]
         if connection.isReady() :
             connection.registerPacket()
-            self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet, client_IP))
+            self.__outgoingDataQueue.queue(packet.getPriority(), (connection, packet, client_IP, client_port))
             return None
         else :
             return "The connection is not ready yet" 

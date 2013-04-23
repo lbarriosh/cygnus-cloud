@@ -32,6 +32,15 @@ class _Packet(object):
         self.__priority = priority
         self.__packetType = packetType
         self._data = ''
+        self.__sender_ip = None
+        self.__sender_port = None
+        
+    def setSenderData(self, sender_ip, sender_port):
+        self.__sender_ip = None
+        self.__sender_port = None
+        
+    def getSenderData(self):
+        return (self.__sender_ip, self.__sender_port)
         
     def _setContent(self, priority, data, packetType=Packet_TYPE.DATA):
         """

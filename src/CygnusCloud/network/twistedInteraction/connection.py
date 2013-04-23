@@ -134,7 +134,7 @@ class Connection(object):
         """
         return self._status.get()
     
-    def sendPacket(self, p, client_IP = None):
+    def sendPacket(self, p, client_IP = None, client_port = None):
         """
         Sends a packet though this connection. If the connection is closed, the packet will be discarded.
         Args:
@@ -145,7 +145,7 @@ class Connection(object):
             Nothing
         """
         if (self._status.get() == CONNECTION_STATUS.READY or self._status.get() == CONNECTION_STATUS.CLOSING) :           
-            self._factory.sendPacket(p, client_IP)
+            self._factory.sendPacket(p, client_IP, client_port)
             self._packagesToSend.decrement()
             return True
                 

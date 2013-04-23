@@ -34,7 +34,8 @@ class CygnusCloudProtocol(Protocol):
             PacketException: this exception will be raised when the received packet header
                 is corrupt.
         """
-        self.__factory.onPacketReceived(data)
+        peerAddr = self.transport.getPeer()
+        self.__factory.onPacketReceived(data, peerAddr.host, peerAddr.port)
     
     def connectionMade(self):
         """
@@ -102,7 +103,7 @@ class CygnusCloudProtocolFactory(Factory):
         This method is called inside Twisted code.
         """
         instance = CygnusCloudProtocol(self) 
-        self.__protocolPool[addr.host] = instance
+        self.__protocolPool[(addr.host, addr.port)] = instance
         return instance   
         
     def removeProtocol(self, protocol):
@@ -117,7 +118,7 @@ class CygnusCloudProtocolFactory(Factory):
         """
         return self.__protocolPool.isEmpty()
 
-    def sendPacket(self, packet, ip=None):
+    def sendPacket(self, packet, ip=None, port=None):
         """
         Returns the last built instance
         Args:
@@ -129,7 +130,7 @@ class CygnusCloudProtocolFactory(Factory):
             for key in self.__protocolPool.keys():
                 self.__protocolPool[key].sendPacket(packet)        
         else :
-            self.__protocolPool[ip].sendPacket(packet)    
+            self.__protocolPool[(ip, port)].sendPacket(packet)    
             
     def disconnect(self):
         """
@@ -145,7 +146,7 @@ class CygnusCloudProtocolFactory(Factory):
         while (not self.__protocolPool.isEmpty()) :
             sleep(0.1)
     
-    def onPacketReceived(self, p):
+    def onPacketReceived(self, p, peerAddr, peerPort):
         """
         Returns the incoming packages queue
         Args:
@@ -154,4 +155,5 @@ class CygnusCloudProtocolFactory(Factory):
             The incoming packages queue
         """
         p = _Packet._deserialize(p)
+        p.setSenderData(peerAddr, peerPort)
         self._queue.queue(p.getPriority(), p)
