@@ -8,6 +8,7 @@ Created on Apr 21, 2013
 from network.manager.networkManager import NetworkCallback, NetworkManager
 from database.imageRepository.imageRepositoryDB import ImageRepositoryDBConnector
 from packets import ImageRepositoryPacketHandler, PACKET_T
+from network.ftp.ftpServer import ConfigurableFTPServer, FTPCallback
 
 class ImageRepository(object):
     
@@ -18,18 +19,22 @@ class ImageRepository(object):
         self.__dbConnector = ImageRepositoryDBConnector(repositoryDBUser, repositoryDBPassword, repositoryDBName)
         self.__dbConnector.connect()
         
-    def startListenning(self, certificatesDirectory, commandsListenningPort, dataListenningPort, uploadSlots, downloadSlots):       
-        self.__dataListenningPort = dataListenningPort
+    def startListenning(self, networkInterface, certificatesDirectory, commandsListenningPort, dataListenningPort, maxConnections,
+                        maxConnectionsPerIP, uploadBandwidthRatio, downloadBandwidthRatio):       
         self.__networkManager = NetworkManager(certificatesDirectory)
         pHandler = ImageRepositoryPacketHandler(self.__networkManager)
-        self.__commandsCallback = CommandsCallback(self.__workingDirectory, self.__networkManager, pHandler, commandsListenningPort, self.__dbConnector)
-        self.__dataCallback = DataCallback(self.__workingDirectory)        
+        
+        self.__commandsCallback = CommandsCallback(self.__workingDirectory, self.__networkManager, pHandler, commandsListenningPort, self.__dbConnector)        
+        
         self.__networkManager.startNetworkService()
         self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, True)
-        self.__networkManager.listenIn(dataListenningPort, self.__dataCallback, False) # TODO: añadir parámetro para configurar esto
+        
+        dataCallback = DataCallback()
+        self.__ftpServer = ConfigurableFTPServer("Image repository FTP Server")
+        self.__ftpServer.startListenning(networkInterface, dataListenningPort, maxConnections, maxConnectionsPerIP, dataCallback, downloadBandwidthRatio, uploadBandwidthRatio)
         
     def stopListenning(self):
-        self.__dataCallback.halt()
+        self.__ftpServer.stopListenning()
         self.__networkManager.stopNetworkService()
         self.__dbConnector.disconnect()
         
@@ -59,13 +64,25 @@ class CommandsCallback(NetworkCallback):
         imageID = self.__dbConnector.addImage()
         p = self.__pHandler.createAddedImagePacket(imageID)
         self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
-    
-class DataCallback(NetworkCallback):
-    def __init__(self, workingDirectory):
-        self.__workingDirectory = workingDirectory
         
-    def halt(self):
+class DataCallback(FTPCallback):
+    def on_disconnect(self):
         pass
-        
-    def processPacket(self, packet):
-        pass    
+
+    def on_login(self, username):
+        pass
+    
+    def on_logout(self, username):
+        pass
+    
+    def on_f_sent(self, f):
+        pass
+    
+    def on_f_received(self, f):
+        pass
+    
+    def on_incomplete_f_sent(self, f):
+        pass
+    
+    def on_incomplete_f_received(self, f):
+        pass

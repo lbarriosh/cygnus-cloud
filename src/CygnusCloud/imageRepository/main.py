@@ -29,8 +29,10 @@ if __name__ == "__main__" :
     
     imageRepository = ImageRepository(cm.getConstant('workingDirectory'))
     imageRepository.connectToDatabases("ImageRepositoryDB", cm.getConstant("dbUser"), cm.getConstant("dbUserPassword"))
-    imageRepository.startListenning(cm.getConstant("certificatePath"), cm.getConstant("commandsPort"), 
-                                    cm.getConstant("dataPort"), cm.getConstant('maxUploadSlots'), cm.getConstant('maxDownloadSlots'))
+    
+    imageRepository.startListenning(cm.getConstant("FTPListenningInterface"), cm.getConstant("certificatePath"), cm.getConstant("commandsPort"), 
+                                    cm.getConstant("FTPPort"), cm.getConstant('maxConnections'), cm.getConstant('maxConnectionsPerIP'),
+                                    cm.getConstant("uploadBandwidthRatio"), cm.getConstant("downloadBandwidthRatio"))
     while (not imageRepository.hasFinished()) :
         sleep(1)
     imageRepository.stopListenning()

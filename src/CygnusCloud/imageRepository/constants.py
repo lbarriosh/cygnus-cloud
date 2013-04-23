@@ -9,6 +9,8 @@ class ImageRepositoryConstantsManager(ConstantsManager):
 
     def _specializeDataStructure(self):
         self._data["commandsPort"] = int(self._data["commandsPort"])
-        self._data["dataPort"] = int(self._data["dataPort"])
-        self._data["maxUploadSlots"] = int(self._data["maxUploadSlots"])
-        self._data["maxDownloadSlots"] = int(self._data["maxDownloadSlots"])
+        self._data["FTPPort"] = int(self._data["FTPPort"])
+        self._data["maxConnections"] = int(self._data["maxConnections"])
+        self._data["maxConnectionsPerIP"] = int(self._data["maxConnectionsPerIP"])
+        self._data["uploadBandwidthRatio"] = float(self._data["uploadBandwidthRatio"])
+        self._data["downloadBandwidthRatio"] = float(self._data["downloadBandwidthRatio"])

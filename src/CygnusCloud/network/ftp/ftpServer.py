@@ -66,7 +66,7 @@ class CygnusCloudFTPHandler(FTPHandler):
 class FTPServerThread(Thread):
 
     def __init__(self, ftpServer):
-        Thread.__init__(self)
+        Thread.__init__(self, name="FTP server thread")
         self.__serving = False
         self.__stopped = False
         self.__lock = Lock()
