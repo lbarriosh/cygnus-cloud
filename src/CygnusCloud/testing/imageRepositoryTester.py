@@ -28,13 +28,18 @@ class TesterCallback(NetworkCallback):
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_RECVD) :
             print("The image repository says: retrieve request received")
         elif (data['packet_type'] == PACKET_T.RETR_START) :
-            print("Initializing transfer...")
+            print("Downloading file...")
             ftpClient = FTPClient()
             ftpClient.connect(self.__ip_address, data['FTPServerPort'], 100, data['username'], data['password'])
             ftpClient.retrieveFile(data['fileName'], "/home/luis", data['serverDirectory']) 
             print("Transfer completed")
+        elif (data['packet_type'] == PACKET_T.STOR_REQUEST_ERROR) :
+            print("Store error: " + data['errorMessage'])
+        elif (data['packet_type'] == PACKET_T.STOR_START) :
+            print("Downloading file...")
+            print("Transfer completed")
         else:
-            print("Error: a packet from an unexpected type has been received " + data['packet_type'])
+            print("Error: a packet from an unexpected type has been received " + str(data['packet_type']))
        
 
 def printLogo():
@@ -64,7 +69,11 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
             return False
         elif (command == "retrieveImage"):
-            p = pHandler.createImageRequestPacket(PACKET_T.RETR_REQUEST, int(tokens.pop(0)), True)
+            p = pHandler.createRetrieveRequestPacket(int(tokens.pop(0)), len(tokens) == 0)
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "storeImage"):
+            p = pHandler.createStoreRequestPacket(int(tokens.pop(0)))
             networkManager.sendPacket(ip_address, port, p)
             return False
         else :

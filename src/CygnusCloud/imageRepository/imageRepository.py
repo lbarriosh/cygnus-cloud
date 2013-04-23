@@ -29,6 +29,7 @@ class ImageRepository(object):
         self.__workingDirectory = workingDirectory        
         self.__slotCounter = MultithreadingCounter()
         self.__retrieveQueue = GenericThreadSafeList()
+        self.__storeQueue = GenericThreadSafeList()
         
     """
     Establece la conexión con la base de datos.
@@ -70,7 +71,7 @@ class ImageRepository(object):
         self.__pHandler = ImageRepositoryPacketHandler(self.__networkManager)        
         
         self.__commandsCallback = CommandsCallback(self.__networkManager, self.__pHandler, commandsListenningPort, self.__dbConnector,
-                                                   self.__retrieveQueue)        
+                                                   self.__retrieveQueue, self.__storeQueue)        
         
         self.__networkManager.startNetworkService()
         self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, True)
@@ -144,15 +145,16 @@ class CommandsCallback(NetworkCallback):
         listenningPort: el puerto de escucha de la conexión de comandos
         dbConnector: conector con la base de datos
         retrieveQueue: cola de peticiones de descarga
-    
+        storeQueue: cola de peticiones de subida    
     """
-    def __init__(self, networkManager, pHandler, listenningPort, dbConnector, retrieveQueue):
+    def __init__(self, networkManager, pHandler, listenningPort, dbConnector, retrieveQueue, storeQueue):
         self.__networkManager = networkManager
         self.__pHandler = pHandler
         self.__commandsListenningPort = listenningPort
         self.__dbConnector = dbConnector    
         self.__haltReceived = False
         self.__retrieveQueue = retrieveQueue
+        self.__storeQueue = storeQueue
         
     """
     Procesa un paquete
@@ -169,6 +171,8 @@ class CommandsCallback(NetworkCallback):
             self.__addNewImage(data)
         elif (data["packet_type"] == PACKET_T.RETR_REQUEST):
             self.__handleRetrieveRequest(data)    
+        elif (data["packet_type"] == PACKET_T.STOR_REQUEST):
+            self.__handleStorRequest(data)
     
     """
     Añade una nueva imagen al repositorio
@@ -205,6 +209,28 @@ class CommandsCallback(NetworkCallback):
             self.__retrieveQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))
             if (data["modify"]) :
                 self.__dbConnector.changeImageStatus(data["imageID"], IMAGE_STATUS_T.EDITION)
+    
+    """
+    Procesa una petición de subida
+    Argumentos:
+        data: el contenido del paquete recibido
+    Devuelve:
+        Nada
+    """   
+    def __handleStorRequest(self, data):
+        imageData = self.__dbConnector.getImageData(data["imageID"])
+        # Chequear errores
+        if (imageData == None) :
+            p = self.__pHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        elif (imageData["imageStatus"] != IMAGE_STATUS_T.EDITION) :
+            p = self.__pHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, "The image {0} is not being edited".format(data["imageID"]))
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        else:
+            # No hay errores => contestar diciendo que hemos recibido la petición y encolarla
+            p = self.__pHandler.createImageRequestReceivedPacket(PACKET_T.STOR_REQUEST_RECVD)
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
+            self.__storeQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))                
          
     """
     Indica si se ha recibido un paquete de apagado o no

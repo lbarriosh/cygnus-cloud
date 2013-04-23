@@ -7,7 +7,8 @@ Created on Apr 21, 2013
 
 from ccutils.enums import enum
 
-PACKET_T = enum("HALT", "ADD_IMAGE", "ADDED_IMAGE_ID", "RETR_REQUEST", "RETR_REQUEST_RECVD", "RETR_REQUEST_ERROR", "RETR_START")
+PACKET_T = enum("HALT", "ADD_IMAGE", "ADDED_IMAGE_ID", "RETR_REQUEST", "RETR_REQUEST_RECVD", "RETR_REQUEST_ERROR", "RETR_START",
+                "STOR_REQUEST", "STOR_REQUEST_RECVD", "STOR_REQUEST_ERROR","STOR_START")
 
 class ImageRepositoryPacketHandler(object):
     def __init__(self, packetCreator):
@@ -18,11 +19,17 @@ class ImageRepositoryPacketHandler(object):
         p.writeInt(PACKET_T.HALT)
         return p
     
-    def createImageRequestPacket(self, packet_t, imageID, modify):
+    def createRetrieveRequestPacket(self, imageID, modify):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(packet_t)
+        p.writeInt(PACKET_T.RETR_REQUEST)
         p.writeInt(imageID)
         p.writeBool(modify)
+        return p
+    
+    def createStoreRequestPacket(self, imageID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(PACKET_T.STOR_REQUEST)
+        p.writeInt(imageID)
         return p
     
     def createImageRequestReceivedPacket(self, packet_t):
@@ -68,9 +75,11 @@ class ImageRepositoryPacketHandler(object):
         elif (packet_type == PACKET_T.RETR_REQUEST) :
             data['imageID'] = p.readInt()
             data['modify'] = p.readBool()
-        elif (packet_type == PACKET_T.RETR_REQUEST_ERROR) :
+        elif (packet_type == PACKET_T.STOR_REQUEST) :
+            data['imageID'] = p.readInt()
+        elif (packet_type == PACKET_T.RETR_REQUEST_ERROR or packet_type == PACKET_T.STOR_REQUEST_ERROR) :
             data['errorMessage'] = p.readString()
-        elif (packet_type == PACKET_T.RETR_START) :
+        elif (packet_type == PACKET_T.RETR_START or packet_type == PACKET_T.STOR_START) :
             data['imageID'] = p.readInt()
             data['FTPServerPort'] = p.readInt()
             data['username'] = p.readString()
