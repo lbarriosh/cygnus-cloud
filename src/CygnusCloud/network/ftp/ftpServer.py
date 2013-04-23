@@ -5,8 +5,63 @@ from network.interfaces.ipAddresses import get_ip_address
 from threading import Thread, Lock, Event
 from ccutils.processes.childProcessManager import ChildProcessManager
 from re import sub    
+from os import remove
     
 from time import sleep
+
+class FTPCallback(object):
+    def on_disconnect(self):
+        raise NotImplementedError
+
+    def on_login(self, username):
+        raise NotImplementedError
+    
+    def on_logout(self, username):
+        raise NotImplementedError
+    
+    def on_f_sent(self, f):
+        raise NotImplementedError
+    
+    def on_f_received(self, f):
+        raise NotImplementedError
+    
+    def on_incomplete_f_sent(self, f):
+        raise NotImplementedError
+    
+    def on_incomplete_f_received(self, f):
+        raise NotImplementedError
+
+class CygnusCloudFTPHandler(FTPHandler):
+    
+    def on_disconnect(self):
+        if (CygnusCloudFTPHandler.ftpCallback != None) :
+            CygnusCloudFTPHandler.ftpCallback.on_disconnect()
+
+    def on_login(self, username):
+        if (CygnusCloudFTPHandler.ftpCallback != None) :
+            CygnusCloudFTPHandler.ftpCallback.on_login(username)
+
+    def on_logout(self, username):
+        if (CygnusCloudFTPHandler.ftpCallback != None):
+            CygnusCloudFTPHandler.ftpCallback.on_logout(username)
+
+    def on_f_sent(self, f):
+        if (CygnusCloudFTPHandler.ftpCallback != None) :
+            CygnusCloudFTPHandler.ftpCallback.on_f_sent(f)
+
+    def on_f_received(self, f):
+        if (CygnusCloudFTPHandler.ftpCallback != None):
+            CygnusCloudFTPHandler.ftpCallback.on_f_received(f)
+
+    def on_incomplete_f_sent(self, f):
+        if (CygnusCloudFTPHandler.ftpCallback != None):
+            CygnusCloudFTPHandler.ftpCallback.on_incomplete_f_sent(f)
+
+    def on_incomplete_f_received(self, f):
+        if (CygnusCloudFTPHandler.ftpCallback != None) :
+            CygnusCloudFTPHandler.ftpCallback.on_incomplete_f_received(f)
+        else :
+            remove(f)
         
 class FTPServerThread(Thread):
 
@@ -65,9 +120,11 @@ class ConfigurableFTPServer(object):
         self.__banner = banner 
         self.__thread = None
         
-    def startListenning(self, networkInterface, port, maxConnections, maxConnectionsPerIP, downloadBandwidthRatio=0.8, uploadBandwitdhRatio=0.8):
+    def startListenning(self, networkInterface, port, maxConnections, maxConnectionsPerIP, ftpCallback = None,
+                        downloadBandwidthRatio=0.8, uploadBandwitdhRatio=0.8):
         ip_address = get_ip_address(networkInterface)
-        handler = FTPHandler
+        handler = CygnusCloudFTPHandler
+        handler.ftpCallback = ftpCallback
         handler.authorizer = self.__authorizer
         handler.banner = self.__banner  
         link_bandwidth = ChildProcessManager.runCommandInForeground("ethtool eth0 | grep -i Speed | cut -b 9-", Exception)
@@ -86,11 +143,11 @@ class ConfigurableFTPServer(object):
     """
     Read permissions:
             - "e" = change directory (CWD command)
-            - "l" = list files (LIST, NLST, STAT, MLSD, MLST, SIZE, MDTM commands)
-            - "r" = retrieve file from the server (RETR command)
+            - "l" = list filess (LIST, NLST, STAT, MLSD, MLST, SIZE, MDTM commands)
+            - "r" = retrieve files from the server (RETR command)
            
            Write permissions:
-            - "a" = append data to an existing file (APPE command)
+            - "a" = append data to an existing f (APPE command)
             - "d" = delete file or directory (DELE, RMD commands)
             - "f" = rename file or directory (RNFR, RNTO commands)
             - "m" = create directory (MKD command)
@@ -110,8 +167,8 @@ class ConfigurableFTPServer(object):
         
 if __name__ == "__main__" :
     ftpServer = ConfigurableFTPServer("Welcome to the image repository FTP server!")
-    ftpServer.startListenning("eth0", 2121, 5, 1, 80)
-    ftpServer.addUser("cygnuscloud", "cygnuscloud", "/home/luis/FTPTests", "elradfmwM")
+    ftpServer.startListenning("lo", 2121, 5, 1)
+    ftpServer.addUser("cygnuscloud", "cygnuscloud", "/home/luis/Pictures", "elradfmwM")
     sleep(5)
     ftpServer.stopListenning()
     

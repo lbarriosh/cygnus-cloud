@@ -20,14 +20,14 @@ class FTPClient(object):
         if (serverDirectory != None) :
             self.__ftp.cwd(serverDirectory)
         with open(os.path.join(localDirectory, fileName), "wb") as f:
-            def callback(data):
+            def ftpCallback(data):
                 f.write(data)
-            self.__ftp.retrbinary("RETR " + fileName, callback)
+            self.__ftp.retrbinary("RETR " + fileName, ftpCallback)
         
     def disconnect(self):
         self.__ftp.quit()
         
 if __name__ == "__main__" :
     ftpClient = FTPClient()
-    ftpClient.connect("192.168.0.4", 2121, 100, "cygnuscloud", "cygnuscloud")
-    ftpClient.retrieveFile("main.py", "/home/luis")
+    ftpClient.connect("127.0.0.1", 2121, 100, "cygnuscloud", "cygnuscloud")
+    ftpClient.retrieveFile("earth-horizon.jpg", "/home/luis")
