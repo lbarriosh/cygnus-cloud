@@ -1,6 +1,5 @@
 # # -*- coding: utf8 -*-
 from ftplib import FTP
-from time import sleep
 import os
 
 class FTPClient(object):
@@ -27,3 +26,8 @@ class FTPClient(object):
         
     def disconnect(self):
         self.__ftp.quit()
+        
+if __name__ == "__main__" :
+    ftpClient = FTPClient()
+    ftpClient.connect("192.168.0.4", 2121, 100, "cygnuscloud", "cygnuscloud")
+    ftpClient.retrieveFile("main.py", "/home/luis")
