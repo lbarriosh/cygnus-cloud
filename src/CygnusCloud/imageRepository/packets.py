@@ -7,7 +7,7 @@ Created on Apr 21, 2013
 
 from ccutils.enums import enum
 
-PACKET_T = enum("STORE_REQUEST", "READY_TO_STORE", "STORE_REQUEST_RECEIVED", "HALT", "ADD_IMAGE", "ADDED_IMAGE_ID")
+PACKET_T = enum("HALT", "ADD_IMAGE", "ADDED_IMAGE_ID", "RETR_REQUEST", "RETR_REQUEST_RECVD", "RETR_REQUEST_ERROR")
 
 class ImageRepositoryPacketHandler(object):
     def __init__(self, packetCreator):
@@ -18,14 +18,21 @@ class ImageRepositoryPacketHandler(object):
         p.writeInt(PACKET_T.HALT)
         return p
     
-    def createStoreRequestPacket(self):
+    def createImageRequestPacket(self, packet_t, imageID):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(PACKET_T.STORE_REQUEST)
+        p.writeInt(packet_t)
+        p.writeInt(imageID)
         return p
     
-    def createReplyPacket(self, packet_T):
+    def createImageRequestReceivedPacket(self, packet_t):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(packet_T)
+        p.writeInt(packet_t)
+        return p
+    
+    def createErrorPacket(self, packet_t, errorMessage):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(packet_t)
+        p.writeString(errorMessage)
         return p
     
     def createAddImagePacket(self):
@@ -46,4 +53,8 @@ class ImageRepositoryPacketHandler(object):
         (data['clientIP'], data['clientPort']) = p.getSenderData()
         if (packet_type == PACKET_T.ADDED_IMAGE_ID):
             data['addedImageID'] = p.readInt()
+        elif (packet_type == PACKET_T.RETR_REQUEST) :
+            data['imageID'] = p.readInt()
+        elif (packet_type == PACKET_T.RETR_REQUEST_ERROR) :
+            data['errorMessage'] = p.readString()
         return data 

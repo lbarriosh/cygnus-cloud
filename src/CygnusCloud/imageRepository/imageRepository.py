@@ -6,7 +6,7 @@ Created on Apr 21, 2013
 '''
 
 from network.manager.networkManager import NetworkCallback, NetworkManager
-from database.imageRepository.imageRepositoryDB import ImageRepositoryDBConnector
+from database.imageRepository.imageRepositoryDB import ImageRepositoryDBConnector, IMAGE_STATUS_T
 from packets import ImageRepositoryPacketHandler, PACKET_T
 from network.ftp.ftpServer import ConfigurableFTPServer, FTPCallback
 
@@ -56,6 +56,8 @@ class CommandsCallback(NetworkCallback):
             self.__finish = True
         elif (data["packet_type"] == PACKET_T.ADD_IMAGE):
             self.__addNewImage(data)
+        elif (data["packet_type"] == PACKET_T.RETR_REQUEST):
+            self.__handleRetrieveRequest(data)
     
     def finish(self):
         return self.__finish
@@ -64,6 +66,19 @@ class CommandsCallback(NetworkCallback):
         imageID = self.__dbConnector.addImage()
         p = self.__pHandler.createAddedImagePacket(imageID)
         self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        
+    def __handleRetrieveRequest(self, data):
+        imageData = self.__dbConnector.getImageData(data["imageID"])
+        if (imageData == None) :
+            p = self.__pHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        elif (imageData["imageStatus"] != IMAGE_STATUS_T.READY) :
+            p = self.__pHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, "The image {0} is already being edited".format(data["imageID"]))
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        else:
+            p = self.__pHandler.createImageRequestReceivedPacket(PACKET_T.RETR_REQUEST_RECVD)
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+            # TODO: encolar
         
 class DataCallback(FTPCallback):
     def on_disconnect(self):

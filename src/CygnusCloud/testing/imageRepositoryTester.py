@@ -20,6 +20,10 @@ class TesterCallback(NetworkCallback):
         data = self.__pHandler.readPacket(packet)
         if (data['packet_type'] == PACKET_T.ADDED_IMAGE_ID) :
             print("Added image ID: {0}".format(data['addedImageID']))
+        elif (data['packet_type'] == PACKET_T.RETR_REQUEST_ERROR) :
+            print("Retrieve error: " + data['errorMessage'])
+        elif (data['packet_type'] == PACKET_T.RETR_REQUEST_RECVD) :
+            print("Retrieve request received")
         else:
             print("Error: a packet from an unexpected type has been received " + data['packet_type'])
        
@@ -48,6 +52,10 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             return True
         elif (command == "createImage"):
             p = pHandler.createAddImagePacket()
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "retrieveImage"):
+            p = pHandler.createImageRequestPacket(PACKET_T.RETR_REQUEST, int(tokens.pop(0)))
             networkManager.sendPacket(ip_address, port, p)
             return False
         else :
