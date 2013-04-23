@@ -15,7 +15,14 @@ def login():
     auth.settings.controller = 'main'
     auth.settings.login_onaccept = loginAccess
     #auth.settings.login_next = URL(c='main',f='login')  
-    return dict(form=auth.login())
+    form = auth.login()  
+    form.element("input",_type="submit")['_class'] = "button button-blue"
+    form.element("input",_type="submit")['_style'] = "width:120px;height:25px;"
+    form.element(_name="email")['_style'] = "width:250px;"
+    form.element(_name="password")['_style'] = "width:250px;"
+    form.element("td")['_style'] = "padding: 0px;text-align:center;"
+    
+    return dict(form=form)
     
 #Metodo encargado de la página "Acerca de"
 def about():

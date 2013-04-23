@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 '''
-Main server packet handler definitions.
+Gestor de paquetes del servidor de cluster
 @author: Luis Barrios Hernández
-@version: 2.1
+@version: 4.0
 '''
 
 from ccutils.enums import enum
@@ -13,40 +13,52 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",
                             "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
                             "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "COMMAND_EXECUTED", "VM_SERVER_SHUTDOWN_ERROR",
-                            "VM_SERVER_UNREGISTRATION_ERROR")
+                            "VM_SERVER_UNREGISTRATION_ERROR", "DOMAIN_DESTRUCTION", "DOMAIN_DESTRUCTION_ERROR", 
+                            "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR")
 
 class ClusterServerPacketHandler(object):
     """
-    These objects will read and write the main server's packages.
+    Estos objetos leen y escriben los paquetes que el endpoint y el servidor de cluster utilizan para
+    comunicarse.
     """    
     def __init__(self, networkManager):
         """
-        Initializes the packet handler's state
-        Args:
-            networkManager: the networkManager object that will create the new packets
+        Inicializa el estado del gestor de paquetes
+        Argumentos:
+            networkManager: el objeto NetworkManager que utilizaremos para crear los paquetes
         """
         self.__packetCreator = networkManager
             
-    def createVMServerRegistrationPacket(self, IPAddress, port, name, commandID):
+    def createVMServerRegistrationPacket(self, IPAddress, port, name, isVanillaServer, commandID):
         """
-        Creates a virtual machine server registration packet
-        Args:
-            IPAddress: the virtual machine server's IPv4 address
-            port: the virtual machine server's port
-            name: the virtual machine server's desired name
-            commandID: the command's unique identifier
-        Returns:
-            a new virtual machine server registration packet containing the supplied data.
+        Crea un paquete de registro de una máquina virtual
+        Argumentos:
+            IPAddress: la dirección IP del servidor
+            port: su puerto
+            name: el nombre del servidor de máquinas virtuales
+            isVanillaServer: indica si el servidor de máquinas virtuales se utilizará preferentemente
+            para editar imágenes o no.
+            commandID: el identificador único del comando de arranque
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.REGISTER_VM_SERVER)
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(name)
+        p.writeBool(isVanillaServer)
         p.writeString(commandID)
         return p
     
-    def createCommandExecutedPacket(self, commandID):
+    def createExecutedCommandPacket(self, commandID):
+        """
+        Crea un paquete que indica que un comando se ha ejecutado.
+        Argumentos:
+            commandID: el identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
+        """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.COMMAND_EXECUTED)
         p.writeString(commandID)
@@ -54,15 +66,15 @@ class ClusterServerPacketHandler(object):
     
     def createVMServerRegistrationErrorPacket(self, IPAddress, port, name, reason, commandID):
         """
-        Creates a virtual machine server registration error packet
-        Args:
-            IPAddress: the virtual machine server's IPv4 address
-            port: the virtual machine server's port
-            name: the virtual machine server's desired name
-            commandID: the command's unique identifier
-            reason: an error message
-        Returns:
-            a new virtual machine server registration error packet containing the supplied data.
+        Crea un paquete de error de registro de un servidor de máquinas virtuales
+        Argumentos:
+            IPAddress: la dirección IP del servidor
+            port: su puerto
+            name: el nombre del servidor de máquinas virtuales
+            commandID: el identificador único del comando de arranque
+            reason: mensaje de error
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR)
@@ -75,12 +87,12 @@ class ClusterServerPacketHandler(object):
     
     def createDataRequestPacket(self, query):
         """
-        Creates a data request packet. These packets are used to obtain a cluster's current status
-        right from a cluster server.
-        Args:
-            query: the information we want to retrieve (i.e. active virtual machines, available images,...)
-        Returns:
-            a new virtual machine data request packet containing the supplied data.
+        Crea un paquete de solicitud de estado
+        Argumentos:
+            query: la información de estado que queremos recuperar
+            (p.e. máquinas virtuales activas, imágenes que se pueden arrancar,...)
+         Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(query)
@@ -88,13 +100,13 @@ class ClusterServerPacketHandler(object):
     
     def createVMServerStatusPacket(self, segment, sequenceSize, data):
         """
-        Creates a virtual machine server status packet
-        Args:
-            segment: the packet's data sequence number
-            sequenceSize: the number of segments in the sequence
-            data: the packet's data
-        Returns:
-            a new virtual machine server status packet containing the supplied data.
+        Crea un paquete con el estado de un servidor de máquinas virtuales
+        Argumentos:
+            segment: posición del segmento en la secuencia
+            sequenceSize: tamaño de la secuencia (en segmentos)
+            data: los datos del segmento
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA)
@@ -104,18 +116,19 @@ class ClusterServerPacketHandler(object):
             p.writeString(row["ServerName"])
             p.writeString(ClusterServerPacketHandler.__vm_server_status_to_string(row["ServerStatus"]))
             p.writeString(row["ServerIP"])
-            p.writeInt(int(row["ServerPort"]))            
+            p.writeInt(int(row["ServerPort"]))   
+            p.writeBool(int(row["IsVanillaServer"]) == 1)         
         return p
     
     def createVMDistributionPacket(self, segment, sequenceSize, data):
         """
-        Creates a virtual machine distribution packet
-        Args:
-            segment: the packet's data sequence number
-            sequenceSize: the number of segments in the sequence
-            data: the packet's data
-        Returns:
-            a new virtual machine distribution packet containing the supplied data.
+        Crea un paquete que contiene la distribución de las máquinas virtuales
+        Argumentos:
+            segment: posición del segmento en la secuencia
+            sequenceSize: tamaño de la secuencia (en segmentos)
+            data: los datos del segmento
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_DISTRIBUTION_DATA)
@@ -126,34 +139,34 @@ class ClusterServerPacketHandler(object):
             p.writeInt(row["VMID"])
         return p
     
-    def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, halt, unregister, commandID):
+    def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, isShutDown, unregister, commandID):
         """
-        Creates a virtual machine server unregistration request packet
-        Args:
-            serverNameOrIPAddress: the virtual machine server's name or IPv4 address
-            halt: True if the server must stop immediately, and false otherwise.
-            unregister: True if the virtual machine server must be deleted from the cluster server's database,
-            and false otherwise.
-            commandID: the command's unique identifier
-        Returns:
-            a new virtual machine server unregistration request packet containing the supplied data.
+        Crea un paquete de apagado o borrado de un servidor de máquinas virtuales
+        Argumentos:
+            serverNameOrIPAddress: el nombre del servidor o su dirección IP
+            isShutDown: Si es True, los dominios se destuirán inmediatamente. Si es False, se esparará a que
+            los usuarios los apaguen. 
+            unregister: Si es True el servidor se borrará; si es False sólo se apagará
+            commandID: el identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER)
         p.writeString(serverNameOrIPAddress)
-        p.writeBool(halt)
+        p.writeBool(isShutDown)
         p.writeBool(unregister)
         p.writeString(commandID)
         return p
     
     def createVMServerBootUpPacket(self, serverNameOrIPAddress, commandID):
         """
-        Creates a virtual machine server boot packet
-        Args:
-            serverNameOrIPAddress: the virtual machine server's name or IPv4 address
-            commandID: the command's unique identifier
-        Returns:
-            a new virtual machine server boot packet containing the supplied data.
+        Crea un paquete de arranque de un servidor de máquinas virtuales
+        Argumentos:
+            serverNameOrIPAddress: el nombre o la IP del servidor
+            commandID: el identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.BOOTUP_VM_SERVER)
@@ -163,15 +176,14 @@ class ClusterServerPacketHandler(object):
     
     def createVMServerGenericErrorPacket(self, packet_type, serverNameOrIPAddress, reason, commandID):
         """
-        Creates a virtual machine server boot up, unregistration or shutdown error packet
-        Args:
-            packet_type: the packet type
-            serverNameOrIPAddress: the virtual machine server's name or IPv4 address
-            reason: an error message
-            commandID: the command's unique identifier
-        Returns:
-            a new virtual machine server boot up, unregistration or shutdown error packet 
-            containing the supplied data.
+        Crea un paquete de error relacionado con un servidor de máquinas virtuales
+        Argumentos:
+            packet_type: tipo del paquete de error
+            serverNameOrIPAddress: la IP o el nombre del servidor
+            reason: un mensaje de error
+            commandID: el identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(packet_type)
@@ -180,50 +192,50 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createVMBootRequestPacket(self, vmID, userID, commandID):
+    def createVMBootRequestPacket(self, imageID, userID, commandID):
         """
-        Creates a virtual machine boot request packet
-        Args:
-            vmID: the virtual machine's ID
-            userID: the virtual machine user's ID
-            commandID: the command's unique identifier
-        Returns:
-            a new virtual machine boot request packet containing the supplied data.
+        Crea un paquete de arranque de máuqina virtual
+        Argumentos:
+            imageID: identificador de la imagen a arrancar
+            userID: identificador del propietario de la máquina
+            commandID: el identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST)
-        p.writeInt(vmID)
+        p.writeInt(imageID)
         p.writeInt(userID)
         p.writeString(commandID)
         return p
     
-    def createVMBootFailurePacket(self, vmID, reason, commandID):
+    def createVMBootFailurePacket(self, imageID, reason, commandID):
         """
-        Creates a virtual machine boot failure packet
-        Args:
-            vmID: the virtual machine's ID
-            reason: an error message
-            commandID: the command's unique identifier
-        Returns:
-            a new virtual machine boot failure packet containing the supplied data.
+        Crea un paquete que indica un error al arrancar una máquina virtual
+        Argumentos:
+            imageID: el identificador de la imagen que se intentó arrancar
+            reason: un mensaje de error
+            commandID: el identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE)
-        p.writeInt(vmID)
+        p.writeInt(imageID)
         p.writeString(reason)
         p.writeString(commandID)
         return p
     
     def createVMConnectionDataPacket(self, IPAddress, port, password, commandID):
         """
-        Creates a virtual machine connection data packet
-        Args:
-            IPAddress: the VNC server's IPv4 address
-            port: the VNC server's port
-            password: the VNC server's password
-            commandID: the command's unique identifier
-        Returns:
-            a new virtual machine connection request packet containing the supplied data.
+        Crea un paquete con los datos de conexión a una máquina virtual
+        Argumentos:
+            IPAddress: dirección IP del servidor VNC
+            port: puerto del servidor VNC
+            password: contraseña del servidor VNC
+            commandID: identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA)
@@ -233,42 +245,72 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createActiveVMsDataPacket(self, packet):
+    def createActiveVMsDataPacket(self, data):
         """
-        Creates a VNC connection data packet
-        Args:
-            packet: a packet containing a VNC connection data segment.
-        Returns:
-            a vnc connection data packet with packet's data
+        Crea un paquete que contiene los datos de conexión de varias máquinas virtuales
+        del mismo servidor
+        Argumentos:
+            data: un string con los datos a enviar
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(MAIN_SERVER_PACKET_T.ACTIVE_VM_DATA)
-        p.dumpData(packet)
+        p.dumpData(data)
         return p
     
     def createHaltPacket(self, haltServers):
         """
-        Creates a cluster server halt packet
-        Args:
-            haltServers: if True, all the virtual machine servers in the cluster will kill
-            their active virtual machines. If False, they'll wait until all their virtual
-            machines will have been shut down.
-        Returns:
-            a cluster server halt packet containing the supplied data.
+        Crea un paquete que apagará el servidor de cluster.
+        Argumentos:
+            haltServers: si es True, los servidores de máquinas virtuales se cargarán todos los
+            dominios inmediatamente. Si es False, esperarán a que los usuarios los apaguen.
+        Devuelve:
+            un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(1)
         p.writeInt(MAIN_SERVER_PACKET_T.HALT)
         p.writeBool(haltServers)
         return p
     
+    def createDomainDestructionPacket(self, domainID, commandID):
+        """
+        Crea un paquete de destrucción de dominios
+        Argumentos:
+            domainID: el identificador único del dominio a destruir
+            commandID: el identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
+        """
+        p = self.__packetCreator.createPacket(4) # Todo lo que sea liberar carga es bueno. Por eso es ligeramente más prioritario que los otros
+        p.writeInt(MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION)
+        p.writeString(domainID)
+        p.writeString(commandID)
+        return p
+
+    def createDomainDestructionErrorPacket(self, errorMessage, commandID):
+        """
+        Crea un paquete de error asociado a la destrucción de un dominio.
+        Argumentos:
+            errorMessage: mensaje de error
+            commandID: identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR)
+        p.writeString(errorMessage)
+        p.writeString(commandID)
+        return p
+    
     @staticmethod
     def __vm_server_status_to_string(status):
         """
-        Converts the virtual machine server's status code to a human-readable string.
-        Args:
-            status: a virtual machine server's status code.
-        Returns:
-            a string with a human-readable virtual machine server status
+        Convierte a string el código de estado de un servidor de máquinas virtuales.
+        Argumentos:
+            status: código de estado.
+        Devuelve:
+            string correspondiente al código de estado
         """
         if (status == SERVER_STATE_T.BOOTING) :
             return "Booting"
@@ -280,15 +322,34 @@ class ClusterServerPacketHandler(object):
             return "Reconnecting"
         else :
             return "Connection lost"
+        
+    def createVMServerConfigurationChangePacket(self, serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior, commandID):
+        p = self.__packetCreator.createPacket(2)
+        p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE)
+        p.writeString(serverNameOrIPAddress)
+        p.writeString(newName)
+        p.writeString(newIPAddress)
+        p.writeInt(newPort)
+        p.writeBool(newVanillaImageEditionBehavior)
+        p.writeString(commandID)
+        return p
+    
+    def createVMServerConfigurationChangeErrorPacket(self, reason, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR)        
+        p.writeString(reason)
+        p.writeString(commandID)
+        return p
+        
     
     def readPacket(self, p):
         """
-        Reads the content of a cluster server packet
-        Args:
-            p: the packet with the data to read
-        Returns:
-            A dictionary with the packet data. The packet type will be assigned to
-            the key "packet_type".
+        Lee un paquete intercambiado por el endpoint y el servidor de cluster
+        Argumentos:
+            p: el paquete a leer
+        Devuelve:
+            Un diccionario con el contenido del paquete. El tipo del paquete se guardará bajo la clave
+            packet_type.
         """
         result = dict()
         packet_type = p.readInt()
@@ -297,6 +358,7 @@ class ClusterServerPacketHandler(object):
             result["VMServerIP"] = p.readString()
             result["VMServerPort"] = p.readInt()
             result["VMServerName"] = p.readString()
+            result["IsVanillaServer"] = p.readBool()
             result["CommandID"] = p.readString()
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
             result["VMServerIP"] = p.readString()
@@ -310,7 +372,7 @@ class ClusterServerPacketHandler(object):
             result["SequenceSize"] = p.readInt()
             data = []
             while (p.hasMoreData()) :
-                data.append((p.readString(), p.readString(), p.readString(), p.readInt()))
+                data.append((p.readString(), p.readString(), p.readString(), p.readInt(), p.readBool()))
             result["Data"] = data
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_DISTRIBUTION_DATA) :
@@ -327,7 +389,7 @@ class ClusterServerPacketHandler(object):
             result["VMServerIP"] = p.readString()
             data = []
             while (p.hasMoreData()) :
-                data.append((p.readInt(), p.readInt(), p.readString(), p.readInt(), p.readString()))
+                data.append((p.readString(), p.readInt(), p.readInt(), p.readString(), p.readInt(), p.readString()))
             result["Data"] = data
                 
         elif (packet_type == MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
@@ -368,5 +430,25 @@ class ClusterServerPacketHandler(object):
             
         elif (packet_type == MAIN_SERVER_PACKET_T.COMMAND_EXECUTED) :
             result["CommandID"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION) :
+            result["DomainID"] = p.readString()
+            result["CommandID"] = p.readString()
+        
+        elif (packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR) :
+            result["ErrorMessage"] = p.readString()
+            result["CommandID"] = p.readString()    
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE): 
+            result["ServerNameOrIPAddress"] = p.readString()    
+            result["NewVMServerName"] = p.readString()
+            result["NewVMServerIPAddress"] = p.readString()
+            result["NewVMServerPort"] = p.readInt()
+            result["NewVanillaImageEditionBehavior"] = p.readBool()
+            result["CommandID"] = p.readString() 
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
+            result["ErrorMessage"] = p.readString()
+            result["CommandID"] = p.readString()            
                       
         return result

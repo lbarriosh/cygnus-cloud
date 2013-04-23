@@ -4,7 +4,7 @@ from gluon import *
 
 from configuration import DBConfigurator
 from gluon.tools import Auth
-from webConstants import rootPassword
+from userInputConstants import rootPassword
 import os
 
 print os.getcwd()

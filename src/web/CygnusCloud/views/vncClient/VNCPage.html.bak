@@ -1,11 +1,12 @@
-{{extend 'layout.html'}}
+@import "../static/noVNC/include/base.css";
 {{if(error):}}
 <center><p>ERROR: {{=errorMessage}}</p></center>
 {{else:}}
+<!--<div id="content" style="background-color:#1e5f95;">-->
 <script type="text/javascript">
-    vnc_ip = ip
-        vnc_port = port
-            vnc_password = password
+    vnc_ip = "{{=ip}}"
+        vnc_port = "{{=port}}"
+            vnc_password = "{{=password}}"
 </script>
 {{include '../static/noVNC/vnc_simple.html'}}
 {{pass}}

@@ -4,7 +4,7 @@
 ## Customize your APP title, subtitle and menus here
 #########################################################################
 
-response.logo = A(IMG(src=URL('static','logo.png'),_alt="My Logo"),XML('&trade;&nbsp;'),
+response.logo = A(IMG(src=URL('static','images/favicon.png'),_alt="My Logo"),XML('&trade;&nbsp;'),
                   _class="brand",_href=URL('main','about'))
 response.title = ' '.join(
     word.capitalize() for word in request.application.split('_'))

@@ -9,18 +9,21 @@
   {{response.files.append(URL('static','css/menu.css'))}}
   {{response.files.append(URL('static','js/superfish.js'))}}
   {{include 'web2py_ajax.html'}}
+  <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
  </head>
  <body>
+  
   <!-- start header -->
-  {{if(request.controller != ' vncClient'):}}
+  {{if(request.controller != 'vncClient'):}}
   <div id="topbar">
+      <!--
       <div id=language>
           {{=plugin_translate()}}
-      </div>
+      </div>-->
       <div id=navbar>              
           {{try:}}
           {{if(auth.user):}}
-          {{=SPAN(T('Bienvenido %(user)s', dict(user=str(auth.user['first_name']))), A(T('Salir'),_href= URL(c = 'main' , f = 'logoutUser')))}}
+          {{=SPAN(B(T('Sesión iniciada como %(user)s     ', dict(user=str(auth.user['email'])))),A(T('Salir'),_href= URL(c = 'main' , f = 'logoutUser')))}}
           {{pass}}
           {{except:}}
           {{=SPAN(A(T('Salir'),_href= URL(c = 'main' , f = 'logoutUser')))}}
@@ -46,18 +49,9 @@
   </div>
   <div id="footer">
    <p class="copyright">
-    Copyright &copy; 2006 Sitename.com. Template Designed by
-    <a href="http://www.thewebhub.com/">
-     TheWebHub.com
-    </a>
-   </p>
-   <p class="links">
-    <a href="http://validator.w3.org/check/referer" class="xhtml">
-     Valid XHTML
-    </a>
-    &nbsp;&nbsp;&nbsp;
-    <a href="http://jigsaw.w3.org/css-validator/check/referer" class="css">
-     Valid CSS
+    Copyright &copy; 2013 CygnusCloud. Template Designed by
+    <a href="http://cygnusclouducm.wordpress.com/">
+     CygnusCloud.com
     </a>
    </p>
   </div>

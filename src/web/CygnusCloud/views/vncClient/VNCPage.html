@@ -1,7 +1,8 @@
-{{extend 'layout.html'}}
+<link rel="stylesheet" type="text/css" href="../static/noVNC/include/base.css" media="screen" />
 {{if(error):}}
 <center><p>ERROR: {{=errorMessage}}</p></center>
 {{else:}}
+<!--<div id="content" style="background-color:#1e5f95;">-->
 <script type="text/javascript">
     vnc_ip = "{{=ip}}"
         vnc_port = "{{=port}}"

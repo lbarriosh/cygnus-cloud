@@ -1,7 +1,6 @@
 {{extend 'layout.html'}}
-<h1>{{=T('Bienvenido a CygnusCloud!')}}</h1>
+<center><h1>{{=T('Bienvenido a CygnusCloud!')}}</h1></center>
 <div id="login_form">
-Please fill the form
-{{=form}}
+    <center>{{=form}}</center>
  
 </div>
