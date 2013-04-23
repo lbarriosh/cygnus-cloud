@@ -22,11 +22,14 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
         return result
     
     def addImage(self):        
-        update = "INSERT INTO Image(compressedFilePath, imageStatus) VALUES ('{0}', {1});".format("undefined", IMAGE_STATUS_T.NOT_RECEIVED)
+        update = "INSERT INTO Image(compressedFilePath, imageStatus) VALUES (NULL, {0});".format(IMAGE_STATUS_T.NOT_RECEIVED)
         self._executeUpdate(update)
         query = "SELECT imageID FROM Image;"
         results = self._executeQuery(query, False)
-        return int(results[len(results) - 1][0])
+        imageID = int(results[len(results) - 1][0])
+        update = "UPDATE Image SET compressedFilePath = '{1}' WHERE imageID = {0};".format(imageID, "undefined" + str(imageID))
+        self._executeUpdate(update)
+        return imageID
     
     def addVanillaImage(self, compressedFilePath):
         update = "INSERT INTO Image(compressedFilePath, imageStatus) VALUES ('{0}', {1});".format("undefined", IMAGE_STATUS_T.READY)

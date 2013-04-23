@@ -11,7 +11,7 @@ from packets import ImageRepositoryPacketHandler, PACKET_T
 from network.ftp.ftpServer import ConfigurableFTPServer, FTPCallback
 from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
 from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
-from os import remove, path
+from os import remove, path, mkdir
 from time import sleep
 from ccutils.processes.childProcessManager import ChildProcessManager
 
@@ -108,6 +108,7 @@ class ImageRepository(object):
     @attention: Este método sólo devolverá el control cuando el repositorio tenga que apagarse.
     """
     def doTransfers(self):
+        store = False
         while not self.__commandsCallback.haltReceived():
             if (self.__slotCounter.read() == self.__maxConnections) :
                 # No hay slots => dormir
@@ -115,24 +116,54 @@ class ImageRepository(object):
             else :
                 # Los hay => atender subidas y bajadas de forma equitativa
                 self.__slotCounter.decrement()
-                if( not self.__retrieveQueue.isEmpty()) :
-                    # Descarga de un fichero
+                
+                # Seleccionar una cola. Si las dos tienen algo, iremos alternándolas
+                # entre distintas ejecuciones del bucle
+                if (self.__retrieveQueue.isEmpty() and self.__storeQueue.isEmpty()) :
+                    sleep(0.1)
+                    continue
+                
+                if (not self.__retrieveQueue.isEmpty() and self.__storeQueue.isEmpty()) :
+                    queue = self.__retrieveQueue
+                    store = False
+                elif (self.__retrieveQueue.isEmpty() and not self.__storeQueue.isEmpty()) :
+                    queue = self.__storeQueue
+                    store = True
+                else :
+                    if (store) :
+                        queue = self.__retrieveQueue
+                        store = False
+                    else :
+                        queue = self.__storeQueue
+                        store = True
+                
+                # Sacar la petición de la cola
+                                   
+                (imageID, clientIP, clientPort) = queue.pop(0)
                     
-                    # Sacar los datos de la petición
-                    (imageID, clientIP, clientPort) = self.__retrieveQueue.pop(0)
-                    
-                    # Generar todo lo que el usuario necesita para conectarse
-                    compressedFilePath = self.__dbConnector.getImageData(imageID)["compressedFilePath"]    
-                    
+                # Generar todo lo que el usuario necesita para conectarse
+                compressedFilePath = self.__dbConnector.getImageData(imageID)["compressedFilePath"]    
+                
+                if (compressedFilePath != "undefined") :                                
                     serverDirectory = path.relpath(path.dirname(compressedFilePath), self.__workingDirectory)
                     compressedFileName = path.basename(compressedFilePath)
+                else :
+                    serverDirectory = str(imageID)
+                    compressedFileName = ""
+                    mkdir(path.join(self.__workingDirectory, imageID))
                     
-                    p = self.__pHandler.createTransferEnabledPacket(PACKET_T.RETR_START, imageID, self.__dataListenningPort, 
-                        self.__ftpUsername, self.__ftpPassword, serverDirectory, compressedFileName)
+                
+                if (store) :
+                    packet_type = PACKET_T.STOR_START
+                else :
+                    packet_type = PACKET_T.RETR_START
+                                
+                p = self.__pHandler.createTransferEnabledPacket(packet_type, imageID, self.__dataListenningPort, 
+                                self.__ftpUsername, self.__ftpPassword, serverDirectory, compressedFileName)
                     
-                    # Enviárselo
-                    self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
-                    
+                # Enviárselo
+                self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
+                              
 """
 Clase para el callback que procesará los datos recibidos por la conexión de comandos.
 """

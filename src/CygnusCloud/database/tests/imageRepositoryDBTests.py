@@ -37,7 +37,7 @@ class ClusterServerDBTests(unittest.TestCase):
     def test_addImage(self):
         imageID = self.__connector.addImage()
         result = self.__connector.getImageData(imageID)
-        expectedResult = {"compressedFilePath" : "undefined", "imageStatus" : IMAGE_STATUS_T.NOT_RECEIVED}
+        expectedResult = {"compressedFilePath" : "undefined" + str(imageID), "imageStatus" : IMAGE_STATUS_T.NOT_RECEIVED}
         self.assertEquals(result, expectedResult, "addImage() error")
         
     def test_removeImage(self):
@@ -51,7 +51,7 @@ class ClusterServerDBTests(unittest.TestCase):
         imageID = self.__connector.addImage()
         self.__connector.changeImageStatus(imageID, IMAGE_STATUS_T.READY)
         result = self.__connector.getImageData(imageID)
-        expectedResult = {"compressedFilePath" : "undefined", "imageStatus" : IMAGE_STATUS_T.READY}
+        expectedResult = {"compressedFilePath" : "undefined" + str(imageID), "imageStatus" : IMAGE_STATUS_T.READY}
         self.assertEquals(result, expectedResult, "changeImageStatus() error")
         
 if __name__ == "__main__":

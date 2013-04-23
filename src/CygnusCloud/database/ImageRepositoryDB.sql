@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS Image(
 	compressedFilePath VARCHAR(100),
 	imageStatus TINYINT);
 
-INSERT IGNORE INTO Image VALUES(1, "/home/luis/FTPTests/1/image.zip", 1);
+INSERT IGNORE INTO Image VALUES(1, "/home/luis/FTPTests/1/1.zip", 2);
