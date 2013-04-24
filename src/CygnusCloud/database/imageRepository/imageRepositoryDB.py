@@ -2,6 +2,7 @@
 from database.utils.connector import BasicDatabaseConnector
 from re import sub
 from ccutils.enums import enum
+from os import path
 
 IMAGE_STATUS_T = enum("NOT_RECEIVED", "READY", "EDITION")
 
@@ -44,6 +45,6 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
         self._executeUpdate(update)
         
     def processFinishedTransfer(self, fileName):
-        imageID = sub("[^0-9]", "", fileName)
-        update = "UPDATE Image SET imageStatus = {1}, compressedImagePath = '{2}' WHERE imageID = {0};".format(imageID, IMAGE_STATUS_T.READY, fileName)
+        imageID = sub("[^0-9]", "", path.basename(fileName))
+        update = "UPDATE Image SET imageStatus = {1}, compressedFilePath = '{2}' WHERE imageID = {0};".format(imageID, IMAGE_STATUS_T.READY, fileName)
         self._executeUpdate(update)

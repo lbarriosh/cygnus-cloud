@@ -19,16 +19,16 @@ class FTPCallback(object):
     def on_logout(self, username):
         raise NotImplementedError
     
-    def on_f_sent(self, f):
+    def on_file_sent(self, f):
         raise NotImplementedError
     
-    def on_f_received(self, f):
+    def on_file_received(self, f):
         raise NotImplementedError
     
-    def on_incomplete_f_sent(self, f):
+    def on_incomplete_file_sent(self, f):
         raise NotImplementedError
     
-    def on_incomplete_f_received(self, f):
+    def on_incomplete_file_received(self, f):
         raise NotImplementedError
 
 class CygnusCloudFTPHandler(FTPHandler):
@@ -45,21 +45,21 @@ class CygnusCloudFTPHandler(FTPHandler):
         if (CygnusCloudFTPHandler.ftpCallback != None):
             CygnusCloudFTPHandler.ftpCallback.on_logout(username)
 
-    def on_f_sent(self, f):
+    def on_file_sent(self, f):
         if (CygnusCloudFTPHandler.ftpCallback != None) :
-            CygnusCloudFTPHandler.ftpCallback.on_f_sent(f)
+            CygnusCloudFTPHandler.ftpCallback.on_file_sent(f)
 
-    def on_f_received(self, f):
+    def on_file_received(self, f):
         if (CygnusCloudFTPHandler.ftpCallback != None):
-            CygnusCloudFTPHandler.ftpCallback.on_f_received(f)
+            CygnusCloudFTPHandler.ftpCallback.on_file_received(f)
 
-    def on_incomplete_f_sent(self, f):
+    def on_incomplete_file_sent(self, f):
         if (CygnusCloudFTPHandler.ftpCallback != None):
-            CygnusCloudFTPHandler.ftpCallback.on_incomplete_f_sent(f)
+            CygnusCloudFTPHandler.ftpCallback.on_incomplete_file_sent(f)
 
-    def on_incomplete_f_received(self, f):
+    def on_incomplete_file_received(self, f):
         if (CygnusCloudFTPHandler.ftpCallback != None) :
-            CygnusCloudFTPHandler.ftpCallback.on_incomplete_f_received(f)
+            CygnusCloudFTPHandler.ftpCallback.on_incomplete_file_received(f)
         else :
             remove(f)
         

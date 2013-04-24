@@ -13,13 +13,16 @@ from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T
 from time import sleep
 from network.ftp.ftpClient import FTPClient
 
+user_input = False
 
-class TesterCallback(NetworkCallback):
+
+class TesterCallback(NetworkCallback):    
     def __init__(self, packetHandler, ip_address):
         self.__pHandler = packetHandler
         self.__ip_address = ip_address
         
     def processPacket(self, packet):
+        global user_input
         data = self.__pHandler.readPacket(packet)
         if (data['packet_type'] == PACKET_T.ADDED_IMAGE_ID) :
             print("Added image ID: {0}".format(data['addedImageID']))
@@ -32,6 +35,7 @@ class TesterCallback(NetworkCallback):
             ftpClient = FTPClient()
             ftpClient.connect(self.__ip_address, data['FTPServerPort'], 100, data['username'], data['password'])
             ftpClient.retrieveFile(data['fileName'], "/home/luis", data['serverDirectory']) 
+            ftpClient.disconnect()
             print("Transfer completed")
         elif (data['packet_type'] == PACKET_T.STOR_REQUEST_ERROR) :
             print("Store error: " + data['errorMessage'])
@@ -39,7 +43,16 @@ class TesterCallback(NetworkCallback):
             print("The image repository says: store request received")
         elif (data['packet_type'] == PACKET_T.STOR_START) :
             print("Uploading file...")
+            ftpClient = FTPClient()
+            ftpClient.connect(self.__ip_address, data['FTPServerPort'], 100, data['username'], data['password'])
+            if (data['fileName'] == '') :
+                fileName = raw_input('File to upload (it MUST contain the image ID): ')
+            else :
+                fileName = data['fileName']
+            ftpClient.storeFile(fileName, "/home/luis", data['serverDirectory']) 
+            ftpClient.disconnect()
             print("Transfer completed")
+            user_input = False
         else:
             print("Error: a packet from an unexpected type has been received " + str(data['packet_type']))
        
@@ -56,6 +69,7 @@ def printLogo():
     print()
     
 def process_command(tokens, networkManager, pHandler, ip_address, port):
+    global user_input
     if (len(tokens) == 0) :
         return False
     try :
@@ -75,6 +89,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
             return False
         elif (command == "storeImage"):
+            user_input = True
             p = pHandler.createStoreRequestPacket(int(tokens.pop(0)))
             networkManager.sendPacket(ip_address, port, p)
             return False
@@ -88,9 +103,11 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             print("\tquit: closes this application")
     except Exception as e :
         print("Error: " + e.message)
+        user_input = False
     
 
 if __name__ == "__main__" :
+    global user_input
     print('*' * 80)
     print('*' * 80)
     printLogo()
@@ -113,9 +130,12 @@ if __name__ == "__main__" :
             sleep(0.1)
         end = False
         while not end :
-            command = raw_input('>')
-            tokens = command.split()
-            end = process_command(tokens, networkManager, pHandler, ip_address, port)
+            if (not user_input) :
+                command = raw_input('>')
+                tokens = command.split()
+                end = process_command(tokens, networkManager, pHandler, ip_address, port)
+            else :
+                sleep(0.1)
     
     except NetworkManagerException as e:
         print("Error: " + e.message)

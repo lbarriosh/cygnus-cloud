@@ -144,13 +144,13 @@ class ImageRepository(object):
                 # Generar todo lo que el usuario necesita para conectarse
                 compressedFilePath = self.__dbConnector.getImageData(imageID)["compressedFilePath"]    
                 
-                if (compressedFilePath != "undefined") :                                
+                if (not "undefined" in compressedFilePath) :                                
                     serverDirectory = path.relpath(path.dirname(compressedFilePath), self.__workingDirectory)
                     compressedFileName = path.basename(compressedFilePath)
                 else :
                     serverDirectory = str(imageID)
                     compressedFileName = ""
-                    mkdir(path.join(self.__workingDirectory, imageID))
+                    mkdir(path.join(self.__workingDirectory, serverDirectory))
                     
                 
                 if (store) :
@@ -254,7 +254,7 @@ class CommandsCallback(NetworkCallback):
         if (imageData == None) :
             p = self.__pHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
-        elif (imageData["imageStatus"] != IMAGE_STATUS_T.EDITION) :
+        elif not (imageData["imageStatus"] == IMAGE_STATUS_T.EDITION or imageData["imageStatus"] == IMAGE_STATUS_T.NOT_RECEIVED) :
             p = self.__pHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, "The image {0} is not being edited".format(data["imageID"]))
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else:
@@ -296,7 +296,7 @@ class DataCallback(FTPCallback):
         Nada
     """
     def on_disconnect(self):
-        pass
+        self.__slotCounter.increment()
 
     """
     Método que se invocará cuando un cliente inicia sesión
@@ -326,7 +326,7 @@ class DataCallback(FTPCallback):
         Nada
     """
     def on_file_sent(self, f):
-        self.__slotCounter.increment()
+        pass
     
     """
     Método que se invocará cuando un fichero acaba de recibirse
@@ -337,7 +337,6 @@ class DataCallback(FTPCallback):
     """
     def on_file_received(self, f):
         self.__dbConnector.processFinishedTransfer(f)
-        self.__slotCounter.increment()
     
     """
     Método que se invocará cuando se interrumpe abruptamente la transferencia
@@ -348,7 +347,7 @@ class DataCallback(FTPCallback):
         Nada
     """
     def on_incomplete_file_sent(self, f):
-        self.__slotCounter.increment()
+        pass
     
     """
     Método que se invocará cuando se interrumpe abruptamente la subida
@@ -358,6 +357,5 @@ class DataCallback(FTPCallback):
     Devuelve:
         Nada
     """
-    def on_incomplete_f_received(self, f):
-        self.__slotCounter.increment()
+    def on_incomplete_f_received(self, f):        
         remove(f) # Borramos el fichero para no dejar mierda.

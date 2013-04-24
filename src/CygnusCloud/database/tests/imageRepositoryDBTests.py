@@ -54,5 +54,13 @@ class ClusterServerDBTests(unittest.TestCase):
         expectedResult = {"compressedFilePath" : "undefined" + str(imageID), "imageStatus" : IMAGE_STATUS_T.READY}
         self.assertEquals(result, expectedResult, "changeImageStatus() error")
         
+    def test_processFinishedTransfer(self):
+        imageID = self.__connector.addImage()
+        self.__connector.processFinishedTransfer(str(imageID) + ".zip")
+        result = self.__connector.getImageData(imageID)
+        expectedResult = {"compressedFilePath" : str(imageID) + ".zip", "imageStatus" : IMAGE_STATUS_T.READY}
+        self.assertEquals(result, expectedResult, "processFinishedTransfer() error")
+        
+        
 if __name__ == "__main__":
     unittest.main()
