@@ -107,7 +107,7 @@ class ImageRepository(object):
         Nada
     @attention: Este método sólo devolverá el control cuando el repositorio tenga que apagarse.
     """
-    def doTransfers(self):
+    def initTransfers(self):
         store = False
         while not self.__commandsCallback.haltReceived():
             if (self.__slotCounter.read() == self.__maxConnections) :
@@ -158,8 +158,11 @@ class ImageRepository(object):
                     else :
                         serverDirectory = str(imageID)
                         compressedFileName = ""
-                        mkdir(path.join(self.__workingDirectory, serverDirectory))
-                        
+                        serverDirectoryPath = path.join(self.__workingDirectory, serverDirectory)
+                        if (path.exists(serverDirectoryPath)) :
+                            # Si el directorio ya existe, puede tener mierda => lo borramos y lo volvemos a crear
+                            ChildProcessManager.runCommandInForeground("rm -rf " + serverDirectoryPath, Exception)
+                        mkdir(serverDirectoryPath)                        
                     
                     if (store) :
                         packet_type = PACKET_T.STOR_START
@@ -359,7 +362,7 @@ class DataCallback(FTPCallback):
         Nada
     """
     def on_file_received(self, f):
-        self.__dbConnector.processFinishedTransfer(f)
+        self.__dbConnector.handleFinishedUploadTransfer(f)
     
     """
     Método que se invocará cuando se interrumpe abruptamente la transferencia
@@ -380,5 +383,7 @@ class DataCallback(FTPCallback):
     Devuelve:
         Nada
     """
-    def on_incomplete_f_received(self, f):        
-        remove(f) # Borramos el fichero para no dejar mierda.
+    def on_incomplete_f_received(self, f):    
+        # Borramos el fichero y su directorio para no dejar mierda    
+        remove(f)
+        ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(f), Exception)

@@ -56,10 +56,10 @@ class ClusterServerDBTests(unittest.TestCase):
         
     def test_processFinishedTransfer(self):
         imageID = self.__connector.addImage()
-        self.__connector.processFinishedTransfer(str(imageID) + ".zip")
+        self.__connector.handleFinishedUploadTransfer(str(imageID) + ".zip")
         result = self.__connector.getImageData(imageID)
         expectedResult = {"compressedFilePath" : str(imageID) + ".zip", "imageStatus" : IMAGE_STATUS_T.READY}
-        self.assertEquals(result, expectedResult, "processFinishedTransfer() error")
+        self.assertEquals(result, expectedResult, "handleFinishedUploadTransfer() error")
         
         
 if __name__ == "__main__":

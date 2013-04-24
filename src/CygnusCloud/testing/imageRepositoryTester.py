@@ -1,9 +1,8 @@
 # -*- coding: utf8 -*-
 '''
-This module contains statements to connect to a virtual machine
-server and control it.
+Tester del repositorio
 @author: Luis Barrios Hernández
-@version: 6.3
+@version: 3.0
 '''
 from __future__ import print_function
 
@@ -104,6 +103,10 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
                 print("Error: unknown command")
             print("Usage: ")
             print("=====")           
+            print("\tcreateImage: creates a new image")
+            print("\tretrieveImage <imageID>: downloads an image from the repository")
+            print("\tstoreImage <imageID>: uploads a file to the repository")
+            print("\tdeleteImage <imageID>: deletes an image from the repository")
             print("\thalt: shuts down the image repository")
             print("\thelp: prints the following help message")
             print("\tquit: closes this application")
@@ -118,7 +121,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     printLogo()
     print('Image repository tester')
-    print('Version 1.0')
+    print('Version 3.0')
     print('*' * 80)
     print('*' * 80)
     print()

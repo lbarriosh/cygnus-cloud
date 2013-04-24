@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 '''
-Created on Apr 21, 2013
+Punto de entrada del repositorio de imágenes
 
 @author: luis
 '''
@@ -33,6 +33,6 @@ if __name__ == "__main__" :
                                     cm.getConstant("FTPPort"), cm.getConstant('maxConnections'), cm.getConstant('maxConnectionsPerIP'),
                                     cm.getConstant("uploadBandwidthRatio"), cm.getConstant("downloadBandwidthRatio"), cm.getConstant("FTPUserName"),
                                     cm.getConstant("FTPPasswordLength"))
-    imageRepository.doTransfers()
-    imageRepository.stopListenning()
+    imageRepository.initTransfers() # Aprovechamos el hilo principal para inicializar las transferencias
+    imageRepository.stopListenning() # Es imprescindible hacer esto en el hilo principal para que no se cuelgue
     

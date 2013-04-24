@@ -11,15 +11,38 @@ PACKET_T = enum("HALT", "ADD_IMAGE", "ADDED_IMAGE_ID", "RETR_REQUEST", "RETR_REQ
                 "STOR_REQUEST", "STOR_REQUEST_RECVD", "STOR_REQUEST_ERROR", "STOR_START", "STOR_ERROR",
                 "DELETE_REQUEST", "DELETE_REQUEST_RECVD", "DELETE_REQUEST_ERROR")
 
+"""
+Gestor de paquetes del repositorio
+"""
 class ImageRepositoryPacketHandler(object):
+    """
+    Inicializa el estado
+    Argumentos:
+        packetCreator: objeto que se usará para crear los paquetes
+    """
     def __init__(self, packetCreator):
         self.__packetCreator = packetCreator
             
+    """
+    Crea un paquete de apagado
+    Argumentos:
+        Ninguno
+    Devuelve:
+        un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+    """
     def createHaltPacket(self):
         p = self.__packetCreator.createPacket(1)
         p.writeInt(PACKET_T.HALT)
         return p
     
+    """
+    Crea un paquete de solicitud de descarga
+    Argumentos:
+        imageID: el identificador único de la imagen
+        modify: si es True, se va a editar una imagen. Si es False, se va a crear una imagen a partir de otra.
+    Devuelve:
+        un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+    """
     def createRetrieveRequestPacket(self, imageID, modify):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.RETR_REQUEST)
@@ -27,17 +50,44 @@ class ImageRepositoryPacketHandler(object):
         p.writeBool(modify)
         return p
     
+    """
+    Crea un paquete de solicitud de subida
+    Argumentos:
+        imageID: el identificador único de la imagen cuyo fichero vamos a subir
+    Devuelve:
+        un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+    """
     def createStoreRequestPacket(self, imageID):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.STOR_REQUEST)
         p.writeInt(imageID)
         return p
     
+    """
+    Crea un paquete que indica la recepción de una petición de subida, descarga o borrado
+    Argumentos:
+        packet_t: el tipo de paquete, que se corresponde con la confirmación a enviar
+    Devuelve:
+        un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+    """
     def createImageRequestReceivedPacket(self, packet_t):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_t)
         return p
     
+    """
+    Crea un paquete que indica que una transferencia puede comenzar
+    Argumentos:
+        packet_t: el tipo de paquete, que se corresponde con el tipo de transferencia (STORE o RETRIEVE)
+        imageID: el identificador único de la imagen
+        FTPServerPort: el puerto de escucha del servidor FTP
+        username: el usuario del servidor FTP
+        password: la contraseña del servidor FTP
+        serverDirectory: el directorio del servidor donde se encuentra el fichero
+        fileName: el nombre del fichero
+    Devuelve:
+        un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+    """
     def createTransferEnabledPacket(self, packet_t, imageID, FTPServerPort, username, password, serverDirectory, fileName):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_t)
@@ -49,29 +99,64 @@ class ImageRepositoryPacketHandler(object):
         p.writeString(fileName)
         return p
     
+    """
+    Crea un paquete de error.
+    Argumentos:
+        packet_t: el tipo de paquete, que se corresponde con el tipo del error
+        errorMessage: un mensaje de error
+    Devuelve:
+        un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+    """
     def createErrorPacket(self, packet_t, errorMessage):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_t)
         p.writeString(errorMessage)
         return p
     
+    """
+    Crea un paquete de adición de imagen
+    Argumentos:
+    Devuelve:
+        un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+    """
     def createAddImagePacket(self):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.ADD_IMAGE)
         return p
     
+    """
+    Crea un paquete de confirmación de adición de imagen.
+    Argumentos:
+        imageID: el identificador único de la nueva imagen
+    Devuelve:
+        un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+    """
     def createAddedImagePacket(self, imageID):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.ADDED_IMAGE_ID)
         p.writeInt(imageID)
         return p
     
+    """
+    Crea un paquete de borrado de una imagen
+    Argumentos:
+        imageID: el identificador único de la imagen a borrar
+    Devuelve:
+        un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+    """
     def createDeleteRequestPacket(self, imageID):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.DELETE_REQUEST)
         p.writeInt(imageID)
         return p
     
+    """
+    Vuelca el contenido de un paquete en un diccionario
+    Argumentos:
+        p: el paquete cuyo contenido queremos extraer
+    Devuelve:
+        Nada
+    """
     def readPacket(self, p):
         data = dict()
         packet_type = p.readInt()
