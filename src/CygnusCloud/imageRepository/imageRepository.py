@@ -66,7 +66,7 @@ class ImageRepository(object):
                         maxConnectionsPerIP, uploadBandwidthRatio, downloadBandwidthRatio, ftpUsername, ftpPasswordLength): 
         self.__maxConnections = maxConnections      
         self.__commandsListenningPort = commandsListenningPort
-        self.__dataListenningPort = ftpListenningPort
+        self.__FTPListenningPort = ftpListenningPort
         self.__networkManager = NetworkManager(certificatesDirectory)
         self.__pHandler = ImageRepositoryPacketHandler(self.__networkManager)        
         
@@ -121,8 +121,7 @@ class ImageRepository(object):
                 # entre distintas ejecuciones del bucle
                 if (self.__retrieveQueue.isEmpty() and self.__storeQueue.isEmpty()) :
                     sleep(0.1)
-                    continue
-                
+                    continue                
                 if (not self.__retrieveQueue.isEmpty() and self.__storeQueue.isEmpty()) :
                     queue = self.__retrieveQueue
                     store = False
@@ -142,27 +141,36 @@ class ImageRepository(object):
                 (imageID, clientIP, clientPort) = queue.pop(0)
                     
                 # Generar todo lo que el usuario necesita para conectarse
-                compressedFilePath = self.__dbConnector.getImageData(imageID)["compressedFilePath"]    
-                
-                if (not "undefined" in compressedFilePath) :                                
-                    serverDirectory = path.relpath(path.dirname(compressedFilePath), self.__workingDirectory)
-                    compressedFileName = path.basename(compressedFilePath)
+                imageData = self.__dbConnector.getImageData(imageID)
+                if (imageData == None) :
+                    if (store) :
+                        packet_type = PACKET_T.STOR_ERROR
+                    else :
+                        packet_type = PACKET_T.RETR_ERROR
+                    p = self.__pHandler.createErrorPacket(packet_type, "The image has been deleted")
+                    self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
                 else :
-                    serverDirectory = str(imageID)
-                    compressedFileName = ""
-                    mkdir(path.join(self.__workingDirectory, serverDirectory))
+                    compressedFilePath = imageData["compressedFilePath"]    
                     
-                
-                if (store) :
-                    packet_type = PACKET_T.STOR_START
-                else :
-                    packet_type = PACKET_T.RETR_START
-                                
-                p = self.__pHandler.createTransferEnabledPacket(packet_type, imageID, self.__dataListenningPort, 
-                                self.__ftpUsername, self.__ftpPassword, serverDirectory, compressedFileName)
+                    if (not "undefined" in compressedFilePath) :                                
+                        serverDirectory = path.relpath(path.dirname(compressedFilePath), self.__workingDirectory)
+                        compressedFileName = path.basename(compressedFilePath)
+                    else :
+                        serverDirectory = str(imageID)
+                        compressedFileName = ""
+                        mkdir(path.join(self.__workingDirectory, serverDirectory))
+                        
                     
-                # Enviárselo
-                self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
+                    if (store) :
+                        packet_type = PACKET_T.STOR_START
+                    else :
+                        packet_type = PACKET_T.RETR_START
+                                    
+                    p = self.__pHandler.createTransferEnabledPacket(packet_type, imageID, self.__FTPListenningPort, 
+                                    self.__ftpUsername, self.__ftpPassword, serverDirectory, compressedFileName)
+                        
+                    # Enviárselo
+                    self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
                               
 """
 Clase para el callback que procesará los datos recibidos por la conexión de comandos.
@@ -204,6 +212,8 @@ class CommandsCallback(NetworkCallback):
             self.__handleRetrieveRequest(data)    
         elif (data["packet_type"] == PACKET_T.STOR_REQUEST):
             self.__handleStorRequest(data)
+        elif (data["packet_type"] == PACKET_T.DELETE_REQUEST):
+            self.__deleteImage(data)
     
     """
     Añade una nueva imagen al repositorio
@@ -261,7 +271,20 @@ class CommandsCallback(NetworkCallback):
             # No hay errores => contestar diciendo que hemos recibido la petición y encolarla
             p = self.__pHandler.createImageRequestReceivedPacket(PACKET_T.STOR_REQUEST_RECVD)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
-            self.__storeQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))                
+            self.__storeQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))        
+            
+    def __deleteImage(self, data):
+        imageData = self.__dbConnector.getImageData(data["imageID"])
+        if (imageData == None) :
+            p = self.__pHandler.createErrorPacket(PACKET_T.DELETE_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        else :            
+            if (not "undefined" in imageData["compressedFilePath"]) :
+                imageDirectory = path.dirname(imageData["compressedFilePath"])
+                ChildProcessManager.runCommandInForeground("rm -rf " + imageDirectory, Exception)
+            self.__dbConnector.deleteImage(data["imageID"]) # TODO: poner encima del if
+            p = self.__pHandler.createImageRequestReceivedPacket(PACKET_T.DELETE_REQUEST_RECVD)
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
          
     """
     Indica si se ha recibido un paquete de apagado o no

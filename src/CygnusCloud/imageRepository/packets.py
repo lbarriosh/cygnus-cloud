@@ -7,8 +7,9 @@ Created on Apr 21, 2013
 
 from ccutils.enums import enum
 
-PACKET_T = enum("HALT", "ADD_IMAGE", "ADDED_IMAGE_ID", "RETR_REQUEST", "RETR_REQUEST_RECVD", "RETR_REQUEST_ERROR", "RETR_START",
-                "STOR_REQUEST", "STOR_REQUEST_RECVD", "STOR_REQUEST_ERROR","STOR_START")
+PACKET_T = enum("HALT", "ADD_IMAGE", "ADDED_IMAGE_ID", "RETR_REQUEST", "RETR_REQUEST_RECVD", "RETR_REQUEST_ERROR", "RETR_START", "RETR_ERROR",
+                "STOR_REQUEST", "STOR_REQUEST_RECVD", "STOR_REQUEST_ERROR", "STOR_START", "STOR_ERROR",
+                "DELETE_REQUEST", "DELETE_REQUEST_RECVD", "DELETE_REQUEST_ERROR")
 
 class ImageRepositoryPacketHandler(object):
     def __init__(self, packetCreator):
@@ -65,6 +66,12 @@ class ImageRepositoryPacketHandler(object):
         p.writeInt(imageID)
         return p
     
+    def createDeleteRequestPacket(self, imageID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(PACKET_T.DELETE_REQUEST)
+        p.writeInt(imageID)
+        return p
+    
     def readPacket(self, p):
         data = dict()
         packet_type = p.readInt()
@@ -77,7 +84,9 @@ class ImageRepositoryPacketHandler(object):
             data['modify'] = p.readBool()
         elif (packet_type == PACKET_T.STOR_REQUEST) :
             data['imageID'] = p.readInt()
-        elif (packet_type == PACKET_T.RETR_REQUEST_ERROR or packet_type == PACKET_T.STOR_REQUEST_ERROR) :
+        elif (packet_type == PACKET_T.RETR_REQUEST_ERROR or packet_type == PACKET_T.STOR_REQUEST_ERROR or 
+              packet_type == PACKET_T.DELETE_REQUEST_ERROR or packet_type == PACKET_T.RETR_ERROR or 
+              packet_type == PACKET_T.STOR_ERROR) :
             data['errorMessage'] = p.readString()
         elif (packet_type == PACKET_T.RETR_START or packet_type == PACKET_T.STOR_START) :
             data['imageID'] = p.readInt()
@@ -86,4 +95,6 @@ class ImageRepositoryPacketHandler(object):
             data['password'] = p.readString()
             data['serverDirectory'] = p.readString()
             data['fileName'] = p.readString()
+        elif (packet_type == PACKET_T.DELETE_REQUEST):
+            data['imageID'] = p.readInt()
         return data 

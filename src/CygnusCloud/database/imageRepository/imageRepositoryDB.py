@@ -32,13 +32,13 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
         self._executeUpdate(update)
         return imageID
     
+    def deleteImage(self, imageID):
+        update = "DELETE FROM Image WHERE imageID = {0};".format(imageID)
+        self._executeUpdate(update)
+    
     def addVanillaImage(self, compressedFilePath):
         update = "INSERT INTO Image(compressedFilePath, imageStatus) VALUES ('{0}', {1});".format("undefined", IMAGE_STATUS_T.READY)
         self._executeUpdate(update)
-        
-    def removeImage(self, imageID):        
-        sqlQuery = "DELETE FROM Image WHERE imageID = " + str(imageID)
-        self._executeUpdate(sqlQuery)
         
     def changeImageStatus(self, imageID, newStatus):
         update = "UPDATE Image SET imageStatus = {1} WHERE imageID = {0};".format(imageID, newStatus)

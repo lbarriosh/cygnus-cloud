@@ -26,18 +26,18 @@ class TesterCallback(NetworkCallback):
         data = self.__pHandler.readPacket(packet)
         if (data['packet_type'] == PACKET_T.ADDED_IMAGE_ID) :
             print("Added image ID: {0}".format(data['addedImageID']))
-        elif (data['packet_type'] == PACKET_T.RETR_REQUEST_ERROR) :
+        elif (data['packet_type'] == PACKET_T.RETR_REQUEST_ERROR or data['packet_type'] == PACKET_T.RETR_ERROR) :
             print("Retrieve error: " + data['errorMessage'])
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_RECVD) :
             print("The image repository says: retrieve request received")
         elif (data['packet_type'] == PACKET_T.RETR_START) :
             print("Downloading file...")
             ftpClient = FTPClient()
-            ftpClient.connect(self.__ip_address, data['FTPServerPort'], 100, data['username'], data['password'])
+            ftpClient.connect(self.__ip_address, data['FTPServerPort'], 5, data['username'], data['password'])
             ftpClient.retrieveFile(data['fileName'], "/home/luis", data['serverDirectory']) 
             ftpClient.disconnect()
             print("Transfer completed")
-        elif (data['packet_type'] == PACKET_T.STOR_REQUEST_ERROR) :
+        elif (data['packet_type'] == PACKET_T.STOR_REQUEST_ERROR or data['packet_type'] == PACKET_T.STOR_ERROR) :
             print("Store error: " + data['errorMessage'])
         elif (data['packet_type'] == PACKET_T.STOR_REQUEST_RECVD) :
             print("The image repository says: store request received")
@@ -53,6 +53,8 @@ class TesterCallback(NetworkCallback):
             ftpClient.disconnect()
             print("Transfer completed")
             user_input = False
+        elif (data['packet_type'] == PACKET_T.DELETE_REQUEST_RECVD):
+            print("The image repository says: delete request received")
         else:
             print("Error: a packet from an unexpected type has been received " + str(data['packet_type']))
        
@@ -91,6 +93,10 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         elif (command == "storeImage"):
             user_input = True
             p = pHandler.createStoreRequestPacket(int(tokens.pop(0)))
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "deleteImage") :
+            p = pHandler.createDeleteRequestPacket(int(tokens.pop(0)))
             networkManager.sendPacket(ip_address, port, p)
             return False
         else :
