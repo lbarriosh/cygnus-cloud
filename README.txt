@@ -83,8 +83,5 @@ Gracias a la entrega de nuestro director de proyecto, CygnusCloud se ha dado a c
       que pude leerse en http://www.fdi.ucm.es/Documento.asp?cod=1006
     - El periódico de la Universidad Complutense, Tribuna Complutense, publicó un artículo en el que se mencionan los objetivos principales
       de CygnusCloud. Puede leerse en http://cygnusclouducm.files.wordpress.com/2013/01/tribunacomplutense.pdf.
-
-
-
-
-
+    - A fecha de 24/04/13, el blog de CygnusCloud cuenta con más de 1800 visitas, contando con tráfico procedente de muchos lugares de Europa
+      y Sudamérica.
