@@ -27,7 +27,7 @@ class _ClusterServerEndpointCallback(NetworkCallback):
         Argumentos:
             endpoint: el endpoint que procesará los paquetes entrantes
         """
-        self.__endpoint = endpoint
+        self.__libvirtConnection = endpoint
         
     def processPacket(self, packet):
         """
@@ -37,7 +37,7 @@ class _ClusterServerEndpointCallback(NetworkCallback):
         Devuelve: 
             Nada
         """
-        self.__endpoint._processIncomingPacket(packet)
+        self.__libvirtConnection._processIncomingPacket(packet)
         
 class _ClusterServerEndpointUpdateHandler(UpdateHandler):
     """
@@ -49,7 +49,7 @@ class _ClusterServerEndpointUpdateHandler(UpdateHandler):
         Argumentos:
             endpoint: el endpoint que enviará los paquetes
         """
-        self.__endpoint = endpoint
+        self.__libvirtConnection = endpoint
         
     def sendUpdateRequestPackets(self):
         """
@@ -59,7 +59,7 @@ class _ClusterServerEndpointUpdateHandler(UpdateHandler):
         Devuelve:
             Nada
         """
-        self.__endpoint._sendUpdateRequestPackets()
+        self.__libvirtConnection._sendUpdateRequestPackets()
 
 class WebServerEndpoint(object):  
     """

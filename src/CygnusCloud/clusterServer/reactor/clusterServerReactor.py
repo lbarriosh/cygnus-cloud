@@ -11,7 +11,7 @@ from database.utils.configuration import DBConfigurator
 from database.clusterServer.clusterServerDB import ClusterServerDatabaseConnector, SERVER_STATE_T
 from network.manager.networkManager import NetworkManager
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
-from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
+from virtualMachineServer.networking.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 from time import sleep
 from clusterServer.loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
 from network.twistedInteraction.clientConnection import RECONNECTION_T

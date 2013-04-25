@@ -9,7 +9,7 @@ from __future__ import print_function
 
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
-from virtualMachineServer.packets import VMServerPacketHandler, VM_SERVER_PACKET_T
+from virtualMachineServer.networking.packets import VMServerPacketHandler, VM_SERVER_PACKET_T
 from time import sleep
 
 class TesterCallback(NetworkCallback):

@@ -8,7 +8,7 @@ Created on 14/01/2013
 from network.manager.networkManager import NetworkManager
 from virtualMachineServer.networking.callback import MainServerCallback
 from network.interfaces.ipAddresses import get_ip_address 
-from virtualMachineServer.libvirtInteraction.libvirtConnector import libvirtConnector
+from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
 from database.vmServer.vmServerDB import VMServerDBConnector
@@ -50,7 +50,7 @@ class VMServer(MainServerPacketReactor):
         
     def __connectToLibvirt(self, createVirtualNetworkAsRoot) :
         # Inicializo la librería libvirt y creo la red virtual que da acceso por red a las máquinas virtuales.
-        self.__libvirtConnector = libvirtConnector(libvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
+        self.__libvirtConnection = LibvirtConnector(LibvirtConnector.KVM, self.__startedVM, self.__stoppedVM)
         self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
         self.__virtualNetworkManager.createVirtualNetwork(self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
                                                           self.__cManager.getConstant("netMask"), self.__cManager.getConstant("dhcpStartIP"), 
@@ -83,7 +83,7 @@ class VMServer(MainServerPacketReactor):
         
     def __stoppedVM(self, domainInfo):
         # Se ha apagado una máquina virtual, borro sus datos
-        if self.__shuttingDown and (self.__libvirtConnector.getNumberOfDomains() == 0):
+        if self.__shuttingDown and (self.__libvirtConnection.getNumberOfDomains() == 0):
             self.__shuttingDown = True
         self.__freeDomainResources(domainInfo["name"])
         
@@ -118,10 +118,10 @@ class VMServer(MainServerPacketReactor):
             self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
             timeout = 300 # 5 mins
             if (self.__destroyDomains) :
-                self.__libvirtConnector.stopAllDomains()
+                self.__libvirtConnection.destroyAllDomains()
             else :
                 wait_time = 0
-                while (self.__libvirtConnector.getNumberOfDomains() != 0 and wait_time < timeout) :
+                while (self.__libvirtConnection.getNumberOfDomains() != 0 and wait_time < timeout) :
                     sleep(0.5)
                     wait_time += 0.5
         self.__childProcessManager.waitForBackgroundChildrenToTerminate()
@@ -244,7 +244,7 @@ class VMServer(MainServerPacketReactor):
         string = xmlFile.generateConfigurationString()
         
         # Arranco la máquina
-        self.__libvirtConnector.startDomain(string)
+        self.__libvirtConnection.startDomain(string)
         
         # Inicio el websockify
         # Los puertos impares serán para el socket que proporciona el hipervisor 
@@ -270,14 +270,14 @@ class VMServer(MainServerPacketReactor):
             # No informamos del error: el servidor de máquinas virtuales siempre intenta
             # hacer lo que se le pide, y si no puede, no lo hace y no se queja.
             return 
-        self.__libvirtConnector.destroyDomain(domainName)
+        self.__libvirtConnection.destroyDomain(domainName)
         # Libvirt borra las imágenes de disco, por lo que sólo tenemos que encargarnos de actualizar
         # las bases de datos.
         self.__freeDomainResources(domainName, False)
         
     
     def __serverStatusRequest(self, packet):
-        info = self.__libvirtConnector.getStatusInfo()
+        info = self.__libvirtConnection.getStatusInfo()
         realCPUNumber = multiprocessing.cpu_count()
         diskStats_storage = os.statvfs(self.__cManager.getConstant("sourceImagePath"))
         diskStats_temporaryData = os.statvfs(self.__cManager.getConstant("executionImagePath"))
@@ -343,7 +343,7 @@ class VMServer(MainServerPacketReactor):
         Returns:
             Nothing
         """
-        activeDomainNames = self.__libvirtConnector.getActiveDomainNames()
+        activeDomainNames = self.__libvirtConnection.getActiveDomainNames()
         registeredDomainNames = self.__dbConnector.getRegisteredDomainNames()
         for domainName in registeredDomainNames :
             if (not domainName in activeDomainNames) :
