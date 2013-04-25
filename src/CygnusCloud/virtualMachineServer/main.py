@@ -7,7 +7,7 @@ Punto de entrada del servidor de máquinas virtuales
 '''
 
 from database.utils.configuration import DBConfigurator
-from reactor.vmServerReactor import VMServer
+from reactor.vmServerReactor import VMServerReactor
 from time import sleep
 from constants import VMServerConstantsManager
 import sys
@@ -30,7 +30,7 @@ if __name__ == "__main__" :
     # Crear un usuario y darle permisos
     configurator.addUser(cm.getConstant("databaseUserName"), cm.getConstant("databasePassword"), cm.getConstant("databaseName"), True)
     # Crear el servidor de máquinas virtuales
-    vmServer = VMServer(cm)    
+    vmServer = VMServerReactor(cm)    
     # Dormir hasta que se apague
     while not vmServer.isShutDown():
         sleep(10) 

@@ -113,7 +113,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         elif (data["packet_type"] == WEB_PACKET_T.VM_BOOT_REQUEST):
             self.__bootUpVM(data)
         elif (data["packet_type"] == WEB_PACKET_T.HALT) :
-            self.__halt(data)
+            self.__doImmediateShutdown(data)
         elif (data["packet_type"] == WEB_PACKET_T.QUERY_VM_DISTRIBUTION) :
             self.__sendVMDistributionData()
         elif (data["packet_type"] == WEB_PACKET_T.QUERY_ACTIVE_VM_DATA) :
@@ -138,7 +138,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             errorMessage = self.__networkManager.sendPacket(cd["ServerIP"], cd["ServerPort"], p)
             NetworkManager.printConnectionWarningIfNecessary(cd["ServerIP"], cd["ServerPort"], "VNC connection data request", errorMessage)
             
-    def __halt(self, data):
+    def __doImmediateShutdown(self, data):
         """
         Apaga TODAS las máquinas del cluster, incluyendo los servidores de máquinas virtuales.
         Argumentos:
@@ -550,7 +550,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         elif (data["packet_type"] == VMSRVR_PACKET_T.DOMAIN_CONNECTION_DATA) :
             self.__sendVMConnectionData(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_DATA) :
-            self.__sendActiveVMsVNCConnectionData(packet)
+            self.__sendDomainsVNCConnectionData(packet)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_DOMAIN_UIDS) :
             self.__processActiveDomainUIDs(data)
             
@@ -574,7 +574,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         serverID = self.__dbConnector.getVMServerID(ipAddress)
         self.__dbConnector.updateVMServerStatus(serverID, status)
             
-    def __sendActiveVMsVNCConnectionData(self, packet):
+    def __sendDomainsVNCConnectionData(self, packet):
         """
         Envía al endpoint los datos de conexión VNC de todas las máquinas
         virtuales activas del servidor de máquinas virtuales

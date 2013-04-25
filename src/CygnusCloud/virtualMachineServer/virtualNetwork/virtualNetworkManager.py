@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 '''
-VirtualNetworkManager definitions.
+Gestor de red virtual
 @author: Luis Barrios Hernández
-@version 1.0
+@version 3.0
 '''
 try :
     import etree.cElementTree as ET
@@ -21,42 +21,43 @@ from time import sleep
     
 class VirtualNetworkManagerException(Exception):
     """
-    Virtual network manager exception class
+    Clase de excepción para el gestor de red virtaul
     """
     pass
 
 class VirtualNetworkManager(object):
     """
-    This class provides methods to create, destroy
-    and to open ports in virtual machine networks.
+    Estos objetos crean y destruyen redes virtuales
     """
-    def __init__(self, runAsRoot=False):
+    def __init__(self, runCommandsAsRoot=False):
+        """
+        Inicializa el estado del gestor de red virtual.
+        Argumentos:
+            runCommandsAsRoot: indica si hay que ejecutar los comandos
+            como el superusuario o como un usuario normal
+        """
         self.__networksByIP = dict()
         self.__networksByName = dict();
-        self.__runAsRoot = runAsRoot
+        self.__runAsRoot = runCommandsAsRoot
         
     def createVirtualNetwork(self, networkName, gatewayIPAddress, netmask,
                                     dhcpStartIPAddress, dhcpEndIPAddress, bridgeName=None):
         """
         Creates a virtual network.
-        Args:
-            networkName: the new virtual network's name
-            gatewayIPAddress: the gateway IPv4 address
-            netmask: the IPv4 netmask
-            dhcpStartIPAddress: the first IP address that the DHCP server will assign to a
-            host.
-            dhcpStopIPAddress: the last IP address that the DHCP server will assign to a
-            host.
-            bridgeName: the new virtual network's bridge name. If it's None, the new network
-            and its bridge will have the same name.
-        Returns:
-            Nothing
-        Raises:
-            VirtualNetworkManagerException: this exceptions will be raised when the gateway
-            IP address or the virtual network name is already in use. 
-            
+        Argumentos:
+            networkName: el nombre de la red virtual
+            gatewayIPAddress: la IP de la puerta de enlace
+            netmask: la máscara de red
+            dhcpStartIPAddress: la primera dirección IP que asignará el servidor DHCP
+            dhcpStopIPAddress: la última dirección IP que asignará el servidor DHCP
+            bridgeName: el nombre del bridge. Si es None, el bridge y la red virtual se llamarán igual
+        Devuelve:
+            Nada
+        Lanza:
+            VirtualNetworkManagerException: se lanza cuando la IP de la puerta de enlace,
+            el nombre del bridge o el nombre de la red ya están en uso.            
         """
-        # Check if this network already exists
+        # Comprobnar errores
         if (self.__networksByIP.has_key(gatewayIPAddress) != 0) :
             raise VirtualNetworkManagerException("The gateway IP address " + \
                                                  gatewayIPAddress + " is already in use")
@@ -64,15 +65,16 @@ class VirtualNetworkManager(object):
             raise VirtualNetworkManagerException("The virtual network name " + networkName + \
                                                  " is already in use")
         xmlFilePath = "/tmp/networkConfig.xml"
-        # Generate the .xml configuration file
+        # Generar el fichero de configuración
         self.__generateConfigurationFile(xmlFilePath, networkName, bridgeName,\
                                          gatewayIPAddress, netmask, dhcpStartIPAddress, dhcpEndIPAddress)
-                
+        
+        # Crear la red virtual (si ya existe, la destruimos)    
         if (self.__runAsRoot) :
             runMethod = ChildProcessManager.runCommandInForegroundAsRoot
         else :
             runMethod = ChildProcessManager.runCommandInForeground
-        # Destroy the virtual network (if it already exists)
+            
         try :
             runMethod("virsh net-destroy " + networkName, Exception)
         except Exception :
@@ -82,47 +84,49 @@ class VirtualNetworkManager(object):
         except Exception :
             pass
         
-        # Create the virtual network
         runMethod("virsh net-define " + xmlFilePath, VirtualNetworkManagerException)
         
-        # Start it
+        # Arrancar la red virtual
         runMethod("virsh net-start " + networkName, VirtualNetworkManagerException)
         
-        # Delete the .xml file
+        # Borrar el fichero de definición
         ChildProcessManager.runCommandInForeground("rm " + xmlFilePath, VirtualNetworkManagerException)
         
-        # Register the new virtual network
+        # Registrar la red virtual
         self.__networksByIP[gatewayIPAddress] = networkName
         self.__networksByName[networkName] = gatewayIPAddress
         
-    def destroyVirtualNetwork(self, nameOrIPAddress):
+    def destroyVirtualNetwork(self, nameOrGatewayIPAddress):
         """
-        Destroys a virtual network. 
-        Args:
-            nameOrIPAddress: the gateway IPv4 address or the networkName of the virtual network to destroy.
-        Returns:
-            nothing
-        Raises:
-            VirtualNetworkManagerException: this exception will be raised when the virtual network
-            does not exist.
+        Destruye una red virtual 
+        Argumentos:
+            nameOrGatewayIPAddress: la IP de la puerta de enlace de la red virtual o el nombre de la red virtual.
+        Devuelve:
+            Nada
+        Lanza:
+            VirtualNetworkManagerException: se lanza si la red virtual no existe
         """
-        if (not self.__networksByName.has_key(nameOrIPAddress) and \
-            not self.__networksByIP.hasKey(nameOrIPAddress)) :
-            raise VirtualNetworkManagerException("The network with networkName or IPv4 gateway address "\
-                                                 + nameOrIPAddress + " does not exist")
-        # Fetch the virtual network's networkName
-        networkName = nameOrIPAddress
-        if (not self.__networksByName.has_key(nameOrIPAddress)):
-            networkName = self.__networksByIP[nameOrIPAddress]        
         
+        # Comprobar errores
+        if (not self.__networksByName.has_key(nameOrGatewayIPAddress) and \
+            not self.__networksByIP.hasKey(nameOrGatewayIPAddress)) :
+            raise VirtualNetworkManagerException("The network with networkName or IPv4 gateway address "\
+                                                 + nameOrGatewayIPAddress + " does not exist")
+            
+        # Averiguar el nombre de la red
+        networkName = nameOrGatewayIPAddress
+        if (not self.__networksByName.has_key(nameOrGatewayIPAddress)):
+            networkName = self.__networksByIP[nameOrGatewayIPAddress]        
+        
+        # Destruirla
         if (self.__runAsRoot) :
             runMethod = ChildProcessManager.runCommandInForegroundAsRoot
         else :
             runMethod = ChildProcessManager.runCommandInForeground
-        # Destroy the virtual network
+        
         runMethod("virsh net-destroy " + networkName, VirtualNetworkManagerException)
         runMethod("virsh net-undefine " + networkName, VirtualNetworkManagerException)
-        # Delete it from the internal data structures
+
         ip = self.__networksByName[networkName]
         self.__networksByName.pop(networkName)
         self.__networksByIP.pop(ip)
@@ -132,31 +136,32 @@ class VirtualNetworkManager(object):
     def __generateConfigurationFile(outputFilePath, networkName, bridgeName, gatewayIPAddress, netmask,
                                     dhcpStartIPAddress, dhcpEndIPAddress):
         """
-        Generates a network configuration file.
+        Genera un fichero de configuración de la red.
+        Argumentos:
+            outputFilePath: la ruta en la que se guardará ese fichero
+            networkName: el nombre de la red virtual
+            bridgeName: el nombre del bridge
+            gatewayIPAddress: la IP de la puerta de enlace
+            netmask: la máscara de red
+            dhcpStartIPAddress: la primera IP que asignará el servidor DHCP
+            dhcpEndIPAddress: la última IP que asignará el servidor DHCP
         """
         network = ET.Element("network")
-        # Generate the name sub-element
+        
         name = ET.SubElement(network, "name")
         name.text = networkName
-        # Generate the bridge sub-element
+        
         if (bridgeName == None) :
             ET.SubElement(network, "bridge", {"name":networkName})
         else :
             ET.SubElement(network, "bridge", {"name":bridgeName})
-        # Generate the forward sub-element
+        
         ET.SubElement(network, "forward")
-        # Generate the ip sub-element
+        
         ip = ET.SubElement(network, "ip", {"address" : gatewayIPAddress, "netmask" : netmask})
-        # Generate the dhcp sub-element
+        
         dhcp = ET.SubElement(ip, "dhcp")
         ET.SubElement(dhcp, "range", {"start" : dhcpStartIPAddress, "end" : dhcpEndIPAddress})        
-        # Write the generated tree to the specified file
+        
         tree = ET.ElementTree(network)
         tree.write(outputFilePath)
-        
-if __name__ == "__main__":
-    # Generate the virtual network foo
-    vnm = VirtualNetworkManager()
-    vnm.createVirtualNetwork("net1", "172.20.20.1", "255.0.0.0", "172.20.0.2", "172.20.255.254")
-    sleep(30)
-    vnm.destroyVirtualNetwork("net1")
