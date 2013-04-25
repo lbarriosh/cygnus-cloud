@@ -6,7 +6,7 @@ Created on 14/01/2013
 '''
 
 from network.manager.networkManager import NetworkManager
-from virtualMachineServer.networking.callback import MainServerCallback
+from virtualMachineServer.networking.callback import ClusterServerCallback
 from network.interfaces.ipAddresses import get_ip_address 
 from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
@@ -33,7 +33,7 @@ class VMServer(MainServerPacketReactor):
         self.__shuttingDown = False
         self.__emergencyStop = False
         self.__cManager = constantManager
-        self.__mainServerCallback = MainServerCallback(self)
+        self.__mainServerCallback = ClusterServerCallback(self)
         self.__childProcessManager = ChildProcessManager()
         self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
         self.__connectToLibvirt(self.__cManager.getConstant("createVirtualNetworkAsRoot"))
@@ -238,7 +238,7 @@ class VMServer(MainServerPacketReactor):
         xmlFile = ConfigurationFileEditor(configFile)
         xmlFile.setDomainIdentifiers(newName, newUUID)
         xmlFile.setImagePaths(newOSDisk, newDataDisk)
-        xmlFile.setNetworkConfiguration(self.__cManager.getConstant("vnName"), newMAC)
+        xmlFile.setVirtualNetworkConfiguration(self.__cManager.getConstant("vnName"), newMAC)
         xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword)
         
         string = xmlFile.generateConfigurationString()

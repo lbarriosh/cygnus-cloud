@@ -22,13 +22,13 @@ class ClusterServerPacketHandler(object):
     Estos objetos leen y escriben los paquetes que el endpoint y el servidor de cluster utilizan para
     comunicarse.
     """    
-    def __init__(self, networkManager):
+    def __init__(self, packetCreator):
         """
         Inicializa el estado del gestor de paquetes
         Argumentos:
-            networkManager: el objeto NetworkManager que utilizaremos para crear los paquetes
+            packetCreator: el objeto NetworkManager que utilizaremos para crear los paquetes
         """
-        self.__packetCreator = networkManager
+        self.__packetCreator = packetCreator
             
     def createVMServerRegistrationPacket(self, IPAddress, port, name, isVanillaServer, commandID):
         """

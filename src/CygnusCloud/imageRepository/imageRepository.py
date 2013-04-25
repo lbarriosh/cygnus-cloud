@@ -179,18 +179,18 @@ class CommandsCallback(NetworkCallback):
     """
     Clase para el callback que procesará los datos recibidos por la conexión de comandos.
     """    
-    def __init__(self, networkManager, pHandler, listenningPort, dbConnector, retrieveQueue, storeQueue):
+    def __init__(self, packetCreator, pHandler, listenningPort, dbConnector, retrieveQueue, storeQueue):
         """
         Inicializa el estado del callback
         Argumentos:
-            networkManager: objeto que se usará para enviar paquetes
+            packetCreator: objeto que se usará para enviar paquetes
             pHandler: objeto que se usará para crear y deserializar paquetes
             listenningPort: el puerto de escucha de la conexión de comandos
             dbConnector: conector con la base de datos
             retrieveQueue: cola de peticiones de descarga
             storeQueue: cola de peticiones de subida    
         """
-        self.__networkManager = networkManager
+        self.__networkManager = packetCreator
         self.__pHandler = pHandler
         self.__commandsListenningPort = listenningPort
         self.__dbConnector = dbConnector    
