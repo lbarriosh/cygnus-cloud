@@ -15,55 +15,55 @@ from os import remove, path, mkdir
 from time import sleep
 from ccutils.processes.childProcessManager import ChildProcessManager
 
-"""
-Clase principal del repositorio de imágenes
-"""
 class ImageRepository(object):
+    """
+    Clase principal del repositorio de imágenes
+    """    
     
-    """
-    Inicializa el estado del repositorio
-    Argumentos:
-        workingDirectory: el directorio en el que se almacenarán los ficheros
-    """
     def __init__(self, workingDirectory):
+        """
+        Inicializa el estado del repositorio
+        Argumentos:
+            workingDirectory: el directorio en el que se almacenarán los ficheros
+        """
         self.__workingDirectory = workingDirectory        
         self.__slotCounter = MultithreadingCounter()
         self.__retrieveQueue = GenericThreadSafeList()
-        self.__storeQueue = GenericThreadSafeList()
-        
-    """
-    Establece la conexión con la base de datos.
-    Argumentos:
-        repositoryDBName: el nombre de la base de datos
-        repositoryDBUser: el usuario a utilizar
-        repositoryDBPassword: la contraseña a utilizar
-    Devuelve:
-        Nada
-    """
+        self.__storeQueue = GenericThreadSafeList()        
+    
     def connectToDatabase(self, repositoryDBName, repositoryDBUser, repositoryDBPassword):
+        """
+        Establece la conexión con la base de datos.
+        Argumentos:
+            repositoryDBName: el nombre de la base de datos
+            repositoryDBUser: el usuario a utilizar
+            repositoryDBPassword: la contraseña a utilizar
+        Devuelve:
+            Nada
+        """
         self.__dbConnector = ImageRepositoryDBConnector(repositoryDBUser, repositoryDBPassword, repositoryDBName)
-        self.__dbConnector.connect()
-        
-    """
-    Arranca el servidor FTP y comienza a atender las peticiones recibidas por la conexión de comandos.
-    Argumentos:
-        networkInterface: la interfaz de red por la que viajará el tráfico FTP
-        certificatesDirectory: el directorio en el que se encuentran los ficheros server.crt y server.key
-        commandsListenningPort: el puerto por el que se escucharán los comandos
-        ftpListenningPort: el puerto en el que escuchará el servidor FTP
-        maxConnections: máximo número de conexiones FTP que estarán activas al mismo tiempo
-        maxConnectionsPerIP: máximo número de conexiones que puede haber entre el servidor FTP y un host.
-        uploadBandwidthRatio: fracción del ancho de banda de subida que se usará para transportar tráfico FTP
-        downloadBandwidthRatio: fracción del ancho de banda de bajada que se usará para transportar tráfico FTP.
-        ftpUsername: el nombre de usuario FTP que se utilizará
-        ftpPasswordLength: la longitud de la contraseña
-    Devuelve:
-        Nada
-    @attention: El ancho de banda se determina automáticamente en función de la interfaz de red escogida.
-    @attention: La contraseña se fija aleatoriamente en cada ejecución
-    """
+        self.__dbConnector.connect()        
+    
     def startListenning(self, networkInterface, certificatesDirectory, commandsListenningPort, ftpListenningPort, maxConnections,
                         maxConnectionsPerIP, uploadBandwidthRatio, downloadBandwidthRatio, ftpUsername, ftpPasswordLength): 
+        """
+        Arranca el servidor FTP y comienza a atender las peticiones recibidas por la conexión de comandos.
+        Argumentos:
+            networkInterface: la interfaz de red por la que viajará el tráfico FTP
+            certificatesDirectory: el directorio en el que se encuentran los ficheros server.crt y server.key
+            commandsListenningPort: el puerto por el que se escucharán los comandos
+            ftpListenningPort: el puerto en el que escuchará el servidor FTP
+            maxConnections: máximo número de conexiones FTP que estarán activas al mismo tiempo
+            maxConnectionsPerIP: máximo número de conexiones que puede haber entre el servidor FTP y un host.
+            uploadBandwidthRatio: fracción del ancho de banda de subida que se usará para transportar tráfico FTP
+            downloadBandwidthRatio: fracción del ancho de banda de bajada que se usará para transportar tráfico FTP.
+            ftpUsername: el nombre de usuario FTP que se utilizará
+            ftpPasswordLength: la longitud de la contraseña
+        Devuelve:
+            Nada
+        @attention: El ancho de banda se determina automáticamente en función de la interfaz de red escogida.
+        @attention: La contraseña se fija aleatoriamente en cada ejecución
+        """
         self.__maxConnections = maxConnections      
         self.__commandsListenningPort = commandsListenningPort
         self.__FTPListenningPort = ftpListenningPort
@@ -84,30 +84,30 @@ class ImageRepository(object):
         self.__ftpServer = ConfigurableFTPServer("Image repository FTP Server")
         self.__ftpServer.startListenning(networkInterface, ftpListenningPort, maxConnections, maxConnectionsPerIP, 
                                          dataCallback, downloadBandwidthRatio, uploadBandwidthRatio)
-        self.__ftpServer.addUser(self.__ftpUsername, self.__ftpPassword, self.__workingDirectory, "eraw")
-        
-    """
-    Para el repositorio
-    Argumentos:
-        Ninguno
-    Devuelve:
-        Nada
-    @attention: Para evitar cuelges, ¡¡¡no llamar a este método desde ningún hilo de la red!!!
-    """
+        self.__ftpServer.addUser(self.__ftpUsername, self.__ftpPassword, self.__workingDirectory, "eraw")        
+    
     def stopListenning(self):
+        """
+        Para el repositorio
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        @attention: Para evitar cuelges, ¡¡¡no llamar a este método desde ningún hilo de la red!!!
+        """
         self.__ftpServer.stopListenning()
         self.__networkManager.stopNetworkService()
-        self.__dbConnector.disconnect()
-        
-    """
-    Inicia las transferencias de subida y bajada a medida que se liberan los slots.
-    Argumentos:
-        Ninguno
-    Devuelve:
-        Nada
-    @attention: Este método sólo devolverá el control cuando el repositorio tenga que apagarse.
-    """
+        self.__dbConnector.disconnect()        
+    
     def initTransfers(self):
+        """
+        Inicia las transferencias de subida y bajada a medida que se liberan los slots.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        @attention: Este método sólo devolverá el control cuando el repositorio tenga que apagarse.
+        """
         store = False
         while not self.__commandsCallback.haltReceived():
             if (self.__slotCounter.read() == self.__maxConnections) :
@@ -175,21 +175,21 @@ class ImageRepository(object):
                     # Enviárselo
                     self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
                               
-"""
-Clase para el callback que procesará los datos recibidos por la conexión de comandos.
-"""
 class CommandsCallback(NetworkCallback):
     """
-    Inicializa el estado del callback
-    Argumentos:
-        networkManager: objeto que se usará para enviar paquetes
-        pHandler: objeto que se usará para crear y deserializar paquetes
-        listenningPort: el puerto de escucha de la conexión de comandos
-        dbConnector: conector con la base de datos
-        retrieveQueue: cola de peticiones de descarga
-        storeQueue: cola de peticiones de subida    
-    """
+    Clase para el callback que procesará los datos recibidos por la conexión de comandos.
+    """    
     def __init__(self, networkManager, pHandler, listenningPort, dbConnector, retrieveQueue, storeQueue):
+        """
+        Inicializa el estado del callback
+        Argumentos:
+            networkManager: objeto que se usará para enviar paquetes
+            pHandler: objeto que se usará para crear y deserializar paquetes
+            listenningPort: el puerto de escucha de la conexión de comandos
+            dbConnector: conector con la base de datos
+            retrieveQueue: cola de peticiones de descarga
+            storeQueue: cola de peticiones de subida    
+        """
         self.__networkManager = networkManager
         self.__pHandler = pHandler
         self.__commandsListenningPort = listenningPort
@@ -198,14 +198,14 @@ class CommandsCallback(NetworkCallback):
         self.__retrieveQueue = retrieveQueue
         self.__storeQueue = storeQueue
         
-    """
-    Procesa un paquete
-    Argumentos:
-        packet: el paquete recibido
-    Devuelve:
-        Nada
-    """
     def processPacket(self, packet):
+        """
+        Procesa un paquete
+        Argumentos:
+            packet: el paquete recibido
+        Devuelve:
+            Nada
+        """
         data = self.__pHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.HALT):
             self.__haltReceived = True
@@ -218,26 +218,26 @@ class CommandsCallback(NetworkCallback):
         elif (data["packet_type"] == PACKET_T.DELETE_REQUEST):
             self.__deleteImage(data)
     
-    """
-    Añade una nueva imagen al repositorio
-    Argumentos:
-        data: el contenido del paquete recibido
-    Devuelve:
-        Nada
-    """
     def __addNewImage(self, data):
+        """
+        Añade una nueva imagen al repositorio
+        Argumentos:
+            data: el contenido del paquete recibido
+        Devuelve:
+            Nada
+        """
         imageID = self.__dbConnector.addImage()
         p = self.__pHandler.createAddedImagePacket(imageID)
         self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
      
-    """
-    Procesa una petición de descarga
-    Argumentos:
-        data: el contenido del paquete recibido
-    Devuelve:
-        Nada
-    """   
     def __handleRetrieveRequest(self, data):
+        """
+        Procesa una petición de descarga
+        Argumentos:
+            data: el contenido del paquete recibido
+        Devuelve:
+            Nada
+        """   
         imageData = self.__dbConnector.getImageData(data["imageID"])
         # Chequear errores
         if (imageData == None) :
@@ -254,14 +254,14 @@ class CommandsCallback(NetworkCallback):
             if (data["modify"]) :
                 self.__dbConnector.changeImageStatus(data["imageID"], IMAGE_STATUS_T.EDITION)
     
-    """
-    Procesa una petición de subida
-    Argumentos:
-        data: el contenido del paquete recibido
-    Devuelve:
-        Nada
-    """   
     def __handleStorRequest(self, data):
+        """
+        Procesa una petición de subida
+        Argumentos:
+            data: el contenido del paquete recibido
+        Devuelve:
+            Nada
+        """   
         imageData = self.__dbConnector.getImageData(data["imageID"])
         # Chequear errores
         if (imageData == None) :
@@ -277,6 +277,13 @@ class CommandsCallback(NetworkCallback):
             self.__storeQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))        
             
     def __deleteImage(self, data):
+        """
+        Procesa una petición de borrado de una imagen
+        Argumentos:
+            data: el contenido del paquete recibido
+        Devuelve:
+            Nada
+        """  
         imageData = self.__dbConnector.getImageData(data["imageID"])
         if (imageData == None) :
             p = self.__pHandler.createErrorPacket(PACKET_T.DELETE_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
@@ -288,102 +295,101 @@ class CommandsCallback(NetworkCallback):
             self.__dbConnector.deleteImage(data["imageID"]) # TODO: poner encima del if
             p = self.__pHandler.createImageRequestReceivedPacket(PACKET_T.DELETE_REQUEST_RECVD)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
-         
-    """
-    Indica si se ha recibido un paquete de apagado o no
-    Argumentos:
-        Ninguno
-    Devuelve:
-        True si el repositorio debe apagarse, y false en caso contrario
-    """   
+        
     def haltReceived(self):
+        """
+        Indica si se ha recibido un paquete de apagado o no
+        Argumentos:
+            Ninguno
+        Devuelve:
+            True si el repositorio debe apagarse, y false en caso contrario
+        """   
         return self.__haltReceived
         
-"""
-Callback que procesará los eventos relacionados con las transferencias FTP
-"""
 class DataCallback(FTPCallback):
-    
     """
-    Inicializa el estado del callback
-    Argumentos:
-        slotCounter: contador de slots
-        dbConnector: conector con la base de datos
-    """
+    Callback que procesará los eventos relacionados con las transferencias FTP
+    """   
     def __init__(self, slotCounter, dbConnector):
+        """
+        Inicializa el estado del callback
+        Argumentos:
+            slotCounter: contador de slots
+            dbConnector: conector con la base de datos
+        """
         self.__slotCounter = slotCounter
         self.__dbConnector = dbConnector
-    
-    """
-    Método que se invocará cuando un cliente se desconecta
-    Argumentos:
-        Ninguno
-    Devuelve:
-        Nada
-    """
+
     def on_disconnect(self):
+        """
+        Método que se invocará cuando un cliente se desconecta
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
         self.__slotCounter.increment()
 
-    """
-    Método que se invocará cuando un cliente inicia sesión
-    Argumentos:
-        username: el nombre del usuario
-    Devuelve:
-        nada
-    """
     def on_login(self, username):
+        """
+        Método que se invocará cuando un cliente inicia sesión
+        Argumentos:
+            username: el nombre del usuario
+        Devuelve:
+            nada
+        """
         pass
-    
-    """
-    Método que se invocará cuando un cliente cierra sesión
-    Argumentos:
-        username: el nombre del usuario
-    Devuelve:
-        Nada
-    """
+
     def on_logout(self, username):
+        """
+        Método que se invocará cuando un cliente cierra sesión
+        Argumentos:
+            username: el nombre del usuario
+        Devuelve:
+            Nada
+        """
         pass
-    
-    """
-    Método que se invocará cuando uun fichero acaba de transferirse
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
+
     def on_file_sent(self, f):
+        """
+        Método que se invocará cuando uun fichero acaba de transferirse
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
         pass
     
-    """
-    Método que se invocará cuando un fichero acaba de recibirse
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
     def on_file_received(self, f):
+        """
+        Método que se invocará cuando un fichero acaba de recibirse
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
         self.__dbConnector.handleFinishedUploadTransfer(f)
     
-    """
-    Método que se invocará cuando se interrumpe abruptamente la transferencia
-    de un fichero
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
     def on_incomplete_file_sent(self, f):
+        """
+        Método que se invocará cuando se interrumpe abruptamente la transferencia
+        de un fichero
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
         pass
-    
-    """
-    Método que se invocará cuando se interrumpe abruptamente la subida
-    de un fichero
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
+
     def on_incomplete_f_received(self, f):    
+        """
+        Método que se invocará cuando se interrumpe abruptamente la subida
+        de un fichero
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
         # Borramos el fichero y su directorio para no dejar mierda    
         remove(f)
         ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(f), Exception)

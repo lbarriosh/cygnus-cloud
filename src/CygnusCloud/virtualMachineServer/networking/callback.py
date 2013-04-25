@@ -3,6 +3,9 @@
 from network.manager.networkManager import NetworkCallback
 
 class MainServerCallback(NetworkCallback):
+    """
+    Callback 
+    """
     
     def __init__(self, processor):
         self.__processor = processor

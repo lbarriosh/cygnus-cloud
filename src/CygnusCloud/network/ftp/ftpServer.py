@@ -10,196 +10,197 @@ from os import remove
     
 from time import sleep
 
-"""
-Callback para los eventos generados por el servidor FTP
-"""
-class FTPCallback(object):    
-    
+class FTPCallback(object):   
     """
-    Método que se invocará cuando un cliente se desconecta
-    Argumentos:
-        Ninguno
-    Devuelve:
-        Nada
-    """
+    Callback para los eventos generados por el servidor FTP
+    """ 
+       
     def on_disconnect(self):
+        """
+        Método que se invocará cuando un cliente se desconecta
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
         raise NotImplementedError
-
-    """
-    Método que se invocará cuando un cliente inicia sesión
-    Argumentos:
-        username: el nombre del usuario
-    Devuelve:
-        nada
-    """
+    
     def on_login(self, username):
-        raise NotImplementedError
+        """
+        Método que se invocará cuando un cliente inicia sesión
+        Argumentos:
+            username: el nombre del usuario
+        Devuelve:
+            nada
+        """
+        raise NotImplementedError    
     
-    """
-    Método que se invocará cuando un cliente cierra sesión
-    Argumentos:
-        username: el nombre del usuario
-    Devuelve:
-        Nada
-    """
     def on_logout(self, username):
-        raise NotImplementedError
+        """
+        Método que se invocará cuando un cliente cierra sesión
+        Argumentos:
+            username: el nombre del usuario
+        Devuelve:
+            Nada
+        """
+        raise NotImplementedError    
     
-    """
-    Método que se invocará cuando uun fichero acaba de transferirse
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
     def on_file_sent(self, f):
-        raise NotImplementedError
+        """
+        Método que se invocará cuando uun fichero acaba de transferirse
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
+        raise NotImplementedError    
     
-    """
-    Método que se invocará cuando un fichero acaba de recibirse
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
     def on_file_received(self, f):
-        raise NotImplementedError
+        """
+        Método que se invocará cuando un fichero acaba de recibirse
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
+        raise NotImplementedError    
     
-    """
-    Método que se invocará cuando se interrumpe abruptamente la transferencia
-    de un fichero
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
     def on_incomplete_file_sent(self, f):
-        raise NotImplementedError
+        """
+        Método que se invocará cuando se interrumpe abruptamente la transferencia
+        de un fichero
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
+        raise NotImplementedError    
     
-    """
-    Método que se invocará cuando se interrumpe abruptamente la subida
-    de un fichero
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
     def on_incomplete_file_received(self, f):
+        """
+        Método que se invocará cuando se interrumpe abruptamente la subida
+        de un fichero
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
         raise NotImplementedError
 
-"""
-Handler par los eventos generados por el servidor FTP. Sus métodos se limitan
-a invocar a los métodos homólogos del callback (si está registrado) y a borrar
-la basura que aparezca.
-"""
 class CygnusCloudFTPHandler(FTPHandler):
+    """
+    Handler par los eventos generados por el servidor FTP. Sus métodos se limitan
+    a invocar a los métodos homólogos del callback (si está registrado) y a borrar
+    la basura que aparezca.
+    """    
     
-    """
-    Método que se invocará cuando un cliente se desconecta
-    Argumentos:
-        Ninguno
-    Devuelve:
-        Nada
-    """
     def on_disconnect(self):
+        """
+        Método que se invocará cuando un cliente se desconecta
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
         if (CygnusCloudFTPHandler.ftpCallback != None) :
             CygnusCloudFTPHandler.ftpCallback.on_disconnect()
-
-    """
-    Método que se invocará cuando un cliente inicia sesión
-    Argumentos:
-        username: el nombre del usuario
-    Devuelve:
-        nada
-    """
+    
     def on_login(self, username):
+        """
+        Método que se invocará cuando un cliente inicia sesión
+        Argumentos:
+            username: el nombre del usuario
+        Devuelve:
+            nada
+        """
         if (CygnusCloudFTPHandler.ftpCallback != None) :
             CygnusCloudFTPHandler.ftpCallback.on_login(username)
-
-    """
-    Método que se invocará cuando un cliente cierra sesión
-    Argumentos:
-        username: el nombre del usuario
-    Devuelve:
-        Nada
-    """
+    
     def on_logout(self, username):
+        """
+        Método que se invocará cuando un cliente cierra sesión
+        Argumentos:
+            username: el nombre del usuario
+        Devuelve:
+            Nada
+        """
         if (CygnusCloudFTPHandler.ftpCallback != None):
             CygnusCloudFTPHandler.ftpCallback.on_logout(username)
-
-    """
-    Método que se invocará cuando uun fichero acaba de transferirse
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
+    
     def on_file_sent(self, f):
+        """
+        Método que se invocará cuando uun fichero acaba de transferirse
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
         if (CygnusCloudFTPHandler.ftpCallback != None) :
             CygnusCloudFTPHandler.ftpCallback.on_file_sent(f)
-
-    """
-    Método que se invocará cuando un fichero acaba de recibirse
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
+    
     def on_file_received(self, f):
+        """
+        Método que se invocará cuando un fichero acaba de recibirse
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
         if (CygnusCloudFTPHandler.ftpCallback != None):
             CygnusCloudFTPHandler.ftpCallback.on_file_received(f)
-
-    """
-    Método que se invocará cuando se interrumpe abruptamente la transferencia
-    de un fichero
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
+    
     def on_incomplete_file_sent(self, f):
+        """
+        Método que se invocará cuando se interrumpe abruptamente la transferencia
+        de un fichero
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
         if (CygnusCloudFTPHandler.ftpCallback != None):
             CygnusCloudFTPHandler.ftpCallback.on_incomplete_file_sent(f)
-
-    """
-    Método que se invocará cuando se interrumpe abruptamente la subida
-    de un fichero. Si no hay callback, se carga los datos recibidos
-    Argumentos:
-        f: el nombre del fichero
-    Devuelve:
-        Nada
-    """
+    
     def on_incomplete_file_received(self, f):
+        """
+        Método que se invocará cuando se interrumpe abruptamente la subida
+        de un fichero. Si no hay callback, se carga los datos recibidos
+        Argumentos:
+            f: el nombre del fichero
+        Devuelve:
+            Nada
+        """
         if (CygnusCloudFTPHandler.ftpCallback != None) :
             CygnusCloudFTPHandler.ftpCallback.on_incomplete_file_received(f)
         else :
-            remove(f)
-        
-"""
-Clase para el hilo que ejecutará el bucle del servidor FTP
-"""
+            remove(f)        
+
 class FTPServerThread(Thread):
     """
-    Inicializa el estado del hilo
-    Argumentos:
-        ftpServer: servidor FTP cuyo bucle vamos a ejecutar
+    Clase para el hilo que ejecutará el bucle del servidor FTP
     """
+    
     def __init__(self, ftpServer):
+        """
+        Inicializa el estado del hilo
+        Argumentos:
+            ftpServer: servidor FTP cuyo bucle vamos a ejecutar
+        """
         Thread.__init__(self, name="FTP server thread")
         self.__serving = False
         self.__stopped = False
         self.__lock = Lock()
         self.__flag = Event()
-        self.server = ftpServer
-        
-    """
-    Reinicia la ejecución del hilo
-    Argumentos:
-        Ninguno
-    Devuelve:
-        Nada
-    """
+        self.server = ftpServer        
+    
     def __restart(self):
+        """
+        Reinicia la ejecución del hilo
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
         Thread.__init__(self)
         self.__serving = False
         self.__stopped = False
@@ -209,16 +210,16 @@ class FTPServerThread(Thread):
     @property
     def running(self):
         return self.__serving
-
-    """
-    Inicia la ejecución del hilo
-    Argumentos:
-        timeout: tiempo durante el que se estará ejecutando el bucle
-        del servidor FTP ANTES de comprobar si hay que acabar o no
-    Devuelve:
-        Nada        
-    """
+    
     def start(self, timeout=0.001):
+        """
+        Inicia la ejecución del hilo
+        Argumentos:
+            timeout: tiempo durante el que se estará ejecutando el bucle
+            del servidor FTP ANTES de comprobar si hay que acabar o no
+        Devuelve:
+            Nada        
+        """
         if self.__serving:
             raise RuntimeError("Server already started")
         if self.__stopped:            
@@ -226,16 +227,16 @@ class FTPServerThread(Thread):
         self.__timeout = timeout   
         Thread.start(self)
         self.__flag.wait()
-
-    """
-    Ejecuta el bucle del servidor FTP y comprueba si hay que parar o no
-    cada timeout segundos.
-    Argumentos:
-        Ninguno
-    Devuelve:
-        Nada
-    """    
+    
     def run(self):
+        """
+        Ejecuta el bucle del servidor FTP y comprueba si hay que parar o no
+        cada timeout segundos.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """    
         self.__serving = True 
         self.__flag.set()
         while self.__serving:
@@ -243,51 +244,52 @@ class FTPServerThread(Thread):
             self.server.serve_forever(timeout=self.__timeout, blocking=False)
             self.__lock.release()
         self.server.close_all()
-
-    """
-    Finaliza (ordenadamente) la ejecución del bucle del servidor FTP
-    Argumentos:
-        Ninguno
-    Devuelve:
-        Nada
-    """
+            
     def stop(self):
+        """
+        Finaliza (ordenadamente) la ejecución del bucle del servidor FTP
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
         if not self.__serving:
             raise RuntimeError("Server not started yet")
         self.__serving = False
         self.__stopped = True
-        self.join()
-        
-"""
-Clase para el servidor FTP basado en pyftpdlib
-"""
+        self.join()        
+
 class ConfigurableFTPServer(object):
     """
-    Inicializa el estado del servidor
-    Argumentos:
-        banner: mensaje que se mostrará cuando los usuarios inicien sesión
-    """
+    Clase para el servidor FTP basado en pyftpdlib
+    """    
+    
     def __init__(self, banner):
+        """
+        Inicializa el estado del servidor
+        Argumentos:
+            banner: mensaje que se mostrará cuando los usuarios inicien sesión
+        """
         self.__authorizer = DummyAuthorizer()       
         self.__banner = banner 
-        self.__thread = None
-        
-    """
-    Arranca el servidor FTP
-    Argumentos:
-        networkInterface: interfaz de red por la que circulará el tráfico FTP
-        port: puerto de escucha del servidor
-        maxConnections: número máximo de conexiones simultáneas
-        maxConnectionsPerIP: número máximo de conexiones por cliente
-        ftpCallback: callback que tratará los eventos generados por el servidor. Si es None,
-            no se hará, en general, nada para tratar estos eventos.
-        downloadBandwidthRatio: fracción del ancho de banda de bajada que se usará para transportar tráfico FTP
-        uploadBandwidthRatio: fracción del ancho de banda de subida que se usará para transportar tráfico FTP.
-    Devuelve:
-        Nada
-    """
+        self.__thread = None        
+    
     def startListenning(self, networkInterface, port, maxConnections, maxConnectionsPerIP, ftpCallback = None,
                         downloadBandwidthRatio=0.8, uploadBandwitdhRatio=0.8):
+        """
+        Arranca el servidor FTP
+        Argumentos:
+            networkInterface: interfaz de red por la que circulará el tráfico FTP
+            port: puerto de escucha del servidor
+            maxConnections: número máximo de conexiones simultáneas
+            maxConnectionsPerIP: número máximo de conexiones por cliente
+            ftpCallback: callback que tratará los eventos generados por el servidor. Si es None,
+                no se hará, en general, nada para tratar estos eventos.
+            downloadBandwidthRatio: fracción del ancho de banda de bajada que se usará para transportar tráfico FTP
+            uploadBandwidthRatio: fracción del ancho de banda de subida que se usará para transportar tráfico FTP.
+        Devuelve:
+            Nada
+        """
         ip_address = get_ip_address(networkInterface)
         handler = CygnusCloudFTPHandler
         handler.ftpCallback = ftpCallback
@@ -308,47 +310,47 @@ class ConfigurableFTPServer(object):
         self.__ftpServer.max_cons = maxConnections
         self.__ftpServer.max_cons_per_ip = maxConnectionsPerIP
         self.__thread = FTPServerThread(self.__ftpServer)
-        self.__thread.start()
-        
-    """
-    Añade un usuario al servidor FTP
-    Argumentos:
-        username: nombre del usuario
-        password: contraseña del usuario
-        homedir: directorio raíz del servidor que verá el usuario
-        permissions: string con los permisos del usuario. Se construye de la siguiente manera:
-            Read permissions:
-                - "e" = change directory (CWD command)
-                - "l" = list filess (LIST, NLST, STAT, MLSD, MLST, SIZE, MDTM commands)
-                - "r" = retrieve files from the server (RETR command)
-               
-               Write permissions:
-                - "a" = append data to an existing f (APPE command)
-                - "d" = delete file or directory (DELE, RMD commands)
-                - "f" = rename file or directory (RNFR, RNTO commands)
-                - "m" = create directory (MKD command)
-                - "w" = store a file to the server (STOR, STOU commands)
-                - "M" = change file mode (SITE CHMOD command)
-    Devuelve:
-        Nada
-    """
+        self.__thread.start()        
+    
     def addUser(self, username, password, homedir, permissions):
-        self.__authorizer.add_user(username, password, homedir, permissions)
-        
-    """
-    Elimina un usuario del servidor FTP
-    Argumentos:
-        username: el nombre del usuario a eliminar
-    Devuelve:
-        Nada
-    """
+        """
+        Añade un usuario al servidor FTP
+        Argumentos:
+            username: nombre del usuario
+            password: contraseña del usuario
+            homedir: directorio raíz del servidor que verá el usuario
+            permissions: string con los permisos del usuario. Se construye de la siguiente manera:
+                Read permissions:
+                    - "e" = change directory (CWD command)
+                    - "l" = list filess (LIST, NLST, STAT, MLSD, MLST, SIZE, MDTM commands)
+                    - "r" = retrieve files from the server (RETR command)
+                   
+                   Write permissions:
+                    - "a" = append data to an existing f (APPE command)
+                    - "d" = delete file or directory (DELE, RMD commands)
+                    - "f" = rename file or directory (RNFR, RNTO commands)
+                    - "m" = create directory (MKD command)
+                    - "w" = store a file to the server (STOR, STOU commands)
+                    - "M" = change file mode (SITE CHMOD command)
+        Devuelve:
+            Nada
+        """
+        self.__authorizer.add_user(username, password, homedir, permissions)        
+    
     def removeUser(self, username):
-        self.__authorizer.remove_user(username)
-        
-    """
-    Detiene ordenadamente el servidor FTP
-    """
+        """
+        Elimina un usuario del servidor FTP
+        Argumentos:
+            username: el nombre del usuario a eliminar
+        Devuelve:
+            Nada
+        """
+        self.__authorizer.remove_user(username)        
+    
     def stopListenning(self):
+        """
+        Detiene ordenadamente el servidor FTP
+        """
         if (self.__thread == None) :
             raise Exception("The FTP server is not running")
         self.__thread.stop()

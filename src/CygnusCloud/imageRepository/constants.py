@@ -2,28 +2,28 @@
 
 from ccutils.configurationFiles.constantsManager import ConstantsManager
 
-"""
-Parser del fichero de configuración del repositorio
-"""
 class ImageRepositoryConstantsManager(ConstantsManager):
+    """
+    Parser del fichero de configuración del repositorio
+    """
     
-    """
-    Inicializa el estado del parser
-    Argumentos:
-        Ninguno
-    """
     def __init__(self):
+        """
+        Inicializa el estado del parser
+        Argumentos:
+            Ninguno
+        """
         ConstantsManager.__init__(self)
-
-    """
-    Convierte algunos elementos de la estructrura de datos
-    a tipos más específicos.
-    Argumentos:
-        Ninguno
-    Devuelve:
-        Nada
-    """
+    
     def _specializeDataStructure(self):
+        """
+        Convierte algunos elementos de la estructrura de datos
+        a tipos más específicos.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
         self._data["commandsPort"] = int(self._data["commandsPort"])
         self._data["FTPPort"] = int(self._data["FTPPort"])
         self._data["maxConnections"] = int(self._data["maxConnections"])
