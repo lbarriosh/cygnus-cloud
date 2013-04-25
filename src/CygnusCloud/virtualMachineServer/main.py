@@ -7,7 +7,7 @@ Punto de entrada del servidor de máquinas virtuales
 '''
 
 from database.utils.configuration import DBConfigurator
-from vmServer import VMServer
+from reactor.vmServerReactor import VMServer
 from time import sleep
 from constants import VMServerConstantsManager
 import sys

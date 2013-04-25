@@ -6,13 +6,13 @@ Created on 14/01/2013
 '''
 
 from network.manager.networkManager import NetworkManager
-from virtualMachineServer.callback import MainServerCallback
+from virtualMachineServer.networking.callback import MainServerCallback
 from network.interfaces.ipAddresses import get_ip_address 
-from libvirtConnector import libvirtConnector
-from packets import VM_SERVER_PACKET_T, VMServerPacketHandler
-from xmlEditor import ConfigurationFileEditor
+from virtualMachineServer.libvirtInteraction.libvirtConnector import libvirtConnector
+from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
+from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
 from database.vmServer.vmServerDB import VMServerDBConnector
-from virtualNetwork.virtualNetworkManager import VirtualNetworkManager
+from virtualMachineServer.virtualNetwork.virtualNetworkManager import VirtualNetworkManager
 from ccutils.processes.childProcessManager import ChildProcessManager
 from time import sleep
 import os
