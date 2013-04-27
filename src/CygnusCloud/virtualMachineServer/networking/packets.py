@@ -9,7 +9,8 @@ from ccutils.enums import enum
 
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
-                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS")
+                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS",
+                          "DOWNLOAD_IMAGE")
 
 class VMServerPacketHandler(object):
     """
@@ -184,6 +185,27 @@ class VMServerPacketHandler(object):
             p.writeString(domain_uid)
         return p
     
+    def createDownloadImagePacket(self, ftpIP, ftpPort, ftpUser, ftpPassword, filename):
+        """
+        Crea un paquete que contiene los datos para descargarse una imagen del repositorio
+        Argumentos:
+            ftpIP: la dirección IP del servidor FTP
+            ftpPort: el puerto de escucha del servidor FTP
+            ftpUser: nombre de usuario del servidor FTP
+            ftpPassword: la contraseña del servidor FTP
+            filename: nombre del archivo a descargar
+        Devuelve:
+            Un paquete construido a partir de sus argumentos.
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA)
+        p.writeString(ftpIP)
+        p.writeInt(ftpPort)
+        p.writeString(ftpUser)
+        p.writeString(ftpPassword)
+        p.writeString(filename)
+        return p
+    
     def readPacket(self, p):
         """
         Lee un paquete del servidor de máquinas virtuales y vuelca sus datos a un diccionario.
@@ -207,6 +229,7 @@ class VMServerPacketHandler(object):
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
             result["CommandID"] = p.readString()
+            result["Modify"] = p.readBool()
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS and p.hasMoreData()) :
             result["VMServerIP"] = p.readString()
             result["ActiveDomains"] = p.readInt()
@@ -223,7 +246,13 @@ class VMServerPacketHandler(object):
             result["VMServerIP"] = p.readString()
             while (p.hasMoreData()):
                 ac.append(p.readString())
-            result["Domain_UIDs"] = ac        
+            result["Domain_UIDs"] = ac    
+        elif (packet_type == VM_SERVER_PACKET_T.DOWNLOAD_IMAGE) :
+            result["ftpIP"] = p.readString()
+            result["ftpPort"] = p.readInt()
+            result["ftpUser"] = p.readString()
+            result["ftpPassword"] = p.readString()
+            result["file"] = p.readString()   
         # Importante: los segmentos que transportan los datos de conexión se reenviarán, por lo que no tenemos que
         # leerlos para ganar en eficiencia.
         return result

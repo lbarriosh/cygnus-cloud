@@ -11,9 +11,13 @@ from network.interfaces.ipAddresses import get_ip_address
 from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
+from virtualMachineServer.repositoryQueue import RepositoryComunicationThread
 from database.vmServer.vmServerDB import VMServerDBConnector
 from virtualMachineServer.virtualNetwork.virtualNetworkManager import VirtualNetworkManager
 from ccutils.processes.childProcessManager import ChildProcessManager
+from ccutils.dataStructures.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
+from ccutils.compression.compressManager import ZipFile
+from network.ftp.ftpClient import FTPClient
 from virtualMachineServer.networking.reactors import MainServerPacketReactor
 from time import sleep
 import os
@@ -40,6 +44,10 @@ class VMServerReactor(MainServerPacketReactor):
         self.__shuttingDown = False
         self.__emergencyStop = False
         self.__cManager = constantManager
+        self.__ftp = FTPClient()
+        self.__repositoryQueue = GenericThreadSafePriorityQueue()
+        self.__repositoryThread = RepositoryComunicationThread(self.__compressQueue, ZipFile)
+        self.__repositoryThread.start()
         self.__mainServerCallback = ClusterServerCallback(self)
         self.__childProcessManager = ChildProcessManager()
         self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
@@ -204,7 +212,14 @@ class VMServerReactor(MainServerPacketReactor):
             self.__destroyDomain(data)
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS) :
             self.__sendActiveDomainUIDs()
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.DOWNLOAD_IMAGE) :
+            self.__downloadImage(data)
         
+    def __downloadImage(self, data):
+        data["compress"] = False
+        data["outputPath"] = self.__cManager.getConstant("sourceImagePath")
+        self.__repositoryQueue.queue(1, data)
+
     def __sendDomainsVNCConnectionData(self):
         '''
         Envía al servidor de cluster los datos de conexion de todas las máquinas virtuales
