@@ -11,7 +11,7 @@ from network.interfaces.ipAddresses import get_ip_address
 from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
-from virtualMachineServer.repositoryQueue import RepositoryComunicationThread
+from virtualMachineServer.repositoryQueue import RepositoryComunicationThread, RepositoryComunicationCallback
 from database.vmServer.vmServerDB import VMServerDBConnector
 from virtualMachineServer.virtualNetwork.virtualNetworkManager import VirtualNetworkManager
 from ccutils.processes.childProcessManager import ChildProcessManager
@@ -30,7 +30,7 @@ class VMServerException(Exception):
     """
     pass
 
-class VMServerReactor(MainServerPacketReactor):
+class VMServerReactor(MainServerPacketReactor, RepositoryComunicationCallback):
     """
     Clase del reactor del servidor de máquinas virtuales
     """
@@ -216,7 +216,8 @@ class VMServerReactor(MainServerPacketReactor):
             self.__downloadImage(data)
         
     def __downloadImage(self, data):
-        data["compress"] = False
+        data["download"] = False
+        data["timeout"] = self.__cManager.getConstant("ftpTimeout")
         data["outputPath"] = self.__cManager.getConstant("sourceImagePath")
         self.__repositoryQueue.queue(1, data)
 
@@ -453,3 +454,12 @@ class VMServerReactor(MainServerPacketReactor):
             if (not domainName in activeDomainNames) :
                 self.__freeDomainResources(domainName)
         self.__dbConnector.allocateAssignedResources()
+
+    def downloadedImage(self):
+        """
+        Registra en la base de datos al imagen que se acaba de descargar.
+        """
+        raise NotImplementedError
+
+    def uploadedImage(self):
+        raise NotImplementedError
