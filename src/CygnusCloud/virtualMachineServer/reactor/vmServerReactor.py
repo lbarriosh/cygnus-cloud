@@ -11,15 +11,14 @@ from network.interfaces.ipAddresses import get_ip_address
 from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
-from virtualMachineServer.repositoryQueue import RepositoryComunicationThread, RepositoryComunicationCallback
 from database.vmServer.vmServerDB import VMServerDBConnector
 from virtualMachineServer.virtualNetwork.virtualNetworkManager import VirtualNetworkManager
 from ccutils.processes.childProcessManager import ChildProcessManager
-from ccutils.dataStructures.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
-from ccutils.compression.compressManager import ZipFile
+from ccutils.dataStructures.multithreadingQueue import GenericThreadSafeQueue
 from network.ftp.ftpClient import FTPClient
 from virtualMachineServer.networking.reactors import MainServerPacketReactor
 from time import sleep
+from virtualMachineServer.threads.fileTransferThread import FileTransferThread
 import os
 import multiprocessing
 import sys
@@ -30,7 +29,7 @@ class VMServerException(Exception):
     """
     pass
 
-class VMServerReactor(MainServerPacketReactor, RepositoryComunicationCallback):
+class VMServerReactor(MainServerPacketReactor):
     """
     Clase del reactor del servidor de máquinas virtuales
     """
@@ -45,18 +44,18 @@ class VMServerReactor(MainServerPacketReactor, RepositoryComunicationCallback):
         self.__emergencyStop = False
         self.__cManager = constantManager
         self.__ftp = FTPClient()
-        self.__repositoryQueue = GenericThreadSafePriorityQueue()
-        self.__repositoryThread = RepositoryComunicationThread(self.__compressQueue, ZipFile)
-        self.__repositoryThread.start()
+        self.__transferQueue = GenericThreadSafeQueue()
+        self.__compressionQueue = GenericThreadSafeQueue()
         self.__mainServerCallback = ClusterServerCallback(self)
         self.__childProcessManager = ChildProcessManager()
         self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
         self.__connectToLibvirt(self.__cManager.getConstant("createVirtualNetworkAsRoot"))
         self.__doInitialCleanup()
+        self.__fileTransferThread = None
         try :
             self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
-        except Exception:
-            print "Error: the network interface '{0}' is not ready. Exiting now".format(self.__cManager.getConstant("vncNetworkInterface"))
+        except Exception as e:
+            print e.message
             self.__emergencyStop = True
             self.__shuttingDown = True
         
@@ -91,12 +90,19 @@ class VMServerReactor(MainServerPacketReactor, RepositoryComunicationCallback):
         """
         Crea la conexión de red por la que se recibirán los comandos del servidor de cluster.
         """
-        self.__vncServerIP = get_ip_address(networkInterface)
+        try :
+            self.__vncServerIP = get_ip_address(networkInterface)
+        except Exception :
+            raise Exception("Error: the network interface '{0}' is not ready. Exiting now".format(networkInterface))
         self.__listenningPort = listenningPort
         self.__networkManager = NetworkManager(self.__cManager.getConstant("certificatePath"))
         self.__networkManager.startNetworkService()
-        self.__packetManager = VMServerPacketHandler(self.__networkManager)
+        self.__packetManager = VMServerPacketHandler(self.__networkManager)        
         self.__networkManager.listenIn(self.__listenningPort, self.__mainServerCallback, True)
+        self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
+                                                       self.__transferQueue, self.__compressionQueue, self.__cManager.getConstant("TransferDirectory"),
+                                                       self.__cManager.getConstant("FTPTimeout"))
+        self.__fileTransferThread.start()
 
     def __onDomainStart(self, domain):
         """
@@ -150,9 +156,15 @@ class VMServerReactor(MainServerPacketReactor, RepositoryComunicationCallback):
             Nada
         """
         dataPath = self.__dbConnector.getDomainImageDataPath(domainName)
-        osPath = self.__dbConnector.getOsImagePathFromDomainName(domainName)       
+        osPath = self.__dbConnector.getOsImagePathFromDomainName(domainName)   
+        websockify_pid = self.__dbConnector.getVMPIDFromDomainName(domainName)
         
-        if (deleteDiskImages) :
+        try :
+            ChildProcessManager.runCommandInForeground("kill -s TERM " + str(websockify_pid))
+        except Exception:
+            pass    
+        
+        if deleteDiskImages :
             ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
             ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
             dataDirectory = os.path.dirname(dataPath)
@@ -174,8 +186,8 @@ class VMServerReactor(MainServerPacketReactor, RepositoryComunicationCallback):
         @attention: Para que no se produzcan cuelgues en la red, este método DEBE llamarse desde el hilo 
         principal.
         """
-        if (not self.__emergencyStop) :
-            self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
+        self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
+        if (not self.__emergencyStop) :            
             timeout = 300 # 5 mins
             if (self.__destroyDomains) :
                 self.__libvirtConnection.destroyAllDomains()
@@ -186,6 +198,9 @@ class VMServerReactor(MainServerPacketReactor, RepositoryComunicationCallback):
                     wait_time += 0.5
         self.__childProcessManager.waitForBackgroundChildrenToTerminate()
         self.__virtualNetworkManager.destroyVirtualNetwork(self.__cManager.getConstant("vnName"))  
+        if (self.__fileTransferThread != None) :
+            self.__fileTransferThread.stop()
+            self.__fileTransferThread.join()
         sys.exit()   
            
         
@@ -212,14 +227,15 @@ class VMServerReactor(MainServerPacketReactor, RepositoryComunicationCallback):
             self.__destroyDomain(data)
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS) :
             self.__sendActiveDomainUIDs()
-        elif (data['packet_type'] == VM_SERVER_PACKET_T.DOWNLOAD_IMAGE) :
-            self.__downloadImage(data)
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.EDIT_IMAGE) :
+            self.__editImage(data)
         
-    def __downloadImage(self, data):
-        data["download"] = False
-        data["timeout"] = self.__cManager.getConstant("ftpTimeout")
-        data["outputPath"] = self.__cManager.getConstant("sourceImagePath")
-        self.__repositoryQueue.queue(1, data)
+    def __editImage(self, data):
+        # Encolar la transferencia
+        data.pop("packet_type")
+        data["retrieve"] = True
+        data["FTPTimeout"] = self.__cManager.getConstant("FTPTimeout")
+        self.__repositoryQueue.append(data)
 
     def __sendDomainsVNCConnectionData(self):
         '''
@@ -455,11 +471,11 @@ class VMServerReactor(MainServerPacketReactor, RepositoryComunicationCallback):
                 self.__freeDomainResources(domainName)
         self.__dbConnector.allocateAssignedResources()
 
-    def downloadedImage(self):
+    def onFileDownloaded(self):
         """
         Registra en la base de datos al imagen que se acaba de descargar.
         """
         raise NotImplementedError
 
-    def uploadedImage(self):
+    def onFileUploaded(self):
         raise NotImplementedError

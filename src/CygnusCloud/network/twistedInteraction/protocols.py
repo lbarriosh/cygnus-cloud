@@ -87,14 +87,14 @@ class CygnusCloudProtocolFactory(Factory):
     within the Twisted Framework, and store all the data shared by multiple
     protocol instances.
     """    
-    def __init__(self, queue):
+    def __init__(self, transferQueue):
         """
         Initializes the protocol factory
         Args:
-            queue: the incoming data queue to use by all protocol instances
+            transferQueue: the incoming data transferQueue to use by all protocol instances
         """
         self.protocol = CygnusCloudProtocol
-        self._queue = queue        
+        self._queue = transferQueue        
         self.__protocolPool = GenericThreadSafeDictionary()
     
     def buildProtocol(self, addr):

@@ -17,12 +17,12 @@ user_input = False
 
 class TesterCallback(NetworkCallback):    
     def __init__(self, packetHandler, ip_address):
-        self.__pHandler = packetHandler
+        self.__repositoryPacketHandler = packetHandler
         self.__ip_address = ip_address
         
     def processPacket(self, packet):
         global user_input
-        data = self.__pHandler.readPacket(packet)
+        data = self.__repositoryPacketHandler.readPacket(packet)
         if (data['packet_type'] == PACKET_T.ADDED_IMAGE_ID) :
             print("Added image ID: {0}".format(data['addedImageID']))
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_ERROR or data['packet_type'] == PACKET_T.RETR_ERROR) :

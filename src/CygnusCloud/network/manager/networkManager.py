@@ -135,7 +135,7 @@ class NetworkManager():
             thread = IncomingDataThread(queue, callbackObject)
             return (queue, thread)  
                 
-    def connectTo(self, host, port, timeout, callbackObject, useSSL=False, reconnect=False):
+    def connectTo(self, host, port, timeout, callbackObject, useSSL=True, reconnect=False):
         """
         Connects to a remote server using its arguments
         @attention: This is a blocking operation. The calling thread will be blocked until
@@ -189,7 +189,7 @@ class NetworkManager():
         Returns:
             Nothing
         """   
-        if self.__connectionPool.has_key(('127.0.0.1', port)) :
+        if self.__connectionPool.has_key(('', port)) :
             raise NetworkManagerException("The port " + str(port) +" is already in use") 
         # The port is free => proceed
         # Allocate the connection resources

@@ -18,13 +18,13 @@ class GenericThreadSafePriorityQueue(object):
     """
     def __init__(self):
         """
-        Creates an empty priority queue
+        Creates an empty priority transferQueue
         Args:
             None
         Returns:
             Nothing
         """
-        # We use this to speed up the queue operations
+        # We use this to speed up the transferQueue operations
         self._data = dict()
         # We use a semaphore to avoid compilation problems in Python 3.x
         self.__semaphore = BoundedSemaphore(1) 
@@ -87,9 +87,9 @@ class GenericThreadSafePriorityQueue(object):
 if __name__ == "__main__" :
     
     class DumbThread(Thread):
-        def __init__(self, queue, thid, threshold):
+        def __init__(self, transferQueue, thid, threshold):
             Thread.__init__(self)
-            self.__queue = queue
+            self.__queue = transferQueue
             self.__thid = thid
             self.__threshold = threshold
     

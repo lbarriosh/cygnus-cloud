@@ -10,7 +10,7 @@ from ccutils.enums import enum
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
                           "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS",
-                          "DOWNLOAD_IMAGE")
+                          "EDIT_IMAGE", "EDIT_IMAGE_ERROR")
 
 class VMServerPacketHandler(object):
     """
@@ -185,25 +185,28 @@ class VMServerPacketHandler(object):
             p.writeString(domain_uid)
         return p
     
-    def createDownloadImagePacket(self, ftpIP, ftpPort, ftpUser, ftpPassword, filename):
+    def createEditImagePacket(self, repositoryIP, repositoryPort, sourceImageID, modify, commandID):
         """
         Crea un paquete que contiene los datos para descargarse una imagen del repositorio
         Argumentos:
-            ftpIP: la dirección IP del servidor FTP
-            ftpPort: el puerto de escucha del servidor FTP
-            ftpUser: nombre de usuario del servidor FTP
-            ftpPassword: la contraseña del servidor FTP
-            filename: nombre del archivo a descargar
+           FIXME: actualizar
         Devuelve:
             Un paquete construido a partir de sus argumentos.
         """
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA)
-        p.writeString(ftpIP)
-        p.writeInt(ftpPort)
-        p.writeString(ftpUser)
-        p.writeString(ftpPassword)
-        p.writeString(filename)
+        p.writeInt(VM_SERVER_PACKET_T.EDIT_IMAGE)
+        p.writeString(repositoryIP)
+        p.writeInt(repositoryPort)
+        p.writeInt(sourceImageID)
+        p.writeBool(modify)
+        p.writeString(commandID)
+        return p
+    
+    def createErrorPacket(self, packet_type, errorMessage, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.EDIT_IMAGE_ERROR)
+        p.writeString(errorMessage)
+        p.writeString(commandID)
         return p
     
     def readPacket(self, p):
@@ -247,12 +250,15 @@ class VMServerPacketHandler(object):
             while (p.hasMoreData()):
                 ac.append(p.readString())
             result["Domain_UIDs"] = ac    
-        elif (packet_type == VM_SERVER_PACKET_T.DOWNLOAD_IMAGE) :
-            result["ftpIP"] = p.readString()
-            result["ftpPort"] = p.readInt()
-            result["ftpUser"] = p.readString()
-            result["ftpPassword"] = p.readString()
-            result["file"] = p.readString()   
+        elif (packet_type == VM_SERVER_PACKET_T.EDIT_IMAGE) :
+            result["repositoryIP"] = p.readString()
+            result["repositoryPort"] = p.readInt()
+            result["sourceImageID"] = p.readInt()
+            result["modify"] = p.readBool()   
+            result["CommandID"] = p.readString()
+        elif (packet_type == VM_SERVER_PACKET_T.EDIT_IMAGE_ERROR) :
+            result["errorMessage"] = p.readString()
+            result["CommandID"] = p.readString()
         # Importante: los segmentos que transportan los datos de conexión se reenviarán, por lo que no tenemos que
         # leerlos para ganar en eficiencia.
         return result

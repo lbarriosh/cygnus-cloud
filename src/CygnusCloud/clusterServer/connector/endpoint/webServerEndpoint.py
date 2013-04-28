@@ -134,7 +134,7 @@ class WebServerEndpoint(object):
                     
             # TODO: si esto falla, terminar.
             # Preparar la recepción de paquetes y la actualización automática de la base de datos de estado
-            self.__pHandler = ClusterServerPacketHandler(self.__manager)
+            self.__repositoryPacketHandler = ClusterServerPacketHandler(self.__manager)
             
             self.__updateRequestThread = VMServerMonitoringThread(_ClusterServerEndpointUpdateHandler(self), statusDBUpdateInterval)
             self.__updateRequestThread.start()            
@@ -153,7 +153,7 @@ class WebServerEndpoint(object):
         @attention: Este método debe llamarse desde el hilo principal para evitar cuelgues
         """
         # Apagar el servidor de cluster
-        p = self.__pHandler.createHaltPacket(self.__haltVMServers)
+        p = self.__repositoryPacketHandler.createHaltPacket(self.__haltVMServers)
         errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Cluster server halt", 
                                                          errorMessage)
@@ -194,7 +194,7 @@ class WebServerEndpoint(object):
         """
         if (self.__stopped) :
             return
-        data = self.__pHandler.readPacket(packet)
+        data = self.__repositoryPacketHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
             self.__writer.processVMServerSegment(data["Segment"], data["SequenceSize"], data["Data"])
         elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
@@ -247,19 +247,19 @@ class WebServerEndpoint(object):
                 if (commandType != COMMAND_TYPE.HALT) :
                     serializedCommandID = "{0}|{1}".format(commandID[0], commandID[1])                    
                     if (commandType == COMMAND_TYPE.BOOTUP_VM_SERVER) :                    
-                        packet = self.__pHandler.createVMServerBootUpPacket(parsedArgs["VMServerNameOrIP"], serializedCommandID)
+                        packet = self.__repositoryPacketHandler.createVMServerBootUpPacket(parsedArgs["VMServerNameOrIP"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.REGISTER_VM_SERVER) :
-                        packet = self.__pHandler.createVMServerRegistrationPacket(parsedArgs["VMServerIP"], 
+                        packet = self.__repositoryPacketHandler.createVMServerRegistrationPacket(parsedArgs["VMServerIP"], 
                             parsedArgs["VMServerPort"], parsedArgs["VMServerName"], parsedArgs["IsVanillaServer"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
-                        packet = self.__pHandler.createVMServerUnregistrationOrShutdownPacket(parsedArgs["VMServerNameOrIP"], 
+                        packet = self.__repositoryPacketHandler.createVMServerUnregistrationOrShutdownPacket(parsedArgs["VMServerNameOrIP"], 
                             parsedArgs["Halt"], parsedArgs["Unregister"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.VM_BOOT_REQUEST) :
-                        packet = self.__pHandler.createVMBootRequestPacket(parsedArgs["VMID"], parsedArgs["UserID"], serializedCommandID)
+                        packet = self.__repositoryPacketHandler.createVMBootRequestPacket(parsedArgs["VMID"], parsedArgs["UserID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.DESTROY_DOMAIN):
-                        packet = self.__pHandler.createDomainDestructionPacket(parsedArgs["DomainID"], serializedCommandID)
+                        packet = self.__repositoryPacketHandler.createDomainDestructionPacket(parsedArgs["DomainID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.VM_SERVER_CONFIGURATION_CHANGE) :
-                        packet = self.__pHandler.createVMServerConfigurationChangePacket(parsedArgs["VMServerNameOrIPAddress"],  parsedArgs["NewServerName"],
+                        packet = self.__repositoryPacketHandler.createVMServerConfigurationChangePacket(parsedArgs["VMServerNameOrIPAddress"],  parsedArgs["NewServerName"],
                                                                                          parsedArgs["NewServerIPAddress"], parsedArgs["NewServerPort"],
                                                                                          parsedArgs["NewVanillaImageEditionBehavior"], serializedCommandID)
                     errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
@@ -283,14 +283,14 @@ class WebServerEndpoint(object):
         if (self.__stopped) :
             return
         # Enviamos paquetes para obtener los tres tipos de información que necesitamos para actualizar la base de datos de estado
-        p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
+        p = self.__repositoryPacketHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
         errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)          
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Virtual machine servers status", errorMessage)     
         
-        p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
+        p = self.__repositoryPacketHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
         errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)        
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Virtual machine distribution", errorMessage)
         
-        p = self.__pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
+        p = self.__repositoryPacketHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
         errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Active virtual machines data", errorMessage)

@@ -14,10 +14,10 @@ from time import sleep
 
 class TesterCallback(NetworkCallback):
     def __init__(self, packetHandler):
-        self.__pHandler = packetHandler
+        self.__repositoryPacketHandler = packetHandler
         
     def processPacket(self, packet):
-        data = self.__pHandler.readPacket(packet)
+        data = self.__repositoryPacketHandler.readPacket(packet)
         packet_type = data["packet_type"]
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA) :
             print("Domain connection data: ")
