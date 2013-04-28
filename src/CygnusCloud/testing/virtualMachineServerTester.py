@@ -35,6 +35,8 @@ class TesterCallback(NetworkCallback):
         elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_VM_DATA) :
             print("Virtual machines' connection data")
             print(packet._getData())
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
+            print("Image edition error: " + data["errorMessage"])
         else :
             print("Error: a packet from an unexpected type has been received "+packet_type)
        
@@ -83,6 +85,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createVMServerHaltPacket()
             networkManager.sendPacket(ip_address, port, p)
             return False
+        elif (command == "editImage") :
+            p = pHandler.createImageEditionPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), False, "1")
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True
         else :

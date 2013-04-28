@@ -227,7 +227,7 @@ class VMServerReactor(MainServerPacketReactor):
             self.__destroyDomain(data)
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS) :
             self.__sendActiveDomainUIDs()
-        elif (data['packet_type'] == VM_SERVER_PACKET_T.EDIT_IMAGE) :
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.IMAGE_EDITION) :
             self.__editImage(data)
         
     def __editImage(self, data):
@@ -235,7 +235,7 @@ class VMServerReactor(MainServerPacketReactor):
         data.pop("packet_type")
         data["retrieve"] = True
         data["FTPTimeout"] = self.__cManager.getConstant("FTPTimeout")
-        self.__repositoryQueue.append(data)
+        self.__transferQueue.queue(data)
 
     def __sendDomainsVNCConnectionData(self):
         '''
