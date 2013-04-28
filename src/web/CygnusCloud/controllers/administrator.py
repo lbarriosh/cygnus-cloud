@@ -198,15 +198,7 @@ def servers():
         for s in servers:
             select.append(OPTION(T(str(s["VMServerName"])),_value = i ,_selected="selected"))
             i = i + 1    
-        form1 = FORM(DIV(H4(T('Servidores')),select),
-        DIV(INPUT(_type='submit',_class="button button-blue",_name = 'search' ,_value=T('Buscar servidor'),_style="width:150px;")
-        ),BR(),
-        DIV( T('Nombre: '),BR(),INPUT(_value=infoServer[0],_name = 'sName',_style="width:240px;"),_style="position:relative;float:left;"),
-        DIV( T('Dirección IP: '),BR(),INPUT(_value=infoServer[1],_name='sIp',_style="width:220px;"),_style="position:relative;left:5%;float:left;"),
-        DIV( T('Puerto: '),BR(),INPUT(_value=infoServer[2],_name='sPort',_style="width:100px;"),_style="position:relative;left:10%;float:left"),
-        DIV(BR(), T('Vanila: '),INPUT(_type="checkbox",_value=infoServer[4],_name ='isVanilla',_style="width:30px;")
-                ,_style="position:absolute;left:65%;"),_style="margin-bottom:100px;")
-        
+       
         buttons = DIV() 
         # Solo mostramos el botón de detener si hay una máquina seleccionada
         if(infoServer[0] != 'No info'):
@@ -218,8 +210,16 @@ def servers():
         if(infoServer[3] == "Shut down"):
             buttons.append(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'run' ,_value=T('Arrancar servidor'),_style="width:170px;")
             ,_style="position:relative;left:30%;float:left;"))
-        
-        form2 = FORM(DIV(buttons,BR(),_style="margin-bottom:10px;"))    
+            
+        form1 = FORM(DIV(DIV(H4(T('Servidores')),select),
+        DIV(INPUT(_type='submit',_class="button button-blue",_name = 'search' ,_value=T('Buscar servidor'),_style="width:150px;")
+        ),BR(),
+        DIV( T('Nombre: '),BR(),INPUT(_name = 'name',_value=infoServer[0],_style="width:240px;"),_style="position:relative;float:left;"),
+        DIV( T('Dirección IP: '),BR(),
+        INPUT(_name='ip',_value=infoServer[1],_style="width:220px;"),_style="position:relative;left:5%;float:left;"),
+        DIV( T('Puerto: '),BR(),INPUT(_name ='port',_value=infoServer[2],_style="width:100px;"),_style="position:relative;left:10%;float:left"),
+        DIV(BR(), T('Vanila: '),INPUT(_type="checkbox",_name ='isVanilla',_value=infoServer[4],_style="width:30px;")
+                ,_style="position:absolute;left:65%;"),BR(),_style="margin-bottom:100px;"),DIV(buttons,BR(),_style="margin-bottom:10px;"))           
         
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
             sInfo = connector.getVMServersData()[int(form1.vars.server)]
@@ -227,7 +227,7 @@ def servers():
             redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
             sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"],sInfo["IsVanillaServer"],form1.vars.server]) ))
             
-        if form2.accepts(request.vars) and form2.vars.remove: 
+        if form1.accepts(request.vars,keepvalues=True) and form1.vars.remove: 
              #Damos de baja el servidor
              print infoServer[0] 
              commandID = connector.unregisterVMServer(infoServer[0],False)
@@ -236,7 +236,7 @@ def servers():
                  response.flash = T(errorInfo['ErrorMessage'])
              else:
                  redirect(URL(c='administrator',f='servers',args = ['remove_servers'] ))
-        if form2.accepts(request.vars) and form2.vars.run:
+        if form1.accepts(request.vars,keepvalues=True) and form1.vars.run:
             #Arrancamos el servidor
             commandID = connector.bootUpVMServer(infoServer[0])
             print infoServer[0]
@@ -248,18 +248,18 @@ def servers():
                 redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
             sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"]]) ))
             
-        if form2.accepts(request.vars) and form2.vars.change:
+        if form1.accepts(request.vars,keepvalues=True) and form1.vars.change:
             #Arrancamos el servidor
-            commandID = connector.changeVMServerConfiguration(infoServer[0],form1.vars.sName,form1.vars.sIp,form1.vars.sPort,form1.vars.isVanilla)
+            commandID = connector.changeVMServerConfiguration(infoServer[0],form1.vars.name,form1.vars.ip,form1.vars.port,form1.vars.isVanilla)
             errorInfo = connector.waitForCommandOutput(commandID)
             if(errorInfo != None):
                 response.flash = T(errorInfo['ErrorMessage'])  
             else:
                 sInfo = connector.getVMServersData()[int(infoServer[5])]
                 redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
-            sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"]]) ))            
+                sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"],sInfo["IsVanillaServer"]]) ))            
         
-        return dict(form1 = form1,form2 = form2)
+        return dict(form1 = form1)
 
 
       
@@ -336,7 +336,7 @@ def users():
             listUsers.append(request.vars.usersFind)
         table = createUserTable(listUsers)
         #Creamos el formulario
-        form2 = FORM(CENTER(table),CENTER(INPUT(_type = 'submit',_class="button button-blue",_name = 'remove',  _value = T('Eliminar seleccionado'),_style="width:170px")))
+        form2 = FORM(table,CENTER(INPUT(_type = 'submit',_class="button button-blue",_name = 'remove',  _value = T('Eliminar seleccionado'),_style="width:170px")))
         
         if form2.accepts(request.vars,keepvalues=True) and form2.vars.remove:
             if(form2.vars.selection != ""):
@@ -487,7 +487,7 @@ def createAdressBar():
                        
 def createUserSearchForm(state):        
     listTypes = []
-    listTypes.append(OPTION(T('All'),_value = 'all'))
+    listTypes.append(OPTION(T('Todos'),_value = 'all'))
     for row in userDB().select(userDB.auth_group.role):
         listTypes.append(OPTION(T(str(row.role)),_value = row.role )) 
         
