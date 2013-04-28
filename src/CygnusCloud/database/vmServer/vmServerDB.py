@@ -491,16 +491,20 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def registerVMResources(self, domainName, VMId, vncPort, vncPassword, userId, webSockifyPID, dataImagePath, osImagePath, mac, uuid):
+    def registerVMResources(self, domainName, VMId, vncPort, vncPassword, userId, webSockifyPID, dataImagePath, osImagePath, mac, uuid, editMode=False):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
         '''
         
         # CInsertamos los datos nuevos en la BD
-        sql = "INSERT INTO ActualVM VALUES('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', '{7}', '{8}', '{9}')" \
+        if (editMode) :
+            editBit = 1
+        else :
+            editBit = 0
+        sql = "INSERT INTO ActualVM VALUES('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', '{7}', '{8}', '{9}', {10})" \
             .format(domainName, VMId, vncPort, vncPassword, userId, webSockifyPID,
-                    dataImagePath, osImagePath, mac, uuid);
+                    dataImagePath, osImagePath, mac, uuid, editBit);
         # Ejecutamos el comando
         self._executeUpdate(sql)        
         # devolvemos el puerto en el que ha sido creado
@@ -579,6 +583,11 @@ class VMServerDBConnector(BasicDatabaseConnector):
             for row in results:
                 ac.append(row[0])
             return ac
+        
+    def getEditFlag(self, domainName):
+        query = "SELECT editMode FROM ActualVM WHERE domainName = '{0}';".format(domainName)
+        edit_bit = self._executeQuery(query, True)[0]
+        return edit_bit == 1
         
     def addVMBootCommand(self, domainName, commandID):
         update = "INSERT INTO ActiveDomainUIDs VALUES ('" + domainName + "', '" + commandID + "');"

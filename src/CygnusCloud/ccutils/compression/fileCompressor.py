@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 '''
 Created on 27/04/2013
 
@@ -9,12 +10,12 @@ class FileCompressor():
     def __init__(self, filename, mode):
         pass
     
-    def addFile(self, filename, filenameInCompressFile=None):
+    def addFile(self, filename, filenameInCompressedFile=None):
         '''
         Añade un archivo al fichero comprimido
         Args:
             filename: nombre del archivo a comprimir
-            filenameInCompressFile: nombre del archivo en el archivo comprimido
+            filenameInCompressedFile: nombre del archivo en el archivo comprimido
         '''
         raise NotImplementedError
     

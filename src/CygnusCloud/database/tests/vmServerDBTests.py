@@ -167,5 +167,14 @@ class DBWebServerTests(unittest.TestCase):
         expectedResult =  ["Command1", "Command2", "Command3", "Command4"]
         self.assertEquals(result, expectedResult, "getActiveDomainUIDs() does not work")
         
+    def test_getEditFlag(self):
+        result = self.__dbConnector.getEditFlag("VMName11")
+        expectedResult = False
+        self.assertEquals(result, expectedResult, "getEditFlag() error")
+        result = self.__dbConnector.getEditFlag("VMName22")
+        expectedResult = True
+        self.assertEquals(result, expectedResult, "getEditFlag() error")
+        
+        
 if __name__ == "__main__":
     unittest.main()
