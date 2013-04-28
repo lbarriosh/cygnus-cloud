@@ -16,13 +16,13 @@ class VMServerDBConnector(BasicDatabaseConnector):
         self.generateMACsAndUUIDs()
         self.generateVNCPorts()
         
-    def getImagesIDs(self):
+    def getImageIDs(self):
         '''
              Devuelve una lista con todos los identificadores de imágenes que se 
               encuentran registradas en el servidor de máquinas virtuales.
         '''
         # Creamos la consulta encargada de extraer los datos
-        sql = "SELECT VMId FROM VirtualMachine" 
+        sql = "SELECT ImageID FROM VirtualMachine" 
         # Recogemos los resultado
         results = self._executeQuery(sql, False)
         # Guardamos en una lista los ids resultantes
@@ -37,7 +37,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
             Devuelve el nombre de la imagen cuyo identificador se pasa como argumento. 
         '''
         # Creamos la consulta encargada de extraer los datos
-        sql = "SELECT name FROM VirtualMachine WHERE VMId = " + str(imageId)   
+        sql = "SELECT name FROM VirtualMachine WHERE ImageID = " + str(imageId)   
         # Recogemos los resultado
         result = self._executeQuery(sql, True)
         if (result == None) : 
@@ -51,7 +51,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
              de imagen se pasa como argumento.
         '''
         # Creamos la consulta encargada de extraer los datos
-        sql = "SELECT dataImagePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
+        sql = "SELECT dataImagePath FROM VirtualMachine WHERE ImageID = " + str(imageId)   
         # Recogemos los resultado
         result = self._executeQuery(sql, True)
         if (result == None) : 
@@ -59,13 +59,13 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def getOsImagePath(self, imageId):
+    def getOSImagePath(self, imageId):
         '''
             Devuelve la ruta donde se encuentra físicamente la imagen del SO cuyo identificador 
              de imagen se pasa como argumento.
         '''
         # Creamos la consulta encargada de extraer los datos
-        sql = "SELECT osImagePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
+        sql = "SELECT osImagePath FROM VirtualMachine WHERE ImageID = " + str(imageId)   
         # Recogemos los resultado
         result = self._executeQuery(sql, True)
         if (result == None) : 
@@ -79,7 +79,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
              la imagen cuyo identificador se pasa como argumento
         '''
         # Creamos la consulta encargada de extraer los datos
-        sql = "SELECT definitionFilePath FROM VirtualMachine WHERE VMId = " + str(imageId)   
+        sql = "SELECT definitionFilePath FROM VirtualMachine WHERE ImageID = " + str(imageId)   
         # Recogemos los resultado
         result = self._executeQuery(sql)
         if (result == None) : 
@@ -92,37 +92,41 @@ class VMServerDBConnector(BasicDatabaseConnector):
             Permite cambiar la ruta de la imagen cuyo identificador se pasa como argumento.
         '''
         # Creamos la consulta encargada de realizar la actualización
-        sql = "UPDATE VirtualMachine SET dataImagePath = '" + path + "' WHERE VMId = " + str(imageId)
+        sql = "UPDATE VirtualMachine SET dataImagePath = '" + path + "' WHERE ImageID = " + str(imageId)
         # Ejecutamos el comando
         self._executeUpdate(sql)
         
-    def createImage(self, imageId, name, dataImagePath, osImagePath, definitionFilePath):
+    def createImage(self, imageID, name, dataImagePath, osImagePath, definitionFilePath, bootable):
         '''
             Permite registrar en la base de datos una nueva imagen de máquina virtual. 
         '''
-        # Introducimos los datos en la base de datos
-        sql = "INSERT INTO VirtualMachine(VMId,name,dataImagePath,osImagePath,definitionFilePath) VALUES("  
-        sql += str(imageId) + ",'" + name + "','" + dataImagePath + "','" + osImagePath + "','" + definitionFilePath + "') "  
-        # Ejecutamos el comando
-        self._executeUpdate(sql)  
-        # Devolvemos el id
-        return imageId
+        if (bootable) : bootableFlag = 1
+        else : bootableFlag = 0
+        
+        update = "INSERT INTO VirtualMachine VALUES ({0}, '{1}', '{2}', '{3}', '{4}', {5})"\
+            .format(imageID, name, dataImagePath, osImagePath, definitionFilePath, bootableFlag)          
+        self._executeUpdate(update)  
+        
+    def getBootableFlag(self, imageID):
+        query = "SELECT bootable FROM VirtualMachine WHERE ImageID = {0};".format(imageID)
+        flag = self._executeQuery(query, True)[0]
+        return flag == 1
     
     def deleteImage(self, imageId):
         # borramos el la MV
-        sql = "DELETE FROM VirtualMachine WHERE VMId =" + str(imageId) 
+        sql = "DELETE FROM VirtualMachine WHERE ImageID =" + str(imageId) 
         # Ejecutamos el comando
         self._executeUpdate(sql) 
         # Gracias al ON DELETE CASCADE debería borrarse sus referencias en
         #  el resto de las tablas
         # Actualizamos la base de datos
  
-    def doesImageExist(self, VMId):   
+    def doesImageExist(self, ImageID):   
         '''
             Comprueba si una imagen existe
         '''
         # Contamos el número de MV con el id dado    
-        sql = "SELECT COUNT(*) FROM VirtualMachine WHERE VMId =" + str(VMId)
+        sql = "SELECT COUNT(*) FROM VirtualMachine WHERE ImageID =" + str(ImageID)
         # Recogemos los resultado
         result = self._executeQuery(sql, True)
         if (result == None) : 
@@ -241,7 +245,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Ejecutamos el comando
         self._executeUpdate(sql)        
 
-    def getRunningPorts(self):
+    def getActivePorts(self):
         '''
             Devuelve una lista con los puertos VNC correspondientes a las máquinas 
              virtuales que se encuentran actualmente en ejecución.
@@ -257,7 +261,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos la lista resultado
         return ports
     
-    def getUserIDs(self):
+    def getVMOwnerIDs(self):
         '''
              Devuelve una lista con los identificadores de todos los usuarios que actualmente
                se encuentran ejecutando una determinada máquina virtual en este servidor de 
@@ -280,7 +284,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
              puerto VNC pasado como argumento.
         '''
         # Creamos la consulta encargada de extraer los datos
-        sql = "SELECT VMId FROM ActualVM WHERE VNCPort = '" + str(vncPort) + "'" 
+        sql = "SELECT ImageID FROM ActualVM WHERE VNCPort = '" + str(vncPort) + "'" 
         # Recogemos el resultado
         result = self._executeQuery(sql, True)
         if (result == None) : 
@@ -288,13 +292,13 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getVMID(self, domainName):
+    def getImageID(self, domainName):
         '''
             Devuelve el identificador de la máquina virtual que se encuentra en ejecución en el 
             dominio pasado como argumento.
         '''
         # Creamos la consulta encargada de extraer los datos
-        sql = "SELECT VMId FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        sql = "SELECT ImageID FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
         # Recogemos el resultado
         result = self._executeQuery(sql, True)
         if (result == None) : 
@@ -309,7 +313,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         '''
         # Creamos la consulta encargada de extraer los datos
         sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.VNCPort = '" + str(vncPort) + "' AND "
-        sql += "vm.VMId = av.VMId " 
+        sql += "vm.ImageID = av.ImageID " 
         # Recogemos el resultado
         result = self._executeQuery(sql, True)
         if (result == None) : 
@@ -324,7 +328,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         '''
         # Creamos la consulta encargada de extraer los datos
         sql = "SELECT vm.name FROM ActualVM av,VirtualMachine vm WHERE av.domainName = '" + str(domainName) + "' AND "
-        sql += "vm.VMId = av.VMId " 
+        sql += "vm.ImageID = av.ImageID " 
         # Recogemos el resultado
         result = self._executeQuery(sql, True)
         if (result == None) : 
@@ -332,7 +336,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getMachineDataPath(self, vncPort):
+    def getDomainDataImagePath(self, vncPort):
         '''
             Devuelve la ruta asociada a la copia de la imagen de la máquina virtual que se encuentra 
              en ejecución en el puertoVNC pasado como argumento.
@@ -346,7 +350,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0] 
     
-    def getDomainImageDataPath(self, domainName):
+    def getDataImagePath(self, domainName):
         '''
             Devuelve la ruta asociada a la copia de la imagen de la máquina virtual que se encuentra 
              en ejecución en el puertoVNC pasado como argumento.
@@ -491,20 +495,16 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return result[0]
     
-    def registerVMResources(self, domainName, VMId, vncPort, vncPassword, userId, webSockifyPID, dataImagePath, osImagePath, mac, uuid, editMode=False):
+    def registerVMResources(self, domainName, ImageID, vncPort, vncPassword, userId, webSockifyPID, dataImagePath, osImagePath, mac, uuid):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
         '''
         
         # CInsertamos los datos nuevos en la BD
-        if (editMode) :
-            editBit = 1
-        else :
-            editBit = 0
-        sql = "INSERT INTO ActualVM VALUES('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', '{7}', '{8}', '{9}', {10})" \
-            .format(domainName, VMId, vncPort, vncPassword, userId, webSockifyPID,
-                    dataImagePath, osImagePath, mac, uuid, editBit);
+        sql = "INSERT INTO ActualVM VALUES('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', '{7}', '{8}', '{9}')" \
+            .format(domainName, ImageID, vncPort, vncPassword, userId, webSockifyPID,
+                    dataImagePath, osImagePath, mac, uuid);
         # Ejecutamos el comando
         self._executeUpdate(sql)        
         # devolvemos el puerto en el que ha sido creado
@@ -547,7 +547,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         # Devolvemos el resultado
         return int(result[0])
     
-    def getVMsConnectionData(self):
+    def getDomainsConnectionData(self):
         '''
         Devuelve una lista con los datos de conexión a las máquinas vituales activas
         Argumentos:
@@ -555,7 +555,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         Devuelve:
             Lista de diccionarios con los datos de conexión a las máquinas virtuales
         '''
-        query = "SELECT ActiveDomainUIDs.commandID, ActualVM.userId, ActualVM.VMId, ActualVM.domainName, ActualVM.VNCPort, ActualVM.VNCPass\
+        query = "SELECT ActiveDomainUIDs.commandID, ActualVM.userId, ActualVM.ImageID, ActualVM.domainName, ActualVM.VNCPort, ActualVM.VNCPass\
             FROM ActualVM, ActiveDomainUIDs WHERE ActualVM.domainName = ActiveDomainUIDs.domainName;"
         results = self._executeQuery(query, False)
         if (results == None) :
@@ -583,11 +583,6 @@ class VMServerDBConnector(BasicDatabaseConnector):
             for row in results:
                 ac.append(row[0])
             return ac
-        
-    def getEditFlag(self, domainName):
-        query = "SELECT editMode FROM ActualVM WHERE domainName = '{0}';".format(domainName)
-        edit_bit = self._executeQuery(query, True)[0]
-        return edit_bit == 1
         
     def addVMBootCommand(self, domainName, commandID):
         update = "INSERT INTO ActiveDomainUIDs VALUES ('" + domainName + "', '" + commandID + "');"

@@ -11,17 +11,15 @@ CREATE DATABASE VMServerDBTest;
 
 USE VMServerDBTest;
 
-#Creamos las tablas necesarias
-CREATE TABLE IF NOT EXISTS VirtualMachine(VMId INTEGER PRIMARY KEY, name VARCHAR(20), 
+CREATE TABLE IF NOT EXISTS VirtualMachine(ImageID INTEGER PRIMARY KEY, name VARCHAR(20), 
 	dataImagePath VARCHAR(100),osImagePath VARCHAR(100),
-	definitionFilePath VARCHAR(100));
+	definitionFilePath VARCHAR(100), bootable BOOL);
 	
-CREATE TABLE IF NOT EXISTS ActualVM(domainName VARCHAR(30) PRIMARY KEY, VMId INTEGER, 
+CREATE TABLE IF NOT EXISTS ActualVM(domainName VARCHAR(30) PRIMARY KEY, ImageID INTEGER, 
 	VNCPort INTEGER, VNCPass VARCHAR(65),
 	userId INTEGER, webSockifyPID INTEGER, 
 	dataImagePath VARCHAR(100), osImagePath  VARCHAR(100),
-	macAddress VARCHAR(20), uuid VARCHAR(40), editMode BOOL, 
-	FOREIGN KEY (VMId) REFERENCES VirtualMachine(VMId) ON DELETE CASCADE ON UPDATE CASCADE);
+	macAddress VARCHAR(20), uuid VARCHAR(40));
 
 CREATE TABLE ActiveDomainUIDs(domainName VARCHAR(30) PRIMARY KEY, commandID VARCHAR(70) NOT NULL,
 	FOREIGN KEY (domainName) REFERENCES ActualVM(domainName) ON DELETE CASCADE ON UPDATE CASCADE);
@@ -31,32 +29,32 @@ CREATE TABLE ActiveDomainUIDs(domainName VARCHAR(30) PRIMARY KEY, commandID VARC
 # ____________________________________________________________
 
 # Tabla VirtualMachine
-INSERT IGNORE INTO VirtualMachine VALUES(1,"VMName1","./VMName1/","./VMName1/","./VMName1/");
-INSERT IGNORE INTO VirtualMachine VALUES(2,"VMName2","./VMName2/","./VMName2/","./VMName2/");
-INSERT IGNORE INTO VirtualMachine VALUES(3,"VMName3","./VMName3/","./VMName3/","./VMName3/");
-INSERT IGNORE INTO VirtualMachine VALUES(4,"VMName4","./VMName4/","./VMName4/","./VMName4/");
+INSERT IGNORE INTO VirtualMachine VALUES(1,"VMName1","./VMName1/","./VMName1/","./VMName1/", 0);
+INSERT IGNORE INTO VirtualMachine VALUES(2,"VMName2","./VMName2/","./VMName2/","./VMName2/", 1);
+INSERT IGNORE INTO VirtualMachine VALUES(3,"VMName3","./VMName3/","./VMName3/","./VMName3/", 1);
+INSERT IGNORE INTO VirtualMachine VALUES(4,"VMName4","./VMName4/","./VMName4/","./VMName4/", 0);
 
 #Tabla ActualVM
 INSERT IGNORE INTO ActualVM VALUES("VMName11", 1,
 	1, "12134567890", 
 	1,1,
 	"./VMNameCopy1","./OSImagePath1",
-	"2C:00:00:00:00:00","fce02cff-5d6d-11e2-a3f0-001f16b99e1d", 0);
+	"2C:00:00:00:00:00","fce02cff-5d6d-11e2-a3f0-001f16b99e1d");
 INSERT IGNORE INTO ActualVM VALUES("VMName22",1,
 	2, "1234567890", 
 	1,2,
 	"./VMNameCopy1","./OSImagePath2",
-	"2C:00:00:00:00:01","fce04938-5d6d-11e2-a3f0-001f16b99e1d", 1);
+	"2C:00:00:00:00:01","fce04938-5d6d-11e2-a3f0-001f16b99e1d");
 INSERT IGNORE INTO ActualVM VALUES("VMName33",1,
 	3, "1234567890Test", 
 	2,3,
 	"./VMNameCopy2","./OSImagePath3",
-	"2C:00:00:00:00:02","fce0707c-5d6d-11e2-a3f0-001f16b99e1d", 0);
+	"2C:00:00:00:00:02","fce0707c-5d6d-11e2-a3f0-001f16b99e1d");
 INSERT IGNORE INTO ActualVM VALUES("VMName44",1,
 	4, "1234567890",
 	3,4,
 	"./VMNameCopy3","./OSImagePath4",
-	"2C:00:00:00:00:03","fce083a2-5d6d-11e2-a3f0-001f16b99e1d", 0);
+	"2C:00:00:00:00:03","fce083a2-5d6d-11e2-a3f0-001f16b99e1d");
 	
 INSERT IGNORE INTO ActiveDomainUIDs VALUES ("VMName11", "Command1"), ("VMName22", "Command2"),
 	("VMName33", "Command3"), ("VMName44", "Command4");

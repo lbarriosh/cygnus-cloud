@@ -160,7 +160,7 @@ class VMServerReactor(MainServerPacketReactor):
         Devuelve:
             Nada
         """
-        dataPath = self.__dbConnector.getDomainImageDataPath(domainName)
+        dataPath = self.__dbConnector.getDataImagePath(domainName)
         osPath = self.__dbConnector.getOsImagePathFromDomainName(domainName)   
         websockify_pid = self.__dbConnector.getVMPIDFromDomainName(domainName)
         
@@ -222,7 +222,7 @@ class VMServerReactor(MainServerPacketReactor):
         """
         data = self.__packetManager.readPacket(packet)
         if (data["packet_type"] == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
-            self.__createDomain(data)
+            self.__processVMBootPacket(data)
         elif (data["packet_type"] == VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST) :
             self.__sendStatusData()
         elif (data["packet_type"] == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN) :
@@ -255,7 +255,7 @@ class VMServerReactor(MainServerPacketReactor):
             Nada
         '''
         # Extraer los datos de la base de datos
-        vncConnectionData = self.__dbConnector.getVMsConnectionData()
+        vncConnectionData = self.__dbConnector.getDomainsConnectionData()
         # Generar los segmentos en los que se dividirá la información
         segmentSize = 150
         segmentCounter = 1
@@ -281,7 +281,7 @@ class VMServerReactor(MainServerPacketReactor):
             packet = self.__packetManager.createActiveVMsDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
             self.__networkManager.sendPacket('', self.__listenningPort, packet) 
 
-    def __createDomain(self, data):
+    def __processVMBootPacket(self, data):
         """
         Arranca una máquina virtual
         Argumentos:
@@ -294,7 +294,7 @@ class VMServerReactor(MainServerPacketReactor):
         configFile = self.__cManager.getConstant("configFilePath") + self.__dbConnector.getImgDefFilePath(domainID)
         originalName = self.__dbConnector.getImageName(domainID)
         dataPath = self.__dbConnector.getImagePath(domainID)
-        osPath = self.__dbConnector.getOsImagePath(domainID)
+        osPath = self.__dbConnector.getOSImagePath(domainID)
         
         # Saco el nombre de los archivos (sin la extension)
         trimmedDataImagePath = dataPath

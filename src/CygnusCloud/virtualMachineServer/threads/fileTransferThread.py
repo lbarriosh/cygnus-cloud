@@ -26,20 +26,22 @@ class FileTransferThread(QueueProcessingThread):
         
     def processElement(self, data):
         try :
-            # Paso 1: nos conectamos al repositorio
+            # Nos conectamos al repositorio
             callback = _FileTransferCallback(self.__repositoryPacketHandler, self.__workingDirectory, data["repositoryIP"], self.__ftpTimeout)
             self.__networkManager.connectTo(data["repositoryIP"], data["repositoryPort"], 
                                             self.__ftpTimeout, callback)
             while not self.__networkManager.isConnectionReady(data["repositoryIP"], data["repositoryPort"]) :
                 sleep(0.1)
-            # Paso 2: solicitamos el inicio de la transferencia
+           
+            # Solicitamos el inicio de la transferencia
             if (data["retrieve"]) :
                 p = self.__repositoryPacketHandler.createRetrieveRequestPacket(data["sourceImageID"], data["modify"])
             else :
                 p = None # TODO: meter store aquí
             self.__networkManager.sendPacket(data["repositoryIP"], data["repositoryPort"], p)
+            
             # Esperamos a que la transferencia termine
-            while not callback.hasTransferFinished() :
+            while not callback.isOperationCompleted() :
                 sleep(0.1)
             if (callback.getErrorMessage() != None) :
                 # Error => informamos al usuario                
@@ -47,8 +49,18 @@ class FileTransferThread(QueueProcessingThread):
                                                                    callback.getErrorMessage(), 
                                                                    data["CommandID"])
                 self.__networkManager.sendPacket('', self.__serverListeningPort, p)
+            
+            
+            # Pedimos un ID de imagen al repositorio (sólo si es necesario)
+            if (data["retrieve"]) :
+                self.__networkManager.sendPacket('', self.__repositoryPacketHandler.createAddImagePacket())
+                while not callback.isOperationCompleted() :
+                    sleep(0.1)
+                data["ImageID"] = callback.getImageID()
+                
             # Nos desconectamos del repositorio
             self.__networkManager.closeConnection(data["repositoryIP"], data["repositoryPort"])
+            
             # No error => añadimos el fichero a la cola de descompresión
             self.__compressionQueue.queue(data)
         except Exception as e :
@@ -61,17 +73,21 @@ class _FileTransferCallback(NetworkCallback):
     
     def __init__(self, packetHandler, imageDirectory, ftpServerIP, ftpTimeout):
         self.__repositoryPacketHandler = packetHandler
-        self.__transfer_finished = False
+        self.__operation_completed = False
         self.__errorMessage = None
         self.__workingDirectory = imageDirectory
         self.__ftpServerIP = ftpServerIP
         self.__ftpTimeout = ftpTimeout
+        self.__imageID = None
         
-    def hasTransferFinished(self):
-        return self.__transfer_finished
+    def isOperationCompleted(self):
+        return self.__operation_completed
     
     def getErrorMessage(self):
         return self.__errorMessage
+    
+    def getImageID(self):
+        return self.__imageID
     
     def processPacket(self, packet):
         data = self.__repositoryPacketHandler.readPacket(packet)
@@ -89,6 +105,8 @@ class _FileTransferCallback(NetworkCallback):
                 ftpClient.retrieveFile(data['fileName'], self.__workingDirectory, data['serverDirectory']) 
                 ftpClient.disconnect()
             except Exception as e:
-                self.__errorMessage = e.message
-            
-        self.__transfer_finished = True
+                self.__errorMessage = e.message                  
+        elif (data["packet_type"] == IR_PACKET_T.ADDED_IMAGE_ID):
+            self.__imageID = data["addedImageID"]
+        
+        self.__operation_completed = True   
