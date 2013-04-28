@@ -61,14 +61,14 @@ class QueueProcessingThread(BasicThread):
     These threads read data from a queue and process
     them in an abstract way.
     """
-    def __init__(self, threadName, transferQueue):
+    def __init__(self, threadName, queue):
         """
         Initializes the thread's state
         Args:
-            transferQueue: the transferQueue to monitor.
+            queue: the queue to monitor.
         """
         BasicThread.__init__(self, threadName)        
-        self._queue = transferQueue   
+        self._queue = queue   
         
     def processElement(self, element):
         """

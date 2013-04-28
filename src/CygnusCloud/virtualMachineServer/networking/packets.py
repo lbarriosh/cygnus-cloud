@@ -185,7 +185,7 @@ class VMServerPacketHandler(object):
             p.writeString(domain_uid)
         return p
     
-    def createImageEditionPacket(self, repositoryIP, repositoryPort, sourceImageID, modify, commandID):
+    def createImageEditionPacket(self, repositoryIP, repositoryPort, sourceImageID, modify, commandID, userID):
         """
         Crea un paquete que contiene los datos para descargarse una imagen del repositorio
         Argumentos:
@@ -200,6 +200,7 @@ class VMServerPacketHandler(object):
         p.writeInt(sourceImageID)
         p.writeBool(modify)
         p.writeString(commandID)
+        p.writeInt(userID)
         return p
     
     def createErrorPacket(self, packet_type, errorMessage, commandID):
@@ -256,6 +257,7 @@ class VMServerPacketHandler(object):
             result["sourceImageID"] = p.readInt()
             result["modify"] = p.readBool()   
             result["CommandID"] = p.readString()
+            result["UserID"] = p.readInt()
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
             result["errorMessage"] = p.readString()
             result["CommandID"] = p.readString()

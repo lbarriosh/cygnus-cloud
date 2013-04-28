@@ -14,11 +14,11 @@ from time import sleep
 
 class FileTransferThread(QueueProcessingThread):
     def __init__(self, networkManager, serverListeningPort, packetHandler,
-                 transferQueue, compressionQueue, workingDirectory, ftpTimeout, ):
-        QueueProcessingThread.__init__(self, "File transfer thread", transferQueue)
+                 queue, compressionQueue, imageDirectory, ftpTimeout, ):
+        QueueProcessingThread.__init__(self, "File transfer thread", queue)
         self.__networkManager = networkManager
         self.__serverListeningPort = serverListeningPort
-        self.__workingDirectory = workingDirectory
+        self.__workingDirectory = imageDirectory
         self.__repositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)
         self.__vmServerPacketHandler = packetHandler
         self.__ftpTimeout = ftpTimeout
@@ -59,11 +59,11 @@ class FileTransferThread(QueueProcessingThread):
         
 class _FileTransferCallback(NetworkCallback):
     
-    def __init__(self, packetHandler, workingDirectory, ftpServerIP, ftpTimeout):
+    def __init__(self, packetHandler, imageDirectory, ftpServerIP, ftpTimeout):
         self.__repositoryPacketHandler = packetHandler
         self.__transfer_finished = False
         self.__errorMessage = None
-        self.__workingDirectory = workingDirectory
+        self.__workingDirectory = imageDirectory
         self.__ftpServerIP = ftpServerIP
         self.__ftpTimeout = ftpTimeout
         

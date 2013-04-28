@@ -19,6 +19,7 @@ from network.ftp.ftpClient import FTPClient
 from virtualMachineServer.networking.reactors import MainServerPacketReactor
 from time import sleep
 from virtualMachineServer.threads.fileTransferThread import FileTransferThread
+from virtualMachineServer.threads.compressionThread import CompressionThread
 import os
 import multiprocessing
 import sys
@@ -52,6 +53,7 @@ class VMServerReactor(MainServerPacketReactor):
         self.__connectToLibvirt(self.__cManager.getConstant("createVirtualNetworkAsRoot"))
         self.__doInitialCleanup()
         self.__fileTransferThread = None
+        self.__compressionThread = None
         try :
             self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
         except Exception as e:
@@ -103,6 +105,9 @@ class VMServerReactor(MainServerPacketReactor):
                                                        self.__transferQueue, self.__compressionQueue, self.__cManager.getConstant("TransferDirectory"),
                                                        self.__cManager.getConstant("FTPTimeout"))
         self.__fileTransferThread.start()
+        self.__compressionThread = CompressionThread(self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("TransferDirectory"), 
+                                                     self.__compressionQueue)
+        self.__compressionThread.start()
 
     def __onDomainStart(self, domain):
         """
@@ -201,6 +206,9 @@ class VMServerReactor(MainServerPacketReactor):
         if (self.__fileTransferThread != None) :
             self.__fileTransferThread.stop()
             self.__fileTransferThread.join()
+        if (self.__compressionThread != None) :
+            self.__compressionThread.stop()
+            self.__compressionThread.join()
         sys.exit()   
            
         

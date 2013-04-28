@@ -86,7 +86,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
             return False
         elif (command == "editImage") :
-            p = pHandler.createImageEditionPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), False, "1")
+            p = pHandler.createImageEditionPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), False, "1", 1)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True
