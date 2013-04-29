@@ -288,7 +288,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
             return ac
         
     def addVMBootCommand(self, domainName, commandID):
-        update = "INSERT INTO ActiveDomainUIDs VALUES ('" + domainName + "', '" + commandID + "');"
+        update = "INSERT INTO ActiveDomainUIDs VALUES ('{0}', '{1}');".format(domainName, commandID)
         self._executeUpdate(update)
         
     def getVMBootCommand(self, domainName):
@@ -347,3 +347,28 @@ class VMServerDBConnector(BasicDatabaseConnector):
         for row in rows :
             result.append(row[0])
         return result
+    
+    def getRegisteredDomainNames(self):
+        """
+        Devuelve una lista con los nombres de los dominios activos.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Lisa de strings con los nombres de los dominios activos.
+        """
+        query = "SELECT domainName FROM ActualVM;"
+        results = self._executeQuery(query, False)
+        if (results == None) :
+            return []
+        else :
+            ac = []
+            for row in results:
+                ac.append(row[0])
+            return ac
+        
+    def allocateAssignedMACsUUIDsAndVNCPorts(self):
+        assignedMACs, assignedVNCPorts = self.__getAssignedResources()
+        for macAddress in assignedMACs :
+            self.__allocateMACAddressAndUUID(macAddress)
+        for port in assignedVNCPorts :
+            self.__allocatePort(port)

@@ -233,7 +233,6 @@ class VMServerPacketHandler(object):
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
             result["CommandID"] = p.readString()
-            result["Modify"] = p.readBool()
         elif (packet_type == VM_SERVER_PACKET_T.SERVER_STATUS and p.hasMoreData()) :
             result["VMServerIP"] = p.readString()
             result["ActiveDomains"] = p.readInt()
@@ -252,14 +251,14 @@ class VMServerPacketHandler(object):
                 ac.append(p.readString())
             result["Domain_UIDs"] = ac    
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION) :
-            result["repositoryIP"] = p.readString()
-            result["repositoryPort"] = p.readInt()
-            result["sourceImageID"] = p.readInt()
-            result["modify"] = p.readBool()   
+            result["RepositoryIP"] = p.readString()
+            result["RepositoryPort"] = p.readInt()
+            result["SourceImageID"] = p.readInt()
+            result["Modify"] = p.readBool()   
             result["CommandID"] = p.readString()
             result["UserID"] = p.readInt()
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
-            result["errorMessage"] = p.readString()
+            result["ErrorMessage"] = p.readString()
             result["CommandID"] = p.readString()
         # Importante: los segmentos que transportan los datos de conexión se reenviarán, por lo que no tenemos que
         # leerlos para ganar en eficiencia.

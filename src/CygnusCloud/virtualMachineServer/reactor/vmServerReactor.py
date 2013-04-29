@@ -138,6 +138,8 @@ class VMServerReactor(MainServerPacketReactor):
         commandID = None
         while (commandID == None) :
             commandID = self.__dbConnector.getVMBootCommand(domainName)
+            if (commandID == None) :
+                sleep(0.1)
         packet = self.__packetManager.createVMConnectionParametersPacket(ip, port + 1, password, commandID)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
@@ -152,7 +154,10 @@ class VMServerReactor(MainServerPacketReactor):
         # Se ha apagado una máquina virtual, borro sus datos
         if self.__shuttingDown and (self.__libvirtConnection.getNumberOfDomains() == 0):
             self.__shuttingDown = True
-        self.__freeDomainResources(domainInfo["name"])
+        if (self.__dbConnector.getVMBootCommand(domainInfo["name"]) != None) :
+            # Al cargarnos manualmente el dominio, ya hemos liberado sus recursos. En estos
+            # casos, no hay que hacer nada.
+            self.__freeDomainResources(domainInfo["name"])
         
     def __freeDomainResources(self, domainName, deleteDiskImages=True):
         """
@@ -163,8 +168,8 @@ class VMServerReactor(MainServerPacketReactor):
         Devuelve:
             Nada
         """
-        dataPath = self.__dbConnector.getDataImagePath(domainName)
-        osPath = self.__dbConnector.getOSImagePath(domainName)   
+        dataPath = self.__dbConnector.getDomainDataImagePath(domainName)
+        osPath = self.__dbConnector.getDomainOSImagePath(domainName)   
         websockify_pid = self.__dbConnector.getWebsockifyDaemonPID(domainName)
         
         try :
@@ -207,7 +212,10 @@ class VMServerReactor(MainServerPacketReactor):
                     wait_time += 0.5
         self.__childProcessManager.waitForBackgroundChildrenToTerminate()
         if (self.__virtualNetworkManager != None) :
-            self.__virtualNetworkManager.destroyVirtualNetwork(self.__cManager.getConstant("vnName"))  
+            try :
+                self.__virtualNetworkManager.destroyVirtualNetwork(self.__cManager.getConstant("vnName"))  
+            except Exception:
+                pass
         if (self.__fileTransferThread != None) :
             self.__fileTransferThread.stop()
             self.__fileTransferThread.join()
@@ -294,12 +302,12 @@ class VMServerReactor(MainServerPacketReactor):
         Devuelve:
             Nada
         """
-        domainID = data["MachineID"]
+        imageID = data["MachineID"]
         userID = data["UserID"]
-        configFile = self.__cManager.getConstant("configFilePath") + self.__dbConnector.getDefinitionFilePath(domainID)
-        originalName = self.__dbConnector.getImageName(domainID)
-        dataPath = self.__dbConnector.getDataImagePath(domainID)
-        osPath = self.__dbConnector.getOSImagePath(domainID)
+        configFile = self.__cManager.getConstant("configFilePath") + self.__dbConnector.getDefinitionFilePath(imageID)
+        originalName = "{0}_".format(imageID)
+        dataPath = self.__dbConnector.getDataImagePath(imageID)
+        osPath = self.__dbConnector.getOSImagePath(imageID)
         
         # Saco el nombre de los archivos (sin la extension)
         trimmedDataImagePath = dataPath
@@ -311,7 +319,7 @@ class VMServerReactor(MainServerPacketReactor):
         try:
             trimmedOSImagePath = osPath[0:osPath.index(".qcow2")]
         except:
-            pass
+            pass       
         
         # Obtengo los parámetros de configuración de la máquina virtual
         newUUID, newMAC = self.__dbConnector.extractFreeMACAndUUID()
@@ -359,7 +367,7 @@ class VMServerReactor(MainServerPacketReactor):
                                     self.__vncServerIP + ":" + str(newPort + 1),
                                     self.__vncServerIP + ":" + str(newPort)])
         
-        self.__dbConnector.registerVMResources(newName, domainID, newPort, newPassword, userID, webSockifyPID, newDataDisk, newOSDisk, newMAC, newUUID)
+        self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, webSockifyPID, newOSDisk,  newDataDisk, newMAC, newUUID)
         self.__dbConnector.addVMBootCommand(newName, data["CommandID"])
         
     def __destroyDomain(self, packet):
@@ -459,7 +467,7 @@ class VMServerReactor(MainServerPacketReactor):
         packet = self.__packetManager.createActiveDomainUIDsPacket(self.__vncServerIP, activeDomainUIDs)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
-    def isShutDown(self):
+    def has_finished(self):
         """
         Indica si el servidor de máquinas virtuales se ha apagado o no.
         Argumentos:
@@ -482,13 +490,4 @@ class VMServerReactor(MainServerPacketReactor):
         for domainName in registeredDomainNames :
             if (not domainName in activeDomainNames) :
                 self.__freeDomainResources(domainName)
-        self.__dbConnector.__allocateAssignedResources()
-
-    def onFileDownloaded(self):
-        """
-        Registra en la base de datos al imagen que se acaba de descargar.
-        """
-        raise NotImplementedError
-
-    def onFileUploaded(self):
-        raise NotImplementedError
+        self.__dbConnector.allocateAssignedMACsUUIDsAndVNCPorts()

@@ -32,7 +32,7 @@ if __name__ == "__main__" :
     # Crear el servidor de máquinas virtuales
     vmServer = VMServerReactor(cm)    
     # Dormir hasta que se apague
-    while not vmServer.isShutDown():
+    while not vmServer.has_finished():
         sleep(10) 
     vmServer.shutdown()       
     

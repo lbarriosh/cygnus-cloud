@@ -157,7 +157,12 @@ class DBWebServerTests(unittest.TestCase):
     def test_getBootableFlag(self):
         result = self.__dbConnector.getBootableFlag(2)
         expectedResult = True
-        self.assertEquals(result, expectedResult, "getBootableFlag() does not work")
+        self.assertEquals(result, expectedResult, "getBootableFlag() error")
+        
+    def test_getRegisteredDomainNames(self):
+        result = self.__dbConnector.getRegisteredDomainNames()
+        expectedResult = ["1_1", "2_2", "3_3", "4_4"]
+        self.assertEquals(result, expectedResult, "getRegisteredDomainNames() error")    
         
 if __name__ == "__main__":
     unittest.main()
