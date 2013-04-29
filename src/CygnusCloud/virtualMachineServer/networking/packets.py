@@ -227,7 +227,7 @@ class VMServerPacketHandler(object):
             result["UserID"] = p.readInt()
             result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
-            result["VMID"] = p.readString()
+            result["DomainID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
             result["VNCServerIP"] = p.readString()
             result["VNCServerPort"] = p.readInt()

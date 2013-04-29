@@ -17,6 +17,7 @@ from virtualMachineServer.threads.compressionThread import CompressionThread
 from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.domainHandler import DomainHandler
 from ccutils.processes.childProcessManager import ChildProcessManager
+from network.interfaces.ipAddresses import get_ip_address 
 import os
 import multiprocessing
 import sys
@@ -47,7 +48,7 @@ class VMServerReactor(MainServerPacketReactor):
         try :
             self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
             self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
-            self.__domainHandler = DomainHandler(self.__dbConnector, self.__networkManager, self.__packetManager, self.__listenningPort, 
+            self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
                                                  self.__cManager.getConstant("configFilePath"),
                                                  self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("executionImagePath"),
                                                  self.__cManager.getConstant("websockifyPath"), self.__cManager.getConstant("passwordLength"))
@@ -76,7 +77,11 @@ class VMServerReactor(MainServerPacketReactor):
     def __startListenning(self, networkInterface, listenningPort):
         """
         Crea la conexión de red por la que se recibirán los comandos del servidor de cluster.
-        """        
+        """    
+        try :
+            self.__vncServerIP = get_ip_address(networkInterface)
+        except Exception :
+            raise Exception("Error: the network interface '{0}' is not ready. Exiting now".format(networkInterface))    
         self.__listenningPort = listenningPort
         self.__networkManager = NetworkManager(self.__cManager.getConstant("certificatePath"))
         self.__networkManager.startNetworkService()
@@ -138,7 +143,7 @@ class VMServerReactor(MainServerPacketReactor):
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA) :
             self.__sendDomainsVNCConnectionData()
         elif (data['packet_type'] == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
-            self.__destroyDomain(data)
+            self.__domainHandler.destroyDomain(data["DomainID"])
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS) :
             self.__sendActiveDomainUIDs()
         elif (data['packet_type'] == VM_SERVER_PACKET_T.IMAGE_EDITION) :

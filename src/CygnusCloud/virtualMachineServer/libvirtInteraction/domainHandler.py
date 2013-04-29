@@ -10,16 +10,16 @@ from ccutils.processes.childProcessManager import ChildProcessManager
 from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
-from network.interfaces.ipAddresses import get_ip_address 
 from os import path, listdir
 
 from time import sleep
 
 class DomainHandler(object):
     
-    def __init__(self, dbConnector, networkManager, packetManager, listenningPort, definitionFileDirectory,
+    def __init__(self, dbConnector, vncServerIP, networkManager, packetManager, listenningPort, definitionFileDirectory,
                  sourceImagePath, executionImagePath, websockifyPath, vncPasswordLength):
-        self.__dbConnector = dbConnector
+        self.__dbConnector = dbConnector        
+        self.__vncServerIP = vncServerIP
         self.__childProcessManager = ChildProcessManager()        
         self.__networkManager = networkManager
         self.__packetManager = packetManager
@@ -43,10 +43,6 @@ class DomainHandler(object):
         Devuelve:
             Nada
         """
-        try :
-            self.__vncServerIP = get_ip_address(networkInterface)
-        except Exception :
-            raise Exception("Error: the network interface '{0}' is not ready. Exiting now".format(networkInterface))
         self.__libvirtConnection = LibvirtConnector(LibvirtConnector.KVM, self.__onDomainStart, self.__onDomainStop)
         self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
         self.__virtualNetworkManager.createVirtualNetwork(virtualNetworkName, gatewayIP, 
