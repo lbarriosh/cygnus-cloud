@@ -43,18 +43,21 @@ class VMServerReactor(MainServerPacketReactor):
         """        
         self.__shuttingDown = False
         self.__emergencyStop = False
+        self.__fileTransferThread = None
+        self.__compressionThread = None
+        self.__libvirtConnection = None
+        self.__networkManager = None
+        self.__virtualNetworkManager = None
         self.__cManager = constantManager
         self.__ftp = FTPClient()
         self.__transferQueue = GenericThreadSafeQueue()
         self.__compressionQueue = GenericThreadSafeQueue()
         self.__mainServerCallback = ClusterServerCallback(self)
         self.__childProcessManager = ChildProcessManager()
-        self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
-        self.__connectToLibvirt(self.__cManager.getConstant("createVirtualNetworkAsRoot"))
-        self.__doInitialCleanup()
-        self.__fileTransferThread = None
-        self.__compressionThread = None
         try :
+            self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
+            self.__connectToLibvirt(self.__cManager.getConstant("createVirtualNetworkAsRoot"))
+            self.__doInitialCleanup()        
             self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
         except Exception as e:
             print e.message
@@ -191,7 +194,8 @@ class VMServerReactor(MainServerPacketReactor):
         @attention: Para que no se produzcan cuelgues en la red, este método DEBE llamarse desde el hilo 
         principal.
         """
-        self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
+        if (self.__networkManager != None) :
+            self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
         if (not self.__emergencyStop) :            
             timeout = 300 # 5 mins
             if (self.__destroyDomains) :
@@ -202,7 +206,8 @@ class VMServerReactor(MainServerPacketReactor):
                     sleep(0.5)
                     wait_time += 0.5
         self.__childProcessManager.waitForBackgroundChildrenToTerminate()
-        self.__virtualNetworkManager.destroyVirtualNetwork(self.__cManager.getConstant("vnName"))  
+        if (self.__virtualNetworkManager != None) :
+            self.__virtualNetworkManager.destroyVirtualNetwork(self.__cManager.getConstant("vnName"))  
         if (self.__fileTransferThread != None) :
             self.__fileTransferThread.stop()
             self.__fileTransferThread.join()
