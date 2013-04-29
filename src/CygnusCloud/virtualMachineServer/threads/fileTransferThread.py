@@ -43,7 +43,7 @@ class FileTransferThread(QueueProcessingThread):
             #################################################################################################
             
             if (data["Retrieve"]) :
-                p = self.__repositoryPacketHandler.createRetrieveRequestPacket(data["sourceImageID"], data["modify"])
+                p = self.__repositoryPacketHandler.createRetrieveRequestPacket(data["SourceImageID"], data["Modify"])
             else :
                 p = None
             self.__networkManager.sendPacket(data["RepositoryIP"], data["RepositoryPort"], p)
@@ -58,21 +58,25 @@ class FileTransferThread(QueueProcessingThread):
                                                                    callback.getErrorMessage(), 
                                                                    data["CommandID"])
                 self.__networkManager.sendPacket('', self.__serverListeningPort, p)
+            else :            
             
-            
-            # Pedimos un ID de imagen al repositorio (sólo si vamos a crear una imagen a partir de otra)
-            if (data["Retrieve"]) :
-                self.__networkManager.sendPacket('', self.__repositoryPacketHandler.createAddImagePacket())
-                while not callback.isTransferCompleted() :
-                    sleep(0.1)
-                data["ImageID"] = callback.getDomainImageID()
+                # Pedimos un ID de imagen al repositorio (sólo si vamos a crear una imagen a partir de otra)
+                if (data["Retrieve"]) :
+                    self.__networkManager.sendPacket(data["RepositoryIP"], data["RepositoryPort"], self.__repositoryPacketHandler.createAddImagePacket())
+                    while not callback.isTransferCompleted() :
+                        sleep(0.1)
+                    data["ImageID"] = callback.getDomainImageID()
+                    # Añadimos el fichero a la cola de compresión/descompresión
+                    self.__compressionQueue.queue(data)
                 
             # Nos desconectamos del repositorio
-            self.__networkManager.closeConnection(data["repositoryIP"], data["repositoryPort"])
-            
-            # No error => añadimos el fichero a la cola de descompresión
-            # self.__compressionQueue.queue(data)
+            self.__networkManager.closeConnection(data["RepositoryIP"], data["RepositoryPort"])
+
         except Exception as e :
+            try :
+                self.__networkManager.closeConnection(data["RepositoryIP"], data["RepositoryPort"])
+            except Exception:
+                pass
             p = self.__vmServerPacketHandler.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR, 
                                                                    "Unable to connect to the image repository" + e.message, 
                                                                    data["CommandID"])
@@ -114,7 +118,7 @@ class _FileTransferCallback(NetworkCallback):
                 ftpClient.retrieveFile(data['fileName'], self.__workingDirectory, data['serverDirectory']) 
                 ftpClient.disconnect()
             except Exception as e:
-                self.__errorMessage = e.message                  
+                self.__errorMessage = str(e)
         elif (data["packet_type"] == IR_PACKET_T.ADDED_IMAGE_ID):
             self.__imageID = data["addedImageID"]
         
