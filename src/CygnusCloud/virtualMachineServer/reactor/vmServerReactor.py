@@ -7,7 +7,6 @@ Created on 14/01/2013
 
 from network.manager.networkManager import NetworkManager
 from virtualMachineServer.networking.callback import ClusterServerCallback
-from network.interfaces.ipAddresses import get_ip_address 
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from database.vmServer.vmServerDB import VMServerDBConnector
 from ccutils.dataStructures.multithreadingQueue import GenericThreadSafeQueue
@@ -33,7 +32,7 @@ class VMServerReactor(MainServerPacketReactor):
         Argumentos:
             constantsManager: objeto del que se obtendrán los parámetros de configuración
         """        
-        self.__shuttingDown = False
+        self.__finished = False
         self.__emergencyStop = False
         self.__fileTransferThread = None
         self.__compressionThread = None
@@ -44,20 +43,23 @@ class VMServerReactor(MainServerPacketReactor):
         self.__compressionQueue = GenericThreadSafeQueue()
         self.__mainServerCallback = ClusterServerCallback(self)
         self.__domainHandler = None
+        self.__domainTimeout = 0
         try :
             self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
             self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
-            self.__domainHandler = DomainHandler(self.__dbConnector, self.__networkManager, self.__packetManager, self.__cManager.getConstant("configFilePath"),
+            self.__domainHandler = DomainHandler(self.__dbConnector, self.__networkManager, self.__packetManager, self.__listenningPort, 
+                                                 self.__cManager.getConstant("configFilePath"),
                                                  self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("executionImagePath"),
-                                                 self.__cManager.getConstant("websockifyPath"))
-            self.__domainHandler.connectToLibvirt(self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
+                                                 self.__cManager.getConstant("websockifyPath"), self.__cManager.getConstant("passwordLength"))
+            self.__domainHandler.connectToLibvirt(self.__cManager.getConstant("vncNetworkInterface"), 
+                                                  self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
                                                   self.__cManager.getConstant("netMask"), self.__cManager.getConstant("dhcpStartIP"), 
                                                   self.__cManager.getConstant("dhcpEndIP"), self.__cManager.getConstant("createVirtualNetworkAsRoot"))
             self.__domainHandler.doInitialCleanup()
         except Exception as e:
             print e.message
             self.__emergencyStop = True
-            self.__shuttingDown = True
+            self.__finished = True
         
     def __connectToDatabases(self, databaseName, user, password) :
         """
@@ -74,11 +76,7 @@ class VMServerReactor(MainServerPacketReactor):
     def __startListenning(self, networkInterface, listenningPort):
         """
         Crea la conexión de red por la que se recibirán los comandos del servidor de cluster.
-        """
-        try :
-            self.__vncServerIP = get_ip_address(networkInterface)
-        except Exception :
-            raise Exception("Error: the network interface '{0}' is not ready. Exiting now".format(networkInterface))
+        """        
         self.__listenningPort = listenningPort
         self.__networkManager = NetworkManager(self.__cManager.getConstant("certificatePath"))
         self.__networkManager.startNetworkService()
@@ -105,12 +103,10 @@ class VMServerReactor(MainServerPacketReactor):
         if (self.__networkManager != None) :
             self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
             
-        if (not self.__emergencyStop) :            
-            if (self.__destroyDomains) :
-                timeout = 0
-            else :
-                timeout = 300 # 5 mins
-            self.__domainHandler.shutdown(timeout)                   
+        if (self.__emergencyStop) :            
+            self.__domainTimeout = 0
+            
+        self.__domainHandler.shutdown(self.__domainTimeout)                   
         
         if (self.__fileTransferThread != None) :
             self.__fileTransferThread.stop()
@@ -118,8 +114,7 @@ class VMServerReactor(MainServerPacketReactor):
         if (self.__compressionThread != None) :
             self.__compressionThread.stop()
             self.__compressionThread.join()
-        sys.exit()   
-           
+        sys.exit()              
         
     def processClusterServerIncomingPackets(self, packet):
         """
@@ -131,13 +126,15 @@ class VMServerReactor(MainServerPacketReactor):
         """
         data = self.__packetManager.readPacket(packet)
         if (data["packet_type"] == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
-            self.__processVMBootPacket(data)
+            self.__domainHandler.createDomain(data["MachineID"], data["UserID"], data["CommandID"])
         elif (data["packet_type"] == VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST) :
             self.__sendStatusData()
         elif (data["packet_type"] == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN) :
-            self.__doUserFriendlyShutdown(data)
+            self.__domainTimeout = 300
+            self.__finished = True
         elif (data["packet_type"] == VM_SERVER_PACKET_T.HALT) :
-            self.__doImmediateShutdown()
+            self.__domainTimeout = 0
+            self.__finished = True
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA) :
             self.__sendDomainsVNCConnectionData()
         elif (data['packet_type'] == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
@@ -222,39 +219,7 @@ class VMServerReactor(MainServerPacketReactor):
                                                                  freeStorageSpace, availableStorageSpace, 
                                                                  freeTemporaryStorage, availableTemporaryStorage,
                                                                  info["#vcpus"], realCPUNumber)
-        self.__networkManager.sendPacket('', self.__listenningPort, packet)
-    
-    def __doUserFriendlyShutdown(self, packet):
-        """
-        Realiza un apagado amigable (es decir, espera a que los usuarios acaben).
-        Argumentos:
-            packet: no se usa (por ahora), pero se usará para resolver un issue.
-        Devuelve:
-            Nada
-        """
-        self.__shuttingDown = True
-        self.__destroyDomains = False
-    
-    def __doImmediateShutdown(self):
-        """
-        Realiza el apagado inmediato del servidor de máquinas virtuales.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
-        """
-        self.__shuttingDown = True      
-        self.__destroyDomains = True  
-        
-    def __generateVNCPassword(self):
-        """
-        Genera una contraseña para un servidor VNC
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Un string con la contraseña generada
-        """
-        return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(self.__cManager.getConstant("passwordLength")), VMServerException)
+        self.__networkManager.sendPacket('', self.__listenningPort, packet)   
     
     def __sendActiveDomainUIDs(self):
         """
@@ -276,4 +241,4 @@ class VMServerReactor(MainServerPacketReactor):
         Devuelve:
             Nada
         """
-        return self.__shuttingDown   
+        return self.__finished   

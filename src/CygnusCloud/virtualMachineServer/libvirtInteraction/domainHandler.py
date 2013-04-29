@@ -10,26 +10,30 @@ from ccutils.processes.childProcessManager import ChildProcessManager
 from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
+from network.interfaces.ipAddresses import get_ip_address 
 from os import path, listdir
 
 from time import sleep
 
 class DomainHandler(object):
-    def __init__(self, dbConnector, networkManager, packetManager, definitionFileDirectory,
-                 sourceImagePath, executionImagePath, websockifyPath):
+    
+    def __init__(self, dbConnector, networkManager, packetManager, listenningPort, definitionFileDirectory,
+                 sourceImagePath, executionImagePath, websockifyPath, vncPasswordLength):
         self.__dbConnector = dbConnector
         self.__childProcessManager = ChildProcessManager()        
         self.__networkManager = networkManager
         self.__packetManager = packetManager
+        self.__listenningPort = listenningPort
         self.__definitionFileDirectory = definitionFileDirectory
         self.__sourceImagePath = sourceImagePath
         self.__executionImagePath = executionImagePath
         self.__websockifyPath = websockifyPath
+        self.__vncPasswordLength = vncPasswordLength
         self.__libvirtConnection = None
         self.__virtualNetworkManager = None
         self.__virtualNetworkName = None
     
-    def connectToLibvirt(self, virtualNetworkName, gatewayIP, netmask, 
+    def connectToLibvirt(self, networkInterface, virtualNetworkName, gatewayIP, netmask, 
                          dhcpStartIP, dhcpEndIP, createVirtualNetworkAsRoot) :
         """
         Establece la conexión con libvirt y crea la red virtual.
@@ -39,6 +43,10 @@ class DomainHandler(object):
         Devuelve:
             Nada
         """
+        try :
+            self.__vncServerIP = get_ip_address(networkInterface)
+        except Exception :
+            raise Exception("Error: the network interface '{0}' is not ready. Exiting now".format(networkInterface))
         self.__libvirtConnection = LibvirtConnector(LibvirtConnector.KVM, self.__onDomainStart, self.__onDomainStop)
         self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
         self.__virtualNetworkManager.createVirtualNetwork(virtualNetworkName, gatewayIP, 
@@ -62,10 +70,11 @@ class DomainHandler(object):
         self.__dbConnector.allocateAssignedMACsUUIDsAndVNCPorts()
         
     def shutdown(self, timeout):
-        if (timeout == 0) :
-            self.__libvirtConnection.destroyAllDomains()
-        else :
-            self.__waitForDomainsToTerminate(timeout)
+        if (self.__libvirtConnection != None) :
+            if (timeout == 0) :
+                self.__libvirtConnection.destroyAllDomains()
+            else :
+                self.__waitForDomainsToTerminate(timeout)
         try :
             self.__virtualNetworkManager.destroyVirtualNetwork(self.__virtualNetworkName)  
         except Exception:
@@ -196,9 +205,6 @@ class DomainHandler(object):
         Devuelve:
             Nada
         """
-        # Se ha apagado una máquina virtual, borro sus datos
-        if self.__shuttingDown and (self.__libvirtConnection.getNumberOfDomains() == 0):
-            self.__shuttingDown = True
         if (self.__dbConnector.getVMBootCommand(domainInfo["name"]) != None) :
             # Al cargarnos manualmente el dominio, ya hemos liberado sus recursos. En estos
             # casos, no hay que hacer nada.
@@ -239,3 +245,13 @@ class DomainHandler(object):
         while (self.__libvirtConnection.getNumberOfDomains() != 0 and wait_time < timeout) :
             sleep(0.5)
             wait_time += 0.5
+            
+    def __generateVNCPassword(self):
+        """
+        Genera una contraseña para un servidor VNC
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Un string con la contraseña generada
+        """
+        return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(self.__vncPasswordLength), VMServerException)

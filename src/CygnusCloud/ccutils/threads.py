@@ -87,7 +87,5 @@ class QueueProcessingThread(BasicThread):
         while not (self.finish() and self._queue.isEmpty()):
             while not self._queue.isEmpty() :
                 element = self._queue.dequeue()
-                self.processElement(element)      
-            if (self.finish()) :
-                print "Empty queue!"    
+                self.processElement(element)                
             sleep(0.01) # Sleep for 10 milliseconds when there's nothing to do   
