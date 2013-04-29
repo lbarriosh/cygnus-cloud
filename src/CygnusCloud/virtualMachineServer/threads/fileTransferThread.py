@@ -56,7 +56,7 @@ class FileTransferThread(QueueProcessingThread):
                 self.__networkManager.sendPacket('', self.__repositoryPacketHandler.createAddImagePacket())
                 while not callback.isOperationCompleted() :
                     sleep(0.1)
-                data["ImageID"] = callback.getImageID()
+                data["ImageID"] = callback.getDomainImageID()
                 
             # Nos desconectamos del repositorio
             self.__networkManager.closeConnection(data["repositoryIP"], data["repositoryPort"])
@@ -86,7 +86,7 @@ class _FileTransferCallback(NetworkCallback):
     def getErrorMessage(self):
         return self.__errorMessage
     
-    def getImageID(self):
+    def getDomainImageID(self):
         return self.__imageID
     
     def processPacket(self, packet):

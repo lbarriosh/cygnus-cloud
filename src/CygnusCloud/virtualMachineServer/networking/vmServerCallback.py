@@ -133,7 +133,7 @@ class VMServerCallback(NetworkCallback):
         userID = info["UserID"]
         configFile = configFilePath + self.__db.getFileConfigPath(idVM)
         originalName = self.__db.getName(idVM)
-        dataPath = self.__db.getImagePath(idVM)
+        dataPath = self.__db.getDataImagePath(idVM)
         osPath = self.__db.getOsImagePath(idVM)
         
         # Calculo los nuevos parametros

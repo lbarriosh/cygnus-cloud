@@ -164,8 +164,8 @@ class VMServerReactor(MainServerPacketReactor):
             Nada
         """
         dataPath = self.__dbConnector.getDataImagePath(domainName)
-        osPath = self.__dbConnector.getOsImagePathFromDomainName(domainName)   
-        websockify_pid = self.__dbConnector.getVMPIDFromDomainName(domainName)
+        osPath = self.__dbConnector.getOSImagePath(domainName)   
+        websockify_pid = self.__dbConnector.getWebsockifyDaemonPID(domainName)
         
         try :
             ChildProcessManager.runCommandInForeground("kill -s TERM " + str(websockify_pid))
@@ -182,7 +182,7 @@ class VMServerReactor(MainServerPacketReactor):
             if (osDirectory != dataDirectory and os.listdir(osDirectory) == []) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, VMServerException)
                 
-        self.__dbConnector.unregisterVMResources(domainName)        
+        self.__dbConnector.unregisterDomainResources(domainName)        
     
     def shutdown(self):
         """
@@ -296,9 +296,9 @@ class VMServerReactor(MainServerPacketReactor):
         """
         domainID = data["MachineID"]
         userID = data["UserID"]
-        configFile = self.__cManager.getConstant("configFilePath") + self.__dbConnector.getImgDefFilePath(domainID)
+        configFile = self.__cManager.getConstant("configFilePath") + self.__dbConnector.getDefinitionFilePath(domainID)
         originalName = self.__dbConnector.getImageName(domainID)
-        dataPath = self.__dbConnector.getImagePath(domainID)
+        dataPath = self.__dbConnector.getDataImagePath(domainID)
         osPath = self.__dbConnector.getOSImagePath(domainID)
         
         # Saco el nombre de los archivos (sin la extension)
@@ -482,7 +482,7 @@ class VMServerReactor(MainServerPacketReactor):
         for domainName in registeredDomainNames :
             if (not domainName in activeDomainNames) :
                 self.__freeDomainResources(domainName)
-        self.__dbConnector.allocateAssignedResources()
+        self.__dbConnector.__allocateAssignedResources()
 
     def onFileDownloaded(self):
         """
