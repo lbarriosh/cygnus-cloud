@@ -16,8 +16,6 @@ except ImportError:
             import xml.etree.ElementTree as ET
     
 from ccutils.processes.childProcessManager import ChildProcessManager
-
-from time import sleep
     
 class VirtualNetworkManagerException(Exception):
     """
