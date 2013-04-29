@@ -29,7 +29,10 @@ class ImageRepository(object):
         self.__workingDirectory = workingDirectory        
         self.__slotCounter = MultithreadingCounter()
         self.__retrieveQueue = GenericThreadSafeList()
-        self.__storeQueue = GenericThreadSafeList()        
+        self.__storeQueue = GenericThreadSafeList() 
+        self.__finish = False   
+        self.__networkManager = None
+        self.__ftpServer = None    
     
     def connectToDatabase(self, repositoryDBName, repositoryDBUser, repositoryDBPassword):
         """
@@ -64,28 +67,33 @@ class ImageRepository(object):
         @attention: El ancho de banda se determina automáticamente en función de la interfaz de red escogida.
         @attention: La contraseña se fija aleatoriamente en cada ejecución
         """
-        self.__maxConnections = maxConnections      
-        self.__commandsListenningPort = commandsListenningPort
-        self.__FTPListenningPort = ftpListenningPort
-        self.__networkManager = NetworkManager(certificatesDirectory)
-        self.__repositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)        
+        try :
+            self.__maxConnections = maxConnections      
+            self.__commandsListenningPort = commandsListenningPort
+            self.__FTPListenningPort = ftpListenningPort
+            self.__networkManager = NetworkManager(certificatesDirectory)
+            self.__repositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)        
+            
+            self.__commandsCallback = CommandsCallback(self.__networkManager, self.__repositoryPacketHandler, commandsListenningPort, self.__dbConnector,
+                                                       self.__retrieveQueue, self.__storeQueue)        
+            
+            self.__networkManager.startNetworkService()
+            self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, True)
+            
+            dataCallback = DataCallback(self.__slotCounter, self.__dbConnector)
+            
+            self.__ftpUsername = ftpUsername
+            self.__ftpPassword = ChildProcessManager.runCommandInForeground("openssl rand -base64 {0}".format(ftpPasswordLength), Exception)        
+            
+            self.__ftpServer = ConfigurableFTPServer("Image repository FTP Server")
+       
+            self.__ftpServer.startListenning(networkInterface, ftpListenningPort, maxConnections, maxConnectionsPerIP, 
+                                             dataCallback, downloadBandwidthRatio, uploadBandwidthRatio)
+            self.__ftpServer.addUser(self.__ftpUsername, self.__ftpPassword, self.__workingDirectory, "eraw")      
+        except Exception as e:
+            print "Error: " + e.message
+            self.__finish = True
         
-        self.__commandsCallback = CommandsCallback(self.__networkManager, self.__repositoryPacketHandler, commandsListenningPort, self.__dbConnector,
-                                                   self.__retrieveQueue, self.__storeQueue)        
-        
-        self.__networkManager.startNetworkService()
-        self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, True)
-        
-        dataCallback = DataCallback(self.__slotCounter, self.__dbConnector)
-        
-        self.__ftpUsername = ftpUsername
-        self.__ftpPassword = ChildProcessManager.runCommandInForeground("openssl rand -base64 {0}".format(ftpPasswordLength), Exception)        
-        
-        self.__ftpServer = ConfigurableFTPServer("Image repository FTP Server")
-        self.__ftpServer.startListenning(networkInterface, ftpListenningPort, maxConnections, maxConnectionsPerIP, 
-                                         dataCallback, downloadBandwidthRatio, uploadBandwidthRatio)
-        self.__ftpServer.addUser(self.__ftpUsername, self.__ftpPassword, self.__workingDirectory, "eraw")        
-    
     def stopListenning(self):
         """
         Para el repositorio
@@ -95,8 +103,14 @@ class ImageRepository(object):
             Nada
         @attention: Para evitar cuelges, ¡¡¡no llamar a este método desde ningún hilo de la red!!!
         """
-        self.__ftpServer.stopListenning()
-        self.__networkManager.stopNetworkService()
+        if (self.__ftpServer != None) :
+            try :
+                self.__ftpServer.stopListenning()
+            except Exception :
+                pass
+        if (self.__networkManager != None) :
+            self.__networkManager.stopNetworkService()
+        
         self.__dbConnector.disconnect()        
     
     def initTransfers(self):
@@ -109,7 +123,7 @@ class ImageRepository(object):
         @attention: Este método sólo devolverá el control cuando el repositorio tenga que apagarse.
         """
         store = False
-        while not self.__commandsCallback.haltReceived():
+        while not (self.__finish or self.__commandsCallback.haltReceived()):
             if (self.__slotCounter.read() == self.__maxConnections) :
                 # No hay slots => dormir
                 sleep(0.1)

@@ -147,12 +147,12 @@ class VMServerReactor(MainServerPacketReactor):
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS) :
             self.__sendActiveDomainUIDs()
         elif (data['packet_type'] == VM_SERVER_PACKET_T.IMAGE_EDITION) :
-            self.__editImage(data)
+            self.__processImageEditionPacket(data)
         
-    def __editImage(self, data):
+    def __processImageEditionPacket(self, data):
         # Encolar la transferencia
         data.pop("packet_type")
-        data["retrieve"] = True
+        data["Retrieve"] = True
         data["FTPTimeout"] = self.__cManager.getConstant("FTPTimeout")
         self.__transferQueue.queue(data)
 

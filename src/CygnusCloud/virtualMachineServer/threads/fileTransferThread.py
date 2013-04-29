@@ -27,22 +27,31 @@ class FileTransferThread(QueueProcessingThread):
     def processElement(self, data):
         try :
             # Nos conectamos al repositorio
-            callback = _FileTransferCallback(self.__repositoryPacketHandler, self.__workingDirectory, data["repositoryIP"], self.__ftpTimeout)
-            self.__networkManager.connectTo(data["repositoryIP"], data["repositoryPort"], 
+            callback = _FileTransferCallback(self.__repositoryPacketHandler, self.__workingDirectory, data["RepositoryIP"], self.__ftpTimeout)
+            self.__networkManager.connectTo(data["RepositoryIP"], data["RepositoryPort"], 
                                             self.__ftpTimeout, callback)
-            while not self.__networkManager.isConnectionReady(data["repositoryIP"], data["repositoryPort"]) :
+            while not self.__networkManager.isConnectionReady(data["RepositoryIP"], data["RepositoryPort"]) :
                 sleep(0.1)
            
             # Solicitamos el inicio de la transferencia
-            if (data["retrieve"]) :
+            
+            #################################################################################################
+            #################################################################################################
+            ### TODO: añadir transferencias store. Los paquetes son distintos => ver tester del repositorio
+            ### ANTES de picar una sola línea de código.
+            #################################################################################################
+            #################################################################################################
+            
+            if (data["Retrieve"]) :
                 p = self.__repositoryPacketHandler.createRetrieveRequestPacket(data["sourceImageID"], data["modify"])
             else :
-                p = None # TODO: meter store aquí
-            self.__networkManager.sendPacket(data["repositoryIP"], data["repositoryPort"], p)
+                p = None
+            self.__networkManager.sendPacket(data["RepositoryIP"], data["RepositoryPort"], p)
             
             # Esperamos a que la transferencia termine
-            while not callback.isOperationCompleted() :
+            while not callback.isTransferCompleted() :
                 sleep(0.1)
+                
             if (callback.getErrorMessage() != None) :
                 # Error => informamos al usuario                
                 p = self.__vmServerPacketHandler.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR, 
@@ -51,10 +60,10 @@ class FileTransferThread(QueueProcessingThread):
                 self.__networkManager.sendPacket('', self.__serverListeningPort, p)
             
             
-            # Pedimos un ID de imagen al repositorio (sólo si es necesario)
-            if (data["retrieve"]) :
+            # Pedimos un ID de imagen al repositorio (sólo si vamos a crear una imagen a partir de otra)
+            if (data["Retrieve"]) :
                 self.__networkManager.sendPacket('', self.__repositoryPacketHandler.createAddImagePacket())
-                while not callback.isOperationCompleted() :
+                while not callback.isTransferCompleted() :
                     sleep(0.1)
                 data["ImageID"] = callback.getDomainImageID()
                 
@@ -62,7 +71,7 @@ class FileTransferThread(QueueProcessingThread):
             self.__networkManager.closeConnection(data["repositoryIP"], data["repositoryPort"])
             
             # No error => añadimos el fichero a la cola de descompresión
-            self.__compressionQueue.queue(data)
+            # self.__compressionQueue.queue(data)
         except Exception as e :
             p = self.__vmServerPacketHandler.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR, 
                                                                    "Unable to connect to the image repository" + e.message, 
@@ -80,7 +89,7 @@ class _FileTransferCallback(NetworkCallback):
         self.__ftpTimeout = ftpTimeout
         self.__imageID = None
         
-    def isOperationCompleted(self):
+    def isTransferCompleted(self):
         return self.__operation_completed
     
     def getErrorMessage(self):
