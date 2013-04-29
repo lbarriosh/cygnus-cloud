@@ -648,7 +648,7 @@ that.changeCursor = function(pixels, mask, hotx, hoty, w, h) {
 };
 
 that.defaultCursor = function() {
-    conf.target.style.cursor = "default";
+    conf.target.style.cursor = "none";
 };
 
 return constructor();  // Return the public API interface
