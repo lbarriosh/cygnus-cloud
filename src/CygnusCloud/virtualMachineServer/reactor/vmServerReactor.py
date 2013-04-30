@@ -46,17 +46,7 @@ class VMServerReactor(MainServerPacketReactor):
         self.__domainHandler = None
         self.__domainTimeout = 0
         try :
-            self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
             self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
-            self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
-                                                 self.__cManager.getConstant("configFilePath"),
-                                                 self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("executionImagePath"),
-                                                 self.__cManager.getConstant("websockifyPath"), self.__cManager.getConstant("passwordLength"))
-            self.__domainHandler.connectToLibvirt(self.__cManager.getConstant("vncNetworkInterface"), 
-                                                  self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
-                                                  self.__cManager.getConstant("netMask"), self.__cManager.getConstant("dhcpStartIP"), 
-                                                  self.__cManager.getConstant("dhcpEndIP"), self.__cManager.getConstant("createVirtualNetworkAsRoot"))
-            self.__domainHandler.doInitialCleanup()
         except Exception as e:
             print e.message
             self.__emergencyStop = True
@@ -91,6 +81,18 @@ class VMServerReactor(MainServerPacketReactor):
                                                        self.__transferQueue, self.__compressionQueue, self.__cManager.getConstant("TransferDirectory"),
                                                        self.__cManager.getConstant("FTPTimeout"))
         self.__fileTransferThread.start()
+        self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
+            
+        self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
+                                                 self.__cManager.getConstant("configFilePath"),
+                                                 self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("executionImagePath"),
+                                                 self.__cManager.getConstant("websockifyPath"), self.__cManager.getConstant("passwordLength"))
+        self.__domainHandler.connectToLibvirt(self.__cManager.getConstant("vncNetworkInterface"), 
+                                                  self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
+                                                  self.__cManager.getConstant("netMask"), self.__cManager.getConstant("dhcpStartIP"), 
+                                                  self.__cManager.getConstant("dhcpEndIP"), self.__cManager.getConstant("createVirtualNetworkAsRoot"))
+            
+        self.__domainHandler.doInitialCleanup()
         self.__compressionThread = CompressionThread(self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("TransferDirectory"), 
                                                      self.__compressionQueue,self.__cManager.getConstant("configFilePath"),self.__dbConnector,
                                                      self.__domainHandler)
