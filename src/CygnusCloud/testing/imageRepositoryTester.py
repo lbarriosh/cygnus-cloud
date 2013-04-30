@@ -48,7 +48,7 @@ class TesterCallback(NetworkCallback):
                 fileName = raw_input('File to upload (it MUST contain the image ID): ')
             else :
                 fileName = data['fileName']
-            ftpClient.storeFile(fileName, "/home/luis", data['serverDirectory']) 
+            ftpClient.storeFile(fileName, "/home/adrian", data['serverDirectory']) 
             ftpClient.disconnect()
             print("Transfer completed")
             user_input = False
@@ -125,7 +125,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Certificates")
+    networkManager = NetworkManager("/home/adrian/Documentos/Certificados")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = ImageRepositoryPacketHandler(networkManager)

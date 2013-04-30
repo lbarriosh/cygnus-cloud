@@ -92,7 +92,8 @@ class VMServerReactor(MainServerPacketReactor):
                                                        self.__cManager.getConstant("FTPTimeout"))
         self.__fileTransferThread.start()
         self.__compressionThread = CompressionThread(self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("TransferDirectory"), 
-                                                     self.__compressionQueue)
+                                                     self.__compressionQueue,self.__cManager.getConstant("configFilePath"),self.__dbConnector,
+                                                     self.__domainHandler)
         self.__compressionThread.start()
     
     def shutdown(self):

@@ -82,6 +82,7 @@ class DomainHandler(object):
         originalName = "{0}_".format(imageID)
         dataPath = self.__dbConnector.getDataImagePath(imageID)
         osPath = self.__dbConnector.getOSImagePath(imageID)
+        isBootable = self.__dbConnector.getBootableFlag(imageID)
         
         # Saco el nombre de los archivos (sin la extension)
         trimmedDataImagePath = dataPath
@@ -116,10 +117,10 @@ class DomainHandler(object):
             ChildProcessManager.runCommandInForeground("rm " + newOSDisk, VMServerException)
             
         # Copio las imagenes
-        ChildProcessManager.runCommandInForeground("cd " + self.__sourceImagePath + ";" + "cp --parents "+ dataPath + " " + 
-                                                   self.__executionImagePath, VMServerException)
-        ChildProcessManager.runCommandInForeground("mv " + self.__executionImagePath + dataPath +" " + newDataDisk, VMServerException)
-        ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
+        if(isBootable):
+            ChildProcessManager.runCommandInForeground("cd " + self.__sourceImagePath + ";" + "cp --parents "+ dataPath + " " +                                        self.__executionImagePath, VMServerException)
+            ChildProcessManager.runCommandInForeground("mv " + self.__executionImagePath + dataPath +" " + newDataDisk, VMServerException)
+            ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
         
         # Genero el fichero de definición
         xmlFile = ConfigurationFileEditor(configFile)
