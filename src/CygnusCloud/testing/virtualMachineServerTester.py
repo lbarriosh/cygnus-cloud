@@ -37,7 +37,7 @@ class TesterCallback(NetworkCallback):
             print("Virtual machines' connection data")
             print(packet._getData())
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
-            print("Image edition error: " + data["ErrorMessage"])
+            print("Image edition error: " + data["ErrorMessage"])  
         else :
             print("Error: a packet from an unexpected type has been received "+packet_type)
        
@@ -117,7 +117,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Certificates")
+    networkManager = NetworkManager("/home/adrian/Documentos/Certificados")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = VMServerPacketHandler(networkManager)

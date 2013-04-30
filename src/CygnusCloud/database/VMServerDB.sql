@@ -22,4 +22,4 @@ CREATE TABLE IF NOT EXISTS ActiveDomainUIDs(domainName VARCHAR(30) PRIMARY KEY, 
 	FOREIGN KEY (domainName) REFERENCES ActualVM(domainName) ON DELETE CASCADE ON UPDATE CASCADE);
 
 INSERT IGNORE INTO VirtualMachine VALUES 
-	(1, 'DebianSqueezeAMD64/SqueezeAMD64.qcow2', 'DebianSqueezeAMD64/Data.qcow2', 'DebianSqueezeAMD64/Squeeze_AMD64.xml', 1);
+	(2, 'DebianSqueezeAMD64/SqueezeAMD64.qcow2', 'DebianSqueezeAMD64/Data.qcow2', 'DebianSqueezeAMD64/Squeeze_AMD64.xml', 1);

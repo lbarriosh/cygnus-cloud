@@ -29,13 +29,12 @@ class CompressionThread(QueueProcessingThread):
         # TODO: informar de errores cuando no se pueda descomprimir el fichero
         #Cambiamos los permisos de los ficheros y buscamos el xml
         definitionFilePath = path.join(self.__configFilePath,str(data["SourceImageID"]))
-         
         for files in listdir(extractFilePath):
-            ChildProcessManager.runCommandInForegroundAsRoot("chmod 666 " + files, Exception)
+            ChildProcessManager.runCommandInForegroundAsRoot("chmod 666 " + path.join(extractFilePath,files), Exception)
             if files.endswith(".xml"):
                 #movemos el fichero al directorio
                 definitionFile = files
-                shutil.move(definitionFile, definitionFilePath)
+                shutil.move(path.join(extractFilePath,definitionFile), definitionFilePath)
 
         #Registramos la máquina virtual
         self.__dbConnector.createImage(data["SourceImageID"],path.join(extractFilePath,"OS.qcow2"),

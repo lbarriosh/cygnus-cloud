@@ -33,7 +33,7 @@ class TesterCallback(NetworkCallback):
             print("Downloading file...")
             ftpClient = FTPClient()
             ftpClient.connect(self.__ip_address, data['FTPServerPort'], 5, data['username'], data['password'])
-            ftpClient.retrieveFile(data['fileName'], "/home/luis", data['serverDirectory']) 
+            ftpClient.retrieveFile(data['fileName'], "/home/adrian", data['serverDirectory']) 
             ftpClient.disconnect()
             print("Transfer completed")
         elif (data['packet_type'] == PACKET_T.STOR_REQUEST_ERROR or data['packet_type'] == PACKET_T.STOR_ERROR) :
@@ -54,6 +54,7 @@ class TesterCallback(NetworkCallback):
             user_input = False
         elif (data['packet_type'] == PACKET_T.DELETE_REQUEST_RECVD):
             print("The image repository says: delete request received")
+        
         else:
             print("Error: a packet from an unexpected type has been received " + str(data['packet_type']))
        
