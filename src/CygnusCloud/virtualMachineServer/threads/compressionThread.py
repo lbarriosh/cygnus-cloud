@@ -9,6 +9,7 @@ from ccutils.threads import QueueProcessingThread
 from ccutils.compression.zipBasedCompressor import ZipBasedCompressor
 from os import path
 from os import listdir
+from os import makedirs
 import shutil
 from ccutils.processes.childProcessManager import ChildProcessManager
 
@@ -29,6 +30,10 @@ class CompressionThread(QueueProcessingThread):
         # TODO: informar de errores cuando no se pueda descomprimir el fichero
         #Cambiamos los permisos de los ficheros y buscamos el xml
         definitionFilePath = path.join(self.__configFilePath,str(data["SourceImageID"]))
+        #Creamos el directorio de definicion en el caso de que no exista
+        if not path.exists(definitionFilePath):
+            makedirs(definitionFilePath)
+        
         for files in listdir(extractFilePath):
             ChildProcessManager.runCommandInForegroundAsRoot("chmod 666 " + path.join(extractFilePath,files), Exception)
             if files.endswith(".xml"):
@@ -37,11 +42,11 @@ class CompressionThread(QueueProcessingThread):
                 shutil.move(path.join(extractFilePath,definitionFile), definitionFilePath)
 
         #Registramos la máquina virtual
-        self.__dbConnector.createImage(data["SourceImageID"],path.join(extractFilePath,"OS.qcow2"),
-                                       path.join(extractFilePath,"Data.qcow2"),
-                                       path.join(definitionFilePath,definitionFile),False)
+        self.__dbConnector.createImage(data["SourceImageID"],path.join(str(data["SourceImageID"]),"OS.qcow2"),
+                                       path.join(str(data["SourceImageID"]),"Data.qcow2"),
+                                       path.join(str(data["SourceImageID"]),definitionFile),False)
 
          
         # Arrancamos la máquina virtual
-        self.__domainHandler.createDomain(data["SourceImageID"],data["UserID"],data["DomainID"])
+        self.__domainHandler.createDomain(data["SourceImageID"], data["UserID"], data["CommandID"])
         

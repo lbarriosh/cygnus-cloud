@@ -103,29 +103,35 @@ class DomainHandler(object):
         newDataDisk = self.__executionImagePath + trimmedDataImagePath + str(newPort) + ".qcow2"
         newOSDisk = self.__executionImagePath + trimmedOSImagePath + str(newPort) + ".qcow2"
         newPassword = self.__generateVNCPassword()
-        sourceOSDisk = self.__sourceImagePath + osPath        
+        sourceOSDisk = self.__sourceImagePath + osPath    
+            
         
         # Preparo los archivos
-                
-        # Compruebo si ya existe alguno de los archivos. Si es el caso, me los cargo
-        if (path.exists(newDataDisk)):
-            print("Warning: the file " + newDataDisk + " already exists")
-            ChildProcessManager.runCommandInForeground("rm " + newDataDisk, VMServerException)
+        
+        if(isBootable):        
+            # Compruebo si ya existe alguno de los archivos. Si es el caso, me los cargo
+            if (path.exists(newDataDisk)):
+                print("Warning: the file " + newDataDisk + " already exists")
+                ChildProcessManager.runCommandInForeground("rm " + newDataDisk, VMServerException)
             
-        if (path.exists(newOSDisk)):
-            print("Warning: the file " + newOSDisk + " already exists")
-            ChildProcessManager.runCommandInForeground("rm " + newOSDisk, VMServerException)
+            if (path.exists(newOSDisk)):
+                print("Warning: the file " + newOSDisk + " already exists")
+                ChildProcessManager.runCommandInForeground("rm " + newOSDisk, VMServerException)
             
-        # Copio las imagenes
-        if(isBootable):
-            ChildProcessManager.runCommandInForeground("cd " + self.__sourceImagePath + ";" + "cp --parents "+ dataPath + " " +                                        self.__executionImagePath, VMServerException)
+            # Copio las imagenes
+            ChildProcessManager.runCommandInForeground("cd " + self.__sourceImagePath + ";" + "cp --parents "+ dataPath + " " + self.__executionImagePath, VMServerException)
             ChildProcessManager.runCommandInForeground("mv " + self.__executionImagePath + dataPath +" " + newDataDisk, VMServerException)
             ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
         
         # Genero el fichero de definición
         xmlFile = ConfigurationFileEditor(configFile)
         xmlFile.setDomainIdentifiers(newName, newUUID)
-        xmlFile.setImagePaths(newOSDisk, newDataDisk)
+        # Elegimos la ruta del fichero a utilizar
+        if(isBootable):
+            xmlFile.setImagePaths(newOSDisk, newDataDisk)
+        else:
+            xmlFile.setImagePaths(self.__sourceImagePath + osPath,self.__sourceImagePath +  dataPath)
+            
         xmlFile.setVirtualNetworkConfiguration(self.__virtualNetworkName, newMAC)
         xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword)
         
@@ -219,13 +225,15 @@ class DomainHandler(object):
         dataPath = self.__dbConnector.getDomainDataImagePath(domainName)
         osPath = self.__dbConnector.getDomainOSImagePath(domainName)   
         websockify_pid = self.__dbConnector.getWebsockifyDaemonPID(domainName)
+        imageID = self.__dbConnector.getDomainImageID(domainName)
+        isBootable = self.__dbConnector.getBootableFlag(imageID)
         
         try :
             ChildProcessManager.runCommandInForeground("kill -s TERM " + str(websockify_pid))
         except Exception:
             pass    
         
-        if deleteDiskImages :
+        if deleteDiskImages and isBootable:
             ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
             ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
             dataDirectory = path.dirname(dataPath)
