@@ -10,6 +10,7 @@ from ccutils.processes.childProcessManager import ChildProcessManager
 from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
+from virtualMachineServer.reactor.transfer_t import TRANSFER_T
 from os import path, listdir
 
 from time import sleep
@@ -17,7 +18,7 @@ from time import sleep
 class DomainHandler(object):
     
     def __init__(self, dbConnector, vncServerIP, networkManager, packetManager, listenningPort, definitionFileDirectory,
-                 sourceImagePath, executionImagePath, websockifyPath, vncPasswordLength, compressionQueue):
+                 sourceImagePath, executionImagePath, websockifyPath, vncPasswordLength, compressionQueue, editedImagesData):
         self.__dbConnector = dbConnector        
         self.__vncServerIP = vncServerIP
         self.__childProcessManager = ChildProcessManager()        
@@ -33,6 +34,7 @@ class DomainHandler(object):
         self.__virtualNetworkManager = None
         self.__virtualNetworkName = None
         self.__compressionQueue = compressionQueue
+        self.__editedImagesData = editedImagesData
     
     def connectToLibvirt(self, networkInterface, virtualNetworkName, gatewayIP, netmask, 
                          dhcpStartIP, dhcpEndIP, createVirtualNetworkAsRoot) :
@@ -81,35 +83,36 @@ class DomainHandler(object):
     def createDomain(self, imageID, userID, commandID):
         configFile = self.__definitionFileDirectory + self.__dbConnector.getDefinitionFilePath(imageID)
         originalName = "{0}_".format(imageID)
-        dataPath = self.__dbConnector.getDataImagePath(imageID)
-        osPath = self.__dbConnector.getOSImagePath(imageID)
-        isBootable = self.__dbConnector.getBootableFlag(imageID)
-        
-        # Saco el nombre de los archivos (sin la extension)
-        trimmedDataImagePath = dataPath
-        try:
-            trimmedDataImagePath = dataPath[0:dataPath.index(".qcow2")]
-        except:
-            pass
-        trimmedOSImagePath = osPath
-        try:
-            trimmedOSImagePath = osPath[0:osPath.index(".qcow2")]
-        except:
-            pass       
+        dataImagePath = self.__dbConnector.getDataImagePath(imageID)
+        osImagePath = self.__dbConnector.getOSImagePath(imageID)
+        isBootable = self.__dbConnector.getBootableFlag(imageID)        
+           
         
         # Obtengo los parámetros de configuración de la máquina virtual
         newUUID, newMAC = self.__dbConnector.extractFreeMACAndUUID()
         newPort = self.__dbConnector.extractFreeVNCPort()
-        newName = originalName + str(newPort)
-        newDataDisk = self.__executionImagePath + trimmedDataImagePath + str(newPort) + ".qcow2"
-        newOSDisk = self.__executionImagePath + trimmedOSImagePath + str(newPort) + ".qcow2"
+        newName = originalName + str(newPort)        
         newPassword = self.__generateVNCPassword()
-        sourceOSDisk = self.__sourceImagePath + osPath    
-            
+        sourceOSDisk = self.__sourceImagePath + osImagePath                
         
         # Preparo los archivos
         
-        if(isBootable):        
+        if(isBootable):                           
+            # Saco el nombre de los archivos (sin la extension)
+            trimmedDataImagePath = dataImagePath
+            try:
+                trimmedDataImagePath = dataImagePath[0:dataImagePath.index(".qcow2")]
+            except:
+                pass
+            trimmedOSImagePath = osImagePath
+            try:
+                trimmedOSImagePath = osImagePath[0:osImagePath.index(".qcow2")]
+            except:
+                pass   
+            
+            newDataDisk = self.__executionImagePath + trimmedDataImagePath + str(newPort) + ".qcow2"
+            newOSDisk = self.__executionImagePath + trimmedOSImagePath + str(newPort) + ".qcow2"
+                
             # Compruebo si ya existe alguno de los archivos. Si es el caso, me los cargo
             if (path.exists(newDataDisk)):
                 print("Warning: the file " + newDataDisk + " already exists")
@@ -120,24 +123,22 @@ class DomainHandler(object):
                 ChildProcessManager.runCommandInForeground("rm " + newOSDisk, VMServerException)
             
             # Copio las imagenes
-            ChildProcessManager.runCommandInForeground("cd " + self.__sourceImagePath + ";" + "cp --parents "+ dataPath + " " + self.__executionImagePath, VMServerException)
-            ChildProcessManager.runCommandInForeground("mv " + self.__executionImagePath + dataPath +" " + newDataDisk, VMServerException)
+            ChildProcessManager.runCommandInForeground("cd " + self.__sourceImagePath + ";" + "cp --parents "+ dataImagePath + " " + self.__executionImagePath, VMServerException)
+            ChildProcessManager.runCommandInForeground("mv " + self.__executionImagePath + dataImagePath +" " + newDataDisk, VMServerException)
             ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
+        
+        else :
+            newDataDisk = path.join(self.__sourceImagePath, dataImagePath)
+            newOSDisk = path.join(self.__sourceImagePath, osImagePath)            
         
         # Genero el fichero de definición
         xmlFile = ConfigurationFileEditor(configFile)
         xmlFile.setDomainIdentifiers(newName, newUUID)
-        # Elegimos la ruta del fichero a utilizar
-        if(isBootable):
-            xmlFile.setImagePaths(newOSDisk, newDataDisk)
-        else:
-            xmlFile.setImagePaths(self.__sourceImagePath + osPath,self.__sourceImagePath +  dataPath)
-            
+        xmlFile.setImagePaths(newOSDisk, newDataDisk)            
         xmlFile.setVirtualNetworkConfiguration(self.__virtualNetworkName, newMAC)
         xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword)
         
-        string = xmlFile.generateConfigurationString()
-        
+        string = xmlFile.generateConfigurationString()        
         # Arranco la máquina
         self.__libvirtConnection.startDomain(string)
         
@@ -223,12 +224,11 @@ class DomainHandler(object):
         Devuelve:
             Nada
         """
-        dataPath = self.__dbConnector.getDomainDataImagePath(domainName)
-        osPath = self.__dbConnector.getDomainOSImagePath(domainName)   
+        dataImagePath = self.__dbConnector.getDomainDataImagePath(domainName)
+        osImagePath = self.__dbConnector.getDomainOSImagePath(domainName)   
         websockify_pid = self.__dbConnector.getWebsockifyDaemonPID(domainName)
         imageID = self.__dbConnector.getDomainImageID(domainName)
-        isBootable = self.__dbConnector.getBootableFlag(imageID)
-        definitionPath = self.__dbConnector.getDefinitionFilePath(imageID)
+        isBootable = self.__dbConnector.getBootableFlag(imageID)        
         
         try :
             ChildProcessManager.runCommandInForeground("kill -s TERM " + str(websockify_pid))
@@ -236,10 +236,10 @@ class DomainHandler(object):
             pass    
         
         if deleteDiskImages and isBootable:
-            ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
-            ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
-            dataDirectory = path.dirname(dataPath)
-            osDirectory = path.dirname(osPath)
+            ChildProcessManager.runCommandInForeground("rm " + dataImagePath, VMServerException)
+            ChildProcessManager.runCommandInForeground("rm " + osImagePath, VMServerException)
+            dataDirectory = path.dirname(dataImagePath)
+            osDirectory = path.dirname(osImagePath)
             if (listdir(dataDirectory) == []) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + dataDirectory, VMServerException)
             if (osDirectory != dataDirectory and listdir(osDirectory) == []) :
@@ -251,11 +251,18 @@ class DomainHandler(object):
         # Añadimos el fichero a la cola de compresión/descompresión
         if(not isBootable):
             data = dict()
-            data["Retrieve"] = False
-            data["DataPath"] = dataPath
-            data["OSPath"] = osPath
-            data["DefinitionPath"] = definitionPath 
+            commandID = self.__dbConnector.getVMBootCommand(domainName)
+            connectionData = self.__editedImagesData[commandID]
+            data["Transfer_Type"] = TRANSFER_T.STORE_IMAGE
+            data["DataImagePath"] = dataImagePath
+            data["OSImagePath"] = osImagePath
+            data["DefinitionFilePath"] = self.__dbConnector.getDefinitionFilePath(imageID)
+            data["RepositoryIP"] = connectionData["RepositoryIP"]
+            data["RepositoryPort"] = connectionData["RepositoryPort"]
+            data["CommandID"] = commandID            
+            data["TargetImageID"] = imageID
             self.__compressionQueue.queue(data)
+            self.__editedImagesData.pop(commandID)
     
     def __waitForDomainsToTerminate(self, timeout):
         wait_time = 0

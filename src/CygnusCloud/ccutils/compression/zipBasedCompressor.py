@@ -5,28 +5,29 @@ Created on Apr 28, 2013
 @author: luis
 '''
 
-import zipfile
-from ccutils.compression.fileCompressor import FileCompressor
+from ccutils.processes.childProcessManager import ChildProcessManager
+from os import path
 
-class ZipBasedCompressor(FileCompressor):
+class ZipBasedCompressor():
     
-    def __init__(self, filename, mode):
-        self.__zip = zipfile.ZipFile(filename, mode, zipfile.ZIP_DEFLATED, True)
-        pass
-    
-    def addFile(self, filename, filenameInCompressedFile=None):
+    def createCompressedFile(self, filePath, fileNameList):
         '''
         Añade un archivo al fichero comprimido
         Args:
             filename: nombre del archivo a comprimir
             filenameInCompressedFile: nombre del archivo en el archivo comprimido
         '''
-        self.__zip.write(filename, filenameInCompressedFile)
-    
-    def extract(self, path):
+        args = filePath + " "
+        for fileName in fileNameList :
+            args += fileName + " "
+        ChildProcessManager.runCommandInForeground("zip -j " + args, Exception)
+
+    def extractFile(self, path, outputDirectory):
         '''
         Extrae los archivos del fichero comprimido en una ruta
         Args:
             path: Ruta en la que descomprimir el fichero
         '''
-        self.__zip.extractall(path)
+        if (outputDirectory == None) :
+            outputDirectory = path.dirname(path)
+        ChildProcessManager.runCommandInForeground("unzip " + path + " -d " + outputDirectory, Exception)

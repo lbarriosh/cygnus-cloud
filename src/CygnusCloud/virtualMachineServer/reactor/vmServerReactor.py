@@ -19,6 +19,7 @@ from virtualMachineServer.libvirtInteraction.domainHandler import DomainHandler
 from ccutils.processes.childProcessManager import ChildProcessManager
 from network.interfaces.ipAddresses import get_ip_address 
 from virtualMachineServer.reactor.transfer_t import TRANSFER_T
+from ccutils.dataStructures.multithreadingDictionary import GenericThreadSafeDictionary
 import os
 import multiprocessing
 import sys
@@ -45,6 +46,7 @@ class VMServerReactor(MainServerPacketReactor):
         self.__ftp = FTPClient()
         self.__transferQueue = GenericThreadSafeQueue()
         self.__compressionQueue = GenericThreadSafeQueue()
+        self.__editedImagesData = GenericThreadSafeDictionary()
         self.__mainServerCallback = ClusterServerCallback(self)
         self.__domainHandler = None
         self.__domainTimeout = 0
@@ -90,7 +92,8 @@ class VMServerReactor(MainServerPacketReactor):
         self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
                                                  self.__cManager.getConstant("configFilePath"),
                                                  self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("executionImagePath"),
-                                                 self.__cManager.getConstant("websockifyPath"), self.__cManager.getConstant("passwordLength"))
+                                                 self.__cManager.getConstant("websockifyPath"), self.__cManager.getConstant("passwordLength"),
+                                                 self.__compressionQueue, self.__editedImagesData)
         self.__domainHandler.connectToLibvirt(self.__cManager.getConstant("vncNetworkInterface"), 
                                                   self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
                                                   self.__cManager.getConstant("netMask"), self.__cManager.getConstant("dhcpStartIP"), 
@@ -98,8 +101,8 @@ class VMServerReactor(MainServerPacketReactor):
             
         self.__domainHandler.doInitialCleanup()
         self.__compressionThread = CompressionThread(self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("TransferDirectory"), 
-                                                     self.__compressionQueue,self.__cManager.getConstant("configFilePath"),self.__dbConnector,
-                                                     self.__domainHandler)
+                                                     self.__compressionQueue, self.__transferQueue, self.__cManager.getConstant("configFilePath"), self.__dbConnector,
+                                                     self.__domainHandler, self.__editedImagesData)
         self.__compressionThread.start()
     
     def shutdown(self):

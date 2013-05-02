@@ -12,14 +12,15 @@ from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T as IR
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T
 from time import sleep
 from virtualMachineServer.reactor.transfer_t import TRANSFER_T
+from ccutils.processes.childProcessManager import ChildProcessManager
 
 class FileTransferThread(QueueProcessingThread):
     def __init__(self, networkManager, serverListeningPort, packetHandler,
-                 queue, compressionQueue, imageDirectory, ftpTimeout, ):
-        QueueProcessingThread.__init__(self, "File transfer thread", queue)
+                 transferQueue, compressionQueue, imageDirectory, ftpTimeout, ):
+        QueueProcessingThread.__init__(self, "File transfer thread", transferQueue)
         self.__networkManager = networkManager
         self.__serverListeningPort = serverListeningPort
-        self.__workingDirectory = imageDirectory
+        self.__imageDirectory = imageDirectory
         self.__repositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)
         self.__vmServerPacketHandler = packetHandler
         self.__ftpTimeout = ftpTimeout
@@ -37,11 +38,11 @@ class FileTransferThread(QueueProcessingThread):
                 p = self.__repositoryPacketHandler.createRetrieveRequestPacket(data["SourceImageID"], False)
                 sourceFilePath = None
             else :
-                p = self.__repositoryPacketHandler.createStoreRequestPacket(data["TargetImageID"])
+                p = self.__repositoryPacketHandler.createStoreRequestPacket(int(data["TargetImageID"]))
                 sourceFilePath = data["SourceFilePath"]
                 
             # Nos conectamos al repositorio
-            callback = _FileTransferCallback(self.__repositoryPacketHandler, self.__workingDirectory, data["RepositoryIP"], self.__ftpTimeout,
+            callback = _FileTransferCallback(self.__repositoryPacketHandler, self.__imageDirectory, data["RepositoryIP"], self.__ftpTimeout,
                                              sourceFilePath)
             callback.initTransfer()
             self.__networkManager.connectTo(data["RepositoryIP"], data["RepositoryPort"], 
@@ -72,14 +73,14 @@ class FileTransferThread(QueueProcessingThread):
                     self.__networkManager.sendPacket(data["RepositoryIP"], data["RepositoryPort"], self.__repositoryPacketHandler.createAddImagePacket())
                     while not callback.isTransferCompleted() :
                         sleep(0.1)
-                    data["ImageID"] = callback.getDomainImageID()
+                    data["TargetImageID"] = callback.getDomainImageID()
                     self.__compressionQueue.queue(data)
                 elif (data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE or data["Transfer_Type"] == TRANSFER_T.DEPLOY_IMAGE):
                     # No tocaremos la imagen => nos limitamos a encolar la petición
                     self.__compressionQueue.queue(data)
                 else :
                     # Teníamos que subir la nueva imagen al repositorio => nos cargamos el fichero .zip y terminamos
-                    pass                
+                    ChildProcessManager.runCommandInForeground("rm " + data["SourceFile"])
                 
             # Nos desconectamos del repositorio
             self.__networkManager.closeConnection(data["RepositoryIP"], data["RepositoryPort"])
@@ -100,7 +101,7 @@ class _FileTransferCallback(NetworkCallback):
         self.__repositoryPacketHandler = packetHandler
         self.__operation_completed = False
         self.__errorMessage = None
-        self.__workingDirectory = imageDirectory
+        self.__imageDirectory = imageDirectory
         self.__ftpServerIP = ftpServerIP
         self.__ftpTimeout = ftpTimeout
         self.__imageID = None
@@ -131,7 +132,7 @@ class _FileTransferCallback(NetworkCallback):
             try :
                 ftpClient = FTPClient()
                 ftpClient.connect(self.__ftpServerIP, data['FTPServerPort'], self.__ftpTimeout, data['username'], data['password'])
-                ftpClient.retrieveFile(data['fileName'], self.__workingDirectory, data['serverDirectory']) 
+                ftpClient.retrieveFile(data['fileName'], self.__imageDirectory, data['serverDirectory']) 
                 ftpClient.disconnect()
             except Exception as e:
                 self.__errorMessage = str(e)
@@ -139,7 +140,7 @@ class _FileTransferCallback(NetworkCallback):
             try :
                 ftpClient = FTPClient()
                 ftpClient.connect(self.__ftpServerIP, data['FTPServerPort'], self.__ftpTimeout, data['username'], data['password'])
-                ftpClient.storeFile(self.__sourceFilePath, self.__workingDirectory, data['serverDirectory'])
+                ftpClient.storeFile(self.__sourceFilePath, self.__imageDirectory, data['serverDirectory'])
                 ftpClient.disconnect()
             except Exception as e:
                 self.__errorMessage = str(e)
