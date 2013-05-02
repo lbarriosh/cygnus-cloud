@@ -14,24 +14,46 @@ from ccutils.processes.childProcessManager import ChildProcessManager
 from virtualMachineServer.reactor.transfer_t import TRANSFER_T
 
 class CompressionThread(QueueProcessingThread):
-    def __init__(self, imageDirectory, transferDirectory, compressionQueue, transferQueue, configFilePath, dbConnector, domainHandler, editedImagesData):
+    """
+    Clase del hilo de descompresión y compresión de ficheros
+    """
+    
+    def __init__(self, transferDirectory, workingDirectory, definitionFileDirectory, compressionQueue, transferQueue, dbConnector, domainHandler, imageRepositoryConnectionData):
+        """
+        Inicializa el estado del hilo
+        Argumentos:
+            transferDirectory: el directorio de trabajo del hilo de transferencias
+            workingDirectory: el directorio en el que se almacenan las imágenes de disco
+            definitionFileDirectory: el directorio en el que se almacenan los ficheros de definición de las máquinas
+            compressionQueue: cola que contiene las peticiones de compresión y descompresión
+            transferQueue: cola que contiene las peticiones de transferencia
+            dbConnector: conector con la base de datos
+            domainHandler: objeto que interactúa con libvirt para manipular máquinas virtuales
+            imageRepositoryConnectionData: diccionario con los datos de conexión al repositorio, indexados por el identificador
+            único de la máquina virtual
+        """
         QueueProcessingThread.__init__(self, "File compression thread", compressionQueue)
-        self.__imageDirectory = imageDirectory
+        self.__workingDirectory = workingDirectory
         self.__transferDirectory = transferDirectory
-        self.__definitionFileDirectory = configFilePath
+        self.__definitionFileDirectory = definitionFileDirectory
         self.__dbConnector = dbConnector
         self.__domainHandler = domainHandler
-        self.__editedImagesData = editedImagesData
+        self.__editedImagesData = imageRepositoryConnectionData
         self.__transferQueue = transferQueue
         self.__compressor = ZipBasedCompressor()
 
         
     def processElement(self, data):
-        
-        if(data["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE):
-            
+        """
+        Procesa una petición de compresión o descompresión.
+        Argumentos:
+            data: diccionario con los datos de la petición a procesar
+        Devuelve:
+            Nada
+        """        
+        if(data["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE):            
             # Extraemos el fichero en el directorio que alberga las imágenes
-            imageDirectory = path.join(self.__imageDirectory, str(data["TargetImageID"]))
+            imageDirectory = path.join(self.__workingDirectory, str(data["TargetImageID"]))
             compressedFilePath = path.join(self.__transferDirectory, str(data["SourceImageID"]) + ".zip")
             self.__compressor.extractFile(compressedFilePath, imageDirectory)
             

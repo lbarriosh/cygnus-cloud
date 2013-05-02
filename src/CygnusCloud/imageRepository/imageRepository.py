@@ -26,7 +26,7 @@ class ImageRepository(object):
         Argumentos:
             workingDirectory: el directorio en el que se almacenarán los ficheros
         """
-        self.__imageDirectory = workingDirectory        
+        self.__workingDirectory = workingDirectory        
         self.__slotCounter = MultithreadingCounter()
         self.__retrieveQueue = GenericThreadSafeList()
         self.__storeQueue = GenericThreadSafeList() 
@@ -89,7 +89,7 @@ class ImageRepository(object):
        
             self.__ftpServer.startListenning(networkInterface, ftpListenningPort, maxConnections, maxConnectionsPerIP, 
                                              dataCallback, downloadBandwidthRatio, uploadBandwidthRatio)
-            self.__ftpServer.addUser(self.__ftpUsername, self.__ftpPassword, self.__imageDirectory, "eramw")      
+            self.__ftpServer.addUser(self.__ftpUsername, self.__ftpPassword, self.__workingDirectory, "eramw")      
         except Exception as e:
             print "Error: " + e.message
             self.__finish = True
@@ -167,12 +167,12 @@ class ImageRepository(object):
                     compressedFilePath = imageData["compressedFilePath"]    
                     
                     if (not "undefined" in compressedFilePath) :                                
-                        serverDirectory = path.relpath(path.dirname(compressedFilePath), self.__imageDirectory)
+                        serverDirectory = path.relpath(path.dirname(compressedFilePath), self.__workingDirectory)
                         compressedFileName = path.basename(compressedFilePath)
                     else :
                         serverDirectory = str(imageID)
                         compressedFileName = ""
-                        serverDirectoryPath = path.join(self.__imageDirectory, serverDirectory)
+                        serverDirectoryPath = path.join(self.__workingDirectory, serverDirectory)
                         if (path.exists(serverDirectoryPath)) :
                             # Si el directorio ya existe, puede tener mierda => lo borramos y lo volvemos a crear
                             ChildProcessManager.runCommandInForeground("rm -rf " + serverDirectoryPath, Exception)

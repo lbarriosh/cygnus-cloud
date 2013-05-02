@@ -1,5 +1,7 @@
+# -*- coding: utf8 -*-
 '''
-Created on May 2, 2013
+Tipo enumerado para las cuatro transferencias posibles entre el repositorio de imágenes
+y un servidor de máquinas virtuales
 
 @author: luis
 '''

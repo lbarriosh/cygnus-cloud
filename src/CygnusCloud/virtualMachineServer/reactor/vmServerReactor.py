@@ -100,9 +100,9 @@ class VMServerReactor(MainServerPacketReactor):
                                                   self.__cManager.getConstant("dhcpEndIP"), self.__cManager.getConstant("createVirtualNetworkAsRoot"))
             
         self.__domainHandler.doInitialCleanup()
-        self.__compressionThread = CompressionThread(self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("TransferDirectory"), 
-                                                     self.__compressionQueue, self.__transferQueue, self.__cManager.getConstant("configFilePath"), self.__dbConnector,
-                                                     self.__domainHandler, self.__editedImagesData)
+        self.__compressionThread = CompressionThread(self.__cManager.getConstant("TransferDirectory"), self.__cManager.getConstant("sourceImagePath"),
+                                                     self.__cManager.getConstant("configFilePath"), self.__compressionQueue, self.__transferQueue, 
+                                                     self.__dbConnector, self.__domainHandler, self.__editedImagesData)
         self.__compressionThread.start()
     
     def shutdown(self):
@@ -160,7 +160,13 @@ class VMServerReactor(MainServerPacketReactor):
             self.__processImageEditionPacket(data)
         
     def __processImageEditionPacket(self, data):
-        # Encolar la transferencia
+        """
+        Procesa un paquete de edición de una imagen.
+        Argumentos:
+            data: el paquete a procesar
+        Devuelve:
+            Nada
+        """
         data.pop("packet_type")
         data["Transfer_Type"] = TRANSFER_T.CREATE_IMAGE
         data["FTPTimeout"] = self.__ftpTimeout

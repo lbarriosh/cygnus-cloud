@@ -16,9 +16,28 @@ from os import path, listdir
 from time import sleep
 
 class DomainHandler(object):
+    """
+    Clase del gestor de dominios. Estos objetos interactúan con libvirt para manipular dominios.
+    """
     
     def __init__(self, dbConnector, vncServerIP, networkManager, packetManager, listenningPort, definitionFileDirectory,
-                 sourceImagePath, executionImagePath, websockifyPath, vncPasswordLength, compressionQueue, editedImagesData):
+                 sourceImageDirectory, executionImageDirectory, websockifyPath, vncPasswordLength, compressionQueue, imageRepositoryConnectionData):
+        """
+        Inicializa el estado del gestor de dominios
+        Argumentos:
+            dbConnector: conector con la base de datos del servidor de máquinas virtuales
+            vncServerIP: la dirección IP del servidor VNC
+            networkManager: gestor de red. Se usará para enviar los datos de conexión a los clientes.
+            packetManager: gestor de paquetes. Se usará para enviar los datos de conexión a los clientes.
+            listenningPort: el peurto en el que escucha el servidor de máquinas virtuales
+            definitionFileDirectory: el directorio en el que se encuentran los ficheros de definición de las máquinas
+            sourceImageDirectory: el directorio en el que se almacenan las imágenes de disco de las máquinas virtuales
+            executionImageDirectory: el directorio en el que se almacenan las imágenes temporales de las máquinas virtuales
+            websockifyPath: la ruta del binario websockify
+            vncPasswordLength: la longitud de la contraseña del servidor VNC
+            compressionQueue: la longitud de la cola de compresión
+            imageRepositoryConnectionData: diccionario con los datos de conexión al repositorio
+        """
         self.__dbConnector = dbConnector        
         self.__vncServerIP = vncServerIP
         self.__childProcessManager = ChildProcessManager()        
@@ -26,15 +45,15 @@ class DomainHandler(object):
         self.__packetManager = packetManager
         self.__listenningPort = listenningPort
         self.__definitionFileDirectory = definitionFileDirectory
-        self.__sourceImagePath = sourceImagePath
-        self.__executionImagePath = executionImagePath
+        self.__sourceImagePath = sourceImageDirectory
+        self.__executionImagePath = executionImageDirectory
         self.__websockifyPath = websockifyPath
         self.__vncPasswordLength = vncPasswordLength
         self.__libvirtConnection = None
         self.__virtualNetworkManager = None
         self.__virtualNetworkName = None
         self.__compressionQueue = compressionQueue
-        self.__editedImagesData = editedImagesData
+        self.__editedImagesData = imageRepositoryConnectionData
     
     def connectToLibvirt(self, networkInterface, virtualNetworkName, gatewayIP, netmask, 
                          dhcpStartIP, dhcpEndIP, createVirtualNetworkAsRoot) :
@@ -69,6 +88,14 @@ class DomainHandler(object):
         self.__dbConnector.allocateAssignedMACsUUIDsAndVNCPorts()
         
     def shutdown(self, timeout):
+        """
+        Detiene los dominios activos.
+        Argumentos:
+            timeout: el número de segundos que se esperará antes de destruir todos
+            los dominios.
+        Devuelve:
+            Nada
+        """
         if (self.__libvirtConnection != None) :
             if (timeout == 0) :
                 self.__libvirtConnection.destroyAllDomains()
@@ -81,6 +108,15 @@ class DomainHandler(object):
         self.__childProcessManager.waitForBackgroundChildrenToTerminate()
         
     def createDomain(self, imageID, userID, commandID):
+        """
+        Crea un dominio
+        Argumentos:
+            imageID: el identificador único de la imagen a usar
+            userID: el identificador único del propietario de la nueva máquina virtual
+            commandID: el identificador único del comando de arranque de la nueva máquina virtual
+        Devuelve:
+            Nada
+        """
         configFile = self.__definitionFileDirectory + self.__dbConnector.getDefinitionFilePath(imageID)
         originalName = "{0}_".format(imageID)
         dataImagePath = self.__dbConnector.getDataImagePath(imageID)
@@ -235,7 +271,7 @@ class DomainHandler(object):
         except Exception:
             pass    
         
-        if deleteDiskImages and isBootable:
+        if deleteDiskImages :
             ChildProcessManager.runCommandInForeground("rm " + dataImagePath, VMServerException)
             ChildProcessManager.runCommandInForeground("rm " + osImagePath, VMServerException)
             dataDirectory = path.dirname(dataImagePath)
@@ -244,9 +280,8 @@ class DomainHandler(object):
                 ChildProcessManager.runCommandInForeground("rm -rf " + dataDirectory, VMServerException)
             if (osDirectory != dataDirectory and listdir(osDirectory) == []) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, VMServerException)
-                
             self.__dbConnector.unregisterDomainResources(domainName)    
-        
+                        
         # si no es bootable añadimos el mensaje a la cola de compresion
         # Añadimos el fichero a la cola de compresión/descompresión
         if(not isBootable):
@@ -263,8 +298,13 @@ class DomainHandler(object):
             data["TargetImageID"] = imageID
             self.__compressionQueue.queue(data)
             self.__editedImagesData.pop(commandID)
+            self.__dbConnector.deleteImage(imageID)        
     
     def __waitForDomainsToTerminate(self, timeout):
+        """
+        Espera a que todos los dominios activos terminen o a que transcurran timeout segundos,
+        lo que suceda antes.
+        """
         wait_time = 0
         while (self.__libvirtConnection.getNumberOfDomains() != 0 and wait_time < timeout) :
             sleep(0.5)
