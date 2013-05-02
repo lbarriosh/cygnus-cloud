@@ -227,6 +227,7 @@ class DomainHandler(object):
         websockify_pid = self.__dbConnector.getWebsockifyDaemonPID(domainName)
         imageID = self.__dbConnector.getDomainImageID(domainName)
         isBootable = self.__dbConnector.getBootableFlag(imageID)
+        definitionPath = self.__dbConnector.getDefinitionFilePath(imageID)
         
         try :
             ChildProcessManager.runCommandInForeground("kill -s TERM " + str(websockify_pid))
@@ -243,7 +244,17 @@ class DomainHandler(object):
             if (osDirectory != dataDirectory and listdir(osDirectory) == []) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, VMServerException)
                 
-        self.__dbConnector.unregisterDomainResources(domainName)      
+            self.__dbConnector.unregisterDomainResources(domainName)    
+        
+        # si no es bootable añadimos el mensaje a la cola de compresion
+        # Añadimos el fichero a la cola de compresión/descompresión
+        if(not isBootable):
+            data = dict()
+            data["Retrieve"] = False
+            data["DataPath"] = dataPath
+            data["OSPath"] = osPath
+            data["DefinitionPath"] = definitionPath 
+            self.__compressionQueue.queue(data)
     
     def __waitForDomainsToTerminate(self, timeout):
         wait_time = 0

@@ -18,6 +18,7 @@ from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.domainHandler import DomainHandler
 from ccutils.processes.childProcessManager import ChildProcessManager
 from network.interfaces.ipAddresses import get_ip_address 
+from ccutils.dataStructures.multithreadingDictionary import GenericThreadSafeDictionary
 import os
 import multiprocessing
 import sys
