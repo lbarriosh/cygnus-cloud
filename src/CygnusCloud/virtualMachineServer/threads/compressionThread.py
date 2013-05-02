@@ -13,6 +13,7 @@ from os import listdir
 from os import makedirs
 import shutil
 from ccutils.processes.childProcessManager import ChildProcessManager
+from virtualMachineServer.reactor.transfer_t import TRANSFER_T
 
 class CompressionThread(QueueProcessingThread):
     def __init__(self, imageDirectory, transferDirectory, queue,configFilePath,dbConnector,domainHandler):
@@ -26,7 +27,7 @@ class CompressionThread(QueueProcessingThread):
         
     def processElement(self, data):
         
-        if(data["Retrieve"]):
+        if(data["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE):
             # Extraemos el fichero en el directorio de trabajo
             extractFilePath = path.join(self.__workingDirectory, str(data["SourceImageID"]))
             compressor = ZipBasedCompressor(path.join(self.__transferDirectory, str(data["SourceImageID"]) + ".zip"), "r")
@@ -38,24 +39,23 @@ class CompressionThread(QueueProcessingThread):
             if not path.exists(definitionFilePath):
                 makedirs(definitionFilePath)
         
-            for files in listdir(extractFilePath):
-                ChildProcessManager.runCommandInForegroundAsRoot("chmod 666 " + path.join(extractFilePath,files), Exception)
-                if files.endswith(".xml"):
+            for fileName in listdir(extractFilePath):
+                ChildProcessManager.runCommandInForegroundAsRoot("chmod 666 " + path.join(extractFilePath,fileName), Exception)
+                if fileName.endswith(".xml"):
                     #movemos el fichero al directorio
-                    definitionFile = files
+                    definitionFile = fileName
                     shutil.move(path.join(extractFilePath,definitionFile), definitionFilePath)
 
             #Registramos la máquina virtual
             self.__dbConnector.createImage(data["SourceImageID"],path.join(str(data["SourceImageID"]),"OS.qcow2"),
                                            path.join(str(data["SourceImageID"]),"Data.qcow2"),
-                                           path.join(str(data["SourceImageID"]),definitionFile),False)
+                                           path.join(str(data["SourceImageID"]), definitionFile),False)
 
          
             # Arrancamos la máquina virtual
             self.__domainHandler.createDomain(data["SourceImageID"], data["UserID"], data["CommandID"])
             #TODO:Añadir información del repositorio a el diccionario
-        else:
-        
+        else:        
             #Añadimos los ficheros a un zip
             extractFilePath = path.join(self.__workingDirectory, str(data["SourceImageID"]))
             compressor = ZipBasedCompressor(path.join(self.__transferDirectory, str(data["SourceImageID"]) + ".zip"), "r")

@@ -117,7 +117,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/adrian/Documentos/Certificados")
+    networkManager = NetworkManager("/home/luis/Certificates")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = VMServerPacketHandler(networkManager)

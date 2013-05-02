@@ -242,7 +242,10 @@ class CommandsCallback(NetworkCallback):
         """
         imageID = self.__dbConnector.addImage()
         p = self.__repositoryPacketHandler.createAddedImagePacket(imageID)
-        self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        try :            
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        except Exception :
+            self.__dbConnector.deleteImage(imageID)
      
     def __handleRetrieveRequest(self, data):
         """

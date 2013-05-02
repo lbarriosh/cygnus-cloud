@@ -20,6 +20,3 @@ CREATE TABLE IF NOT EXISTS ActualVM(domainName VARCHAR(30) PRIMARY KEY, ImageID 
 
 CREATE TABLE IF NOT EXISTS ActiveDomainUIDs(domainName VARCHAR(30) PRIMARY KEY, commandID VARCHAR(70) NOT NULL,
 	FOREIGN KEY (domainName) REFERENCES ActualVM(domainName) ON DELETE CASCADE ON UPDATE CASCADE);
-
-INSERT IGNORE INTO VirtualMachine VALUES 
-	(2, 'DebianSqueezeAMD64/SqueezeAMD64.qcow2', 'DebianSqueezeAMD64/Data.qcow2', 'DebianSqueezeAMD64/Squeeze_AMD64.xml', 1);

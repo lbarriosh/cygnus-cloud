@@ -17,7 +17,7 @@ from time import sleep
 class DomainHandler(object):
     
     def __init__(self, dbConnector, vncServerIP, networkManager, packetManager, listenningPort, definitionFileDirectory,
-                 sourceImagePath, executionImagePath, websockifyPath, vncPasswordLength):
+                 sourceImagePath, executionImagePath, websockifyPath, vncPasswordLength, compressionQueue):
         self.__dbConnector = dbConnector        
         self.__vncServerIP = vncServerIP
         self.__childProcessManager = ChildProcessManager()        
@@ -32,6 +32,7 @@ class DomainHandler(object):
         self.__libvirtConnection = None
         self.__virtualNetworkManager = None
         self.__virtualNetworkName = None
+        self.__compressionQueue = compressionQueue
     
     def connectToLibvirt(self, networkInterface, virtualNetworkName, gatewayIP, netmask, 
                          dhcpStartIP, dhcpEndIP, createVirtualNetworkAsRoot) :

@@ -18,10 +18,12 @@ from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.domainHandler import DomainHandler
 from ccutils.processes.childProcessManager import ChildProcessManager
 from network.interfaces.ipAddresses import get_ip_address 
-from ccutils.dataStructures.multithreadingDictionary import GenericThreadSafeDictionary
+from virtualMachineServer.reactor.transfer_t import TRANSFER_T
 import os
 import multiprocessing
 import sys
+
+
 
 class VMServerReactor(MainServerPacketReactor):
     """
@@ -73,6 +75,7 @@ class VMServerReactor(MainServerPacketReactor):
             self.__vncServerIP = get_ip_address(networkInterface)
         except Exception :
             raise Exception("Error: the network interface '{0}' is not ready. Exiting now".format(networkInterface))    
+        self.__ftpTimeout = self.__cManager.getConstant("FTPTimeout")
         self.__listenningPort = listenningPort
         self.__networkManager = NetworkManager(self.__cManager.getConstant("certificatePath"))
         self.__networkManager.startNetworkService()
@@ -156,8 +159,8 @@ class VMServerReactor(MainServerPacketReactor):
     def __processImageEditionPacket(self, data):
         # Encolar la transferencia
         data.pop("packet_type")
-        data["Retrieve"] = True
-        data["FTPTimeout"] = self.__cManager.getConstant("FTPTimeout")
+        data["Transfer_Type"] = TRANSFER_T.CREATE_IMAGE
+        data["FTPTimeout"] = self.__ftpTimeout
         self.__transferQueue.queue(data)
 
     def __sendDomainsVNCConnectionData(self):
