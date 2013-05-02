@@ -96,7 +96,14 @@ De esta manera, a medida que las TIC han ido implantándose en la sociedad,
 
 \begin_layout Standard
 La Universidad Complutense de Madrid (UCM) es la universidad presencial
- española con mayor número de alumnos.
+ española con mayor número de alumnos
+\begin_inset CommandInset citation
+LatexCommand cite
+key "INEMatriculados"
+
+\end_inset
+
+.
  Para que todos ellos puedan realizar sus trabajos académicos, existe un
  gran número de aulas de informática y laboratorios repartidos entre sus
  diversos centros.
@@ -136,6 +143,17 @@ hardware
  del aula y el alojamiento de material docente en la web de la Facultad
  de Informática.
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Esto no va a ser tan así si al final hablamos de usar Raspberry Pi's como
+ puestos de laboratorios
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Section
@@ -160,7 +178,7 @@ Los planes de estudio de la Facultad de Informática de la UCM siempre se
  En el caso de los planes de estudio en extinción, los estudiantes deben
  pasar más de la mitad de su tiempo de estudio ante un ordenador personal.
  Además, esta situación se ha mantenido en el caso de los nuevos planes
- de estudio, implantados en el curso académico 2011/2012.
+ de estudio, implantados en el curso académico 2010/2011.
 \end_layout
 
 \begin_layout Standard
@@ -171,10 +189,10 @@ laboratorios
 \emph default
 .
  Para ello, la Facultad de Informática cuenta con 300 ordenadores personales
- conectados a Internet y repartidos entre 12 laboratorios.
+ conectados a Internet, repartidos entre 12 laboratorios.
  En términos generales, podríamos considerar un laboratorio como un aula
  de informática, si bien algunos disponen de equipamiento específico (como
- FPGAs, osciloscopios, entrenadores, polímetros,\SpecialChar \ldots{}
+ FPGAs, osciloscopios, entrenadores, polímetros, \SpecialChar \ldots{}
 ).
 \end_layout
 
@@ -215,7 +233,7 @@ Es cierto que la informática es fundamental en todos estos estudios, pero
 es muy diferentes.
  Por ejemplo, una asignatura de introducción a la programación en C++ requerirá
  un editor y un compilador, mientras que una asignatura de electrónica requerirá
- osciloscopios, polímetros, resistencias, transistores,\SpecialChar \ldots{}
+ osciloscopios, polímetros, resistencias, transistores, \SpecialChar \ldots{}
  junto con 
 \emph on
 software
@@ -747,8 +765,8 @@ software
 
 \begin_layout Standard
 Para cuantificar el sobrecoste de los equipos, consideraremos tres asignaturas
- típicas: una asignatura de programación, una asignatura optativa relacionada
- con la informática gráfica y una asignatura de diseño de circuitos.
+ típicas: una asignatura de programación, una asignatura relacionada con
+ la informática gráfica y una asignatura de diseño de circuitos.
  Actualmente, estos tipos de asignatura se imparten en los laboratorios
  de la Facultad de Informática.
 \end_layout
@@ -889,7 +907,7 @@ hardware
  de un PC, mayor es su consumo energético.
  De esta manera, cuando se imparte la asignatura de programación la CPU
  y la tarjeta gráfica del Equipo 2 consumen más energía de la requerida.
- Análogamente, cuando se imparte la asignatura de diseño de circuitos, será
+ Análogamente, cuando se imparte la asignatura de informática gráfica, será
  la tarjeta gráfica la que eleve el consumo innecesariamente.
 \end_layout
 
@@ -941,7 +959,7 @@ Professional
 \begin_deeper
 \begin_layout Standard
 De esta manera, en el caso mejor, en el que todos los equipos incorporan
- la versión más barata 
+ la versión más barata, 
 \emph on
 Home Premium
 \emph default
@@ -1115,8 +1133,8 @@ software
 Pero el problema no acaba aquí: si un profesor detecta un error en la configurac
 ión de los puestos tras la semana de pruebas, también será necesario iniciar
  otro lento proceso burocrático para algo tan sumamente simple como volver
- a ejecutar algunos intaladores en la máquina de prototipado, volver a generar
- la imagen de disco y clonarla.
+ a ejecutar algunos instaladores en la máquina de prototipado, volver a
+ generar la imagen de disco y clonarla.
 \end_layout
 
 \begin_layout Standard

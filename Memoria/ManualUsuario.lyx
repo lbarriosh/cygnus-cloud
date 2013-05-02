@@ -3,9 +3,6 @@
 \begin_document
 \begin_header
 \textclass memoir
-\begin_preamble
- \DisemulatePackage{moreverb}
-\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language spanish
@@ -651,7 +648,7 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -1029,7 +1026,7 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -1340,7 +1337,7 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -1469,7 +1466,7 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -1703,7 +1700,7 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -1870,7 +1867,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Pantalla inicial.png
+	filename graficos/Manual usuario/virt-manager/Pantalla inicial.png
 	scale 60
 
 \end_inset
@@ -1935,7 +1932,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Botón crear máquina.png
+	filename graficos/Manual usuario/virt-manager/Botón crear máquina.png
 	scale 60
 
 \end_inset
@@ -2052,14 +2049,14 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Asistente-1.png
+	filename graficos/Manual usuario/virt-manager/Asistente-1.png
 	scale 60
 
 \end_inset
 
 
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Asistente-2.png
+	filename graficos/Manual usuario/virt-manager/Asistente-2.png
 	scale 60
 
 \end_inset
@@ -2100,14 +2097,14 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Asistente-3.png
+	filename graficos/Manual usuario/virt-manager/Asistente-3.png
 	scale 60
 
 \end_inset
 
 
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Asistente-4.png
+	filename graficos/Manual usuario/virt-manager/Asistente-4.png
 	scale 60
 
 \end_inset
@@ -2148,7 +2145,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Asistente-5.png
+	filename graficos/Manual usuario/virt-manager/Asistente-5.png
 	scale 60
 
 \end_inset
@@ -2243,7 +2240,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Configuración máquina virtual.png
+	filename graficos/Manual usuario/virt-manager/Configuración máquina virtual.png
 	scale 60
 
 \end_inset
@@ -2342,9 +2339,8 @@ status collapsed
 \begin_layout Plain Layout
 \noindent
 \align center
-.
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Configuración CPU.png
+	filename graficos/Manual usuario/virt-manager/Configuración CPU.png
 	scale 60
 
 \end_inset
@@ -2385,7 +2381,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Imágenes disco.png
+	filename graficos/Manual usuario/virt-manager/Imágenes disco.png
 	scale 60
 
 \end_inset
@@ -2487,7 +2483,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Configuración tarjeta vídeo.png
+	filename graficos/Manual usuario/virt-manager/Configuración tarjeta vídeo.png
 	scale 60
 
 \end_inset
@@ -2598,7 +2594,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Configuración tableta.png
+	filename graficos/Manual usuario/virt-manager/Configuración tableta.png
 	scale 60
 
 \end_inset
@@ -2778,7 +2774,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Drivers VirtIO.png
+	filename graficos/Manual usuario/virt-manager/Drivers VirtIO.png
 	scale 60
 
 \end_inset
@@ -2819,7 +2815,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/virt-manager/Corrección bug arranque virt-manager.png
+	filename graficos/Manual usuario/virt-manager/Corrección bug arranque virt-manager.png
 	scale 60
 
 \end_inset
@@ -2944,7 +2940,7 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -3139,7 +3135,7 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -3332,68 +3328,56 @@ has_inner_box 1
 inner_pos "t"
 use_parbox 0
 use_makebox 0
-width "40col%"
+width "50col%"
 special "none"
 height "1in"
 height_special "totalheight"
 status open
 
 \begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{verbatimtab}[4]
-\end_layout
-
-\begin_layout Plain Layout
-
 [nombre-del-recurso]         
 \end_layout
 
 \begin_layout Plain Layout
-
-	comment = <comentario>         
-\end_layout
-
-\begin_layout Plain Layout
-
-	read only = yes | no         
-\end_layout
-
-\begin_layout Plain Layout
-
-	guest ok = yes | no  
-\end_layout
-
-\begin_layout Plain Layout
-
-	browsable = yes         
-\end_layout
-
-\begin_layout Plain Layout
-
-	force user = <nuestro usuario>        
-\end_layout
-
-\begin_layout Plain Layout
-
-	path = <ruta de la carpeta compartida> 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{verbatimtab}
-\end_layout
-
+\begin_inset space \quad{}
 \end_inset
 
+comment = <comentario>         
+\end_layout
 
+\begin_layout Plain Layout
+\begin_inset space \quad{}
+\end_inset
+
+read only = yes | no         
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space \quad{}
+\end_inset
+
+guest ok = yes | no  
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space \quad{}
+\end_inset
+
+browsable = yes         
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space \quad{}
+\end_inset
+
+force user = <nuestro usuario>        
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space \quad{}
+\end_inset
+
+path = <ruta de la carpeta compartida> 
 \end_layout
 
 \end_inset
@@ -3815,7 +3799,7 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -3956,7 +3940,7 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -4093,13 +4077,13 @@ que nos permite modificar el fichero de código correspondiente.
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/webServer/Web2pyAdmin1.png
+	filename graficos/Manual usuario/webServer/Web2pyAdmin1.png
 	scale 50
 	rotateOrigin center
 
@@ -4228,13 +4212,13 @@ Salir
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/webServer/PaginaInicioCygnusCloud.png
+	filename graficos/Manual usuario/webServer/PaginaInicioCygnusCloud.png
 	scale 50
 	rotateOrigin center
 
@@ -4275,13 +4259,13 @@ name "fig:Página-de-inicio-CygnusCloud"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/webServer/ArranqueMaquinasWeb.png
+	filename graficos/Manual usuario/webServer/ArranqueMaquinasWeb.png
 	scale 50
 	rotateOrigin center
 
@@ -4318,13 +4302,13 @@ name "fig:Página-de-arranque-Web"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename /home/luis/Downloads/Manual usuario/graficos/Manual usuario/webServer/MáquinaArrancada.png
+	filename graficos/Manual usuario/webServer/MáquinaArrancada.png
 	scale 50
 	rotateOrigin center
 
