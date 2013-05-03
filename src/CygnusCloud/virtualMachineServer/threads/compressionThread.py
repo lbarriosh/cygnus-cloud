@@ -79,12 +79,12 @@ class CompressionThread(QueueProcessingThread):
             self.__dbConnector.createImage(data["TargetImageID"], path.join(str(data["TargetImageID"]), "OS.qcow2"),
                                            path.join(str(data["TargetImageID"]), "Data.qcow2"),
                                            path.join(str(data["TargetImageID"]), definitionFile), False)
-         
-            # Arrancamos la máquina virtual
-            self.__domainHandler.createDomain(data["TargetImageID"], data["UserID"], data["CommandID"])
             
             # Guardamos los datos de conexión al repositorio            
             self.__editedImagesData[data["CommandID"]] = {"RepositoryIP": data["RepositoryIP"], "RepositoryPort" : data["RepositoryPort"]}
+         
+            # Arrancamos la máquina virtual
+            self.__domainHandler.createDomain(data["TargetImageID"], data["UserID"], data["CommandID"])            
         else:        
             # Comprimimos los ficheros
             
@@ -93,7 +93,7 @@ class CompressionThread(QueueProcessingThread):
             self.__compressor.createCompressedFile(zipFilePath, [data["OSImagePath"], data["DataImagePath"], data["DefinitionFilePath"]])
             
             # Borramos los ficheros fuente
-            ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(data["DefinitionFilePath"]), Exception)
+            ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(path.join(self.__definitionFileDirectory, data["DefinitionFilePath"])), Exception)
             ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(data["OSImagePath"]), Exception)
             
             # Encolamos la petición

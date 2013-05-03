@@ -117,7 +117,7 @@ class DomainHandler(object):
         Devuelve:
             Nada
         """
-        configFile = self.__definitionFileDirectory + self.__dbConnector.getDefinitionFilePath(imageID)
+        definitionFile = self.__definitionFileDirectory + self.__dbConnector.getDefinitionFilePath(imageID)
         originalName = "{0}_".format(imageID)
         dataImagePath = self.__dbConnector.getDataImagePath(imageID)
         osImagePath = self.__dbConnector.getOSImagePath(imageID)
@@ -168,7 +168,7 @@ class DomainHandler(object):
             newOSDisk = path.join(self.__sourceImagePath, osImagePath)            
         
         # Genero el fichero de definición
-        xmlFile = ConfigurationFileEditor(configFile)
+        xmlFile = ConfigurationFileEditor(definitionFile)
         xmlFile.setDomainIdentifiers(newName, newUUID)
         xmlFile.setImagePaths(newOSDisk, newDataDisk)            
         xmlFile.setVirtualNetworkConfiguration(self.__virtualNetworkName, newMAC)
@@ -265,13 +265,16 @@ class DomainHandler(object):
         websockify_pid = self.__dbConnector.getWebsockifyDaemonPID(domainName)
         imageID = self.__dbConnector.getDomainImageID(domainName)
         isBootable = self.__dbConnector.getBootableFlag(imageID)        
+        commandID = self.__dbConnector.getVMBootCommand(domainName)
         
         try :
             ChildProcessManager.runCommandInForeground("kill -s TERM " + str(websockify_pid))
         except Exception:
             pass    
         
-        if deleteDiskImages :
+        self.__dbConnector.unregisterDomainResources(domainName)     
+        
+        if isBootable :
             ChildProcessManager.runCommandInForeground("rm " + dataImagePath, VMServerException)
             ChildProcessManager.runCommandInForeground("rm " + osImagePath, VMServerException)
             dataDirectory = path.dirname(dataImagePath)
@@ -279,14 +282,10 @@ class DomainHandler(object):
             if (listdir(dataDirectory) == []) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + dataDirectory, VMServerException)
             if (osDirectory != dataDirectory and listdir(osDirectory) == []) :
-                ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, VMServerException)
-            self.__dbConnector.unregisterDomainResources(domainName)    
-                        
-        # si no es bootable añadimos el mensaje a la cola de compresion
-        # Añadimos el fichero a la cola de compresión/descompresión
-        if(not isBootable):
-            data = dict()
-            commandID = self.__dbConnector.getVMBootCommand(domainName)
+                ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, VMServerException)            
+                    
+        else :
+            data = dict()            
             connectionData = self.__editedImagesData[commandID]
             data["Transfer_Type"] = TRANSFER_T.STORE_IMAGE
             data["DataImagePath"] = dataImagePath
@@ -298,7 +297,7 @@ class DomainHandler(object):
             data["TargetImageID"] = imageID
             self.__compressionQueue.queue(data)
             self.__editedImagesData.pop(commandID)
-            self.__dbConnector.deleteImage(imageID)        
+            self.__dbConnector.deleteImage(imageID)              
     
     def __waitForDomainsToTerminate(self, timeout):
         """

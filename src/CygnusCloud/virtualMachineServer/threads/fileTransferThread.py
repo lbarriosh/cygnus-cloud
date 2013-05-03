@@ -13,6 +13,7 @@ from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T
 from time import sleep
 from virtualMachineServer.reactor.transfer_t import TRANSFER_T
 from ccutils.processes.childProcessManager import ChildProcessManager
+from os import path
 
 class FileTransferThread(QueueProcessingThread):
     """
@@ -102,7 +103,7 @@ class FileTransferThread(QueueProcessingThread):
                     self.__compressionQueue.queue(data)
                 else :
                     # Teníamos que subir la nueva imagen al repositorio => nos cargamos el fichero .zip y terminamos
-                    ChildProcessManager.runCommandInForeground("rm " + data["SourceFile"])
+                    ChildProcessManager.runCommandInForeground("rm " + path.join(self.__workingDirectory, data["SourceFilePath"]), Exception)
                 
             # Nos desconectamos del repositorio
             self.__networkManager.closeConnection(data["RepositoryIP"], data["RepositoryPort"])
