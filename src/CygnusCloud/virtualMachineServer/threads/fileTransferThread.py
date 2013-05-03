@@ -55,7 +55,7 @@ class FileTransferThread(QueueProcessingThread):
             # Generamos toda la información que necesitamos para iniciar la transferencia
             
             if (data["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :
-                p = self.__repositoryPacketHandler.createRetrieveRequestPacket(data["SourceImageID"], data["Modify"])
+                p = self.__repositoryPacketHandler.createRetrieveRequestPacket(data["SourceImageID"], data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE)
                 sourceFilePath = None
             elif (data["Transfer_Type"] == TRANSFER_T.DEPLOY_IMAGE):
                 p = self.__repositoryPacketHandler.createRetrieveRequestPacket(data["SourceImageID"], False)
@@ -100,6 +100,7 @@ class FileTransferThread(QueueProcessingThread):
                     self.__compressionQueue.queue(data)
                 elif (data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE or data["Transfer_Type"] == TRANSFER_T.DEPLOY_IMAGE):
                     # No tocaremos la imagen => nos limitamos a encolar la petición
+                    data["TargetImageID"] = data["SourceImageID"]
                     self.__compressionQueue.queue(data)
                 else :
                     # Teníamos que subir la nueva imagen al repositorio => nos cargamos el fichero .zip y terminamos

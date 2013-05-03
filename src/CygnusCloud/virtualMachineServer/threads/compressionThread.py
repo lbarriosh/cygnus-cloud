@@ -51,7 +51,11 @@ class CompressionThread(QueueProcessingThread):
         Devuelve:
             Nada
         """        
-        if(data["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE):            
+        if(data["Transfer_Type"] != TRANSFER_T.STORE_IMAGE):            
+            if (data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :
+                # Borramos la imagen de la base de datos (si existe)
+                self.__dbConnector.deleteImage(data["SourceImageID"])
+                
             # Extraemos el fichero en el directorio que alberga las imágenes
             imageDirectory = path.join(self.__workingDirectory, str(data["TargetImageID"]))
             compressedFilePath = path.join(self.__transferDirectory, str(data["SourceImageID"]) + ".zip")

@@ -168,7 +168,11 @@ class VMServerReactor(MainServerPacketReactor):
             Nada
         """
         data.pop("packet_type")
-        data["Transfer_Type"] = TRANSFER_T.CREATE_IMAGE
+        if (data["Modify"]) :
+            data["Transfer_Type"] = TRANSFER_T.EDIT_IMAGE
+        else :
+            data["Transfer_Type"] = TRANSFER_T.CREATE_IMAGE
+        data.pop("Modify")
         data["FTPTimeout"] = self.__ftpTimeout
         self.__transferQueue.queue(data)
 
