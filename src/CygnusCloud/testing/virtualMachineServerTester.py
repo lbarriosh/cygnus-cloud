@@ -89,6 +89,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         elif (command == "editImage") :
             p = pHandler.createImageEditionPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), tokens.pop(0) == "True", "1", 1)
             networkManager.sendPacket(ip_address, port, p)
+        elif (command == "deployImage"):
+            p = pHandler.createImageDeployPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), "1")
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True
         else :
@@ -100,6 +103,8 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             print("\tdestroyvm <machineID>: destroys an active virtual machine")
             print("\tshutdown: asks the virtual machine server to terminate")
             print("\tstatus: asks the virtual machine server the number of active VMs")
+            print("\teditImage <ImageRepositoryIP> <ImageRepositoryPort> <ImageID> <Modify>: creates or edits an image in the virtual machine server")
+            print("\tdeployImage <ImageRepositoryIP> <ImageRepositoryPort> <ImageID>: deploys an existing image in the virtual machine server")
             print("\thalt: commands the virtual machine server to destroy all the virtual machines\n\t\t\
                 and exit immediately")
             print("\thelp: prints the following help message")

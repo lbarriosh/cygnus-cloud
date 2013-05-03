@@ -318,3 +318,6 @@ class DomainHandler(object):
             Un string con la contraseña generada
         """
         return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(self.__vncPasswordLength), VMServerException)
+    
+    def getLibvirtStatusInfo(self):
+        return self.__libvirtConnection.getStatusInfo()

@@ -82,19 +82,21 @@ class CompressionThread(QueueProcessingThread):
             # Registramos la máquina virtual
             self.__dbConnector.createImage(data["TargetImageID"], path.join(str(data["TargetImageID"]), "OS.qcow2"),
                                            path.join(str(data["TargetImageID"]), "Data.qcow2"),
-                                           path.join(str(data["TargetImageID"]), definitionFile), False)
+                                           path.join(str(data["TargetImageID"]), definitionFile), data["Transfer_Type"] == TRANSFER_T.DEPLOY_IMAGE)
             
-            # Guardamos los datos de conexión al repositorio            
-            self.__editedImagesData[data["CommandID"]] = {"RepositoryIP": data["RepositoryIP"], "RepositoryPort" : data["RepositoryPort"]}
-         
-            # Arrancamos la máquina virtual
-            self.__domainHandler.createDomain(data["TargetImageID"], data["UserID"], data["CommandID"])            
+            if (data["Transfer_Type"] != TRANSFER_T.DEPLOY_IMAGE):                
+                # Guardamos los datos de conexión al repositorio            
+                self.__editedImagesData[data["CommandID"]] = {"RepositoryIP": data["RepositoryIP"], "RepositoryPort" : data["RepositoryPort"]}
+             
+                # Arrancamos la máquina virtual
+                self.__domainHandler.createDomain(data["TargetImageID"], data["UserID"], data["CommandID"])            
         else:        
             # Comprimimos los ficheros
             
             zipFilePath = path.join(self.__transferDirectory, str(data["TargetImageID"]) + ".zip")
             
-            self.__compressor.createCompressedFile(zipFilePath, [data["OSImagePath"], data["DataImagePath"], data["DefinitionFilePath"]])
+            self.__compressor.createCompressedFile(zipFilePath, [data["OSImagePath"], 
+                    data["DataImagePath"], path.join(self.__definitionFileDirectory, data["DefinitionFilePath"])])
             
             # Borramos los ficheros fuente
             ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(path.join(self.__definitionFileDirectory, data["DefinitionFilePath"])), Exception)

@@ -158,6 +158,21 @@ class VMServerReactor(MainServerPacketReactor):
             self.__sendActiveDomainUIDs()
         elif (data['packet_type'] == VM_SERVER_PACKET_T.IMAGE_EDITION) :
             self.__processImageEditionPacket(data)
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.DEPLOY_IMAGE) :
+            self.__processDeployImagePacket(data)
+            
+    def __processDeployImagePacket(self, data):
+        """
+        Procesa un paquete de despliegue de una imagen
+        Argumentos:
+            data: el paquete a procesar
+        Devuelve:
+            Nada
+        """
+        data.pop("packet_type")
+        data["FTPTimeout"] = self.__ftpTimeout
+        data["Transfer_Type"] = TRANSFER_T.DEPLOY_IMAGE
+        self.__transferQueue.queue(data)
         
     def __processImageEditionPacket(self, data):
         """
@@ -220,7 +235,7 @@ class VMServerReactor(MainServerPacketReactor):
         Devuelve:
             Nada
         """
-        info = self.__libvirtConnection.getStatusInfo()
+        info = self.__domainHandler.getLibvirtStatusInfo()
         realCPUNumber = multiprocessing.cpu_count()
         diskStats_storage = os.statvfs(self.__cManager.getConstant("sourceImagePath"))
         diskStats_temporaryData = os.statvfs(self.__cManager.getConstant("executionImagePath"))
