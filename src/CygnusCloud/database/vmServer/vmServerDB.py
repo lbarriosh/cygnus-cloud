@@ -1,5 +1,6 @@
 # -*- coding: UTF8 -*-
 from database.utils.connector import BasicDatabaseConnector
+from virtualMachineServer.reactor.transfer_t import TRANSFER_T 
 
 class VMServerDBConnector(BasicDatabaseConnector):
     '''
@@ -367,8 +368,97 @@ class VMServerDBConnector(BasicDatabaseConnector):
             return ac
         
     def allocateAssignedMACsUUIDsAndVNCPorts(self):
+        """
+        Marca como utilizadas las MACs y los UUIDs de las máquinas virtuales activas
+        en el arranque del servidor.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
         assignedMACs, assignedVNCPorts = self.__getAssignedResources()
         for macAddress in assignedMACs :
             self.__allocateMACAddressAndUUID(macAddress)
         for port in assignedVNCPorts :
             self.__allocatePort(port)
+        
+    def addToTransferQueue(self, data):
+        """
+        Añade una petición a la cola de transferencias
+        Argumentos:
+            data: un diccionario con los datos de la petición a añadir
+        Devuelve:
+            Nada
+        """
+        serialized_data = ""
+        serialized_data += str(data["Transfer_Type"]) + "$"
+        serialized_data += str(data["FTPTimeout"]) + "$"
+        serialized_data += str(data["SourceImageID"]) + "$"
+        serialized_data += str(data["TargetImageID"]) + "$"
+        serialized_data += data["RepositoryIP"] + "$"
+        serialized_data += str(data["RepositoryPort"]) + "$"
+        serialized_data += data["CommandID"] + "$"
+        if (data["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
+            serialized_data += data["SourceFilePath"] + "$"
+        
+        insert = "INSERT INTO TransferQueue(data) VALUES ('{0}');".format(serialized_data)
+        self._executeUpdate(insert)  
+
+    def peekFromTransferQueue(self):
+        """
+        Lee el primero elemento (sin eliminarlo) de la cola de transferencias.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Un diccionario con los datos de la transferencia leída. Si la cola está vacía, devuelve
+            None
+        """
+        query = "SELECT MIN(position) FROM TransferQueue;"
+        first_element_ID = self._executeQuery(query, True)
+        if (first_element_ID == None) :
+            return None
+        else :
+            first_element_ID = first_element_ID[0]
+        query = "SELECT data FROM TransferQueue WHERE position = {0};".format(first_element_ID)
+        serialized_data = self._executeQuery(query, True)[0]
+        tokens = serialized_data.split("$")
+        result = dict()
+        result["Transfer_Type"] = int(tokens[0])
+        result["FTPTimeout"] = int(tokens[1])
+        result["SourceImageID"] = int(tokens[2])
+        result["TargetImageID"] = int(tokens[3])
+        result["RepositoryIP"] = tokens[4]
+        result["RepositoryPort"] = int(tokens[5])
+        result["CommandID"] = tokens[6]
+        if (result["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
+            result["SourceFilePath"] = tokens[7]            
+        return result
+        
+    def removeFirstElementFromTransferQueue(self):
+        """
+        Elimina la cabecera de la cola de transferencias.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
+        query = "SELECT MIN(position) FROM TransferQueue;"
+        first_element_ID = self._executeQuery(query, True)
+        if (first_element_ID == None) :
+            return
+        else :
+            first_element_ID = first_element_ID[0]
+        update = "DELETE FROM TransferQueue WHERE position = {0};".format(first_element_ID)
+        self._executeUpdate(update)
+        
+    def isTransferQueueEmpty(self):
+        """
+        Indica si la cola de transferencias está vacía o no
+        Argumentos:
+            Ninguno
+        Devuelve:
+            True si la cola de transferencias está vacía, y False en otro caso
+        """
+        query = "SELECT * FROM TransferQueue;"
+        result = self._executeQuery(query, True)
+        return result == None
