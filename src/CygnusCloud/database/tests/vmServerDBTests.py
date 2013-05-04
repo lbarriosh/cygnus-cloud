@@ -169,7 +169,6 @@ class DBWebServerTests(unittest.TestCase):
         expectedResult = dict()
         expectedResult["Transfer_Type"] = TRANSFER_T.STORE_IMAGE
         expectedResult["FTPTimeout"] = 100
-        expectedResult["SourceImageID"] = 1
         expectedResult["TargetImageID"] = 2
         expectedResult["RepositoryIP"] = "192.168.0.1"
         expectedResult["RepositoryPort"] = 3000
@@ -178,22 +177,45 @@ class DBWebServerTests(unittest.TestCase):
         self.__dbConnector.addToTransferQueue(expectedResult)
         result = self.__dbConnector.peekFromTransferQueue()
         self.assertEquals(result, expectedResult, "addToTransferQueue() error")
-        
-    def test_popFromTransferQueue(self):
-        data = dict()
-        data["Transfer_Type"] = TRANSFER_T.STORE_IMAGE
-        data["FTPTimeout"] = 100
-        data["SourceImageID"] = 1
-        data["TargetImageID"] = 2
-        data["RepositoryIP"] = "192.168.0.1"
-        data["RepositoryPort"] = 3000
-        data["CommandID"] = "1"
-        data["SourceFilePath"] ="/tmp/foo.zip"
-        self.__dbConnector.addToTransferQueue(data)
         self.__dbConnector.removeFirstElementFromTransferQueue()
-        result = self.__dbConnector.isTransferQueueEmpty()
-        expectedResult = True
-        self.assertEquals(result, expectedResult, "popFromTransferQueue() error")
+        expectedResult = dict()
+        expectedResult["Transfer_Type"] = TRANSFER_T.EDIT_IMAGE
+        expectedResult["FTPTimeout"] = 100
+        expectedResult["SourceImageID"] = 2
+        expectedResult["TargetImageID"] = 2
+        expectedResult["RepositoryIP"] = "192.168.0.1"
+        expectedResult["RepositoryPort"] = 3000
+        expectedResult["CommandID"] = "1"
+        expectedResult["UserID"] = 1
+        self.__dbConnector.addToTransferQueue(expectedResult)
+        result = self.__dbConnector.peekFromTransferQueue()
+        self.assertEquals(result, expectedResult, "addToTransferQueue() error")
+        
+    def test_addToCompressionQueue(self):
+        expectedResult = dict()
+        expectedResult["Transfer_Type"] = TRANSFER_T.STORE_IMAGE
+        expectedResult["CommandID"] = "1"
+        expectedResult["TargetImageID"] = 1
+        expectedResult["OSImagePath"] = "os.qcow"
+        expectedResult["DataImagePath"] = "data.qcow2"
+        expectedResult["DefinitionFilePath"] = "definition.xml"
+        expectedResult["RepositoryIP"] = "192.198.0.2"
+        expectedResult["RepositoryPort"] = 3000
+        self.__dbConnector.addToCompressionQueue(expectedResult)
+        result = self.__dbConnector.peekFromCompressionQueue()
+        self.assertEquals(result, expectedResult, "addToCompressionQueue() error")
+        self.__dbConnector.removeFirstElementFromCompressionQueue()
+        expectedResult = dict()
+        expectedResult["Transfer_Type"] = TRANSFER_T.EDIT_IMAGE
+        expectedResult["CommandID"] = "1"
+        expectedResult["TargetImageID"] = 1
+        expectedResult["SourceImageID"] = 2
+        expectedResult["UserID"] = 3
+        self.__dbConnector.addToCompressionQueue(expectedResult)
+        result = self.__dbConnector.peekFromCompressionQueue()
+        self.assertEquals(result, expectedResult, "addToCompressionQueue() error")
+        
+        
         
 if __name__ == "__main__":
     unittest.main()

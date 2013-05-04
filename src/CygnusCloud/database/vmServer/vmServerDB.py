@@ -393,13 +393,15 @@ class VMServerDBConnector(BasicDatabaseConnector):
         serialized_data = ""
         serialized_data += str(data["Transfer_Type"]) + "$"
         serialized_data += str(data["FTPTimeout"]) + "$"
-        serialized_data += str(data["SourceImageID"]) + "$"
         serialized_data += str(data["TargetImageID"]) + "$"
         serialized_data += data["RepositoryIP"] + "$"
         serialized_data += str(data["RepositoryPort"]) + "$"
         serialized_data += data["CommandID"] + "$"
         if (data["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
-            serialized_data += data["SourceFilePath"] + "$"
+            serialized_data += data["SourceFilePath"]
+        elif (data["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :            
+            serialized_data += str(data["SourceImageID"]) + "$"
+            serialized_data += str(data["UserID"])
         
         insert = "INSERT INTO TransferQueue(data) VALUES ('{0}');".format(serialized_data)
         self._executeUpdate(insert)  
@@ -425,13 +427,15 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = dict()
         result["Transfer_Type"] = int(tokens[0])
         result["FTPTimeout"] = int(tokens[1])
-        result["SourceImageID"] = int(tokens[2])
-        result["TargetImageID"] = int(tokens[3])
-        result["RepositoryIP"] = tokens[4]
-        result["RepositoryPort"] = int(tokens[5])
-        result["CommandID"] = tokens[6]
+        result["TargetImageID"] = int(tokens[2])
+        result["RepositoryIP"] = tokens[3]
+        result["RepositoryPort"] = int(tokens[4])
+        result["CommandID"] = tokens[5]
         if (result["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
-            result["SourceFilePath"] = tokens[7]            
+            result["SourceFilePath"] = tokens[6]            
+        elif (result["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or result["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :  
+            result["SourceImageID"] = int(tokens[6])
+            result["UserID"] = int(tokens[7])
         return result
         
     def removeFirstElementFromTransferQueue(self):
@@ -460,5 +464,78 @@ class VMServerDBConnector(BasicDatabaseConnector):
             True si la cola de transferencias está vacía, y False en otro caso
         """
         query = "SELECT * FROM TransferQueue;"
+        result = self._executeQuery(query, True)
+        return result == None
+    
+    def addToCompressionQueue(self, data):
+        serialized_data = ""
+        serialized_data += str(data["Transfer_Type"]) + "$"
+        serialized_data += data["CommandID"] + "$"
+        serialized_data += str(data["TargetImageID"]) + "$"
+        if (data["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
+            serialized_data += data["OSImagePath"] + "$"
+            serialized_data += data["DataImagePath"] + "$"
+            serialized_data += data["DefinitionFilePath"] + "$"
+            serialized_data += data["RepositoryIP"] + "$"
+            serialized_data += str(data["RepositoryPort"])
+        else :
+            serialized_data += str(data["SourceImageID"]) + "$"
+            serialized_data += str(data["UserID"])
+            
+        insert = "INSERT INTO CompressionQueue(data) VALUES ('{0}');".format(serialized_data)
+        self._executeUpdate(insert)  
+            
+    def peekFromCompressionQueue(self):
+        query = "SELECT MIN(position) FROM CompressionQueue;"
+        first_element_ID = self._executeQuery(query, True)
+        if (first_element_ID == None) :
+            return None
+        else :
+            first_element_ID = first_element_ID[0]
+        query = "SELECT data FROM CompressionQueue WHERE position = {0};".format(first_element_ID)
+        serialized_data = self._executeQuery(query, True)[0]
+        tokens = serialized_data.split("$")
+        result = dict()
+        result["Transfer_Type"] = int(tokens[0])
+        result["CommandID"] = tokens[1]
+        result["TargetImageID"] = int(tokens[2])
+        if (result["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
+            result["OSImagePath"] = tokens[3]
+            result["DataImagePath"] = tokens[4]
+            result["DefinitionFilePath"] = tokens[5]
+            result["RepositoryIP"] = tokens[6]
+            result["RepositoryPort"] = int(tokens[7])
+        else:
+            result["SourceImageID"] = int(tokens[3])
+            result["UserID"] = int(tokens[4])
+            
+        return result
+            
+    def removeFirstElementFromCompressionQueue(self):
+        """
+        Elimina la cabecera de la cola de transferencias.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
+        """
+        query = "SELECT MIN(position) FROM CompressionQueue;"
+        first_element_ID = self._executeQuery(query, True)
+        if (first_element_ID == None) :
+            return
+        else :
+            first_element_ID = first_element_ID[0]
+        update = "DELETE FROM CompressionQueue WHERE position = {0};".format(first_element_ID)
+        self._executeUpdate(update)
+        
+    def isCompressionQueueEmpty(self):
+        """
+        Indica si la cola de transferencias está vacía o no
+        Argumentos:
+            Ninguno
+        Devuelve:
+            True si la cola de transferencias está vacía, y False en otro caso
+        """
+        query = "SELECT * FROM CompressionQueue;"
         result = self._executeQuery(query, True)
         return result == None
