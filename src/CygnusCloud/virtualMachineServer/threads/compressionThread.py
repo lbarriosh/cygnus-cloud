@@ -40,13 +40,15 @@ class CompressionThread(BasicThread):
         
     def run(self):
         while not self.finish() :
-            if (self.__dbConnector.isCompressionQueueEmpty()):
-                sleep(0.1)
+            data = self.__dbConnector.peekFromCompressionQueue()
+            if (data == None):
+                sleep(0.5)
             else:
-                self.__processElement()
+                self.__processElement(data)
+                self.__dbConnector.removeFirstElementFromCompressionQueue()
 
         
-    def __processElement(self):
+    def __processElement(self, data):
         """
         Procesa una petición de compresión o descompresión.
         Argumentos:
@@ -54,7 +56,7 @@ class CompressionThread(BasicThread):
         Devuelve:
             Nada
         """        
-        data = self.__dbConnector.peekFromCompressionQueue()
+        
         if(data["Transfer_Type"] != TRANSFER_T.STORE_IMAGE):            
             if (data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :
                 # Borramos la imagen de la base de datos (si existe)
@@ -63,10 +65,7 @@ class CompressionThread(BasicThread):
             # Extraemos el fichero en el directorio que alberga las imágenes
             imageDirectory = path.join(self.__workingDirectory, str(data["TargetImageID"]))
             compressedFilePath = path.join(self.__transferDirectory, str(data["SourceImageID"]) + ".zip")
-            self.__compressor.extractFile(compressedFilePath, imageDirectory)
-            
-            # Borramos el fichero .zip
-            ChildProcessManager.runCommandInForeground("rm " + compressedFilePath, VMServerException)
+            self.__compressor.extractFile(compressedFilePath, imageDirectory)            
             
             # Cambiamos los permisos de los ficheros y buscamos el fichero de definición
             definitionFileDirectory = path.join(self.__definitionFileDirectory, str(data["TargetImageID"]))            
@@ -92,14 +91,21 @@ class CompressionThread(BasicThread):
                 # Guardamos los datos de conexión al repositorio  
                 self.__dbConnector.addValueToConnectionDataDictionary(data["CommandID"], {"RepositoryIP": data["RepositoryIP"], "RepositoryPort" : data["RepositoryPort"]})                
                 # Arrancamos la máquina virtual
-                self.__domainHandler.createDomain(data["TargetImageID"], data["UserID"], data["CommandID"])            
+                self.__domainHandler.createDomain(data["TargetImageID"], data["UserID"], data["CommandID"])        
+                
+            # Borramos el fichero .zip
+            ChildProcessManager.runCommandInForeground("rm " + compressedFilePath, VMServerException)    
         else:        
             # Comprimimos los ficheros
             
             zipFilePath = path.join(self.__transferDirectory, str(data["TargetImageID"]) + ".zip")
             
-            self.__compressor.createCompressedFile(zipFilePath, [data["OSImagePath"], 
+            try :
+                self.__compressor.createCompressedFile(zipFilePath, [data["OSImagePath"], 
                     data["DataImagePath"], path.join(self.__definitionFileDirectory, data["DefinitionFilePath"])])
+            except Exception as e:
+                if (not "Nothing to do" in e.message) :
+                    pass
             
             # Borramos los ficheros fuente
             ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(path.join(self.__definitionFileDirectory, data["DefinitionFilePath"])), Exception)
@@ -114,5 +120,3 @@ class CompressionThread(BasicThread):
             data["SourceFilePath"] = path.basename(zipFilePath)        
             
             self.__dbConnector.addToTransferQueue(data)
-            
-        self.__dbConnector.removeFirstElementFromCompressionQueue()

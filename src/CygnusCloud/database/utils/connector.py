@@ -28,31 +28,7 @@ class BasicDatabaseConnector(object):
         self.__sqlPassword = sqlPassword
         self.__databaseName = databaseName
         self.__lock = Lock()
-        # Nota: no nos conectamos a MySQL aquí: el código cliente llama a connect.    
-        
-    def connect(self):
-        '''
-            Realiza la conexión con la base de datos
-            Argumentos:
-                Ninguno
-            Devuelve:
-                Nada
-        '''
-        with self.__lock:
-            self.__dbConnection = mysql.connector.connect(user=self.__sqlUser, password=self.__sqlPassword,
-                              host='127.0.0.1', database=self.__databaseName)
-            
-    
-    def disconnect(self):
-        '''
-            Realiza la desconexión de una base de datos
-            Argumentos:
-                Ninguno
-            Devuelve:
-                Nada
-        '''       
-        with self.__lock :
-            self.__dbConnection.close()
+        # Nota: no nos conectamos a MySQL aquí: el código cliente llama a connect.
         
     def _executeUpdate(self, command):
         '''
@@ -63,10 +39,13 @@ class BasicDatabaseConnector(object):
             Nada
         '''       
         with self.__lock :
+            self.__dbConnection = mysql.connector.connect(user=self.__sqlUser, password=self.__sqlPassword,
+                              host='127.0.0.1', database=self.__databaseName)
             cursor = self.__dbConnection.cursor()
             cursor.execute(command, ())    
             self.__dbConnection.commit()
             cursor.close()
+            self.__dbConnection.close()
         
     def _executeQuery(self, command, pickOneResult=False):
         '''
@@ -79,6 +58,8 @@ class BasicDatabaseConnector(object):
             resultado o resultados obtenidos a partir de la consulta
         '''
         with self.__lock :
+            self.__dbConnection = mysql.connector.connect(user=self.__sqlUser, password=self.__sqlPassword,
+                              host='127.0.0.1', database=self.__databaseName)
             cursor = self.__dbConnection.cursor()
             cursor.execute(command, ())
             result = []
@@ -94,3 +75,4 @@ class BasicDatabaseConnector(object):
                 return result[0]
             else:
                 return result
+            self.__dbConnection.close()

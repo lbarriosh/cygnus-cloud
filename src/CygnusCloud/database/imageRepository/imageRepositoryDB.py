@@ -36,7 +36,7 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
             return None
         (imageID, compressedFilePath, imageStatus) = row[0]
         result = dict()
-        result["compressedFilePath"] = compressedFilePath
+        result["compressedFilePath"] = str(compressedFilePath)
         result["imageStatus"] = imageStatus
         return result
     

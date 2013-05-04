@@ -13,7 +13,6 @@ class VMServerDBConnector(BasicDatabaseConnector):
             Constructora de la clase
         '''
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPass, databaseName)
-        self.connect()
         self.generateMACsAndUUIDs()
         self.generateVNCPorts()
         
@@ -145,7 +144,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        sql = "DELETE FROM FreeVNCPorts WHERE VNCPort = '" + str(result[0]) + "'"
+        sql = "DELETE FROM FreeVNCPorts WHERE VNCPort = '" + str(result) + "'"
         self._executeUpdate(sql)
         return result
     
@@ -392,16 +391,17 @@ class VMServerDBConnector(BasicDatabaseConnector):
         """
         serialized_data = ""
         serialized_data += str(data["Transfer_Type"]) + "$"
-        serialized_data += str(data["FTPTimeout"]) + "$"
         serialized_data += data["RepositoryIP"] + "$"
         serialized_data += str(data["RepositoryPort"]) + "$"
         serialized_data += data["CommandID"] + "$"
         if (data["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
             serialized_data += str(data["TargetImageID"]) + "$"
             serialized_data += data["SourceFilePath"]
-        elif (data["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :            
+        else:        
             serialized_data += str(data["SourceImageID"]) + "$"
-            serialized_data += str(data["UserID"])
+            if (data["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :    
+                serialized_data += str(data["UserID"])
+        
         
         insert = "INSERT INTO TransferQueue(data) VALUES ('{0}');".format(serialized_data)
         self._executeUpdate(insert)  
@@ -423,17 +423,17 @@ class VMServerDBConnector(BasicDatabaseConnector):
         serialized_data = self._executeQuery(query, True)
         tokens = serialized_data.split("$")
         result = dict()
-        result["Transfer_Type"] = int(tokens[0])
-        result["FTPTimeout"] = int(tokens[1])       
-        result["RepositoryIP"] = tokens[2]
-        result["RepositoryPort"] = int(tokens[3])
-        result["CommandID"] = tokens[4]
+        result["Transfer_Type"] = int(tokens[0]) 
+        result["RepositoryIP"] = tokens[1]
+        result["RepositoryPort"] = int(tokens[2])
+        result["CommandID"] = tokens[3]
         if (result["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
-            result["TargetImageID"] = int(tokens[5])
-            result["SourceFilePath"] = tokens[6]            
-        elif (result["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or result["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :  
-            result["SourceImageID"] = int(tokens[5])
-            result["UserID"] = int(tokens[6])
+            result["TargetImageID"] = int(tokens[4])
+            result["SourceFilePath"] = tokens[5]           
+        else : 
+            result["SourceImageID"] = int(tokens[4])
+            if (result["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or result["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :             
+                result["UserID"] = int(tokens[5])
         return result
         
     def removeFirstElementFromTransferQueue(self):
@@ -458,15 +458,16 @@ class VMServerDBConnector(BasicDatabaseConnector):
         serialized_data += str(data["Transfer_Type"]) + "$"
         serialized_data += data["CommandID"] + "$"
         serialized_data += str(data["TargetImageID"]) + "$"
+        serialized_data += data["RepositoryIP"] + "$"
+        serialized_data += str(data["RepositoryPort"]) + "$"
         if (data["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
             serialized_data += data["OSImagePath"] + "$"
             serialized_data += data["DataImagePath"] + "$"
-            serialized_data += data["DefinitionFilePath"] + "$"
-            serialized_data += data["RepositoryIP"] + "$"
-            serialized_data += str(data["RepositoryPort"])
+            serialized_data += data["DefinitionFilePath"] + "$"            
         else :
-            serialized_data += str(data["SourceImageID"]) + "$"
-            serialized_data += str(data["UserID"])
+            serialized_data += str(data["SourceImageID"]) 
+            if (data["Transfer_Type"] != TRANSFER_T.DEPLOY_IMAGE) :            
+                serialized_data += "$" + str(data["UserID"])
             
         insert = "INSERT INTO CompressionQueue(data) VALUES ('{0}');".format(serialized_data)
         self._executeUpdate(insert)  
@@ -483,15 +484,16 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result["Transfer_Type"] = int(tokens[0])
         result["CommandID"] = tokens[1]
         result["TargetImageID"] = int(tokens[2])
+        result["RepositoryIP"] = tokens[3]
+        result["RepositoryPort"] = int(tokens[4])
         if (result["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
-            result["OSImagePath"] = tokens[3]
-            result["DataImagePath"] = tokens[4]
-            result["DefinitionFilePath"] = tokens[5]
-            result["RepositoryIP"] = tokens[6]
-            result["RepositoryPort"] = int(tokens[7])
+            result["OSImagePath"] = tokens[5]
+            result["DataImagePath"] = tokens[6]
+            result["DefinitionFilePath"] = tokens[7]            
         else:
-            result["SourceImageID"] = int(tokens[3])
-            result["UserID"] = int(tokens[4])
+            result["SourceImageID"] = int(tokens[5])
+            if (result["Transfer_Type"] != TRANSFER_T.DEPLOY_IMAGE) :
+                result["UserID"] = int(tokens[6])
             
         return result
             
@@ -509,18 +511,6 @@ class VMServerDBConnector(BasicDatabaseConnector):
             return
         update = "DELETE FROM CompressionQueue WHERE position = {0};".format(first_element_ID)
         self._executeUpdate(update)
-        
-    def isCompressionQueueEmpty(self):
-        """
-        Indica si la cola de transferencias está vacía o no
-        Argumentos:
-            Ninguno
-        Devuelve:
-            True si la cola de transferencias está vacía, y False en otro caso
-        """
-        query = "SELECT * FROM CompressionQueue;"
-        result = self._executeQuery(query)
-        return result == ()
     
     def addValueToConnectionDataDictionary(self, commandID, value):
         serialized_data = value["RepositoryIP"] + "$" + str(value["RepositoryPort"])

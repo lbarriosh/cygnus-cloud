@@ -45,7 +45,7 @@ class FileTransferThread(BasicThread):
         while not self.finish() :
             data = self.__dbConnector.peekFromTransferQueue()
             if data == None :
-                sleep(1.0)
+                sleep(0.5)
             else :
                 self.__processElement(data)        
                 self.__dbConnector.removeFirstElementFromTransferQueue()

@@ -164,7 +164,6 @@ class VMServerReactor(MainServerPacketReactor):
             Nada
         """
         data.pop("packet_type")
-        data["FTPTimeout"] = self.__ftpTimeout
         data["Transfer_Type"] = TRANSFER_T.DEPLOY_IMAGE
         self.__dbConnector.addToTransferQueue(data)
         
@@ -182,7 +181,6 @@ class VMServerReactor(MainServerPacketReactor):
         else :
             data["Transfer_Type"] = TRANSFER_T.CREATE_IMAGE
         data.pop("Modify")
-        data["FTPTimeout"] = self.__ftpTimeout
         self.__dbConnector.addToTransferQueue(data)
 
     def __sendDomainsVNCConnectionData(self):
