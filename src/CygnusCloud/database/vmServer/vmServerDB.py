@@ -539,3 +539,25 @@ class VMServerDBConnector(BasicDatabaseConnector):
         query = "SELECT * FROM CompressionQueue;"
         result = self._executeQuery(query, True)
         return result == None
+    
+    def addValueToConnectionDataDictionary(self, commandID, value):
+        serialized_data = value["RepositoryIP"] + "$" + str(value["RepositoryPort"])
+        update = "INSERT INTO ConnectionDataDictionary VALUES('{0}', '{1}');".format(commandID, serialized_data)
+        self._executeUpdate(update)
+        
+    def getImageRepositoryConnectionData(self, commandID):
+        query = "SELECT value FROM ConnectionDataDictionary WHERE dict_key = '{0}';".format(commandID)
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else:
+            result = result[0]
+        value = dict()
+        tokens = result.split("$")
+        value["RepositoryIP"] = tokens[0]
+        value["RepositoryPort"] = int(tokens[1])
+        return value
+    
+    def removeImageRepositoryConnectionData(self, commandID):
+        update = "DELETE FROM ConnectionDataDictionary WHERE dict_key = '{0}';".format(commandID)
+        self._executeUpdate(update)        
