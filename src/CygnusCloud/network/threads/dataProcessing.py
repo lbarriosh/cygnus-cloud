@@ -12,15 +12,15 @@ class IncomingDataThread(QueueProcessingThread):
     Incoming packages thread class.
     This threads will process the incoming packages.
     """
-    def __init__(self, queue, callbackObject):
+    def __init__(self, transferQueue, callbackObject):
         """
         Initializes the thread's state
         Args:
-            queue: The incoming packages queue 
+            transferQueue: The incoming packages transferQueue 
             callbackObject: The callback object that will process
             all the received packets.
         """
-        QueueProcessingThread.__init__(self, "Incoming data processing thread", queue)   
+        QueueProcessingThread.__init__(self, "Incoming data processing thread", transferQueue)   
         self.__callbackObject = callbackObject     
         self.__referenceCounter = MultithreadingCounter()
         
@@ -66,8 +66,8 @@ class IncomingDataThread(QueueProcessingThread):
         
 class OutgoingDataThread(QueueProcessingThread):
     
-    def __init__(self, queue):
-        QueueProcessingThread.__init__(self, "Outgoing data processing thread", queue)
+    def __init__(self, transferQueue):
+        QueueProcessingThread.__init__(self, "Outgoing data processing thread", transferQueue)
         
     """
     Outgoing packages thread class.

@@ -13,10 +13,10 @@ from time import sleep
 
 class TesterCallback(NetworkCallback):
     def __init__(self, packetHandler):
-        self.__pHandler = packetHandler
+        self.__repositoryPacketHandler = packetHandler
         
     def processPacket(self, packet):
-        data = self.__pHandler.readPacket(packet)
+        data = self.__repositoryPacketHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
             print("Virtual machine server registration error")
             print("\tServer IP: " + data["VMServerIP"])

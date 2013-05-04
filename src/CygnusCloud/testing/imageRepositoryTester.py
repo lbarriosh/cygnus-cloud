@@ -17,12 +17,12 @@ user_input = False
 
 class TesterCallback(NetworkCallback):    
     def __init__(self, packetHandler, ip_address):
-        self.__pHandler = packetHandler
+        self.__repositoryPacketHandler = packetHandler
         self.__ip_address = ip_address
         
     def processPacket(self, packet):
         global user_input
-        data = self.__pHandler.readPacket(packet)
+        data = self.__repositoryPacketHandler.readPacket(packet)
         if (data['packet_type'] == PACKET_T.ADDED_IMAGE_ID) :
             print("Added image ID: {0}".format(data['addedImageID']))
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_ERROR or data['packet_type'] == PACKET_T.RETR_ERROR) :
@@ -33,7 +33,7 @@ class TesterCallback(NetworkCallback):
             print("Downloading file...")
             ftpClient = FTPClient()
             ftpClient.connect(self.__ip_address, data['FTPServerPort'], 5, data['username'], data['password'])
-            ftpClient.retrieveFile(data['fileName'], "/home/luis", data['serverDirectory']) 
+            ftpClient.retrieveFile(data['fileName'], "/home/adrian", data['serverDirectory']) 
             ftpClient.disconnect()
             print("Transfer completed")
         elif (data['packet_type'] == PACKET_T.STOR_REQUEST_ERROR or data['packet_type'] == PACKET_T.STOR_ERROR) :
@@ -48,12 +48,13 @@ class TesterCallback(NetworkCallback):
                 fileName = raw_input('File to upload (it MUST contain the image ID): ')
             else :
                 fileName = data['fileName']
-            ftpClient.storeFile(fileName, "/home/luis", data['serverDirectory']) 
+            ftpClient.storeFile(fileName, "/home/adrian", data['serverDirectory']) 
             ftpClient.disconnect()
             print("Transfer completed")
             user_input = False
         elif (data['packet_type'] == PACKET_T.DELETE_REQUEST_RECVD):
             print("The image repository says: delete request received")
+        
         else:
             print("Error: a packet from an unexpected type has been received " + str(data['packet_type']))
        
@@ -125,7 +126,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Certificates")
+    networkManager = NetworkManager("/home/adrian/Documentos/Certificados")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = ImageRepositoryPacketHandler(networkManager)

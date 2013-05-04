@@ -10,19 +10,19 @@ from network.exceptions.connection import ConnectionException
 from twisted.internet import reactor, ssl
 
 class ServerConnection(Connection):
-    def __init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject) :
+    def __init__(self, useSSL, certificatesDirectory, port, transferQueue, incomingDataThread, callbackObject) :
         """
         Initializes the connection's state
         Args:
             useSSL: if True, all the traffic will be protectd by SSLv4. If false, 
             certificatesDirectory: the directory where the certificates are stored               
             port: the port assigned to the connection.
-            queue: the incoming data queue assigned to the connection
+            transferQueue: the incoming data transferQueue assigned to the connection
             incomingDataThread: the incoming data thread assigned to the connection
             callbackObject: the callback object assigned to the connection     
             
         """
-        Connection.__init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject)
+        Connection.__init__(self, useSSL, certificatesDirectory, port, transferQueue, incomingDataThread, callbackObject)
         self.__listenningPort = None
 
     def establish(self, timeout):

@@ -32,11 +32,11 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
     def getImageData(self, imageID):
         sqlQuery = "SELECT * FROM Image WHERE imageID = {0}".format(imageID)
         row = self._executeQuery(sqlQuery, False)
-        if (row == ()) :
+        if (row == None) :
             return None
         (imageID, compressedFilePath, imageStatus) = row[0]
         result = dict()
-        result["compressedFilePath"] = compressedFilePath
+        result["compressedFilePath"] = str(compressedFilePath)
         result["imageStatus"] = imageStatus
         return result
     
@@ -52,7 +52,7 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
         self._executeUpdate(update)
         query = "SELECT imageID FROM Image;"
         results = self._executeQuery(query, False)
-        imageID = int(results[len(results) - 1][0])
+        imageID = int(results[len(results) - 1])
         update = "UPDATE Image SET compressedFilePath = '{1}' WHERE imageID = {0};".format(imageID, "undefined" + str(imageID))
         self._executeUpdate(update)
         return imageID
@@ -103,4 +103,4 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
     def handleFinishedUploadTransfer(self, fileName):
         imageID = sub("[^0-9]", "", path.basename(fileName))
         update = "UPDATE Image SET imageStatus = {1}, compressedFilePath = '{2}' WHERE imageID = {0};".format(imageID, IMAGE_STATUS_T.READY, fileName)
-        self._executeUpdate(update)
+        self._executeUpdate(update)    

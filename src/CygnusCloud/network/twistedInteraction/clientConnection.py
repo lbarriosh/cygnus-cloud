@@ -20,7 +20,7 @@ class ClientConnection (Connection) :
     """
     This class represents a client connection
     """ 
-    def __init__(self, useSSL, certificatesDirectory, host, port, queue, 
+    def __init__(self, useSSL, certificatesDirectory, host, port, transferQueue, 
                  incomingDataThread, reconnect, callbackObject):
         """
         Initializes the connection's state
@@ -29,13 +29,13 @@ class ClientConnection (Connection) :
             certificatesDirectory: the directory where the certificates are stored   
             host: the server's hostname or IPv4 address
             port: the port assigned to the connection.
-            queue: the incoming data queue assigned to the connection
+            transferQueue: the incoming data transferQueue assigned to the connection
             incomingDataThread: the incoming data thread assigned to the connection
             reconnect: if True, the network subsystem will try to reestablish the unexpectedly closed client connection.
             callbackObject: the callback object assigned to the connection     
             
         """
-        Connection.__init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject)
+        Connection.__init__(self, useSSL, certificatesDirectory, port, transferQueue, incomingDataThread, callbackObject)
         self.__host = host
         self.__reconnect = reconnect
         

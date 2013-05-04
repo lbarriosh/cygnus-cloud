@@ -1,3 +1,4 @@
+
 # -*- coding: utf8 -*-
 '''
 This module contains statements to connect to a virtual machine
@@ -14,10 +15,10 @@ from time import sleep
 
 class TesterCallback(NetworkCallback):
     def __init__(self, packetHandler):
-        self.__pHandler = packetHandler
+        self.__repositoryPacketHandler = packetHandler
         
     def processPacket(self, packet):
-        data = self.__pHandler.readPacket(packet)
+        data = self.__repositoryPacketHandler.readPacket(packet)
         packet_type = data["packet_type"]
         if (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA) :
             print("Domain connection data: ")
@@ -35,6 +36,8 @@ class TesterCallback(NetworkCallback):
         elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_VM_DATA) :
             print("Virtual machines' connection data")
             print(packet._getData())
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
+            print("Image edition error: " + data["ErrorMessage"])  
         else :
             print("Error: a packet from an unexpected type has been received "+packet_type)
        
@@ -83,6 +86,12 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createVMServerHaltPacket()
             networkManager.sendPacket(ip_address, port, p)
             return False
+        elif (command == "editImage") :
+            p = pHandler.createImageEditionPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), tokens.pop(0) == "True", "1", 1)
+            networkManager.sendPacket(ip_address, port, p)
+        elif (command == "deployImage"):
+            p = pHandler.createImageDeployPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), "1")
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True
         else :
@@ -94,6 +103,8 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             print("\tdestroyvm <machineID>: destroys an active virtual machine")
             print("\tshutdown: asks the virtual machine server to terminate")
             print("\tstatus: asks the virtual machine server the number of active VMs")
+            print("\teditImage <ImageRepositoryIP> <ImageRepositoryPort> <ImageID> <Modify>: creates or edits an image in the virtual machine server")
+            print("\tdeployImage <ImageRepositoryIP> <ImageRepositoryPort> <ImageID>: deploys an existing image in the virtual machine server")
             print("\thalt: commands the virtual machine server to destroy all the virtual machines\n\t\t\
                 and exit immediately")
             print("\thelp: prints the following help message")

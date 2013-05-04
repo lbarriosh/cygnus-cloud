@@ -20,14 +20,14 @@ class Connection(object):
     """
     A class that represents a generic network connection.
     """
-    def __init__(self, useSSL, certificatesDirectory, port, queue, incomingDataThread, callbackObject):
+    def __init__(self, useSSL, certificatesDirectory, port, transferQueue, incomingDataThread, callbackObject):
         """
         Initializes the connection.
         Args:
             useSSL: if True, all the traffic will be protectd by SSLv4. If false, 
             certificatesDirectory: the directory where the certificates are stored
             port: the port assigned to the connection.   
-            queue: the incoming data queue assigned to the connection
+            transferQueue: the incoming data transferQueue assigned to the connection
             incomingDataThread: the incoming data thread assigned to the connection
             callbackObject: the callback object assigned to the connection     
         """
@@ -36,7 +36,7 @@ class Connection(object):
         self._certificatesDirectory = certificatesDirectory
         self._port = port
         self._factory = None
-        self._queue = queue
+        self._queue = transferQueue
         self._incomingDataThread = incomingDataThread        
         self._callback = callbackObject
         self._packagesToSend = MultithreadingCounter()

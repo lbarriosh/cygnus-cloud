@@ -8,7 +8,7 @@ Child process manager definitios
 
 from subprocess import Popen, PIPE, STDOUT
 
-from ccutils.processes.rootPasswordHandler import RootPasswordHandler
+from ccutils.rootPasswordHandler import RootPasswordHandler
 from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
 from ccutils.processes.backgroundPollingThread import BackgroundProcessesPollingThread
 from time import sleep
@@ -88,6 +88,6 @@ class ChildProcessManager(object):
             ExceptionClass: this exception will be raised if something goes
             wrong when running the command.
         """ 
-        password = RootPasswordHandler.getInstance().getRootsPassword()
+        password = RootPasswordHandler().getRootsPassword()
         header = "echo " + password + " | sudo -S "
         return ChildProcessManager.runCommandInForeground(header + cmd, ExceptionClass)

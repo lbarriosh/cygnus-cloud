@@ -295,7 +295,7 @@ class ConfigurableFTPServer(object):
         handler.ftpCallback = ftpCallback
         handler.authorizer = self.__authorizer
         handler.banner = self.__banner  
-        link_bandwidth = ChildProcessManager.runCommandInForeground("ethtool eth0 | grep -i Speed | cut -b 9-", Exception)
+        link_bandwidth = ChildProcessManager.runCommandInForeground("/sbin/ethtool eth0 | grep -i Speed | cut -b 9-", Exception)
         if ("Mb/s" in link_bandwidth) :
             power = 1024 ** 2
         else :

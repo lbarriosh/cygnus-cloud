@@ -9,7 +9,8 @@ from ccutils.enums import enum
 
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
-                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS")
+                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS",
+                          "IMAGE_EDITION", "IMAGE_EDITION_ERROR", "DEPLOY_IMAGE", "DEPLOY_IMAGE_ERROR")
 
 class VMServerPacketHandler(object):
     """
@@ -184,6 +185,40 @@ class VMServerPacketHandler(object):
             p.writeString(domain_uid)
         return p
     
+    def createImageEditionPacket(self, repositoryIP, repositoryPort, sourceImageID, modify, commandID, userID):
+        """
+        Crea un paquete que contiene los datos para descargarse una imagen del repositorio
+        Argumentos:
+           FIXME: actualizar
+        Devuelve:
+            Un paquete construido a partir de sus argumentos.
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.IMAGE_EDITION)
+        p.writeString(repositoryIP)
+        p.writeInt(repositoryPort)
+        p.writeInt(sourceImageID)
+        p.writeBool(modify)
+        p.writeString(commandID)
+        p.writeInt(userID)
+        return p
+    
+    def createErrorPacket(self, packet_type, errorMessage, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR)
+        p.writeString(errorMessage)
+        p.writeString(commandID)
+        return p
+    
+    def createImageDeployPacket(self, repositoryIP, repositoryPort, imageID, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.DEPLOY_IMAGE)
+        p.writeString(repositoryIP)
+        p.writeInt(repositoryPort)
+        p.writeInt(imageID)
+        p.writeString(commandID)
+        return p
+    
     def readPacket(self, p):
         """
         Lee un paquete del servidor de máquinas virtuales y vuelca sus datos a un diccionario.
@@ -201,7 +236,7 @@ class VMServerPacketHandler(object):
             result["UserID"] = p.readInt()
             result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
-            result["VMID"] = p.readString()
+            result["DomainID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
             result["VNCServerIP"] = p.readString()
             result["VNCServerPort"] = p.readInt()
@@ -223,7 +258,22 @@ class VMServerPacketHandler(object):
             result["VMServerIP"] = p.readString()
             while (p.hasMoreData()):
                 ac.append(p.readString())
-            result["Domain_UIDs"] = ac        
+            result["Domain_UIDs"] = ac    
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION) :
+            result["RepositoryIP"] = p.readString()
+            result["RepositoryPort"] = p.readInt()
+            result["SourceImageID"] = p.readInt()
+            result["Modify"] = p.readBool()   
+            result["CommandID"] = p.readString()
+            result["UserID"] = p.readInt()
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
+            result["ErrorMessage"] = p.readString()
+            result["CommandID"] = p.readString()
+        elif (packet_type == VM_SERVER_PACKET_T.DEPLOY_IMAGE) :
+            result["RepositoryIP"] = p.readString()
+            result["RepositoryPort"] = p.readInt()
+            result["SourceImageID"] = p.readInt()
+            result["CommandID"] = p.readString()
         # Importante: los segmentos que transportan los datos de conexión se reenviarán, por lo que no tenemos que
         # leerlos para ganar en eficiencia.
         return result

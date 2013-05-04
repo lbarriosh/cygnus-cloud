@@ -95,7 +95,7 @@ class _Packet(object):
             PacketException: these exceptions will be raised when type errors are detected
                 and when the packet has not enough room to hold the value.
         """
-        if not isinstance(value, str):
+        if not (isinstance(value, str) or isinstance(value, unicode)):
             raise PacketException("The given value is not an " + self.__extractTypeName(str) + " instance")
         if '$' in value :
             raise PacketException('Strings cannot contain the \'$\' character')

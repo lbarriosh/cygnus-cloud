@@ -16,8 +16,6 @@ except ImportError:
             import xml.etree.ElementTree as ET
     
 from ccutils.processes.childProcessManager import ChildProcessManager
-
-from time import sleep
     
 class VirtualNetworkManagerException(Exception):
     """
@@ -109,8 +107,8 @@ class VirtualNetworkManager(object):
         
         # Comprobar errores
         if (not self.__networksByName.has_key(nameOrGatewayIPAddress) and \
-            not self.__networksByIP.hasKey(nameOrGatewayIPAddress)) :
-            raise VirtualNetworkManagerException("The network with networkName or IPv4 gateway address "\
+            not self.__networksByIP.has_key(nameOrGatewayIPAddress)) :
+            raise VirtualNetworkManagerException("The virtual network with name or IPv4 gateway address "\
                                                  + nameOrGatewayIPAddress + " does not exist")
             
         # Averiguar el nombre de la red

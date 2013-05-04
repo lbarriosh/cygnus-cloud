@@ -7,24 +7,20 @@ Created on 14/01/2013
 
 from network.manager.networkManager import NetworkManager
 from virtualMachineServer.networking.callback import ClusterServerCallback
-from network.interfaces.ipAddresses import get_ip_address 
-from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
-from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
 from database.vmServer.vmServerDB import VMServerDBConnector
-from virtualMachineServer.virtualNetwork.virtualNetworkManager import VirtualNetworkManager
-from ccutils.processes.childProcessManager import ChildProcessManager
+from network.ftp.ftpClient import FTPClient
 from virtualMachineServer.networking.reactors import MainServerPacketReactor
-from time import sleep
+from virtualMachineServer.threads.fileTransferThread import FileTransferThread
+from virtualMachineServer.threads.compressionThread import CompressionThread
+from virtualMachineServer.exceptions.vmServerException import VMServerException
+from virtualMachineServer.libvirtInteraction.domainHandler import DomainHandler
+from ccutils.processes.childProcessManager import ChildProcessManager
+from network.interfaces.ipAddresses import get_ip_address 
+from virtualMachineServer.reactor.transfer_t import TRANSFER_T
 import os
 import multiprocessing
 import sys
-
-class VMServerException(Exception):
-    """
-    Clase de excepción que utiliza el servidor de máquinas virtuales
-    """
-    pass
 
 class VMServerReactor(MainServerPacketReactor):
     """
@@ -37,20 +33,24 @@ class VMServerReactor(MainServerPacketReactor):
         Argumentos:
             constantsManager: objeto del que se obtendrán los parámetros de configuración
         """        
-        self.__shuttingDown = False
+        self.__finished = False
         self.__emergencyStop = False
+        self.__fileTransferThread = None
+        self.__compressionThread = None
+        self.__networkManager = None
         self.__cManager = constantManager
+        self.__ftp = FTPClient()        
         self.__mainServerCallback = ClusterServerCallback(self)
-        self.__childProcessManager = ChildProcessManager()
-        self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
-        self.__connectToLibvirt(self.__cManager.getConstant("createVirtualNetworkAsRoot"))
-        self.__doInitialCleanup()
+        self.__domainHandler = None
+        self.__domainTimeout = 0
         try :
+            self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), 
+                                      self.__cManager.getConstant("databasePassword"), )
             self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
-        except Exception:
-            print "Error: the network interface '{0}' is not ready. Exiting now".format(self.__cManager.getConstant("vncNetworkInterface"))
+        except Exception as e:
+            print e.message
             self.__emergencyStop = True
-            self.__shuttingDown = True
+            self.__finished = True
         
     def __connectToDatabases(self, databaseName, user, password) :
         """
@@ -62,99 +62,42 @@ class VMServerReactor(MainServerPacketReactor):
         Devuelve:
             Nada
         """
-        self.__dbConnector = VMServerDBConnector(user, password, databaseName)
-        
-    def __connectToLibvirt(self, createVirtualNetworkAsRoot) :
-        """
-        Establece la conexión con libvirt y crea la red virtual.
-        Argumentos:
-            createVirtualNetworkAsRoot: indica si hay que crear la red virtual como el superusuario o como
-            un usuario normal.
-        Devuelve:
-            Nada
-        """
-        self.__libvirtConnection = LibvirtConnector(LibvirtConnector.KVM, self.__onDomainStart, self.__onDomainStop)
-        self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
-        self.__virtualNetworkManager.createVirtualNetwork(self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
-                                                          self.__cManager.getConstant("netMask"), self.__cManager.getConstant("dhcpStartIP"), 
-                                                          self.__cManager.getConstant("dhcpEndIP"))
+        self.__dbConnector = VMServerDBConnector(user, password, databaseName)  
             
     def __startListenning(self, networkInterface, listenningPort):
         """
         Crea la conexión de red por la que se recibirán los comandos del servidor de cluster.
-        """
-        self.__vncServerIP = get_ip_address(networkInterface)
+        """    
+        try :
+            self.__vncServerIP = get_ip_address(networkInterface)
+        except Exception :
+            raise Exception("Error: the network interface '{0}' is not ready. Exiting now".format(networkInterface))    
+        self.__ftpTimeout = self.__cManager.getConstant("FTPTimeout")
         self.__listenningPort = listenningPort
         self.__networkManager = NetworkManager(self.__cManager.getConstant("certificatePath"))
         self.__networkManager.startNetworkService()
-        self.__packetManager = VMServerPacketHandler(self.__networkManager)
+        self.__packetManager = VMServerPacketHandler(self.__networkManager)        
         self.__networkManager.listenIn(self.__listenningPort, self.__mainServerCallback, True)
-
-    def __onDomainStart(self, domain):
-        """
-        Método que se ejecuta cuando una máquina virtual arranca.  Se limita a enviar los datos
-        de conexión a los usuarios.
-        Argumentos:
-            domain: objeto que identifica a la máquina que se ha arrancado.
-        Devuelve:
-            Nada
-        """
-        self.__sendConnectionData(domain)
-    
-    def __sendConnectionData(self, domainInfo):
-        """
-        Envía al servidor de cluster los datos de conexión a una máquina virtual.
-        Argumentos:
-            domainInfo: diccionario con los datos de conexión al servidor VNC
-        Devuelve:
-            Nada
-        """
-        ip = domainInfo["VNCip"]
-        port = domainInfo["VNCport"]
-        password = domainInfo["VNCpassword"]
-        domainName = domainInfo["name"]
-        commandID = None
-        while (commandID == None) :
-            commandID = self.__dbConnector.getVMBootCommand(domainName)
-        packet = self.__packetManager.createVMConnectionParametersPacket(ip, port + 1, password, commandID)
-        self.__networkManager.sendPacket('', self.__listenningPort, packet)
-        
-    def __onDomainStop(self, domainInfo):
-        """
-        Método que se ejecuta cuando una máquina virtual se apaga. Se limita a liberar sus recursos.
-        Argumentos:
-            domainInfo: diccionario con los datos de la máquina virtual
-        Devuelve:
-            Nada
-        """
-        # Se ha apagado una máquina virtual, borro sus datos
-        if self.__shuttingDown and (self.__libvirtConnection.getNumberOfDomains() == 0):
-            self.__shuttingDown = True
-        self.__freeDomainResources(domainInfo["name"])
-        
-    def __freeDomainResources(self, domainName, deleteDiskImages=True):
-        """
-        Libera los recursos asignados a una máquina virtual
-        Argumentos:
-            domainName: el nombre de la máquina virtual
-            deleteDiskImages: indica si hay que borrar o no las imágenes de disco.
-        Devuelve:
-            Nada
-        """
-        dataPath = self.__dbConnector.getDomainImageDataPath(domainName)
-        osPath = self.__dbConnector.getOsImagePathFromDomainName(domainName)       
-        
-        if (deleteDiskImages) :
-            ChildProcessManager.runCommandInForeground("rm " + dataPath, VMServerException)
-            ChildProcessManager.runCommandInForeground("rm " + osPath, VMServerException)
-            dataDirectory = os.path.dirname(dataPath)
-            osDirectory = os.path.dirname(osPath)
-            if (os.listdir(dataDirectory) == []) :
-                ChildProcessManager.runCommandInForeground("rm -rf " + dataDirectory, VMServerException)
-            if (osDirectory != dataDirectory and os.listdir(osDirectory) == []) :
-                ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, VMServerException)
-                
-        self.__dbConnector.unregisterVMResources(domainName)        
+        self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
+                                                       self.__cManager.getConstant("TransferDirectory"),
+                                                       self.__cManager.getConstant("FTPTimeout"), self.__dbConnector)
+        self.__fileTransferThread.start()
+        self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
+            
+        self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
+                                                 self.__cManager.getConstant("configFilePath"),
+                                                 self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("executionImagePath"),
+                                                 self.__cManager.getConstant("websockifyPath"), self.__cManager.getConstant("passwordLength"))
+        self.__domainHandler.connectToLibvirt(self.__cManager.getConstant("vncNetworkInterface"), 
+                                                  self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
+                                                  self.__cManager.getConstant("netMask"), self.__cManager.getConstant("dhcpStartIP"), 
+                                                  self.__cManager.getConstant("dhcpEndIP"), self.__cManager.getConstant("createVirtualNetworkAsRoot"))
+            
+        self.__domainHandler.doInitialCleanup()
+        self.__compressionThread = CompressionThread(self.__cManager.getConstant("TransferDirectory"), self.__cManager.getConstant("sourceImagePath"),
+                                                     self.__cManager.getConstant("configFilePath"),
+                                                     self.__dbConnector, self.__domainHandler)
+        self.__compressionThread.start()
     
     def shutdown(self):
         """
@@ -166,20 +109,21 @@ class VMServerReactor(MainServerPacketReactor):
         @attention: Para que no se produzcan cuelgues en la red, este método DEBE llamarse desde el hilo 
         principal.
         """
-        if (not self.__emergencyStop) :
+        if (self.__networkManager != None) :
             self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
-            timeout = 300 # 5 mins
-            if (self.__destroyDomains) :
-                self.__libvirtConnection.destroyAllDomains()
-            else :
-                wait_time = 0
-                while (self.__libvirtConnection.getNumberOfDomains() != 0 and wait_time < timeout) :
-                    sleep(0.5)
-                    wait_time += 0.5
-        self.__childProcessManager.waitForBackgroundChildrenToTerminate()
-        self.__virtualNetworkManager.destroyVirtualNetwork(self.__cManager.getConstant("vnName"))  
-        sys.exit()   
-           
+            
+        if (self.__emergencyStop) :            
+            self.__domainTimeout = 0
+            
+        self.__domainHandler.shutdown(self.__domainTimeout)                   
+        
+        if (self.__fileTransferThread != None) :
+            self.__fileTransferThread.stop()
+            self.__fileTransferThread.join()
+        if (self.__compressionThread != None) :
+            self.__compressionThread.stop()
+            self.__compressionThread.join()
+        sys.exit()              
         
     def processClusterServerIncomingPackets(self, packet):
         """
@@ -191,20 +135,54 @@ class VMServerReactor(MainServerPacketReactor):
         """
         data = self.__packetManager.readPacket(packet)
         if (data["packet_type"] == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
-            self.__createDomain(data)
+            self.__domainHandler.createDomain(data["MachineID"], data["UserID"], data["CommandID"])
         elif (data["packet_type"] == VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST) :
             self.__sendStatusData()
         elif (data["packet_type"] == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN) :
-            self.__doUserFriendlyShutdown(data)
+            self.__domainTimeout = 300
+            self.__finished = True
         elif (data["packet_type"] == VM_SERVER_PACKET_T.HALT) :
-            self.__doImmediateShutdown()
+            self.__domainTimeout = 0
+            self.__finished = True
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA) :
             self.__sendDomainsVNCConnectionData()
         elif (data['packet_type'] == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
-            self.__destroyDomain(data)
+            self.__domainHandler.destroyDomain(data["DomainID"])
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS) :
             self.__sendActiveDomainUIDs()
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.IMAGE_EDITION) :
+            self.__processImageEditionPacket(data)
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.DEPLOY_IMAGE) :
+            self.__processDeployImagePacket(data)
+            
+    def __processDeployImagePacket(self, data):
+        """
+        Procesa un paquete de despliegue de una imagen
+        Argumentos:
+            data: el paquete a procesar
+        Devuelve:
+            Nada
+        """
+        data.pop("packet_type")
+        data["Transfer_Type"] = TRANSFER_T.DEPLOY_IMAGE
+        self.__dbConnector.addToTransferQueue(data)
         
+    def __processImageEditionPacket(self, data):
+        """
+        Procesa un paquete de edición de una imagen.
+        Argumentos:
+            data: el paquete a procesar
+        Devuelve:
+            Nada
+        """
+        data.pop("packet_type")
+        if (data["Modify"]) :
+            data["Transfer_Type"] = TRANSFER_T.EDIT_IMAGE
+        else :
+            data["Transfer_Type"] = TRANSFER_T.CREATE_IMAGE
+        data.pop("Modify")
+        self.__dbConnector.addToTransferQueue(data)
+
     def __sendDomainsVNCConnectionData(self):
         '''
         Envía al servidor de cluster los datos de conexion de todas las máquinas virtuales
@@ -215,7 +193,7 @@ class VMServerReactor(MainServerPacketReactor):
             Nada
         '''
         # Extraer los datos de la base de datos
-        vncConnectionData = self.__dbConnector.getVMsConnectionData()
+        vncConnectionData = self.__dbConnector.getDomainsConnectionData()
         # Generar los segmentos en los que se dividirá la información
         segmentSize = 150
         segmentCounter = 1
@@ -239,102 +217,7 @@ class VMServerReactor(MainServerPacketReactor):
         # Send the last segment
         if (sendLastSegment) :
             packet = self.__packetManager.createActiveVMsDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
-            self.__networkManager.sendPacket('', self.__listenningPort, packet) 
-
-    def __createDomain(self, data):
-        """
-        Arranca una máquina virtual
-        Argumentos:
-            data: un diccionario con los datos necesarios para arrancar la máquina virtual
-        Devuelve:
-            Nada
-        """
-        domainID = data["MachineID"]
-        userID = data["UserID"]
-        configFile = self.__cManager.getConstant("configFilePath") + self.__dbConnector.getImgDefFilePath(domainID)
-        originalName = self.__dbConnector.getImageName(domainID)
-        dataPath = self.__dbConnector.getImagePath(domainID)
-        osPath = self.__dbConnector.getOsImagePath(domainID)
-        
-        # Saco el nombre de los archivos (sin la extension)
-        trimmedDataImagePath = dataPath
-        try:
-            trimmedDataImagePath = dataPath[0:dataPath.index(".qcow2")]
-        except:
-            pass
-        trimmedOSImagePath = osPath
-        try:
-            trimmedOSImagePath = osPath[0:osPath.index(".qcow2")]
-        except:
-            pass
-        
-        # Obtengo los parámetros de configuración de la máquina virtual
-        newUUID, newMAC = self.__dbConnector.extractFreeMACAndUUID()
-        newPort = self.__dbConnector.extractFreeVNCPort()
-        newName = originalName + str(newPort)
-        newDataDisk = self.__cManager.getConstant("executionImagePath") + trimmedDataImagePath + str(newPort) + ".qcow2"
-        newOSDisk = self.__cManager.getConstant("executionImagePath") + trimmedOSImagePath + str(newPort) + ".qcow2"
-        newPassword = self.__generateVNCPassword()
-        sourceOSDisk = self.__cManager.getConstant("sourceImagePath") + osPath        
-        
-        # Preparo los archivos
-                
-        # Compruebo si ya existe alguno de los archivos. Si es el caso, me los cargo
-        if (os.path.exists(newDataDisk)):
-            print("Warning: the file " + newDataDisk + " already exists")
-            ChildProcessManager.runCommandInForeground("rm " + newDataDisk, VMServerException)
-            
-        if (os.path.exists(newOSDisk)):
-            print("Warning: the file " + newOSDisk + " already exists")
-            ChildProcessManager.runCommandInForeground("rm " + newOSDisk, VMServerException)
-            
-        # Copio las imagenes
-        ChildProcessManager.runCommandInForeground("cd " + self.__cManager.getConstant("sourceImagePath") + ";" + "cp --parents "+ dataPath + " " + 
-                                                   self.__cManager.getConstant("executionImagePath"), VMServerException)
-        ChildProcessManager.runCommandInForeground("mv " + self.__cManager.getConstant("executionImagePath") + dataPath +" " + newDataDisk, VMServerException)
-        ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
-        
-        # Genero el fichero de definición
-        xmlFile = ConfigurationFileEditor(configFile)
-        xmlFile.setDomainIdentifiers(newName, newUUID)
-        xmlFile.setImagePaths(newOSDisk, newDataDisk)
-        xmlFile.setVirtualNetworkConfiguration(self.__cManager.getConstant("vnName"), newMAC)
-        xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword)
-        
-        string = xmlFile.generateConfigurationString()
-        
-        # Arranco la máquina
-        self.__libvirtConnection.startDomain(string)
-        
-        # Inicio el demonio websockify
-        # Los puertos impares serán para el socket que proporciona el hipervisor 
-        # y los pares los websockets generados por websockify        
-        
-        webSockifyPID = self.__childProcessManager.runCommandInBackground([self.__cManager.getConstant("websockifyPath"),
-                                    self.__vncServerIP + ":" + str(newPort + 1),
-                                    self.__vncServerIP + ":" + str(newPort)])
-        
-        self.__dbConnector.registerVMResources(newName, domainID, newPort, newPassword, userID, webSockifyPID, newDataDisk, newOSDisk, newMAC, newUUID)
-        self.__dbConnector.addVMBootCommand(newName, data["CommandID"])
-        
-    def __destroyDomain(self, packet):
-        """
-        Destruye una máquina virtual por petición explícita de su propietario.
-        Argumentos:
-            packet: un diccionario con los datos del paquete de destrucción
-        Devuelve:
-            Nada
-        """
-        domainName = self.__dbConnector.getDomainNameFromVMBootCommand(packet["VMID"])
-        if (domainName == None) :
-            # No informamos del error: el servidor de máquinas virtuales siempre intenta
-            # hacer lo que se le pide, y si no puede, no lo hace y no se queja.
-            return 
-        self.__libvirtConnection.destroyDomain(domainName)
-        # Libvirt borra las imágenes de disco, por lo que sólo tenemos que encargarnos de actualizar
-        # las bases de datos.
-        self.__freeDomainResources(domainName, False)
-        
+            self.__networkManager.sendPacket('', self.__listenningPort, packet)         
     
     def __sendStatusData(self):
         """
@@ -344,7 +227,7 @@ class VMServerReactor(MainServerPacketReactor):
         Devuelve:
             Nada
         """
-        info = self.__libvirtConnection.getStatusInfo()
+        info = self.__domainHandler.getLibvirtStatusInfo()
         realCPUNumber = multiprocessing.cpu_count()
         diskStats_storage = os.statvfs(self.__cManager.getConstant("sourceImagePath"))
         diskStats_temporaryData = os.statvfs(self.__cManager.getConstant("executionImagePath"))
@@ -368,39 +251,7 @@ class VMServerReactor(MainServerPacketReactor):
                                                                  freeStorageSpace, availableStorageSpace, 
                                                                  freeTemporaryStorage, availableTemporaryStorage,
                                                                  info["#vcpus"], realCPUNumber)
-        self.__networkManager.sendPacket('', self.__listenningPort, packet)
-    
-    def __doUserFriendlyShutdown(self, packet):
-        """
-        Realiza un apagado amigable (es decir, espera a que los usuarios acaben).
-        Argumentos:
-            packet: no se usa (por ahora), pero se usará para resolver un issue.
-        Devuelve:
-            Nada
-        """
-        self.__shuttingDown = True
-        self.__destroyDomains = False
-    
-    def __doImmediateShutdown(self):
-        """
-        Realiza el apagado inmediato del servidor de máquinas virtuales.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
-        """
-        self.__shuttingDown = True      
-        self.__destroyDomains = True  
-        
-    def __generateVNCPassword(self):
-        """
-        Genera una contraseña para un servidor VNC
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Un string con la contraseña generada
-        """
-        return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(self.__cManager.getConstant("passwordLength")), VMServerException)
+        self.__networkManager.sendPacket('', self.__listenningPort, packet)   
     
     def __sendActiveDomainUIDs(self):
         """
@@ -414,7 +265,7 @@ class VMServerReactor(MainServerPacketReactor):
         packet = self.__packetManager.createActiveDomainUIDsPacket(self.__vncServerIP, activeDomainUIDs)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
-    def isShutDown(self):
+    def has_finished(self):
         """
         Indica si el servidor de máquinas virtuales se ha apagado o no.
         Argumentos:
@@ -422,19 +273,4 @@ class VMServerReactor(MainServerPacketReactor):
         Devuelve:
             Nada
         """
-        return self.__shuttingDown
-    
-    def __doInitialCleanup(self):
-        """
-        Borra toda la basura que hay en el directorio de trabajo
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
-        """
-        activeDomainNames = self.__libvirtConnection.getActiveDomainNames()
-        registeredDomainNames = self.__dbConnector.getRegisteredDomainNames()
-        for domainName in registeredDomainNames :
-            if (not domainName in activeDomainNames) :
-                self.__freeDomainResources(domainName)
-        self.__dbConnector.allocateAssignedResources()
+        return self.__finished   

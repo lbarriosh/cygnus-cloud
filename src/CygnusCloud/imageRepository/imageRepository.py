@@ -29,7 +29,10 @@ class ImageRepository(object):
         self.__workingDirectory = workingDirectory        
         self.__slotCounter = MultithreadingCounter()
         self.__retrieveQueue = GenericThreadSafeList()
-        self.__storeQueue = GenericThreadSafeList()        
+        self.__storeQueue = GenericThreadSafeList() 
+        self.__finish = False   
+        self.__networkManager = None
+        self.__ftpServer = None    
     
     def connectToDatabase(self, repositoryDBName, repositoryDBUser, repositoryDBPassword):
         """
@@ -42,7 +45,6 @@ class ImageRepository(object):
             Nada
         """
         self.__dbConnector = ImageRepositoryDBConnector(repositoryDBUser, repositoryDBPassword, repositoryDBName)
-        self.__dbConnector.connect()        
     
     def startListenning(self, networkInterface, certificatesDirectory, commandsListenningPort, ftpListenningPort, maxConnections,
                         maxConnectionsPerIP, uploadBandwidthRatio, downloadBandwidthRatio, ftpUsername, ftpPasswordLength): 
@@ -64,28 +66,33 @@ class ImageRepository(object):
         @attention: El ancho de banda se determina automáticamente en función de la interfaz de red escogida.
         @attention: La contraseña se fija aleatoriamente en cada ejecución
         """
-        self.__maxConnections = maxConnections      
-        self.__commandsListenningPort = commandsListenningPort
-        self.__FTPListenningPort = ftpListenningPort
-        self.__networkManager = NetworkManager(certificatesDirectory)
-        self.__pHandler = ImageRepositoryPacketHandler(self.__networkManager)        
+        try :
+            self.__maxConnections = maxConnections      
+            self.__commandsListenningPort = commandsListenningPort
+            self.__FTPListenningPort = ftpListenningPort
+            self.__networkManager = NetworkManager(certificatesDirectory)
+            self.__repositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)        
+            
+            self.__commandsCallback = CommandsCallback(self.__networkManager, self.__repositoryPacketHandler, commandsListenningPort, self.__dbConnector,
+                                                       self.__retrieveQueue, self.__storeQueue)        
+            
+            self.__networkManager.startNetworkService()
+            self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, True)
+            
+            dataCallback = DataCallback(self.__slotCounter, self.__dbConnector)
+            
+            self.__ftpUsername = ftpUsername
+            self.__ftpPassword = ChildProcessManager.runCommandInForeground("openssl rand -base64 {0}".format(ftpPasswordLength), Exception)        
+            
+            self.__ftpServer = ConfigurableFTPServer("Image repository FTP Server")
+       
+            self.__ftpServer.startListenning(networkInterface, ftpListenningPort, maxConnections, maxConnectionsPerIP, 
+                                             dataCallback, downloadBandwidthRatio, uploadBandwidthRatio)
+            self.__ftpServer.addUser(self.__ftpUsername, self.__ftpPassword, self.__workingDirectory, "eramw")      
+        except Exception as e:
+            print "Error: " + e.message
+            self.__finish = True
         
-        self.__commandsCallback = CommandsCallback(self.__networkManager, self.__pHandler, commandsListenningPort, self.__dbConnector,
-                                                   self.__retrieveQueue, self.__storeQueue)        
-        
-        self.__networkManager.startNetworkService()
-        self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, True)
-        
-        dataCallback = DataCallback(self.__slotCounter, self.__dbConnector)
-        
-        self.__ftpUsername = ftpUsername
-        self.__ftpPassword = ChildProcessManager.runCommandInForeground("openssl rand -base64 {0}".format(ftpPasswordLength), Exception)        
-        
-        self.__ftpServer = ConfigurableFTPServer("Image repository FTP Server")
-        self.__ftpServer.startListenning(networkInterface, ftpListenningPort, maxConnections, maxConnectionsPerIP, 
-                                         dataCallback, downloadBandwidthRatio, uploadBandwidthRatio)
-        self.__ftpServer.addUser(self.__ftpUsername, self.__ftpPassword, self.__workingDirectory, "eraw")        
-    
     def stopListenning(self):
         """
         Para el repositorio
@@ -95,8 +102,14 @@ class ImageRepository(object):
             Nada
         @attention: Para evitar cuelges, ¡¡¡no llamar a este método desde ningún hilo de la red!!!
         """
-        self.__ftpServer.stopListenning()
-        self.__networkManager.stopNetworkService()
+        if (self.__ftpServer != None) :
+            try :
+                self.__ftpServer.stopListenning()
+            except Exception :
+                pass
+        if (self.__networkManager != None) :
+            self.__networkManager.stopNetworkService()
+        
         self.__dbConnector.disconnect()        
     
     def initTransfers(self):
@@ -109,7 +122,7 @@ class ImageRepository(object):
         @attention: Este método sólo devolverá el control cuando el repositorio tenga que apagarse.
         """
         store = False
-        while not self.__commandsCallback.haltReceived():
+        while not (self.__finish or self.__commandsCallback.haltReceived()):
             if (self.__slotCounter.read() == self.__maxConnections) :
                 # No hay slots => dormir
                 sleep(0.1)
@@ -147,7 +160,7 @@ class ImageRepository(object):
                         packet_type = PACKET_T.STOR_ERROR
                     else :
                         packet_type = PACKET_T.RETR_ERROR
-                    p = self.__pHandler.createErrorPacket(packet_type, "The image has been deleted")
+                    p = self.__repositoryPacketHandler.createErrorPacket(packet_type, "The image has been deleted")
                     self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
                 else :
                     compressedFilePath = imageData["compressedFilePath"]    
@@ -169,7 +182,7 @@ class ImageRepository(object):
                     else :
                         packet_type = PACKET_T.RETR_START
                                     
-                    p = self.__pHandler.createTransferEnabledPacket(packet_type, imageID, self.__FTPListenningPort, 
+                    p = self.__repositoryPacketHandler.createTransferEnabledPacket(packet_type, imageID, self.__FTPListenningPort, 
                                     self.__ftpUsername, self.__ftpPassword, serverDirectory, compressedFileName)
                         
                     # Enviárselo
@@ -191,7 +204,7 @@ class CommandsCallback(NetworkCallback):
             storeQueue: cola de peticiones de subida    
         """
         self.__networkManager = packetCreator
-        self.__pHandler = pHandler
+        self.__repositoryPacketHandler = pHandler
         self.__commandsListenningPort = listenningPort
         self.__dbConnector = dbConnector    
         self.__haltReceived = False
@@ -206,7 +219,7 @@ class CommandsCallback(NetworkCallback):
         Devuelve:
             Nada
         """
-        data = self.__pHandler.readPacket(packet)
+        data = self.__repositoryPacketHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.HALT):
             self.__haltReceived = True
         elif (data["packet_type"] == PACKET_T.ADD_IMAGE):
@@ -227,8 +240,11 @@ class CommandsCallback(NetworkCallback):
             Nada
         """
         imageID = self.__dbConnector.addImage()
-        p = self.__pHandler.createAddedImagePacket(imageID)
-        self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        p = self.__repositoryPacketHandler.createAddedImagePacket(imageID)
+        try :            
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        except Exception :
+            self.__dbConnector.deleteImage(imageID)
      
     def __handleRetrieveRequest(self, data):
         """
@@ -241,14 +257,14 @@ class CommandsCallback(NetworkCallback):
         imageData = self.__dbConnector.getImageData(data["imageID"])
         # Chequear errores
         if (imageData == None) :
-            p = self.__pHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         elif (imageData["imageStatus"] != IMAGE_STATUS_T.READY) :
-            p = self.__pHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, "The image {0} is already being edited".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, "The image {0} is already being edited".format(data["imageID"]))
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else:
             # No hay errores => contestar diciendo que hemos recibido la petición y encolarla
-            p = self.__pHandler.createImageRequestReceivedPacket(PACKET_T.RETR_REQUEST_RECVD)
+            p = self.__repositoryPacketHandler.createImageRequestReceivedPacket(PACKET_T.RETR_REQUEST_RECVD)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
             self.__retrieveQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))
             if (data["modify"]) :
@@ -265,14 +281,14 @@ class CommandsCallback(NetworkCallback):
         imageData = self.__dbConnector.getImageData(data["imageID"])
         # Chequear errores
         if (imageData == None) :
-            p = self.__pHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         elif not (imageData["imageStatus"] == IMAGE_STATUS_T.EDITION or imageData["imageStatus"] == IMAGE_STATUS_T.NOT_RECEIVED) :
-            p = self.__pHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, "The image {0} is not being edited".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, "The image {0} is not being edited".format(data["imageID"]))
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else:
             # No hay errores => contestar diciendo que hemos recibido la petición y encolarla
-            p = self.__pHandler.createImageRequestReceivedPacket(PACKET_T.STOR_REQUEST_RECVD)
+            p = self.__repositoryPacketHandler.createImageRequestReceivedPacket(PACKET_T.STOR_REQUEST_RECVD)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
             self.__storeQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))        
             
@@ -286,14 +302,14 @@ class CommandsCallback(NetworkCallback):
         """  
         imageData = self.__dbConnector.getImageData(data["imageID"])
         if (imageData == None) :
-            p = self.__pHandler.createErrorPacket(PACKET_T.DELETE_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.DELETE_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else :            
             if (not "undefined" in imageData["compressedFilePath"]) :
                 imageDirectory = path.dirname(imageData["compressedFilePath"])
                 ChildProcessManager.runCommandInForeground("rm -rf " + imageDirectory, Exception)
             self.__dbConnector.deleteImage(data["imageID"]) # TODO: poner encima del if
-            p = self.__pHandler.createImageRequestReceivedPacket(PACKET_T.DELETE_REQUEST_RECVD)
+            p = self.__repositoryPacketHandler.createImageRequestReceivedPacket(PACKET_T.DELETE_REQUEST_RECVD)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
         
     def haltReceived(self):
