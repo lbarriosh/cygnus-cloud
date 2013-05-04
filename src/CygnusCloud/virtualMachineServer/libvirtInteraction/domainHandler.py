@@ -21,7 +21,7 @@ class DomainHandler(object):
     """
     
     def __init__(self, dbConnector, vncServerIP, networkManager, packetManager, listenningPort, definitionFileDirectory,
-                 sourceImageDirectory, executionImageDirectory, websockifyPath, vncPasswordLength, compressionQueue, imageRepositoryConnectionData):
+                 sourceImageDirectory, executionImageDirectory, websockifyPath, vncPasswordLength):
         """
         Inicializa el estado del gestor de dominios
         Argumentos:
@@ -35,8 +35,6 @@ class DomainHandler(object):
             executionImageDirectory: el directorio en el que se almacenan las imágenes temporales de las máquinas virtuales
             websockifyPath: la ruta del binario websockify
             vncPasswordLength: la longitud de la contraseña del servidor VNC
-            compressionQueue: la longitud de la cola de compresión
-            imageRepositoryConnectionData: diccionario con los datos de conexión al repositorio
         """
         self.__dbConnector = dbConnector        
         self.__vncServerIP = vncServerIP
@@ -52,8 +50,6 @@ class DomainHandler(object):
         self.__libvirtConnection = None
         self.__virtualNetworkManager = None
         self.__virtualNetworkName = None
-        self.__compressionQueue = compressionQueue
-        self.__editedImagesData = imageRepositoryConnectionData
     
     def connectToLibvirt(self, networkInterface, virtualNetworkName, gatewayIP, netmask, 
                          dhcpStartIP, dhcpEndIP, createVirtualNetworkAsRoot) :
@@ -286,7 +282,7 @@ class DomainHandler(object):
                     
         else :
             data = dict()            
-            connectionData = self.__editedImagesData[commandID]
+            connectionData = self.__dbConnector.getImageRepositoryConnectionData(commandID)
             data["Transfer_Type"] = TRANSFER_T.STORE_IMAGE
             data["DataImagePath"] = dataImagePath
             data["OSImagePath"] = osImagePath
@@ -295,8 +291,8 @@ class DomainHandler(object):
             data["RepositoryPort"] = connectionData["RepositoryPort"]
             data["CommandID"] = commandID            
             data["TargetImageID"] = imageID
-            self.__compressionQueue.queue(data)
-            self.__editedImagesData.pop(commandID)
+            self.__dbConnector.addToCompressionQueue(data)
+            self.__dbConnector.removeImageRepositoryConnectionData(commandID)
             self.__dbConnector.deleteImage(imageID)              
     
     def __waitForDomainsToTerminate(self, timeout):

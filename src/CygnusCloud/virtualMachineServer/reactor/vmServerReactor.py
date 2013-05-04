@@ -9,7 +9,6 @@ from network.manager.networkManager import NetworkManager
 from virtualMachineServer.networking.callback import ClusterServerCallback
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from database.vmServer.vmServerDB import VMServerDBConnector
-from ccutils.dataStructures.multithreadingQueue import GenericThreadSafeQueue
 from network.ftp.ftpClient import FTPClient
 from virtualMachineServer.networking.reactors import MainServerPacketReactor
 from virtualMachineServer.threads.fileTransferThread import FileTransferThread
@@ -19,12 +18,9 @@ from virtualMachineServer.libvirtInteraction.domainHandler import DomainHandler
 from ccutils.processes.childProcessManager import ChildProcessManager
 from network.interfaces.ipAddresses import get_ip_address 
 from virtualMachineServer.reactor.transfer_t import TRANSFER_T
-from ccutils.dataStructures.multithreadingDictionary import GenericThreadSafeDictionary
 import os
 import multiprocessing
 import sys
-
-
 
 class VMServerReactor(MainServerPacketReactor):
     """
@@ -43,14 +39,13 @@ class VMServerReactor(MainServerPacketReactor):
         self.__compressionThread = None
         self.__networkManager = None
         self.__cManager = constantManager
-        self.__ftp = FTPClient()
-        self.__transferQueue = GenericThreadSafeQueue()
-        self.__compressionQueue = GenericThreadSafeQueue()
-        self.__editedImagesData = GenericThreadSafeDictionary()
+        self.__ftp = FTPClient()        
         self.__mainServerCallback = ClusterServerCallback(self)
         self.__domainHandler = None
         self.__domainTimeout = 0
         try :
+            self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), 
+                                      self.__cManager.getConstant("databasePassword"), )
             self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
         except Exception as e:
             print e.message
@@ -84,16 +79,15 @@ class VMServerReactor(MainServerPacketReactor):
         self.__packetManager = VMServerPacketHandler(self.__networkManager)        
         self.__networkManager.listenIn(self.__listenningPort, self.__mainServerCallback, True)
         self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
-                                                       self.__transferQueue, self.__compressionQueue, self.__cManager.getConstant("TransferDirectory"),
-                                                       self.__cManager.getConstant("FTPTimeout"))
+                                                       self.__cManager.getConstant("TransferDirectory"),
+                                                       self.__cManager.getConstant("FTPTimeout"), self.__dbConnector)
         self.__fileTransferThread.start()
         self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
             
         self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
                                                  self.__cManager.getConstant("configFilePath"),
                                                  self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("executionImagePath"),
-                                                 self.__cManager.getConstant("websockifyPath"), self.__cManager.getConstant("passwordLength"),
-                                                 self.__compressionQueue, self.__editedImagesData)
+                                                 self.__cManager.getConstant("websockifyPath"), self.__cManager.getConstant("passwordLength"))
         self.__domainHandler.connectToLibvirt(self.__cManager.getConstant("vncNetworkInterface"), 
                                                   self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
                                                   self.__cManager.getConstant("netMask"), self.__cManager.getConstant("dhcpStartIP"), 
@@ -101,8 +95,8 @@ class VMServerReactor(MainServerPacketReactor):
             
         self.__domainHandler.doInitialCleanup()
         self.__compressionThread = CompressionThread(self.__cManager.getConstant("TransferDirectory"), self.__cManager.getConstant("sourceImagePath"),
-                                                     self.__cManager.getConstant("configFilePath"), self.__compressionQueue, self.__transferQueue, 
-                                                     self.__dbConnector, self.__domainHandler, self.__editedImagesData)
+                                                     self.__cManager.getConstant("configFilePath"),
+                                                     self.__dbConnector, self.__domainHandler)
         self.__compressionThread.start()
     
     def shutdown(self):
@@ -172,7 +166,7 @@ class VMServerReactor(MainServerPacketReactor):
         data.pop("packet_type")
         data["FTPTimeout"] = self.__ftpTimeout
         data["Transfer_Type"] = TRANSFER_T.DEPLOY_IMAGE
-        self.__transferQueue.queue(data)
+        self.__dbConnector.addToTransferQueue(data)
         
     def __processImageEditionPacket(self, data):
         """
@@ -189,7 +183,7 @@ class VMServerReactor(MainServerPacketReactor):
             data["Transfer_Type"] = TRANSFER_T.CREATE_IMAGE
         data.pop("Modify")
         data["FTPTimeout"] = self.__ftpTimeout
-        self.__transferQueue.queue(data)
+        self.__dbConnector.addToTransferQueue(data)
 
     def __sendDomainsVNCConnectionData(self):
         '''

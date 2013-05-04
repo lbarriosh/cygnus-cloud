@@ -5,45 +5,48 @@ Created on Apr 28, 2013
 @author: luis
 '''
 
-from ccutils.threads import QueueProcessingThread
+from ccutils.threads import BasicThread
 from ccutils.compression.zipBasedCompressor import ZipBasedCompressor
 from virtualMachineServer.exceptions.vmServerException import VMServerException
 from os import path, listdir, makedirs
 import shutil
 from ccutils.processes.childProcessManager import ChildProcessManager
 from virtualMachineServer.reactor.transfer_t import TRANSFER_T
+from time import sleep
 
-class CompressionThread(QueueProcessingThread):
+class CompressionThread(BasicThread):
     """
     Clase del hilo de descompresión y compresión de ficheros
     """
     
-    def __init__(self, transferDirectory, workingDirectory, definitionFileDirectory, compressionQueue, transferQueue, dbConnector, domainHandler, imageRepositoryConnectionData):
+    def __init__(self, transferDirectory, workingDirectory, definitionFileDirectory, dbConnector, domainHandler):
         """
         Inicializa el estado del hilo
         Argumentos:
             transferDirectory: el directorio de trabajo del hilo de transferencias
             workingDirectory: el directorio en el que se almacenan las imágenes de disco
             definitionFileDirectory: el directorio en el que se almacenan los ficheros de definición de las máquinas
-            compressionQueue: cola que contiene las peticiones de compresión y descompresión
-            transferQueue: cola que contiene las peticiones de transferencia
             dbConnector: conector con la base de datos
             domainHandler: objeto que interactúa con libvirt para manipular máquinas virtuales
-            imageRepositoryConnectionData: diccionario con los datos de conexión al repositorio, indexados por el identificador
             único de la máquina virtual
         """
-        QueueProcessingThread.__init__(self, "File compression thread", compressionQueue)
+        BasicThread.__init__(self, "File compression thread")
         self.__workingDirectory = workingDirectory
         self.__transferDirectory = transferDirectory
         self.__definitionFileDirectory = definitionFileDirectory
         self.__dbConnector = dbConnector
         self.__domainHandler = domainHandler
-        self.__editedImagesData = imageRepositoryConnectionData
-        self.__transferQueue = transferQueue
         self.__compressor = ZipBasedCompressor()
+        
+    def run(self):
+        while not self.finish() :
+            if (self.__dbConnector.isCompressionQueueEmpty()):
+                sleep(0.1)
+            else:
+                self.__processElement()
 
         
-    def processElement(self, data):
+    def __processElement(self):
         """
         Procesa una petición de compresión o descompresión.
         Argumentos:
@@ -51,6 +54,7 @@ class CompressionThread(QueueProcessingThread):
         Devuelve:
             Nada
         """        
+        data = self.__dbConnector.peekFromCompressionQueue()
         if(data["Transfer_Type"] != TRANSFER_T.STORE_IMAGE):            
             if (data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :
                 # Borramos la imagen de la base de datos (si existe)
@@ -85,9 +89,8 @@ class CompressionThread(QueueProcessingThread):
                                            path.join(str(data["TargetImageID"]), definitionFile), data["Transfer_Type"] == TRANSFER_T.DEPLOY_IMAGE)
             
             if (data["Transfer_Type"] != TRANSFER_T.DEPLOY_IMAGE):                
-                # Guardamos los datos de conexión al repositorio            
-                self.__editedImagesData[data["CommandID"]] = {"RepositoryIP": data["RepositoryIP"], "RepositoryPort" : data["RepositoryPort"]}
-             
+                # Guardamos los datos de conexión al repositorio  
+                self.__dbConnector.addValueToConnectionDataDictionary(data["CommandID"], {"RepositoryIP": data["RepositoryIP"], "RepositoryPort" : data["RepositoryPort"]})                
                 # Arrancamos la máquina virtual
                 self.__domainHandler.createDomain(data["TargetImageID"], data["UserID"], data["CommandID"])            
         else:        
@@ -108,6 +111,8 @@ class CompressionThread(QueueProcessingThread):
             data.pop("OSImagePath")
             data.pop("DefinitionFilePath")
            
-            data["SourceFilePath"] = path.basename(zipFilePath)            
-           
-            self.__transferQueue.queue(data)
+            data["SourceFilePath"] = path.basename(zipFilePath)        
+            
+            self.__dbConnector.addToTransferQueue(data)
+            
+        self.__dbConnector.removeFirstElementFromCompressionQueue()

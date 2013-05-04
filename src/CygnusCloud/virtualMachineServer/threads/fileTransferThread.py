@@ -5,7 +5,7 @@ Created on Apr 28, 2013
 @author: luis
 '''
 
-from ccutils.threads import QueueProcessingThread
+from ccutils.threads import BasicThread
 from network.manager.networkManager import NetworkCallback
 from network.ftp.ftpClient import FTPClient
 from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T as IR_PACKET_T
@@ -15,12 +15,12 @@ from virtualMachineServer.reactor.transfer_t import TRANSFER_T
 from ccutils.processes.childProcessManager import ChildProcessManager
 from os import path
 
-class FileTransferThread(QueueProcessingThread):
+class FileTransferThread(BasicThread):
     """
     Clase del hilo de transferencias
     """
     def __init__(self, networkManager, serverListeningPort, packetHandler,
-                 transferQueue, compressionQueue, workingDirectory, ftpTimeout):
+                 workingDirectory, ftpTimeout, dbConnector):
         """
         Inicializa el estado del hilo de transferencias
         Argumentos:
@@ -28,22 +28,29 @@ class FileTransferThread(QueueProcessingThread):
             con el repositorio.
             serverListeningPort: el puerto en el que escucha el servidor de máquinas virtuales
             packetHandler: objeto que se usará para leer y crear paquetes
-            transferQueue: cola con las peticiones de transferencia
-            compressionQueue: cola con las peticiones de compresión. 
             workingDirectory: directorio en el que se colocarán los ficheros .zip que se intercambian
             con el repositorio de imágenes.
             ftpTimeout: el timeout máximo de las comunicaciones con el servidor FTP (en segundos)
         """
-        QueueProcessingThread.__init__(self, "File transfer thread", transferQueue)
+        BasicThread.__init__(self, "File transfer thread")
         self.__networkManager = networkManager
         self.__serverListeningPort = serverListeningPort
         self.__workingDirectory = workingDirectory
         self.__repositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)
         self.__vmServerPacketHandler = packetHandler
         self.__ftpTimeout = ftpTimeout
-        self.__compressionQueue = compressionQueue
+        self.__dbConnector = dbConnector
         
-    def processElement(self, data):
+    def run(self):
+        while not self.finish() :
+            data = self.__dbConnector.peekFromTransferQueue()
+            if data == None :
+                sleep(1.0)
+            else :
+                self.__processElement(data)        
+                self.__dbConnector.removeFirstElementFromTransferQueue()
+        
+    def __processElement(self, data):
         """
         Procesa una transferencia.
         Argumentos:
@@ -97,11 +104,11 @@ class FileTransferThread(QueueProcessingThread):
                     while not callback.isTransferCompleted() :
                         sleep(0.1)
                     data["TargetImageID"] = callback.getDomainImageID()
-                    self.__compressionQueue.queue(data)
+                    self.__dbConnector.addToCompressionQueue(data)
                 elif (data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE or data["Transfer_Type"] == TRANSFER_T.DEPLOY_IMAGE):
                     # No tocaremos la imagen => nos limitamos a encolar la petición
                     data["TargetImageID"] = data["SourceImageID"]
-                    self.__compressionQueue.queue(data)
+                    self.__dbConnector.addToCompressionQueue(data)
                 else :
                     # Teníamos que subir la nueva imagen al repositorio => nos cargamos el fichero .zip y terminamos
                     ChildProcessManager.runCommandInForeground("rm " + path.join(self.__workingDirectory, data["SourceFilePath"]), Exception)

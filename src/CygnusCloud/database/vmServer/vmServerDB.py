@@ -26,7 +26,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         results = self._executeQuery(sql, False)
         imageIds = []
         for r in results:
-            imageIds.append(r[0])
+            imageIds.append(r)
         return imageIds
     
     def getDataImagePath(self, imageID):
@@ -38,7 +38,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return result[0]
+        return result
     
     def getOSImagePath(self, imageID):
         '''
@@ -49,7 +49,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return result[0]
+        return result
     
     def getDefinitionFilePath(self, imageID):
         '''
@@ -60,7 +60,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql)
         if (result == None) : 
             return None
-        return result[0][0]
+        return result[0]
         
     def createImage(self, imageID, osImagePath, dataImagePath, definitionFilePath, bootable):
         '''
@@ -75,7 +75,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         
     def getBootableFlag(self, imageID):
         query = "SELECT bootable FROM VirtualMachine WHERE ImageID = {0};".format(imageID)
-        flag = self._executeQuery(query, True)[0]
+        flag = self._executeQuery(query, True)
         return flag == 1
     
     def deleteImage(self, imageID):
@@ -147,7 +147,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
             return None
         sql = "DELETE FROM FreeVNCPorts WHERE VNCPort = '" + str(result[0]) + "'"
         self._executeUpdate(sql)
-        return result[0]
+        return result
     
     def freeVNCPort(self, VNCPort):
         '''
@@ -165,7 +165,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return result[0] 
+        return result
     
     def getDomainMACAddress(self, domainName):
         '''
@@ -175,7 +175,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return result[0]     
+        return result
     
     def getDomainUUID(self, domainName):
         '''
@@ -185,7 +185,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return result[0] 
+        return result
     
     def getDomainVNCPassword(self, domainName): 
         '''
@@ -195,8 +195,8 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return result[0]
-    
+        return result
+
     def getWebsockifyDaemonPID(self, domainName): 
         '''
             Devuelve la contraseña que se ha dado el dominio que se le pasa como argumento.
@@ -205,7 +205,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return result[0] 
+        return result
     
     
     def getDomainOSImagePath(self, domainName): 
@@ -216,7 +216,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return result[0]    
+        return result
     
     def getDomainImageID(self, domainName):
         '''
@@ -227,7 +227,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return result[0]          
+        return result         
     
     def getDomainNameFromVNCPort(self, vncPort): 
         '''
@@ -237,7 +237,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return result[0]
+        return result
     
     def registerVMResources(self, domainName, ImageID, vncPort, vncPassword, userId, webSockifyPID, osImagePath, dataImagePath, mac, uuid):
         '''
@@ -267,7 +267,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
-        return int(result[0])
+        return int(result)
     
     def getDomainsConnectionData(self):
         '''
@@ -298,7 +298,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         if (result == None) :
             return None
         else :
-            return result[0]
+            return result
         
     def getDomainNameFromVMBootCommand(self, commandID):
         query = "SELECT domainName FROM ActiveDomainUIDs WHERE commandID = '{0}';".format(commandID)
@@ -306,7 +306,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         if (result == None) :
             return None
         else :
-            return result[0]
+            return result
     
     def __getAssignedResources(self):
         query = "SELECT macAddress, VNCPort FROM ActualVM;"
@@ -364,7 +364,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         else :
             ac = []
             for row in results:
-                ac.append(row[0])
+                ac.append(row)
             return ac
         
     def allocateAssignedMACsUUIDsAndVNCPorts(self):
@@ -393,11 +393,11 @@ class VMServerDBConnector(BasicDatabaseConnector):
         serialized_data = ""
         serialized_data += str(data["Transfer_Type"]) + "$"
         serialized_data += str(data["FTPTimeout"]) + "$"
-        serialized_data += str(data["TargetImageID"]) + "$"
         serialized_data += data["RepositoryIP"] + "$"
         serialized_data += str(data["RepositoryPort"]) + "$"
         serialized_data += data["CommandID"] + "$"
         if (data["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
+            serialized_data += str(data["TargetImageID"]) + "$"
             serialized_data += data["SourceFilePath"]
         elif (data["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :            
             serialized_data += str(data["SourceImageID"]) + "$"
@@ -419,23 +419,21 @@ class VMServerDBConnector(BasicDatabaseConnector):
         first_element_ID = self._executeQuery(query, True)
         if (first_element_ID == None) :
             return None
-        else :
-            first_element_ID = first_element_ID[0]
         query = "SELECT data FROM TransferQueue WHERE position = {0};".format(first_element_ID)
-        serialized_data = self._executeQuery(query, True)[0]
+        serialized_data = self._executeQuery(query, True)
         tokens = serialized_data.split("$")
         result = dict()
         result["Transfer_Type"] = int(tokens[0])
-        result["FTPTimeout"] = int(tokens[1])
-        result["TargetImageID"] = int(tokens[2])
-        result["RepositoryIP"] = tokens[3]
-        result["RepositoryPort"] = int(tokens[4])
-        result["CommandID"] = tokens[5]
+        result["FTPTimeout"] = int(tokens[1])       
+        result["RepositoryIP"] = tokens[2]
+        result["RepositoryPort"] = int(tokens[3])
+        result["CommandID"] = tokens[4]
         if (result["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
+            result["TargetImageID"] = int(tokens[5])
             result["SourceFilePath"] = tokens[6]            
         elif (result["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or result["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :  
-            result["SourceImageID"] = int(tokens[6])
-            result["UserID"] = int(tokens[7])
+            result["SourceImageID"] = int(tokens[5])
+            result["UserID"] = int(tokens[6])
         return result
         
     def removeFirstElementFromTransferQueue(self):
@@ -451,21 +449,9 @@ class VMServerDBConnector(BasicDatabaseConnector):
         if (first_element_ID == None) :
             return
         else :
-            first_element_ID = first_element_ID[0]
+            first_element_ID = first_element_ID
         update = "DELETE FROM TransferQueue WHERE position = {0};".format(first_element_ID)
         self._executeUpdate(update)
-        
-    def isTransferQueueEmpty(self):
-        """
-        Indica si la cola de transferencias está vacía o no
-        Argumentos:
-            Ninguno
-        Devuelve:
-            True si la cola de transferencias está vacía, y False en otro caso
-        """
-        query = "SELECT * FROM TransferQueue;"
-        result = self._executeQuery(query, True)
-        return result == None
     
     def addToCompressionQueue(self, data):
         serialized_data = ""
@@ -490,10 +476,8 @@ class VMServerDBConnector(BasicDatabaseConnector):
         first_element_ID = self._executeQuery(query, True)
         if (first_element_ID == None) :
             return None
-        else :
-            first_element_ID = first_element_ID[0]
         query = "SELECT data FROM CompressionQueue WHERE position = {0};".format(first_element_ID)
-        serialized_data = self._executeQuery(query, True)[0]
+        serialized_data = self._executeQuery(query, True)
         tokens = serialized_data.split("$")
         result = dict()
         result["Transfer_Type"] = int(tokens[0])
@@ -523,8 +507,6 @@ class VMServerDBConnector(BasicDatabaseConnector):
         first_element_ID = self._executeQuery(query, True)
         if (first_element_ID == None) :
             return
-        else :
-            first_element_ID = first_element_ID[0]
         update = "DELETE FROM CompressionQueue WHERE position = {0};".format(first_element_ID)
         self._executeUpdate(update)
         
@@ -537,8 +519,8 @@ class VMServerDBConnector(BasicDatabaseConnector):
             True si la cola de transferencias está vacía, y False en otro caso
         """
         query = "SELECT * FROM CompressionQueue;"
-        result = self._executeQuery(query, True)
-        return result == None
+        result = self._executeQuery(query)
+        return result == ()
     
     def addValueToConnectionDataDictionary(self, commandID, value):
         serialized_data = value["RepositoryIP"] + "$" + str(value["RepositoryPort"])
@@ -547,7 +529,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         
     def getImageRepositoryConnectionData(self, commandID):
         query = "SELECT value FROM ConnectionDataDictionary WHERE dict_key = '{0}';".format(commandID)
-        result = self._executeQuery(query, True)
+        result = self._executeQuery(query)
         if (result == None) :
             return None
         else:
