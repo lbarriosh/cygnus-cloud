@@ -42,7 +42,7 @@ class ClusterServerDBTests(unittest.TestCase):
         
     def test_removeImage(self):
         imageID = self.__connector.addImage()
-        self.__connector.removeImage(imageID)
+        self.__connector.deleteImage(imageID)
         result = self.__connector.getImageData(imageID)
         expectedResult = None
         self.assertEquals(result, expectedResult, "removeImage() error")

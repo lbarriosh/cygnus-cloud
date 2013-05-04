@@ -83,7 +83,10 @@ class BasicDatabaseConnector(object):
             cursor.execute(command, ())
             result = []
             for row in cursor :
-                result.append(row[0])                    
+                if (len(row) == 1) :
+                    result.append(row[0])     
+                else :
+                    result.append(row)               
             cursor.close()
             if (result == []) :
                 return None
