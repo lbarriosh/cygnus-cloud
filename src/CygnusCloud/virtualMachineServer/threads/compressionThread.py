@@ -74,13 +74,16 @@ class CompressionThread(BasicThread):
             if not path.exists(definitionFileDirectory):
                 makedirs(definitionFileDirectory)
         
+            find = 0
             for fileName in listdir(imageDirectory):
                 ChildProcessManager.runCommandInForegroundAsRoot("chmod 666 " + path.join(imageDirectory, fileName), VMServerException)
                 if fileName.endswith(".xml"):
                     # movemos el fichero al directorio
                     definitionFile = fileName
                     shutil.move(path.join(imageDirectory, fileName), definitionFileDirectory)
-                    
+                    find = 1
+            if(find == 0):
+                raise Exception("Xml file not found")
 
             # Registramos la máquina virtual
             self.__dbConnector.createImage(data["TargetImageID"], path.join(str(data["TargetImageID"]), "OS.qcow2"),

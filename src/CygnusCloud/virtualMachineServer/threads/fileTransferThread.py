@@ -120,7 +120,7 @@ class FileTransferThread(BasicThread):
             try :
                 self.__networkManager.closeConnection(data["RepositoryIP"], data["RepositoryPort"])
             except Exception:
-                pass
+                raise Exception("Error : An error ocurred while the conection was closed")
             p = self.__vmServerPacketHandler.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR, 
                                                                    "Unable to connect to the image repository" + e.message, 
                                                                    data["CommandID"])

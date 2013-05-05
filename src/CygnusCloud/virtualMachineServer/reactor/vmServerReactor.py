@@ -154,6 +154,8 @@ class VMServerReactor(MainServerPacketReactor):
             self.__processImageEditionPacket(data)
         elif (data['packet_type'] == VM_SERVER_PACKET_T.DEPLOY_IMAGE) :
             self.__processDeployImagePacket(data)
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.DELETE_IMAGE) :
+            self.__deleteImage(data)
             
     def __processDeployImagePacket(self, data):
         """
@@ -166,6 +168,34 @@ class VMServerReactor(MainServerPacketReactor):
         data.pop("packet_type")
         data["Transfer_Type"] = TRANSFER_T.DEPLOY_IMAGE
         self.__dbConnector.addToTransferQueue(data)
+        
+    def __deleteImage(self,data):
+        data.pop("packet_type")
+        isBootable = self.__dbConnector.getBootableFlag(data["CommandID"])
+        
+        if(isBootable):
+            dataImagePath = os.path.join(self.__cManager.getConstant("sourceImagePath") 
+                                   ,self.__dbConnector.getDataImagePath(data["CommandID"]))
+            osImagePath = os.path.join(self.__cManager.getConstant("sourceImagePath") 
+                                   ,self.__dbConnector.getOSImagePath(data["CommandID"]))
+            certificatePath = os.path.join(self.__cManager.getConstant("configFilePath") 
+                                   ,self.__dbConnector.getDefinitionFilePath(data["CommandID"]))
+            ChildProcessManager.runCommandInForeground("rm " + dataImagePath, VMServerException)
+            ChildProcessManager.runCommandInForeground("rm " + osImagePath, VMServerException)
+            ChildProcessManager.runCommandInForeground("rm " + certificatePath, VMServerException)
+        
+            dataDirectory = os.path.dirname(dataImagePath)
+            configDirectory = os.path.dirname(certificatePath)
+            if (os.listdir(dataDirectory) == []) :
+                ChildProcessManager.runCommandInForeground("rm -rf " + dataDirectory, VMServerException)
+            if (configDirectory != dataDirectory and os.listdir(configDirectory) == []) :
+                ChildProcessManager.runCommandInForeground("rm -rf " + configDirectory, VMServerException) 
+        
+            self.__dbConnector.deleteImage(data["CommandID"])
+        else:
+            raise Exception("Error: image editing. Not be removed ")
+            
+        
         
     def __processImageEditionPacket(self, data):
         """
