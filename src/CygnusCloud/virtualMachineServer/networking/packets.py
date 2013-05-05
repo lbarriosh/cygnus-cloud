@@ -123,7 +123,7 @@ class VMServerPacketHandler(object):
         p.writeInt(physicalCPUs)
         return p
     
-    def createVMServerShutdownPacket(self):
+    def createVMServerShutdownPacket(self, timeout=300):
         """
         Crea un paquete de apagado (amigable) de un servidor de máquinas virtuales
         Argumentos:
@@ -133,6 +133,7 @@ class VMServerPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN)
+        p.writeInt(timeout)
         return p
     
     def createVMServerHaltPacket(self):
@@ -306,6 +307,8 @@ class VMServerPacketHandler(object):
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DEPLOYED or
               packet_type == VM_SERVER_PACKET_T.IMAGE_DELETED):
                 result["CommandID"] = p.readString()
+        elif (packet_type == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN):
+            result["Timeout"] = p.readInt()
         # Importante: los segmentos que transportan los datos de conexión se reenviarán, por lo que no tenemos que
         # leerlos para ganar en eficiencia.
         return result

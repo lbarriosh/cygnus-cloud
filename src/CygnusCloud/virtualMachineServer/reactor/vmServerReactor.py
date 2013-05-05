@@ -139,7 +139,7 @@ class VMServerReactor(MainServerPacketReactor):
         elif (data["packet_type"] == VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST) :
             self.__sendStatusData()
         elif (data["packet_type"] == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN) :
-            self.__domainTimeout = 300
+            self.__domainTimeout = data["Timeout"]
             self.__finished = True
         elif (data["packet_type"] == VM_SERVER_PACKET_T.HALT) :
             self.__domainTimeout = 0
