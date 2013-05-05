@@ -538,3 +538,19 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             return None
         else :
             return int(result)
+        
+    def addImageRepository(self, repositoryIP, repositoryPort):
+        command = "INSERT INTO ImageRepository VALUES ('{0}', {1}, 0, 0)".format(repositoryIP, repositoryPort)
+        self._executeUpdate(command)
+        
+    def updateImageRepositoryStatus(self, repositoryIP, repositoryPort, freeDiskSpace, availableDiskSpace):
+        command = "UPDATE ImageRepository SET freeDiskSpace={2}, availableDiskSpace={3} WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
+            .format(repositoryIP, repositoryPort, freeDiskSpace, availableDiskSpace)
+        self._executeUpdate(command)
+        
+    def getImageRepositoryStatus(self, repositoryIP, repositoryPort):
+        query = "SELECT freeDiskSpace, availableDiskSpace FROM ImageRepository repositoryIP = '{0}' AND repositoryPort = {1};"\
+            .format(repositoryIP, repositoryPort)
+        result = self._executeQuery(query, True)
+        return {"FreeDiskSpace" : result[0], "AvailableDiskSpace" : result[1]}        
+        

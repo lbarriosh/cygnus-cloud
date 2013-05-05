@@ -33,6 +33,12 @@ CREATE TABLE IF NOT EXISTS VanillaImageFamilyOf(imageID INTEGER, familyID SMALLI
 	PRIMARY KEY(familyID, imageID),
 	FOREIGN KEY(familyID) REFERENCES VanillaImageFamily(familyID));
 	
+DROP TABLE IF EXISTS ImageRepository;
+
+CREATE TABLE ImageRepository(repositoryIP VARCHAR(15), repositoryPort INTEGER,
+	freeDiskSpace INTEGER, availableDiskSpace INTEGER, PRIMARY KEY(repositoryIP, repositoryPort))
+	ENGINE=MEMORY;
+	
 DROP TABLE IF EXISTS VMBootCommand;
 
 CREATE TABLE VMBootCommand(commandID VARCHAR(70), dispatchTime double, VMID INT,
