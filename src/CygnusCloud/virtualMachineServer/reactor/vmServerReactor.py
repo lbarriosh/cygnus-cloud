@@ -175,9 +175,9 @@ class VMServerReactor(MainServerPacketReactor):
         
         if(isBootable):            
             osImagePath = os.path.join(self.__cManager.getConstant("sourceImagePath") 
-                                   ,self.__dbConnector.getOSImagePath(data["CommandID"]))
+                                   ,self.__dbConnector.getOSImagePath(data["ImageID"]))
             definitionFilePath = os.path.join(self.__cManager.getConstant("configFilePath") 
-                                   ,self.__dbConnector.getDefinitionFilePath(data["CommandID"]))
+                                   ,self.__dbConnector.getDefinitionFilePath(data["ImageID"]))
             
             try :
                 

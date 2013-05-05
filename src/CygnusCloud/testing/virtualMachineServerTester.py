@@ -42,12 +42,12 @@ class TesterCallback(NetworkCallback):
             print("Image deletion error: " + data["ErrorMessage"])
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITED):
             print("The virtual machine server says: the image {0} has been edited".format(data["ImageID"]))
-        elif (packet_type == VM_SERVER_PACKET_T.DELETE_IMAGE):
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DELETED):
             print("The virtual machine server says: the image deletion request has been processed")
-        elif (packet_type == VM_SERVER_PACKET_T.DEPLOY_IMAGE):
-            print("The virtual machine server says: the image deploy request has been processed")
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DEPLOYED):
+            print("The virtual machine server says: the image deployment request has been processed")
         else :
-            print("Error: a packet from an unexpected type has been received "+packet_type)
+            print("Error: a packet from an unexpected type has been received "+ str(packet_type))
        
 
 def printLogo():
