@@ -11,7 +11,7 @@ from packets import ImageRepositoryPacketHandler, PACKET_T
 from network.ftp.ftpServer import ConfigurableFTPServer, FTPCallback
 from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
 from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
-from os import remove, path, mkdir
+from os import remove, path, mkdir, statvfs
 from time import sleep
 from ccutils.processes.childProcessManager import ChildProcessManager
 
@@ -74,7 +74,7 @@ class ImageRepository(object):
             self.__repositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)        
             
             self.__commandsCallback = CommandsCallback(self.__networkManager, self.__repositoryPacketHandler, commandsListenningPort, self.__dbConnector,
-                                                       self.__retrieveQueue, self.__storeQueue)        
+                                                       self.__retrieveQueue, self.__storeQueue, self.__workingDirectory)        
             
             self.__networkManager.startNetworkService()
             self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, True)
@@ -190,7 +190,7 @@ class CommandsCallback(NetworkCallback):
     """
     Clase para el callback que procesará los datos recibidos por la conexión de comandos.
     """    
-    def __init__(self, packetCreator, pHandler, listenningPort, dbConnector, retrieveQueue, storeQueue):
+    def __init__(self, packetCreator, pHandler, listenningPort, dbConnector, retrieveQueue, storeQueue, workingDirectory):
         """
         Inicializa el estado del callback
         Argumentos:
@@ -208,6 +208,7 @@ class CommandsCallback(NetworkCallback):
         self.__haltReceived = False
         self.__retrieveQueue = retrieveQueue
         self.__storeQueue = storeQueue
+        self.__workingDirectory = workingDirectory
         
     def processPacket(self, packet):
         """
@@ -228,6 +229,15 @@ class CommandsCallback(NetworkCallback):
             self.__handleStorRequest(data)
         elif (data["packet_type"] == PACKET_T.DELETE_REQUEST):
             self.__deleteImage(data)
+        elif (data["packet_type"] == PACKET_T.STATUS_REQUEST):
+            self.__sendStatusData(data)
+            
+    def __sendStatusData(self, data):
+        diskStats = statvfs(self.__workingDirectory)
+        freeDiskSpace = diskStats.f_bfree * diskStats.f_frsize / 1024
+        totalDiskSpace = diskStats.f_bavail * diskStats.f_frsize / 1024
+        p = self.__repositoryPacketHandler.createStatusDataPacket(freeDiskSpace, totalDiskSpace)
+        self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
     
     def __addNewImage(self, data):
         """

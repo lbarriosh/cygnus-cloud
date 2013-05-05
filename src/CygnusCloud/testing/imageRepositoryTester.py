@@ -54,7 +54,8 @@ class TesterCallback(NetworkCallback):
             user_input = False
         elif (data['packet_type'] == PACKET_T.DELETE_REQUEST_RECVD):
             print("The image repository says: delete request received")
-        
+        elif (data['packet_type'] == PACKET_T.STATUS_DATA):
+            print("Image repository disk status: {0} KB free, {1} KB available".format(data["FreeDiskSpace"], data["TotalDiskSpace"]))     
         else:
             print("Error: a packet from an unexpected type has been received " + str(data['packet_type']))
        
@@ -97,6 +98,10 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             return False
         elif (command == "deleteImage") :
             p = pHandler.createDeleteRequestPacket(int(tokens.pop(0)))
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "status"):
+            p = pHandler.createStatusRequestPacket()
             networkManager.sendPacket(ip_address, port, p)
             return False
         else :

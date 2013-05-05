@@ -9,7 +9,7 @@ from ccutils.enums import enum
 
 PACKET_T = enum("HALT", "ADD_IMAGE", "ADDED_IMAGE_ID", "RETR_REQUEST", "RETR_REQUEST_RECVD", "RETR_REQUEST_ERROR", "RETR_START", "RETR_ERROR",
                 "STOR_REQUEST", "STOR_REQUEST_RECVD", "STOR_REQUEST_ERROR", "STOR_START", "STOR_ERROR",
-                "DELETE_REQUEST", "DELETE_REQUEST_RECVD", "DELETE_REQUEST_ERROR")
+                "DELETE_REQUEST", "DELETE_REQUEST_RECVD", "DELETE_REQUEST_ERROR", "STATUS_REQUEST", "STATUS_DATA")
 
 class ImageRepositoryPacketHandler(object):
     """
@@ -151,6 +151,18 @@ class ImageRepositoryPacketHandler(object):
         p.writeInt(imageID)
         return p
     
+    def createStatusRequestPacket(self):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(PACKET_T.STATUS_REQUEST)
+        return p
+    
+    def createStatusDataPacket(self, freeDiskSpace, totalDiskSpace):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(PACKET_T.STATUS_DATA)
+        p.writeInt(freeDiskSpace)
+        p.writeInt(totalDiskSpace)
+        return p
+    
     def readPacket(self, p):
         """
         Vuelca el contenido de un paquete en un diccionario
@@ -183,4 +195,7 @@ class ImageRepositoryPacketHandler(object):
             data['fileName'] = p.readString()
         elif (packet_type == PACKET_T.DELETE_REQUEST):
             data['imageID'] = p.readInt()
+        elif (packet_type == PACKET_T.STATUS_DATA):
+            data["FreeDiskSpace"] = p.readInt()
+            data["TotalDiskSpace"] = p.readInt()
         return data 
