@@ -112,6 +112,9 @@ class FileTransferThread(BasicThread):
                 else :
                     # Teníamos que subir la nueva imagen al repositorio => nos cargamos el fichero .zip y terminamos
                     ChildProcessManager.runCommandInForeground("rm " + path.join(self.__workingDirectory, data["SourceFilePath"]), Exception)
+                    # Confirmamos que hemos subido la imagen
+                    p = self.__vmServerPacketHandler.createImageEditedPacket(data["TargetImageID"], data["CommandID"])
+                    self.__networkManager.sendPacket('', self.__serverListeningPort, p)
                 
             # Nos desconectamos del repositorio
             self.__networkManager.closeConnection(data["RepositoryIP"], data["RepositoryPort"])

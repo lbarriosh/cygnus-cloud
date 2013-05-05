@@ -12,6 +12,7 @@ from os import path, listdir, makedirs
 import shutil
 from ccutils.processes.childProcessManager import ChildProcessManager
 from virtualMachineServer.reactor.transfer_t import TRANSFER_T
+from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T
 from time import sleep
 
 class CompressionThread(BasicThread):
@@ -19,7 +20,8 @@ class CompressionThread(BasicThread):
     Clase del hilo de descompresión y compresión de ficheros
     """
     
-    def __init__(self, transferDirectory, workingDirectory, definitionFileDirectory, dbConnector, domainHandler):
+    def __init__(self, transferDirectory, workingDirectory, definitionFileDirectory, dbConnector, domainHandler,
+                 networkManager, serverListenningPort, packetHandler):
         """
         Inicializa el estado del hilo
         Argumentos:
@@ -37,6 +39,9 @@ class CompressionThread(BasicThread):
         self.__dbConnector = dbConnector
         self.__domainHandler = domainHandler
         self.__compressor = ZipBasedCompressor()
+        self.__networkManager = networkManager
+        self.__serverListenningPort = serverListenningPort
+        self.__packetHandler = packetHandler
         
     def run(self):
         while not self.finish() :
@@ -95,6 +100,9 @@ class CompressionThread(BasicThread):
                 self.__dbConnector.addValueToConnectionDataDictionary(data["CommandID"], {"RepositoryIP": data["RepositoryIP"], "RepositoryPort" : data["RepositoryPort"]})                
                 # Arrancamos la máquina virtual
                 self.__domainHandler.createDomain(data["TargetImageID"], data["UserID"], data["CommandID"])        
+            else :
+                p = self.__packetHandler.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DEPLOYED, data["CommandID"])
+                self.__networkManager.sendPacket('', self.__serverListenningPort, p)
                 
             # Borramos el fichero .zip
             ChildProcessManager.runCommandInForeground("rm " + compressedFilePath, VMServerException)    

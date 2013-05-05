@@ -96,7 +96,7 @@ class VMServerReactor(MainServerPacketReactor):
         self.__domainHandler.doInitialCleanup()
         self.__compressionThread = CompressionThread(self.__cManager.getConstant("TransferDirectory"), self.__cManager.getConstant("sourceImagePath"),
                                                      self.__cManager.getConstant("configFilePath"),
-                                                     self.__dbConnector, self.__domainHandler)
+                                                     self.__dbConnector, self.__domainHandler, self.__networkManager, self.__listenningPort, self.__packetManager)
         self.__compressionThread.start()
     
     def shutdown(self):
@@ -171,7 +171,7 @@ class VMServerReactor(MainServerPacketReactor):
         
     def __processDeleteImagePacket(self, data):
         
-        isBootable = self.__dbConnector.getBootableFlag(data["CommandID"])
+        isBootable = self.__dbConnector.getBootableFlag(data["ImageID"])
         
         if(isBootable):            
             osImagePath = os.path.join(self.__cManager.getConstant("sourceImagePath") 
@@ -184,15 +184,21 @@ class VMServerReactor(MainServerPacketReactor):
                 self.__dbConnector.deleteImage(data["ImageID"])                
                 ChildProcessManager.runCommandInForeground("rm -rf " + os.path.dirname(osImagePath), VMServerException)                
                 ChildProcessManager.runCommandInForeground("rm -rf " + os.path.dirname(definitionFilePath), VMServerException)
+                p = self.__packetManager.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DELETED, data["CommandID"])
             except Exception as e:
                 p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.DELETE_IMAGE_ERROR, "Can't delete image: internal error ({0})".format(e.message), 
-                                                            data["CommandID"])
-                self.__networkManager.sendPacket('', self.__listenningPort, p)
+                                                            data["CommandID"])                
             
         else:
-            p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.DELETE_IMAGE_ERROR, "The image is being edited, so it can't be deleted", 
+            if (isBootable != None) :
+                errorMessage = "The image is being edited, so it cannot be deleted"
+            else :
+                errorMessage = "The image {0} does not exist".format(data["ImageID"])
+            
+            p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.DELETE_IMAGE_ERROR, errorMessage, 
                                                        data["CommandID"])
-            self.__networkManager.sendPacket('', self.__listenningPort, p)
+        
+        self.__networkManager.sendPacket('', self.__listenningPort, p)
             
         
         

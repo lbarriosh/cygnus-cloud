@@ -4,7 +4,7 @@
 This module contains statements to connect to a virtual machine
 server and control it.
 @author: Luis Barrios Hernández
-@version: 6.3
+@version: 7.0
 '''
 from __future__ import print_function
 
@@ -40,6 +40,12 @@ class TesterCallback(NetworkCallback):
             print("Image edition error: " + data["ErrorMessage"])  
         elif (packet_type == VM_SERVER_PACKET_T.DELETE_IMAGE_ERROR) :
             print("Image deletion error: " + data["ErrorMessage"])
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITED):
+            print("The virtual machine server says: the image {0} has been edited".format(data["ImageID"]))
+        elif (packet_type == VM_SERVER_PACKET_T.DELETE_IMAGE):
+            print("The virtual machine server says: the image deletion request has been processed")
+        elif (packet_type == VM_SERVER_PACKET_T.DEPLOY_IMAGE):
+            print("The virtual machine server says: the image deploy request has been processed")
         else :
             print("Error: a packet from an unexpected type has been received "+packet_type)
        
@@ -123,7 +129,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     printLogo()
     print('Virtual Machine Server tester')
-    print('Version 6.3')
+    print('Version 7.0')
     print('*' * 80)
     print('*' * 80)
     print()

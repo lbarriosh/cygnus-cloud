@@ -10,7 +10,8 @@ from ccutils.enums import enum
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
                           "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS",
-                          "IMAGE_EDITION", "IMAGE_EDITION_ERROR", "DEPLOY_IMAGE", "DEPLOY_IMAGE_ERROR","DELETE_IMAGE", "DELETE_IMAGE_ERROR")
+                          "IMAGE_EDITION", "IMAGE_EDITION_ERROR", "DEPLOY_IMAGE", "DEPLOY_IMAGE_ERROR","DELETE_IMAGE", "DELETE_IMAGE_ERROR",
+                          "IMAGE_EDITED", "IMAGE_DEPLOYED", "IMAGE_DELETED")
 
 class VMServerPacketHandler(object):
     """
@@ -226,6 +227,19 @@ class VMServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
+    def createImageEditedPacket(self, imageID, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.IMAGE_EDITED)
+        p.writeString(commandID)
+        p.writeInt(imageID)
+        return p
+        
+    def createConfirmationPacket(self, packet_type, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(packet_type)
+        p.writeString(commandID)
+        return p
+    
     def readPacket(self, p):
         """
         Lee un paquete del servidor de máquinas virtuales y vuelca sus datos a un diccionario.
@@ -286,6 +300,12 @@ class VMServerPacketHandler(object):
         elif (packet_type == VM_SERVER_PACKET_T.DELETE_IMAGE):
             result["ImageID"] = p.readInt()
             result["CommandID"] = p.readString()
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITED) :
+            result["CommandID"] = p.readString()
+            result["ImageID"] = p.readInt()
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DEPLOYED or
+              packet_type == VM_SERVER_PACKET_T.IMAGE_DELETED):
+                result["CommandID"] = p.readString()
         # Importante: los segmentos que transportan los datos de conexión se reenviarán, por lo que no tenemos que
         # leerlos para ganar en eficiencia.
         return result
