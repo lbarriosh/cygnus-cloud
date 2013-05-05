@@ -38,6 +38,8 @@ class TesterCallback(NetworkCallback):
             print(packet._getData())
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
             print("Image edition error: " + data["ErrorMessage"])  
+        elif (packet_type == VM_SERVER_PACKET_T.DELETE_IMAGE_ERROR) :
+            print("Image deletion error: " + data["ErrorMessage"])
         else :
             print("Error: a packet from an unexpected type has been received "+packet_type)
        
@@ -91,6 +93,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "deployImage"):
             p = pHandler.createImageDeployPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), "1")
+            networkManager.sendPacket(ip_address, port, p)
+        elif (command == "deleteImage") :
+            p = pHandler.createDeleteImagePacket(int(tokens.pop(0)), "1")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True

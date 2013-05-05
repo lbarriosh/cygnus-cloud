@@ -10,7 +10,7 @@ from ccutils.enums import enum
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
                           "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS",
-                          "IMAGE_EDITION", "IMAGE_EDITION_ERROR", "DEPLOY_IMAGE", "DEPLOY_IMAGE_ERROR","DELETE_IMAGE")
+                          "IMAGE_EDITION", "IMAGE_EDITION_ERROR", "DEPLOY_IMAGE", "DEPLOY_IMAGE_ERROR","DELETE_IMAGE", "DELETE_IMAGE_ERROR")
 
 class VMServerPacketHandler(object):
     """
@@ -219,9 +219,10 @@ class VMServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createDeleteImagePacket(self,imageId):
-        p = self.__packetCreator.createPacket(2)
+    def createDeleteImagePacket(self, imageID, commandID):
+        p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.DELETE_IMAGE)
+        p.writeInt(imageID)
         p.writeString(commandID)
         return p
     
@@ -272,7 +273,9 @@ class VMServerPacketHandler(object):
             result["Modify"] = p.readBool()   
             result["CommandID"] = p.readString()
             result["UserID"] = p.readInt()
-        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR or
+              packet_type == VM_SERVER_PACKET_T.DEPLOY_IMAGE_ERROR or
+              packet_type == VM_SERVER_PACKET_T.DELETE_IMAGE_ERROR) :
             result["ErrorMessage"] = p.readString()
             result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DEPLOY_IMAGE) :
@@ -281,6 +284,7 @@ class VMServerPacketHandler(object):
             result["SourceImageID"] = p.readInt()
             result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DELETE_IMAGE):
+            result["ImageID"] = p.readInt()
             result["CommandID"] = p.readString()
         # Importante: los segmentos que transportan los datos de conexión se reenviarán, por lo que no tenemos que
         # leerlos para ganar en eficiencia.
