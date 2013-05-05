@@ -109,8 +109,6 @@ class ImageRepository(object):
                 pass
         if (self.__networkManager != None) :
             self.__networkManager.stopNetworkService()
-        
-        self.__dbConnector.disconnect()        
     
     def initTransfers(self):
         """

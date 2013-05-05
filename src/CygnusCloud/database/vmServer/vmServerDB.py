@@ -343,6 +343,8 @@ class VMServerDBConnector(BasicDatabaseConnector):
         """
         query = "SELECT CommandID FROM ActiveDomainUIDs;"
         rows = self._executeQuery(query, False)
+        if (rows == None) :
+            return []
         result = []
         for row in rows :
             result.append(row[0])

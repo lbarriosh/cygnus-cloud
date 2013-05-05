@@ -112,6 +112,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "SELECT serverId FROM VMServer;"  
         #Recogemos los resultado
         results=self._executeQuery(query)
+        if (results == None) :
+            return []
         serverIds = []
         for r in results:
             serverIds.append(r)
@@ -128,6 +130,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         """
         query = "SELECT serverIP, serverPort FROM VMServer WHERE serverStatus = " + str(SERVER_STATE_T.READY) + ";"
         results = self._executeQuery(query)
+        if (results == None) :
+            return []
         serverIPs = []
         for r in results :
             serverIPs.append({"ServerIP" : r[0], "ServerPort" : r[1]})
@@ -210,6 +214,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 + " AND " + "imageId =" + str(imageId) + ";"
         #Recogemos los resultado
         results=self._executeQuery(query)
+        if (results == None) :
+            return []
         #Guardamos en una lista los ids resultantes
         serverIds = []
         for r in results:
@@ -256,10 +262,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "SELECT serverId FROM VMServer WHERE serverIP = '" + nameOrIPAddress +\
              "' OR serverName = '" + nameOrIPAddress + "';"
         # Execute it
-        results=self._executeQuery(query)
-        if (results == ()) : 
+        results=self._executeQuery(query, True)
+        if (results == None) : 
             return None
-        return results[0]
+        return results
     
     def updateVMServerStatus(self, serverId, newStatus):
         '''

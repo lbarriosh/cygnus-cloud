@@ -33,7 +33,7 @@ class TesterCallback(NetworkCallback):
             print("Downloading file...")
             ftpClient = FTPClient()
             ftpClient.connect(self.__ip_address, data['FTPServerPort'], 5, data['username'], data['password'])
-            ftpClient.retrieveFile(data['fileName'], "/home/adrian", data['serverDirectory']) 
+            ftpClient.retrieveFile(data['fileName'], "/home/luis", data['serverDirectory']) 
             ftpClient.disconnect()
             print("Transfer completed")
         elif (data['packet_type'] == PACKET_T.STOR_REQUEST_ERROR or data['packet_type'] == PACKET_T.STOR_ERROR) :
@@ -48,7 +48,7 @@ class TesterCallback(NetworkCallback):
                 fileName = raw_input('File to upload (it MUST contain the image ID): ')
             else :
                 fileName = data['fileName']
-            ftpClient.storeFile(fileName, "/home/adrian", data['serverDirectory']) 
+            ftpClient.storeFile(fileName, "/home/luis", data['serverDirectory']) 
             ftpClient.disconnect()
             print("Transfer completed")
             user_input = False
@@ -126,7 +126,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/adrian/Documentos/Certificados")
+    networkManager = NetworkManager("/home/luis/Certificates")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = ImageRepositoryPacketHandler(networkManager)
