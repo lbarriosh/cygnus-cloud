@@ -10,7 +10,7 @@ from ccutils.enums import enum
 VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
                           "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS",
-                          "IMAGE_EDITION", "IMAGE_EDITION_ERROR", "DEPLOY_IMAGE", "DEPLOY_IMAGE_ERROR","DELETE_IMAGE", "DELETE_IMAGE_ERROR",
+                          "IMAGE_EDITION", "IMAGE_EDITION_ERROR", "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR","DELETE_IMAGE", "IMAGE_DELETION_ERROR",
                           "IMAGE_EDITED", "IMAGE_DEPLOYED", "IMAGE_DELETED")
 
 class VMServerPacketHandler(object):
@@ -288,8 +288,8 @@ class VMServerPacketHandler(object):
             result["CommandID"] = p.readString()
             result["UserID"] = p.readInt()
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR or
-              packet_type == VM_SERVER_PACKET_T.DEPLOY_IMAGE_ERROR or
-              packet_type == VM_SERVER_PACKET_T.DELETE_IMAGE_ERROR) :
+              packet_type == VM_SERVER_PACKET_T.IMAGE_DEPLOYMENT_ERROR or
+              packet_type == VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR) :
             result["ErrorMessage"] = p.readString()
             result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DEPLOY_IMAGE) :

@@ -20,7 +20,13 @@ class ZipBasedCompressor():
         args = filePath + " "
         for fileName in fileNameList :
             args += fileName + " "
-        ChildProcessManager.runCommandInForeground("zip -j " + args, Exception)
+        try :
+            ChildProcessManager.runCommandInForeground("zip -j " + args, Exception)
+        except Exception as e:
+            if ("Nothing to do" in e.message) :
+                pass
+            else :
+                raise e
 
     def extractFile(self, path, outputDirectory):
         '''

@@ -38,8 +38,10 @@ class TesterCallback(NetworkCallback):
             print(packet._getData())
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
             print("Image edition error: " + data["ErrorMessage"])  
-        elif (packet_type == VM_SERVER_PACKET_T.DELETE_IMAGE_ERROR) :
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR) :
             print("Image deletion error: " + data["ErrorMessage"])
+        elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DEPLOYMENT_ERROR):
+            print("Image deployment error: " + data["ErrorMessage"])
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITED):
             print("The virtual machine server says: the image {0} has been edited".format(data["ImageID"]))
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DELETED):
