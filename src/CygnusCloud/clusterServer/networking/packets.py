@@ -15,7 +15,8 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "COMMAND_EXECUTED", "VM_SERVER_SHUTDOWN_ERROR",
                             "VM_SERVER_UNREGISTRATION_ERROR", "DOMAIN_DESTRUCTION", "DOMAIN_DESTRUCTION_ERROR", 
                             "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
-                            "DELETE_IMAGE", "GET_IMAGE", "SET_IMAGE", "REPOSITORY_STATUS_REQUEST", "REPOSITORY_STATUS")
+                            "DELETE_IMAGE", "GET_IMAGE", "SET_IMAGE", "REPOSITORY_STATUS_REQUEST", "REPOSITORY_STATUS",
+                            "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR")
 
 class ClusterServerPacketHandler(object):
     """
@@ -356,6 +357,13 @@ class ClusterServerPacketHandler(object):
         p.writeInt(imageID)
         return p
         
+    def createDeployImagePacket(self, serverNameOrIPAddress, imageID, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.DEPLOY_IMAGE)    
+        p.writeString(serverNameOrIPAddress)    
+        p.writeInt(imageID)
+        p.writeString(commandID)
+        return p
     
     def readPacket(self, p):
         """
@@ -368,7 +376,7 @@ class ClusterServerPacketHandler(object):
         """
         result = dict()
         packet_type = p.readInt()
-        result["packet_type"] = packet_type
+        result["packet_type"] = packet_type        
         if (packet_type == MAIN_SERVER_PACKET_T.REGISTER_VM_SERVER) :
             result["VMServerIP"] = p.readString()
             result["VMServerPort"] = p.readInt()
@@ -419,9 +427,15 @@ class ClusterServerPacketHandler(object):
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR or 
               packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR or 
-              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_SHUTDOWN_ERROR) :
+              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_SHUTDOWN_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.IMAGE_DEPLOYMENT_ERROR) :
             result["ServerNameOrIPAddress"] = p.readString()
             result["ErrorMessage"] = p.readString()
+            result["CommandID"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.DEPLOY_IMAGE) :
+            result["ServerNameOrIPAddress"] = p.readString()
+            result["ImageID"] = p.readInt()
             result["CommandID"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST):

@@ -212,7 +212,7 @@ class VMServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createImageDeployPacket(self, repositoryIP, repositoryPort, imageID, commandID):
+    def createImageDeploymentPacket(self, repositoryIP, repositoryPort, imageID, commandID):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.DEPLOY_IMAGE)
         p.writeString(repositoryIP)
@@ -235,9 +235,10 @@ class VMServerPacketHandler(object):
         p.writeInt(imageID)
         return p
         
-    def createConfirmationPacket(self, packet_type, commandID):
+    def createConfirmationPacket(self, packet_type, imageID, commandID):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_type)
+        p.writeInt(imageID)
         p.writeString(commandID)
         return p
     
@@ -251,8 +252,9 @@ class VMServerPacketHandler(object):
             packet_type.
         """
         result = dict()
-        packet_type = p.readInt()
+        packet_type = p.readInt()        
         result["packet_type"] = packet_type
+        (result['SenderIP'], result['SenderPort']) = p.getSenderData()
         if (packet_type == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
             result["MachineID"] = p.readInt()
             result["UserID"] = p.readInt()
@@ -306,6 +308,7 @@ class VMServerPacketHandler(object):
             result["ImageID"] = p.readInt()
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DEPLOYED or
               packet_type == VM_SERVER_PACKET_T.IMAGE_DELETED):
+                result["ImageID"] = p.readInt()
                 result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN):
             result["Timeout"] = p.readInt()

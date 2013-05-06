@@ -184,7 +184,7 @@ class VMServerReactor(MainServerPacketReactor):
                 self.__dbConnector.deleteImage(data["ImageID"])                
                 ChildProcessManager.runCommandInForeground("rm -rf " + os.path.dirname(osImagePath), VMServerException)                
                 ChildProcessManager.runCommandInForeground("rm -rf " + os.path.dirname(definitionFilePath), VMServerException)
-                p = self.__packetManager.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DELETED, data["CommandID"])
+                p = self.__packetManager.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DELETED, data["ImageID"], data["CommandID"])
             except Exception as e:
                 p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR, "Can't delete image: internal error ({0})".format(e.message), 
                                                             data["CommandID"])                

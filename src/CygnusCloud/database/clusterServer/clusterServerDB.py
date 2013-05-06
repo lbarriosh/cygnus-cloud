@@ -250,6 +250,11 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         #Devolvemos la lista resultado
         return retrievedData
     
+    def hostsImage(self, serverID, imageID):
+        query = "SELECT * FROM ImageOnServer WHERE serverId = {0} AND imageID = {1};".format(serverID, imageID)
+        result = self._executeQuery(query, True)
+        return result != None
+    
     def getVMServerID(self, nameOrIPAddress):
         '''
         Devuelve el ID de un servidor de máquinas virtuales a partir de su nombre o

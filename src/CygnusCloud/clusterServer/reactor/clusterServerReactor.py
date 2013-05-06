@@ -136,6 +136,40 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__changeVMServerConfiguration(data)
         elif (data["packet_type"] == WEB_PACKET_T.REPOSITORY_STATUS_REQUEST):
             self.__sendRepositoryStatusData()
+        elif (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE):
+            self.__deployImage(data)
+            
+    def __deployImage(self, data):
+        serverNameOrIPAddress = data["ServerNameOrIPAddress"]
+        
+        # Comprobar si el servidor existe
+        
+        serverID = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
+        if (serverID == None) :
+            p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR, serverNameOrIPAddress, 
+                                                                         "The virtual machine server is not registered", data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, p)
+            return
+        
+        # Comprobar si el servidor está arrancado
+        serverData = self.__dbConnector.getVMServerBasicData(serverID)
+        if (serverData["ServerStatus"] != SERVER_STATE_T.READY):
+            p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR, serverNameOrIPAddress, 
+                                                                         "The virtual machine server is ready", data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, p)
+            return
+        
+        # Comprobar que el servidor no tiene ya la imagen
+        if self.__dbConnector.hostsImage(serverID, data["ImageID"]) :
+            p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR, serverNameOrIPAddress, 
+                                                                         "The image {0} is already hosted on this server".format(data["ImageID"]), 
+                                                                         data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, p)
+            return
+            
+        # Todo es correcto => enviar la petición
+        p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
+        self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             
     def __sendRepositoryStatusData(self):
         repositoryStatus = self.__dbConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
@@ -557,6 +591,21 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendDomainsVNCConnectionData(packet)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_DOMAIN_UIDS) :
             self.__processActiveDomainUIDs(data)
+        elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYMENT_ERROR):
+            self.__processImageDeploymentError(data)
+        elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYED):
+            self.__processImageDeployment(data)
+            
+    def __processImageDeploymentError(self, data):
+        p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR, 
+                                                                     data["SenderIP"], data["ErrorMessage"], data["CommandID"])
+        self.__networkManager.sendPacket('', self.__webPort, p)
+        
+    def __processImageDeployment(self, data):
+        serverID = self.__dbConnector.getVMServerID(data["SenderIP"])
+        self.__dbConnector.assignImageToServer(serverID, data["ImageID"])
+        p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
+        self.__networkManager.sendPacket('', self.__webPort, p)
             
     def processVMServerReconnectionData(self, ipAddress, reconnection_status) :
         """

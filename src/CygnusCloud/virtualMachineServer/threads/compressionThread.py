@@ -102,7 +102,7 @@ class CompressionThread(BasicThread):
                     # Arrancamos la máquina virtual
                     self.__domainHandler.createDomain(data["TargetImageID"], data["UserID"], data["CommandID"])        
                 else :
-                    p = self.__packetHandler.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DEPLOYED, data["CommandID"])
+                    p = self.__packetHandler.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DEPLOYED, data["TargetImageID"], data["CommandID"])
                     self.__networkManager.sendPacket('', self.__serverListenningPort, p)
                     
                 # Borramos el fichero .zip

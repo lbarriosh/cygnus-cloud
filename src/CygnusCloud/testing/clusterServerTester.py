@@ -61,6 +61,8 @@ class TesterCallback(NetworkCallback):
         elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS):
             print("Image repository status: {0} KB free, {1} KB in use, {2}".format(data["FreeDiskSpace"], data["AvailableDiskSpace"],
                                                                                     data["ConnectionStatus"]))
+        elif (data["packet_type"] == PACKET_T.IMAGE_DEPLOYMENT_ERROR):
+            print("Image deployment error on server {0}: {1}".format(data["ServerNameOrIPAddress"], data["ErrorMessage"]))
 
 def printLogo():
     print('\t   _____                             _____ _                 _ ')
@@ -119,6 +121,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "obtainImageRepositoryStatus") :
             p = pHandler.createDataRequestPacket(PACKET_T.REPOSITORY_STATUS_REQUEST)
+            networkManager.sendPacket(ip_address, port, p)
+        elif (command == "deployImage"):
+            p = pHandler.createDeployImagePacket(tokens.pop(0), int(tokens.pop(0)), "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True

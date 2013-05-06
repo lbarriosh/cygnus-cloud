@@ -67,7 +67,5 @@ INSERT IGNORE INTO VanillaImageFamily VALUES (1, 'Linux-Small', 1048576, 1, 5242
 /*
  * Imágenes activas
  */
-INSERT IGNORE INTO ImageOnServer VALUES
-	(1, 1);
 	
-INSERT IGNORE INTO VanillaImageFamilyOf VALUES (1, 4);
+INSERT IGNORE INTO VanillaImageFamilyOf VALUES (1, 1);
