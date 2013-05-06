@@ -323,6 +323,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "INSERT INTO ImageOnServer VALUES(" + str(serverID)+ "," + str(imageID)  +") "  
         self._executeUpdate(query)
         
+    def deleteImageFromServer(self, serverID, imageID):
+        update = "DELETE FROM ImageOnServer WHERE serverId = {0} AND imageId = {1}".format(serverID, imageID)
+        self._executeUpdate(update)
+        
     def setVMServerStatistics(self, serverID, runningHosts, ramInUse, ramSize, freeStorageSpace,
                               availableStorageSpace, freeTemporarySpace, availableTemporarySpace,
                               activeVCPUs, physicalCPUs):

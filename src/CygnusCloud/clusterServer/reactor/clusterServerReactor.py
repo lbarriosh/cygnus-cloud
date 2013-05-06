@@ -136,39 +136,51 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__changeVMServerConfiguration(data)
         elif (data["packet_type"] == WEB_PACKET_T.REPOSITORY_STATUS_REQUEST):
             self.__sendRepositoryStatusData()
-        elif (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE):
-            self.__deployImage(data)
+        elif (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE or data["packet_type"] == WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER):
+            self.__deployOrDeleteImage(data)
             
-    def __deployImage(self, data):
+    def __deployOrDeleteImage(self, data):
         serverNameOrIPAddress = data["ServerNameOrIPAddress"]
+        if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE):
+            error_type = WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR
+        else:
+            error_type = WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR
         
-        # Comprobar si el servidor existe
-        
+        # Comprobar que el servidor existe        
         serverID = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
         if (serverID == None) :
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR, serverNameOrIPAddress, 
+            p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
                                                                          "The virtual machine server is not registered", data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
             return
         
-        # Comprobar si el servidor está arrancado
+        # Comprobar que el servidor está arrancado
         serverData = self.__dbConnector.getVMServerBasicData(serverID)
         if (serverData["ServerStatus"] != SERVER_STATE_T.READY):
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR, serverNameOrIPAddress, 
-                                                                         "The virtual machine server is ready", data["CommandID"])
+            p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
+                                                                         "The virtual machine server is not ready yet", data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
             return
         
-        # Comprobar que el servidor no tiene ya la imagen
-        if self.__dbConnector.hostsImage(serverID, data["ImageID"]) :
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR, serverNameOrIPAddress, 
-                                                                         "The image {0} is already hosted on this server".format(data["ImageID"]), 
-                                                                         data["CommandID"])
+        # Comprobar que el servidor tiene/no tiene la imagen
+    
+        if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE and self.__dbConnector.hostsImage(serverID, data["ImageID"]))\
+            or (data["packet_type"] == WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER and not self.__dbConnector.hostsImage(serverID, data["ImageID"])):
+            
+            if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE):
+                errorMessage = "The image {0} is already hosted on this server".format(data["ImageID"])
+            else :
+                errorMessage = "The image {0} is not hosted on this server".format(data["ImageID"])
+            p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
+                                                                         errorMessage, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
             return
             
         # Todo es correcto => enviar la petición
-        p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
+        if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE) :
+            p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
+        else:
+            p = self.__vmServerPacketHandler.createDeleteImagePacket(data["ImageID"], data["CommandID"])
         self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             
     def __sendRepositoryStatusData(self):
@@ -593,19 +605,26 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendDomainsVNCConnectionData(packet)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_DOMAIN_UIDS) :
             self.__processActiveDomainUIDs(data)
-        elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYMENT_ERROR):
+        elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYMENT_ERROR or data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DELETION_ERROR):
             self.__processImageDeploymentError(data)
-        elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYED):
+        elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYED or data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DELETED):
             self.__processImageDeployment(data)
             
     def __processImageDeploymentError(self, data):
-        p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR, 
+        if (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYMENT_ERROR) :
+            packet_type = WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR
+        else :
+            packet_type = WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR
+        p = self.__webPacketHandler.createVMServerGenericErrorPacket(packet_type, 
                                                                      data["SenderIP"], data["ErrorMessage"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)
         
     def __processImageDeployment(self, data):
         serverID = self.__dbConnector.getVMServerID(data["SenderIP"])
-        self.__dbConnector.assignImageToServer(serverID, data["ImageID"])
+        if (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYED) :
+            self.__dbConnector.assignImageToServer(serverID, data["ImageID"])
+        else :
+            self.__dbConnector.deleteImageFromServer(serverID, data["ImageID"])
         p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)
             
