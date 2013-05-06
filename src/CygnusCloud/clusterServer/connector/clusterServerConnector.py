@@ -2,9 +2,9 @@
 '''
 Conector que usará la web para interactuar con el sistema
 @author: Luis Barrios Hernández
-@version: 3.5
+@version: 4.0
 '''
-from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
+from database.clusterEndpoint.clusterEndpointDB import ClusterEndpointDBConnector
 from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
 from clusterServer.connector.commands.commandsHandler import CommandsHandler
 from time import sleep
@@ -33,10 +33,8 @@ class ClusterServerConnector(object):
         Devuelve:
             Nada
         """
-        self.__statusDBConnector = SystemStatusDatabaseReader(databaseUser, databasePassword, statusDBName)
-        self.__statusDBConnector.connect()
+        self.__endpointDBConnector = ClusterEndpointDBConnector(databaseUser, databasePassword, statusDBName)
         self.__commandsDBConnector = CommandsDatabaseConnector(databaseUser, databasePassword, commandsDBName, 1)
-        self.__commandsDBConnector.connect()
         
     def dispose(self):
         """
@@ -46,8 +44,7 @@ class ClusterServerConnector(object):
         Devuelve:
             Nada
         """
-        self.__statusDBConnector.disconnect()
-        self.__commandsDBConnector.disconnect()
+        pass
         
     def getActiveVMsData(self, showAllVMs=False):
         """
@@ -61,7 +58,7 @@ class ClusterServerConnector(object):
             userID = self.__userID
         else :
             userID = None
-        return self.__statusDBConnector.getActiveVMsData(userID)
+        return self.__endpointDBConnector.getActiveVMsData(userID)
     
     def getVMDistributionData(self):
         """
@@ -70,7 +67,7 @@ class ClusterServerConnector(object):
             Ninguno
         Devuelve: una lista de diccionarios con los datos de distribución de las imágenes
         """
-        return self.__statusDBConnector.getVMDistributionData()
+        return self.__endpointDBConnector.getVMDistributionData()
         
     def getVMServersData(self):
         """
@@ -79,7 +76,7 @@ class ClusterServerConnector(object):
             Ninguno
         Devuelve: una lista de diccionarios con los datos básicos de los servidores de máquinas virtuales
         """
-        return self.__statusDBConnector.getVMServersData()
+        return self.__endpointDBConnector.getVMServersData()
         
     def registerVMServer(self, vmServerIP, vmServerPort, vmServerName, isVanillaServer):
         """
@@ -215,15 +212,3 @@ class ClusterServerConnector(object):
             return None
         else :
             return CommandsHandler.deserializeCommandOutput(result[0], result[1])
-    
-if __name__ == "__main__":
-    connector = ClusterServerConnector(1)
-    connector.connectToDatabases("SystemStatusDB", "CommandsDB", "website", "CygnusCloud")
-    sleep(10)
-    commandID = connector.changeVMServerConfiguration("Server2", "Foo", "192.168.0.1", 15900, 
-                                    True)
-    print connector.waitForCommandOutput(commandID)
-    sleep(4)
-    print connector.getVMServersData()
-    connector.isShutDown(True)
-    connector.dispose()    

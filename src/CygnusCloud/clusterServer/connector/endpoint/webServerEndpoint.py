@@ -9,7 +9,7 @@ from clusterServer.connector.threads.databaseUpdateThread import VMServerMonitor
 from clusterServer.connector.threads.commandMonitoringThread import CommandMonitoringThread
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
 from database.utils.configuration import DBConfigurator
-from database.systemStatusDB.systemStatusDBWriter import SystemStatusDatabaseWriter
+from database.clusterEndpoint.clusterEndpointDB import ClusterEndpointDBConnector
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from time import sleep
 from clusterServer.connector.commands.commandsHandler import CommandsHandler, COMMAND_TYPE
@@ -102,10 +102,7 @@ class WebServerEndpoint(object):
         # Crear los conectores
         self.__commandsDBConnector = CommandsDatabaseConnector(endpointUser, endpointUserPassword, 
                                                                commandsDBName, minCommandInterval) 
-        self.__writer = SystemStatusDatabaseWriter(endpointUser, endpointUserPassword, statusDBName)
-        # Establecer las conexiones con MySQL
-        self.__writer.connect()
-        self.__commandsDBConnector.connect()
+        self.__endpointDBConnector = ClusterEndpointDBConnector(endpointUser, endpointUserPassword, statusDBName)
         
     def connectToClusterServer(self, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval,
                                commandTimeout, commandTimeoutCheckInterval):
@@ -164,9 +161,9 @@ class WebServerEndpoint(object):
         self.__commandMonitoringThread.stop()
         
         # Cerrar las conexiones con las bases de datos
-        self.closeDBConnections()
+        self.closeNetworkAndDBConnections()
         
-    def closeDBConnections(self):
+    def closeNetworkAndDBConnections(self):
         """
         Cierra las conexiones con las bases de datos
         Argumentos:
@@ -174,14 +171,10 @@ class WebServerEndpoint(object):
         Devuelve:
             Nada
         """
-        # Cerrar las conexiones con las bases de datos
-        self.__commandsDBConnector.disconnect()
-        self.__writer.disconnect()
         # Detener el servicio de red
         self.__manager.stopNetworkService()
         # Borrar las bases de datos de comandos y de estado
         dbConfigurator = DBConfigurator(self.__rootsPassword)
-        dbConfigurator.dropDatabase(self.__statusDatabaseName)
         dbConfigurator.dropDatabase(self.__commandsDatabaseName)    
         
     def _processIncomingPacket(self, packet):
@@ -196,11 +189,11 @@ class WebServerEndpoint(object):
             return
         data = self.__repositoryPacketHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
-            self.__writer.processVMServerSegment(data["Segment"], data["SequenceSize"], data["Data"])
+            self.__endpointDBConnector.processVMServerSegment(data["Segment"], data["SequenceSize"], data["Data"])
         elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
-            self.__writer.processVMDistributionSegment(data["Segment"], data["SequenceSize"], data["Data"])
+            self.__endpointDBConnector.processVMDistributionSegment(data["Segment"], data["SequenceSize"], data["Data"])
         elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
-            self.__writer.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])
+            self.__endpointDBConnector.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])
         else :
             l = data["CommandID"].split("|")
             commandID = (int(l[0]), float(l[1]))
