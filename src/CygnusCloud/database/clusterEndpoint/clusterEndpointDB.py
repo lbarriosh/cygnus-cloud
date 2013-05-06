@@ -1,25 +1,22 @@
 # -*- coding: UTF8 -*-
 '''
-Escritor de la base de datos de estado
+Lector de la base de datos de estado
 
 @author: Luis Barrios Hernández
-@version: 3.5
+@version: 2.5
 '''
 
 from database.utils.connector import BasicDatabaseConnector
 
-class SystemStatusDatabaseWriter(BasicDatabaseConnector):
+class ClusterEndpointDBConnector(BasicDatabaseConnector):
     """
-    Estos objetos actualizan la base de estado con la información que envía el servidor de cluster
+    Inicializa el estado del lector
+    Argumentos:
+        sqlUser: usuario SQL a utilizaqr
+        sqlPassword: contraseña de ese usuario
+        databaseName: nombre de la base de datos de estado
     """
     def __init__(self, sqlUser, sqlPassword, databaseName):
-        """
-        Inicializa el estado del escritor
-        Argumentos:
-            sqlUser: usuario SQL a utilizaqr
-            sqlPassword: contraseña de ese usuario
-            databaseName: nombre de la base de datos de estado
-        """
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         self.__vmServerSegmentsData = []
         self.__vmServerSegments = 0
@@ -27,8 +24,77 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         self.__imageDistributionSegments = 0
         self.__activeVMSegmentsData = dict()
         self.__activeVMSegments = dict()
-        
-        
+                  
+    def getVMServersData(self):
+        """
+        Devuelve los datos básicos de todos los servidores de máquinas virtuales
+        Argumentos:
+            Ninguno
+        Returns: una lista de diccionarios, cada uno de los cuales contiene los datos
+        de un servidor de máquinas virtuales
+        """
+        command = "SELECT * FROM VirtualMachineServer;"
+        results = self._executeQuery(command, False)
+        if (results == None) :
+            return []
+        retrievedData = []
+        for row in results :
+            d = dict()
+            d["VMServerName"] = row[0]
+            d["VMServerStatus"] = row[1]
+            d["VMServerIP"] = row[2]
+            d["VMServerListenningPort"] = int(row[3])
+            d["IsVanillaServer"] = int(row[4]) == 1
+            retrievedData.append(d)
+        return retrievedData
+    
+    def getVMDistributionData(self):
+        """
+        Devuelve la distribución de todas las máquinas virtuales
+        Argumentos:
+            Ninguno
+        Devuelve: 
+            una lista de diccionarios. Cada uno contiene una ubicación de una
+            imagen.
+        """
+        command = "SELECT * FROM VirtualMachineDistribution;"
+        results = self._executeQuery(command, False)
+        retrievedData = []
+        for row in results :
+            d = dict()
+            d["VMServerName"] = row[0]
+            d["VMID"] = int(row[1])
+            retrievedData.append(d)
+        return retrievedData 
+    
+    def getActiveVMsData(self, ownerID):
+        """
+        Devuelve los datos de las máquinas virtuales activas
+        Argumentos:
+            ownerID: identificador del propietario de las máquinas. Si es None, se devolverán
+            los datos de todas las máquinas virtuales.
+        Devuelve: 
+            una lista de diccionarios. Cada uno contiene los datos de una máquina
+        """
+        if (ownerID == None) :
+            command = "SELECT * FROM ActiveVirtualMachines;"
+        else :
+            command = "SELECT * FROM ActiveVirtualMachines WHERE ownerID = {0};".format(ownerID)
+            
+        results = self._executeQuery(command, False)
+        retrievedData = []
+        for row in results :
+            d = dict()
+            d["VMServerName"] = row[0]
+            d["DomainUID"] = row[1]
+            d["UserID"] = row[2]
+            d["VMID"] = int(row[3])            
+            d["VMName"] = row[4]
+            d["VNCPort"] = int(row[5])
+            d["VNCPassword"] = row[6]
+            retrievedData.append(d)
+        return retrievedData 
+    
     def processVMServerSegment(self, segmentNumber, segmentCount, data):
         """
         Procesa un segmento con datos de los servidores de máquinas virtuales
@@ -46,7 +112,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             
         if (self.__vmServerSegments == segmentCount) :
             # Hemos recibido la secuencia completa => la procesamos
-            receivedData = SystemStatusDatabaseWriter.__getVMServersDictionary(self.__vmServerSegmentsData)
+            receivedData = ClusterEndpointDBConnector.__getVMServersDictionary(self.__vmServerSegmentsData)
             registeredIDs = self.__getKnownVMServerIDs()
             
             # Quitar las filas que no existen
@@ -87,7 +153,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             command = "DELETE FROM VirtualMachineDistribution;"
             self._executeUpdate(command)
             if (self.__imageDistributionSegmentsData != []) :
-                command = "INSERT INTO VirtualMachineDistribution VALUES " + SystemStatusDatabaseWriter.__convertSegmentsToSQLTuples(self.__imageDistributionSegmentsData)
+                command = "INSERT INTO VirtualMachineDistribution VALUES " + ClusterEndpointDBConnector.__convertSegmentsToSQLTuples(self.__imageDistributionSegmentsData)
                 self.__imageDistributionSegmentsData = []   
                 self.__imageDistributionSegments = 0         
                 self._executeUpdate(command)
@@ -109,7 +175,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             self.__activeVMSegmentsData[vmServerIP] += data
             self.__activeVMSegments[vmServerIP] += 1
         if (self.__activeVMSegments[vmServerIP] == segmentCount) :
-            receivedData = SystemStatusDatabaseWriter.__getActiveVMsDictionary(self.__activeVMSegmentsData[vmServerIP])
+            receivedData = ClusterEndpointDBConnector.__getActiveVMsDictionary(self.__activeVMSegmentsData[vmServerIP])
             registeredIDs = self.__getActiveVMIDs()
             
             # Quitar las filas que haga falta
@@ -170,8 +236,10 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         query = "SELECT serverName FROM VirtualMachineServer;";
         result = set()
         output = self._executeQuery(query, False)
+        if (output == None) :
+            return None
         for t in output :
-            result.add(t[0])
+            result.add(t)
         return result
             
     def __insertVMServers(self, tupleList):
@@ -183,7 +251,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             Nada
         """
         update = "INSERT INTO VirtualMachineServer VALUES {0};"\
-            .format(SystemStatusDatabaseWriter.__convertTuplesToSQLStr(tupleList))
+            .format(ClusterEndpointDBConnector.__convertTuplesToSQLStr(tupleList))
         self._executeUpdate(update)
         
     def __updateVMServerData(self, data):
@@ -238,7 +306,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
             Nada
         """
         update = "INSERT INTO ActiveVirtualMachines VALUES {0};"\
-            .format(SystemStatusDatabaseWriter.__convertTuplesToSQLStr(data, [vmServerIP]))
+            .format(ClusterEndpointDBConnector.__convertTuplesToSQLStr(data, [vmServerIP]))
         self._executeUpdate(update)
         
     def __deleteActiveVM(self, machineID):
@@ -263,7 +331,7 @@ class SystemStatusDatabaseWriter(BasicDatabaseConnector):
         """
         query = "SELECT serverName FROM VirtualMachineServer WHERE serverIP = '" + serverIP + "';"
         result = self._executeQuery(query, True)
-        return result[0]
+        return result
                         
     @staticmethod
     def __convertTuplesToSQLStr(tupleList, dataToAdd = []):
