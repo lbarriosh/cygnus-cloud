@@ -212,3 +212,21 @@ class ClusterServerConnector(object):
             return None
         else :
             return CommandsHandler.deserializeCommandOutput(result[0], result[1])
+        
+    def getImageBasicData(self, imageID):
+        return self.__endpointDBConnector.getImageBasicData(imageID)
+        
+    def getBootableImagesData(self, imageIDs):
+        return self.__endpointDBConnector.getBootableImagesData(imageIDs)
+    
+    def getBaseImagesData(self):
+        return self.__endpointDBConnector.getBaseImagesData()
+        
+    def getEditedImages(self, userID):
+        return self.__endpointDBConnector.getEditedImages(userID)
+    
+    def getVanillaImageFamilyID(self, imageID):
+        return self.__endpointDBConnector.getVanillaImageFamilyID(imageID)
+    
+    def getVanillaImageFamiliyData(self, vanillaImageFamilyID):
+        return self.__endpointDBConnector.getVanillaImageFamiliyData(vanillaImageFamilyID)
