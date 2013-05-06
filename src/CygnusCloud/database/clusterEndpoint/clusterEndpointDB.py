@@ -59,6 +59,8 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         """
         command = "SELECT * FROM VirtualMachineDistribution;"
         results = self._executeQuery(command, False)
+        if (results == None) :
+            return []
         retrievedData = []
         for row in results :
             d = dict()
@@ -82,6 +84,8 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             command = "SELECT * FROM ActiveVirtualMachines WHERE ownerID = {0};".format(ownerID)
             
         results = self._executeQuery(command, False)
+        if (results == None) :
+            return []
         retrievedData = []
         for row in results :
             d = dict()
@@ -291,6 +295,8 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         """
         query = "SELECT serverName, ownerID, imageID FROM ActiveVirtualMachines;"
         results = self._executeQuery(query)
+        if (results == None) :
+            return set()
         output = set()
         for row in results :
             output.add((row[0], row[1], row[2]))
@@ -331,7 +337,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         """
         query = "SELECT serverName FROM VirtualMachineServer WHERE serverIP = '" + serverIP + "';"
         result = self._executeQuery(query, True)
-        return result
+        return str(result)
                         
     @staticmethod
     def __convertTuplesToSQLStr(tupleList, dataToAdd = []):
@@ -375,3 +381,80 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
                 command += str(segmentTuple)
         command += ";"
         return command    
+    
+    def getImageBasicData(self, imageID):
+        
+        if (isinstance(imageID, int)) :
+            query = "SELECT name, description FROM Image WHERE imageID = {0}".format(imageID)
+        else :
+            query = "SELECT name, description FROM NewImage WHERE temporaryID = '{0}'".format(imageID)
+            
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else :
+            d = dict()
+            d["ImageName"] = result[0]
+            d["ImageDescription"] = result[1]
+            return d
+        
+    def getBootableImagesData(self, imageIDs):
+        query = "SELECT imageID, name, description FROM Image WHERE bootable = 1"
+        if (imageIDs != []) :
+            query += " AND ("
+            i = 0
+            for imageID in imageIDs :
+                query += "imageID = {0} ".format(imageID)
+                if (i != len(imageIDs) - 1) :
+                    query += " OR "
+                i += 1
+            query += ");"
+        result = self._executeQuery(query, False)        
+        if (result == None) :
+            return []
+        else :
+            rows = []
+            for row in result :
+                rows.append({"ImageID": row[0], "ImageName" : str(row[1]), "ImageDescription" : str(row[2])})
+        return rows
+    
+    def getBaseImagesData(self):
+        query = "SELECT imageID, name, description FROM Image WHERE isBaseImage = 1;"
+        result = self._executeQuery(query, False)
+        if (result == None) :
+            return []
+        else :
+            rows = 0
+            rows = []
+            for row in result :
+                rows.append({"ImageID": row[0], "ImageName" : str(row[1]), "ImageDescription" : str(row[2])})
+            return rows
+        
+    def getEditedImages(self, userID):
+        query = "SELECT imageID FROM Image WHERE edited = 1 AND ownerID = {0};".format(userID)
+        result = self._executeQuery(query, False)
+        rows = []
+        if (result != None) :
+            for row in result :
+                rows.append(row)
+        query = "SELECT temporaryID FROM NewImage WHERE ownerID = {0};".format(userID)
+        result = self._executeQuery(query, False)
+        if (result != None) :
+            for row in result :
+                rows.append(str(row))
+        return rows
+    
+    def getVanillaImageFamilyID(self, imageID):
+        if (isinstance(imageID, int)) :
+            query = "SELECT familyID FROM VanillaImageFamilyOf WHERE imageID = {0}".format(imageID)
+        else :
+            query = "SELECT vanillaImageFamilyID FROM NewImage WHERE temporaryID = '{0}'".format(imageID)
+        return self._executeQuery(query, True)
+    
+    def getVanillaImageFamiliyData(self, vanillaImageFamilyID):
+        query = "SELECT familyName, ramSize, vCPUs, osDiskSize, dataDiskSize FROM VanillaImageFamily WHERE familyID = {0}".format(vanillaImageFamilyID)
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else :
+            return {"Name" : str(result[0]), "RAMSize" : result[1], "VCPUs": result[2], "OSDiskSize" : result[3], "DataDiskSize" : result[4]}
