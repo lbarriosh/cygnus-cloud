@@ -340,9 +340,6 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Cerramos la conexión 
             self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])       
             
-            # Borramos las máquinas virtuales activas en el servidor
-            self.__dbConnector.deleteHostedVMs(serverID)
-            
         # Paso 3: borramos el servidor de la base de datos (sólo si es necesario)      
         if (unregister) :
             self.__dbConnector.deleteVMServer(key)
@@ -390,6 +387,11 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             if (serverId == None) :
                 raise Exception("The virtual machine server is not registered")
             serverData = self.__dbConnector.getVMServerBasicData(serverId)
+            
+            if (serverData["ServerStatus"] != SERVER_STATE_T.SHUT_DOWN and 
+                serverData["ServerStatus"] != SERVER_STATE_T.CONNECTION_TIMED_OUT) :
+                # El servidor ya está arrancado => ignoramos la petición
+                return
             
             # Establecer la conexión
             
