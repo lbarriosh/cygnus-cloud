@@ -5,8 +5,8 @@ Definiciones del reactor del servidor de cluster
 @version: 4.0
 '''
 
-from clusterServer.networking.callbacks import VMServerCallback, WebCallback
-from clusterServer.threads.vmServerMonitoringThread import VMServerMonitoringThread
+from clusterServer.networking.callbacks import VMServerCallback, WebCallback, ImageRepositoryCallback
+from clusterServer.threads.clusterStatusMonitoringThread import ClusterStatusMonitoringThread
 from database.utils.configuration import DBConfigurator
 from database.clusterServer.clusterServerDB import ClusterServerDatabaseConnector, SERVER_STATE_T
 from network.manager.networkManager import NetworkManager
@@ -16,6 +16,7 @@ from time import sleep
 from clusterServer.loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
 from network.twistedInteraction.clientConnection import RECONNECTION_T
 from clusterServer.loadBalancing.penaltyBasedLoadBalancer import PenaltyBasedLoadBalancer
+from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T as REPOSITORY_PACKET_T
 
 class WebPacketReactor(object):
     '''
@@ -43,8 +44,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             Ninguno
         Devuelve:
             Nada
-        """
-        self.__webCallback = WebCallback(self)
+        """        
         self.__finished = False
         self.__loadBalancerSettings = loadBalancerSettings
         self.__timeout = timeout
@@ -67,12 +67,12 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__dbConnector = ClusterServerDatabaseConnector(dbUser, dbPassword, dbName)
         self.__dbConnector.resetVMServersStatus()
         
-    def startListenning(self, certificatePath, port, vmServerStatusUpdateInterval):
+    def startListenning(self, certificatePath, listenningPort, repositoryIP, repositoryPort, vmServerStatusUpdateInterval):
         """
         Hace que el reactor comience a escuchar las peticiones del endpoint.
         Argumentos:
             certificatePath: ruta de los ficheros server.crt y server.key
-            port: el puerto en el que se escuchará
+            listenningPort: el puerto en el que se escuchará
         Devuelve:
             Nada
         """
@@ -83,13 +83,26 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         else :
             self.__loadBalancer = SimpleLoadBalancer(self.__dbConnector)
         self.__networkManager = NetworkManager(certificatePath)
-        self.__webPort = port
+        self.__webPort = listenningPort
+        self.__repositoryIP = repositoryIP
+        self.__repositoryPort = repositoryPort
+        self.__dbConnector.addImageRepository(repositoryIP, repositoryPort, SERVER_STATE_T.READY)
         self.__networkManager.startNetworkService()        
+        self.__imageRepositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)
         self.__webPacketHandler = ClusterServerPacketHandler(self.__networkManager)
         self.__vmServerPacketHandler = VMServerPacketHandler(self.__networkManager)
-        self.__networkManager.listenIn(port, self.__webCallback, True)
+        self.__webCallback = WebCallback(self)
         self.__vmServerCallback = VMServerCallback(self)
-        self.__vmServerStatusUpdateThread = VMServerMonitoringThread(self, vmServerStatusUpdateInterval)
+        self.__imageRepositoryCallback = ImageRepositoryCallback(self)
+        try :
+            self.__networkManager.connectTo(repositoryIP, repositoryPort, 10, self.__imageRepositoryCallback, True, True)
+        except Exception as e:
+            print "Can't connect to the image repository: " + e.message
+            self.__finished = True
+            return
+            
+        self.__networkManager.listenIn(listenningPort, self.__webCallback, True)        
+        self.__vmServerStatusUpdateThread = ClusterStatusMonitoringThread(self, vmServerStatusUpdateInterval)
         self.__vmServerStatusUpdateThread.run()
         
     def processWebIncomingPacket(self, packet):
@@ -121,6 +134,15 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__destroyDomain(data)
         elif (data["packet_type"] == WEB_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE):
             self.__changeVMServerConfiguration(data)
+        elif (data["packet_type"] == WEB_PACKET_T.REPOSITORY_STATUS_REQUEST):
+            self.__sendRepositoryStatusData()
+            
+    def __sendRepositoryStatusData(self):
+        repositoryStatus = self.__dbConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
+        p = self.__webPacketHandler.createRepositoryStatusPacket(repositoryStatus["FreeDiskSpace"], 
+                                                                 repositoryStatus["AvailableDiskSpace"], 
+                                                                 repositoryStatus["ConnectionStatus"])
+        self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __requestVNCConnectionData(self):
         """
@@ -145,6 +167,11 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Devuelve:
             Nada
         """    
+        # Apagamos el repositorio
+        p = self.__imageRepositoryPacketHandler.createHaltPacket()
+        self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p)
+        self.__networkManager.closeConnection(self.__repositoryIP, self.__repositoryPort)
+        # Apagamos los servidores de máquinas virtuales
         self.__vmServerStatusUpdateThread.stop()
         vmServersConnectionData = self.__dbConnector.getActiveVMServersConnectionData()
         if (vmServersConnectionData != None) :
@@ -211,13 +238,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         errorMessage = self.__networkManager.sendPacket(vmServerIP, vmServerPort, p)
         NetworkManager.printConnectionWarningIfNecessary(vmServerIP, vmServerPort, "active domain UIDs request", errorMessage)
         
-    def sendStatusRequestPacketsToActiveVMServers(self):
+    def sendStatusRequestPacketsToClusterMachines(self):
         for serverID in self.__dbConnector.getVMServerIDs() :
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
             if (serverData["ServerStatus"] == SERVER_STATE_T.READY) :
                 self.__sendStatusRequestPackets(serverData["ServerIP"], serverData["ServerPort"])
-            
-            
+        p = self.__imageRepositoryPacketHandler.createStatusRequestPacket()
+        self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p)            
             
     def __unregisterOrShutdownVMServer(self, data):
         """
@@ -531,7 +558,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_DOMAIN_UIDS) :
             self.__processActiveDomainUIDs(data)
             
-    def processServerReconnectionData(self, ipAddress, reconnection_status) :
+    def processVMServerReconnectionData(self, ipAddress, reconnection_status) :
         """
         Procesa una reconexión con un servidor de máquinas virtuales
         Argumentos:
@@ -550,6 +577,15 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         
         serverID = self.__dbConnector.getVMServerID(ipAddress)
         self.__dbConnector.updateVMServerStatus(serverID, status)
+        
+    def processImageRepositoryReconnectionData(self, reconnection_status):
+        if (reconnection_status == RECONNECTION_T.RECONNECTING) : 
+            status = SERVER_STATE_T.RECONNECTING
+        elif (reconnection_status == RECONNECTION_T.REESTABLISHED) :
+            status = SERVER_STATE_T.READY
+        else :
+            status = SERVER_STATE_T.CONNECTION_TIMED_OUT
+        self.__dbConnector.updateImageRepositoryConnectionStatus(self.__repositoryIP, self.__repositoryPort, status)
             
     def __sendDomainsVNCConnectionData(self, packet):
         """
@@ -578,6 +614,12 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         p = self.__webPacketHandler.createVMConnectionDataPacket(data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)        
+        
+    def processImageRepositoryIncomingPacket(self, packet):
+        data = self.__imageRepositoryPacketHandler.readPacket(packet)
+        if data['packet_type'] == REPOSITORY_PACKET_T.STATUS_DATA:
+            self.__dbConnector.updateImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort, data["FreeDiskSpace"], data["TotalDiskSpace"])
+        # TODO: procesar errores de borrado
         
     def __processActiveDomainUIDs(self, data):
         vmServerID = self.__dbConnector.getVMServerID(data["VMServerIP"])

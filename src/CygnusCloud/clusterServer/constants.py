@@ -17,4 +17,5 @@ class ClusterServerConstantsManager(ConstantsManager):
             self._data["vCPUsExcessThreshold"] = float(self._data["vCPUsExcessThreshold"])       
             self._data["ramWeight"] = float(self._data["ramWeight"])        
             self._data["storageSpaceWeight"] = float(self._data["storageSpaceWeight"])        
-            self._data["temporarySpaceWeight"] = float(self._data["temporarySpaceWeight"])                       
+            self._data["temporarySpaceWeight"] = float(self._data["temporarySpaceWeight"])      
+            self._data["imageRepositoryPort"] = int(self._data["imageRepositoryPort"])                  

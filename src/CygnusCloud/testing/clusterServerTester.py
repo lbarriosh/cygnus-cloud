@@ -58,6 +58,9 @@ class TesterCallback(NetworkCallback):
             print("Domain destruction error: " + data["ErrorMessage"])
         elif (data["packet_type"] == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
             print("Virtual machine configuration change error: " + data["ErrorMessage"])
+        elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS):
+            print("Image repository status: {0} KB free, {1} KB in use, {2}".format(data["FreeDiskSpace"], data["AvailableDiskSpace"],
+                                                                                    data["ConnectionStatus"]))
 
 def printLogo():
     print('\t   _____                             _____ _                 _ ')
@@ -113,6 +116,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "destroyDomain") :
             p = pHandler.createDomainDestructionPacket(tokens.pop(0), "")
+            networkManager.sendPacket(ip_address, port, p)
+        elif (command == "obtainImageRepositoryStatus") :
+            p = pHandler.createDataRequestPacket(PACKET_T.REPOSITORY_STATUS_REQUEST)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True

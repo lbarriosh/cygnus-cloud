@@ -539,8 +539,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         else :
             return int(result)
         
-    def addImageRepository(self, repositoryIP, repositoryPort):
-        command = "INSERT INTO ImageRepository VALUES ('{0}', {1}, 0, 0)".format(repositoryIP, repositoryPort)
+    def addImageRepository(self, repositoryIP, repositoryPort, status):
+        command = "INSERT INTO ImageRepository VALUES ('{0}', {1}, 0, 0, {2})".format(repositoryIP, repositoryPort, status)
         self._executeUpdate(command)
         
     def updateImageRepositoryStatus(self, repositoryIP, repositoryPort, freeDiskSpace, availableDiskSpace):
@@ -548,9 +548,17 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             .format(repositoryIP, repositoryPort, freeDiskSpace, availableDiskSpace)
         self._executeUpdate(command)
         
+    def updateImageRepositoryConnectionStatus(self, repositoryIP, repositoryPort, status):
+        command = "UPDATE ImageRepository SET connection_status={2} WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
+            .format(repositoryIP, repositoryPort, status)
+        self._executeUpdate(command)
+        
     def getImageRepositoryStatus(self, repositoryIP, repositoryPort):
-        query = "SELECT freeDiskSpace, availableDiskSpace FROM ImageRepository repositoryIP = '{0}' AND repositoryPort = {1};"\
+        query = "SELECT freeDiskSpace, availableDiskSpace, connection_status FROM ImageRepository WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
             .format(repositoryIP, repositoryPort)
         result = self._executeQuery(query, True)
-        return {"FreeDiskSpace" : result[0], "AvailableDiskSpace" : result[1]}        
+        if (result == None):
+            return None
+        else :
+            return {"FreeDiskSpace" : result[0], "AvailableDiskSpace" : result[1], "ConnectionStatus" : result[2]}        
         

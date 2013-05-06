@@ -15,7 +15,7 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "COMMAND_EXECUTED", "VM_SERVER_SHUTDOWN_ERROR",
                             "VM_SERVER_UNREGISTRATION_ERROR", "DOMAIN_DESTRUCTION", "DOMAIN_DESTRUCTION_ERROR", 
                             "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
-                            "DELETE_IMAGE", "GET_IMAGE", "SET_IMAGE")
+                            "DELETE_IMAGE", "GET_IMAGE", "SET_IMAGE", "REPOSITORY_STATUS_REQUEST", "REPOSITORY_STATUS")
 
 class ClusterServerPacketHandler(object):
     """
@@ -115,7 +115,7 @@ class ClusterServerPacketHandler(object):
         p.writeInt(sequenceSize)
         for row in data :
             p.writeString(row["ServerName"])
-            p.writeString(ClusterServerPacketHandler.__vm_server_status_to_string(row["ServerStatus"]))
+            p.writeString(ClusterServerPacketHandler.__server_status_to_string(row["ServerStatus"]))
             p.writeString(row["ServerIP"])
             p.writeInt(int(row["ServerPort"]))   
             p.writeBool(int(row["IsVanillaServer"]) == 1)         
@@ -304,8 +304,16 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
+    def createRepositoryStatusPacket(self, freeDiskSpace, availableDiskSpace, status):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.REPOSITORY_STATUS)
+        p.writeInt(freeDiskSpace)
+        p.writeInt(availableDiskSpace)
+        p.writeString(ClusterServerPacketHandler.__server_status_to_string(status))
+        return p
+    
     @staticmethod
-    def __vm_server_status_to_string(status):
+    def __server_status_to_string(status):
         """
         Convierte a string el código de estado de un servidor de máquinas virtuales.
         Argumentos:
@@ -460,5 +468,10 @@ class ClusterServerPacketHandler(object):
             
         elif (packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE) :
             result["ImageID"] = p.readInt()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.REPOSITORY_STATUS) :
+            result["FreeDiskSpace"] = p.readInt()
+            result["AvailableDiskSpace"] = p.readInt()
+            result["ConnectionStatus"] = p.readString()
                       
         return result
