@@ -65,14 +65,12 @@ class TesterCallback(NetworkCallback):
             print("Image deployment error on server {0}: {1}".format(data["ServerNameOrIPAddress"], data["ErrorMessage"]))
         elif (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR):
             print("Image deletion error on server {0}: {1}".format(data["ServerNameOrIPAddress"], data["ErrorMessage"]))
-        elif (data["packet_type"] == PACKET_T.IMAGE_CREATED):
-            print("The cluster server says: the image {0} has been created".format(data["ImageID"]))
         elif (data["packet_type"] == PACKET_T.IMAGE_CREATION_ERROR):
             print("Image creation error: {0}".format(data["ErrorMessage"]))
-        elif (data["packet_type"] == PACKET_T.IMAGE_EDITED) :
-            print("The cluster server says: the image {0} has been edited and deployed".format(data["ImageID"]))
         elif (data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR):
             print("Image edition error: {0}".format(data["ErrorMessage"]))
+        elif (data["packet_type"] == PACKET_T.COMMAND_EXECUTED):
+            print("The cluster server says: command executed successfully")
 
 def printLogo():
     print('\t   _____                             _____ _                 _ ')

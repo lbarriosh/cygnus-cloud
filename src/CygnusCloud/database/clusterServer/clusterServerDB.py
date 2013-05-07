@@ -599,20 +599,48 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         self._executeUpdate(update)
         
     def addImageEditionCommand(self, commandID, imageID):
-        update = "INSERT INTO ImageEditionCommands VALUES('{0}', {1});".format(commandID, imageID)
+        self.__addImageCommand(self, "ImageEditionCommand", commandID, imageID)
+        
+    def addImageDeletionCommand(self, commandID, imageID):
+        self.__addImageCommand(self, "ImageDeletionCommand", commandID, imageID)
+        
+    def __addImageCommand(self, tableName, commandID, imageID):
+        update = "INSERT INTO {0} VALUES('{1}', {2});".format(tableName, commandID, imageID)
         self._executeUpdate(update)
         
     def removeImageEditionCommand(self, commandID):
-        update = "DELETE FROM ImageEditionCommands WHERE commandID = '{0}';".format(commandID)
+        self.__removeImageCommand("ImageEditionCommand", commandID)
+        
+    def removeImageDeletionCommand(self, commandID):
+        self.__removeImageCommand("ImageDeletionCommand", commandID)
+        
+    def removeImageCommand(self, tableName, commandID):
+        update = "DELETE FROM {0} WHERE commandID = '{1}';".format(tableName, commandID)
         self._executeUpdate(update)
         
     def isImageEditionCommand(self, commandID):
-        query = "SELECT * FROM ImageEditionCommands WHERE commandID = '{0}';".format(commandID)
+        return self.__classifyCommand("ImageEditionCommand", commandID)
+    
+    def isImageDeletionCommand(self, commandID):
+        return self.__classifyCommand("ImageDeletionCommand", commandID)
+        
+    def __classifyCommand(self, tableName, commandID):
+        query = "SELECT * FROM {0} WHERE commandID = '{1}';".format(tableName, commandID)
+        return self._executeQuery(query, True) != None
+    
+    def isBeingEdited(self, imageID):
+        return self.__isAffectedByCommand("ImageEditionCommand", imageID)
+    
+    def isBeingDeleted(self, imageID):
+        return self.__isAffectedByCommand("ImageDeletionCommand", imageID)
+    
+    def __isAffectedByCommand(self, tableName, imageID):
+        query = "SELECT * FROM {0} WHERE imageID = {1}".format(tableName, imageID)
         return self._executeQuery(query, True) != None
     
     def getCommandID(self, imageID):
-        query = "SELECT imageID FROM ImageEditionCommands WHERE imageID = {0};".format(imageID)
-        return self._executeQuery(query, True)
+        query = "SELECT imageID FROM ImageEditionCommand WHERE imageID = {0};".format(imageID)
+        return self._executeQuery(query, True)    
     
     def changeImageStatus(self, imageID, status):
         update = "UPDATE ImageOnServer SET status = {1} WHERE imageId = {0}".format(imageID, status)
@@ -626,15 +654,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "SELECT * FROM ImageOnServer WHERE imageID = {0} AND status = {1};".format(imageID, state)
         return self._executeQuery(query, True) != None
     
-    def getImages(self, serverID, status):
+    def getHostedImagesWithStatus(self, serverID, status):
         query = "SELECT imageId FROM ImageOnServer WHERE serverId = {0} AND status = {1};".format(serverID, status)
         result = self._executeQuery(query, False)
         if (result == None) : 
             return []
         else :
             return result
-        
-    def isBeingEdited(self, imageID):
-        query = "SELECT * FROM ImageEditionCommands WHERE imageID = {0}".format(imageID)
-        return self._executeQuery(query, True) != None
-        
