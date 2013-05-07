@@ -6,6 +6,8 @@ import time
 
 SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN", "RECONNECTING", "CONNECTION_TIMED_OUT")
 
+IMAGE_STATE_T = enum("READY", "DIRTY", "DELETE")
+
 class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     """
     Nota: esta clase es ServerVMManager, con los métodos específicos
@@ -208,10 +210,9 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             se ha desconectado la tiene. Sólo está disponible si el servidor está listo.
         '''
         # Creamos la consulta
-        query = "SELECT ImageOnServer.serverId FROM ImageOnServer " +\
-            "INNER JOIN VMServer ON ImageOnServer.serverId = VMServer.serverID " \
-                + "WHERE VMServer.serverStatus = " + str(SERVER_STATE_T.READY) \
-                + " AND " + "imageId =" + str(imageId) + ";"
+        query = "SELECT ImageOnServer.serverId FROM ImageOnServer\
+            INNER JOIN VMServer ON ImageOnServer.serverId = VMServer.serverID \
+                WHERE VMServer.serverStatus = {0} AND imageId = {1} AND status = {2};".format(SERVER_STATE_T.READY, imageId, IMAGE_STATE_T.READY) 
         #Recogemos los resultado
         results=self._executeQuery(query)
         if (results == None) :
@@ -238,7 +239,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 lista con los identificadores de los servidores que tienen la imagen
         '''
         # Creamos la consulta
-        query = "SELECT VMServer.serverName, imageId FROM VMServer, ImageOnServer " +\
+        query = "SELECT VMServer.serverName, imageId, status FROM VMServer, ImageOnServer " +\
                  "WHERE VMServer.serverId = ImageOnServer.serverId AND VMServer.serverID = {0};"\
                  .format(serverID)
         #Recogemos los resultado
@@ -248,7 +249,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         #Guardamos en una lista los ids resultantes
         retrievedData = []
         for r in results:
-            retrievedData.append({"ServerName" : r[0], "VMID" : int(r[1])})
+            retrievedData.append({"ServerName" : str(r[0]), "VMID" : int(r[1]), "Status": int(r[2])})
         #Devolvemos la lista resultado
         return retrievedData
     
@@ -302,13 +303,13 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             para cada servidor de máquinas virtuales, y eso son muchas conexiones.
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT imageId FROM ImageOnServer WHERE serverId = " + str(serverId)    
+        sql = "SELECT imageId, status FROM ImageOnServer WHERE serverId = {0}; ".format(serverId)    
         #Recogemos los resultado
         results=self._executeQuery(sql)
         #Guardamos en una lista los ids resultantes
         serverIds = []
         for r in results:
-            serverIds.append(r)
+            serverIds.append((r[0], r[1]))
         #Devolvemos la lista resultado
         return serverIds
          
@@ -322,7 +323,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             Nada.
         '''
         # Insert the row in the table
-        query = "INSERT INTO ImageOnServer VALUES(" + str(serverID)+ "," + str(imageID)  +") "  
+        query = "INSERT INTO ImageOnServer VALUES({0}, {1}, {2});".format(serverID, imageID, IMAGE_STATE_T.READY)
         self._executeUpdate(query)
         
     def deleteImageFromServer(self, serverID, imageID):
@@ -597,6 +598,23 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         update = "DELETE FROM VanillaImageFamilyOfNewVM WHERE temporaryID = '{0}';".format(commandID)
         self._executeUpdate(update)
         
+    def addImageEditionCommand(self, commandID):
+        update = "INSERT INTO ImageEditionCommands VALUES('{0}');".format(commandID)
+        self._executeUpdate(update)
         
-      
+    def removeImageEditionCommand(self, commandID):
+        update = "DELETE FROM ImageEditionCommands WHERE commandID = '{0}';".format(commandID)
+        self._executeUpdate(update)
+        
+    def isImageEditionCommand(self, commandID):
+        query = "SELECT * FROM ImageEditionCommands WHERE commandID = '{0}';".format(commandID)
+        return self._executeQuery(query, True) != None
+    
+    def changeImageStatus(self, imageID, status):
+        update = "UPDATE ImageOnServer SET status = {1} WHERE imageId = {0}".format(imageID, status)
+        self._executeUpdate(update)
+        
+    def changeImageCopyStatus(self, imageID, serverID, status):
+        update = "UPDATE ImageOnServer SET status = {2} WHERE imageId = {0} AND serverId = {1}".format(imageID, serverID, status)
+        self._executeUpdate(update)      
         

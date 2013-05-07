@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT,
 	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER,
 	isVanillaServer BOOL, UNIQUE(serverName), UNIQUE(serverIP, serverPort));
 
-CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER,
+CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER, status TINYINT,
 	PRIMARY KEY(serverId,imageId),
 	FOREIGN KEY(serverId) REFERENCES VMServer(serverId) ON DELETE CASCADE ON UPDATE CASCADE);
 
@@ -51,6 +51,8 @@ DROP TABLE IF EXISTS ActiveVMDistribution;
     
 CREATE TABLE ActiveVMDistribution(vmID VARCHAR(70) PRIMARY KEY, serverID INTEGER,
 	FOREIGN KEY(serverID) REFERENCES VMServer(serverID) ON DELETE CASCADE ON UPDATE CASCADE);
+	
+CREATE TABLE ImageEditionCommands(commandID VARCHAR(70) PRIMARY KEY);
 
 /*
  * Características de las familias de imágenes vanilla
@@ -73,13 +75,13 @@ INSERT INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort, i
 	(4, 'Server4', 1, '1.2.3.7', 8080, 0);
 	
 INSERT INTO ImageOnServer VALUES
-	(1, 1),
-	(1, 2),
-	(1, 3),
-	(2, 1),
-	(2, 2),
-	(3, 1),
-	(3, 3);
+	(1, 1, 0),
+	(1, 2, 0),
+	(1, 3, 1),
+	(2, 1, 1),
+	(2, 2, 0),
+	(3, 1, 2),
+	(3, 3, 2);
 	
 INSERT INTO VanillaImageFamilyOf VALUES
 	(1, 3), (2, 1), (3, 5);
