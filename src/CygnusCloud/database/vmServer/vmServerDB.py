@@ -347,7 +347,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
             return []
         result = []
         for row in rows :
-            result.append(row[0])
+            result.append(row)
         return result
     
     def getRegisteredDomainNames(self):

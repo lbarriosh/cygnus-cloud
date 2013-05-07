@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS VanillaImageFamilyOf(imageID INTEGER, familyID SMALLI
 	PRIMARY KEY(familyID, imageID),
 	FOREIGN KEY(familyID) REFERENCES VanillaImageFamily(familyID));
 	
-CREATE TABLE VanillaImageFamilyOfNewVM(temporaryID VARCHAR(70) PRIMARY KEY, familyID SMALLINT,
+CREATE TABLE IF NOT EXISTS VanillaImageFamilyOfNewVM(temporaryID VARCHAR(70) PRIMARY KEY, familyID SMALLINT,
 	FOREIGN KEY(familyID) REFERENCES VanillaImageFamily(familyID));
 	
 DROP TABLE IF EXISTS ImageRepository;

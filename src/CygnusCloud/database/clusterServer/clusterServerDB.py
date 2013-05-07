@@ -243,6 +243,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                  .format(serverID)
         #Recogemos los resultado
         results=self._executeQuery(query)
+        if (results == None) :
+            return []
         #Guardamos en una lista los ids resultantes
         retrievedData = []
         for r in results:
@@ -453,6 +455,14 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             return None
         else :
             return result
+        
+    def getReadyVanillaServers(self):
+        query = "SELECT serverID FROM VMServer WHERE isVanillaServer = 1 AND serverStatus = {0};".format(SERVER_STATE_T.READY)
+        result = self._executeQuery(query, False)
+        if (result == None) :
+            return []
+        else :
+            return result
     
     def deleteHostedVMs(self, serverID):
         """
@@ -547,6 +557,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             return None
         else :
             return int(result)
+        
+    def registerFamilyID(self, imageID, familyID):
+        update = "INSERT INTO VanillaImageFamilyOf VALUES ({0}, {1});".format(imageID, familyID)
+        self._executeUpdate(update)
         
     def addImageRepository(self, repositoryIP, repositoryPort, status):
         command = "INSERT INTO ImageRepository VALUES ('{0}', {1}, 0, 0, {2})".format(repositoryIP, repositoryPort, status)

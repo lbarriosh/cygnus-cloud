@@ -17,15 +17,17 @@ class LoadBalancer(object):
         Args:
             databaseConnector: a connector to the main server database
         '''
-        self._dbConnector = databaseConnector
+        self._dbConnector = databaseConnector    
         
-    def assignVMServer(self, imageId):
+    def assignVMServer(self, imageID, create_new_image=False):
         '''
         Determines what virtual machine server will host an image.
         Args:
-            imageId: the image's ID
+            imageID: the image's ID
         Returns:
             a tuple (ID, errorMessage), where ID is the virtual machine server's ID
             and errorMessage is an error message.
         '''
         raise NotImplementedError
+    
+    

@@ -138,6 +138,24 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__sendRepositoryStatusData()
         elif (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE or data["packet_type"] == WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER):
             self.__deployOrDeleteImage(data)
+        elif (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE):
+            self.__createImage(data)
+            
+    def __createImage(self, data):
+        # Encontrar un servidor vanilla
+        (serverID, errorMessage) = self.__loadBalancer.assignVMServer(data["ImageID"], True)
+        if (errorMessage != None) :
+            # Error => informar de él y terminar
+            p = self.__webPacketHandler.generateImageCreationErrorPacket(errorMessage, data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, p)
+            return
+        
+        # Ya tenemos un servidor vanilla => registramos la nueva imagen en la BD y enviamos la petición
+        self.__dbConnector.registerNewVMVanillaImageFamily(data["CommandID"], self.__dbConnector.getFamilyID(data["ImageID"]))
+        connectionData = self.__dbConnector.getVMServerBasicData(serverID)
+        p = self.__vmServerPacketHandler.createImageEditionPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], False, data["CommandID"], 
+                                                                  data["OwnerID"])
+        self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)
             
     def __deployOrDeleteImage(self, data):
         serverNameOrIPAddress = data["ServerNameOrIPAddress"]
@@ -609,6 +627,28 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__processImageDeploymentError(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYED or data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DELETED):
             self.__processImageDeployment(data)
+        elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_EDITED):
+            self.__processImageEditedPacket(data)
+        elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_EDITION_ERROR):
+            self.__processImageEditionError(data)
+        
+    def __processImageEditedPacket(self, data):
+        # Actualizar la base de datos
+        familyID = self.__dbConnector.getNewVMVanillaImageFamily(data["CommandID"])
+        self.__dbConnector.deleteNewVMVanillaImageFamily(data["CommandID"])
+        self.__dbConnector.registerFamilyID(data["ImageID"], familyID)
+        
+        # Enviar la respuesta
+        p = self.__webPacketHandler.generateImageCreatedPacket(data["ImageID"], data["CommandID"])
+        self.__networkManager.sendPacket('', self.__webPort, p)
+    
+    def __processImageEditionError(self, data):
+        # Actualizar la base de datos
+        self.__dbConnector.deleteNewVMVanillaImageFamily(data["CommandID"])
+        
+        # Enviar la respuesta
+        p = self.__webPacketHandler.generateImageCreationErrorPacket(data["ErrorMessage"], data["CommandID"])
+        self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __processImageDeploymentError(self, data):
         if (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYMENT_ERROR) :

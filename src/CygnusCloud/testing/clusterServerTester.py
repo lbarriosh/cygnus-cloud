@@ -65,6 +65,10 @@ class TesterCallback(NetworkCallback):
             print("Image deployment error on server {0}: {1}".format(data["ServerNameOrIPAddress"], data["ErrorMessage"]))
         elif (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR):
             print("Image deletion error on server {0}: {1}".format(data["ServerNameOrIPAddress"], data["ErrorMessage"]))
+        elif (data["packet_type"] == PACKET_T.IMAGE_CREATED):
+            print("The cluster server says: the image {0} has been created".format(data["ImageID"]))
+        elif (data["packet_type"] == PACKET_T.IMAGE_CREATION_ERROR):
+            print("Image creation error: {0}".format(data["ErrorMessage"]))
 
 def printLogo():
     print('\t   _____                             _____ _                 _ ')
@@ -129,6 +133,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "deleteImageFromServer"):
             p = pHandler.createImageDeploymentPacket(PACKET_T.DELETE_IMAGE_FROM_SERVER, tokens.pop(0), int(tokens.pop(0)), "")
+            networkManager.sendPacket(ip_address, port, p)
+        elif (command == "createImage") :
+            p = pHandler.generateCreateImagePacket(int(tokens.pop(0)), 1, "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True

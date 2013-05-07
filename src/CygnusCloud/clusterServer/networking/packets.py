@@ -360,9 +360,17 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def generateCreateImagePacket(self, packet_type, imageID, commandID):
+    def generateCreateImagePacket(self, imageID, ownerID, commandID):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(packet_type)
+        p.writeInt(MAIN_SERVER_PACKET_T.CREATE_IMAGE)
+        p.writeInt(imageID)
+        p.writeInt(ownerID)
+        p.writeString(commandID)
+        return p
+    
+    def generateImageCreatedPacket(self, imageID, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.IMAGE_CREATED)
         p.writeInt(imageID)
         p.writeString(commandID)
         return p
@@ -496,8 +504,12 @@ class ClusterServerPacketHandler(object):
             result["AvailableDiskSpace"] = p.readInt()
             result["ConnectionStatus"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.CREATE_IMAGE or
-              packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATED) :
+        elif (packet_type == MAIN_SERVER_PACKET_T.CREATE_IMAGE):
+            result["ImageID"] = p.readInt()
+            result["OwnerID"] = p.readInt()
+            result["CommandID"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATED) :
             result["ImageID"] = p.readInt()
             result["CommandID"] = p.readString()
             
