@@ -196,7 +196,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             imageIDs.append(r)
         return imageIDs
         
-    def getHosts(self, imageId):
+    def getHosts(self, imageId, imageStatus = IMAGE_STATE_T.READY):
         '''
             Devuelve una lista con todos los identificadores de servidores que pueden dar acceso a la
              imagen cuyo identificador se pasa como argumento.
@@ -212,7 +212,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         # Creamos la consulta
         query = "SELECT ImageOnServer.serverId FROM ImageOnServer\
             INNER JOIN VMServer ON ImageOnServer.serverId = VMServer.serverID \
-                WHERE VMServer.serverStatus = {0} AND imageId = {1} AND status = {2};".format(SERVER_STATE_T.READY, imageId, IMAGE_STATE_T.READY) 
+                WHERE VMServer.serverStatus = {0} AND imageId = {1} AND status = {2};".format(SERVER_STATE_T.READY, imageId, imageStatus) 
         #Recogemos los resultado
         results=self._executeQuery(query)
         if (results == None) :
@@ -598,8 +598,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         update = "DELETE FROM VanillaImageFamilyOfNewVM WHERE temporaryID = '{0}';".format(commandID)
         self._executeUpdate(update)
         
-    def addImageEditionCommand(self, commandID):
-        update = "INSERT INTO ImageEditionCommands VALUES('{0}');".format(commandID)
+    def addImageEditionCommand(self, commandID, imageID):
+        update = "INSERT INTO ImageEditionCommands VALUES('{0}', {1});".format(commandID, imageID)
         self._executeUpdate(update)
         
     def removeImageEditionCommand(self, commandID):
@@ -610,6 +610,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "SELECT * FROM ImageEditionCommands WHERE commandID = '{0}';".format(commandID)
         return self._executeQuery(query, True) != None
     
+    def getCommandID(self, imageID):
+        query = "SELECT imageID FROM ImageEditionCommands WHERE imageID = {0};".format(imageID)
+        return self._executeQuery(query, True)
+    
     def changeImageStatus(self, imageID, status):
         update = "UPDATE ImageOnServer SET status = {1} WHERE imageId = {0}".format(imageID, status)
         self._executeUpdate(update)
@@ -617,4 +621,20 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     def changeImageCopyStatus(self, imageID, serverID, status):
         update = "UPDATE ImageOnServer SET status = {2} WHERE imageId = {0} AND serverId = {1}".format(imageID, serverID, status)
         self._executeUpdate(update)      
+        
+    def isThereSomeImageCopyInState(self, imageID, state):
+        query = "SELECT * FROM ImageOnServer WHERE imageID = {0} AND status = {1};".format(imageID, state)
+        return self._executeQuery(query, True) != None
+    
+    def getImages(self, serverID, status):
+        query = "SELECT imageId FROM ImageOnServer WHERE serverId = {0} AND status = {1};".format(serverID, status)
+        result = self._executeQuery(query, False)
+        if (result == None) : 
+            return []
+        else :
+            return result
+        
+    def isBeingEdited(self, imageID):
+        query = "SELECT * FROM ImageEditionCommands WHERE imageID = {0}".format(imageID)
+        return self._executeQuery(query, True) != None
         

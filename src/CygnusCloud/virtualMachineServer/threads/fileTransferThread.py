@@ -126,7 +126,7 @@ class FileTransferThread(BasicThread):
             except Exception:
                 pass
             p = self.__vmServerPacketHandler.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR, 
-                                                                    + errorMessage, 
+                                                                errorMessage, 
                                                                    data["CommandID"])
             self.__networkManager.sendPacket('', self.__serverListeningPort, p)
         

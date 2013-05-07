@@ -70,11 +70,18 @@ class CompressionThread(BasicThread):
                     
                 # Extraemos el fichero en el directorio que alberga las imágenes
                 imageDirectory = path.join(self.__workingDirectory, str(data["TargetImageID"]))
+                # Cambiamos los permisos de los ficheros y buscamos el fichero de definición
+                definitionFileDirectory = path.join(self.__definitionFileDirectory, str(data["TargetImageID"]))            
+                
+                try :
+                    ChildProcessManager.runCommandInForeground("rm -rf " + imageDirectory, Exception)
+                    ChildProcessManager.runCommandInForeground("rm -rf " + definitionFileDirectory, Exception)
+                except Exception:
+                    pass
                 compressedFilePath = path.join(self.__transferDirectory, str(data["SourceImageID"]) + ".zip")
                 self.__compressor.extractFile(compressedFilePath, imageDirectory)            
                 
-                # Cambiamos los permisos de los ficheros y buscamos el fichero de definición
-                definitionFileDirectory = path.join(self.__definitionFileDirectory, str(data["TargetImageID"]))            
+                
                 
                 # Creamos el directorio de definicion en el caso de que no exista
                 if not path.exists(definitionFileDirectory):

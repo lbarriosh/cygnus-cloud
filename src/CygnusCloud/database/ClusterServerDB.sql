@@ -11,7 +11,7 @@ USE ClusterServerDB;
 
 CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT, 
 	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER,
-	isVanillaServer TINYINT, UNIQUE(serverName), UNIQUE(serverIP, serverPort));
+	isVanillaServer BIT, UNIQUE(serverName), UNIQUE(serverIP, serverPort));
 
 CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER, status TINYINT,
 	PRIMARY KEY(serverId,imageId),
@@ -50,10 +50,10 @@ DROP TABLE IF EXISTS ActiveVMDistribution;
 CREATE TABLE ActiveVMDistribution(vmID VARCHAR(70) PRIMARY KEY, serverID INTEGER,
 	FOREIGN KEY(serverID) REFERENCES VMServer(serverID) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=MEMORY;
 	
-CREATE TABLE IF NOT EXISTS ImageEditionCommands(commandID VARCHAR(70) PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS ImageEditionCommands(commandID VARCHAR(70) PRIMARY KEY, imageID INTEGER, UNIQUE(imageID));
 
-INSERT IGNORE INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort) VALUES
-    (1, 'Server1', 2, '192.168.0.4', 15800);
+INSERT IGNORE INTO VMServer VALUES
+    (1, 'Server1', 2, '192.168.0.4', 15800, 1);
 
 /*
  * Características de las familias de imágenes vanilla

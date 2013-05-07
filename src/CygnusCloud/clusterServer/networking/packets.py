@@ -16,8 +16,8 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "VM_SERVER_UNREGISTRATION_ERROR", "DOMAIN_DESTRUCTION", "DOMAIN_DESTRUCTION_ERROR", 
                             "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
                             "GET_IMAGE", "SET_IMAGE", "REPOSITORY_STATUS_REQUEST", "REPOSITORY_STATUS",
-                            "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR", "DELETE_IMAGE_FROM_SERVER", "DELETE_IMAGE_FROM_SERVER_ERROR",
-                            "CREATE_IMAGE", "IMAGE_CREATION_ERROR", "IMAGE_CREATED")
+                            "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR", "IMAGE_DEPLOYED", "DELETE_IMAGE_FROM_SERVER", "DELETE_IMAGE_FROM_SERVER_ERROR",
+                            "IMAGE_DELETED", "CREATE_IMAGE", "IMAGE_CREATION_ERROR", "IMAGE_CREATED", "EDIT_IMAGE", "IMAGE_EDITION_ERROR", "IMAGE_EDITED")
 
 class ClusterServerPacketHandler(object):
     """
@@ -360,24 +360,24 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def generateCreateImagePacket(self, imageID, ownerID, commandID):
+    def createImageEditionPacket(self, packet_type, imageID, ownerID, commandID):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.CREATE_IMAGE)
+        p.writeInt(packet_type)
         p.writeInt(imageID)
         p.writeInt(ownerID)
         p.writeString(commandID)
         return p
     
-    def generateImageCreatedPacket(self, imageID, commandID):
+    def createImageEditedPacket(self, packet_type, imageID, commandID):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.IMAGE_CREATED)
+        p.writeInt(packet_type)
         p.writeInt(imageID)
         p.writeString(commandID)
         return p
     
-    def generateImageCreationErrorPacket(self, errorMessage, commandID):
+    def createImageEditionErrorPacket(self, packet_type, errorMessage, commandID):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.IMAGE_CREATION_ERROR)
+        p.writeInt(packet_type)
         p.writeString(errorMessage)
         p.writeString(commandID)
         return p
@@ -504,16 +504,19 @@ class ClusterServerPacketHandler(object):
             result["AvailableDiskSpace"] = p.readInt()
             result["ConnectionStatus"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.CREATE_IMAGE):
+        elif (packet_type == MAIN_SERVER_PACKET_T.CREATE_IMAGE or 
+              packet_type == MAIN_SERVER_PACKET_T.EDIT_IMAGE):
             result["ImageID"] = p.readInt()
             result["OwnerID"] = p.readInt()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATED) :
+        elif (packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATED or
+              packet_type == MAIN_SERVER_PACKET_T.IMAGE_EDITED) :
             result["ImageID"] = p.readInt()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATION_ERROR):
+        elif (packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATION_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.IMAGE_EDITION_ERROR):
             result["ErrorMessage"] = p.readString()
             result["CommandID"] = p.readString()
                       
