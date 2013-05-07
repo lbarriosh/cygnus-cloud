@@ -32,6 +32,11 @@ CREATE TABLE IF NOT EXISTS VanillaImageFamilyOf(imageID INTEGER, familyID SMALLI
 	PRIMARY KEY(familyID, imageID),
 	FOREIGN KEY(familyID) REFERENCES VanillaImageFamily(familyID));
 	
+DROP TABLE IF EXISTS ImageRepository;
+CREATE TABLE ImageRepository(repositoryIP VARCHAR(15), repositoryPort INTEGER,
+	freeDiskSpace INTEGER, availableDiskSpace INTEGER, connection_status TINYINT, PRIMARY KEY(repositoryIP, repositoryPort))
+	ENGINE=MEMORY;
+	
 DROP TABLE IF EXISTS VMBootCommand;
 
 CREATE TABLE VMBootCommand(commandID VARCHAR(70), dispatchTime double, VMID INT,
@@ -40,7 +45,7 @@ CREATE TABLE VMBootCommand(commandID VARCHAR(70), dispatchTime double, VMID INT,
 DROP TABLE IF EXISTS ActiveVMDistribution;
     
 CREATE TABLE ActiveVMDistribution(vmID VARCHAR(70) PRIMARY KEY, serverID INTEGER,
-	FOREIGN KEY(serverID) REFERENCES VMServer(serverID) ON DELETE CASCADE ON UPDATE CASCADE);
+	FOREIGN KEY(serverID) REFERENCES VMServer(serverID) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=MEMORY;
 
 INSERT IGNORE INTO VMServer(serverId, serverName, serverStatus, serverIP, serverPort) VALUES
     (1, 'Server1', 2, '192.168.0.4', 15800);
@@ -48,17 +53,16 @@ INSERT IGNORE INTO VMServer(serverId, serverName, serverStatus, serverIP, server
 /*
  * Características de las familias de imágenes vanilla
  */
-INSERT IGNORE INTO VanillaImageFamily VALUES (1, 'Windows7-Small',  1048576, 1, 20971520, 4194304);
-INSERT IGNORE INTO VanillaImageFamily VALUES (2, 'Windows7-Medium', 2097152, 2, 31457280, 8388608);
-INSERT IGNORE INTO VanillaImageFamily VALUES (3, 'Windows7-Big', 3145728, 4, 41943040, 16777216);
-INSERT IGNORE INTO VanillaImageFamily VALUES (4, 'Linux-Small', 1048576, 1, 5242880, 3145728);
-INSERT IGNORE INTO VanillaImageFamily VALUES (5, 'Linux-Medium', 2097152, 2, 10485760, 6291456);
-INSERT IGNORE INTO VanillaImageFamily VALUES (6, 'Linux-Big', 3145728, 4, 15728640, 12582912);
+INSERT IGNORE INTO VanillaImageFamily VALUES (1, 'Linux-Small', 1048576, 1, 5242880, 3145728); 
+INSERT IGNORE INTO VanillaImageFamily VALUES (2, 'Linux-Medium', 2097152, 2, 10485760, 6291456);
+INSERT IGNORE INTO VanillaImageFamily VALUES (3, 'Linux-Big', 3145728, 4, 15728640, 12582912);
+
+INSERT IGNORE INTO VanillaImageFamily VALUES (4, 'Windows7-Small',  1048576, 1, 20971520, 4194304);
+INSERT IGNORE INTO VanillaImageFamily VALUES (5, 'Windows7-Medium', 2097152, 2, 31457280, 8388608);
+INSERT IGNORE INTO VanillaImageFamily VALUES (6, 'Windows7-Big', 3145728, 4, 41943040, 16777216);
 
 /*
  * Imágenes activas
  */
-INSERT IGNORE INTO ImageOnServer VALUES
-	(1, 1);
 	
-INSERT IGNORE INTO VanillaImageFamilyOf VALUES (1, 4);
+INSERT IGNORE INTO VanillaImageFamilyOf VALUES (1, 1);

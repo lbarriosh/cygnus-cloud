@@ -14,20 +14,22 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
                             "HALT", "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "COMMAND_EXECUTED", "VM_SERVER_SHUTDOWN_ERROR",
                             "VM_SERVER_UNREGISTRATION_ERROR", "DOMAIN_DESTRUCTION", "DOMAIN_DESTRUCTION_ERROR", 
-                            "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR")
+                            "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
+                            "GET_IMAGE", "SET_IMAGE", "REPOSITORY_STATUS_REQUEST", "REPOSITORY_STATUS",
+                            "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR", "DELETE_IMAGE_FROM_SERVER", "DELETE_IMAGE_FROM_SERVER_ERROR")
 
 class ClusterServerPacketHandler(object):
     """
     Estos objetos leen y escriben los paquetes que el endpoint y el servidor de cluster utilizan para
     comunicarse.
     """    
-    def __init__(self, networkManager):
+    def __init__(self, packetCreator):
         """
         Inicializa el estado del gestor de paquetes
         Argumentos:
-            networkManager: el objeto NetworkManager que utilizaremos para crear los paquetes
+            packetCreator: el objeto NetworkManager que utilizaremos para crear los paquetes
         """
-        self.__packetCreator = networkManager
+        self.__packetCreator = packetCreator
             
     def createVMServerRegistrationPacket(self, IPAddress, port, name, isVanillaServer, commandID):
         """
@@ -114,7 +116,7 @@ class ClusterServerPacketHandler(object):
         p.writeInt(sequenceSize)
         for row in data :
             p.writeString(row["ServerName"])
-            p.writeString(ClusterServerPacketHandler.__vm_server_status_to_string(row["ServerStatus"]))
+            p.writeString(ClusterServerPacketHandler.__server_status_to_string(row["ServerStatus"]))
             p.writeString(row["ServerIP"])
             p.writeInt(int(row["ServerPort"]))   
             p.writeBool(int(row["IsVanillaServer"]) == 1)         
@@ -303,8 +305,16 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
+    def createRepositoryStatusPacket(self, freeDiskSpace, availableDiskSpace, status):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.REPOSITORY_STATUS)
+        p.writeInt(freeDiskSpace)
+        p.writeInt(availableDiskSpace)
+        p.writeString(ClusterServerPacketHandler.__server_status_to_string(status))
+        return p
+    
     @staticmethod
-    def __vm_server_status_to_string(status):
+    def __server_status_to_string(status):
         """
         Convierte a string el código de estado de un servidor de máquinas virtuales.
         Argumentos:
@@ -341,6 +351,13 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
         
+    def createImageDeploymentPacket(self, packet_type, serverNameOrIPAddress, imageID, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(packet_type)    
+        p.writeString(serverNameOrIPAddress)    
+        p.writeInt(imageID)
+        p.writeString(commandID)
+        return p
     
     def readPacket(self, p):
         """
@@ -353,7 +370,7 @@ class ClusterServerPacketHandler(object):
         """
         result = dict()
         packet_type = p.readInt()
-        result["packet_type"] = packet_type
+        result["packet_type"] = packet_type        
         if (packet_type == MAIN_SERVER_PACKET_T.REGISTER_VM_SERVER) :
             result["VMServerIP"] = p.readString()
             result["VMServerPort"] = p.readInt()
@@ -404,9 +421,17 @@ class ClusterServerPacketHandler(object):
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR or 
               packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR or 
-              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_SHUTDOWN_ERROR) :
+              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_SHUTDOWN_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.IMAGE_DEPLOYMENT_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR) :
             result["ServerNameOrIPAddress"] = p.readString()
             result["ErrorMessage"] = p.readString()
+            result["CommandID"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.DEPLOY_IMAGE or
+              packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_SERVER) :
+            result["ServerNameOrIPAddress"] = p.readString()
+            result["ImageID"] = p.readInt()
             result["CommandID"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST):
@@ -449,6 +474,11 @@ class ClusterServerPacketHandler(object):
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
             result["ErrorMessage"] = p.readString()
-            result["CommandID"] = p.readString()            
+            result["CommandID"] = p.readString()  
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.REPOSITORY_STATUS) :
+            result["FreeDiskSpace"] = p.readInt()
+            result["AvailableDiskSpace"] = p.readInt()
+            result["ConnectionStatus"] = p.readString()
                       
         return result

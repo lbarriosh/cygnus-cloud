@@ -112,9 +112,11 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "SELECT serverId FROM VMServer;"  
         #Recogemos los resultado
         results=self._executeQuery(query)
+        if (results == None) :
+            return []
         serverIds = []
         for r in results:
-            serverIds.append(r[0])
+            serverIds.append(r)
         #Devolvemos la lista resultado
         return serverIds
     
@@ -128,6 +130,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         """
         query = "SELECT serverIP, serverPort FROM VMServer WHERE serverStatus = " + str(SERVER_STATE_T.READY) + ";"
         results = self._executeQuery(query)
+        if (results == None) :
+            return []
         serverIPs = []
         for r in results :
             serverIPs.append({"ServerIP" : r[0], "ServerPort" : r[1]})
@@ -157,8 +161,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         update = "INSERT INTO VMServer(serverStatus, serverName, serverIP, serverPort, isVanillaServer) VALUES ({0}, '{1}', '{2}', {3}, {4});"\
             .format(SERVER_STATE_T.BOOTING, name, IPAddress, port, vanillaValue)
         self._executeUpdate(update)      
-        update = "SELECT serverId FROM VMServer WHERE serverIP ='" + IPAddress + "';"
-        serverId = self._getLastRowId(update)
+        query = "SELECT serverId FROM VMServer WHERE serverIP ='" + IPAddress + "';"
+        serverId = self._executeQuery(query)[-1]
         return serverId
     
     def deleteVMServer(self, serverNameOrIPAddress):
@@ -187,7 +191,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         results = self._executeQuery(query)
         imageIDs = []
         for r in results:
-            imageIDs.append(r[0])
+            imageIDs.append(r)
         return imageIDs
         
     def getHosts(self, imageId):
@@ -210,10 +214,12 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 + " AND " + "imageId =" + str(imageId) + ";"
         #Recogemos los resultado
         results=self._executeQuery(query)
+        if (results == None) :
+            return []
         #Guardamos en una lista los ids resultantes
         serverIds = []
         for r in results:
-            serverIds.append(r[0])
+            serverIds.append(r)
         #Devolvemos la lista resultado
         return serverIds
     
@@ -244,6 +250,11 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         #Devolvemos la lista resultado
         return retrievedData
     
+    def hostsImage(self, serverID, imageID):
+        query = "SELECT * FROM ImageOnServer WHERE serverId = {0} AND imageID = {1};".format(serverID, imageID)
+        result = self._executeQuery(query, True)
+        return result != None
+    
     def getVMServerID(self, nameOrIPAddress):
         '''
         Devuelve el ID de un servidor de máquinas virtuales a partir de su nombre o
@@ -256,10 +267,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "SELECT serverId FROM VMServer WHERE serverIP = '" + nameOrIPAddress +\
              "' OR serverName = '" + nameOrIPAddress + "';"
         # Execute it
-        results=self._executeQuery(query)
-        if (results == ()) : 
+        results=self._executeQuery(query, True)
+        if (results == None) : 
             return None
-        return results[0][0]
+        return results
     
     def updateVMServerStatus(self, serverId, newStatus):
         '''
@@ -295,7 +306,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         #Guardamos en una lista los ids resultantes
         serverIds = []
         for r in results:
-            serverIds.append(r[0])
+            serverIds.append(r)
         #Devolvemos la lista resultado
         return serverIds
          
@@ -311,6 +322,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         # Insert the row in the table
         query = "INSERT INTO ImageOnServer VALUES(" + str(serverID)+ "," + str(imageID)  +") "  
         self._executeUpdate(query)
+        
+    def deleteImageFromServer(self, serverID, imageID):
+        update = "DELETE FROM ImageOnServer WHERE serverId = {0} AND imageId = {1}".format(serverID, imageID)
+        self._executeUpdate(update)
         
     def setVMServerStatistics(self, serverID, runningHosts, ramInUse, ramSize, freeStorageSpace,
                               availableStorageSpace, freeTemporarySpace, availableTemporarySpace,
@@ -388,6 +403,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         """
         query = "SELECT * FROM VMBootCommand;"
         results = self._executeQuery(query, False)
+        if (results == None) :
+            return None
         currentTime = time.time()
         for row in results :
             difference = currentTime - row[1]
@@ -435,7 +452,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         if result == None :
             return None
         else :
-            return result[0]
+            return result
     
     def deleteHostedVMs(self, serverID):
         """
@@ -453,6 +470,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         """
         Registra un conjunto de máquinas virtuales almacenadas en un servidor
         """
+        update = "DELETE FROM ActiveVMDistribution WHERE serverID = {0};".format(serverID)
+        self._executeUpdate(update)
         update = "INSERT INTO ActiveVMDistribution VALUES ('{0}',{1});"
         for hostedDomainUID in hostedVMs :
             self._executeUpdate(update.format(hostedDomainUID, serverID))
@@ -494,7 +513,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         if (result == None) :
             return None
         else :
-            return int(result[0])
+            return int(result)
         
     def deleteVanillaImageFamilies(self):
         update = "DELETE FROM VanillaImageFamily;"
@@ -518,7 +537,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         results=self._executeQuery(query)
         if (results == ()) : 
             return None
-        (vanillaID, VMID) = results[0] 
+        (vanillaID, VMID) = results
         return self.getVanillaImageFamilyFeatures(vanillaID)
     
     def getFamilyID(self, imageID):
@@ -527,5 +546,28 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         if (result == None) :
             return None
         else :
-            return int(result[0])
+            return int(result)
+        
+    def addImageRepository(self, repositoryIP, repositoryPort, status):
+        command = "INSERT INTO ImageRepository VALUES ('{0}', {1}, 0, 0, {2})".format(repositoryIP, repositoryPort, status)
+        self._executeUpdate(command)
+        
+    def updateImageRepositoryStatus(self, repositoryIP, repositoryPort, freeDiskSpace, availableDiskSpace):
+        command = "UPDATE ImageRepository SET freeDiskSpace={2}, availableDiskSpace={3} WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
+            .format(repositoryIP, repositoryPort, freeDiskSpace, availableDiskSpace)
+        self._executeUpdate(command)
+        
+    def updateImageRepositoryConnectionStatus(self, repositoryIP, repositoryPort, status):
+        command = "UPDATE ImageRepository SET connection_status={2} WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
+            .format(repositoryIP, repositoryPort, status)
+        self._executeUpdate(command)
+        
+    def getImageRepositoryStatus(self, repositoryIP, repositoryPort):
+        query = "SELECT freeDiskSpace, availableDiskSpace, connection_status FROM ImageRepository WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
+            .format(repositoryIP, repositoryPort)
+        result = self._executeQuery(query, True)
+        if (result == None):
+            return None
+        else :
+            return {"FreeDiskSpace" : result[0], "AvailableDiskSpace" : result[1], "ConnectionStatus" : result[2]}        
         

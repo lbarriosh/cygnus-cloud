@@ -226,6 +226,20 @@ a:hover {
     width: 800px;
 }
 
+label.notAvaible{
+    background-color: #d1d1d1;
+     opacity:.7;
+    color: #7E7E7E;
+    font-family:  Arial, MS Sans Serif, Tahoma, Helvetica, sans-serif;
+    font-size: 15px;
+    line-height: 1.6em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    padding: 0;    
+    text-align: justify;
+}
+
 td{
     padding: 10px;
     text-align: center;

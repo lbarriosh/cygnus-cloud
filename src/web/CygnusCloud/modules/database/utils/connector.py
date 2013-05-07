@@ -6,8 +6,8 @@ Conector básico con una base de datos
 @author: Adrián Fernández Hernández
 @version: 3.0
 '''
-import MySQLdb
-from threading import BoundedSemaphore
+import mysql.connector
+from threading import Lock
 
 class BasicDatabaseConnector(object):
     '''
@@ -27,35 +27,8 @@ class BasicDatabaseConnector(object):
         self.__sqlUser = sqlUser
         self.__sqlPassword = sqlPassword
         self.__databaseName = databaseName
-        self.__semaphore = BoundedSemaphore(1)
-        # Nota: no nos conectamos a MySQL aquí: el código cliente llama a connect.    
-        
-    def connect(self):
-        '''
-            Realiza la conexión con la base de datos
-            Argumentos:
-                Ninguno
-            Devuelve:
-                Nada
-        '''
-        with self.__semaphore :
-            self.__dbConnection = MySQLdb.connect(host='localhost', user=self.__sqlUser, passwd=self.__sqlPassword)
-            cursor = self.__dbConnection.cursor()
-            sql = "USE " + self.__databaseName   
-            cursor.execute(sql) 
-            cursor.close()               
-    
-    def disconnect(self):
-        '''
-            Realiza la desconexión de una base de datos
-            Argumentos:
-                Ninguno
-            Devuelve:
-                Nada
-        '''       
-        with self.__semaphore :
-            self.__dbConnection.commit()
-            self.__dbConnection.close()
+        self.__lock = Lock()
+        # Nota: no nos conectamos a MySQL aquí: el código cliente llama a connect.
         
     def _executeUpdate(self, command):
         '''
@@ -65,17 +38,14 @@ class BasicDatabaseConnector(object):
         Devuelve:
             Nada
         '''       
-        with self.__semaphore :
+        with self.__lock :
+            self.__dbConnection = mysql.connector.connect(user=self.__sqlUser, password=self.__sqlPassword,
+                              host='127.0.0.1', database=self.__databaseName)
             cursor = self.__dbConnection.cursor()
-            cursor.execute(command)       
-            cursor.close()
+            cursor.execute(command, ())    
             self.__dbConnection.commit()
-         
-#    def _writeChangesToDatabase(self):
-#        '''
-#        Fuerza la escritura de los cambios realizados a la base de datos
-#        '''
-#        self.__dbConnection.commit() 
+            cursor.close()
+            self.__dbConnection.close()
         
     def _executeQuery(self, command, pickOneResult=False):
         '''
@@ -87,27 +57,22 @@ class BasicDatabaseConnector(object):
         Devuelve:
             resultado o resultados obtenidos a partir de la consulta
         '''
-        with self.__semaphore :
+        with self.__lock :
+            self.__dbConnection = mysql.connector.connect(user=self.__sqlUser, password=self.__sqlPassword,
+                              host='127.0.0.1', database=self.__databaseName)
             cursor = self.__dbConnection.cursor()
-            cursor.execute(command)        
-            if (pickOneResult) :
-                result =  cursor.fetchone()
-            else :
-                result = cursor.fetchall()
+            cursor.execute(command, ())
+            result = []
+            for row in cursor :
+                if (len(row) == 1) :
+                    result.append(row[0])     
+                else :
+                    result.append(row)               
             cursor.close()
-            return result
-        
-    def _getLastRowId(self, command):
-        '''
-        Ejecuta una consulta en la base de datos, devolviendo el ID de la ultima fila
-        Argumentos:
-            command: string con la consulta SQL
-        Devuelve:
-            ID de la última fila devuelta por la consulta
-        '''
-        with self.__semaphore :
-            cursor = self.__dbConnection.cursor()
-            cursor.execute(command)
-            result = cursor.lastrowid         
-            cursor.close()
-            return result
+            if (result == []) :
+                return None
+            if (pickOneResult):
+                return result[0]
+            else:
+                return result
+            self.__dbConnection.close()

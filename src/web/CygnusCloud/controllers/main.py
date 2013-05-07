@@ -39,9 +39,10 @@ def createAdressBar():
                    [T('Acerca de'),False,URL('about')]]
 
 def initValues():
-    if(userDB(userDB.auth_user.email == 'Admin1@ucm.es').count() == 0):
+    if(userDB(userDB.auth_group.role == 'Student').count() == 0):
         #Añadimos los grupos
         userDB.auth_group.insert(role = 'Student',description =  'Only run virtual machines available')
+        userDB.auth_group.insert(role = 'Teacher',description =  'Run, create and edit virtual machines privilages avaible')
         userDB.auth_group.insert(role = 'Administrator',description =  'All privilages available')
         #auth.add_group('Administrator', 'All privilages available')
         #Usuario de prueba
@@ -64,6 +65,8 @@ def loginAccess(state):
         redirect(URL(c='student',f='runVM'))
     elif(auth.has_membership(role='Administrator')):
         redirect(URL(c='administrator',f='runVM',args = ['run']))
+    elif(auth.has_membership(role='Teacher')):
+        redirect(URL(c='teacher',f='runVM',args = ['run']))
 
 @auth.requires_login()          
 def logoutUser():
