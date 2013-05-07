@@ -569,5 +569,20 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         if (result == None):
             return None
         else :
-            return {"FreeDiskSpace" : result[0], "AvailableDiskSpace" : result[1], "ConnectionStatus" : result[2]}        
+            return {"FreeDiskSpace" : result[0], "AvailableDiskSpace" : result[1], "ConnectionStatus" : result[2]}      
+        
+    def registerNewVMVanillaImageFamily(self, commandID, familyID):
+        update = "INSERT INTO VanillaImageFamilyOfNewVM VALUES ('{0}', {1});".format(commandID, familyID)
+        self._executeUpdate(update)
+        
+    def getNewVMVanillaImageFamily(self, commandID):
+        query = "SELECT familyID FROM VanillaImageFamilyOfNewVM WHERE temporaryID = '{0}';".format(commandID)
+        return self._executeQuery(query, True)
+        
+    def deleteNewVMVanillaImageFamily(self, commandID):
+        update = "DELETE FROM VanillaImageFamilyOfNewVM WHERE temporaryID = '{0}';".format(commandID)
+        self._executeUpdate(update)
+        
+        
+      
         

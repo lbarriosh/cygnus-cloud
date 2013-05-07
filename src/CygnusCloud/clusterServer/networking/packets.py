@@ -16,7 +16,8 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "VM_SERVER_UNREGISTRATION_ERROR", "DOMAIN_DESTRUCTION", "DOMAIN_DESTRUCTION_ERROR", 
                             "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
                             "GET_IMAGE", "SET_IMAGE", "REPOSITORY_STATUS_REQUEST", "REPOSITORY_STATUS",
-                            "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR", "DELETE_IMAGE_FROM_SERVER", "DELETE_IMAGE_FROM_SERVER_ERROR")
+                            "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR", "DELETE_IMAGE_FROM_SERVER", "DELETE_IMAGE_FROM_SERVER_ERROR",
+                            "CREATE_IMAGE", "IMAGE_CREATION_ERROR", "IMAGE_CREATED")
 
 class ClusterServerPacketHandler(object):
     """
@@ -359,6 +360,20 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
+    def generateCreateImagePacket(self, packet_type, imageID, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(packet_type)
+        p.writeInt(imageID)
+        p.writeString(commandID)
+        return p
+    
+    def generateImageCreationErrorPacket(self, errorMessage, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.IMAGE_CREATION_ERROR)
+        p.writeString(errorMessage)
+        p.writeString(commandID)
+        return p
+    
     def readPacket(self, p):
         """
         Lee un paquete intercambiado por el endpoint y el servidor de cluster
@@ -480,5 +495,14 @@ class ClusterServerPacketHandler(object):
             result["FreeDiskSpace"] = p.readInt()
             result["AvailableDiskSpace"] = p.readInt()
             result["ConnectionStatus"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.CREATE_IMAGE or
+              packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATED) :
+            result["ImageID"] = p.readInt()
+            result["CommandID"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATION_ERROR):
+            result["ErrorMessage"] = p.readString()
+            result["CommandID"] = p.readString()
                       
         return result
