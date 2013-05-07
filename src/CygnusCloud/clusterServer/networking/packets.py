@@ -488,5 +488,9 @@ class ClusterServerPacketHandler(object):
             result["ImageID"] = p.readInt()
             result["OwnerID"] = p.readInt()
             result["CommandID"] = p.readString() 
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE) :
+            result["ImageID"] = p.readInt()
+            result["CommandID"] = p.readString()
                        
         return result

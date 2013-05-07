@@ -6,7 +6,7 @@ import time
 
 SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN", "RECONNECTING", "CONNECTION_TIMED_OUT")
 
-IMAGE_STATE_T = enum("READY", "DIRTY", "DELETE")
+IMAGE_STATE_T = enum("READY", "DEPLOY", "DELETE")
 
 class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     """
@@ -563,6 +563,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         update = "INSERT INTO VanillaImageFamilyOf VALUES ({0}, {1});".format(imageID, familyID)
         self._executeUpdate(update)
         
+    def deleteFamilyID(self, imageID):
+        update = "DELETE FROM VanillaImageFamilyOf WHERE imageID = {0}".format(imageID)
+        self._executeUpdate(update)
+        
     def addImageRepository(self, repositoryIP, repositoryPort, status):
         command = "INSERT INTO ImageRepository VALUES ('{0}', {1}, 0, 0, {2})".format(repositoryIP, repositoryPort, status)
         self._executeUpdate(command)
@@ -599,10 +603,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         self._executeUpdate(update)
         
     def addImageEditionCommand(self, commandID, imageID):
-        self.__addImageCommand(self, "ImageEditionCommand", commandID, imageID)
+        self.__addImageCommand("ImageEditionCommand", commandID, imageID)
         
     def addImageDeletionCommand(self, commandID, imageID):
-        self.__addImageCommand(self, "ImageDeletionCommand", commandID, imageID)
+        self.__addImageCommand("ImageDeletionCommand", commandID, imageID)
         
     def __addImageCommand(self, tableName, commandID, imageID):
         update = "INSERT INTO {0} VALUES('{1}', {2});".format(tableName, commandID, imageID)
@@ -638,8 +642,14 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "SELECT * FROM {0} WHERE imageID = {1}".format(tableName, imageID)
         return self._executeQuery(query, True) != None
     
-    def getCommandID(self, imageID):
-        query = "SELECT imageID FROM ImageEditionCommand WHERE imageID = {0};".format(imageID)
+    def getImageEditionCommandID(self, imageID):
+        return self.__getCommandID("ImageEditionCommand", imageID)
+        
+    def getImageDeletionCommandID(self, imageID):
+        return self.__getCommandID("ImageDeletionCommand", imageID)
+    
+    def __getCommandID(self, table, imageID):
+        query = "SELECT imageID FROM {0} WHERE imageID = {1};".format(table, imageID)
         return self._executeQuery(query, True)    
     
     def changeImageStatus(self, imageID, status):

@@ -114,6 +114,26 @@ class ImageRepositoryPacketHandler(object):
         p.writeString(errorMessage)
         return p
     
+    def createImageDeletionErrorPacket(self, imageID, errorMessage):
+        """
+        Crea un paquete de error.
+        Argumentos:
+            packet_t: el tipo de paquete, que se corresponde con el tipo del error
+            errorMessage: un mensaje de error
+        Devuelve:
+            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(PACKET_T.DELETE_REQUEST_ERROR)
+        p.writeString(errorMessage)
+        return p
+    
+    def createDeleteRequestReceivedPacket(self, imageID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(PACKET_T.DELETE_REQUEST_RECVD)
+        p.writeInt(imageID)
+        return p
+    
     def createAddImagePacket(self):
         """
         Crea un paquete de adición de imagen
@@ -180,11 +200,14 @@ class ImageRepositoryPacketHandler(object):
         elif (packet_type == PACKET_T.RETR_REQUEST) :
             data['imageID'] = p.readInt()
             data['modify'] = p.readBool()
-        elif (packet_type == PACKET_T.STOR_REQUEST) :
+        elif (packet_type == PACKET_T.DELETE_REQUEST or packet_type == PACKET_T.DELETE_REQUEST_RECVD or 
+              packet_type == PACKET_T.STOR_REQUEST) :
             data['imageID'] = p.readInt()
         elif (packet_type == PACKET_T.RETR_REQUEST_ERROR or packet_type == PACKET_T.STOR_REQUEST_ERROR or 
-              packet_type == PACKET_T.DELETE_REQUEST_ERROR or packet_type == PACKET_T.RETR_ERROR or 
-              packet_type == PACKET_T.STOR_ERROR) :
+              packet_type == PACKET_T.RETR_ERROR or packet_type == PACKET_T.STOR_ERROR) :
+            data['errorMessage'] = p.readString()
+        elif (packet_type == PACKET_T.DELETE_REQUEST_ERROR) :            
+            data['imageID'] = p.readInt()
             data['errorMessage'] = p.readString()
         elif (packet_type == PACKET_T.RETR_START or packet_type == PACKET_T.STOR_START) :
             data['imageID'] = p.readInt()
@@ -193,8 +216,6 @@ class ImageRepositoryPacketHandler(object):
             data['password'] = p.readString()
             data['serverDirectory'] = p.readString()
             data['fileName'] = p.readString()
-        elif (packet_type == PACKET_T.DELETE_REQUEST):
-            data['imageID'] = p.readInt()
         elif (packet_type == PACKET_T.STATUS_DATA):
             data["FreeDiskSpace"] = p.readInt()
             data["TotalDiskSpace"] = p.readInt()

@@ -69,6 +69,8 @@ class TesterCallback(NetworkCallback):
             print("Image creation error: {0}".format(data["ErrorMessage"]))
         elif (data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR):
             print("Image edition error: {0}".format(data["ErrorMessage"]))
+        elif (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR):
+            print("Image deletion error: {0}".format(data["ErrorMessage"]))
         elif (data["packet_type"] == PACKET_T.COMMAND_EXECUTED):
             print("The cluster server says: command executed successfully")
 
@@ -142,6 +144,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         elif (command == "editImage") :
             p = pHandler.createImageEditionPacket(PACKET_T.EDIT_IMAGE, int(tokens.pop(0)), 1, "")
             networkManager.sendPacket(ip_address, port, p)
+        elif (command == "deleteImageFromInfrastructure") :
+            p = pHandler.createImageDeletionPacket(int(tokens.pop(0)), "")
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True
         elif (command == "help") :
@@ -198,5 +203,3 @@ if __name__ == "__main__" :
     except NetworkManagerException as e:
         print("Error: " + e.message)
     networkManager.stopNetworkService()
-    
-    

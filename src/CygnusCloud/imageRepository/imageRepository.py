@@ -310,7 +310,7 @@ class CommandsCallback(NetworkCallback):
         """  
         imageData = self.__dbConnector.getImageData(data["imageID"])
         if (imageData == None) :
-            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.DELETE_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createImageDeletionErrorPacket(data["imageID"], "The image {0} does not exist".format(data["imageID"]))
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else :            
             if (not "undefined" in imageData["compressedFilePath"]) :
