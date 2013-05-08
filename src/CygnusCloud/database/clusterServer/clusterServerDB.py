@@ -6,7 +6,7 @@ import time
 
 SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN", "RECONNECTING", "CONNECTION_TIMED_OUT")
 
-IMAGE_STATE_T = enum("READY", "DEPLOY", "DELETE")
+IMAGE_STATE_T = enum("READY", "EDITED", "DEPLOY", "DELETE")
 
 class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     """
@@ -217,12 +217,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         results=self._executeQuery(query)
         if (results == None) :
             return []
-        #Guardamos en una lista los ids resultantes
-        serverIds = []
-        for r in results:
-            serverIds.append(r)
-        #Devolvemos la lista resultado
-        return serverIds
+        return results
     
     def resetVMServersStatus(self):
         vmServerIDs = self.getVMServerIDs()

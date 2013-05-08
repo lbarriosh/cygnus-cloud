@@ -71,6 +71,8 @@ class TesterCallback(NetworkCallback):
             print("Image edition error: {0}".format(data["ErrorMessage"]))
         elif (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR):
             print("Image deletion error: {0}".format(data["ErrorMessage"]))
+        elif (data["packet_type"] == PACKET_T.AUTO_DEPLOY_ERROR):
+            print("Image auto-deployment error: {0}".format(data["ErrorMessage"]))
         elif (data["packet_type"] == PACKET_T.COMMAND_EXECUTED):
             print("The cluster server says: command executed successfully")
 
@@ -146,6 +148,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "deleteImageFromInfrastructure") :
             p = pHandler.createImageDeletionPacket(int(tokens.pop(0)), "")
+            networkManager.sendPacket(ip_address, port, p)
+        elif (command == "deployEditedImage") :
+            p = pHandler.createAutoDeployPacket(int(tokens.pop(0)), -1, "Auto-deploy")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True

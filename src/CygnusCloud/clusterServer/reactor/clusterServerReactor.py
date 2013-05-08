@@ -142,6 +142,35 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__createOrEditImage(data)
         elif (data["packet_type"] == WEB_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE):
             self.__deleteImageFromInfrastructure(data)
+        elif (data["packet_type"] == WEB_PACKET_T.AUTO_DEPLOY):
+            self.__auto_deploy_image(data)
+            
+    def __auto_deploy_image(self, data):        
+        if (data["Instances"] == -1) :
+            oldCommandID = self.__dbConnector.getImageEditionCommandID(data["ImageID"])
+            if (oldCommandID != None) :            
+                self.__dbConnector.removeImageEditionCommand(oldCommandID)                
+                self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.DEPLOY)
+                serverIDs = self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DEPLOY)
+                if (serverIDs != []) :
+                    self.__dbConnector.addImageEditionCommand(data["CommandID"], data["ImageID"])
+                    # Enviar una petición de despliegue a todos los servidores arrancados que la tienen.
+                    # A los demás, se la enviaremos cuando arranquen
+                    p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
+                    for serverID in serverIDs :
+                        connectionData = self.__dbConnector.getVMServerBasicData(serverID)
+                        self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)   
+                else :
+                    # No hay nada que hacer => hemos terminado si ningún servidor apagado tiene la imagen
+                    if (not self.__dbConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.EDITED)) :
+                        p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+                        self.__networkManager.sendPacket('', self.__webPort, p)
+            else :
+                # Error => avisar de él
+                p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "The image {0} is not being edited".format(data["ImageID"]), 
+                                                                     data["CommandID"])
+                self.__networkManager.sendPacket('', self.__webPort, p)  
+               
             
     def __deleteImageFromInfrastructure(self, data):
         error = False
@@ -174,16 +203,26 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             
-    def __createOrEditImage(self, data):
-        # Averiguar si la imagen ya se está editando
-        if (self.__dbConnector.isBeingEdited(data["ImageID"]) or self.__dbConnector.isBeingDeleted(data["ImageID"])) :
+    def __createOrEditImage(self, data):                      
+        errorMessage = None
+        
+        # Averiguar si la imagen ya se está editando, borrando o no existe
+        
+        if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
+            errorMessage = "The image is being edited"  
+        elif (self.__dbConnector.isBeingDeleted(data["ImageID"])) :    
+            errorMessage = "The image is being deleted"
+        elif (self.__dbConnector.getFamilyID(data["ImageID"]) == None) :
+            errorMessage = "The image {0} does not exist".format(data["ImageID"])  
+        
+        if (errorMessage != None) :        
             if (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE) :
                 packet_type = WEB_PACKET_T.IMAGE_CREATION_ERROR
             else :
-                packet_type = WEB_PACKET_T.IMAGE_EDITION_ERROR
-            p = self.__webPacketHandler.createGenericErrorPacket(packet_type, "The image is being edited", data["CommandID"])
+                packet_type = WEB_PACKET_T.IMAGE_EDITION_ERROR  
+            p = self.__webPacketHandler.createGenericErrorPacket(packet_type, errorMessage, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
-            return
+            return           
         
         # Encontrar un servidor vanilla
         (serverID, errorMessage) = self.__loadBalancer.assignVMServer(data["ImageID"], True)
@@ -213,55 +252,41 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             
     def __deployOrDeleteImage(self, data):
         serverNameOrIPAddress = data["ServerNameOrIPAddress"]
-        if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE):
-            error_type = WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR
-        else:
-            error_type = WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR
+        serverID = self.__dbConnector.getVMServerID(serverNameOrIPAddress)        
+        serverData = self.__dbConnector.getVMServerBasicData(serverID)
+        errorMessage = None        
             
         # Comprobar que la imagen existe
         if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
-                                                                         "The image {0} does not exist".format(data["ImageID"]), data["CommandID"])
-            self.__networkManager.sendPacket('', self.__webPort, p)
-            return
+            errorMessage = "The image {0} is being edited".format(data["ImageID"])
+        elif (self.__dbConnector.isBeingDeleted(data["ImageID"])):
+            errorMessage = "The image {0} does not exist".format(data["ImageID"])
         
-        # Comprobar que la imagen no se está editando
-        if (self.__dbConnector.isBeingDeleted(data["ImageID"])):
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
-                                                                         "The image {0} is being edited".format(data["ImageID"]), data["CommandID"])
-            self.__networkManager.sendPacket('', self.__webPort, p)
-            return
+        elif (serverID == None) :
+            errorMessage =  "The virtual machine server with name or IP address {0} is not registered".format(serverNameOrIPAddress)
         
-        # Comprobar que el servidor existe        
-        serverID = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
-        if (serverID == None) :
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
-                                                                         "The virtual machine server is not registered", data["CommandID"])
-            self.__networkManager.sendPacket('', self.__webPort, p)
-            return
+        elif (serverData["ServerStatus"] != SERVER_STATE_T.READY):
+            errorMessage = "The virtual machine server with name or IP address {0} is not ready yet".format(serverNameOrIPAddress)
         
-        # Comprobar que el servidor está arrancado
-        serverData = self.__dbConnector.getVMServerBasicData(serverID)
-        if (serverData["ServerStatus"] != SERVER_STATE_T.READY):
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
-                                                                         "The virtual machine server is not ready yet", data["CommandID"])
-            self.__networkManager.sendPacket('', self.__webPort, p)
-            return
-        
-        # Comprobar que el servidor tiene/no tiene la imagen
-    
-        if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE and self.__dbConnector.hostsImage(serverID, data["ImageID"]))\
+        elif (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE and self.__dbConnector.hostsImage(serverID, data["ImageID"]))\
             or (data["packet_type"] == WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER and not self.__dbConnector.hostsImage(serverID, data["ImageID"])):
             
             if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE):
                 errorMessage = "The image {0} is already hosted on this server".format(data["ImageID"])
             else :
                 errorMessage = "The image {0} is not hosted on this server".format(data["ImageID"])
+            
+            
+        if (errorMessage != None) :       
+            if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE):
+                error_type = WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR
+            else:
+                error_type = WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR 
             p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
                                                                          errorMessage, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
             return
-            
+        
         # Todo es correcto => enviar la petición
         if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE) :
             p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
@@ -720,20 +745,10 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
         else :
-            # Ensuciar todas las copias de la imagen
-            self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.DEPLOY)
-            # Enviar una petición de despliegue a todos los servidores arrancados que la tienen.
-            # A los demás, se la enviaremos cuando arranquen
-            serverIDs = self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DEPLOY)
-            if (serverIDs != []) :
-                p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
-                for serverID in serverIDs :
-                    connectionData = self.__dbConnector.getVMServerBasicData(serverID)
-                    self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)
-            else :
-                p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
-                self.__networkManager.sendPacket('', self.__webPort, p)
-                self.__dbConnector.removeImageEditionCommand(data["CommandID"])
+            # Evitar que todas las copias de la imagen puedan arrancarse
+            self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.EDITED)            
+            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, p)            
     
     def __processImageEditionError(self, data):
         
