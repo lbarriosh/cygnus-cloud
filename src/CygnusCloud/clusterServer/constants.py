@@ -18,4 +18,6 @@ class ClusterServerConstantsManager(ConstantsManager):
             self._data["ramWeight"] = float(self._data["ramWeight"])        
             self._data["storageSpaceWeight"] = float(self._data["storageSpaceWeight"])        
             self._data["temporarySpaceWeight"] = float(self._data["temporarySpaceWeight"])      
-            self._data["imageRepositoryPort"] = int(self._data["imageRepositoryPort"])                  
+            self._data["imageRepositoryPort"] = int(self._data["imageRepositoryPort"])    
+            self._data["imageCompressionRatio"] = float(self._data["imageCompressionRatio"])  
+            self._data["dataImageExpectedSize"] = float(self._data["dataImageExpectedSize"])              

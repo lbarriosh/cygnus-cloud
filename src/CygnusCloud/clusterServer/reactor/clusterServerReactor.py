@@ -37,7 +37,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
     Estos objetos reaccionan a los paquetes recibidos desde los servidores de máquinas
     virtuales y desde el endpoint de la web.
     '''
-    def __init__(self, loadBalancerSettings, timeout):
+    def __init__(self, loadBalancerSettings, compressionRatio, dataImageExpectedSize, timeout):
         """
         Inicializa el estado del reactor
         Argumentos:
@@ -47,7 +47,10 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         """        
         self.__finished = False
         self.__loadBalancerSettings = loadBalancerSettings
+        self.__compressionRatio = compressionRatio
+        self.__dataImageExpectedSize = dataImageExpectedSize
         self.__timeout = timeout
+        self.__repositoryStatusChanged = False
         
     def connectToDatabase(self, mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath):
         """
@@ -206,14 +209,24 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
     def __createOrEditImage(self, data):                      
         errorMessage = None
         
-        # Averiguar si la imagen ya se está editando, borrando o no existe
-        
+        # Averiguar si la imagen ya se está editando, borrando o no existe        
         if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
             errorMessage = "The image is being edited"  
         elif (self.__dbConnector.isBeingDeleted(data["ImageID"])) :    
             errorMessage = "The image is being deleted"
         elif (self.__dbConnector.getFamilyID(data["ImageID"]) == None) :
             errorMessage = "The image {0} does not exist".format(data["ImageID"])  
+        elif (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE):
+            while self.__repositoryStatusChanged :
+                sleep(0.5)
+            self.__repositoryStatusChanged = True
+            repositoryStatus = self.__dbConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
+            imageFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(self.__dbConnector.getFamilyID(data["ImageID"]))
+            required_disk_space = imageFeatures["osDiskSize"] + imageFeatures["dataDiskSize"] * self.__dataImageExpectedSize
+            required_disk_space = self.__compressionRatio * required_disk_space
+            remaining_disk_space = repositoryStatus["FreeDiskSpace"] - required_disk_space
+            if (remaining_disk_space < 0) :
+                errorMessage = "There is not enough disk space on the image repository"
         
         if (errorMessage != None) :        
             if (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE) :
@@ -863,6 +876,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         data = self.__imageRepositoryPacketHandler.readPacket(packet)
         if data['packet_type'] == REPOSITORY_PACKET_T.STATUS_DATA:
             self.__dbConnector.updateImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort, data["FreeDiskSpace"], data["TotalDiskSpace"])
+            self.__repositoryStatusChanged = False
         elif data['packet_type'] == REPOSITORY_PACKET_T.DELETE_REQUEST_RECVD :
             commandID = self.__dbConnector.getImageDeletionCommandID(data['imageID'])
             if not self.__dbConnector.isThereSomeImageCopyInState(data["imageID"], IMAGE_STATE_T.DELETE) :
