@@ -64,6 +64,7 @@
 'Arrancar máquinas': 'Arrancar máquinas',
 'Arrancar servidor': 'Arrancar servidor',
 'Arranque de máquinas Virtuales': 'Arranque de máquinas Virtuales',
+'Asignatura asociada': 'Asignatura asociada',
 'Asignatura: ': 'Asignatura: ',
 'Asociar asignaturas': 'Asociar asignaturas',
 'ATTENTION: Login requires a secure (HTTPS) connection or running on localhost.': 'ATENCION: Inicio de sesión requiere una conexión segura (HTTPS) o localhost.',

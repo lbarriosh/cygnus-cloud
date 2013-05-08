@@ -8,22 +8,21 @@ from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 def runVM():
     #actualizamos la barra
     createAdressBar()
-    #Creamos el formulario
-    print request.vars.actualDescription
-    listSubjects = userDB((userDB.UserGroup.userId == auth.user['email'])).select(userDB.UserGroup.cod,userDB.UserGroup.curseGroup)
+   
     #Calculamos las tablas
-    tables = []
     j = 0
-    for l in listSubjects:
-        [table,j] = createTable(l,j)
-        tables.append(table)
+    [readyTable,j] = createReadyTable(j)
+    #TODO: Descomentar cuando proceda
+    #[editingTable,waitingTable,j] = createDisabledTables(j)
     #Creamos el formulario
     form = FORM(HR(),_target='_blank')
+    form.append(DIV(H2("Máquinas disponibles"),H4(readyTable),BR()))
+    #form.append(DIV(H2("Máquinas en edicion"),H4(editingTable),BR()))
+    #form.append(DIV(H2("Máquinas no registradas"),H4(waitingTable),BR()))
     i = 0
-    divMaquinas = DIV(_id='maquinas')
-    for table in tables:     
-        form.append(DIV(H3(B(T(userDB(userDB.Subjects.code == listSubjects[i].cod).select(userDB.Subjects.name)[0].name))),BR(),H4(table),BR()))
-        i = i + 1
+    divMaquinas = DIV(_id='maquinas')   
+    
+        
     if(form.accepts(request.vars)) and (form.vars.run):
             if(form.vars.selection != ""):
                 #Establecemos la conexión con el servidor 
@@ -84,21 +83,54 @@ def createAdressBar():
     response.menu=[[T('Arrancar máquina'),False,URL('runVM')],[T('Detener máquina'),False,URL('stopVM')],
                    [T('Crear nueva máquina'),False,URL('createVM')],[T('Editar máquina'),False,URL('editVM')]]
     
-def createTable(subject,j):
+def createReadyTable(j):
+    listSubjects = userDB((userDB.UserGroup.userId == auth.user['email'])).select(userDB.UserGroup.cod,userDB.UserGroup.curseGroup)
     table = TABLE(_class='data', _name='table')
-    table.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Grupo de asignaturas asociadas")),TH('Descripcion',_class='izquierda')))
-    i = 0
-    for l in userDB((userDB.VMByGroup.cod == subject.cod) & (userDB.VMByGroup.curseGroup == subject.curseGroup) & \
-        (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
-        descInfo = userDB((userDB.VMByGroup.cod == subject.cod) & \
-             (userDB.VMByGroup.curseGroup == subject.curseGroup) & \
-             (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.VMId,userDB.Images.description)
-        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId,_id = "c"+str(i + j)
-        ),TD(LABEL(l.name),_class='izquierda'),TD(DIV(P(descInfo[i].description),CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar'))),_id = str(i + j)),_class='izquierda'))))
-        i = i + 1
+    table.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
+            TH("Grupo"),TH('Descripcion',_class='izquierda')))
+   
+    for s in listSubjects:
+        i = 0
+        subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
+        for l in userDB((userDB.VMByGroup.cod == s.cod) & (userDB.VMByGroup.curseGroup == s.curseGroup) & \
+            (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
+            descInfo = userDB((userDB.VMByGroup.cod == s.cod) & \
+                 (userDB.VMByGroup.curseGroup == s.curseGroup) & \
+                 (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.VMId,userDB.Images.description)
+            
+            table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId,_id = "c"+str(i + j)
+                )),TD(LABEL(l.name),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda'),TD(LABEL(s.curseGroup)),TD(DIV(P(descInfo[i].description),
+                CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar')))
+                ,_id = str(i + j)),_class='izquierda')))
+            i = i + 1
+        j = j + i
         
     pass
-    return [table,i + j]
+    return [table,j]
+    
+def createDisabledTables(j):
+    connector = conectToServer()
+    disabledImages = connector.getEditedImages(auth.user_id)
+    editingTable = TABLE(_class='data', _name='table')
+    editingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
+            TH("Grupo"),TH('Descripcion',_class='izquierda')))
+    waitingTable = editingTable = TABLE(_class='data', _name='table')
+    waitingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
+            TH("Grupo"),TH('Descripcion',_class='izquierda')))
+    for image in disabledImages:
+        imageInfo = connector.getBootableImagesData(image)
+        if imageInfo["bootable"]:
+               subjectsInfo = userDB((VMByGroup.VMId == image)).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)
+               for s in subjectsInfo:
+                   subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
+                   waitingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId,_id = "c"+str(i + j) )),
+                         TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda'),TD(LABEL(s.curseGroup)),
+                         TD(DIV(P(imageInfo["ImageDescription"]),_id = str(i + j)),_class='izquierda'),_class='notAvaible'))
+        else:
+           editingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId,_id = "c"+str(i + j) )),
+              TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(""),_class='izquierda'),TD(LABEL("")),
+              TD(DIV(P(imageInfo["ImageDescription"]),_id = str(i + j)),_class='izquierda'),_class='notAvaible'))            
+            
     
 def conectToServer():
     #Establecemos la conexión con el servidor principal

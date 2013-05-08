@@ -226,10 +226,10 @@ a:hover {
     width: 800px;
 }
 
-label.notAvaible{
-    background-color: #d1d1d1;
+tr.notAvaible{
+    background-color: #e0e6ff;
      opacity:.7;
-    color: #7E7E7E;
+    color: #959bb4;
     font-family:  Arial, MS Sans Serif, Tahoma, Helvetica, sans-serif;
     font-size: 15px;
     line-height: 1.6em;
