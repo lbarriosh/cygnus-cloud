@@ -57,6 +57,17 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
         self._executeUpdate(update)
         return imageID
     
+    def cancelImageEdition(self, imageID):
+        query = "SELECT compressedFilePath FROM Image WHERE imageID = {0};".format(imageID)
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            # La imagen no se está editando => nos limitamos a confirmar la petición
+            return
+        if ("undefined" in result) :
+            self.deleteImage(imageID)
+        else :
+            self.changeImageStatus(imageID, IMAGE_STATUS_T.READY)
+    
     """
     Borra una imagen de la base de datos
     Argumentos:

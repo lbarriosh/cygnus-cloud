@@ -55,7 +55,9 @@ class TesterCallback(NetworkCallback):
         elif (data['packet_type'] == PACKET_T.DELETE_REQUEST_RECVD):
             print("The image repository says: delete request received")
         elif (data['packet_type'] == PACKET_T.STATUS_DATA):
-            print("Image repository disk status: {0} KB free, {1} KB available".format(data["FreeDiskSpace"], data["TotalDiskSpace"]))     
+            print("Image repository disk status: {0} KB free, {1} KB available".format(data["FreeDiskSpace"], data["TotalDiskSpace"]))   
+        elif (data['packet_type'] == PACKET_T.IMAGE_EDITION_CANCELLED):
+            print("The image repository says: image edition cancelled")  
         else:
             print("Error: a packet from an unexpected type has been received " + str(data['packet_type']))
        
@@ -102,6 +104,10 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             return False
         elif (command == "status"):
             p = pHandler.createStatusRequestPacket()
+            networkManager.sendPacket(ip_address, port, p)
+            return False
+        elif (command == "cancel_image_edition"):
+            p = pHandler.createCancelEditionPacket(int(tokens.pop(0)))
             networkManager.sendPacket(ip_address, port, p)
             return False
         else :

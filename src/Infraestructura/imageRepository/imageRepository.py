@@ -231,6 +231,13 @@ class CommandsCallback(NetworkCallback):
             self.__deleteImage(data)
         elif (data["packet_type"] == PACKET_T.STATUS_REQUEST):
             self.__sendStatusData(data)
+        elif (data["packet_type"] == PACKET_T.CANCEL_EDITION):
+            self.__cancelImageEdition(data)
+            
+    def __cancelImageEdition(self, data):
+        self.__dbConnector.cancelImageEdition(data["ImageID"])
+        p = self.__repositoryPacketHandler.createImageRequestReceivedPacket(PACKET_T.IMAGE_EDITION_CANCELLED)
+        self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data["clientIP"], data["clientPort"])
             
     def __sendStatusData(self, data):
         diskStats = statvfs(self.__workingDirectory)
