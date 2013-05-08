@@ -55,7 +55,7 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createExecutedCommandPacket(self, commandID):
+    def createCommandExecutedPacket(self, commandID):
         """
         Crea un paquete que indica que un comando se ha ejecutado.
         Argumentos:

@@ -618,7 +618,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
     def removeImageDeletionCommand(self, commandID):
         self.__removeImageCommand("ImageDeletionCommand", commandID)
         
-    def removeImageCommand(self, tableName, commandID):
+    def __removeImageCommand(self, tableName, commandID):
         update = "DELETE FROM {0} WHERE commandID = '{1}';".format(tableName, commandID)
         self._executeUpdate(update)
         
@@ -649,7 +649,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         return self.__getCommandID("ImageDeletionCommand", imageID)
     
     def __getCommandID(self, table, imageID):
-        query = "SELECT imageID FROM {0} WHERE imageID = {1};".format(table, imageID)
+        query = "SELECT commandID FROM {0} WHERE imageID = {1};".format(table, imageID)
         return self._executeQuery(query, True)    
     
     def changeImageStatus(self, imageID, status):

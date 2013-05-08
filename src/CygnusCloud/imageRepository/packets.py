@@ -125,6 +125,7 @@ class ImageRepositoryPacketHandler(object):
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.DELETE_REQUEST_ERROR)
+        p.writeInt(imageID)
         p.writeString(errorMessage)
         return p
     

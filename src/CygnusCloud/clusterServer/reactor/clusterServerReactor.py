@@ -144,26 +144,39 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__deleteImageFromInfrastructure(data)
             
     def __deleteImageFromInfrastructure(self, data):
-        # Impedimos que se arranquen más copias de la imagen
-        self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.DELETE)
-        # Borramos la familia a la que pertenece la imagen
-        self.__dbConnector.deleteFamilyID(data["ImageID"])
-        # Registramos el comando en la base de datos
-        self.__dbConnector.addImageDeletionCommand(data["CommandID"], data["ImageID"])
-        # Borramos la imagen del repositorio
-        p = self.__imageRepositoryPacketHandler.createDeleteRequestPacket(data["ImageID"])
-        self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p)
+        error = False
+        if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
+            error = True
+            errorMessage = "The image {0} is being edited".format(data["ImageID"])
+        elif (self.__dbConnector.isBeingDeleted(data["ImageID"])) :
+            error = True
+            errorMessage = "The image {0} is being deleted".format(data["ImageID"])
+        if (error) :
+            p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, errorMessage, data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, '')
+        else :
+            # Impedimos que se arranquen más copias de la imagen
+            self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.DELETE)
+            # Borramos la asociación entre una imagen y una familia de imágenes
+            self.__dbConnector.deleteFamilyID(data["ImageID"])
+            # Registramos el comando en la base de datos
+            self.__dbConnector.addImageDeletionCommand(data["CommandID"], data["ImageID"])
+            # Borramos la imagen del repositorio
+            p = self.__imageRepositoryPacketHandler.createDeleteRequestPacket(data["ImageID"])
+            self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p)           
+                
+    def __sendDeleteRequets(self, imageID, commandID):
         # Borramos la imagen de todos los servidores de máquinas arrancados. Nos ocuparemos de los otros
         # a medida que se vayan arrancando
-        p = self.__vmServerPacketHandler.createDeleteImagePacket(data["ImageID"], data["CommandID"])
-        serverIDs = self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DELETE)
+        p = self.__vmServerPacketHandler.createDeleteImagePacket(imageID, commandID)
+        serverIDs = self.__dbConnector.getHosts(imageID, IMAGE_STATE_T.DELETE)
         for serverID in serverIDs :
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             
     def __createOrEditImage(self, data):
         # Averiguar si la imagen ya se está editando
-        if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
+        if (self.__dbConnector.isBeingEdited(data["ImageID"]) or self.__dbConnector.isBeingDeleted(data["ImageID"])) :
             if (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE) :
                 packet_type = WEB_PACKET_T.IMAGE_CREATION_ERROR
             else :
@@ -204,6 +217,20 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             error_type = WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR
         else:
             error_type = WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR
+            
+        # Comprobar que la imagen existe
+        if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
+            p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
+                                                                         "The image {0} does not exist".format(data["ImageID"]), data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, p)
+            return
+        
+        # Comprobar que la imagen no se está editando
+        if (self.__dbConnector.isBeingDeleted(data["ImageID"])):
+            p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
+                                                                         "The image {0} is being edited".format(data["ImageID"]), data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, p)
+            return
         
         # Comprobar que el servidor existe        
         serverID = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
@@ -320,7 +347,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             
             
             # Indicar al endpoint de la web que el comando se ha ejecutado con éxito
-            p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
+            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
         except Exception as e:                
             p = self.__webPacketHandler.createVMServerRegistrationErrorPacket(data["VMServerIP"], 
                                                                             data["VMServerPort"], 
@@ -417,7 +444,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             
         # Paso 4: respondemos a la web (sólo si es necesario)      
         if (useCommandID) :
-            p = self.__webPacketHandler.createExecutedCommandPacket(commandID)
+            p = self.__webPacketHandler.createCommandExecutedPacket(commandID)
             self.__networkManager.sendPacket('', self.__webPort, p)  
             
     def __updateVMServerStatus(self, data):
@@ -450,8 +477,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             Nada
         """
         try :            
-            # Comprobar si el servidor está registrado
-            
+            # Comprobar si el servidor está registrado            
             serverNameOrIPAddress = data["ServerNameOrIPAddress"]
             serverId = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
             if (serverId == None) :
@@ -463,17 +489,14 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 # El servidor ya está arrancado => ignoramos la petición
                 return
             
-            # Establecer la conexión
-            
+            # Establecer la conexión            
             self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 
                                                 20, self.__vmServerCallback, True, True)
             while not self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"]) :
                 sleep(0.1)
                 
-            # Solicitar el estado al servidor de máquinas virtuales
-            
-            self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)
-            
+            # Solicitar el estado al servidor de máquinas virtuales            
+            self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)            
             self.__sendStatusRequestPackets(serverData["ServerIP"], serverData["ServerPort"])
             
             # Hacer que el servidor de máquinas virtuales sincronice sus imágenes con las del repositorio
@@ -489,7 +512,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             
             # Indicar al endpoint que el comando se ha ejecutado con éxito
-            p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
+            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
         except Exception as e:
             p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.VM_SERVER_BOOTUP_ERROR, 
                                                                          serverNameOrIPAddress, e.message, data["CommandID"])
@@ -627,7 +650,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Borrar la máquina virtual de la base de datos           
             self.__dbConnector.deleteActiveVMLocation(data["CommandID"])         
             # Indicar al endpoint que todo fue bien
-            packet = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
+            packet = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, packet)
         
     def __changeVMServerConfiguration(self, data):
@@ -651,7 +674,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         try :
             self.__dbConnector.setServerBasicData(serverID, data["NewVMServerName"], SERVER_STATE_T.SHUT_DOWN, 
                                                   data["NewVMServerIPAddress"], data["NewVMServerPort"], data["NewVanillaImageEditionBehavior"])
-            packet = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
+            packet = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
         
         except Exception :
             packet = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
@@ -761,7 +784,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 self.__dbConnector.assignImageToServer(serverID, data["ImageID"])
             else :
                 self.__dbConnector.deleteImageFromServer(serverID, data["ImageID"])
-            p = self.__webPacketHandler.createExecutedCommandPacket(data["CommandID"])
+            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
             
     def processVMServerReconnectionData(self, ipAddress, reconnection_status) :
@@ -825,16 +848,18 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         data = self.__imageRepositoryPacketHandler.readPacket(packet)
         if data['packet_type'] == REPOSITORY_PACKET_T.STATUS_DATA:
             self.__dbConnector.updateImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort, data["FreeDiskSpace"], data["TotalDiskSpace"])
-        elif data['packet_type'] == REPOSITORY_PACKET_T.DELETE_REQUEST_RECVD or data['packet_type'] == REPOSITORY_PACKET_T.DELETE_REQUEST_ERROR:
+        elif data['packet_type'] == REPOSITORY_PACKET_T.DELETE_REQUEST_RECVD :
             commandID = self.__dbConnector.getImageDeletionCommandID(data['imageID'])
             if not self.__dbConnector.isThereSomeImageCopyInState(data["imageID"], IMAGE_STATE_T.DELETE) :
                 self.__dbConnector.removeImageDeletionCommand(commandID)
-            if (data['packet_type'] == REPOSITORY_PACKET_T.DELETE_REQUEST_RECVD) :
-                p = self.__webPacketHandler.createExecutedCommandPacket(commandID)
+                p = self.__webPacketHandler.createCommandExecutedPacket(commandID)
+                self.__networkManager.sendPacket('', self.__webPort, p)
             else :
-                p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, data['errorMessage'], commandID)
-            
-            self.__networkManager.sendPacket('', self.__webPort, p)
+                # Borrar la imagen de los servidores
+                self.__sendDeleteRequets(data['imageID'], commandID)
+        elif data['packet_type'] == REPOSITORY_PACKET_T.DELETE_REQUEST_ERROR:            
+            p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, data['errorMessage'], commandID)
+            self.__networkManager.sendPacket('', self.__webPort, p)            
         
     def __processActiveDomainUIDs(self, data):
         vmServerID = self.__dbConnector.getVMServerID(data["VMServerIP"])

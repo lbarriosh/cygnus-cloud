@@ -317,7 +317,7 @@ class CommandsCallback(NetworkCallback):
                 imageDirectory = path.dirname(imageData["compressedFilePath"])
                 ChildProcessManager.runCommandInForeground("rm -rf " + imageDirectory, Exception)
             self.__dbConnector.deleteImage(data["imageID"]) # TODO: poner encima del if
-            p = self.__repositoryPacketHandler.createImageRequestReceivedPacket(PACKET_T.DELETE_REQUEST_RECVD)
+            p = self.__repositoryPacketHandler.createDeleteRequestReceivedPacket(data["imageID"])
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
         
     def haltReceived(self):
