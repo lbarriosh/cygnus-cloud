@@ -63,10 +63,9 @@ class CompressionThread(BasicThread):
         """        
         try :
             
-            if(data["Transfer_Type"] != TRANSFER_T.STORE_IMAGE):            
-                if (data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :
-                    # Borramos la imagen de la base de datos (si existe)
-                    self.__dbConnector.deleteImage(data["SourceImageID"])
+            if(data["Transfer_Type"] != TRANSFER_T.STORE_IMAGE):                   
+                
+                self.__dbConnector.deleteImage(data["SourceImageID"])
                     
                 # Extraemos el fichero en el directorio que alberga las imágenes
                 imageDirectory = path.join(self.__workingDirectory, str(data["TargetImageID"]))
@@ -79,9 +78,7 @@ class CompressionThread(BasicThread):
                 except Exception:
                     pass
                 compressedFilePath = path.join(self.__transferDirectory, str(data["SourceImageID"]) + ".zip")
-                self.__compressor.extractFile(compressedFilePath, imageDirectory)            
-                
-                
+                self.__compressor.extractFile(compressedFilePath, imageDirectory)                     
                 
                 # Creamos el directorio de definicion en el caso de que no exista
                 if not path.exists(definitionFileDirectory):

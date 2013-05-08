@@ -18,7 +18,8 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "GET_IMAGE", "SET_IMAGE", "REPOSITORY_STATUS_REQUEST", "REPOSITORY_STATUS",
                             "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR", "IMAGE_DEPLOYED", "DELETE_IMAGE_FROM_SERVER", "DELETE_IMAGE_FROM_SERVER_ERROR",
                             "IMAGE_DELETED", "CREATE_IMAGE", "IMAGE_CREATION_ERROR", "EDIT_IMAGE", "IMAGE_EDITION_ERROR",
-                            "DELETE_IMAGE_FROM_INFRASTRUCTURE", "DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR", "AUTO_DEPLOY", "AUTO_DEPLOY_ERROR")
+                            "DELETE_IMAGE_FROM_INFRASTRUCTURE", "DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR", "AUTO_DEPLOY", "AUTO_DEPLOY_ERROR",
+                            "VM_SERVER_INTERNAL_ERROR")
 
 class ClusterServerPacketHandler(object):
     """
@@ -32,6 +33,12 @@ class ClusterServerPacketHandler(object):
             packetCreator: el objeto NetworkManager que utilizaremos para crear los paquetes
         """
         self.__packetCreator = packetCreator
+        
+    def createUnexpectedErrorPacket(self, packet_type, commandID):
+        p = self.__packetCreator.createPacket(2)
+        p.writeInt(packet_type)
+        p.writeString(commandID)
+        return p
         
     def createAutoDeployPacket(self, imageID, instances, commandID):
         p = self.__packetCreator.createPacket(5)
@@ -505,6 +512,9 @@ class ClusterServerPacketHandler(object):
         elif (packet_type == MAIN_SERVER_PACKET_T.AUTO_DEPLOY):
             result["ImageID"] = p.readInt()
             result["Instances"] = p.readInt()
+            result["CommandID"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_INTERNAL_ERROR):
             result["CommandID"] = p.readString()
                        
         return result

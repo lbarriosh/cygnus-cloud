@@ -12,7 +12,7 @@ USE ClusterServerDBTest;
 
 CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT, 
 	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER,
-	isVanillaServer BOOL, UNIQUE(serverName), UNIQUE(serverIP, serverPort));
+	isVanillaServer BIT, UNIQUE(serverName), UNIQUE(serverIP, serverPort));
 
 CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER, status TINYINT,
 	PRIMARY KEY(serverId,imageId),
@@ -25,7 +25,16 @@ CREATE TABLE IF NOT EXISTS VMServerStatus(serverId INTEGER PRIMARY KEY, hosts IN
 	FOREIGN KEY(serverId) REFERENCES VMServer(serverId) ON DELETE CASCADE ON UPDATE CASCADE)
 	ENGINE=MEMORY;
 	
-CREATE TABLE IF NOT EXISTS VanillaImageFamily(familyID SMALLINT PRIMARY KEY AUTO_INCREMENT, familyName VARCHAR(20),
+DELETE FROM VMServerStatus;
+	
+CREATE TABLE IF NOT EXISTS AllocatedVMServerResources(commandID VARCHAR(70) PRIMARY KEY, serverID INTEGER,
+	ramInUse INTEGER, freeStorageSpace INTEGER, freeTemporarySpace INTEGER, activeVCPUs TINYINT, activeHosts TINYINT, remove BOOL, 
+	FOREIGN KEY(serverID) REFERENCES VMServer(serverId) ON DELETE CASCADE ON UPDATE CASCADE)
+	ENGINE=MEMORY;
+	
+DELETE FROM AllocatedVMServerResources;
+	
+CREATE TABLE IF NOT EXISTS VanillaImageFamily(familyID SMALLINT PRIMARY KEY, familyName VARCHAR(20),
     ramSize INTEGER, vCPUs TINYINT, osDiskSize INTEGER, dataDiskSize INTEGER,
     UNIQUE(familyName));
     
@@ -33,13 +42,12 @@ CREATE TABLE IF NOT EXISTS VanillaImageFamilyOf(imageID INTEGER, familyID SMALLI
 	PRIMARY KEY(familyID, imageID),
 	FOREIGN KEY(familyID) REFERENCES VanillaImageFamily(familyID));
 	
-CREATE TABLE VanillaImageFamilyOfNewVM(temporaryID VARCHAR(70) PRIMARY KEY, familyID SMALLINT,
+CREATE TABLE IF NOT EXISTS VanillaImageFamilyOfNewVM(temporaryID VARCHAR(70) PRIMARY KEY, familyID SMALLINT,
 	FOREIGN KEY(familyID) REFERENCES VanillaImageFamily(familyID));
 	
 DROP TABLE IF EXISTS ImageRepository;
-
 CREATE TABLE ImageRepository(repositoryIP VARCHAR(15), repositoryPort INTEGER,
-	freeDiskSpace INTEGER, availableDiskSpace INTEGER, PRIMARY KEY(repositoryIP, repositoryPort))
+	freeDiskSpace INTEGER, availableDiskSpace INTEGER, connection_status TINYINT, PRIMARY KEY(repositoryIP, repositoryPort))
 	ENGINE=MEMORY;
 	
 DROP TABLE IF EXISTS VMBootCommand;
@@ -50,9 +58,11 @@ CREATE TABLE VMBootCommand(commandID VARCHAR(70), dispatchTime double, VMID INT,
 DROP TABLE IF EXISTS ActiveVMDistribution;
     
 CREATE TABLE ActiveVMDistribution(vmID VARCHAR(70) PRIMARY KEY, serverID INTEGER,
-	FOREIGN KEY(serverID) REFERENCES VMServer(serverID) ON DELETE CASCADE ON UPDATE CASCADE);
+	FOREIGN KEY(serverID) REFERENCES VMServer(serverID) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=MEMORY;
 	
-CREATE TABLE ImageEditionCommands(commandID VARCHAR(70) PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS ImageEditionCommand(commandID VARCHAR(70) PRIMARY KEY, imageID INTEGER, UNIQUE(imageID));
+
+CREATE TABLE IF NOT EXISTS ImageDeletionCommand(commandID VARCHAR(70) PRIMARY KEY, imageID INTEGER, UNIQUE(imageID));
 
 /*
  * Características de las familias de imágenes vanilla
@@ -91,3 +101,8 @@ INSERT INTO VMServerStatus VALUES
 	(2, 10, 200, 201, 202, 203, 204, 205, 206, 207),
 	(3, 5, 300, 301, 302, 303, 304, 305, 306, 307),
 	(4, 0, 400, 401, 402, 403, 404, 405, 406, 407);
+	
+INSERT INTO AllocatedVMServerResources VALUES
+	("Command1", 1, 1000, 1000, 1000, 2, 2, 0),
+	("Command2", 2, 1000, 1000, 1000, 2, 2, 1),
+	("Command3", 1, 1000, 1000, 2000, 2, 2, 0);

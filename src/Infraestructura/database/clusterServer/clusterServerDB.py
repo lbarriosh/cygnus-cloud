@@ -30,7 +30,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         '''
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         
-    def deleteVMServerStatistics(self, serverId):
+    def deleteVMServerStatistics(self, serverID):
         '''
         Borra las estadísticas de un servidor de máquinas virtuales
             Argumentos:
@@ -38,9 +38,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             Devuelve:
                 Nada
         '''
-        command = "DELETE FROM VMServerStatus WHERE serverId = " + str(serverId)
+        command = "DELETE FROM VMServerStatus WHERE serverId = {0}".format(serverID)
         self._executeUpdate(command)
-        
+        command = "DELETE FROM AllocatedVMServerResources WHERE serverID = {0};".format(serverID)
+        self._executeUpdate(command)
         
     def getVMServerBasicData(self, serverId):
         '''
@@ -71,7 +72,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         d["IsVanillaServer"] = isVanillaServer == 1
         return d         
         
-    def getVMServerStatistics(self, serverId) :
+    def getVMServerStatistics(self, serverID) :
         '''
             Devuelve las estadísticas de un servidor de máquinas virtuales
             Argumentos:
@@ -81,10 +82,10 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         '''
         #Creamos la consulta encargada de extraer los datos
         query = "SELECT hosts, ramInUse, ramSize, freeStorageSpace, availableStorageSpace,\
-            freeTemporarySpace, availableTemporarySpace, activeVCPUs, physicalCPUs FROM VMServerStatus WHERE serverId = " + str(serverId) + ";"
+            freeTemporarySpace, availableTemporarySpace, activeVCPUs, physicalCPUs FROM VMServerStatus WHERE serverId = {0};".format(serverID)
         result = self._executeQuery(query, True)
         if (result == None) : 
-            return None
+            return None            
         d = dict()        
         d["ActiveHosts"] = int(result[0])
         d["RAMInUse"] = int(result[1])
@@ -95,6 +96,16 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         d["AvailableTemporarySpace"] = int(result[6])
         d["ActiveVCPUs"] = int(result[7])
         d["PhysicalCPUs"] = int(result[8])
+        
+        query = "SELECT SUM(ramInUse), SUM(freeStorageSpace), SUM(freeTemporarySpace), SUM(activeVCPUs), SUM(activeHosts) FROM AllocatedVMServerResources \
+            WHERE serverId = {0};".format(serverID)
+        result = self._executeQuery(query, True)
+        if (result[0] != None) :
+            d["RAMInUse"] += int(round(result[0]))
+            d["FreeStorageSpace"] -= int(round(result[1]))
+            d["FreeTemporarySpace"] -= int(round(result[2]))
+            d["ActiveVCPUs"] += int(round(result[3]))
+            d["ActiveHosts"] += int(round(result[3]))
         
         # Devolvemos los resultados
         return d
@@ -185,8 +196,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         self._executeUpdate(query)
         # Apaño. ON DELETE CASCADE no funciona cuando las tablas usan un motor de almacenamiento
         # distinto. Una usa INNODB (VMServer) y otra usa MEMORY (VMServerStatus, que es nueva)
-        query = "DELETE From VMServerStatus WHERE serverId = " + str(serverId) + ";"
-        self._executeUpdate(query)
+        self.deleteVMServerStatistics(serverId)
         
     def getImageIDs(self):
         query = "SELECT DISTINCT imageId FROM ImageOnServer;"
@@ -280,10 +290,11 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             Devuelve:
                 Nada
         '''
-        query = "UPDATE VMServer SET serverStatus=" + str(newStatus) + \
+        command = "UPDATE VMServer SET serverStatus=" + str(newStatus) + \
             " WHERE serverId = " + str(serverId) + ";"
         # Execute it
-        self._executeUpdate(query)
+        self._executeUpdate(command)
+        
         
     def getServerImages(self, serverId):
         '''
@@ -344,6 +355,9 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                               availableStorageSpace, freeTemporarySpace, availableTemporarySpace,
                               activeVCPUs, physicalCPUs, serverID)
             self._executeUpdate(query)
+        
+        update = "DELETE FROM AllocatedVMServerResources WHERE serverID = {0} AND remove = 1;".format(serverID)
+        self._executeUpdate(update)
             
             
         
@@ -413,8 +427,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         return None
     
     def getVMBootCommandData(self, commandID):
-        query = "SELECT * FROM VMBootCommand WHERE commandID = '{0}';"
-        result = self._executeQuery(commandID, True)
+        query = "SELECT * FROM VMBootCommand WHERE commandID = '{0}';".format(commandID)
+        result = self._executeQuery(query, True)
         if (result == None) : return None
         else :
             return (result[0], int(result[2]))
@@ -673,3 +687,16 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             return []
         else :
             return result
+        
+    def allocateVMServerResources(self, commandID, serverID, ramInUse, freeStorageSpace, freeTemporarySpace, activeVCPUs, activeHosts):
+        update = "INSERT INTO AllocatedVMServerResources VALUES('{0}', {1}, {2}, {3}, {4}, {5}, {6}, 0);"\
+            .format(commandID, serverID, ramInUse, freeStorageSpace, freeTemporarySpace, activeVCPUs, activeHosts)
+        self._executeUpdate(update)
+        
+    def freeVMServerResources(self, commandID, error):
+        if (error) :
+            update = "DELETE FROM AllocatedVMServerResources WHERE commandID = '{0}';".format(commandID)
+        else :
+            update = "UPDATE AllocatedVMServerResources SET remove = 1 WHERE commandID = '{0}';".format(commandID)
+        self._executeUpdate(update)
+    
