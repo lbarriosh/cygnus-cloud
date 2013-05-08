@@ -591,6 +591,8 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         command = "UPDATE ImageRepository SET freeDiskSpace={2}, availableDiskSpace={3} WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
             .format(repositoryIP, repositoryPort, freeDiskSpace, availableDiskSpace)
         self._executeUpdate(command)
+        command = "DELETE FROM AllocatedImageRepositoryResources WHERE repositoryIP = '{0}' AND repositoryPort = {1} AND remove = 1".format(repositoryIP, repositoryPort)
+        self._executeUpdate(command)
         
     def updateImageRepositoryConnectionStatus(self, repositoryIP, repositoryPort, status):
         command = "UPDATE ImageRepository SET connection_status={2} WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
@@ -601,10 +603,26 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         query = "SELECT freeDiskSpace, availableDiskSpace, connection_status FROM ImageRepository WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
             .format(repositoryIP, repositoryPort)
         result = self._executeQuery(query, True)
-        if (result == None):
+        if (result == None or result[2] != SERVER_STATE_T.READY):
             return None
+        query = "SELECT SUM(allocatedDiskSpace) FROM AllocatedImageRepositoryResources WHERE repositoryIP = '{0}' AND repositoryPort={1};".\
+            format(repositoryIP, repositoryPort)
+        allocatedSpace = self._executeQuery(query, True)
+        status =  {"FreeDiskSpace" : result[0], "AvailableDiskSpace" : result[1], "ConnectionStatus" : result[2]}
+        if (allocatedSpace != None) :
+            status["FreeDiskSpace"] += round(allocatedSpace[0])
+        return status
+        
+    def allocateImageRepositoryResources(self, repositoryIP, repositoryPort, commandID, diskSpace):
+        update = "INSERT INTO AllocatedImageRepositoryResources VALUES ('{0}', '{1}', {2}, {3}, 0)".format(commandID, repositoryIP, repositoryPort, diskSpace)
+        self._executeUpdate(update)
+        
+    def freeImageRepositoryResources(self, commandID, error):
+        if (error) :
+            update = "DELETE FROM AllocatedImageRepositoryResources WHERE commandID = '{0}';".format(commandID)
         else :
-            return {"FreeDiskSpace" : result[0], "AvailableDiskSpace" : result[1], "ConnectionStatus" : result[2]}      
+            update = "UPDATE AllocatedImageRepositoryResources SET remove = 1 WHERE commandID = '{0}';".format(commandID)
+        self._executeUpdate(update)
         
     def registerNewVMVanillaImageFamily(self, commandID, familyID):
         update = "INSERT INTO VanillaImageFamilyOfNewVM VALUES ('{0}', {1});".format(commandID, familyID)

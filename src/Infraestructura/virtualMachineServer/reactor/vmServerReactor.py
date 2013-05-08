@@ -195,7 +195,7 @@ class VMServerReactor(MainServerPacketReactor):
             else :
                 errorMessage = "The image {0} does not exist".format(data["ImageID"])
             
-            p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.DELETE_IMAGE_ERROR, errorMessage, 
+            p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR, errorMessage, 
                                                        data["CommandID"])
         
         self.__networkManager.sendPacket('', self.__listenningPort, p)

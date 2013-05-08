@@ -50,7 +50,6 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__compressionRatio = compressionRatio
         self.__dataImageExpectedSize = dataImageExpectedSize
         self.__timeout = timeout
-        self.__repositoryStatusChanged = False
         
     def connectToDatabase(self, mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath):
         """
@@ -150,9 +149,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             
     def __auto_deploy_image(self, data):        
         if (data["Instances"] == -1) :
-            oldCommandID = self.__dbConnector.getImageEditionCommandID(data["ImageID"])
-            if (oldCommandID != None) :            
-                self.__dbConnector.removeImageEditionCommand(oldCommandID)                
+            if (not self.__dbConnector.isBeingDeleted(data["ImageID"])) :                 
                 self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.DEPLOY)
                 serverIDs = self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DEPLOY)
                 if (serverIDs != []) :
@@ -225,16 +222,16 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         elif (self.__dbConnector.getFamilyID(data["ImageID"]) == None) :
             errorMessage = "The image {0} does not exist".format(data["ImageID"])  
         elif (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE):
-            while self.__repositoryStatusChanged :
-                sleep(0.5)
-            self.__repositoryStatusChanged = True
             repositoryStatus = self.__dbConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
-            imageFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(self.__dbConnector.getFamilyID(data["ImageID"]))
-            required_disk_space = imageFeatures["osDiskSize"] + imageFeatures["dataDiskSize"] * self.__dataImageExpectedSize
-            required_disk_space = self.__compressionRatio * required_disk_space
-            remaining_disk_space = repositoryStatus["FreeDiskSpace"] - required_disk_space
-            if (remaining_disk_space < 0) :
-                errorMessage = "There is not enough disk space on the image repository"
+            if (repositoryStatus == None) :
+                errorMessage = "The connection with the image repository has been lost"
+            else :
+                imageFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(self.__dbConnector.getFamilyID(data["ImageID"]))
+                required_disk_space = imageFeatures["osDiskSize"] + imageFeatures["dataDiskSize"] * self.__dataImageExpectedSize
+                required_disk_space = self.__compressionRatio * required_disk_space
+                remaining_disk_space = repositoryStatus["FreeDiskSpace"] - required_disk_space
+                if (remaining_disk_space < 0) :
+                    errorMessage = "There is not enough disk space on the image repository"
         
         if (errorMessage != None) :        
             if (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE) :
@@ -273,6 +270,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
                                                          familyFeatures["RAMSize"], familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 0, 
                                                          familyFeatures["vCPUs"], 1)
+        self.__dbConnector.allocateImageRepositoryResources(self.__repositoryIP, self.__repositoryPort, data["CommandID"], 
+                                                            familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"])
         
         connectionData = self.__dbConnector.getVMServerBasicData(serverID)
         p = self.__vmServerPacketHandler.createImageEditionPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], modify, data["CommandID"], 
@@ -800,7 +799,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
     def __processImageEditedPacket(self, data):
         # Actualizar la base de datos
         self.__dbConnector.deleteActiveVMLocation(data["CommandID"])
-        if (not self.__dbConnector.isImageEditionCommand(data["CommandID"])) :
+        if (not self.__dbConnector.isImageEditionCommand(data["CommandID"])) :            
             familyID = self.__dbConnector.getNewVMVanillaImageFamily(data["CommandID"])
             self.__dbConnector.deleteNewVMVanillaImageFamily(data["CommandID"])
             self.__dbConnector.registerFamilyID(data["ImageID"], familyID)        
@@ -809,13 +808,15 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
         else :
+            self.__dbConnector.removeImageEditionCommand(data["CommandID"])
             # Evitar que todas las copias de la imagen puedan arrancarse
             self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.EDITED)            
             p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)   
         
         # Liberar los recursos asignados a la máquina
-        self.__dbConnector.freeVMServerResources(data["CommandID"], False)         
+        self.__dbConnector.freeVMServerResources(data["CommandID"], False)        
+        self.__dbConnector.freeImageRepositoryResources(data["CommandID"], False) 
     
     def __processImageEditionError(self, data):
         
@@ -832,6 +833,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         
         # Liberar los recursos asignados a la máquina
         self.__dbConnector.freeVMServerResources(data["CommandID"], True)
+        self.__dbConnector.freeImageRepositoryResources(data["CommandID"], True)
             
     def __processImageDeploymentErrorPacket(self, data):
         if (self.__dbConnector.isImageEditionCommand(data["CommandID"])) :
@@ -949,7 +951,6 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         data = self.__imageRepositoryPacketHandler.readPacket(packet)
         if data['packet_type'] == REPOSITORY_PACKET_T.STATUS_DATA:
             self.__dbConnector.updateImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort, data["FreeDiskSpace"], data["TotalDiskSpace"])
-            self.__repositoryStatusChanged = False
         elif data['packet_type'] == REPOSITORY_PACKET_T.DELETE_REQUEST_RECVD :
             commandID = self.__dbConnector.getImageDeletionCommandID(data['imageID'])
             if not self.__dbConnector.isThereSomeImageCopyInState(data["imageID"], IMAGE_STATE_T.DELETE) :

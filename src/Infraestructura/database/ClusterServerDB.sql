@@ -48,6 +48,16 @@ DROP TABLE IF EXISTS ImageRepository;
 CREATE TABLE ImageRepository(repositoryIP VARCHAR(15), repositoryPort INTEGER,
 	freeDiskSpace INTEGER, availableDiskSpace INTEGER, connection_status TINYINT, PRIMARY KEY(repositoryIP, repositoryPort))
 	ENGINE=MEMORY;
+		
+CREATE TABLE IF NOT EXISTS AllocatedImageRepositoryResources(
+	commandID VARCHAR(70) PRIMARY KEY, 
+	repositoryIP VARCHAR(15), 
+	repositoryPort INTEGER, 
+	allocatedDiskSpace INTEGER, 
+	remove BOOL, 
+	FOREIGN KEY(repositoryIP, repositoryPort) REFERENCES ImageRepository(repositoryIP, repositoryPort) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=MEMORY;
+		
+DELETE FROM AllocatedImageRepositoryResources;
 	
 DROP TABLE IF EXISTS VMBootCommand;
 
