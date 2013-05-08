@@ -412,6 +412,13 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
                 return (row[0], int(row[2])) # Match! -> return it
         return None
     
+    def getVMBootCommandData(self, commandID):
+        query = "SELECT * FROM VMBootCommand WHERE commandID = '{0}';"
+        result = self._executeQuery(commandID, True)
+        if (result == None) : return None
+        else :
+            return (result[0], int(result[2]))
+    
     def registerActiveVMLocation(self, vmID, serverID):
         """
         Registra la ubicación de una nueva máquina virtual activa

@@ -43,7 +43,7 @@ class ChildProcessManager(object):
         """
         p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
         code = p.wait()
-        if (code != 0) :            
+        if (code != 0 and ExceptionClass != None) :            
             raise ExceptionClass(p.stdout.read())  
         else :
             return p.stdout.read()

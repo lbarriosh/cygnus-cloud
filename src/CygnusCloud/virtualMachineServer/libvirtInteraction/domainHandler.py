@@ -127,60 +127,77 @@ class DomainHandler(object):
         newPassword = self.__generateVNCPassword()
         sourceOSDisk = self.__sourceImagePath + osImagePath                
         
-        # Preparo los archivos
+        diskImagesCreated = False
+        websockifyPID = None
         
-        if(isBootable):                           
-            # Saco el nombre de los archivos (sin la extension)
-            trimmedDataImagePath = dataImagePath
-            try:
-                trimmedDataImagePath = dataImagePath[0:dataImagePath.index(".qcow2")]
-            except:
-                pass
-            trimmedOSImagePath = osImagePath
-            try:
-                trimmedOSImagePath = osImagePath[0:osImagePath.index(".qcow2")]
-            except:
-                pass   
-            
-            newDataDisk = self.__executionImagePath + trimmedDataImagePath + str(newPort) + ".qcow2"
-            newOSDisk = self.__executionImagePath + trimmedOSImagePath + str(newPort) + ".qcow2"
+        try :        
+            if(isBootable):                           
+                # Saco el nombre de los archivos (sin la extension)
+                trimmedDataImagePath = dataImagePath
+                try:
+                    trimmedDataImagePath = dataImagePath[0:dataImagePath.index(".qcow2")]
+                except:
+                    pass
+                trimmedOSImagePath = osImagePath
+                try:
+                    trimmedOSImagePath = osImagePath[0:osImagePath.index(".qcow2")]
+                except:
+                    pass   
                 
-            # Compruebo si ya existe alguno de los archivos. Si es el caso, me los cargo
-            if (path.exists(newDataDisk)):
-                print("Warning: the file " + newDataDisk + " already exists")
-                ChildProcessManager.runCommandInForeground("rm " + newDataDisk, VMServerException)
+                newDataDisk = self.__executionImagePath + trimmedDataImagePath + str(newPort) + ".qcow2"
+                newOSDisk = self.__executionImagePath + trimmedOSImagePath + str(newPort) + ".qcow2"                
+               
+                # Compruebo si ya existe alguno de los archivos. Si es el caso, me los cargo
+                if (path.exists(newDataDisk)):
+                    print("Warning: the file " + newDataDisk + " already exists")
+                    ChildProcessManager.runCommandInForeground("rm " + newDataDisk, VMServerException)
+                    
+                if (path.exists(newOSDisk)):
+                    print("Warning: the file " + newOSDisk + " already exists")
+                    ChildProcessManager.runCommandInForeground("rm " + newOSDisk, VMServerException)
+                    
+                try :
+                    # Copio las imagenes
+                    ChildProcessManager.runCommandInForeground("cd " + self.__sourceImagePath + ";" + "cp --parents "+ dataImagePath + " " + self.__executionImagePath, VMServerException)
+                    ChildProcessManager.runCommandInForeground("mv " + self.__executionImagePath + dataImagePath +" " + newDataDisk, VMServerException)
+                    ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
+                except Exception as e:
+                    diskImagesCreated = True
+                    raise e
             
-            if (path.exists(newOSDisk)):
-                print("Warning: the file " + newOSDisk + " already exists")
-                ChildProcessManager.runCommandInForeground("rm " + newOSDisk, VMServerException)
+            else :
+                newDataDisk = path.join(self.__sourceImagePath, dataImagePath)
+                newOSDisk = path.join(self.__sourceImagePath, osImagePath)            
             
-            # Copio las imagenes
-            ChildProcessManager.runCommandInForeground("cd " + self.__sourceImagePath + ";" + "cp --parents "+ dataImagePath + " " + self.__executionImagePath, VMServerException)
-            ChildProcessManager.runCommandInForeground("mv " + self.__executionImagePath + dataImagePath +" " + newDataDisk, VMServerException)
-            ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
-        
-        else :
-            newDataDisk = path.join(self.__sourceImagePath, dataImagePath)
-            newOSDisk = path.join(self.__sourceImagePath, osImagePath)            
-        
-        # Genero el fichero de definición
-        xmlFile = ConfigurationFileEditor(definitionFile)
-        xmlFile.setDomainIdentifiers(newName, newUUID)
-        xmlFile.setImagePaths(newOSDisk, newDataDisk)            
-        xmlFile.setVirtualNetworkConfiguration(self.__virtualNetworkName, newMAC)
-        xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword)
-        
-        string = xmlFile.generateConfigurationString()        
-        # Arranco la máquina
-        self.__libvirtConnection.startDomain(string)
-        
-        # Inicio el demonio websockify
-        # Los puertos impares serán para el socket que proporciona el hipervisor 
-        # y los pares los websockets generados por websockify        
-        
-        webSockifyPID = self.__childProcessManager.runCommandInBackground([self.__websockifyPath,
-                                    self.__vncServerIP + ":" + str(newPort + 1),
-                                    self.__vncServerIP + ":" + str(newPort)])
+            # Genero el fichero de definición
+            xmlFile = ConfigurationFileEditor(definitionFile)
+            xmlFile.setDomainIdentifiers(newName, newUUID)
+            xmlFile.setImagePaths(newOSDisk, newDataDisk)            
+            xmlFile.setVirtualNetworkConfiguration(self.__virtualNetworkName, newMAC)
+            xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword)
+            
+            string = xmlFile.generateConfigurationString()        
+            # Arranco la máquina        
+            self.__libvirtConnection.startDomain(string)
+                
+            # Inicio el demonio websockify
+            # Los puertos impares serán para el socket que proporciona el hipervisor 
+            # y los pares los websockets generados por websockify        
+            websockifyPID = None
+            webSockifyPID = self.__childProcessManager.runCommandInBackground([self.__websockifyPath,
+                                            self.__vncServerIP + ":" + str(newPort + 1),
+                                            self.__vncServerIP + ":" + str(newPort)])
+       
+        except Exception :
+            self.__dbConnector.freeMACAndUUID(newUUID, newMAC)
+            if (diskImagesCreated) :
+                ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(newOSDisk), None)
+            if (websockifyPID != None) :
+                ChildProcessManager.runCommandInForeground("kill " + websockifyPID, None)
+            p = self.__packetManager.createInternalErrorPacket()
+            self.__networkManager.sendPacket('', self.__listenningPort, p)
+            
+        # Todo ha ido bien => registramos los recursos de la máquina como siempre        
         
         self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, webSockifyPID, newOSDisk,  newDataDisk, newMAC, newUUID)
         self.__dbConnector.addVMBootCommand(newName, commandID)

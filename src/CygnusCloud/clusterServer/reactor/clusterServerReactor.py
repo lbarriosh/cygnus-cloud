@@ -262,6 +262,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         p = self.__vmServerPacketHandler.createImageEditionPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], modify, data["CommandID"], 
                                                                   data["OwnerID"])
         self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)
+        self.__dbConnector.registerActiveVMLocation(data["CommandID"], serverID)
             
     def __deployOrDeleteImage(self, data):
         serverNameOrIPAddress = data["ServerNameOrIPAddress"]
@@ -749,6 +750,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         
     def __processImageEditedPacket(self, data):
         # Actualizar la base de datos
+        self.__dbConnector.deleteActiveVMLocation(data["CommandID"])
         if (not self.__dbConnector.isImageEditionCommand(data["CommandID"])) :
             familyID = self.__dbConnector.getNewVMVanillaImageFamily(data["CommandID"])
             self.__dbConnector.deleteNewVMVanillaImageFamily(data["CommandID"])
@@ -870,7 +872,15 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         
         p = self.__webPacketHandler.createVMConnectionDataPacket(data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"], data["CommandID"])
-        self.__networkManager.sendPacket('', self.__webPort, p)        
+        self.__networkManager.sendPacket('', self.__webPort, p)      
+        
+    def __sendVMBootError(self, data):
+        self.__dbConnector.removeVMBootCommand(data["CommandID"])
+        commandData = self.__dbConnector.getVMBootCommandData(data["CommandID"])
+        self.__dbConnector.removeVMBootCommand(data["CommandID"])
+        self.__dbConnector.deleteActiveVMLocation(commandData[0])
+        p = self.__webPacketHandler.createVMBootFailurePacket(commandData[1], "VM server internal error", commandData[0])
+        self.__networkManager.sendPacket('', self.__webPort, p)
         
     def processImageRepositoryIncomingPacket(self, packet):
         data = self.__imageRepositoryPacketHandler.readPacket(packet)

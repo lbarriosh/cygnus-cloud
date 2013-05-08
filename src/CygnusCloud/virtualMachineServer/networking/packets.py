@@ -11,7 +11,7 @@ VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_
                           "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
                           "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS",
                           "IMAGE_EDITION", "IMAGE_EDITION_ERROR", "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR","DELETE_IMAGE", "IMAGE_DELETION_ERROR",
-                          "IMAGE_EDITED", "IMAGE_DEPLOYED", "IMAGE_DELETED")
+                          "IMAGE_EDITED", "IMAGE_DEPLOYED", "IMAGE_DELETED", "INTERNAL_ERROR")
 
 class VMServerPacketHandler(object):
     """
@@ -242,6 +242,12 @@ class VMServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
+    def createInternalErrorPacket(self, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.INTERNAL_ERROR)
+        p.writeString(commandID)
+        return p
+    
     def readPacket(self, p):
         """
         Lee un paquete del servidor de máquinas virtuales y vuelca sus datos a un diccionario.
@@ -312,6 +318,8 @@ class VMServerPacketHandler(object):
                 result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN):
             result["Timeout"] = p.readInt()
+        elif (packet_type == VM_SERVER_PACKET_T.INTERNAL_ERROR) :
+            result["CommandID"] = p.readString()
         # Importante: los segmentos que transportan los datos de conexión se reenviarán, por lo que no tenemos que
         # leerlos para ganar en eficiencia.
         return result
