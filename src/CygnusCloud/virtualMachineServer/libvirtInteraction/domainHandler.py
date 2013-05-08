@@ -189,6 +189,10 @@ class DomainHandler(object):
                                             self.__vncServerIP + ":" + str(newPort)])
        
         except Exception :
+            # TODO: cancelar la edición en el repositorio
+            if (not isBootable) :
+                # Borrar la imagen
+                self.__dbConnector.deleteImage(imageID)
             self.__dbConnector.freeMACAndUUID(newUUID, newMAC)
             if (diskImagesCreated) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(newOSDisk), None)
