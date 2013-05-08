@@ -20,7 +20,7 @@ class FileTransferThread(BasicThread):
     Clase del hilo de transferencias
     """
     def __init__(self, networkManager, serverListeningPort, packetHandler,
-                 workingDirectory, ftpTimeout, dbConnector):
+                 workingDirectory, ftpTimeout, dbConnector, max_cancel_timeout = 60):
         """
         Inicializa el estado del hilo de transferencias
         Argumentos:
@@ -40,6 +40,7 @@ class FileTransferThread(BasicThread):
         self.__vmServerPacketHandler = packetHandler
         self.__ftpTimeout = ftpTimeout
         self.__dbConnector = dbConnector
+        self.__max_cancel_timeout = max_cancel_timeout
         
     def run(self):
         while not self.finish() :
@@ -67,9 +68,11 @@ class FileTransferThread(BasicThread):
             elif (data["Transfer_Type"] == TRANSFER_T.DEPLOY_IMAGE):
                 p = self.__repositoryPacketHandler.createRetrieveRequestPacket(data["SourceImageID"], False)
                 sourceFilePath = None
-            else :
+            elif (data["Transfer_Type"] == TRANSFER_T.STORE_IMAGE):
                 p = self.__repositoryPacketHandler.createStoreRequestPacket(int(data["TargetImageID"]))
                 sourceFilePath = data["SourceFilePath"]
+            else :
+                p = self.__repositoryPacketHandler.createCancelEditionPacket(data["ImageID"])
                 
             # Nos conectamos al repositorio
             callback = _FileTransferCallback(self.__repositoryPacketHandler, self.__workingDirectory, data["RepositoryIP"], self.__ftpTimeout,
@@ -84,15 +87,28 @@ class FileTransferThread(BasicThread):
                 
             self.__networkManager.sendPacket(data["RepositoryIP"], data["RepositoryPort"], p)
             
-            # Esperamos a que la transferencia termine
-            while not callback.isTransferCompleted() :
-                sleep(0.1)
+            
+            if (data["Transfer_Type"] != TRANSFER_T.CANCEL_EDITION) :
+                # Esperamos a que la transferencia termine
+                while not callback.isTransferCompleted() :
+                    sleep(0.1)
+                timeout = False
+            else :
+                elapsed_time = 0
+                while not callback.isTransferCompleted() and elapsed_time < self.__max_cancel_timeout:
+                    sleep(0.1)
+                    elapsed_time += 0.1
+                timeout = elapsed_time >= self.__max_cancel_timeout
                 
-            if (callback.getErrorMessage() != None) :
-                # Error => informamos al usuario                
-                p = self.__vmServerPacketHandler.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR, 
-                                                                   callback.getErrorMessage(), 
-                                                                   data["CommandID"])
+            if (callback.getErrorMessage() != None or timeout) :
+                if (data["Transfer_Type"] != TRANSFER_T.CANCEL_EDITION):
+                    # Error => informamos al usuario                
+                    p = self.__vmServerPacketHandler.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR, 
+                                                                       callback.getErrorMessage(), 
+                                                                       data["CommandID"])
+                else :
+                    p = self.__vmServerPacketHandler.createInternalErrorPacket(data["CommandID"])
+                    
                 self.__networkManager.sendPacket('', self.__serverListeningPort, p)
             else :       
                 # La transferencia ha acabado bien => determinamos qué hacer con el fichero que nos hemos descargado.
@@ -109,7 +125,7 @@ class FileTransferThread(BasicThread):
                     # No tocaremos la imagen => nos limitamos a encolar la petición
                     data["TargetImageID"] = data["SourceImageID"]
                     self.__dbConnector.addToCompressionQueue(data)
-                else :
+                elif (data["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
                     # Teníamos que subir la nueva imagen al repositorio => nos cargamos el fichero .zip y terminamos
                     ChildProcessManager.runCommandInForeground("rm " + path.join(self.__workingDirectory, data["SourceFilePath"]), Exception)
                     # Confirmamos que hemos subido la imagen
@@ -214,6 +230,6 @@ class _FileTransferCallback(NetworkCallback):
             except Exception as e:
                 self.__errorMessage = str(e)
         elif (data["packet_type"] == IR_PACKET_T.ADDED_IMAGE_ID):
-            self.__imageID = data["addedImageID"]
+            self.__imageID = data["addedImageID"]          
         
         self.__operation_completed = True   

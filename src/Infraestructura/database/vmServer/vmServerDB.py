@@ -399,10 +399,12 @@ class VMServerDBConnector(BasicDatabaseConnector):
         if (data["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
             serialized_data += str(data["TargetImageID"]) + "$"
             serialized_data += data["SourceFilePath"]
-        else:        
+        elif (data["Transfer_Type"] != TRANSFER_T.CANCEL_EDITION) :        
             serialized_data += str(data["SourceImageID"]) + "$"
             if (data["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or data["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :    
                 serialized_data += str(data["UserID"])
+        else :
+            serialized_data += str(data["ImageID"])
         
         
         insert = "INSERT INTO TransferQueue(data) VALUES ('{0}');".format(serialized_data)
@@ -432,10 +434,12 @@ class VMServerDBConnector(BasicDatabaseConnector):
         if (result["Transfer_Type"] == TRANSFER_T.STORE_IMAGE) :
             result["TargetImageID"] = int(tokens[4])
             result["SourceFilePath"] = tokens[5]           
-        else : 
+        elif (result["Transfer_Type"] != TRANSFER_T.CANCEL_EDITION) :   
             result["SourceImageID"] = int(tokens[4])
             if (result["Transfer_Type"] == TRANSFER_T.CREATE_IMAGE or result["Transfer_Type"] == TRANSFER_T.EDIT_IMAGE) :             
                 result["UserID"] = int(tokens[5])
+        else :
+            result["ImageID"] = int(tokens[4])
         return result
         
     def removeFirstElementFromTransferQueue(self):

@@ -144,3 +144,12 @@ class CompressionThread(BasicThread):
                 
             p = self.__packetHandler.createErrorPacket(packet_type, "Compression error: " + e.message, data["CommandID"])
             self.__networkManager.sendPacket('', self.__serverListenningPort, p)
+            
+            # Generar una transferencia especial para dejar de editar la imagen
+            transfer = dict()
+            transfer["Transfer_Type"] = TRANSFER_T.CANCEL_EDITION
+            transfer["RepositoryIP"] = data["RepositoryIP"]
+            transfer["RepositoryPort"] = data["RepositoryPort"]
+            transfer["CommandID"] = data["CommandID"]
+            transfer["ImageID"] = data["TargetImageID"]
+            self.__dbConnector.addToTransferQueue(transfer)
