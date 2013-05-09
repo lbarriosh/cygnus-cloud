@@ -14,7 +14,6 @@ from network.ftp.ftpClient import FTPClient
 
 user_input = False
 
-
 class TesterCallback(NetworkCallback):    
     def __init__(self, packetHandler, ip_address):
         self.__repositoryPacketHandler = packetHandler

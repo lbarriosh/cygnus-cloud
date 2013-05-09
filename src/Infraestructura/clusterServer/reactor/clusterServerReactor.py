@@ -13,10 +13,10 @@ from network.manager.networkManager import NetworkManager
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
 from virtualMachineServer.networking.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 from time import sleep
-from clusterServer.loadBalancing.simpleLoadBalancer import SimpleLoadBalancer
 from network.twistedInteraction.clientConnection import RECONNECTION_T
 from clusterServer.loadBalancing.penaltyBasedLoadBalancer import PenaltyBasedLoadBalancer
 from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T as REPOSITORY_PACKET_T
+from clusterServer.loadBalancing.loadBalancer import MODE_T
 
 class WebPacketReactor(object):
     '''
@@ -78,12 +78,11 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Devuelve:
             Nada
         """
-        if (self.__loadBalancerSettings[0] == "penalty-based") :
-            self.__loadBalancer = PenaltyBasedLoadBalancer(self.__dbConnector, self.__loadBalancerSettings[1], 
-                self.__loadBalancerSettings[2], self.__loadBalancerSettings[3], self.__loadBalancerSettings[4], 
-                self.__loadBalancerSettings[5])
-        else :
-            self.__loadBalancer = SimpleLoadBalancer(self.__dbConnector)
+        
+        self.__loadBalancer = PenaltyBasedLoadBalancer(self.__dbConnector, self.__loadBalancerSettings[1], 
+        self.__loadBalancerSettings[2], self.__loadBalancerSettings[3], self.__loadBalancerSettings[4], 
+        self.__loadBalancerSettings[5])
+            
         self.__networkManager = NetworkManager(certificatePath)
         self.__webPort = listenningPort
         self.__repositoryIP = repositoryIP
@@ -147,17 +146,24 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         elif (data["packet_type"] == WEB_PACKET_T.AUTO_DEPLOY):
             self.__auto_deploy_image(data)
             
-    def __auto_deploy_image(self, data):        
+    def __auto_deploy_image(self, data):       
+        
+        if (data["Instances"] == 0 or data["Instances"] < -1) :
+            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, p)        
+            return  
+        
+        familyID = self.__dbConnector.getFamilyID(data["ImageID"])
+        familyFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(familyID)
+         
         if (data["Instances"] == -1) :
             if (not self.__dbConnector.isBeingDeleted(data["ImageID"])) :                 
                 self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.DEPLOY)
+                
                 serverIDs = self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DEPLOY)
                 if (serverIDs != []) :
-                    self.__dbConnector.addImageEditionCommand(data["CommandID"], data["ImageID"])
-                    
-                    familyID = self.__dbConnector.getFamilyID(data["ImageID"])
-                    familyFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(familyID)
-                    
+                    self.__dbConnector.addImageEditionCommand(data["CommandID"], data["ImageID"]) 
+                                       
                     # Enviar una petición de despliegue a todos los servidores arrancados que la tienen.
                     # A los demás, se la enviaremos cuando arranquen
                     p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
@@ -178,7 +184,47 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "The image {0} is not being edited".format(data["ImageID"]), 
                                                                      data["CommandID"])
                 self.__networkManager.sendPacket('', self.__webPort, p)  
-               
+        elif (data["Instances"] > 0) :
+            if (self.__dbConnector.isAffectedByAutoDeploymentCommand(data["ImageID"])) :
+                p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "Image affected by another auto-deployment command", 
+                                                                     data["CommandID"])
+                self.__networkManager.sendPacket('', self.__webPort, p)  
+                return
+            # Ejecutamos el algoritmo de despliegue
+            output = self.__loadBalancer.assignVMServer(data["ImageID"], MODE_T.DEPLOY_IMAGE)
+            if (output[1] != None) :
+                # Error => informamos de él y terminamos
+                p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, output[1], data["CommandID"])
+                self.__networkManager.sendPacket('', self.__webPort, p)  
+            else :
+                if (output[2] < data["Instances"]) :
+                    # No podemos cumplir con lo que nos piden => error
+                    p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "Too many copies", data["CommandID"])
+                    self.__networkManager.sendPacket('', self.__webPort, p)  
+                else :
+                    
+                    # Todo ha ido bien => preparamos los paquetes de despliegue                    
+                    servers = []
+                    deployed_copies = 0
+                    i = 0
+                    while (deployed_copies < data["Instances"]) :
+                        servers.append(output[i][0][0])                             
+                        deployed_copies += output[i][0][1]
+                        i += 1
+                                                
+                    # Registramos la petición de despliegue automático
+                    self.__dbConnector.addAutoDeploymentCommand(data["CommandID"], data["ImageID"], len(servers))
+                    
+                    # Enviamos los paquetes de despliegue                    
+                    p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])                    
+                    for serverID in servers:                        
+                        # Registrar los recursos en la BD
+                        self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
+                                                         0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
+                                                         0, 0, 1)
+                        # Enviar los paquetes
+                        connectionData = self.__dbConnector.getVMServerBasicData(serverID)            
+                        self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)              
             
     def __deleteImageFromInfrastructure(self, data):
         error = False
@@ -243,7 +289,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             return           
         
         # Encontrar un servidor vanilla
-        (serverID, errorMessage) = self.__loadBalancer.assignVMServer(data["ImageID"], True)
+        (serverID, errorMessage) = self.__loadBalancer.assignVMServer(data["ImageID"], MODE_T.CREATE_OR_EDIT_IMAGE)
         if (errorMessage != None) :
             # Error => informar de él y terminar
             if (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE) :
@@ -671,7 +717,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         userID = data["UserID"]
         
         # Escoger el servidor de máquinas virtuales que alojará la máquina
-        (serverID, errorMessage) = self.__loadBalancer.assignVMServer(vmID)
+        (serverID, errorMessage) = self.__loadBalancer.assignVMServer(vmID, MODE_T.BOOT_DOMAIN)
         if (errorMessage != None) :
             # Error => avisar al usuario
             p = self.__webPacketHandler.createVMBootFailurePacket(vmID, errorMessage, data["CommandID"])
@@ -839,6 +885,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         if (self.__dbConnector.isImageEditionCommand(data["CommandID"])) :
             packet_type = WEB_PACKET_T.IMAGE_EDITION_ERROR
             self.__dbConnector.removeImageEditionCommand(data["CommandID"])
+            
+        elif (self.__dbConnector.isAutoDeploymentCommand(data["CommandID"])) :
+            (generateOutput, _unused) = self.__dbConnector.handleAutoDeploymentCommandOutput(data["CommandID"], True)
+            if (generateOutput) :              
+                p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "Deployment error on some server(s)", data["CommandID"])
+                self.__networkManager.sendPacket('', self.__webPort, p)
+                
         elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYMENT_ERROR) :
             packet_type = WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR
         else :
@@ -872,6 +925,16 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
                 self.__networkManager.sendPacket('', self.__webPort, p)
                 self.__dbConnector.removeImageDeletionCommand(data["CommandID"])
+        elif (self.__dbConnector.isAutoDeploymentCommand(data["CommandID"])) :
+            (generateOutput, error) = self.__dbConnector.handleAutoDeploymentCommandOutput(data["CommandID"], False)
+            if (not error) :
+                self.__dbConnector.assignImageToServer(serverID, data["ImageID"])
+            if (generateOutput) :
+                if (error) :
+                    p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "Deployment error on some server(s)", data["CommandID"])
+                else :
+                    p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])                
+                self.__networkManager.sendPacket('', self.__webPort, p)
         else :
             if (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYED) :
                 self.__dbConnector.assignImageToServer(serverID, data["ImageID"])                

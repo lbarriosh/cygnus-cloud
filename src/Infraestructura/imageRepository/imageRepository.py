@@ -255,10 +255,9 @@ class CommandsCallback(NetworkCallback):
             Nada
         """
         imageID = self.__dbConnector.addImage()
-        p = self.__repositoryPacketHandler.createAddedImagePacket(imageID)
-        try :            
-            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
-        except Exception :
+        p = self.__repositoryPacketHandler.createAddedImagePacket(imageID)        
+        value = self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        if (value != None) :
             self.__dbConnector.deleteImage(imageID)
      
     def __handleRetrieveRequest(self, data):
@@ -280,10 +279,11 @@ class CommandsCallback(NetworkCallback):
         else:
             # No hay errores => contestar diciendo que hemos recibido la petición y encolarla
             p = self.__repositoryPacketHandler.createImageRequestReceivedPacket(PACKET_T.RETR_REQUEST_RECVD)
-            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
-            self.__retrieveQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))
-            if (data["modify"]) :
-                self.__dbConnector.changeImageStatus(data["imageID"], IMAGE_STATUS_T.EDITION)
+            value = self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+            if (value == None) :    
+                self.__retrieveQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))
+                if (data["modify"]) :
+                    self.__dbConnector.changeImageStatus(data["imageID"], IMAGE_STATUS_T.EDITION)
     
     def __handleStorRequest(self, data):
         """

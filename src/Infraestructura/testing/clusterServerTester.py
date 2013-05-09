@@ -152,6 +152,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         elif (command == "deployEditedImage") :
             p = pHandler.createAutoDeployPacket(int(tokens.pop(0)), -1, "Auto-deploy")
             networkManager.sendPacket(ip_address, port, p)
+        elif (command == "autoDeployImage") :
+            p = pHandler.createAutoDeployPacket(int(tokens.pop(0)), int(tokens.pop(0)), "Auto-deploy")
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "quit") :
             return True
         elif (command == "help") :

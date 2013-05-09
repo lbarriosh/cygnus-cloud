@@ -50,6 +50,8 @@ class MultithreadingCounter(object):
             Nothing
         """
         with self.__semaphore:
+            if (self.__counter == 0) :
+                return
             self.__counter -= 1
     
     def incrementIfGreaterThan(self, n):

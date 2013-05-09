@@ -6,7 +6,12 @@ Basic load balancer definitions
 @version: 1.1
 '''
 
-class LoadBalancer(object):
+from ccutils.enums import enum
+
+MODE_T = enum("BOOT_DOMAIN", "CREATE_OR_EDIT_IMAGE", "DEPLOY_IMAGE")
+
+class LoadBalancer(object):    
+    
     '''
     These objects determine the virtual machine server that will host
     a virtual machine.
@@ -19,7 +24,7 @@ class LoadBalancer(object):
         '''
         self._dbConnector = databaseConnector    
         
-    def assignVMServer(self, imageID, create_new_image=False):
+    def assignVMServer(self, imageID, mode):
         '''
         Determines what virtual machine server will host an image.
         Args:
@@ -28,6 +33,9 @@ class LoadBalancer(object):
             a tuple (ID, errorMessage), where ID is the virtual machine server's ID
             and errorMessage is an error message.
         '''
+        raise NotImplementedError
+    
+    def assignVMServers(self, imageID):
         raise NotImplementedError
     
     
