@@ -250,7 +250,7 @@ def servers():
             
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.change:
             #Arrancamos el servidor
-            commandID = connector.changeVMServerConfiguration(infoServer[0],form1.vars.sName,form1.vars.sIp,form1.vars.port,form1.vars.isVanilla)
+            commandID = connector.changeVMServerConfiguration(infoServer[0],form1.vars.name,form1.vars.ip,form1.vars.port,form1.vars.isVanilla)
             errorInfo = connector.waitForCommandOutput(commandID)
             if(errorInfo != None):
                 response.flash = T(errorInfo['ErrorMessage'])  
@@ -359,11 +359,11 @@ def subjects():
     createAdressBar()
     if(request.args(0) == 'add'):              
         #Creamos el primer formulario
-        form = FORM(HR(),H2(T('Añadir un nueva asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_size = '30px')),
-                DIV( T('Nombre: '),BR(),INPUT(_name ='name')),
-                DIV( T('Año: '),BR(),INPUT(_name ='year')),
-                DIV( T('Curso: '),BR(),INPUT(_name ='curse')),
-                DIV( T('Grupo de clase: '),BR(),INPUT(_name ='group')),
+        form = FORM(HR(),H2(T('Añadir un nueva asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_style="width:80px;"),_style="position:absolute;left:10%;"),
+                DIV( T('Nombre: '),BR(),INPUT(_name ='name'),_style="position:absolute;left:18%;"),BR(),BR(),BR(),
+                DIV( T('Año: '),BR(),INPUT(_name ='year',_style="width:70px;"),_style="position:absolute;left:10%;"),
+                DIV( T('Curso: '),BR(),INPUT(_name ='curse',_style="width:50px;"),_style="position:absolute;left:18%;"),
+                DIV( T('Grupo: '),BR(),INPUT(_name ='group',_style="width:50px;"),_style="position:absolute;left:24%;"),BR(),BR(),BR(),
                 HR(),CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'add' ,_value=T('Añadir'))))                
         
         if form.accepts(request.vars) and form.vars.add:
@@ -519,12 +519,12 @@ def createUserSearchForm(state):
 def createSubjectsSearchForm(state):        
 
         
-    form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Codigo: '),BR(),INPUT(_name = 'cod')),
-           DIV(T('Nombre: '),BR(),INPUT(_name = 'name')),
-           DIV(T('Año: '),BR(),INPUT(_name = 'year')),
-           DIV(T('Curso: '),BR(),INPUT(_name = 'curse')),
-           DIV(T('Grupo de clase: '),BR(),INPUT(_name = 'group')),
-           INPUT(_type='submit',_class="button button-blue",_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
+    form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_style="width:80px;"),_style="position:absolute;left:10%;"),
+                DIV( T('Nombre: '),BR(),INPUT(_name ='name'),_style="position:absolute;left:18%;"),BR(),BR(),BR(),
+                DIV( T('Año: '),BR(),INPUT(_name ='year',_style="width:70px;"),_style="position:absolute;left:10%;"),
+                DIV( T('Curso: '),BR(),INPUT(_name ='curse',_style="width:50px;"),_style="position:absolute;left:18%;"),
+                DIV( T('Grupo: '),BR(),INPUT(_name ='group',_style="width:50px;"),_style="position:absolute;left:24%;"),BR(),BR(),BR(),
+                INPUT(_type='submit',_class="button button-blue",_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
     
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
         query = ""
@@ -579,12 +579,12 @@ def createUserTable(listUsers):
     
 def createSubjectTable(listSubjects):
     table = TABLE(_class='data', _name='table')
-    table.append(TR(TH('Selección'),TH(T('Cod-Asignatura'),TH(T('Grupo')))))
+    table.append(TR(TH('Selección'),TH(T('Cod-Asignatura'),_class='izquierda'),TH(T('Grupo'))))
     i = 0
     for l in listSubjects:
         table.append(TR(\
         TD(INPUT(_type='radio',_name = 'selection',_value = i)),\
-        TD(LABEL(str(l[0]) + '-' + userDB(l[0] == userDB.Subjects.code).select()[0].name),_width = '50%'),
+        TD(LABEL(str(l[0]) + '-' + userDB(l[0] == userDB.Subjects.code).select()[0].name,_class='izquierda'),_width = '50%'),
         TD(LABEL(l[1]))))
         i = i + 1
     pass

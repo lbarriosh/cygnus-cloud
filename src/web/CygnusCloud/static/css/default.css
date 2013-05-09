@@ -9,7 +9,7 @@ Released for free under a Creative Commons Attribution-Share Alike 3.0 Philippin
 
 body {
     background: none repeat scroll 0 0 #939393;
-    color: #15415f;
+    color: #00388d;
     font-family:  Arial, MS Sans Serif, Tahoma, Helvetica, sans-serif;
     font-size: 15px;
     line-height: 1.6em;
@@ -378,4 +378,48 @@ div.flash {
     font-family: Arial, MS Sans Serif, Tahoma, Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
     z-index:2000;
+}
+
+input[type=text], textarea , .inputText{
+  font-size:15px;
+  -webkit-transition: all 0.30s ease-in-out;
+  -moz-transition: all 0.30s ease-in-out;
+  -ms-transition: all 0.30s ease-in-out;
+  -o-transition: all 0.30s ease-in-out;
+  outline: none;
+  padding: 3px 3px 3px 3px;
+  margin: 3px 3px 3px 3px;
+  border: 1px solid rgba(65, 141, 236, 1);
+  border-radius:4px;
+  -o-border-radius: 4px;
+  -moz-border-radius:4px;
+  -webkit-border-radius:4px;
+  -webkit-box-shadow: inset 1px 1px 1px 0px #8db1d1;
+  -moz-box-shadow: inset 1px 1px 1px 0px #8db1d1;
+
+}
+ 
+input[type=text]:focus, textarea:focus , .inputText:focus{
+  box-shadow: 0 0 7px rgba(65, 141, 236, 1);
+  padding: 3px 3px 3px 3px;
+  margin: 3px 3px 3px 3px;
+  border: 1.3px solid rgba(65, 141, 236, 1);
+
+
+}
+
+select {
+   background: transparent;
+   padding: 5px;
+   color: #00388d;
+   font-size: 15px;
+   border: 1px solid rgba(65, 141, 236, 1);
+   -o-border-radius: 4px;
+   -moz-border-radius:4px;
+   -webkit-border-radius:4px;
+}
+
+select:after{
+   box-shadow: 0 0 7px rgba(65, 141, 236, 1);
+   border: 1.3px solid rgba(65, 141, 236, 1);
 }

@@ -16,7 +16,10 @@ MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR"
                             "VM_SERVER_UNREGISTRATION_ERROR", "DOMAIN_DESTRUCTION", "DOMAIN_DESTRUCTION_ERROR", 
                             "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
                             "GET_IMAGE", "SET_IMAGE", "REPOSITORY_STATUS_REQUEST", "REPOSITORY_STATUS",
-                            "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR", "DELETE_IMAGE_FROM_SERVER", "DELETE_IMAGE_FROM_SERVER_ERROR")
+                            "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR", "IMAGE_DEPLOYED", "DELETE_IMAGE_FROM_SERVER", "DELETE_IMAGE_FROM_SERVER_ERROR",
+                            "IMAGE_DELETED", "CREATE_IMAGE", "IMAGE_CREATION_ERROR", "EDIT_IMAGE", "IMAGE_EDITION_ERROR",
+                            "DELETE_IMAGE_FROM_INFRASTRUCTURE", "DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR", "AUTO_DEPLOY", "AUTO_DEPLOY_ERROR",
+                            "VM_SERVER_INTERNAL_ERROR")
 
 class ClusterServerPacketHandler(object):
     """
@@ -30,6 +33,20 @@ class ClusterServerPacketHandler(object):
             packetCreator: el objeto NetworkManager que utilizaremos para crear los paquetes
         """
         self.__packetCreator = packetCreator
+        
+    def createUnexpectedErrorPacket(self, packet_type, commandID):
+        p = self.__packetCreator.createPacket(2)
+        p.writeInt(packet_type)
+        p.writeString(commandID)
+        return p
+        
+    def createAutoDeployPacket(self, imageID, instances, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.AUTO_DEPLOY)
+        p.writeInt(imageID)
+        p.writeInt(instances)
+        p.writeString(commandID)
+        return p
             
     def createVMServerRegistrationPacket(self, IPAddress, port, name, isVanillaServer, commandID):
         """
@@ -53,7 +70,7 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createExecutedCommandPacket(self, commandID):
+    def createCommandExecutedPacket(self, commandID):
         """
         Crea un paquete que indica que un comando se ha ejecutado.
         Argumentos:
@@ -289,21 +306,6 @@ class ClusterServerPacketHandler(object):
         p.writeString(domainID)
         p.writeString(commandID)
         return p
-
-    def createDomainDestructionErrorPacket(self, errorMessage, commandID):
-        """
-        Crea un paquete de error asociado a la destrucción de un dominio.
-        Argumentos:
-            errorMessage: mensaje de error
-            commandID: identificador único del comando
-        Devuelve:
-            un paquete con los datos de los argumentos
-        """
-        p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR)
-        p.writeString(errorMessage)
-        p.writeString(commandID)
-        return p
     
     def createRepositoryStatusPacket(self, freeDiskSpace, availableDiskSpace, status):
         p = self.__packetCreator.createPacket(5)
@@ -344,9 +346,9 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createVMServerConfigurationChangeErrorPacket(self, reason, commandID):
+    def createGenericErrorPacket(self, packet_type, reason, commandID):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR)        
+        p.writeInt(packet_type)        
         p.writeString(reason)
         p.writeString(commandID)
         return p
@@ -355,6 +357,21 @@ class ClusterServerPacketHandler(object):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_type)    
         p.writeString(serverNameOrIPAddress)    
+        p.writeInt(imageID)
+        p.writeString(commandID)
+        return p
+    
+    def createImageEditionPacket(self, packet_type, imageID, ownerID, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(packet_type)
+        p.writeInt(imageID)
+        p.writeInt(ownerID)
+        p.writeString(commandID)
+        return p
+    
+    def createImageDeletionPacket(self, imageID, commandID):
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE)
         p.writeInt(imageID)
         p.writeString(commandID)
         return p
@@ -460,7 +477,12 @@ class ClusterServerPacketHandler(object):
             result["DomainID"] = p.readString()
             result["CommandID"] = p.readString()
         
-        elif (packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR) :
+        elif (packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR or 
+              packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATION_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.IMAGE_EDITION_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.AUTO_DEPLOY_ERROR) :
             result["ErrorMessage"] = p.readString()
             result["CommandID"] = p.readString()    
             
@@ -472,13 +494,27 @@ class ClusterServerPacketHandler(object):
             result["NewVanillaImageEditionBehavior"] = p.readBool()
             result["CommandID"] = p.readString() 
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
-            result["ErrorMessage"] = p.readString()
-            result["CommandID"] = p.readString()  
-            
         elif (packet_type == MAIN_SERVER_PACKET_T.REPOSITORY_STATUS) :
             result["FreeDiskSpace"] = p.readInt()
             result["AvailableDiskSpace"] = p.readInt()
             result["ConnectionStatus"] = p.readString()
-                      
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.CREATE_IMAGE or 
+              packet_type == MAIN_SERVER_PACKET_T.EDIT_IMAGE):
+            result["ImageID"] = p.readInt()
+            result["OwnerID"] = p.readInt()
+            result["CommandID"] = p.readString() 
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE) :
+            result["ImageID"] = p.readInt()
+            result["CommandID"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.AUTO_DEPLOY):
+            result["ImageID"] = p.readInt()
+            result["Instances"] = p.readInt()
+            result["CommandID"] = p.readString()
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_INTERNAL_ERROR):
+            result["CommandID"] = p.readString()
+                       
         return result
