@@ -37,6 +37,7 @@ class TesterCallback(NetworkCallback):
             print("Transfer completed")
         elif (data['packet_type'] == PACKET_T.STOR_REQUEST_ERROR or data['packet_type'] == PACKET_T.STOR_ERROR) :
             print("Store error: " + str(data['errorCode']))
+            user_input = False
         elif (data['packet_type'] == PACKET_T.STOR_REQUEST_RECVD) :
             print("The image repository says: store request received")
         elif (data['packet_type'] == PACKET_T.STOR_START) :
