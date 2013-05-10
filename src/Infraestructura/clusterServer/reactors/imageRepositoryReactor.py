@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 '''
 Created on May 10, 2013
 
@@ -11,14 +12,15 @@ from clusterServer.database.clusterServerDB import IMAGE_STATE_T
 class ImageRepositoryPacketReactor(object):
     
     def __init__(self, dbConnector, networkManager, listenningPort, 
-                 repositoryIP, repositoryPort, webPacketHandler, vmServerPacketHandler):
+                 repositoryIP, repositoryPort, webPacketHandler, vmServerPacketHandler, imageRepositoryPacketHandler):
         self.__dbConnector = dbConnector
         self.__networkManager = networkManager
-        self.__listenningPort = self.__listenningPort
+        self.__listenningPort = listenningPort
         self.__repositoryIP = repositoryIP
         self.__repositoryPort = repositoryPort
         self.__webPacketHandler = webPacketHandler
         self.__vmServerPacketHandler = vmServerPacketHandler        
+        self.__imageRepositoryPacketHandler = imageRepositoryPacketHandler
     
     def processImageRepositoryIncomingPacket(self, packet):
         data = self.__imageRepositoryPacketHandler.readPacket(packet)
@@ -45,7 +47,3 @@ class ImageRepositoryPacketReactor(object):
         for serverID in serverIDs :
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
-        
-    def __processActiveDomainUIDs(self, data):
-        vmServerID = self.__dbConnector.getVMServerID(data["VMServerIP"])
-        self.__dbConnector.registerHostedVMs(vmServerID, data["Domain_UIDs"])

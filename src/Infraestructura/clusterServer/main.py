@@ -5,7 +5,7 @@ Main server entry point
 @version: 1.0
 '''
 
-from clusterServer.reactor.clusterServerReactor import ClusterServerReactor
+from cServer import ClusterServer
 import sys
 from constants import ClusterServerConstantsManager
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
                                 cm.getConstant("temporarySpaceWeight")]
     else :
         loadBalancerSettings = ["simple"]
-    reactor = ClusterServerReactor(loadBalancerSettings, cm.getConstant("imageCompressionRatio"),
+    reactor = ClusterServer(loadBalancerSettings, cm.getConstant("imageCompressionRatio"),
                                    cm.getConstant("dataImageExpectedSize"), cm.getConstant("vmBootTimeout"))
     reactor.connectToDatabase(cm.getConstant("mysqlRootsPassword"), cm.getConstant("dbName"), 
                               cm.getConstant("dbUser"), cm.getConstant("dbPassword"), cm.getConstant("scriptPath"))

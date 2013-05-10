@@ -201,3 +201,19 @@ class VMServerPacketReactor(object):
         self.__networkManager.sendPacket('', self.__listenningPort, p)      
         # Preparar la "liberación" de los recursos asignados a la máquina.
         self.__dbConnector.freeVMServerResources(data["CommandID"], False)
+        
+    def __processActiveDomainUIDs(self, data):
+        vmServerID = self.__dbConnector.getVMServerID(data["VMServerIP"])
+        self.__dbConnector.registerHostedVMs(vmServerID, data["Domain_UIDs"])
+        
+    def __sendDomainsVNCConnectionData(self, packet):
+        """
+        Envía al endpoint los datos de conexión VNC de todas las máquinas
+        virtuales activas del servidor de máquinas virtuales
+        Argumentos:
+            packet: diccionario con los datos a procesar
+        Devuelve:
+            Nada
+        """
+        p = self.__webPacketHandler.createActiveVMsDataPacket(packet)
+        self.__networkManager.sendPacket('', self.__listenningPort, p)

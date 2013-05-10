@@ -5,8 +5,10 @@ from network.twistedInteraction.clientConnection import RECONNECTION_T
 
 class NetworkEventsReactor(object):
     
-    def __init__(self, dbConnector):
+    def __init__(self, dbConnector, repositoryIP, repositoryPort):
         self.__dbConnector = dbConnector    
+        self.__repositoryIP = repositoryIP
+        self.__repositoryPort = repositoryPort
     
     def processVMServerReconnectionData(self, ipAddress, reconnection_status) :
         """

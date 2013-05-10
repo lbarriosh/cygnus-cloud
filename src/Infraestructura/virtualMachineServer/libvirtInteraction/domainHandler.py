@@ -291,14 +291,16 @@ class DomainHandler(object):
         self.__dbConnector.unregisterDomainResources(domainName)     
         
         if isBootable :
-            ChildProcessManager.runCommandInForeground("rm " + dataImagePath, VMServerException)
-            ChildProcessManager.runCommandInForeground("rm " + osImagePath, VMServerException)
+            # Nota: al destruir el dominio manualmente, libvirt ya se carga las imágenes.
+            # En esos casos, no hay que lanzar exceptiones.
+            ChildProcessManager.runCommandInForeground("rm " + dataImagePath, None)
+            ChildProcessManager.runCommandInForeground("rm " + osImagePath, None)
             dataDirectory = path.dirname(dataImagePath)
             osDirectory = path.dirname(osImagePath)
             if (listdir(dataDirectory) == []) :
-                ChildProcessManager.runCommandInForeground("rm -rf " + dataDirectory, VMServerException)
+                ChildProcessManager.runCommandInForeground("rm -rf " + dataDirectory, None)
             if (osDirectory != dataDirectory and listdir(osDirectory) == []) :
-                ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, VMServerException)            
+                ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, None)            
                     
         else :
             data = dict()            
