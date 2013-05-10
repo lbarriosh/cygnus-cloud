@@ -25,7 +25,7 @@ class TesterCallback(NetworkCallback):
         if (data['packet_type'] == PACKET_T.ADDED_IMAGE_ID) :
             print("Added image ID: {0}".format(data['addedImageID']))
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_ERROR or data['packet_type'] == PACKET_T.RETR_ERROR) :
-            print("Retrieve error: " + data['errorMessage'])
+            print("Retrieve error: " + str(data['errorCode']))
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_RECVD) :
             print("The image repository says: retrieve request received")
         elif (data['packet_type'] == PACKET_T.RETR_START) :
@@ -36,7 +36,7 @@ class TesterCallback(NetworkCallback):
             ftpClient.disconnect()
             print("Transfer completed")
         elif (data['packet_type'] == PACKET_T.STOR_REQUEST_ERROR or data['packet_type'] == PACKET_T.STOR_ERROR) :
-            print("Store error: " + data['errorMessage'])
+            print("Store error: " + str(data['errorCode']))
         elif (data['packet_type'] == PACKET_T.STOR_REQUEST_RECVD) :
             print("The image repository says: store request received")
         elif (data['packet_type'] == PACKET_T.STOR_START) :

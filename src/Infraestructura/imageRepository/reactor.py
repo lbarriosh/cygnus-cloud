@@ -14,6 +14,7 @@ from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
 from os import remove, path, mkdir, statvfs
 from time import sleep
 from ccutils.processes.childProcessManager import ChildProcessManager
+from errors.codes import ERROR_T
 
 class ImageRepositoryReactor(object):
     """
@@ -158,7 +159,7 @@ class ImageRepositoryReactor(object):
                         packet_type = PACKET_T.STOR_ERROR
                     else :
                         packet_type = PACKET_T.RETR_ERROR
-                    p = self.__repositoryPacketHandler.createErrorPacket(packet_type, "The image has been deleted")
+                    p = self.__repositoryPacketHandler.createErrorPacket(packet_type, ERROR_T.IMAGE_DELETED)
                     self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
                 else :
                     compressedFilePath = imageData["compressedFilePath"]    
@@ -271,10 +272,10 @@ class CommandsCallback(NetworkCallback):
         imageData = self.__dbConnector.getImageData(data["imageID"])
         # Chequear errores
         if (imageData == None) :
-            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, ERROR_T.UNKNOWN_IMAGE)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         elif (imageData["imageStatus"] != IMAGE_STATUS_T.READY) :
-            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, "The image {0} is already being edited".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, ERROR_T.IMAGE_EDITED)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else:
             # No hay errores => contestar diciendo que hemos recibido la petición y encolarla
@@ -296,10 +297,10 @@ class CommandsCallback(NetworkCallback):
         imageData = self.__dbConnector.getImageData(data["imageID"])
         # Chequear errores
         if (imageData == None) :
-            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, "The image {0} does not exist".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, ERROR_T.UNKNOWN_IMAGE)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         elif not (imageData["imageStatus"] == IMAGE_STATUS_T.EDITION or imageData["imageStatus"] == IMAGE_STATUS_T.NOT_RECEIVED) :
-            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, "The image {0} is not being edited".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, ERROR_T.NOT_EDITED_IMAGE)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else:
             # No hay errores => contestar diciendo que hemos recibido la petición y encolarla
@@ -317,7 +318,7 @@ class CommandsCallback(NetworkCallback):
         """  
         imageData = self.__dbConnector.getImageData(data["imageID"])
         if (imageData == None) :
-            p = self.__repositoryPacketHandler.createImageDeletionErrorPacket(data["imageID"], "The image {0} does not exist".format(data["imageID"]))
+            p = self.__repositoryPacketHandler.createImageDeletionErrorPacket(data["imageID"], ERROR_T.UNKNOWN_IMAGE)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else :            
             if (not "undefined" in imageData["compressedFilePath"]) :

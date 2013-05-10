@@ -106,33 +106,33 @@ class ImageRepositoryPacketHandler(object):
         p.writeString(fileName)
         return p
     
-    def createErrorPacket(self, packet_t, errorMessage):
+    def createErrorPacket(self, packet_t, errorCode):
         """
         Crea un paquete de error.
         Argumentos:
             packet_t: el tipo de paquete, que se corresponde con el tipo del error
-            errorMessage: un mensaje de error
+            errorCode: un mensaje de error
         Devuelve:
             un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_t)
-        p.writeString(errorMessage)
+        p.writeInt(errorCode)
         return p
     
-    def createImageDeletionErrorPacket(self, imageID, errorMessage):
+    def createImageDeletionErrorPacket(self, imageID, errorCode):
         """
         Crea un paquete de error.
         Argumentos:
             packet_t: el tipo de paquete, que se corresponde con el tipo del error
-            errorMessage: un mensaje de error
+            errorCode: un mensaje de error
         Devuelve:
             un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.DELETE_REQUEST_ERROR)
         p.writeInt(imageID)
-        p.writeString(errorMessage)
+        p.writeInt(errorCode)
         return p
     
     def createDeleteRequestReceivedPacket(self, imageID):
@@ -212,10 +212,10 @@ class ImageRepositoryPacketHandler(object):
             data['imageID'] = p.readInt()
         elif (packet_type == PACKET_T.RETR_REQUEST_ERROR or packet_type == PACKET_T.STOR_REQUEST_ERROR or 
               packet_type == PACKET_T.RETR_ERROR or packet_type == PACKET_T.STOR_ERROR) :
-            data['errorMessage'] = p.readString()
+            data['errorCode'] = p.readInt()
         elif (packet_type == PACKET_T.DELETE_REQUEST_ERROR) :            
             data['imageID'] = p.readInt()
-            data['errorMessage'] = p.readString()
+            data['errorCode'] = p.readInt()
         elif (packet_type == PACKET_T.RETR_START or packet_type == PACKET_T.STOR_START) :
             data['imageID'] = p.readInt()
             data['FTPServerPort'] = p.readInt()
