@@ -8,7 +8,7 @@ Gestor de paquetes del servidor de cluster
 from ccutils.enums import enum
 from clusterServer.database.clusterServerDB import SERVER_STATE_T
 
-MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR", "QUERY_VM_SERVERS_STATUS",
+CLUSTER_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR", "QUERY_VM_SERVERS_STATUS",
                             "VM_SERVERS_STATUS_DATA", "QUERY_VM_DISTRIBUTION", "VM_DISTRIBUTION_DATA",
                             "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER",
                             "VM_SERVER_BOOTUP_ERROR", "VM_BOOT_REQUEST", "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", 
@@ -43,7 +43,7 @@ class ClusterServerPacketHandler(object):
         
     def createAutoDeployPacket(self, imageID, instances, commandID):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.AUTO_DEPLOY)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.AUTO_DEPLOY)
         p.writeInt(imageID)
         p.writeInt(instances)
         p.writeString(commandID)
@@ -63,7 +63,7 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(3)
-        p.writeInt(MAIN_SERVER_PACKET_T.REGISTER_VM_SERVER)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.REGISTER_VM_SERVER)
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(name)
@@ -80,7 +80,7 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(3)
-        p.writeInt(MAIN_SERVER_PACKET_T.COMMAND_EXECUTED)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.COMMAND_EXECUTED)
         p.writeString(commandID)
         return p    
     
@@ -108,7 +108,7 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA)
         p.writeInt(segment)
         p.writeInt(sequenceSize)
         for row in data :
@@ -130,7 +130,7 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.VM_DISTRIBUTION_DATA)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.VM_DISTRIBUTION_DATA)
         p.writeInt(segment)
         p.writeInt(sequenceSize)
         for row in data :
@@ -151,7 +151,7 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(3)
-        p.writeInt(MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER)
         p.writeString(serverNameOrIPAddress)
         p.writeBool(isShutDown)
         p.writeBool(unregister)
@@ -168,7 +168,7 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(3)
-        p.writeInt(MAIN_SERVER_PACKET_T.BOOTUP_VM_SERVER)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.BOOTUP_VM_SERVER)
         p.writeString(serverNameOrIPAddress)
         p.writeString(commandID)
         return p
@@ -184,7 +184,7 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(4)
-        p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.VM_BOOT_REQUEST)
         p.writeInt(imageID)
         p.writeInt(userID)
         p.writeString(commandID)
@@ -202,7 +202,7 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(4)
-        p.writeInt(MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.VM_CONNECTION_DATA)
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(password)
@@ -219,7 +219,7 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.ACTIVE_VM_DATA)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.ACTIVE_VM_DATA)
         p.dumpData(data)
         return p
     
@@ -233,7 +233,7 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(1)
-        p.writeInt(MAIN_SERVER_PACKET_T.HALT)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.HALT)
         p.writeBool(haltServers)
         return p
     
@@ -247,14 +247,14 @@ class ClusterServerPacketHandler(object):
             un paquete con los datos de los argumentos
         """
         p = self.__packetCreator.createPacket(4) # Todo lo que sea liberar carga es bueno. Por eso es ligeramente más prioritario que los otros
-        p.writeInt(MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.DOMAIN_DESTRUCTION)
         p.writeString(domainID)
         p.writeString(commandID)
         return p
     
     def createRepositoryStatusPacket(self, freeDiskSpace, availableDiskSpace, status):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.REPOSITORY_STATUS)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.REPOSITORY_STATUS)
         p.writeInt(freeDiskSpace)
         p.writeInt(availableDiskSpace)
         p.writeString(ClusterServerPacketHandler.__server_status_to_string(status))
@@ -282,7 +282,7 @@ class ClusterServerPacketHandler(object):
         
     def createVMServerConfigurationChangePacket(self, serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior, commandID):
         p = self.__packetCreator.createPacket(2)
-        p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE)
         p.writeString(serverNameOrIPAddress)
         p.writeString(newName)
         p.writeString(newIPAddress)
@@ -309,7 +309,7 @@ class ClusterServerPacketHandler(object):
     
     def createImageDeletionPacket(self, imageID, commandID):
         p = self.__packetCreator.createPacket(5)
-        p.writeInt(MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE)
         p.writeInt(imageID)
         p.writeString(commandID)
         return p
@@ -326,14 +326,14 @@ class ClusterServerPacketHandler(object):
         result = dict()
         packet_type = p.readInt()
         result["packet_type"] = packet_type        
-        if (packet_type == MAIN_SERVER_PACKET_T.REGISTER_VM_SERVER) :
+        if (packet_type == CLUSTER_SERVER_PACKET_T.REGISTER_VM_SERVER) :
             result["VMServerIP"] = p.readString()
             result["VMServerPort"] = p.readInt()
             result["VMServerName"] = p.readString()
             result["IsVanillaServer"] = p.readBool()
             result["CommandID"] = p.readString()        
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA) :
             result["Segment"] = p.readInt()
             result["SequenceSize"] = p.readInt()
             data = []
@@ -341,7 +341,7 @@ class ClusterServerPacketHandler(object):
                 data.append((p.readString(), p.readString(), p.readString(), p.readInt(), p.readBool()))
             result["Data"] = data
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_DISTRIBUTION_DATA) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_DISTRIBUTION_DATA) :
             result["Segment"] = p.readInt()
             result["SequenceSize"] = p.readInt()
             data = []
@@ -349,7 +349,7 @@ class ClusterServerPacketHandler(object):
                 data.append((p.readString(), p.readInt()))
             result["Data"] = data
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.ACTIVE_VM_DATA) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.ACTIVE_VM_DATA) :
             result["Segment"] = p.readInt()
             result["SequenceSize"] = p.readInt()
             result["VMServerIP"] = p.readString()
@@ -358,44 +358,44 @@ class ClusterServerPacketHandler(object):
                 data.append((p.readString(), p.readInt(), p.readInt(), p.readString(), p.readInt(), p.readString()))
             result["Data"] = data
                 
-        elif (packet_type == MAIN_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
             result["ServerNameOrIPAddress"] = p.readString()
             result["Halt"] =  p.readBool()
             result["Unregister"] = p.readBool()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.BOOTUP_VM_SERVER) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.BOOTUP_VM_SERVER) :
             result["ServerNameOrIPAddress"] = p.readString()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.DEPLOY_IMAGE or
-              packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_SERVER) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.DEPLOY_IMAGE or
+              packet_type == CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_SERVER) :
             result["ServerNameOrIPAddress"] = p.readString()
             result["ImageID"] = p.readInt()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST):
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_BOOT_REQUEST):
             result["VMID"] = p.readInt()
             result["UserID"] = p.readInt()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA):
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_CONNECTION_DATA):
             result["VNCServerIPAddress"] = p.readString()
             result["VNCServerPort"] = p.readInt()
             result["VNCServerPassword"] = p.readString()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.HALT) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.HALT) :
             result["HaltVMServers"] = p.readBool()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.COMMAND_EXECUTED) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.COMMAND_EXECUTED) :
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.DOMAIN_DESTRUCTION) :
             result["DomainID"] = p.readString()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE): 
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE): 
             result["ServerNameOrIPAddress"] = p.readString()    
             result["NewVMServerName"] = p.readString()
             result["NewVMServerIPAddress"] = p.readString()
@@ -403,42 +403,42 @@ class ClusterServerPacketHandler(object):
             result["NewVanillaImageEditionBehavior"] = p.readBool()
             result["CommandID"] = p.readString() 
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.REPOSITORY_STATUS) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.REPOSITORY_STATUS) :
             result["FreeDiskSpace"] = p.readInt()
             result["AvailableDiskSpace"] = p.readInt()
             result["ConnectionStatus"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.CREATE_IMAGE or 
-              packet_type == MAIN_SERVER_PACKET_T.EDIT_IMAGE):
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.CREATE_IMAGE or 
+              packet_type == CLUSTER_SERVER_PACKET_T.EDIT_IMAGE):
             result["ImageID"] = p.readInt()
             result["OwnerID"] = p.readInt()
             result["CommandID"] = p.readString() 
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE) :
             result["ImageID"] = p.readInt()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.AUTO_DEPLOY):
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.AUTO_DEPLOY):
             result["ImageID"] = p.readInt()
             result["Instances"] = p.readInt()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_INTERNAL_ERROR):
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_INTERNAL_ERROR):
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR or 
-              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR or 
-              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR or 
-              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_SHUTDOWN_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.IMAGE_DEPLOYMENT_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR or 
-              packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE or 
-              packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR or 
-              packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATION_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.IMAGE_EDITION_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.AUTO_DEPLOY_ERROR) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR or 
+              packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR or 
+              packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR or 
+              packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_SHUTDOWN_ERROR or
+              packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_DEPLOYMENT_ERROR or
+              packet_type == CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR or 
+              packet_type == CLUSTER_SERVER_PACKET_T.VM_BOOT_FAILURE or 
+              packet_type == CLUSTER_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR or
+              packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR or 
+              packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_CREATION_ERROR or
+              packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_EDITION_ERROR or
+              packet_type == CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR or
+              packet_type == CLUSTER_SERVER_PACKET_T.AUTO_DEPLOY_ERROR) :
             result["ErrorDescription"] = p.readInt()        
             result["CommandID"] = p.readString()                       
         return result

@@ -8,12 +8,12 @@ from __future__ import print_function
 
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
-from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
+from clusterServer.networking.packets import ClusterServerPacketHandler, ENDPOINT_PACKET_T as PACKET_T
 from time import sleep
 
 class TesterCallback(NetworkCallback):
-    def __init__(self, packetHandler):
-        self.__repositoryPacketHandler = packetHandler
+    def __init__(self, webPacketHandler):
+        self.__repositoryPacketHandler = webPacketHandler
         
     def processPacket(self, packet):
         data = self.__repositoryPacketHandler.readPacket(packet)
