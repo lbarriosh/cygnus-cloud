@@ -20,7 +20,7 @@ from network.interfaces.ipAddresses import get_ip_address
 import os
 import multiprocessing
 import sys
-from errors.codes import ERROR_T
+from errors.codes import ERROR_DESC_T
 
 class VMServerReactor(MainServerPacketReactor):
     """
@@ -186,14 +186,14 @@ class VMServerReactor(MainServerPacketReactor):
                 ChildProcessManager.runCommandInForeground("rm -rf " + os.path.dirname(definitionFilePath), VMServerException)
                 p = self.__packetManager.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DELETED, data["ImageID"], data["CommandID"])
             except Exception:
-                p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR, ERROR_T.VM_SRVR_INTERNAL_ERROR, 
+                p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR, ERROR_DESC_T.VM_SRVR_INTERNAL_ERROR, 
                                                             data["CommandID"])                
             
         else:
             if (isBootable != None) :
-                errorCode = ERROR_T.VMSRVR_LOCKED_IMAGE
+                errorCode = ERROR_DESC_T.VMSRVR_LOCKED_IMAGE
             else :
-                errorCode = ERROR_T.VMSRVR_UNKNOWN_IMAGE
+                errorCode = ERROR_DESC_T.VMSRVR_UNKNOWN_IMAGE
             
             p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR, errorCode, 
                                                        data["CommandID"])

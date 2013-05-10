@@ -19,10 +19,7 @@ class TesterCallback(NetworkCallback):
         data = self.__repositoryPacketHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
             print("Virtual machine server registration error")
-            print("\tServer IP: " + data["VMServerIP"])
-            print("\tServer port: " + str(data["VMServerPort"]))
-            print("\tServer name: " + data["VMServerName"])
-            print("\tReason: " + data["ErrorMessage"])
+            print("\tReason: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA or data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
             print("Virtual machine servers' current status")
             print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
@@ -30,20 +27,16 @@ class TesterCallback(NetworkCallback):
                 print(row)
         elif (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR):
             print("Virtual machine server bootup error")
-            print("\tServer name or IP address: " + data["ServerNameOrIPAddress"])
-            print("\tReason: " + data["ErrorMessage"])
+            print("\tReason: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.VM_SERVER_UNREGISTRATION_ERROR):
             print("Virtual machine server unregistration error")
-            print("\tServer name or IP address: " + data["ServerNameOrIPAddress"])
-            print("\tReason: " + data["ErrorMessage"])
+            print("\tReason: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.VM_SERVER_SHUTDOWN_ERROR):
             print("Virtual machine server shutdown error")
-            print("\tServer name or IP address: " + data["ServerNameOrIPAddress"])
-            print("\tReason: " + data["ErrorMessage"])
+            print("\tReason: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE):
             print("Virtual machine boot failure")
-            print("\nImage ID: " + str(data["VMID"]))
-            print("\tReason: " + data["ErrorMessage"])
+            print("\tReason: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
             print("Virtual machine connection data")
             print("\tVNC server IP address: " + data["VNCServerIPAddress"])
@@ -55,24 +48,24 @@ class TesterCallback(NetworkCallback):
             print("\tVNC server IP address: " + data["VMServerIP"])
             print("\t" + str(data["Data"]))
         elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION_ERROR) :
-            print("Domain destruction error: " + data["ErrorMessage"])
+            print("Domain destruction error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
-            print("Virtual machine configuration change error: " + data["ErrorMessage"])
+            print("Virtual machine configuration change error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS):
             print("Image repository status: {0} KB free, {1} KB in use, {2}".format(data["FreeDiskSpace"], data["AvailableDiskSpace"],
                                                                                     data["ConnectionStatus"]))
         elif (data["packet_type"] == PACKET_T.IMAGE_DEPLOYMENT_ERROR):
-            print("Image deployment error on server {0}: {1}".format(data["ServerNameOrIPAddress"], data["ErrorMessage"]))
+            print("Image deployment error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR):
-            print("Image deletion error on server {0}: {1}".format(data["ServerNameOrIPAddress"], data["ErrorMessage"]))
+            print("Image deletion error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.IMAGE_CREATION_ERROR):
-            print("Image creation error: {0}".format(data["ErrorMessage"]))
+            print("Image creation error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR):
-            print("Image edition error: {0}".format(data["ErrorMessage"]))
+            print("Image edition error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR):
-            print("Image deletion error: {0}".format(data["ErrorMessage"]))
+            print("Image deletion error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.AUTO_DEPLOY_ERROR):
-            print("Image auto-deployment error: {0}".format(data["ErrorMessage"]))
+            print("Image auto-deployment error error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.COMMAND_EXECUTED):
             print("The cluster server says: command executed successfully")
 

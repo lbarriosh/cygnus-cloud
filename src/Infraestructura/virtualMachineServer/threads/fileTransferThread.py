@@ -12,7 +12,7 @@ from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T as IR
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T
 from time import sleep
 from virtualMachineServer.database.vmServerDB import TRANSFER_T
-from errors.codes import ERROR_T
+from errors.codes import ERROR_DESC_T
 from ccutils.processes.childProcessManager import ChildProcessManager
 from os import path
 
@@ -101,11 +101,11 @@ class FileTransferThread(BasicThread):
                     elapsed_time += 0.1
                 timeout = elapsed_time >= self.__max_cancel_timeout
                 
-            if (callback.getErrorCode() != None or timeout) :
+            if (callback.getErrorDescription() != None or timeout) :
                 if (data["Transfer_Type"] != TRANSFER_T.CANCEL_EDITION):
                     # Error => informamos al usuario                
                     p = self.__vmServerPacketHandler.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR, 
-                                                                       callback.getErrorCode(), 
+                                                                       callback.getErrorDescription(), 
                                                                        data["CommandID"])
                 else :
                     p = self.__vmServerPacketHandler.createInternalErrorPacket(data["CommandID"])
@@ -137,7 +137,7 @@ class FileTransferThread(BasicThread):
             self.__networkManager.closeConnection(data["RepositoryIP"], data["RepositoryPort"])
 
         except Exception:
-            errorCode = ERROR_T.VMSRVR_IR_CONNECTION_ERROR
+            errorCode = ERROR_DESC_T.VMSRVR_IR_CONNECTION_ERROR
             try :
                 self.__networkManager.closeConnection(data["RepositoryIP"], data["RepositoryPort"])
             except Exception:
@@ -164,7 +164,7 @@ class _FileTransferCallback(NetworkCallback):
         """
         self.__repositoryPacketHandler = packetHandler
         self.__operation_completed = False
-        self.__errorCode = None
+        self.__errorDescription = None
         self.__workingDirectory = workingDirectory
         self.__ftpServerIP = imageRepositoryIP
         self.__ftpTimeout = ftpTimeout
@@ -177,12 +177,12 @@ class _FileTransferCallback(NetworkCallback):
         """
         return self.__operation_completed
     
-    def getErrorCode(self):
+    def getErrorDescription(self):
         """
         Devuelve un mensaje que describe el error que se ha producido durante
         la última transferencia
         """
-        return self.__errorCode
+        return self.__errorDescription
     
     def getDomainImageID(self):
         """
@@ -195,7 +195,7 @@ class _FileTransferCallback(NetworkCallback):
         """
         Prepara el callback para una nueva transferencia
         """
-        self.__errorCode = None
+        self.__errorDescription = None
         self.__operation_completed = False
     
     def processPacket(self, packet):
@@ -212,7 +212,7 @@ class _FileTransferCallback(NetworkCallback):
             return
         elif (data["packet_type"] == IR_PACKET_T.RETR_REQUEST_ERROR or data["packet_type"] == IR_PACKET_T.RETR_ERROR or
               data["packet_type"] == IR_PACKET_T.STOR_REQUEST_ERROR or data["packet_type"] == IR_PACKET_T.STOR_ERROR) :
-            self.__errorCode = data["errorCode"]
+            self.__errorDescription = data["errorDescription"]
         elif (data["packet_type"] == IR_PACKET_T.RETR_START) :
             try :
                 ftpClient = FTPClient()
@@ -220,7 +220,7 @@ class _FileTransferCallback(NetworkCallback):
                 ftpClient.retrieveFile(data['fileName'], self.__workingDirectory, data['serverDirectory']) 
                 ftpClient.disconnect()
             except Exception:
-                self.__errorCode = ERROR_T.VMSRVR_FTP_RETR_TRANSFER_ERROR
+                self.__errorDescription = ERROR_DESC_T.VMSRVR_FTP_RETR_TRANSFER_ERROR
         elif (data["packet_type"] == IR_PACKET_T.STOR_START) :
             try :
                 ftpClient = FTPClient()
@@ -228,7 +228,7 @@ class _FileTransferCallback(NetworkCallback):
                 ftpClient.storeFile(self.__sourceFilePath, self.__workingDirectory, data['serverDirectory'])
                 ftpClient.disconnect()
             except Exception:
-                self.__errorCode = ERROR_T.VMSRVR_FTP_RETR_TRANSFER_ERROR
+                self.__errorDescription = ERROR_DESC_T.VMSRVR_FTP_RETR_TRANSFER_ERROR
         elif (data["packet_type"] == IR_PACKET_T.ADDED_IMAGE_ID):
             self.__imageID = data["addedImageID"]                  
         self.__operation_completed = True   

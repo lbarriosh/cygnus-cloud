@@ -205,10 +205,10 @@ class VMServerPacketHandler(object):
         p.writeInt(userID)
         return p
     
-    def createErrorPacket(self, packet_type, errorCode, commandID):
+    def createErrorPacket(self, packet_type, errorDescription, commandID):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_type)
-        p.writeInt(errorCode)
+        p.writeInt(errorDescription)
         p.writeString(commandID)
         return p
     
@@ -299,7 +299,7 @@ class VMServerPacketHandler(object):
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR or
               packet_type == VM_SERVER_PACKET_T.IMAGE_DEPLOYMENT_ERROR or
               packet_type == VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR) :
-            result["ErrorCode"] = p.readInt()
+            result["ErrorDescription"] = p.readInt()
             result["CommandID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DEPLOY_IMAGE) :
             result["RepositoryIP"] = p.readString()

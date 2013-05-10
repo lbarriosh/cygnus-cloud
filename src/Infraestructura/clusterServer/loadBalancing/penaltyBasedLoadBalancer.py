@@ -6,6 +6,7 @@ Un balanceador de carga muy simple.
 '''
 
 from loadBalancer import LoadBalancer, MODE_T
+from errors.codes import ERROR_DESC_T
 
 class PenaltyBasedLoadBalancer(LoadBalancer):
     '''
@@ -40,24 +41,22 @@ class PenaltyBasedLoadBalancer(LoadBalancer):
         
         if (mode == MODE_T.BOOT_DOMAIN) :
             availableServers = self._dbConnector.getHosts(imageID)
-            errorMessage = 'The image is not available'
-            token = ""
+            errorDescription = ERROR_DESC_T.CLSRVR_IMAGE_NOT_AVAILABLE
         elif (mode == MODE_T.CREATE_OR_EDIT_IMAGE):
             availableServers = self._dbConnector.getVanillaVMServers()
-            errorMessage = 'There are no vanilla servers available'
-            token = "source"
+            errorDescription = ERROR_DESC_T.CLSRVR_NO_EDITION_SRVRS
         else:
             availableServers = self._dbConnector.getCandidateVMServers(imageID)
-            errorMessage = 'There are no servers available'
+            errorDescription = ERROR_DESC_T.CLSRVR_NO_CANDIDATE_SRVRS
             
         if (len(availableServers) == 0) :
-            return (0, errorMessage)
+            return (0, errorDescription)
             
         # Paso 2: obtenemos las características de la imagen
         
         vanillaFamilyID = self._dbConnector.getFamilyID(imageID)
         if (vanillaFamilyID == None) :
-            return (0, "The {0} image does not exist".format(token))            
+            return (0, ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE)            
         
         imageFeatures = self._dbConnector.getVanillaImageFamilyFeatures(vanillaFamilyID)       
         
@@ -91,10 +90,10 @@ class PenaltyBasedLoadBalancer(LoadBalancer):
                 
         if (serverPenalties == []) :
             if (mode == MODE_T.CREATE_OR_EDIT_IMAGE) :
-                token = "vanilla"
+                errorDescription = ERROR_DESC_T.CLSRVR_EDITION_VMSRVRS_UNDER_FULL_LOAD
             else :
-                token = ""
-            return (0, 'All the {0} virtual machine servers are under full load. Please conctact the system administrators.'.format(token))
+                errorDescription = ERROR_DESC_T.CLSRVR_VMSRVRS_UNDER_FULL_LOAD
+            return (0, errorDescription)
         
         # Ordenar los servidores por su penalización
         

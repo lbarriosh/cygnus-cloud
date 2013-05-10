@@ -17,6 +17,7 @@ from network.twistedInteraction.clientConnection import RECONNECTION_T
 from clusterServer.loadBalancing.penaltyBasedLoadBalancer import PenaltyBasedLoadBalancer
 from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T as REPOSITORY_PACKET_T
 from clusterServer.loadBalancing.loadBalancer import MODE_T
+from errors.codes import ERROR_DESC_T
 
 class WebPacketReactor(object):
     '''
@@ -181,12 +182,12 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                         self.__networkManager.sendPacket('', self.__webPort, p)
             else :
                 # Error => avisar de él
-                p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "The image {0} is not being edited".format(data["ImageID"]), 
+                p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_NOT_EDITED_IMAGE, 
                                                                      data["CommandID"])
                 self.__networkManager.sendPacket('', self.__webPort, p)  
         elif (data["Instances"] > 0) :
             if (self.__dbConnector.isAffectedByAutoDeploymentCommand(data["ImageID"])) :
-                p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "Image affected by another auto-deployment command", 
+                p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTODEPLOYED, 
                                                                      data["CommandID"])
                 self.__networkManager.sendPacket('', self.__webPort, p)  
                 return
@@ -194,12 +195,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             output = self.__loadBalancer.assignVMServer(data["ImageID"], MODE_T.DEPLOY_IMAGE)
             if (output[1] != None) :
                 # Error => informamos de él y terminamos
-                p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, output[1], data["CommandID"])
+                p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, output[1], data["CommandID"])
                 self.__networkManager.sendPacket('', self.__webPort, p)  
             else :
                 if (output[2] < data["Instances"]) :
                     # No podemos cumplir con lo que nos piden => error
-                    p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "Too many copies", data["CommandID"])
+                    p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, 
+                                                                  ERROR_DESC_T.CLSRVR_AUTOD_TOO_MANY_INSTANCES, data["CommandID"])
                     self.__networkManager.sendPacket('', self.__webPort, p)  
                 else :
                     
@@ -230,13 +232,13 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         error = False
         if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
             error = True
-            errorMessage = "The image {0} is being edited".format(data["ImageID"])
+            errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
         elif (self.__dbConnector.isBeingDeleted(data["ImageID"])) :
             error = True
-            errorMessage = "The image {0} is being deleted".format(data["ImageID"])
+            errorDescription = ERROR_DESC_T.CLSRVR_DELETED_IMAGE
         if (error) :
-            p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, errorMessage, data["CommandID"])
-            self.__networkManager.sendPacket('', self.__webPort, '')
+            p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, errorDescription, data["CommandID"])
+            self.__networkManager.sendPacket('', self.__webPort, p)
         else :
             # Impedimos que se arranquen más copias de la imagen
             self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.DELETE)
@@ -258,45 +260,45 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             
     def __createOrEditImage(self, data):                      
-        errorMessage = None
+        errorDescription = None
         
         # Averiguar si la imagen ya se está editando, borrando o no existe        
         if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
-            errorMessage = "The image is being edited"  
+            errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
         elif (self.__dbConnector.isBeingDeleted(data["ImageID"])) :    
-            errorMessage = "The image is being deleted"
+            errorDescription = ERROR_DESC_T.CLSRVR_DELETED_IMAGE
         elif (self.__dbConnector.getFamilyID(data["ImageID"]) == None) :
-            errorMessage = "The image {0} does not exist".format(data["ImageID"])  
+            errorDescription = ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE
         elif (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE):
             repositoryStatus = self.__dbConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
             if (repositoryStatus == None) :
-                errorMessage = "The connection with the image repository has been lost"
+                errorDescription = ERROR_DESC_T.CLSRVR_IR_CONNECTION_ERROR
             else :
                 imageFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(self.__dbConnector.getFamilyID(data["ImageID"]))
                 required_disk_space = imageFeatures["osDiskSize"] + imageFeatures["dataDiskSize"] * self.__dataImageExpectedSize
                 required_disk_space = self.__compressionRatio * required_disk_space
                 remaining_disk_space = repositoryStatus["FreeDiskSpace"] - required_disk_space
                 if (remaining_disk_space < 0) :
-                    errorMessage = "There is not enough disk space on the image repository"
+                    errorDescription = ERROR_DESC_T.CLSRVR_IR_NO_DISK_SPACE
         
-        if (errorMessage != None) :        
+        if (errorDescription != None) :        
             if (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE) :
                 packet_type = WEB_PACKET_T.IMAGE_CREATION_ERROR
             else :
                 packet_type = WEB_PACKET_T.IMAGE_EDITION_ERROR  
-            p = self.__webPacketHandler.createGenericErrorPacket(packet_type, errorMessage, data["CommandID"])
+            p = self.__webPacketHandler.createErrorPacket(packet_type, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
             return           
         
         # Encontrar un servidor vanilla
-        (serverID, errorMessage) = self.__loadBalancer.assignVMServer(data["ImageID"], MODE_T.CREATE_OR_EDIT_IMAGE)
-        if (errorMessage != None) :
+        (serverID, errorDescription) = self.__loadBalancer.assignVMServer(data["ImageID"], MODE_T.CREATE_OR_EDIT_IMAGE)
+        if (errorDescription != None) :
             # Error => informar de él y terminar
             if (data["packet_type"] == WEB_PACKET_T.CREATE_IMAGE) :
                 packet_type = WEB_PACKET_T.IMAGE_CREATION_ERROR
             else :
                 packet_type = WEB_PACKET_T.IMAGE_EDITION_ERROR
-            p = self.__webPacketHandler.createGenericErrorPacket(packet_type, errorMessage, data["CommandID"])
+            p = self.__webPacketHandler.createErrorPacket(packet_type, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
             return
         
@@ -329,24 +331,24 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         serverNameOrIPAddress = data["ServerNameOrIPAddress"]
         serverID = self.__dbConnector.getVMServerID(serverNameOrIPAddress)        
         serverData = self.__dbConnector.getVMServerBasicData(serverID)
-        errorMessage = None        
+        errorDescription = None        
             
         # Comprobar que la imagen existe
         if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
-            errorMessage = "The image {0} is being edited".format(data["ImageID"])
+            errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
         elif (self.__dbConnector.isBeingDeleted(data["ImageID"])):
-            errorMessage = "The image {0} does not exist".format(data["ImageID"])        
+            errorDescription = ERROR_DESC_T.CLSRVR_DELETED_IMAGE
         elif (serverID == None) :
-            errorMessage =  "The virtual machine server with name or IP address {0} is not registered".format(serverNameOrIPAddress)        
+            errorDescription =  ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR
         elif (serverData["ServerStatus"] != SERVER_STATE_T.READY):
-            errorMessage = "The virtual machine server with name or IP address {0} is not ready yet".format(serverNameOrIPAddress)        
+            errorDescription = ERROR_DESC_T.CLSRVR_VMSRVR_NOT_READY
         elif (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE and self.__dbConnector.hostsImage(serverID, data["ImageID"]))\
             or (data["packet_type"] == WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER and not self.__dbConnector.hostsImage(serverID, data["ImageID"])):
             
             if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE):
-                errorMessage = "The image {0} is already hosted on this server".format(data["ImageID"])
+                errorDescription = ERROR_DESC_T.CLSRVR_IMAGE_HOSTED_ON_VMSRVR
             else :
-                errorMessage = "The image {0} is not hosted on this server".format(data["ImageID"])
+                errorDescription = ERROR_DESC_T.CLSRVR_IMAGE_NOT_HOSTED_ON_VMSRVR
         elif (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE):
             # Comprobar que la imagen cabe
             free_disk_space = self.__dbConnector.getVMServerStatistics(serverID)["FreeStorageSpace"]
@@ -354,16 +356,14 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             familyFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(familyID)
             required_disk_space = familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"]
             if (free_disk_space < required_disk_space) :
-                errorMessage = "The virtual machine server with name or IP address {0} has not enough disk space to store the image"\
-                    .format(serverNameOrIPAddress)            
+                errorDescription = ERROR_DESC_T.CLSRVR_VMSRVR_NO_DISK_SPACE
             
-        if (errorMessage != None) :       
+        if (errorDescription != None) :       
             if (data["packet_type"] == WEB_PACKET_T.DEPLOY_IMAGE):
                 error_type = WEB_PACKET_T.IMAGE_DEPLOYMENT_ERROR
             else:
                 error_type = WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR 
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(error_type, serverNameOrIPAddress, 
-                                                                         errorMessage, data["CommandID"])
+            p = self.__webPacketHandler.createErrorPacket(error_type, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
             return
            
@@ -460,10 +460,9 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             
             # Indicar al endpoint de la web que el comando se ha ejecutado con éxito
             p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
-        except Exception as e:                
-            p = self.__webPacketHandler.createVMServerRegistrationErrorPacket(data["VMServerIP"], 
-                                                                            data["VMServerPort"], 
-                                                                            data["VMServerName"], e.message, data["CommandID"])        
+        except Exception:                
+            p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.VM_SERVER_REGISTRATION_ERROR,
+                                                          ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR, data["CommandID"])        
         self.__networkManager.sendPacket('', self.__webPort, p)
         
     def __sendStatusRequestPackets(self, vmServerIP, vmServerPort):
@@ -511,13 +510,12 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             
         # Paso 1: averiguar si existe el servidor
         serverID = self.__dbConnector.getVMServerID(key)
-        if (serverID == None) :
-            errorMessage = "The virtual machine server with name or IP address <<{0}>> is not registered".format(key)
+        if (serverID == None) :            
             if (unregister) :
                 packet_type = WEB_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR
             else :
                 packet_type = WEB_PACKET_T.VM_SERVER_SHUTDOWN_ERROR
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(packet_type, key, errorMessage, commandID)
+            p = self.__webPacketHandler.createErrorPacket(packet_type, key, ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR, commandID)
             self.__networkManager.sendPacket('', self.__webPort, p)  
             return
         
@@ -527,15 +525,14 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         if (status == SERVER_STATE_T.READY or status == SERVER_STATE_T.BOOTING) :  
             try :
                 connectionReady = self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"])
-            except Exception as e :
-                connectionReady = False
-                errorMessage = e.message                    
+            except Exception:
+                connectionReady = False                 
             if (not connectionReady) :   
                 if (unregister) :
                     packet_type = WEB_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR
                 else :
                     packet_type = WEB_PACKET_T.VM_SERVER_SHUTDOWN_ERROR
-                p = self.__webPacketHandler.createVMServerGenericErrorPacket(packet_type, key, errorMessage, commandID)
+                p = self.__webPacketHandler.createErrorPacket(packet_type, ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR, commandID)
                 self.__networkManager.sendPacket('', self.__webPort, p)  
                 return
             
@@ -630,9 +627,9 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             
             # Indicar al endpoint que el comando se ha ejecutado con éxito
             p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
-        except Exception as e:
-            p = self.__webPacketHandler.createVMServerGenericErrorPacket(WEB_PACKET_T.VM_SERVER_BOOTUP_ERROR, 
-                                                                         serverNameOrIPAddress, e.message, data["CommandID"])
+        except Exception:
+            p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.VM_SERVER_BOOTUP_ERROR,
+                                                          ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR, data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)
             
     def __sendVMServerStatusData(self):
@@ -717,10 +714,10 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         userID = data["UserID"]
         
         # Escoger el servidor de máquinas virtuales que alojará la máquina
-        (serverID, errorMessage) = self.__loadBalancer.assignVMServer(vmID, MODE_T.BOOT_DOMAIN)
-        if (errorMessage != None) :
+        (serverID, errorDescription) = self.__loadBalancer.assignVMServer(vmID, MODE_T.BOOT_DOMAIN)
+        if (errorDescription != None) :
             # Error => avisar al usuario
-            p = self.__webPacketHandler.createVMBootFailurePacket(vmID, errorMessage, data["CommandID"])
+            p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.VM_BOOT_FAILURE, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, p)
         else :           
             # Registrar los recursos de la máquina virtual
@@ -732,9 +729,9 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             # Enviar la petición de arranque al servidor de máquinas virtuales
             p = self.__vmServerPacketHandler.createVMBootPacket(vmID, userID, data["CommandID"])
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
-            errorMessage = self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
-            if (errorMessage != None) :
-                p = self.__webPacketHandler.createVMBootFailurePacket(vmID, "The virtual machine server connection was lost", data["CommandID"])
+            error = self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
+            if (error != None) :
+                p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.VM_BOOT_FAILURE, ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_LOST, data["CommandID"])
                 self.__networkManager.sendPacket('', self.__webPort, p)
                 self.__dbConnector.freeVMServerResources(data["CommandID"], True)
                 return              
@@ -757,8 +754,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         serverID = self.__dbConnector.getActiveVMHostID(data["DomainID"])
         if (serverID == None) :
             # Error
-            packet = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.DOMAIN_DESTRUCTION_ERROR, 
-                                                                      "The domain does not exist", data["CommandID"])
+            packet = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.DOMAIN_DESTRUCTION_ERROR, 
+                                                                      ERROR_DESC_T.CLSRVR_DOMAIN_NOT_REGISTERED, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, packet)
             return       
         
@@ -767,8 +764,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         packet = self.__vmServerPacketHandler.createVMShutdownPacket(data["DomainID"])
         errorMessage = self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], packet)
         if (errorMessage != None) :
-            packet = self.__webPacketHandler.createDomainDestructionErrorPacket(WEB_PACKET_T.DOMAIN_DESTRUCTION_ERROR, 
-                                                                                "The connection was lost", data["CommandID"])
+            packet = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.DOMAIN_DESTRUCTION_ERROR, 
+                                                                                ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_LOST, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, packet)
         else :
             # Borrar la máquina virtual de la base de datos           
@@ -781,17 +778,16 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         serverID = self.__dbConnector.getVMServerID(data["ServerNameOrIPAddress"])
         
         if (serverID == None) :
-            packet = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
-                "The virtual machine server with name or IP address <<{0}>> is not registered".format(data["ServerNameOrIPAddress"]), data["CommandID"])
+            packet = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
+                ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, packet)
             return
         
         status = self.__dbConnector.getVMServerBasicData(serverID)["ServerStatus"]
         
         if (status == SERVER_STATE_T.BOOTING or status == SERVER_STATE_T.READY) :
-            packet = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
-                "The virtual machine server with name or IP address <<{0}>> is active. You must shut it down before proceeding."
-                    .format(data["ServerNameOrIPAddress"]), data["CommandID"])
+            packet = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
+                ERROR_DESC_T.CLSRVR_ACTIVE_VMSRVR, data["CommandID"])
             self.__networkManager.sendPacket('', self.__webPort, packet)
             return
             
@@ -801,9 +797,8 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             packet = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
         
         except Exception :
-            packet = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
-                "The new virtual machine server name (<<{0}>>) or IP address and port (<<{1}:{2}>> are already in use."\
-                .format(data["NewVMServerName"], data["NewVMServerIPAddress"], data["NewVMServerPort"]), data["CommandID"])
+            packet = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
+               ERROR_DESC_T.CLSRVR_VMSRVR_IDS_IN_USE, data["CommandID"])
             
         self.__networkManager.sendPacket('', self.__webPort, packet)    
     
@@ -839,7 +834,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         # Liberar los recursos asignados
         self.__dbConnector.freeVMServerResources(data["CommandID"], True)
         # Generar un paquete de error
-        p = self.__webPacketHandler.createUnexpectedErrorPacket(WEB_PACKET_T.VM_SERVER_INTERNAL_ERROR, data["CommandID"])
+        p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.VM_SERVER_INTERNAL_ERROR, ERROR_DESC_T.VMSRVR_INTERNAL_ERROR, data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)
         
     def __processImageEditedPacket(self, data):
@@ -874,7 +869,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
             self.__dbConnector.removeImageEditionCommand(data["CommandID"])
             packet_type = WEB_PACKET_T.IMAGE_EDITION_ERROR        
         # Enviar la respuesta
-        p = self.__webPacketHandler.createGenericErrorPacket(packet_type, data["ErrorMessage"], data["CommandID"])
+        p = self.__webPacketHandler.createErrorPacket(packet_type, data["ErrorDescription"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)
         
         # Liberar los recursos asignados a la máquina
@@ -889,7 +884,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         elif (self.__dbConnector.isAutoDeploymentCommand(data["CommandID"])) :
             (generateOutput, _unused) = self.__dbConnector.handleAutoDeploymentCommandOutput(data["CommandID"], True)
             if (generateOutput) :              
-                p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "Deployment error on some server(s)", data["CommandID"])
+                p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTOD_ERROR, data["CommandID"])
                 self.__networkManager.sendPacket('', self.__webPort, p)
                 
         elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYMENT_ERROR) :
@@ -897,8 +892,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         else :
             packet_type = WEB_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR
             
-        p = self.__webPacketHandler.createVMServerGenericErrorPacket(packet_type, 
-                                                                     data["SenderIP"], data["ErrorMessage"], data["CommandID"])
+        p = self.__webPacketHandler.createErrorPacket(packet_type, data["ErrorCode"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__webPort, p)
         
         # Liberar los recursos asignados a la máquina
@@ -931,7 +925,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 self.__dbConnector.assignImageToServer(serverID, data["ImageID"])
             if (generateOutput) :
                 if (error) :
-                    p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, "Deployment error on some server(s)", data["CommandID"])
+                    p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTOD_ERROR, data["CommandID"])
                 else :
                     p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])                
                 self.__networkManager.sendPacket('', self.__webPort, p)
@@ -1007,7 +1001,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         commandData = self.__dbConnector.getVMBootCommandData(data["CommandID"])
         self.__dbConnector.removeVMBootCommand(data["CommandID"])
         self.__dbConnector.deleteActiveVMLocation(commandData[0])
-        p = self.__webPacketHandler.createVMBootFailurePacket(commandData[1], "VM server internal error", commandData[0])
+        p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.VM_BOOT_FAILURE, ERROR_DESC_T.VMSRVR_INTERNAL_ERROR, commandData[0])
         self.__networkManager.sendPacket('', self.__webPort, p)
         
     def processImageRepositoryIncomingPacket(self, packet):
@@ -1024,7 +1018,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 # Borrar la imagen de los servidores
                 self.__sendDeleteRequets(data['imageID'], commandID)
         elif data['packet_type'] == REPOSITORY_PACKET_T.DELETE_REQUEST_ERROR:            
-            p = self.__webPacketHandler.createGenericErrorPacket(WEB_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, data['errorMessage'], commandID)
+            p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, data['errorDescription'], commandID)
             self.__networkManager.sendPacket('', self.__webPort, p)            
         
     def __processActiveDomainUIDs(self, data):
@@ -1039,7 +1033,6 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
         Devuelve:
             Nada
         """
-        errorMessage = "Could not boot up virtual machine (timeout error)"
         while not self.__finished :
             data = self.__dbConnector.getOldVMBootCommandID(self.__timeout)
             if (not self.__finished and data == None) :
@@ -1049,7 +1042,7 @@ class ClusterServerReactor(WebPacketReactor, VMServerPacketReactor):
                 # Borramos la máquina activa (sabemos que no existe)
                 self.__dbConnector.deleteActiveVMLocation(data[0])
                 # Creamos el paquete de error y se lo enviamos al endpoint de la web
-                p = self.__webPacketHandler.createVMBootFailurePacket(data[1], errorMessage, data[0])
+                p = self.__webPacketHandler.createErrorPacket(WEB_PACKET_T.VM_BOOT_FAILURE, ERROR_DESC_T.CLSRVR_VM_BOOT_TIMEOUT, data[0])
                 self.__networkManager.sendPacket('', self.__webPort, p)
     
     def hasFinished(self):

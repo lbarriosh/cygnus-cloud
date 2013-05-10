@@ -13,7 +13,7 @@ import shutil
 from ccutils.processes.childProcessManager import ChildProcessManager
 from virtualMachineServer.database.vmServerDB import TRANSFER_T
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T
-from errors.codes import ERROR_T
+from errors.codes import ERROR_DESC_T
 from time import sleep
 
 class CompressionThread(BasicThread):
@@ -140,7 +140,7 @@ class CompressionThread(BasicThread):
             else :
                 packet_type = VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR
                 
-            p = self.__packetHandler.createErrorPacket(packet_type, ERROR_T.VMSRVR_COMPRESSION_ERROR, data["CommandID"])
+            p = self.__packetHandler.createErrorPacket(packet_type, ERROR_DESC_T.VMSRVR_COMPRESSION_ERROR, data["CommandID"])
             self.__networkManager.sendPacket('', self.__serverListenningPort, p)
             
             # Generar una transferencia especial para dejar de editar la imagen

@@ -34,9 +34,10 @@ class ClusterServerPacketHandler(object):
         """
         self.__packetCreator = packetCreator
         
-    def createUnexpectedErrorPacket(self, packet_type, commandID):
-        p = self.__packetCreator.createPacket(2)
+    def createErrorPacket(self, packet_type, errorDescription, commandID):
+        p = self.__packetCreator.createPacket(3)
         p.writeInt(packet_type)
+        p.writeInt(errorDescription)
         p.writeString(commandID)
         return p
         
@@ -81,28 +82,7 @@ class ClusterServerPacketHandler(object):
         p = self.__packetCreator.createPacket(3)
         p.writeInt(MAIN_SERVER_PACKET_T.COMMAND_EXECUTED)
         p.writeString(commandID)
-        return p
-    
-    def createVMServerRegistrationErrorPacket(self, IPAddress, port, name, reason, commandID):
-        """
-        Crea un paquete de error de registro de un servidor de máquinas virtuales
-        Argumentos:
-            IPAddress: la dirección IP del servidor
-            port: su puerto
-            name: el nombre del servidor de máquinas virtuales
-            commandID: el identificador único del comando de arranque
-            reason: mensaje de error
-        Devuelve:
-            un paquete con los datos de los argumentos
-        """
-        p = self.__packetCreator.createPacket(3)
-        p.writeInt(MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR)
-        p.writeString(IPAddress)
-        p.writeInt(port)
-        p.writeString(name)
-        p.writeString(reason)        
-        p.writeString(commandID)
-        return p        
+        return p    
     
     def createDataRequestPacket(self, query):
         """
@@ -193,24 +173,6 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createVMServerGenericErrorPacket(self, packet_type, serverNameOrIPAddress, reason, commandID):
-        """
-        Crea un paquete de error relacionado con un servidor de máquinas virtuales
-        Argumentos:
-            packet_type: tipo del paquete de error
-            serverNameOrIPAddress: la IP o el nombre del servidor
-            reason: un mensaje de error
-            commandID: el identificador único del comando
-        Devuelve:
-            un paquete con los datos de los argumentos
-        """
-        p = self.__packetCreator.createPacket(3)
-        p.writeInt(packet_type)
-        p.writeString(serverNameOrIPAddress)
-        p.writeString(reason)
-        p.writeString(commandID)
-        return p
-    
     def createVMBootRequestPacket(self, imageID, userID, commandID):
         """
         Crea un paquete de arranque de máuqina virtual
@@ -225,23 +187,6 @@ class ClusterServerPacketHandler(object):
         p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST)
         p.writeInt(imageID)
         p.writeInt(userID)
-        p.writeString(commandID)
-        return p
-    
-    def createVMBootFailurePacket(self, imageID, reason, commandID):
-        """
-        Crea un paquete que indica un error al arrancar una máquina virtual
-        Argumentos:
-            imageID: el identificador de la imagen que se intentó arrancar
-            reason: un mensaje de error
-            commandID: el identificador único del comando
-        Devuelve:
-            un paquete con los datos de los argumentos
-        """
-        p = self.__packetCreator.createPacket(4)
-        p.writeInt(MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE)
-        p.writeInt(imageID)
-        p.writeString(reason)
         p.writeString(commandID)
         return p
     
@@ -345,13 +290,6 @@ class ClusterServerPacketHandler(object):
         p.writeBool(newVanillaImageEditionBehavior)
         p.writeString(commandID)
         return p
-    
-    def createGenericErrorPacket(self, packet_type, reason, commandID):
-        p = self.__packetCreator.createPacket(5)
-        p.writeInt(packet_type)        
-        p.writeString(reason)
-        p.writeString(commandID)
-        return p
         
     def createImageDeploymentPacket(self, packet_type, serverNameOrIPAddress, imageID, commandID):
         p = self.__packetCreator.createPacket(5)
@@ -393,13 +331,7 @@ class ClusterServerPacketHandler(object):
             result["VMServerPort"] = p.readInt()
             result["VMServerName"] = p.readString()
             result["IsVanillaServer"] = p.readBool()
-            result["CommandID"] = p.readString()
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
-            result["VMServerIP"] = p.readString()
-            result["VMServerPort"] = p.readInt()
-            result["VMServerName"] = p.readString()
-            result["ErrorMessage"] = p.readString()            
-            result["CommandID"] = p.readString()
+            result["CommandID"] = p.readString()        
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA) :
             result["Segment"] = p.readInt()
@@ -436,15 +368,6 @@ class ClusterServerPacketHandler(object):
             result["ServerNameOrIPAddress"] = p.readString()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR or 
-              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR or 
-              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_SHUTDOWN_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.IMAGE_DEPLOYMENT_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR) :
-            result["ServerNameOrIPAddress"] = p.readString()
-            result["ErrorMessage"] = p.readString()
-            result["CommandID"] = p.readString()
-            
         elif (packet_type == MAIN_SERVER_PACKET_T.DEPLOY_IMAGE or
               packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_SERVER) :
             result["ServerNameOrIPAddress"] = p.readString()
@@ -454,11 +377,6 @@ class ClusterServerPacketHandler(object):
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_REQUEST):
             result["VMID"] = p.readInt()
             result["UserID"] = p.readInt()
-            result["CommandID"] = p.readString()
-            
-        elif (packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE):
-            result["VMID"] = p.readInt()
-            result["ErrorMessage"] = p.readString()
             result["CommandID"] = p.readString()
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_CONNECTION_DATA):
@@ -476,15 +394,6 @@ class ClusterServerPacketHandler(object):
         elif (packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION) :
             result["DomainID"] = p.readString()
             result["CommandID"] = p.readString()
-        
-        elif (packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR or 
-              packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATION_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.IMAGE_EDITION_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR or
-              packet_type == MAIN_SERVER_PACKET_T.AUTO_DEPLOY_ERROR) :
-            result["ErrorMessage"] = p.readString()
-            result["CommandID"] = p.readString()    
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE): 
             result["ServerNameOrIPAddress"] = p.readString()    
@@ -516,5 +425,20 @@ class ClusterServerPacketHandler(object):
             
         elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_INTERNAL_ERROR):
             result["CommandID"] = p.readString()
-                       
+            
+        elif (packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR or 
+              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR or 
+              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_UNREGISTRATION_ERROR or 
+              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_SHUTDOWN_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.IMAGE_DEPLOYMENT_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR or 
+              packet_type == MAIN_SERVER_PACKET_T.VM_BOOT_FAILURE or 
+              packet_type == MAIN_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR or 
+              packet_type == MAIN_SERVER_PACKET_T.IMAGE_CREATION_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.IMAGE_EDITION_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR or
+              packet_type == MAIN_SERVER_PACKET_T.AUTO_DEPLOY_ERROR) :
+            result["ErrorDescription"] = p.readInt()        
+            result["CommandID"] = p.readString()                       
         return result
