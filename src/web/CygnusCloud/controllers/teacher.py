@@ -80,10 +80,21 @@ def stopVM():
        
        
 def createVanillaVM():
-    info = LOAD(url=URL('static', 'progressBar.html', scheme='http'),ajax=False)
-    table = createVanillaImageTable("Imagen 1",1048576,2,5242880,3145728,3145728,4,8388608,8388608)
-    form = FORM(HR(),LABEL(H2(T('Máquinas vanilla'))),table)
-    return dict(form = form,info=info)
+    #actualizamos la barra
+    createAdressBar()
+    progressBarStyle = LOAD(url=URL('static', 'progressBar.html', scheme='http'),ajax=False)
+    connector = conectToServer()
+    table = TABLE(_class='data', _name='table')
+    j= 0
+    #TODO: Recorrido de imagenes vanilla
+    subTable = createVanillaImageTable('Linux-Small',1048576,1,5242880,3145728,3145728,4,41943040,16777216)
+    table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = 0,_id = "c"+str(j) )),subTable))
+    form = FORM(DIV( T('Nombre: '),BR(),INPUT(_name = 'newVMName')),BR(),
+                DIV( T('Descripcion: '),BR(),TEXTAREA(_name = 'description')),BR(),
+                LABEL(H3(T('Máquinas vanila disponibles:'))),table,
+                CENTER(INPUT(_type='submit',_name = 'createVM',  _value = T('Crear máquina virtual')
+                    ,_class="button button-blue",_style="width:180px;")))
+    return dict(form = form,progressBarStyle=progressBarStyle)
           
        
    
@@ -165,9 +176,25 @@ def createVanillaImageTable(name,ramSize,cpuNumber,osDiskSize,dataDiskSize,maxRa
        table.append(TR(TD(IMG(_src=URL('static','images/osDiskIcon.png'), _alt="memoryIcon",_style="width:30px;"),_class='vanillaData')
            ,TD(LABEL("Espacio disco"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pOsDisk) + "%;"),_class="meter animate blue"),_class='vanillaData')
-           ,TD(LABEL(osDiskSize))))
+           ,TD(LABEL(osDiskSize)),_class='vanillaData'))
        table.append(TR(TD(IMG(_src=URL('static','images/dataDiskIcon.png'), _alt="memoryIcon",_style="width:30px;"),_class='vanillaData')
            ,TD(LABEL("Espacio datos"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pDataDisk) + "%;"),_class="meter animate orange"),_class='vanillaData')
-           ,TD(LABEL(dataDiskSize))))
+           ,TD(LABEL(dataDiskSize)),_class='vanillaData'))
        return table
+       
+def searchMaxValues(rows):
+    maxRam = 0
+    maxCPUs = 0
+    maxOsDisk = 0
+    maxDataDisk = 0
+    for r in rows:
+        if(r["ramSize"] > maxRam):
+            maxRam = r["ramSize"]
+        if(r["vCPUs"] > maxCPUs):
+            maxCPUs = r["vCPUs"]
+        if(r["osDiskSize"] > maxOsDisk):
+            maxOsDisk = r["osDiskSize"]
+        if(r["dataDiskSize"] > maxDataDisk):
+            maxDataDisk = r["dataDiskSize"]
+    return (maxRam,maxCPUs,maxOsDisk,maxDataDisk)
