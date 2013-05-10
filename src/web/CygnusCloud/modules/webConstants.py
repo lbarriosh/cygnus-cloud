@@ -4,11 +4,11 @@
 #Ruta de los certificados
 certificatesPath = "applications/CygnusCloud/static/Certificates" 
 #Nombre de la base de datos de estado
-dbStatusName = "SystemStatusDB"
+dbStatusName = "ClusterEndpointDB"
 #Nombre de la base de datos de comandos
 commandsDBName = "CommandsDB"
 #Ruta del sql
-dbStatusPath = "applications/CygnusCloud/modules/database/SystemStatusDB.sql"
+dbStatusPath = "applications/CygnusCloud/modules/database/ClusterEndpointDB.sql"
 #Nombre del usuario web
 webUserName =  "CygnusCloud"
 #Contraseña del usuario 

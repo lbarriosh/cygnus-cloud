@@ -252,6 +252,16 @@ td.izquierda{
     width = 20%;
     font-size:13px;
 }
+
+td.vanillaData{
+    padding: 0px;
+    margin-top: 0px;
+}
+
+tr.vanillaData{
+    margin-top: 0px;
+}
+
 th {
     padding: 10px;
     text-align: center;
@@ -422,4 +432,11 @@ select {
 select:after{
    box-shadow: 0 0 7px rgba(65, 141, 236, 1);
    border: 1.3px solid rgba(65, 141, 236, 1);
+}
+
+pre {
+	background: black;
+	text-align: left;
+	padding: 20px;
+	margin: 0 auto 30px auto; 
 }

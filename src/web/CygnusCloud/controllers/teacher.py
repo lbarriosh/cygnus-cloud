@@ -78,10 +78,18 @@ def stopVM():
                  
     return dict(form = form,num = j)
        
+       
+def createVanillaVM():
+    info = LOAD(url=URL('static', 'progressBar.html', scheme='http'),ajax=False)
+    table = createVanillaImageTable("Imagen 1",1048576,2,5242880,3145728,3145728,4,8388608,8388608)
+    form = FORM(HR(),LABEL(H2(T('Máquinas vanilla'))),table)
+    return dict(form = form,info=info)
+          
+       
    
 def createAdressBar():
     response.menu=[[T('Arrancar máquina'),False,URL('runVM')],[T('Detener máquina'),False,URL('stopVM')],
-                   [T('Crear nueva máquina'),False,URL('createVM')],[T('Editar máquina'),False,URL('editVM')]]
+                   [T('Crear nueva máquina'),False,URL('createVanillaVM')],[T('Editar máquina'),False,URL('editVM')]]
     
 def createReadyTable(j):
     listSubjects = userDB((userDB.UserGroup.userId == auth.user['email'])).select(userDB.UserGroup.cod,userDB.UserGroup.curseGroup)
@@ -137,3 +145,29 @@ def conectToServer():
     connector = ClusterServerConnector(auth.user_id)
     connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
     return connector
+    
+def createVanillaImageTable(name,ramSize,cpuNumber,osDiskSize,dataDiskSize,maxRam,maxCpuNumber,maxOsDisk,maxDataDisk):
+       pRam = ((ramSize*100)/maxRam)
+       pCPUs = ((cpuNumber*100)/maxCpuNumber)
+       pOsDisk = ((osDiskSize*100)/maxOsDisk)
+       pDataDisk = ((dataDiskSize*100)/maxDataDisk)
+       
+       table = TABLE(_class='data', _name='table')
+       table.append(TR(TD(LABEL(name),_style="font-size:17px;")))
+       table.append(TR(TD(IMG(_src=URL('static','images/memoryIcon.png'), _alt="memoryIcon",_style="width:35px;"),_class='vanillaData')
+           ,TD(LABEL("Memoria Ram"),_class='vanillaData'),
+           TD(DIV(SPAN(SPAN(),_style="width:" + str(pRam) + "%;"),_class="meter animate"),_class='vanillaData')
+           ,TD(LABEL(ramSize),_class='vanillaData'),_class='vanillaData'))
+       table.append(TR(TD(IMG(_src=URL('static','images/cpuIcon.png'), _alt="cpuIcon",_style="width:35px;"),_class='vanillaData')
+           ,TD(LABEL("Número Cpus"),_class='vanillaData'),
+           TD(DIV(SPAN(SPAN(),_style="width:" + str(pCPUs) + "%;"),_class="meter animate red"),_class='vanillaData')
+           ,TD(LABEL(cpuNumber),_class='vanillaData'),_class='vanillaData'))
+       table.append(TR(TD(IMG(_src=URL('static','images/osDiskIcon.png'), _alt="memoryIcon",_style="width:30px;"),_class='vanillaData')
+           ,TD(LABEL("Espacio disco"),_class='vanillaData'),
+           TD(DIV(SPAN(SPAN(),_style="width:" + str(pOsDisk) + "%;"),_class="meter animate blue"),_class='vanillaData')
+           ,TD(LABEL(osDiskSize))))
+       table.append(TR(TD(IMG(_src=URL('static','images/dataDiskIcon.png'), _alt="memoryIcon",_style="width:30px;"),_class='vanillaData')
+           ,TD(LABEL("Espacio datos"),_class='vanillaData'),
+           TD(DIV(SPAN(SPAN(),_style="width:" + str(pDataDisk) + "%;"),_class="meter animate orange"),_class='vanillaData')
+           ,TD(LABEL(dataDiskSize))))
+       return table

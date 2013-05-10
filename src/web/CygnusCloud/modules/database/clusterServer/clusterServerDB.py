@@ -229,6 +229,14 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             return []
         return results
     
+    def getCandidateVMServers(self, imageID) :
+        query = "SELECT VMServer.serverId FROM VMServer WHERE serverStatus = {0} AND NOT EXISTS (SELECT * FROM ImageOnServer\
+            WHERE ImageOnServer.serverId = VMServer.serverID AND ImageOnServer.imageId = {1});".format(SERVER_STATE_T.READY, imageID)
+        results=self._executeQuery(query)
+        if (results == None) :
+            return []
+        return results
+    
     def resetVMServersStatus(self):
         vmServerIDs = self.getVMServerIDs()
         for vmServerID in vmServerIDs :
@@ -319,7 +327,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         #Devolvemos la lista resultado
         return serverIds
          
-    def assignImageToServer(self, serverID, imageID):
+    def assignImageToServer(self, serverID, imageID, status = IMAGE_STATE_T.READY):
         '''
         Asigna una imagen a un servidor de máquinas virtuales
         Argumentos:
@@ -329,7 +337,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             Nada.
         '''
         # Insert the row in the table
-        query = "INSERT INTO ImageOnServer VALUES({0}, {1}, {2});".format(serverID, imageID, IMAGE_STATE_T.READY)
+        query = "INSERT INTO ImageOnServer VALUES({0}, {1}, {2});".format(serverID, imageID, status)
         self._executeUpdate(query)
         
     def deleteImageFromServer(self, serverID, imageID):
@@ -473,7 +481,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         else :
             return result
         
-    def getReadyVanillaServers(self):
+    def getVanillaVMServers(self):
         query = "SELECT serverID FROM VMServer WHERE isVanillaServer = 1 AND serverStatus = {0};".format(SERVER_STATE_T.READY)
         result = self._executeQuery(query, False)
         if (result == None) :
@@ -718,3 +726,33 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             update = "UPDATE AllocatedVMServerResources SET remove = 1 WHERE commandID = '{0}';".format(commandID)
         self._executeUpdate(update)
     
+    def addAutoDeploymentCommand(self, commandID, imageID, remainingMessages):
+        update = "INSERT INTO AutoDeploymentCommand VALUES('{0}', {1}, {2}, 0)".format(commandID, imageID, remainingMessages)
+        self._executeUpdate(update)
+        
+    def isAutoDeploymentCommand(self, commandID):
+        query = "SELECT * FROM AutoDeploymentCommand WHERE commandID = '{0}';".format(commandID)
+        return self._executeQuery(query, True) != None
+    
+    def isAffectedByAutoDeploymentCommand(self, imageID):
+        query = "SELECT * FROM AutoDeploymentCommand WHERE imageID = {0};".format(imageID)
+        return self._executeQuery(query, True) != None
+        
+    def handleAutoDeploymentCommandOutput(self, commandID, error):
+        query = "SELECT remainingMessages, error FROM AutoDeploymentCommand WHERE commandID = '{0}';".format(commandID)
+        result = self._executeQuery(query, True)
+        generateOutputCommand = False
+        if (result[0] == 1) :
+            update = "DELETE FROM AutoDeploymentCommand WHERE commandID = '{0}';".format(commandID)
+            generateOutputCommand = True
+            error = result[1] != 0 or error
+        else :
+            if (error) : errorValue = 1
+            else : errorValue = 0
+            update = "UPDATE AutoDeploymentCommand SET remainingMessages = {1}, error = {2} WHERE commandID = '{0}';".format(commandID, result - 1, errorValue)
+        self._executeUpdate(update)
+        return (generateOutputCommand, error)
+    
+    def getAutoDeploymentCommandImageID(self, commandID):
+        query = "SELECT imageID FROM AutoDeploymentCommand WHERE commandID = '{0}';".format(commandID)
+        return self._executeQuery(query, True)
