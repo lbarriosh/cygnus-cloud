@@ -214,19 +214,46 @@ class ClusterConnector(object):
             return CommandsHandler.deserializeCommandOutput(result[0], result[1])
         
     def getImageBasicData(self, imageID):
+        """
+        Devuelve los datos de una imagen
+        """
         return self.__endpointDBConnector.getImageBasicData(imageID)
         
     def getBootableImagesData(self, imageIDs):
+        """
+        Devuelve los datos de las imágenes arrancables
+        """
         return self.__endpointDBConnector.getBootableImagesData(imageIDs)
     
     def getBaseImagesData(self):
+        """
+        Devuelve los datos de las imágenes base (i.e. imágenes vanilla)
+        """
         return self.__endpointDBConnector.getBaseImagesData()
         
-    def getEditedImages(self, userID):
-        return self.__endpointDBConnector.getEditedImages(userID)
+    def getEditedImageIDs(self, userID):
+        """
+        Devuelve los datos de las imágenes ya asignadas a una asignatura
+        que un usuario está editando.
+        """
+        return self.__endpointDBConnector.getEditedImageIDs(userID)
+    
+    def getNewImageIDs(self, userID):
+        """
+        Devuelve los datos de las imágenes no asignadas a ninguna
+        asignatura que un usuario está editando.
+        """
+        return self.__endpointDBConnector.getNewImageIDs(userID)
     
     def getVanillaImageFamilyID(self, imageID):
         return self.__endpointDBConnector.getVanillaImageFamilyID(imageID)
     
     def getVanillaImageFamiliyData(self, vanillaImageFamilyID):
-        return self.__endpointDBConnector.getVanillaImageFamiliyData(vanillaImageFamilyID)
+        return self.__endpointDBConnector.getVanillaImageFamilyData(vanillaImageFamilyID)
+    
+    def getMaxVanillaImageFamilyData(self):
+        """
+        Calcula los valores máximos del número de CPUs, RAM, disco,... de todas las
+        familias de imágenes vanilla
+        """
+        return self.__endpointDBConnector.getMaxVanillaImageFamilyData()

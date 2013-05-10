@@ -382,24 +382,46 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         command += ";"
         return command    
     
-    def getImageBasicData(self, imageID):
+    def getImageData(self, imageID):
         
         if (isinstance(imageID, int)) :
-            query = "SELECT name, description FROM Image WHERE imageID = {0}".format(imageID)
-        else :
-            query = "SELECT name, description FROM NewImage WHERE temporaryID = '{0}'".format(imageID)
-            
-        result = self._executeQuery(query, True)
-        if (result == None) :
-            return None
-        else :
+            query = "SELECT name, description, vanillaImageFamilyID,\
+                osFamily, osVariant, isBaseImage, bootable, edited,\
+                ownerID FROM Image WHERE imageID = {0}".format(imageID)
+            result = self._executeQuery(query, True)
+            if (result == None) : return None
             d = dict()
-            d["ImageName"] = result[0]
-            d["ImageDescription"] = result[1]
-            return d
+            d["ImageName"] = str(result[0])
+            d["ImageDescription"] = str(result[1])
+            d["AssignedToSubject"] = True
+            d["VanillaImageFamilyID"] = result[2]
+            d["OSFamily"] = result[3]
+            d["OSVariant"] = result[4]
+            d["IsBaseImage"] = result[5] == 1
+            d["IsBootable"] = result[6] == 1
+            d["IsEdited"] = result[7] == 1
+            d["OwnerID"] = result[8]
+        else :
+            query = "SELECT name, description, vanillaImageFamilyID,\
+                osFamily, osVariant, ownerID FROM NewImage WHERE temporaryID = '{0}'".format(imageID)
+            result = self._executeQuery(query, True)
+            d = dict()
+            d["ImageName"] = str(result[0])
+            d["ImageDescription"] = str(result[1])
+            d["AssignedToSubject"] = False
+            d["VanillaImageFamilyID"] = result[2]
+            d["OSFamily"] = result[3]
+            d["OSVariant"] = result[4]
+            d["IsBaseImage"] = False
+            d["IsBootable"] = False
+            d["IsEdited"] = True
+            d["OwnerID"] = result[5]
+        
+        return d       
         
     def getBootableImagesData(self, imageIDs):
-        query = "SELECT imageID, name, description FROM Image WHERE bootable = 1"
+        query = "SELECT imageID, name, description, vanillaImageFamilyID,\
+                osFamily, osVariant FROM Image WHERE bootable = 1"
         if (imageIDs != []) :
             query += " AND ("
             i = 0
@@ -415,11 +437,13 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         else :
             rows = []
             for row in result :
-                rows.append({"ImageID": row[0], "ImageName" : str(row[1]), "ImageDescription" : str(row[2])})
+                rows.append({"ImageID": row[0], "ImageName" : str(row[1]), "ImageDescription" : str(row[2]),
+                             "VanillaImageFamilyID" : row[3], "OSFamily" : row[4], "OSVariant" : row[5]})
         return rows
     
     def getBaseImagesData(self):
-        query = "SELECT imageID, name, description FROM Image WHERE isBaseImage = 1;"
+        query = "SELECT imageID, name, description, vanillaImageFamilyID,\
+                osFamily, osVariant FROM Image WHERE isBaseImage = 1;"
         result = self._executeQuery(query, False)
         if (result == None) :
             return []
@@ -427,18 +451,23 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             rows = 0
             rows = []
             for row in result :
-                rows.append({"ImageID": row[0], "ImageName" : str(row[1]), "ImageDescription" : str(row[2])})
+                rows.append({"ImageID": row[0], "ImageName" : str(row[1]), "ImageDescription" : str(row[2]),
+                             "VanillaImageFamilyID" : row[3], "OSFamily" : row[4], "OSVariant" : row[5]})
             return rows
         
-    def getEditedImages(self, userID):
+    def getEditedImageIDs(self, userID):
         query = "SELECT imageID FROM Image WHERE edited = 1 AND ownerID = {0};".format(userID)
         result = self._executeQuery(query, False)
         rows = []
         if (result != None) :
             for row in result :
                 rows.append(row)
+        return rows
+    
+    def getNewImageIDs(self, userID):
         query = "SELECT temporaryID FROM NewImage WHERE ownerID = {0};".format(userID)
         result = self._executeQuery(query, False)
+        rows = []
         if (result != None) :
             for row in result :
                 rows.append(str(row))
@@ -446,15 +475,23 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
     
     def getVanillaImageFamilyID(self, imageID):
         if (isinstance(imageID, int)) :
-            query = "SELECT familyID FROM VanillaImageFamilyOf WHERE imageID = {0}".format(imageID)
+            query = "SELECT vanillaImageFamilyID FROM Image WHERE imageID = {0}".format(imageID)
         else :
             query = "SELECT vanillaImageFamilyID FROM NewImage WHERE temporaryID = '{0}'".format(imageID)
         return self._executeQuery(query, True)
     
-    def getVanillaImageFamiliyData(self, vanillaImageFamilyID):
+    def getVanillaImageFamilyData(self, vanillaImageFamilyID):
         query = "SELECT familyName, ramSize, vCPUs, osDiskSize, dataDiskSize FROM VanillaImageFamily WHERE familyID = {0}".format(vanillaImageFamilyID)
         result = self._executeQuery(query, True)
         if (result == None) :
             return None
         else :
             return {"Name" : str(result[0]), "RAMSize" : result[1], "VCPUs": result[2], "OSDiskSize" : result[3], "DataDiskSize" : result[4]}
+        
+    def getMaxVanillaImageFamilyData(self):
+        query = "SELECT MAX(ramSize), MAX(vCPUs), MAX(osDiskSize), MAX(dataDiskSize) FROM VanillaImageFamily;"
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else :
+            return {"RAMSize" : result[0], "VCPUs": result[1], "OSDiskSize" : result[2], "DataDiskSize" : result[3]}
