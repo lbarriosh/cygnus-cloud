@@ -1,5 +1,5 @@
 # -*- coding: UTF8 -*-
-from database.utils.connector import BasicDatabaseConnector
+from ccutils.databases.connector import BasicDatabaseConnector
 from virtualMachineServer.reactor.transfer_t import TRANSFER_T 
 
 class VMServerDBConnector(BasicDatabaseConnector):

@@ -6,7 +6,7 @@ Gestor de paquetes del servidor de cluster
 '''
 
 from ccutils.enums import enum
-from database.clusterServer.clusterServerDB import SERVER_STATE_T
+from clusterServer.database.clusterServerDB import SERVER_STATE_T
 
 MAIN_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR", "QUERY_VM_SERVERS_STATUS",
                             "VM_SERVERS_STATUS_DATA", "QUERY_VM_DISTRIBUTION", "VM_DISTRIBUTION_DATA",

@@ -1,6 +1,6 @@
 # -*- coding: UTF8 -*-
 
-from database.utils.connector import BasicDatabaseConnector
+from ccutils.databases.connector import BasicDatabaseConnector
 from re import sub
 from ccutils.enums import enum
 from os import path

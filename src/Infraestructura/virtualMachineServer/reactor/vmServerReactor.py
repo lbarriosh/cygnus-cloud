@@ -8,7 +8,7 @@ Created on 14/01/2013
 from network.manager.networkManager import NetworkManager
 from virtualMachineServer.networking.callback import ClusterServerCallback
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
-from database.vmServer.vmServerDB import VMServerDBConnector
+from virtualMachineServer.database.vmServerDB import VMServerDBConnector
 from network.ftp.ftpClient import FTPClient
 from virtualMachineServer.networking.reactors import MainServerPacketReactor
 from virtualMachineServer.threads.fileTransferThread import FileTransferThread

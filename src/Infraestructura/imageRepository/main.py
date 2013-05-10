@@ -7,8 +7,8 @@ Punto de entrada del repositorio de imágenes
 
 import sys
 from constants import ImageRepositoryConstantsManager
-from database.utils.configuration import DBConfigurator
-from imageRepository import ImageRepository
+from ccutils.databases.configuration import DBConfigurator
+from imageRepository.reactor import ImageRepositoryReactor
 
 if __name__ == "__main__" :
     
@@ -26,7 +26,7 @@ if __name__ == "__main__" :
     dbConfigurator.runSQLScript("ImageRepositoryDB", cm.getConstant('scriptPath'))
     dbConfigurator.addUser(cm.getConstant('dbUser'), cm.getConstant('dbUserPassword'), "ImageRepositoryDB")
     
-    imageRepository = ImageRepository(cm.getConstant('FTPRootDirectory'))
+    imageRepository = ImageRepositoryReactor(cm.getConstant('FTPRootDirectory'))
     imageRepository.connectToDatabase("ImageRepositoryDB", cm.getConstant("dbUser"), cm.getConstant("dbUserPassword"))
     
     imageRepository.startListenning(cm.getConstant("FTPListenningInterface"), cm.getConstant("certificatePath"), cm.getConstant("commandsPort"), 

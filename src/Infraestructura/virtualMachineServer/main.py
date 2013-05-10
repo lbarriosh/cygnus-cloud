@@ -6,7 +6,7 @@ Punto de entrada del servidor de máquinas virtuales
 @version: 2.0
 '''
 
-from database.utils.configuration import DBConfigurator
+from ccutils.databases.configuration import DBConfigurator
 from reactor.vmServerReactor import VMServerReactor
 from time import sleep
 from ccutils.rootPasswordHandler import RootPasswordHandler
@@ -38,7 +38,7 @@ if __name__ == "__main__" :
         
     # Crear la base de datos (si es necesario)
     configurator = DBConfigurator(cm.getConstant("mysqlRootsPassword"))
-    configurator.runSQLScript(cm.getConstant("databaseName"), "../database/VMServerDB.sql")
+    configurator.runSQLScript(cm.getConstant("databaseName"), "./database/VMServerDB.sql")
     # Crear un usuario y darle permisos
     configurator.addUser(cm.getConstant("databaseUserName"), cm.getConstant("databasePassword"), cm.getConstant("databaseName"), True)
     # Crear el servidor de máquinas virtuales

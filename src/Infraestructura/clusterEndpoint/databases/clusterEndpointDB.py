@@ -6,7 +6,7 @@ Lector de la base de datos de estado
 @version: 2.5
 '''
 
-from database.utils.connector import BasicDatabaseConnector
+from ccutils.databases.connector import BasicDatabaseConnector
 
 class ClusterEndpointDBConnector(BasicDatabaseConnector):
     """

@@ -3,7 +3,7 @@
 
 from ccutils.configurationFiles.constantsManager import ConstantsManager
 
-class WebServerEndpointConstantsManager(ConstantsManager):
+class ClusterEndpointConstantsManager(ConstantsManager):
     
     def __init__(self):
         ConstantsManager.__init__(self)

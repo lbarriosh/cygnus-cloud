@@ -42,7 +42,7 @@ INSERT IGNORE INTO VanillaImageFamily VALUES (6, 'Windows7-Big', 3145728, 4, 419
 CREATE TABLE IF NOT EXISTS Image(imageID INTEGER PRIMARY KEY, name VARCHAR(20), description VARCHAR(200), bootable BOOL,
 	edited BOOL, ownerID INTEGER, isBaseImage BOOL);
 
-INSERT INTO Image VALUES
+INSERT IGNORE INTO Image VALUES
 	(1, "Debian-Squeeze", "Imagen vanilla", 0, 0, 0, 1),
 	(2, "Windows 7", "Imagen vanilla", 0, 0, 0, 1),
 	(3, "Debian-AISO", "Imagen de AISO", 1, 0, 0, 0),
@@ -52,7 +52,7 @@ INSERT INTO Image VALUES
 CREATE TABLE IF NOT EXISTS NewImage(temporaryID VARCHAR(70) PRIMARY KEY, imageID INTEGER, name VARCHAR(20), description VARCHAR(200),
 	ownerID INTEGER, vanillaImageFamilyID SMALLINT, FOREIGN KEY(vanillaImageFamilyID) REFERENCES VanillaImageFamily(familyID));
 	
-INSERT INTO NewImage VALUEs
+INSERT IGNORE INTO NewImage VALUEs
 	("Command1", -1, "Debian-LSO", "Imagen LSO", 1, 1),
 	("Command10", 2, "Ubuntu-SO", "Imagen SO", 2, 1);
 
@@ -61,4 +61,4 @@ CREATE TABLE IF NOT EXISTS VanillaImageFamilyOf(imageID INTEGER, familyID SMALLI
 	FOREIGN KEY(imageID) REFERENCES Image(imageID) ON DELETE CASCADE,
 	FOREIGN KEY(familyID) REFERENCES VanillaImageFamily(familyID) ON DELETE CASCADE);
 	
-INSERT INTO VanillaImageFamilyOf VALUES (1, 1), (2, 5), (3, 2), (4, 6), (5, 4);
+INSERT IGNORE INTO VanillaImageFamilyOf VALUES (1, 1), (2, 5), (3, 2), (4, 6), (5, 4);

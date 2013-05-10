@@ -4,12 +4,12 @@ Conector que usará la web para interactuar con el sistema
 @author: Luis Barrios Hernández
 @version: 4.0
 '''
-from database.clusterEndpoint.clusterEndpointDB import ClusterEndpointDBConnector
-from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
-from clusterServer.connector.commands.commandsHandler import CommandsHandler
+from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
+from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
+from clusterEndpoint.commands.commandsHandler import CommandsHandler
 from time import sleep
 
-class ClusterServerConnector(object):
+class ClusterConnector(object):
     """
     Estos objetos comunican la web y el endpoint a través de memoria compartida.
     """
@@ -22,18 +22,18 @@ class ClusterServerConnector(object):
         """
         self.__userID = userID
     
-    def connectToDatabases(self, statusDBName, commandsDBName, databaseUser, databasePassword):
+    def connectToDatabases(self, endpointDBName, commandsDBName, databaseUser, databasePassword):
         """
         Establece una conexión con las bases de datos de estado y comandos.
         Argumentos:
-            statusDBName: el nombre de la base de datos de estado
+            endpointDBName: el nombre de la base de datos de estado
             commandsDBName: el nombre de la base de datos de comandos
             databaseUser: el nombre de usuario con el que se accederá a las dos bases de datos
             databasePassword: la contraseña para acceder a las bases de datos
         Devuelve:
             Nada
         """
-        self.__endpointDBConnector = ClusterEndpointDBConnector(databaseUser, databasePassword, statusDBName)
+        self.__endpointDBConnector = ClusterEndpointDBConnector(databaseUser, databasePassword, endpointDBName)
         self.__commandsDBConnector = CommandsDatabaseConnector(databaseUser, databasePassword, commandsDBName, 1)
         
     def dispose(self):

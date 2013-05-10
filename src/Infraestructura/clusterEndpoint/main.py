@@ -6,8 +6,8 @@ Created on Apr 3, 2013
 '''
 
 import sys
-from constants import WebServerEndpointConstantsManager
-from clusterServer.connector.endpoint.webServerEndpoint import WebServerEndpoint, EndpointException
+from constants import ClusterEndpointConstantsManager
+from clusterEndpoint.endpoint import ClusterEndpoint, EndpointException
 
 if __name__ == "__main__" :
     # Parsear el fichero de configuración
@@ -15,16 +15,16 @@ if __name__ == "__main__" :
         print "A configuration file path is needed"
         sys.exit()
     try :
-        cm = WebServerEndpointConstantsManager()
+        cm = ClusterEndpointConstantsManager()
         cm.parseConfigurationFile(sys.argv[1])
     except Exception as e:
         print "Error: " + e.message
         sys.exit()
         
-    endpoint = WebServerEndpoint()
+    endpoint = ClusterEndpoint()
     
-    endpoint.connectToDatabases(cm.getConstant("mysqlRootsPassword"), cm.getConstant("statusDBName"), 
-                                cm.getConstant("commandsDBName"), cm.getConstant("statusdbSQLFilePath"), 
+    endpoint.connectToDatabases(cm.getConstant("mysqlRootsPassword"), cm.getConstant("endpointDBName"), 
+                                cm.getConstant("commandsDBName"), cm.getConstant("endpointdbSQLFilePath"), 
                                 cm.getConstant("commandsdbSQLFilePath"), cm.getConstant("websiteUser"), 
                                 cm.getConstant("websiteUserPassword"),  cm.getConstant("endpointUser"), 
                                 cm.getConstant("endpointUserPassword"), cm.getConstant("minCommandInterval"))
@@ -35,5 +35,5 @@ if __name__ == "__main__" :
         endpoint.processCommands()
         endpoint.disconnectFromClusterServer()
     except EndpointException as e:
-        endpoint.closeDBConnections()
+        endpoint.doEmergencyStop()
         print "Error: " + e.message

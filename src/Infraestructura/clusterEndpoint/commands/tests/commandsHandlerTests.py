@@ -5,7 +5,7 @@ Command handler class unit tests.
 @version: 1.0
 '''
 import unittest
-from clusterServer.connector.commandsHandler import COMMAND_OUTPUT_TYPE, COMMAND_TYPE, CommandsHandler
+from clusterEndpoint.commands.commandsHandler import COMMAND_OUTPUT_TYPE, COMMAND_TYPE, CommandsHandler
 
 class CommandsHandlerTest(unittest.TestCase):
 

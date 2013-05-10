@@ -1,5 +1,5 @@
 from ccutils.threads import BasicThread
-from clusterServer.connector.commands.commandsHandler import CommandsHandler
+from clusterEndpoint.commands.commandsHandler import CommandsHandler
 
 from time import sleep
 

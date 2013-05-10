@@ -7,8 +7,8 @@ Definiciones del reactor del servidor de cluster
 
 from clusterServer.networking.callbacks import VMServerCallback, WebCallback, ImageRepositoryCallback
 from clusterServer.threads.clusterStatusMonitoringThread import ClusterStatusMonitoringThread
-from database.utils.configuration import DBConfigurator
-from database.clusterServer.clusterServerDB import ClusterServerDatabaseConnector, SERVER_STATE_T, IMAGE_STATE_T
+from ccutils.databases.configuration import DBConfigurator
+from clusterServer.database.clusterServerDB import ClusterServerDatabaseConnector, SERVER_STATE_T, IMAGE_STATE_T
 from network.manager.networkManager import NetworkManager
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as WEB_PACKET_T
 from virtualMachineServer.networking.packets import VMServerPacketHandler, VM_SERVER_PACKET_T as VMSRVR_PACKET_T

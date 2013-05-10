@@ -1,7 +1,7 @@
 # -*- coding: UTF8 -*-
 
 from ccutils.enums import enum
-from database.utils.connector import BasicDatabaseConnector
+from ccutils.databases.connector import BasicDatabaseConnector
 import time
 
 SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN", "RECONNECTING", "CONNECTION_TIMED_OUT")

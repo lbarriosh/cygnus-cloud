@@ -6,7 +6,7 @@ Created on Apr 21, 2013
 '''
 
 from network.manager.networkManager import NetworkCallback, NetworkManager
-from database.imageRepository.imageRepositoryDB import ImageRepositoryDBConnector, IMAGE_STATUS_T
+from imageRepository.database.imageRepositoryDB import IMAGE_STATUS_T, ImageRepositoryDBConnector
 from packets import ImageRepositoryPacketHandler, PACKET_T
 from network.ftp.ftpServer import ConfigurableFTPServer, FTPCallback
 from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
@@ -15,7 +15,7 @@ from os import remove, path, mkdir, statvfs
 from time import sleep
 from ccutils.processes.childProcessManager import ChildProcessManager
 
-class ImageRepository(object):
+class ImageRepositoryReactor(object):
     """
     Clase principal del repositorio de imágenes
     """    

@@ -5,7 +5,7 @@ The commands database connector
 @version: 1.1
 '''
 
-from database.utils.connector import BasicDatabaseConnector
+from ccutils.databases.connector import BasicDatabaseConnector
 import time
 
 class CommandsDatabaseConnector(BasicDatabaseConnector):

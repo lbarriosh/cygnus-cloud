@@ -5,19 +5,19 @@ Definiciones del endpoint de la web
 @version: 3.5
 '''
 
-from clusterServer.connector.threads.databaseUpdateThread import VMServerMonitoringThread, UpdateHandler
-from clusterServer.connector.threads.commandMonitoringThread import CommandMonitoringThread
+from clusterEndpoint.threads.databaseUpdateThread import VMServerMonitoringThread, UpdateHandler
+from clusterEndpoint.threads.commandMonitoringThread import CommandMonitoringThread
 from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
-from database.utils.configuration import DBConfigurator
-from database.clusterEndpoint.clusterEndpointDB import ClusterEndpointDBConnector
+from ccutils.databases.configuration import DBConfigurator
+from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from time import sleep
-from clusterServer.connector.commands.commandsHandler import CommandsHandler, COMMAND_TYPE
-from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
+from clusterEndpoint.commands.commandsHandler import CommandsHandler, COMMAND_TYPE
+from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
 from network.exceptions.networkManager import NetworkManagerException
 from endpointException import EndpointException
 
-class _ClusterServerEndpointCallback(NetworkCallback):
+class _ClusterEndpointCallback(NetworkCallback):
     """
     Callback para procesar los paquetes enviados por el servidor de cluster
     """
@@ -27,7 +27,7 @@ class _ClusterServerEndpointCallback(NetworkCallback):
         Argumentos:
             endpoint: el endpoint que procesará los paquetes entrantes
         """
-        self.__libvirtConnection = endpoint
+        self.__endpoint = endpoint
         
     def processPacket(self, packet):
         """
@@ -37,9 +37,9 @@ class _ClusterServerEndpointCallback(NetworkCallback):
         Devuelve: 
             Nada
         """
-        self.__libvirtConnection._processIncomingPacket(packet)
+        self.__endpoint._processIncomingPacket(packet)
         
-class _ClusterServerEndpointUpdateHandler(UpdateHandler):
+class _ClusterEndpointUpdateHandler(UpdateHandler):
     """
     Estos objetos envían periódicamente paquetes al servidor de cluster para actualizar la base de datos de estado
     """
@@ -49,7 +49,7 @@ class _ClusterServerEndpointUpdateHandler(UpdateHandler):
         Argumentos:
             endpoint: el endpoint que enviará los paquetes
         """
-        self.__libvirtConnection = endpoint
+        self.__endpoint = endpoint
         
     def sendUpdateRequestPackets(self):
         """
@@ -59,9 +59,9 @@ class _ClusterServerEndpointUpdateHandler(UpdateHandler):
         Devuelve:
             Nada
         """
-        self.__libvirtConnection._sendUpdateRequestPackets()
+        self.__endpoint._sendUpdateRequestPackets()
 
-class WebServerEndpoint(object):  
+class ClusterEndpoint(object):  
     """
     Estos objetos comunican un servidor de cluster con la web
     """    
@@ -72,15 +72,18 @@ class WebServerEndpoint(object):
             Ninguno
         """
         self.__stopped = False
+        self.__webPacketHandler = None
+        self.__commandExecutionThread = None
+        self.__updateRequestThread = None
     
-    def connectToDatabases(self, mysqlRootsPassword, statusDBName, commandsDBName, statusdbSQLFilePath, commandsDBSQLFilePath,
+    def connectToDatabases(self, mysqlRootsPassword, endpointDBName, commandsDBName, endpointdbSQLFilePath, commandsDBSQLFilePath,
                            websiteUser, websiteUserPassword, endpointUser, endpointUserPassword, minCommandInterval):
         """
         Establece la conexión con la base de datos de estado y con la base de datos de comandos.
         Argumentos:
             mysqlRootsPassword: la contraseña de root de MySQL
-            statusDBName: el nombre de la base de datos de estado
-            statusdbSQLFilePath: la ruta del script que crea la base de datos de estado
+            endpointDBName: el nombre de la base de datos de estado
+            endpointdbSQLFilePath: la ruta del script que crea la base de datos de estado
             websiteUser: nombre de usuario que usará la web para manipular las bases de datos
             websiteUserPassword: contraseña del usuario de la web
             endpointUser: usuario que utilizará en eldpoint para manipular las bases de datos de estado. Será el único
@@ -89,20 +92,20 @@ class WebServerEndpoint(object):
         """        
         # Crear las bases de datos
         self.__rootsPassword = mysqlRootsPassword
-        self.__statusDatabaseName = statusDBName
+        self.__statusDatabaseName = endpointDBName
         self.__commandsDatabaseName = commandsDBName
         configurator = DBConfigurator(mysqlRootsPassword)
-        configurator.runSQLScript(statusDBName, statusdbSQLFilePath)
+        configurator.runSQLScript(endpointDBName, endpointdbSQLFilePath)
         configurator.runSQLScript(commandsDBName, commandsDBSQLFilePath)
         # Registrar en ellas los usuarios
-        configurator.addUser(websiteUser, websiteUserPassword, statusDBName, False)
-        configurator.addUser(endpointUser, endpointUserPassword, statusDBName, True)
+        configurator.addUser(websiteUser, websiteUserPassword, endpointDBName, False)
+        configurator.addUser(endpointUser, endpointUserPassword, endpointDBName, True)
         configurator.addUser(websiteUser, websiteUserPassword, commandsDBName, True)
         configurator.addUser(endpointUser, endpointUserPassword, commandsDBName, True)
         # Crear los conectores
         self.__commandsDBConnector = CommandsDatabaseConnector(endpointUser, endpointUserPassword, 
                                                                commandsDBName, minCommandInterval) 
-        self.__endpointDBConnector = ClusterEndpointDBConnector(endpointUser, endpointUserPassword, statusDBName)
+        self.__endpointDBConnector = ClusterEndpointDBConnector(endpointUser, endpointUserPassword, endpointDBName)
         
     def connectToClusterServer(self, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval,
                                commandTimeout, commandTimeoutCheckInterval):
@@ -118,27 +121,34 @@ class WebServerEndpoint(object):
         Lanza:
             EnpointException: se lanza cuando no se puede establecer una conexión con el servidor web
         """
-        self.__manager = NetworkManager(certificatePath)
-        self.__manager.startNetworkService()
-        callback = _ClusterServerEndpointCallback(self)
+        self.__networkManager = NetworkManager(certificatePath)
+        self.__networkManager.startNetworkService()
+        callback = _ClusterEndpointCallback(self)
         # Establecer la conexión
         self.__clusterServerIP = clusterServerIP
         self.__clusterServerPort = clusterServerListenningPort
         try :
-            self.__manager.connectTo(clusterServerIP, clusterServerListenningPort, 5, callback, True)
-            while (not self.__manager.isConnectionReady(clusterServerIP, clusterServerListenningPort)) :
+            self.__networkManager.connectTo(clusterServerIP, clusterServerListenningPort, 5, callback, True)
+            while (not self.__networkManager.isConnectionReady(clusterServerIP, clusterServerListenningPort)) :
                 sleep(0.1)
                     
             # TODO: si esto falla, terminar.
             # Preparar la recepción de paquetes y la actualización automática de la base de datos de estado
-            self.__repositoryPacketHandler = ClusterServerPacketHandler(self.__manager)
+            self.__webPacketHandler = ClusterServerPacketHandler(self.__networkManager)
             
-            self.__updateRequestThread = VMServerMonitoringThread(_ClusterServerEndpointUpdateHandler(self), statusDBUpdateInterval)
+            self.__updateRequestThread = VMServerMonitoringThread(_ClusterEndpointUpdateHandler(self), statusDBUpdateInterval)
             self.__updateRequestThread.start()            
-            self.__commandMonitoringThread = CommandMonitoringThread(self.__commandsDBConnector, commandTimeout, commandTimeoutCheckInterval)
-            self.__commandMonitoringThread.start()
+            self.__commandExecutionThread = CommandMonitoringThread(self.__commandsDBConnector, commandTimeout, commandTimeoutCheckInterval)
+            self.__commandExecutionThread.start()
         except NetworkManagerException as e :
             raise EndpointException(e.message)
+        
+    def doEmergencyStop(self):
+        self.__networkManager.stopNetworkService()
+        if (self.__updateRequestThread != None):
+            self.__updateRequestThread.stop()
+        if (self.__commandExecutionThread != None):
+            self.__commandExecutionThread.stop()        
         
     def disconnectFromClusterServer(self):
         """
@@ -150,15 +160,15 @@ class WebServerEndpoint(object):
         @attention: Este método debe llamarse desde el hilo principal para evitar cuelgues
         """
         # Apagar el servidor de cluster
-        p = self.__repositoryPacketHandler.createHaltPacket(self.__haltVMServers)
-        errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        p = self.__webPacketHandler.createHaltPacket(self.__haltVMServers)
+        errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Cluster server halt", 
                                                          errorMessage)
         # Dejar de actualizar las bases de datos
         self.__updateRequestThread.stop()
         
         # Dejar de monitorizar los comandos
-        self.__commandMonitoringThread.stop()
+        self.__commandExecutionThread.stop()
         
         # Cerrar las conexiones con las bases de datos
         self.closeNetworkAndDBConnections()
@@ -172,7 +182,7 @@ class WebServerEndpoint(object):
             Nada
         """
         # Detener el servicio de red
-        self.__manager.stopNetworkService()
+        self.__networkManager.stopNetworkService()
         # Borrar las bases de datos de comandos y de estado
         dbConfigurator = DBConfigurator(self.__rootsPassword)
         dbConfigurator.dropDatabase(self.__commandsDatabaseName)    
@@ -187,7 +197,7 @@ class WebServerEndpoint(object):
         """
         if (self.__stopped) :
             return
-        data = self.__repositoryPacketHandler.readPacket(packet)
+        data = self.__webPacketHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
             self.__endpointDBConnector.processVMServerSegment(data["Segment"], data["SequenceSize"], data["Data"])
         elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
@@ -240,22 +250,22 @@ class WebServerEndpoint(object):
                 if (commandType != COMMAND_TYPE.HALT) :
                     serializedCommandID = "{0}|{1}".format(commandID[0], commandID[1])                    
                     if (commandType == COMMAND_TYPE.BOOTUP_VM_SERVER) :                    
-                        packet = self.__repositoryPacketHandler.createVMServerBootUpPacket(parsedArgs["VMServerNameOrIP"], serializedCommandID)
+                        packet = self.__webPacketHandler.createVMServerBootUpPacket(parsedArgs["VMServerNameOrIP"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.REGISTER_VM_SERVER) :
-                        packet = self.__repositoryPacketHandler.createVMServerRegistrationPacket(parsedArgs["VMServerIP"], 
+                        packet = self.__webPacketHandler.createVMServerRegistrationPacket(parsedArgs["VMServerIP"], 
                             parsedArgs["VMServerPort"], parsedArgs["VMServerName"], parsedArgs["IsVanillaServer"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
-                        packet = self.__repositoryPacketHandler.createVMServerUnregistrationOrShutdownPacket(parsedArgs["VMServerNameOrIP"], 
+                        packet = self.__webPacketHandler.createVMServerUnregistrationOrShutdownPacket(parsedArgs["VMServerNameOrIP"], 
                             parsedArgs["Halt"], parsedArgs["Unregister"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.VM_BOOT_REQUEST) :
-                        packet = self.__repositoryPacketHandler.createVMBootRequestPacket(parsedArgs["VMID"], parsedArgs["UserID"], serializedCommandID)
+                        packet = self.__webPacketHandler.createVMBootRequestPacket(parsedArgs["VMID"], parsedArgs["UserID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.DESTROY_DOMAIN):
-                        packet = self.__repositoryPacketHandler.createDomainDestructionPacket(parsedArgs["DomainID"], serializedCommandID)
+                        packet = self.__webPacketHandler.createDomainDestructionPacket(parsedArgs["DomainID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.VM_SERVER_CONFIGURATION_CHANGE) :
-                        packet = self.__repositoryPacketHandler.createVMServerConfigurationChangePacket(parsedArgs["VMServerNameOrIPAddress"],  parsedArgs["NewServerName"],
+                        packet = self.__webPacketHandler.createVMServerConfigurationChangePacket(parsedArgs["VMServerNameOrIPAddress"],  parsedArgs["NewServerName"],
                                                                                          parsedArgs["NewServerIPAddress"], parsedArgs["NewServerPort"],
                                                                                          parsedArgs["NewVanillaImageEditionBehavior"], serializedCommandID)
-                    errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
+                    errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
                     if (errorMessage != None) :
                         # Error al enviar el paquete => el comando no se podrá ejecutar => avisar a la web
                         (outputType, outputContent) = CommandsHandler.createConnectionErrorOutput()
@@ -276,14 +286,14 @@ class WebServerEndpoint(object):
         if (self.__stopped) :
             return
         # Enviamos paquetes para obtener los tres tipos de información que necesitamos para actualizar la base de datos de estado
-        p = self.__repositoryPacketHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
-        errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)          
+        p = self.__webPacketHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
+        errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)          
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Virtual machine servers status", errorMessage)     
         
-        p = self.__repositoryPacketHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
-        errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)        
+        p = self.__webPacketHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
+        errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)        
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Virtual machine distribution", errorMessage)
         
-        p = self.__repositoryPacketHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
-        errorMessage = self.__manager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        p = self.__webPacketHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
+        errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Active virtual machines data", errorMessage)
