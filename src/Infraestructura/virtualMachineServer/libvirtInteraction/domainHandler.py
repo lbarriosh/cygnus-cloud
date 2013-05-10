@@ -10,7 +10,7 @@ from ccutils.processes.childProcessManager import ChildProcessManager
 from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
-from virtualMachineServer.reactor.transfer_t import TRANSFER_T
+from virtualMachineServer.database.vmServerDB import TRANSFER_T
 from os import path, listdir
 
 from time import sleep
@@ -216,8 +216,7 @@ class DomainHandler(object):
         """
         domainName = self.__dbConnector.getDomainNameFromVMBootCommand(domainUID)
         if (domainName == None) :
-            # No informamos del error: el servidor de máquinas virtuales siempre intenta
-            # hacer lo que se le pide, y si no puede, no lo hace y no se queja.
+            # Ignoramos la petición: el dominio ya está apagado
             return 
         self.__libvirtConnection.destroyDomain(domainName)
         # Libvirt borra las imágenes de disco, por lo que sólo tenemos que encargarnos de actualizar

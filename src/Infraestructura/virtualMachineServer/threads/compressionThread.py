@@ -11,8 +11,9 @@ from virtualMachineServer.exceptions.vmServerException import VMServerException
 from os import path, listdir, makedirs
 import shutil
 from ccutils.processes.childProcessManager import ChildProcessManager
-from virtualMachineServer.reactor.transfer_t import TRANSFER_T
+from virtualMachineServer.database.vmServerDB import TRANSFER_T
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T
+from errors.codes import ERROR_T
 from time import sleep
 
 class CompressionThread(BasicThread):
@@ -133,13 +134,13 @@ class CompressionThread(BasicThread):
                 data["SourceFilePath"] = path.basename(zipFilePath)        
                 
                 self.__dbConnector.addToTransferQueue(data)
-        except Exception as e:
+        except Exception:
             if (data["Transfer_Type"] == TRANSFER_T.DEPLOY_IMAGE):
                 packet_type = VM_SERVER_PACKET_T.IMAGE_DEPLOYMENT_ERROR
             else :
                 packet_type = VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR
                 
-            p = self.__packetHandler.createErrorPacket(packet_type, "Compression error: " + e.message, data["CommandID"])
+            p = self.__packetHandler.createErrorPacket(packet_type, ERROR_T.VMSRVR_COMPRESSION_ERROR, data["CommandID"])
             self.__networkManager.sendPacket('', self.__serverListenningPort, p)
             
             # Generar una transferencia especial para dejar de editar la imagen

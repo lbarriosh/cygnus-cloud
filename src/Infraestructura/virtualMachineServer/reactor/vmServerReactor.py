@@ -8,7 +8,7 @@ Created on 14/01/2013
 from network.manager.networkManager import NetworkManager
 from virtualMachineServer.networking.callback import ClusterServerCallback
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
-from virtualMachineServer.database.vmServerDB import VMServerDBConnector
+from virtualMachineServer.database.vmServerDB import VMServerDBConnector, TRANSFER_T
 from network.ftp.ftpClient import FTPClient
 from virtualMachineServer.networking.reactors import MainServerPacketReactor
 from virtualMachineServer.threads.fileTransferThread import FileTransferThread
@@ -17,10 +17,10 @@ from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.domainHandler import DomainHandler
 from ccutils.processes.childProcessManager import ChildProcessManager
 from network.interfaces.ipAddresses import get_ip_address 
-from virtualMachineServer.reactor.transfer_t import TRANSFER_T
 import os
 import multiprocessing
 import sys
+from errors.codes import ERROR_T
 
 class VMServerReactor(MainServerPacketReactor):
     """
@@ -185,17 +185,17 @@ class VMServerReactor(MainServerPacketReactor):
                 ChildProcessManager.runCommandInForeground("rm -rf " + os.path.dirname(osImagePath), VMServerException)                
                 ChildProcessManager.runCommandInForeground("rm -rf " + os.path.dirname(definitionFilePath), VMServerException)
                 p = self.__packetManager.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DELETED, data["ImageID"], data["CommandID"])
-            except Exception as e:
-                p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR, "Can't delete image: internal error ({0})".format(e.message), 
+            except Exception:
+                p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR, ERROR_T.VM_SRVR_INTERNAL_ERROR, 
                                                             data["CommandID"])                
             
         else:
             if (isBootable != None) :
-                errorMessage = "The image is being edited, so it cannot be deleted"
+                errorCode = ERROR_T.VMSRVR_LOCKED_IMAGE
             else :
-                errorMessage = "The image {0} does not exist".format(data["ImageID"])
+                errorCode = ERROR_T.VMSRVR_UNKNOWN_IMAGE
             
-            p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR, errorMessage, 
+            p = self.__packetManager.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR, errorCode, 
                                                        data["CommandID"])
         
         self.__networkManager.sendPacket('', self.__listenningPort, p)
