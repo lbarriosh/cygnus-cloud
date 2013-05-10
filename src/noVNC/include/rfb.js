@@ -3,7 +3,7 @@
  * Copyright (C) 2012 Joel Martin
  * Licensed under MPL 2.0 (see LICENSE.txt)
  *
- * See README.md for usage and integration instructions.
+//  * See README.md for usage and integration instructions.
  *
  * TIGHT decoder portion:
  * (c) 2012 Michael Tinglof, Joe Balaz, Les Piech (Mercuri.ca)
@@ -127,7 +127,7 @@ var that           = {},  // Public API methods
     mouse_arr        = [],
     viewportDragging = false,
     viewportDragPos  = {};
-
+    
 // Configuration attributes
 Util.conf_defaults(conf, that, defaults, [
     ['target',             'wo', 'dom', null, 'VNC display rendering Canvas object'],
@@ -147,8 +147,8 @@ Util.conf_defaults(conf, that, defaults, [
 
     ['viewportDrag',       'rw', 'bool', false, 'Move the viewport on mouse drags'],
 
-    ['check_rate',         'rw', 'int', 217,  'Timing (ms) of send/receive check'],
-    ['fbu_req_rate',       'rw', 'int', 1413, 'Timing (ms) of frameBufferUpdate requests'],
+    ['check_rate',         'rw', 'int', 10,  'Timing (ms) of send/receive check'],
+    ['fbu_req_rate',       'rw', 'int', 50, 'Timing (ms) of frameBufferUpdate requests'],
 
     // Callback functions
     ['onUpdateState',      'rw', 'func', function() { },
@@ -184,7 +184,8 @@ that.set_local_cursor = function(cursor) {
         } else {
             Util.Warn("Browser does not support local cursor");
         }
-    }
+    } 
+    conf.local_cursor = false;
 };
 
 // These are fake configuration getters

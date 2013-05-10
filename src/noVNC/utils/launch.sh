@@ -23,8 +23,8 @@ usage() {
 
 NAME="$(basename $0)"
 HERE="$(cd "$(dirname "$0")" && pwd)"
-PORT="15000"
-VNC_DEST="localhost:15001"
+PORT="6080"
+VNC_DEST="localhost:5900"
 CERT=""
 WEB=""
 proxy_pid=""
