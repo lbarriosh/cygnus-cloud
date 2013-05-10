@@ -256,10 +256,12 @@ td.izquierda{
 td.vanillaData{
     padding: 0px;
     margin-top: 0px;
+
 }
 
 tr.vanillaData{
     margin-top: 0px;
+    line-height: 1.2em;
 }
 
 th {
@@ -434,9 +436,7 @@ select:after{
    border: 1.3px solid rgba(65, 141, 236, 1);
 }
 
-pre {
-	background: black;
-	text-align: left;
-	padding: 20px;
-	margin: 0 auto 30px auto; 
+textArea{
+	width: 70%;
+	height: 80px;
 }
