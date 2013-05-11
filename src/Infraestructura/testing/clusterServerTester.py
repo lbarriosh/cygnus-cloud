@@ -125,7 +125,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createDomainDestructionPacket(tokens.pop(0), "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "obtainImageRepositoryStatus") :
-            p = pHandler.createDataRequestPacket(PACKET_T.REPOSITORY_STATUS_REQUEST)
+            p = pHandler.createDataRequestPacket(PACKET_T.QUERY_REPOSITORY_STATUS)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "deployImage"):
             p = pHandler.createImageDeploymentPacket(PACKET_T.DEPLOY_IMAGE, tokens.pop(0), int(tokens.pop(0)), "")

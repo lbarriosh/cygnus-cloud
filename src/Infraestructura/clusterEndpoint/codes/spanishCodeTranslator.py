@@ -13,16 +13,7 @@ class SpanishCodeTranslator(CodeTranslator):
         result = []
         for tup in data :
             tmp = list(tup)
-            if (tmp[1] == SERVER_STATE_T.BOOTING) :
-                tmp[1] = "Arrancando"
-            elif (tmp[1] == SERVER_STATE_T.READY) :
-                tmp[1] = "Listo"
-            elif (tmp[1] == SERVER_STATE_T.SHUT_DOWN):
-                tmp[1] = "Apagado"
-            elif (tmp[1] == SERVER_STATE_T.RECONNECTING):
-                tmp[1] = "Reestableciendo conexión"
-            else :
-                tmp[1] = "Apagado - Fallo de conexión"            
+            tmp[1] = self.__translateServerStatusCode(tmp[1])
             result.append(tuple(tmp))
         return result
     
@@ -39,4 +30,19 @@ class SpanishCodeTranslator(CodeTranslator):
             else:
                 tmp[2] = "Pendiente de borrado"
             result.append(tuple(tmp))
-        return result            
+        return result           
+    
+    def __translateServerStatusCode(self, code):
+        if (code == SERVER_STATE_T.BOOTING) :
+            return "Arrancando"
+        elif (code == SERVER_STATE_T.READY) :
+            return "Listo"
+        elif (code == SERVER_STATE_T.SHUT_DOWN):
+            return "Apagado"
+        elif (code == SERVER_STATE_T.RECONNECTING):
+            return "Reestableciendo conexión"
+        else :
+            return "Apagado - Fallo de conexión"         
+    
+    def translateRepositoryStatusCode(self, code): 
+        return self.__translateServerStatusCode(code)

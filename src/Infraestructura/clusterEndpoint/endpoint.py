@@ -205,6 +205,9 @@ class ClusterEndpoint(object):
         elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
             processedData = self.__codeTranslator.processVMDistributionSegment(data["Data"])
             self.__endpointDBConnector.processVMDistributionSegment(data["Segment"], data["SequenceSize"], processedData)
+        elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS):
+            status = self.__codeTranslator.translateRepositoryStatusCode(data["RepositoryStatus"])
+            self.__endpointDBConnector.updateImageRepositoryStatus(data["FreeDiskSpace"], data["AvailableDiskSpace"], status)
         elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
             self.__endpointDBConnector.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])
         else :
@@ -298,5 +301,9 @@ class ClusterEndpoint(object):
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Virtual machine distribution", errorMessage)
         
         p = self.__webPacketHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
+        errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Active virtual machines data", errorMessage)
+        
+        p = self.__webPacketHandler.createDataRequestPacket(PACKET_T.QUERY_REPOSITORY_STATUS)
         errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Active virtual machines data", errorMessage)

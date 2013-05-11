@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS VirtualMachineServerStatus(serverName VARCHAR(30) PRI
 	
 DELETE FROM VirtualMachineServerStatus;
 
-CREATE TABLE IF NOT EXISTS ImageRepositoryStatus(repositoryIP VARCHAR(15), repositoryPort INTEGER, freeDiskSpace INTEGER,
-	availableDiskSpace INTEGER, PRIMARY KEY(repositoryIP, repositoryPort)) ENGINE=MEMORY;
+CREATE TABLE IF NOT EXISTS ImageRepositoryStatus(repositoryID TINYINT PRIMARY KEY, freeDiskSpace INTEGER,
+	availableDiskSpace INTEGER, repositoryStatus VARCHAR(30)) ENGINE=MEMORY;
 	
 DELETE FROM ImageRepositoryStatus;
 

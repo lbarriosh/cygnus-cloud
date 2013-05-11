@@ -496,3 +496,25 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             return None
         else :
             return {"RAMSize" : result[0], "VCPUs": result[1], "OSDiskSize" : result[2], "DataDiskSize" : result[3]}
+        
+    def updateImageRepositoryStatus(self, freeDiskSpace, availableDiskSpace, status) :
+        query = "SELECT * FROM ImageRepositoryStatus;"
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            command = "INSERT INTO ImageRepositoryStatus VALUES (1, {0}, {1}, '{2}');".format(freeDiskSpace, availableDiskSpace, status)
+        else :
+            command = "UPDATE ImageRepositoryStatus SET freeDiskSpace = {0}, availableDiskSpace = {1}, repositoryStatus = '{2}';"\
+                .format(freeDiskSpace, availableDiskSpace, status)
+        self._executeUpdate(command)
+        
+    def getImageRepositoryStatus(self):
+        query = "SELECT freeDiskSpace, availableDiskSpace, repositoryStatus FROM ImageRepositoryStatus;"
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else :
+            d = dict()
+            d["FreeDiskSpace"] = result[0]
+            d["AvailableDiskSpace"] = result[1]
+            d["RepositoryStatus"] = str(result[2])
+            return d

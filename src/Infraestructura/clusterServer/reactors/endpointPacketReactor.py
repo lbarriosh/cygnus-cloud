@@ -64,7 +64,7 @@ class EndpointPacketReactor(object):
             self.__destroyDomain(data)
         elif (data["packet_type"] == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE):
             self.__changeVMServerConfiguration(data)
-        elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS_REQUEST):
+        elif (data["packet_type"] == PACKET_T.QUERY_REPOSITORY_STATUS):
             self.__sendRepositoryStatusData()
         elif (data["packet_type"] == PACKET_T.DEPLOY_IMAGE or data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER):
             self.__deployOrDeleteImage(data)

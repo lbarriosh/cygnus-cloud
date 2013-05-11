@@ -9,3 +9,6 @@ class CodeTranslator(object):
     
     def processVMDistributionSegment(self, data):
         raise NotImplementedError
+    
+    def translateRepositoryStatusCode(self, code):
+        raise NotImplementedError

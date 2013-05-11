@@ -257,3 +257,6 @@ class ClusterConnector(object):
         familias de imágenes vanilla
         """
         return self.__endpointDBConnector.getMaxVanillaImageFamilyData()
+    
+    def getImageRepositoryStatus(self):
+        return self.__endpointDBConnector.getImageRepositoryStatus()
