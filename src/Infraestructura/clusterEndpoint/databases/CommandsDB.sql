@@ -22,7 +22,7 @@ CREATE TABLE RunCommandOutput(
 	userID INT,
 	time DOUBLE,
 	outputType TINYINT NOT NULL,
-	commandOutput VARCHAR(100),
+	commandOutput VARCHAR(200),
 	isNotification BOOL,
 	PRIMARY KEY(userID, time))
 	ENGINE=MEMORY;

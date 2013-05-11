@@ -7,6 +7,7 @@ Conector que usará la web para interactuar con el sistema
 from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
 from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
 from clusterEndpoint.commands.commandsHandler import CommandsHandler
+from clusterEndpoint.codes.spanishCodesTranslator import SpanishCodesTranslator
 from time import sleep
 
 class ClusterConnector(object):
@@ -21,6 +22,7 @@ class ClusterConnector(object):
             userID: el identificador del usuario que accede al sistema. Se trata de un entero.
         """
         self.__userID = userID
+        self.__commandsHandler = CommandsHandler(SpanishCodesTranslator())
     
     def connectToDatabases(self, endpointDBName, commandsDBName, databaseUser, databasePassword):
         """
@@ -91,7 +93,7 @@ class ClusterConnector(object):
             El identificador único del comando.
             @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isVanillaServer)
+        (commandType, commandArgs) = self.__commandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isVanillaServer)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
         
     def unregisterVMServer(self, vmServerNameOrIP, isShutDown):
@@ -105,7 +107,7 @@ class ClusterConnector(object):
             El identificador único del comando.
             @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMServerUnregistrationOrShutdownCommand(True, vmServerNameOrIP, isShutDown)
+        (commandType, commandArgs) = self.__commandsHandler.createVMServerUnregistrationOrShutdownCommand(True, vmServerNameOrIP, isShutDown)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def shutdownVMServer(self, vmServerNameOrIP, isShutDown):
@@ -119,7 +121,7 @@ class ClusterConnector(object):
             El identificador único del comando.
             @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMServerUnregistrationOrShutdownCommand(False, vmServerNameOrIP, isShutDown)
+        (commandType, commandArgs) = self.__commandsHandler.createVMServerUnregistrationOrShutdownCommand(False, vmServerNameOrIP, isShutDown)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def bootUpVMServer(self, vmServerNameOrIP):
@@ -131,7 +133,7 @@ class ClusterConnector(object):
             El identificador único del comando.
             @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMServerBootCommand(vmServerNameOrIP)
+        (commandType, commandArgs) = self.__commandsHandler.createVMServerBootCommand(vmServerNameOrIP)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def bootUpVM(self, imageID):
@@ -143,7 +145,7 @@ class ClusterConnector(object):
             El identificador único del comando.
             @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMBootCommand(imageID, self.__userID)
+        (commandType, commandArgs) = self.__commandsHandler.createVMBootCommand(imageID, self.__userID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def isShutDown(self, haltVMServers):
@@ -155,7 +157,7 @@ class ClusterConnector(object):
         Devuelve: 
             Nada
         """
-        (commandType, commandArgs) = CommandsHandler.createHaltCommand(haltVMServers)
+        (commandType, commandArgs) = self.__commandsHandler.createHaltCommand(haltVMServers)
         self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
         
     def destroyDomain(self, domainID):
@@ -166,12 +168,12 @@ class ClusterConnector(object):
         Devuelve:
             Nada
         """
-        (commandType, commandArgs) = CommandsHandler.createDomainDestructionCommand(domainID)
+        (commandType, commandArgs) = self.__commandsHandler.createDomainDestructionCommand(domainID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def changeVMServerConfiguration(self, serverNameOrIPAddress, newName, newIPAddress, newPort, 
                                     newVanillaImageEditionBehavior):
-        (commandType, commandArgs) = CommandsHandler.createVMServerConfigurationChangeCommand(serverNameOrIPAddress, 
+        (commandType, commandArgs) = self.__commandsHandler.createVMServerConfigurationChangeCommand(serverNameOrIPAddress, 
             newName, newIPAddress, newPort, newVanillaImageEditionBehavior)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
@@ -191,7 +193,7 @@ class ClusterConnector(object):
             result = self.__commandsDBConnector.getCommandOutput(commandID)
             if (result != None) :
                 (outputType, outputContent) = result
-                result = CommandsHandler.deserializeCommandOutput(outputType, outputContent)
+                result = self.__commandsHandler.deserializeCommandOutput(outputType, outputContent)
             return result
     
     def waitForCommandOutput(self, commandID):
@@ -211,7 +213,7 @@ class ClusterConnector(object):
         if result == None :
             return None
         else :
-            return CommandsHandler.deserializeCommandOutput(result[0], result[1])
+            return self.__commandsHandler.deserializeCommandOutput(result[0], result[1])
         
     def getImageBasicData(self, imageID):
         """
@@ -263,3 +265,10 @@ class ClusterConnector(object):
     
     def getVirtualMachineServerStatus(self, serverName):
         return self.__endpointDBConnector.getVirtualMachineServerStatus(serverName)
+    
+if __name__ == "__main__" :
+    connector = ClusterConnector(1)
+    connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "connector_user", "CygnusCloud")
+    commandID = connector.bootUpVM(1)
+    print connector.waitForCommandOutput(commandID)
+        

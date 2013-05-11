@@ -13,7 +13,9 @@ COMMAND_TYPE = enum("REGISTER_VM_SERVER", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "B
 COMMAND_OUTPUT_TYPE = enum("VM_SERVER_REGISTRATION_ERROR", "VM_SERVER_BOOTUP_ERROR", 
                            "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", "VM_SERVER_UNREGISTRATION_ERROR",
                            "VM_SERVER_SHUTDOWN_ERROR", "DOMAIN_DESTRUCTION_ERROR", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
-                           "CONNECTION_ERROR", "COMMAND_TIMED_OUT")
+                           "CONNECTION_ERROR", "COMMAND_TIMED_OUT", "IMAGE_DEPLOYMENT_ERROR", "DELETE_IMAGE_FROM_SERVER_ERROR",
+                           "IMAGE_CREATION_ERROR", "IMAGE_EDITION_ERROR", "DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR",
+                           "AUTO_DEPLOY_ERROR", "VM_SERVER_INTERNAL_ERROR")
 
 from clusterServer.networking.packets import CLUSTER_SERVER_PACKET_T as PACKET_T
 
@@ -22,8 +24,10 @@ class CommandsHandler(object):
     Esta clase define métodos estáticos que serializan y deserializan comandos y salidas de comandos
     """
     
-    @staticmethod
-    def createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isVanillaServer):
+    def __init__(self, codesTranslator):
+        self.__codesTranslator = codesTranslator
+    
+    def createVMServerRegistrationCommand(self, vmServerIP, vmServerPort, vmServerName, isVanillaServer):
         """
         Crea un comando de registro de un servidor de máquinas virtuales
         Args:
@@ -38,8 +42,7 @@ class CommandsHandler(object):
         args = "{0}${1}${2}${3}".format(vmServerIP, vmServerPort, vmServerName, isVanillaServer)
         return (COMMAND_TYPE.REGISTER_VM_SERVER, args)
     
-    @staticmethod
-    def createVMServerUnregistrationOrShutdownCommand(unregister, vmServerNameOrIP, isShutDown):
+    def createVMServerUnregistrationOrShutdownCommand(self, unregister, vmServerNameOrIP, isShutDown):
         """
         Crea un comando de borrado o apagado de un servidor de máquinas virtuales
         Args:
@@ -53,13 +56,11 @@ class CommandsHandler(object):
         args =  "{0}${1}${2}".format(unregister, vmServerNameOrIP, isShutDown)
         return (COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER, args)
     
-    @staticmethod
-    def createVMServerConfigurationChangeCommand(serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior):
+    def createVMServerConfigurationChangeCommand(self, serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior):
         args = "{0}${1}${2}${3}${4}".format(serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior)
         return (COMMAND_TYPE.VM_SERVER_CONFIGURATION_CHANGE, args)
     
-    @staticmethod
-    def createVMServerBootCommand(vmServerNameOrIP):
+    def createVMServerBootCommand(self, vmServerNameOrIP):
         """
         Crea un comando de arranque de un servidor de máquinas virtuales
         Args:
@@ -70,8 +71,7 @@ class CommandsHandler(object):
         args = vmServerNameOrIP
         return (COMMAND_TYPE.BOOTUP_VM_SERVER, args)
     
-    @staticmethod
-    def createVMBootCommand(imageID, ownerID):
+    def createVMBootCommand(self, imageID, ownerID):
         """
         Crea un comando de arranque de una máquina virtual
         Args:
@@ -83,8 +83,7 @@ class CommandsHandler(object):
         args = "{0}${1}".format(imageID, ownerID)
         return (COMMAND_TYPE.VM_BOOT_REQUEST, args)
     
-    @staticmethod
-    def createHaltCommand(haltVMServers): 
+    def createHaltCommand(self, haltVMServers): 
         """
         Crea un comando que para toda la infraestructura
         Args:
@@ -95,8 +94,7 @@ class CommandsHandler(object):
         """
         return (COMMAND_TYPE.HALT, str(haltVMServers))
     
-    @staticmethod
-    def createDomainDestructionCommand(domainID):
+    def createDomainDestructionCommand(self, domainID):
         """
         Crea un comando de destrucción de un dominio
         Argumentos:
@@ -106,8 +104,7 @@ class CommandsHandler(object):
         """
         return (COMMAND_TYPE.DESTROY_DOMAIN, domainID)
 
-    @staticmethod
-    def deserializeCommandArgs(commandType, commandArgs):
+    def deserializeCommandArgs(self, commandType, commandArgs):
         """
         Deserializa los argumentos de un comando
         Args:
@@ -144,8 +141,39 @@ class CommandsHandler(object):
             result["NewVanillaImageEditionBehavior"] = l[4] == "True"
         return result
     
-    @staticmethod
-    def createVMServerGenericErrorOutput(packet_type, serverNameOrIPAddress, errorMessage):
+    def __getErrorOutputType(self, packet_type):
+        if (packet_type == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
+            return COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR
+        elif (packet_type == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
+            return COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR
+        elif (packet_type == PACKET_T.VM_BOOT_FAILURE) :
+            return COMMAND_OUTPUT_TYPE.VM_BOOT_FAILURE
+        elif (packet_type == PACKET_T.VM_SERVER_SHUTDOWN_ERROR):
+            return COMMAND_OUTPUT_TYPE.VM_SERVER_SHUTDOWN_ERROR
+        elif (packet_type == PACKET_T.VM_SERVER_UNREGISTRATION_ERROR):
+            return COMMAND_OUTPUT_TYPE.VM_SERVER_UNREGISTRATION_ERROR
+        elif (packet_type == PACKET_T.DOMAIN_DESTRUCTION_ERROR):
+            return COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR
+        elif (packet_type == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR):
+            return COMMAND_OUTPUT_TYPE.VM_SERVER_CONFIGURATION_CHANGE_ERROR
+        elif (packet_type == PACKET_T.IMAGE_DEPLOYMENT_ERROR):
+            return COMMAND_OUTPUT_TYPE.IMAGE_DEPLOYMENT_ERROR
+        elif (packet_type == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR):
+            return COMMAND_OUTPUT_TYPE.DELETE_IMAGE_FROM_SERVER_ERROR
+        elif (packet_type == PACKET_T.IMAGE_CREATION_ERROR):
+            return COMMAND_OUTPUT_TYPE.IMAGE_CREATION_ERROR
+        elif (packet_type == PACKET_T.IMAGE_EDITION_ERROR):
+            return COMMAND_OUTPUT_TYPE.IMAGE_EDITION_ERROR
+        elif (packet_type == PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR):
+            return COMMAND_OUTPUT_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR
+        elif (packet_type == PACKET_T.AUTO_DEPLOY_ERROR):
+            return COMMAND_OUTPUT_TYPE.AUTO_DEPLOY_ERROR
+        elif (packet_type == PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR):
+            return COMMAND_OUTPUT_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR
+        else :
+            return COMMAND_OUTPUT_TYPE.VM_SERVER_INTERNAL_ERROR
+    
+    def createErrorOutput(self, packet_type, errorCode):
         """
         Crea salidas de error para los comandos de arranque, apagado y borrado
         de servidores de máquinas virtuales
@@ -155,82 +183,9 @@ class CommandsHandler(object):
         Devuelve:
             Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
         """
-        content = "{0}${1}".format(serverNameOrIPAddress, errorMessage)
-        if (packet_type == PACKET_T.VM_SERVER_BOOTUP_ERROR) :
-            outputType = COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR
-        elif (packet_type == PACKET_T.VM_SERVER_UNREGISTRATION_ERROR) :
-            outputType = COMMAND_OUTPUT_TYPE.VM_SERVER_UNREGISTRATION_ERROR
-        else :
-            outputType = COMMAND_OUTPUT_TYPE.VM_SERVER_SHUTDOWN_ERROR
-        return (outputType, content)
+        return (self.__getErrorOutputType(packet_type), self.__codesTranslator.translateErrorDescriptionCode(errorCode))
     
-    @staticmethod
-    def createVMServerRegistrationErrorOutput(vmServerIP, vmServerPort, vmServerName, errorMessage):
-        """
-        Crea salidas de error para los comandos de registro de servidores de máquinas virtuales
-        Args:
-            vmServeriP: la IP del servidor
-            vmServerPort: el puerto en el que el serivodr escucha
-            vmServerName: el nombre del servidor
-            errorMessage: un mensaje de error
-        Devuelve:
-            Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
-        """
-        content = "{0}${1}${2}${3}".format(vmServerIP, vmServerPort, vmServerName, errorMessage)
-        return (COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR, content)
-    
-    @staticmethod
-    def createVMBootFailureErrorOutput(imageID, errorMessage):
-        """
-        Crea salidas de error para los comandos de arranque de máquinas virtuales
-        Args:
-            imageID: el identificador único de la imagen
-            errorMessage: un mensaje de error
-        Devuelve:
-            Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
-        """
-        content = "{0}${1}".format(imageID, errorMessage)
-        return (COMMAND_OUTPUT_TYPE.VM_BOOT_FAILURE, content)
-    
-    @staticmethod
-    def createVMConnectionDataOutput(vncServerIPAddress, vncServerPort, vncServerPassword):
-        """
-        Crea la salida normal para los comandos de arranque de una máquina virtual. Esta contiene los datos de conexión.
-        Args:
-            vncServerIPAddress: la IP del servidor VNC
-            vncServerPort: el puerto del servidor VNC
-            vncServerPassword: la contraseña del servidor VNC
-        Devuelve:
-            Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
-        """
-        content = "{0}${1}${2}".format(vncServerIPAddress, vncServerPort, vncServerPassword)
-        return (COMMAND_OUTPUT_TYPE.VM_CONNECTION_DATA, content)
-    
-    @staticmethod
-    def createDomainDestructionErrorOutput(errorMessage):
-        """
-        Crea un mensaje de error asociado a la destrucción de una máquina virtual
-        Argumentos:
-            errorMessage: el mensaje de error
-        Devuelve:
-            Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
-        """
-        return (COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR, errorMessage)
-    
-    @staticmethod
-    def createVMServerConfigurationChangeErrorOutput(reason):
-        return (COMMAND_OUTPUT_TYPE.VM_SERVER_CONFIGURATION_CHANGE_ERROR, reason)
-    
-    @staticmethod
-    def createConnectionErrorOutput():
-        return (COMMAND_OUTPUT_TYPE.CONNECTION_ERROR, "The connection was lost")
-    
-    @staticmethod
-    def createCommandTimeoutErrorOutput():
-        return (COMMAND_OUTPUT_TYPE.COMMAND_TIMED_OUT, "")
-    
-    @staticmethod
-    def deserializeCommandOutput(commandOutputType, content):
+    def deserializeCommandOutput(self, commandOutputType, content):
         """
         Deserializa la salida de un comando
         Args:
@@ -242,26 +197,13 @@ class CommandsHandler(object):
         l = content.split("$")
         result = dict()
         result["OutputType"] = commandOutputType
-        if (commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_BOOTUP_ERROR or
-            commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_SHUTDOWN_ERROR or
-            commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_UNREGISTRATION_ERROR) :
-            result["ServerNameOrIPAddress"] = l[0]
-            result["ErrorMessage"] = l[1]
-        elif (commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_REGISTRATION_ERROR) :
-            result["VMServerIP"] = l[0]
-            result["VMServerPort"] = l[1]
-            result["VMServerName"] = l[2]
-            result["ErrorMessage"] = l[3]
-        elif (commandOutputType == COMMAND_OUTPUT_TYPE.VM_BOOT_FAILURE) :
-            result["VMID"] = int(l[0])
-            result["ErrorMessage"] = l[1]
-        elif (commandOutputType == COMMAND_OUTPUT_TYPE.VM_CONNECTION_DATA): 
+        if (commandOutputType == COMMAND_OUTPUT_TYPE.VM_CONNECTION_DATA): 
             result["VNCServerIPAddress"] = l[0]
             result["VNCServerPort"] = int(l[1])
             result["VNCServerPassword"] = l[2]
-        elif (commandOutputType == COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR or
-              commandOutputType == COMMAND_OUTPUT_TYPE.VM_SERVER_CONFIGURATION_CHANGE_ERROR or
-              commandOutputType == COMMAND_OUTPUT_TYPE.CONNECTION_ERROR) :
-            result["ErrorMessage"] = l[0]
-            
+        else :
+            result["ErrorMessage"] = l[0]              
         return result
+    
+    def createConnectionErrorOutput(self):
+        return (COMMAND_OUTPUT_TYPE.CONNECTION_ERROR, "No se puede establecer la conexión con el servidor de cluster")

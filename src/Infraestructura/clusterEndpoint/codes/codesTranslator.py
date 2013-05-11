@@ -3,7 +3,7 @@ Created on May 11, 2013
 
 @author: luis
 '''
-class CodeTranslator(object):
+class CodesTranslator(object):
     def processVMServerSegment(self, data):
         raise NotImplementedError
     
@@ -11,4 +11,7 @@ class CodeTranslator(object):
         raise NotImplementedError
     
     def translateRepositoryStatusCode(self, code):
+        raise NotImplementedError
+    
+    def translateErrorDescriptionCode(self, code):
         raise NotImplementedError

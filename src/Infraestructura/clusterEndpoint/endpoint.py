@@ -6,7 +6,7 @@ Definiciones del endpoint de la web
 '''
 
 from clusterEndpoint.threads.databaseUpdateThread import VMServerMonitoringThread, UpdateHandler
-from clusterEndpoint.threads.commandMonitoringThread import CommandMonitoringThread
+from clusterEndpoint.threads.commandMonitoringThread import CommandsMonitoringThread
 from clusterServer.networking.packets import ClusterServerPacketHandler, CLUSTER_SERVER_PACKET_T as PACKET_T
 from ccutils.databases.configuration import DBConfigurator
 from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
@@ -76,6 +76,7 @@ class ClusterEndpoint(object):
         self.__commandExecutionThread = None
         self.__updateRequestThread = None
         self.__codeTranslator = codeTranslator
+        self.__commandsHandler = CommandsHandler(codeTranslator)
     
     def connectToDatabases(self, mysqlRootsPassword, endpointDBName, commandsDBName, endpointdbSQLFilePath, commandsDBSQLFilePath,
                            websiteUser, websiteUserPassword, endpointUser, endpointUserPassword, minCommandInterval):
@@ -139,7 +140,7 @@ class ClusterEndpoint(object):
             
             self.__updateRequestThread = VMServerMonitoringThread(_ClusterEndpointUpdateHandler(self), statusDBUpdateInterval)
             self.__updateRequestThread.start()            
-            self.__commandExecutionThread = CommandMonitoringThread(self.__commandsDBConnector, commandTimeout, commandTimeoutCheckInterval)
+            self.__commandExecutionThread = CommandsMonitoringThread(self.__commandsDBConnector, commandTimeout, self.__commandsHandler, commandTimeoutCheckInterval)
             self.__commandExecutionThread.start()
         except NetworkManagerException as e :
             raise EndpointException(e.message)
@@ -219,25 +220,8 @@ class ClusterEndpoint(object):
                 self.__commandsDBConnector.removeExecutedCommand(commandID)
             else :           
                 # El resto de paquetes contienen el resultado de ejecutar comandos => los serializamos y los añadimos
-                # a la base de datos de comandos para que los conectores se enteren
-                if (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR or 
-                    data["packet_type"] == PACKET_T.VM_SERVER_UNREGISTRATION_ERROR or 
-                    data["packet_type"] == PACKET_T.VM_SERVER_SHUTDOWN_ERROR) :
-                    (outputType, outputContent) = CommandsHandler.createVMServerGenericErrorOutput(
-                        data["packet_type"], data["ServerNameOrIPAddress"], data["ErrorMessage"])
-                elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
-                    (outputType, outputContent) = CommandsHandler.createVMServerRegistrationErrorOutput(
-                        data["VMServerIP"], data["VMServerPort"], data["VMServerName"], data["ErrorMessage"])
-                elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE) :
-                    (outputType, outputContent) = CommandsHandler.createVMBootFailureErrorOutput(
-                        data["VMID"], data["ErrorMessage"])  
-                elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
-                    (outputType, outputContent) = CommandsHandler.createVMConnectionDataOutput(
-                        data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"])
-                elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION_ERROR):
-                    (outputType, outputContent) = CommandsHandler.createDomainDestructionErrorOutput(data["ErrorMessage"])
-                elif (data["packet_type"] == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
-                    (outputType, outputContent) = CommandsHandler.createVMServerConfigurationChangeErrorOutput(data["ErrorMessage"])
+                # a la base de datos de comandos para que los conectores se enteren                
+                (outputType, outputContent) = self.__commandsHandler.createErrorOutput(data['packet_type'], data["ErrorDescription"])
                 self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
                 
     def processCommands(self):
@@ -254,7 +238,7 @@ class ClusterEndpoint(object):
                 sleep(0.1)
             else :
                 (commandID, commandType, commandArgs) = commandData
-                parsedArgs = CommandsHandler.deserializeCommandArgs(commandType, commandArgs)
+                parsedArgs = self.__commandsHandler.deserializeCommandArgs(commandType, commandArgs)
                 if (commandType != COMMAND_TYPE.HALT) :
                     serializedCommandID = "{0}|{1}".format(commandID[0], commandID[1])                    
                     if (commandType == COMMAND_TYPE.BOOTUP_VM_SERVER) :                    
@@ -276,7 +260,7 @@ class ClusterEndpoint(object):
                     errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
                     if (errorMessage != None) :
                         # Error al enviar el paquete => el comando no se podrá ejecutar => avisar a la web
-                        (outputType, outputContent) = CommandsHandler.createConnectionErrorOutput()
+                        (outputType, outputContent) = self.__commandsHandler.createConnectionErrorOutput()
                         self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
                         
                 else :

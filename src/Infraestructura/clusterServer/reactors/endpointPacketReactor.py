@@ -547,6 +547,8 @@ class EndpointPacketReactor(object):
         # Crear los segmentos y enviarlos cuando estén llenos
         for serverID in serverIDs :
             row = queryMethod(serverID)
+            if (row == None):
+                break
             if (isinstance(row, dict)) :
                 outgoingData.append(row)
             else :
