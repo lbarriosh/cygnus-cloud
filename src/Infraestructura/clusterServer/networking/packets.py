@@ -301,7 +301,7 @@ class ClusterServerPacketHandler(object):
         p.writeInt(sequenceSize)
         for row in data :
             p.writeString(row["ServerName"])
-            p.writeInt(row["Hosts"])
+            p.writeInt(row["ActiveHosts"])
             p.writeInt(row["RAMInUse"])
             p.writeInt(row["RAMSize"])
             p.writeInt(row["FreeStorageSpace"])

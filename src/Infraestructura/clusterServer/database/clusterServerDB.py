@@ -73,24 +73,11 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         return d         
     
     def getVMServerResouceUsage(self, serverID):
-        query = "SELECT VMServer.serverName, hosts, ramInUse, ramSize, freeStorageSpace, availableStorageSpace,\
-            freeTemporarySpace, availableTemporarySpace, activeVCPUs, physicalCPUs FROM VMServerStatus, VMServer\
-            WHERE VMServerStatus.serverId = VMServer.serverID AND VMServer.serverID = {0};".format(serverID)
-        result = self._executeQuery(query, True)
+        result = self.getVMServerStatistics(serverID)
         if (result == None) :
             return None
-        d = dict()
-        d["ServerName"] = str(result[0])
-        d["Hosts"] = result[1]
-        d["RAMInUse"] = result[2]
-        d["RAMSize"] = result[3]
-        d["FreeStorageSpace"] = result[4]
-        d["AvailableStorageSpace"] = result[5]
-        d["FreeTemporarySpace"] = result[6]
-        d["AvailableTemporarySpace"] = result[7]
-        d["ActiveVCPUs"] = result[8]
-        d["PhysicalCPUs"] = result[9]
-        return d     
+        result["ServerName"] = str(self.getVMServerBasicData(serverID)["ServerName"])        
+        return result     
         
     def getVMServerStatistics(self, serverID) :
         '''
