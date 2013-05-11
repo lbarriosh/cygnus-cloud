@@ -171,6 +171,34 @@ class ClusterConnector(object):
         (commandType, commandArgs) = self.__commandsHandler.createDomainDestructionCommand(domainID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
+    def deployImage(self, serverNameOrIPAddress, imageID):
+        (commandType, commandArgs) = self.__commandsHandler.createImageDeploymentCommand(True, serverNameOrIPAddress, imageID)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+    
+    def deleteImage(self, serverNameOrIPAddress, imageID):
+        (commandType, commandArgs) = self.__commandsHandler.createImageDeploymentCommand(False, serverNameOrIPAddress, imageID)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+    
+    def createImage(self, imageID):
+        (commandType, commandArgs) = self.__commandsHandler.createImageEditionCommand(True, imageID, self.__userID)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+    
+    def editImage(self, imageID):
+        (commandType, commandArgs) = self.__commandsHandler.createImageEditionCommand(False, imageID, self.__userID)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+    
+    def deleteImageFromInfrastructure(self, imageID):
+        (commandType, commandArgs) = self.__commandsHandler.createDeleteImageFromInfrastructureCommand(imageID)        
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+    
+    def deployEditedImage(self, imageID):
+        (commandType, commandArgs) = self.__commandsHandler.createAutoDeploymentCommand(imageID, -1)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+    
+    def autoDeployImage(self, imageID, max_instances):
+        (commandType, commandArgs) = self.__commandsHandler.createAutoDeploymentCommand(imageID, max_instances)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+    
     def changeVMServerConfiguration(self, serverNameOrIPAddress, newName, newIPAddress, newPort, 
                                     newVanillaImageEditionBehavior):
         (commandType, commandArgs) = self.__commandsHandler.createVMServerConfigurationChangeCommand(serverNameOrIPAddress, 

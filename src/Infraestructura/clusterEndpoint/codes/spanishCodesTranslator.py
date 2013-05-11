@@ -8,6 +8,7 @@ from codesTranslator import CodesTranslator
 
 from clusterServer.database.clusterServerDB import SERVER_STATE_T, IMAGE_STATE_T
 from errors.codes import ERROR_DESC_T
+from clusterEndpoint.commands.commandsHandler import COMMAND_TYPE
 
 class SpanishCodesTranslator(CodesTranslator):
     def processVMServerSegment(self, data):
@@ -113,3 +114,15 @@ class SpanishCodesTranslator(CodesTranslator):
             return "Los servidores de edición no admiten más peticiones"       
         elif (code == ERROR_DESC_T.CLSRVR_EDITION_VMSRVRS_UNDER_FULL_LOAD) :
             return "Los servidores de máquinas virtuales no admiten más peticiones"
+        
+    def translateNotificationCode(self, code):
+        if (code == COMMAND_TYPE.DEPLOY_IMAGE or code == COMMAND_TYPE.AUTO_DEPLOY_IMAGE) :
+            return "La imagen ha terminado de desplegarse"
+        elif (code == COMMAND_TYPE.DELETE_IMAGE) :
+            return "La imagen se ha borrado del servidor"
+        elif (code == COMMAND_TYPE.CREATE_IMAGE) :
+            return "La creación de la imagen ha terminado"
+        elif (code == COMMAND_TYPE.EDIT_IMAGE):
+            return "La edición de la imagen ha terminado"
+        elif (code == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE):
+            return "La imagen se ha borrado de la infraestructura"

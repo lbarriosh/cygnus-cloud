@@ -8,14 +8,15 @@ Definiciones del gestor de comandos
 from ccutils.enums import enum
 
 COMMAND_TYPE = enum("REGISTER_VM_SERVER", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER", 
-                     "VM_BOOT_REQUEST", "HALT", "DESTROY_DOMAIN", "VM_SERVER_CONFIGURATION_CHANGE")
+                     "VM_BOOT_REQUEST", "HALT", "DESTROY_DOMAIN", "VM_SERVER_CONFIGURATION_CHANGE", "DEPLOY_IMAGE", "DELETE_IMAGE",
+                     "CREATE_IMAGE", "EDIT_IMAGE", "DELETE_IMAGE_FROM_INFRASTRUCTURE", "AUTO_DEPLOY_IMAGE")
 
 COMMAND_OUTPUT_TYPE = enum("VM_SERVER_REGISTRATION_ERROR", "VM_SERVER_BOOTUP_ERROR", 
                            "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", "VM_SERVER_UNREGISTRATION_ERROR",
                            "VM_SERVER_SHUTDOWN_ERROR", "DOMAIN_DESTRUCTION_ERROR", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
                            "CONNECTION_ERROR", "COMMAND_TIMED_OUT", "IMAGE_DEPLOYMENT_ERROR", "DELETE_IMAGE_FROM_SERVER_ERROR",
                            "IMAGE_CREATION_ERROR", "IMAGE_EDITION_ERROR", "DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR",
-                           "AUTO_DEPLOY_ERROR", "VM_SERVER_INTERNAL_ERROR")
+                           "AUTO_DEPLOY_ERROR", "VM_SERVER_INTERNAL_ERROR", "IMAGE_DEPLOYED", "IMAGE_CREATED", "IMAGE_EDITED")
 
 from clusterServer.networking.packets import CLUSTER_SERVER_PACKET_T as PACKET_T
 
@@ -26,6 +27,28 @@ class CommandsHandler(object):
     
     def __init__(self, codesTranslator):
         self.__codesTranslator = codesTranslator
+        
+    def createAutoDeploymentCommand(self, imageID, instances):
+        args = "{0}${1}".format(imageID, instances)
+        return (COMMAND_TYPE.AUTO_DEPLOY_IMAGE, args)
+        
+    def createDeleteImageFromInfrastructureCommand(self, imageID):
+        args = str(imageID)
+        return (COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE, args)
+        
+    def createImageEditionCommand(self, create, imageID, userID):
+        args = "{0}${1}".format(imageID, userID)
+        if (create) :
+            return (COMMAND_TYPE.CREATE_IMAGE, args)
+        else :
+            return (COMMAND_TYPE.EDIT_IMAGE, args)
+        
+    def createImageDeploymentCommand(self, deploy, serverNameOrIPAddress, imageID):
+        args = "{0}${1}".format(serverNameOrIPAddress, imageID)
+        if (deploy) :
+            return (COMMAND_TYPE.DEPLOY_IMAGE, args)
+        else :
+            return (COMMAND_TYPE.DELETE_IMAGE, args)
     
     def createVMServerRegistrationCommand(self, vmServerIP, vmServerPort, vmServerName, isVanillaServer):
         """
@@ -139,6 +162,19 @@ class CommandsHandler(object):
             result["NewServerIPAddress"] = l[2]
             result["NewServerPort"] = int(l[3])
             result["NewVanillaImageEditionBehavior"] = l[4] == "True"
+        elif (commandType == COMMAND_TYPE.DEPLOY_IMAGE or
+              commandType == COMMAND_TYPE.DELETE_IMAGE):
+            result["VMServerNameOrIPAddress"] = l[0]
+            result["ImageID"] = int(l[1])
+        elif (commandType == COMMAND_TYPE.CREATE_IMAGE or
+              commandType == COMMAND_TYPE.EDIT_IMAGE):
+            result["ImageID"] = int(l[0])
+            result["OwnerID"] = int(l[1])
+        elif (commandType == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE):
+            result["ImageID"] = int(l[0])
+        elif (commandType == COMMAND_TYPE.AUTO_DEPLOY_IMAGE):
+            result["ImageID"] = int(l[0])
+            result["MaxInstances"] = int(l[1])
         return result
     
     def __getErrorOutputType(self, packet_type):

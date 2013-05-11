@@ -15,3 +15,6 @@ class CodesTranslator(object):
     
     def translateErrorDescriptionCode(self, code):
         raise NotImplementedError
+    
+    def translateNotificationCode(self, code):
+        raise NotImplementedError

@@ -12,7 +12,7 @@ from ccutils.databases.configuration import DBConfigurator
 from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from time import sleep
-from clusterEndpoint.commands.commandsHandler import CommandsHandler, COMMAND_TYPE
+from clusterEndpoint.commands.commandsHandler import CommandsHandler, COMMAND_TYPE, COMMAND_OUTPUT_TYPE
 from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
 from network.exceptions.networkManager import NetworkManagerException
 from endpointException import EndpointException
@@ -217,12 +217,30 @@ class ClusterEndpoint(object):
             l = data["CommandID"].split("|")
             commandID = (int(l[0]), float(l[1]))
             if (data["packet_type"] == PACKET_T.COMMAND_EXECUTED) :
-                self.__commandsDBConnector.removeExecutedCommand(commandID)
+                data = self.__commandsDBConnector.removeExecutedCommand(commandID)
+                if (data["CommandType"] == COMMAND_TYPE.DEPLOY_IMAGE or data["CommandType"] == COMMAND_TYPE.DELETE_IMAGE or
+                    data["CommandType"] == COMMAND_TYPE.CREATE_IMAGE or data["CommandType"] == COMMAND_TYPE.EDIT_IMAGE or
+                    data["CommandType"] == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE or data["CommandType"] == COMMAND_TYPE.AUTO_DEPLOY_IMAGE) :
+                    # Crear notificación
+                    self.__commandsDBConnector.addCommandOutput(commandID, COMMAND_OUTPUT_TYPE.IMAGE_DEPLOYED, 
+                                                                self.__codeTranslator.translateNotificationCode(data["CommandType"]), 
+                                                                False, True)
             else :           
                 # El resto de paquetes contienen el resultado de ejecutar comandos => los serializamos y los añadimos
-                # a la base de datos de comandos para que los conectores se enteren                
-                (outputType, outputContent) = self.__commandsHandler.createErrorOutput(data['packet_type'], data["ErrorDescription"])
-                self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
+                # a la base de datos de comandos para que los conectores se enteren     
+                isNotification = False     
+                if (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
+                    (outputType, outputContent) = self.__commandsHandler.createVMConnectionDataOutput(
+                        data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"]) 
+                else :
+                    # Errores
+                    if (data["packet_type"] == PACKET_T.IMAGE_DEPLOYMENT_ERROR or data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR or
+                        data["packet_type"] == PACKET_T.IMAGE_CREATION_ERROR or data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR or
+                        data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR or data["packet_type"] == PACKET_T.AUTO_DEPLOY_ERROR):
+                        isNotification = True
+                    (outputType, outputContent) = self.__commandsHandler.createErrorOutput(data['packet_type'], data["ErrorDescription"])
+                
+                self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent, False, isNotification)
                 
     def processCommands(self):
         """
@@ -257,6 +275,21 @@ class ClusterEndpoint(object):
                         packet = self.__webPacketHandler.createVMServerConfigurationChangePacket(parsedArgs["VMServerNameOrIPAddress"],  parsedArgs["NewServerName"],
                                                                                          parsedArgs["NewServerIPAddress"], parsedArgs["NewServerPort"],
                                                                                          parsedArgs["NewVanillaImageEditionBehavior"], serializedCommandID)
+                    elif (commandType == COMMAND_TYPE.DEPLOY_IMAGE):
+                        packet = self.__webPacketHandler.createImageDeploymentPacket(PACKET_T.DEPLOY_IMAGE, parsedArgs["VMServerNameOrIPAddress"], 
+                                                                                     parsedArgs["ImageID"], serializedCommandID)
+                    elif (commandType == COMMAND_TYPE.DELETE_IMAGE):
+                        packet = self.__webPacketHandler.createImageDeploymentPacket(PACKET_T.DELETE_IMAGE_FROM_SERVER, parsedArgs["VMServerNameOrIPAddress"], 
+                                                                                     parsedArgs["ImageID"], serializedCommandID)     
+                    elif (commandType == COMMAND_TYPE.CREATE_IMAGE):
+                        packet = self.__webPacketHandler.createImageEditionPacket(PACKET_T.CREATE_IMAGE, parsedArgs["ImageID"], parsedArgs["OwnerID"], commandID) 
+                    elif (commandType == COMMAND_TYPE.EDIT_IMAGE):   
+                        packet = self.__webPacketHandler.createImageEditionPacket(PACKET_T.EDIT_IMAGE, parsedArgs["ImageID"], parsedArgs["OwnerID"], commandID)  
+                    elif (commandType == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE):
+                        packet = self.__webPacketHandler.createImageDeletionPacket(parsedArgs["ImageID"], commandID)
+                    elif (commandType == COMMAND_TYPE.AUTO_DEPLOY_IMAGE):
+                        packet = self.__webPacketHandler.createAutoDeployPacket(parsedArgs["ImageID"], parsedArgs["MaxInstances"], commandID)
+                                          
                     errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
                     if (errorMessage != None) :
                         # Error al enviar el paquete => el comando no se podrá ejecutar => avisar a la web
