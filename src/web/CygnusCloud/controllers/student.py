@@ -1,6 +1,6 @@
 # coding: utf8
 from gluon import *
-from clusterServer.connector.clusterServerConnector import ClusterServerConnector
+from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 
 #Método encargado de manejar la página de arranque de máquinas para el usuario
@@ -102,6 +102,6 @@ def createTable(subject,j):
 def conectToServer():
     #Establecemos la conexión con el servidor principal
     print "Usuario " + userDB(userDB.auth_user.id == auth.user_id).select(userDB.auth_user.email)[0].email
-    connector = ClusterServerConnector(auth.user_id)
+    connector = ClusterConnector(auth.user_id)
     connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
     return connector

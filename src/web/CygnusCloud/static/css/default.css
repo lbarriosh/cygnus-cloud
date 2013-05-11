@@ -259,6 +259,11 @@ td.vanillaData{
 
 }
 
+tr.izquierda{
+    text-align: left;
+
+}
+
 tr.vanillaData{
     margin-top: 0px;
     line-height: 1.2em;

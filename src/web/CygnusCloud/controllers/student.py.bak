@@ -52,17 +52,15 @@ def stopVM():
     j = 0
     for vm in vmList: 
         #Creamos la tabla con los resultados   
-        
-        print  userDB(userDB.auth_user.id == vm['UserID']).select(userDB.auth_user.email)[0].email  
-        #Extramos el nombre de la máquina y su descripcion
-        vminfo = userDB(userDB.Images.VMId == vm['VMID']).select(userDB.Images.name,userDB.Images.description)
-        
-        table.append(TR(\
-        TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
-        TD(LABEL(vminfo[0].name)),
-        TD(DIV(P(vminfo[0].description,_class='izquierda'),_id= 'd' + str(j))),
-        TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = str(j)))))
-        j = j + 1
+        if(vm['UserID'] == auth.user_id):
+            #Extramos el nombre de la máquina y su descripcion
+            vminfo = userDB(userDB.Images.VMId == vm['VMID']).select(userDB.Images.name,userDB.Images.description)
+            table.append(TR(\
+            TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
+            TD(LABEL(vminfo[0].name)),
+            TD(DIV(P(vminfo[0].description,_class='izquierda'),_id= 'd' + str(j))),
+            TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = str(j)))))
+            j = j + 1
 
     #Creamos el formulario
     form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table)

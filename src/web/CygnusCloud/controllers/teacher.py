@@ -1,6 +1,6 @@
 # coding: utf8
 from gluon import *
-from clusterServer.connector.clusterServerConnector import ClusterServerConnector
+from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 
 #Método encargado de manejar la página de arranque de máquinas para el usuario
@@ -84,14 +84,22 @@ def createVanillaVM():
     createAdressBar()
     progressBarStyle = LOAD(url=URL('static', 'progressBar.html', scheme='http'),ajax=False)
     connector = conectToServer()
+    vanillaImagesIds = connector.getBaseImagesData()
+    maxValues = connector.getMaxVanillaImageFamilyData()
     table = TABLE(_class='data', _name='table')
     j= 0
-    #TODO: Recorrido de imagenes vanilla
-    subTable = createVanillaImageTable('Linux-Small',1048576,1,5242880,3145728,3145728,4,41943040,16777216)
-    table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = 0,_id = "c"+str(j) )),subTable))
+    for id in vanillaImagesIds:
+        vanillaInfo = connector.getVanillaImageFamiliyData(id["VanillaImageFamilyID"])
+        subTable = createVanillaImageTable(vanillaInfo["RAMSize"],
+                    vanillaInfo["VCPUs"],vanillaInfo["OSDiskSize"],vanillaInfo["DataDiskSize"],
+                    maxValues["RAMSize"],maxValues["VCPUs"],maxValues["OSDiskSize"],maxValues["DataDiskSize"])
+        table.append(TR(TH(LABEL(vanillaInfo["Name"]),_style="font-size:17px;")))
+        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = 0,_id = "c"+str(j) )),subTable))
+        j = j + 1
+    
     form = FORM(DIV( T('Nombre: '),BR(),INPUT(_name = 'newVMName')),BR(),
                 DIV( T('Descripcion: '),BR(),TEXTAREA(_name = 'description')),BR(),
-                LABEL(H3(T('Máquinas vanila disponibles:'))),table,
+                LABEL(H2(T('Máquinas vanila disponibles:'))),table,
                 CENTER(INPUT(_type='submit',_name = 'createVM',  _value = T('Crear máquina virtual')
                     ,_class="button button-blue",_style="width:180px;")))
     return dict(form = form,progressBarStyle=progressBarStyle)
@@ -153,22 +161,21 @@ def createDisabledTables(j):
     
 def conectToServer():
     #Establecemos la conexión con el servidor principal
-    connector = ClusterServerConnector(auth.user_id)
+    connector = ClusterConnector(auth.user_id)
     connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
     return connector
     
-def createVanillaImageTable(name,ramSize,cpuNumber,osDiskSize,dataDiskSize,maxRam,maxCpuNumber,maxOsDisk,maxDataDisk):
+def createVanillaImageTable(ramSize,cpuNumber,osDiskSize,dataDiskSize,maxRam,maxCpuNumber,maxOsDisk,maxDataDisk):
        pRam = ((ramSize*100)/maxRam)
        pCPUs = ((cpuNumber*100)/maxCpuNumber)
        pOsDisk = ((osDiskSize*100)/maxOsDisk)
        pDataDisk = ((dataDiskSize*100)/maxDataDisk)
        
        table = TABLE(_class='data', _name='table')
-       table.append(TR(TD(LABEL(name),_style="font-size:17px;")))
        table.append(TR(TD(IMG(_src=URL('static','images/memoryIcon.png'), _alt="memoryIcon",_style="width:35px;"),_class='vanillaData')
            ,TD(LABEL("Memoria Ram"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pRam) + "%;"),_class="meter animate"),_class='vanillaData')
-           ,TD(LABEL(ramSize),_class='vanillaData'),_class='vanillaData'))
+           ,TD(LABEL(str("%.0f" %(ramSize/1024))+" Mb"),_class='vanillaData'),_class='vanillaData'))
        table.append(TR(TD(IMG(_src=URL('static','images/cpuIcon.png'), _alt="cpuIcon",_style="width:35px;"),_class='vanillaData')
            ,TD(LABEL("Número Cpus"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pCPUs) + "%;"),_class="meter animate red"),_class='vanillaData')
@@ -176,12 +183,14 @@ def createVanillaImageTable(name,ramSize,cpuNumber,osDiskSize,dataDiskSize,maxRa
        table.append(TR(TD(IMG(_src=URL('static','images/osDiskIcon.png'), _alt="memoryIcon",_style="width:30px;"),_class='vanillaData')
            ,TD(LABEL("Espacio disco"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pOsDisk) + "%;"),_class="meter animate blue"),_class='vanillaData')
-           ,TD(LABEL(osDiskSize)),_class='vanillaData'))
+           ,TD(LABEL(str("%.0f" %(osDiskSize/1024))+" Mb")),_class='vanillaData'))
        table.append(TR(TD(IMG(_src=URL('static','images/dataDiskIcon.png'), _alt="memoryIcon",_style="width:30px;"),_class='vanillaData')
            ,TD(LABEL("Espacio datos"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pDataDisk) + "%;"),_class="meter animate orange"),_class='vanillaData')
-           ,TD(LABEL(dataDiskSize)),_class='vanillaData'))
+           ,TD(LABEL(str("%.0f" %(dataDiskSize/1024))+" Mb")),_class='vanillaData'))
+           
        return table
+
        
 def searchMaxValues(rows):
     maxRam = 0

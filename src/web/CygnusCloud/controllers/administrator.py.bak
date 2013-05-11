@@ -1,5 +1,5 @@
 # coding: utf8
-from clusterServer.connector.clusterServerConnector import ClusterServerConnector
+from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 
 @auth.requires_membership('Administrator')
@@ -584,7 +584,7 @@ def createSubjectTable(listSubjects):
     for l in listSubjects:
         table.append(TR(\
         TD(INPUT(_type='radio',_name = 'selection',_value = i)),\
-        TD(LABEL(str(l[0]) + '-' + userDB(l[0] == userDB.Subjects.code).select()[0].name,_class='izquierda'),_width = '50%'),
+        TD(LABEL(str(l[0]) + '-' + userDB(l[0] == userDB.Subjects.code).select()[0].name),_width = '50%',_class='izquierda'),
         TD(LABEL(l[1]))))
         i = i + 1
     pass

@@ -1,5 +1,5 @@
 # coding: utf8
-from clusterServer.connector.clusterServerConnector import ClusterServerConnector
+from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 
 @auth.requires_membership('Administrator')
@@ -599,6 +599,6 @@ def selectRadioButton():
     
 def conectToServer():
     #Establecemos la conexión con el servidor principal
-    connector = ClusterServerConnector(auth.user_id)
+    connector = ClusterConnector(auth.user_id)
     connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
     return connector
