@@ -260,3 +260,6 @@ class ClusterConnector(object):
     
     def getImageRepositoryStatus(self):
         return self.__endpointDBConnector.getImageRepositoryStatus()
+    
+    def getVirtualMachineServerStatus(self, serverName):
+        return self.__endpointDBConnector.getVirtualMachineServerStatus(serverName)
