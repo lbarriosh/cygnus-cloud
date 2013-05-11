@@ -20,7 +20,8 @@ class TesterCallback(NetworkCallback):
         if (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
             print("Virtual machine server registration error")
             print("\tReason: " + str(data["ErrorDescription"]))
-        elif (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA or data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
+        elif (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA or data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA or
+              data["packet_type"] == PACKET_T.VM_SERVERS_RESOURCE_USAGE) :
             print("Virtual machine servers' current status")
             print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
             for row in data["Data"] :
@@ -53,7 +54,7 @@ class TesterCallback(NetworkCallback):
             print("Virtual machine configuration change error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS):
             print("Image repository status: {0} KB free, {1} KB in use, {2}".format(data["FreeDiskSpace"], data["AvailableDiskSpace"],
-                                                                                    data["ConnectionStatus"]))
+                                                                                    data["RepositoryStatus"]))
         elif (data["packet_type"] == PACKET_T.IMAGE_DEPLOYMENT_ERROR):
             print("Image deployment error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR):
@@ -99,6 +100,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         elif (command == "obtainVMDistributionData") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_DISTRIBUTION)
             networkManager.sendPacket(ip_address, port, p)
+        elif (command == "obtainVMServerResourceUsage"):
+            p = pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_RESOURCE_USAGE)
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "unregisterVMServer") :
             p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), True, "")
             networkManager.sendPacket(ip_address, port, p)
@@ -125,7 +129,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createDomainDestructionPacket(tokens.pop(0), "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "obtainImageRepositoryStatus") :
-            p = pHandler.createDataRequestPacket(PACKET_T.REPOSITORY_STATUS_REQUEST)
+            p = pHandler.createDataRequestPacket(PACKET_T.QUERY_REPOSITORY_STATUS)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "deployImage"):
             p = pHandler.createImageDeploymentPacket(PACKET_T.DEPLOY_IMAGE, tokens.pop(0), int(tokens.pop(0)), "")

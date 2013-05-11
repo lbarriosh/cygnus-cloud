@@ -71,6 +71,13 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         d["ServerPort"] = port
         d["IsVanillaServer"] = isVanillaServer == 1
         return d         
+    
+    def getVMServerResouceUsage(self, serverID):
+        result = self.getVMServerStatistics(serverID)
+        if (result == None) :
+            return None
+        result["ServerName"] = str(self.getVMServerBasicData(serverID)["ServerName"])        
+        return result     
         
     def getVMServerStatistics(self, serverID) :
         '''
@@ -262,7 +269,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         #Guardamos en una lista los ids resultantes
         retrievedData = []
         for r in results:
-            retrievedData.append({"ServerName" : str(r[0]), "VMID" : int(r[1]), "Status": int(r[2])})
+            retrievedData.append({"ServerName" : str(r[0]), "ImageID" : int(r[1]), "CopyStatus": int(r[2])})
         #Devolvemos la lista resultado
         return retrievedData
     

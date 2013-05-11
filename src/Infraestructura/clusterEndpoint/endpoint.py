@@ -6,13 +6,13 @@ Definiciones del endpoint de la web
 '''
 
 from clusterEndpoint.threads.databaseUpdateThread import VMServerMonitoringThread, UpdateHandler
-from clusterEndpoint.threads.commandMonitoringThread import CommandMonitoringThread
-from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
+from clusterEndpoint.threads.commandMonitoringThread import CommandsMonitoringThread
+from clusterServer.networking.packets import ClusterServerPacketHandler, CLUSTER_SERVER_PACKET_T as PACKET_T
 from ccutils.databases.configuration import DBConfigurator
 from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from time import sleep
-from clusterEndpoint.commands.commandsHandler import CommandsHandler, COMMAND_TYPE
+from clusterEndpoint.commands.commandsHandler import CommandsHandler, COMMAND_TYPE, COMMAND_OUTPUT_TYPE
 from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
 from network.exceptions.networkManager import NetworkManagerException
 from endpointException import EndpointException
@@ -65,7 +65,7 @@ class ClusterEndpoint(object):
     """
     Estos objetos comunican un servidor de cluster con la web
     """    
-    def __init__(self):
+    def __init__(self, codeTranslator):
         """
         Inicializa el estado del endpoint
         Argumentos:
@@ -75,6 +75,8 @@ class ClusterEndpoint(object):
         self.__webPacketHandler = None
         self.__commandExecutionThread = None
         self.__updateRequestThread = None
+        self.__codeTranslator = codeTranslator
+        self.__commandsHandler = CommandsHandler(codeTranslator)
     
     def connectToDatabases(self, mysqlRootsPassword, endpointDBName, commandsDBName, endpointdbSQLFilePath, commandsDBSQLFilePath,
                            websiteUser, websiteUserPassword, endpointUser, endpointUserPassword, minCommandInterval):
@@ -138,7 +140,7 @@ class ClusterEndpoint(object):
             
             self.__updateRequestThread = VMServerMonitoringThread(_ClusterEndpointUpdateHandler(self), statusDBUpdateInterval)
             self.__updateRequestThread.start()            
-            self.__commandExecutionThread = CommandMonitoringThread(self.__commandsDBConnector, commandTimeout, commandTimeoutCheckInterval)
+            self.__commandExecutionThread = CommandsMonitoringThread(self.__commandsDBConnector, commandTimeout, self.__commandsHandler, commandTimeoutCheckInterval)
             self.__commandExecutionThread.start()
         except NetworkManagerException as e :
             raise EndpointException(e.message)
@@ -199,38 +201,46 @@ class ClusterEndpoint(object):
             return
         data = self.__webPacketHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
-            self.__endpointDBConnector.processVMServerSegment(data["Segment"], data["SequenceSize"], data["Data"])
+            processedData = self.__codeTranslator.processVMServerSegment(data["Data"])
+            self.__endpointDBConnector.processVMServerSegment(data["Segment"], data["SequenceSize"], processedData)
         elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
-            self.__endpointDBConnector.processVMDistributionSegment(data["Segment"], data["SequenceSize"], data["Data"])
+            processedData = self.__codeTranslator.processVMDistributionSegment(data["Data"])
+            self.__endpointDBConnector.processVMDistributionSegment(data["Segment"], data["SequenceSize"], processedData)
+        elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS):
+            status = self.__codeTranslator.translateRepositoryStatusCode(data["RepositoryStatus"])
+            self.__endpointDBConnector.updateImageRepositoryStatus(data["FreeDiskSpace"], data["AvailableDiskSpace"], status)
+        elif (data["packet_type"] == PACKET_T.VM_SERVERS_RESOURCE_USAGE) :
+            self.__endpointDBConnector.processVMServerResourceUsageSegment(data["Segment"], data["SequenceSize"], data["Data"])
         elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
             self.__endpointDBConnector.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])
         else :
             l = data["CommandID"].split("|")
             commandID = (int(l[0]), float(l[1]))
             if (data["packet_type"] == PACKET_T.COMMAND_EXECUTED) :
-                self.__commandsDBConnector.removeExecutedCommand(commandID)
+                data = self.__commandsDBConnector.removeExecutedCommand(commandID)
+                if (data["CommandType"] == COMMAND_TYPE.DEPLOY_IMAGE or data["CommandType"] == COMMAND_TYPE.DELETE_IMAGE or
+                    data["CommandType"] == COMMAND_TYPE.CREATE_IMAGE or data["CommandType"] == COMMAND_TYPE.EDIT_IMAGE or
+                    data["CommandType"] == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE or data["CommandType"] == COMMAND_TYPE.AUTO_DEPLOY_IMAGE) :
+                    # Crear notificación
+                    self.__commandsDBConnector.addCommandOutput(commandID, COMMAND_OUTPUT_TYPE.IMAGE_DEPLOYED, 
+                                                                self.__codeTranslator.translateNotificationCode(data["CommandType"]), 
+                                                                False, True)
             else :           
                 # El resto de paquetes contienen el resultado de ejecutar comandos => los serializamos y los añadimos
-                # a la base de datos de comandos para que los conectores se enteren
-                if (data["packet_type"] == PACKET_T.VM_SERVER_BOOTUP_ERROR or 
-                    data["packet_type"] == PACKET_T.VM_SERVER_UNREGISTRATION_ERROR or 
-                    data["packet_type"] == PACKET_T.VM_SERVER_SHUTDOWN_ERROR) :
-                    (outputType, outputContent) = CommandsHandler.createVMServerGenericErrorOutput(
-                        data["packet_type"], data["ServerNameOrIPAddress"], data["ErrorMessage"])
-                elif (data["packet_type"] == PACKET_T.VM_SERVER_REGISTRATION_ERROR) :
-                    (outputType, outputContent) = CommandsHandler.createVMServerRegistrationErrorOutput(
-                        data["VMServerIP"], data["VMServerPort"], data["VMServerName"], data["ErrorMessage"])
-                elif (data["packet_type"] == PACKET_T.VM_BOOT_FAILURE) :
-                    (outputType, outputContent) = CommandsHandler.createVMBootFailureErrorOutput(
-                        data["VMID"], data["ErrorMessage"])  
-                elif (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
-                    (outputType, outputContent) = CommandsHandler.createVMConnectionDataOutput(
-                        data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"])
-                elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION_ERROR):
-                    (outputType, outputContent) = CommandsHandler.createDomainDestructionErrorOutput(data["ErrorMessage"])
-                elif (data["packet_type"] == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR) :
-                    (outputType, outputContent) = CommandsHandler.createVMServerConfigurationChangeErrorOutput(data["ErrorMessage"])
-                self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
+                # a la base de datos de comandos para que los conectores se enteren     
+                isNotification = False     
+                if (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
+                    (outputType, outputContent) = self.__commandsHandler.createVMConnectionDataOutput(
+                        data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"]) 
+                else :
+                    # Errores
+                    if (data["packet_type"] == PACKET_T.IMAGE_DEPLOYMENT_ERROR or data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR or
+                        data["packet_type"] == PACKET_T.IMAGE_CREATION_ERROR or data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR or
+                        data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR or data["packet_type"] == PACKET_T.AUTO_DEPLOY_ERROR):
+                        isNotification = True
+                    (outputType, outputContent) = self.__commandsHandler.createErrorOutput(data['packet_type'], data["ErrorDescription"])
+                
+                self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent, False, isNotification)
                 
     def processCommands(self):
         """
@@ -246,7 +256,7 @@ class ClusterEndpoint(object):
                 sleep(0.1)
             else :
                 (commandID, commandType, commandArgs) = commandData
-                parsedArgs = CommandsHandler.deserializeCommandArgs(commandType, commandArgs)
+                parsedArgs = self.__commandsHandler.deserializeCommandArgs(commandType, commandArgs)
                 if (commandType != COMMAND_TYPE.HALT) :
                     serializedCommandID = "{0}|{1}".format(commandID[0], commandID[1])                    
                     if (commandType == COMMAND_TYPE.BOOTUP_VM_SERVER) :                    
@@ -265,10 +275,25 @@ class ClusterEndpoint(object):
                         packet = self.__webPacketHandler.createVMServerConfigurationChangePacket(parsedArgs["VMServerNameOrIPAddress"],  parsedArgs["NewServerName"],
                                                                                          parsedArgs["NewServerIPAddress"], parsedArgs["NewServerPort"],
                                                                                          parsedArgs["NewVanillaImageEditionBehavior"], serializedCommandID)
+                    elif (commandType == COMMAND_TYPE.DEPLOY_IMAGE):
+                        packet = self.__webPacketHandler.createImageDeploymentPacket(PACKET_T.DEPLOY_IMAGE, parsedArgs["VMServerNameOrIPAddress"], 
+                                                                                     parsedArgs["ImageID"], serializedCommandID)
+                    elif (commandType == COMMAND_TYPE.DELETE_IMAGE):
+                        packet = self.__webPacketHandler.createImageDeploymentPacket(PACKET_T.DELETE_IMAGE_FROM_SERVER, parsedArgs["VMServerNameOrIPAddress"], 
+                                                                                     parsedArgs["ImageID"], serializedCommandID)     
+                    elif (commandType == COMMAND_TYPE.CREATE_IMAGE):
+                        packet = self.__webPacketHandler.createImageEditionPacket(PACKET_T.CREATE_IMAGE, parsedArgs["ImageID"], parsedArgs["OwnerID"], commandID) 
+                    elif (commandType == COMMAND_TYPE.EDIT_IMAGE):   
+                        packet = self.__webPacketHandler.createImageEditionPacket(PACKET_T.EDIT_IMAGE, parsedArgs["ImageID"], parsedArgs["OwnerID"], commandID)  
+                    elif (commandType == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE):
+                        packet = self.__webPacketHandler.createImageDeletionPacket(parsedArgs["ImageID"], commandID)
+                    elif (commandType == COMMAND_TYPE.AUTO_DEPLOY_IMAGE):
+                        packet = self.__webPacketHandler.createAutoDeployPacket(parsedArgs["ImageID"], parsedArgs["MaxInstances"], commandID)
+                                          
                     errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
                     if (errorMessage != None) :
                         # Error al enviar el paquete => el comando no se podrá ejecutar => avisar a la web
-                        (outputType, outputContent) = CommandsHandler.createConnectionErrorOutput()
+                        (outputType, outputContent) = self.__commandsHandler.createConnectionErrorOutput()
                         self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
                         
                 else :
@@ -297,3 +322,11 @@ class ClusterEndpoint(object):
         p = self.__webPacketHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
         errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Active virtual machines data", errorMessage)
+        
+        p = self.__webPacketHandler.createDataRequestPacket(PACKET_T.QUERY_REPOSITORY_STATUS)
+        errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Image repository status", errorMessage)
+        
+        p = self.__webPacketHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_RESOURCE_USAGE)
+        errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
+        NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Virtual machine servers resource usage", errorMessage)
