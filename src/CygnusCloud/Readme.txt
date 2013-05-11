@@ -1,1 +1,0 @@
-Este directorio contiene los paquetes Python de los proyectos de PyDev con los que implementaremos los distintos módulos del sistema.
