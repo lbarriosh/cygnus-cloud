@@ -14,9 +14,23 @@ CREATE TABLE IF NOT EXISTS VirtualMachineServer(serverName VARCHAR(30) PRIMARY K
     
 DELETE FROM VirtualMachineServer;
 
+CREATE TABLE IF NOT EXISTS VirtualMachineServerStatus(serverName VARCHAR(30) PRIMARY KEY NOT NULL, 
+	hosts INTEGER, ramInUse INTEGER, ramSize INTEGER, freeStorageSpace INTEGER, availableStorageSpace INTEGER,
+	freeTemporarySpace INTEGER, availableTemporarySpace INTEGER, activeVCPUs TINYINT,
+	physicalCPUs TINYINT, 
+	FOREIGN KEY(serverName) REFERENCES VirtualMachineServer(serverName) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=MEMORY;
+	
+DELETE FROM VirtualMachineServerStatus;
+
+CREATE TABLE IF NOT EXISTS ImageRepositoryStatus(repositoryIP VARCHAR(15), repositoryPort INTEGER, freeDiskSpace INTEGER,
+	availableDiskSpace INTEGER, PRIMARY KEY(repositoryIP, repositoryPort)) ENGINE=MEMORY;
+	
+DELETE FROM ImageRepositoryStatus;
+
 CREATE TABLE IF NOT EXISTS VirtualMachineDistribution(
     serverName VARCHAR(30),
     imageID INTEGER,
+    imageStatus TINYINT,
     PRIMARY KEY (serverName, imageID)) ENGINE=MEMORY;
 
 DELETE FROM VirtualMachineDistribution;
