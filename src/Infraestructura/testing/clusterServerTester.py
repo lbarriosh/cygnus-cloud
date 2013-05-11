@@ -53,7 +53,7 @@ class TesterCallback(NetworkCallback):
             print("Virtual machine configuration change error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS):
             print("Image repository status: {0} KB free, {1} KB in use, {2}".format(data["FreeDiskSpace"], data["AvailableDiskSpace"],
-                                                                                    data["ConnectionStatus"]))
+                                                                                    data["RepositoryStatus"]))
         elif (data["packet_type"] == PACKET_T.IMAGE_DEPLOYMENT_ERROR):
             print("Image deployment error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR):

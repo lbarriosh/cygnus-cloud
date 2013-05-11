@@ -9,7 +9,7 @@ CREATE DATABASE IF NOT EXISTS ClusterEndpointDB;
 USE ClusterEndpointDB;
  
 CREATE TABLE IF NOT EXISTS VirtualMachineServer(serverName VARCHAR(30) PRIMARY KEY NOT NULL, 
-    serverStatus VARCHAR(20) NOT NULL, serverIP VARCHAR(15) NOT NULL,
+    serverStatus VARCHAR(30) NOT NULL, serverIP VARCHAR(15) NOT NULL,
     serverPort INTEGER NOT NULL, isVanillaServer TINYINT, UNIQUE(serverIP, serverPort)) ENGINE=MEMORY;
     
 DELETE FROM VirtualMachineServer;
@@ -30,7 +30,7 @@ DELETE FROM ImageRepositoryStatus;
 CREATE TABLE IF NOT EXISTS VirtualMachineDistribution(
     serverName VARCHAR(30),
     imageID INTEGER,
-    imageStatus TINYINT,
+    imageStatus VARCHAR(25),
     PRIMARY KEY (serverName, imageID)) ENGINE=MEMORY;
 
 DELETE FROM VirtualMachineDistribution;

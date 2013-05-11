@@ -7,7 +7,7 @@ Definiciones del endpoint de la web
 
 from clusterEndpoint.threads.databaseUpdateThread import VMServerMonitoringThread, UpdateHandler
 from clusterEndpoint.threads.commandMonitoringThread import CommandMonitoringThread
-from clusterServer.networking.packets import ClusterServerPacketHandler, MAIN_SERVER_PACKET_T as PACKET_T
+from clusterServer.networking.packets import ClusterServerPacketHandler, CLUSTER_SERVER_PACKET_T as PACKET_T
 from ccutils.databases.configuration import DBConfigurator
 from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
 from network.manager.networkManager import NetworkManager, NetworkCallback
@@ -65,7 +65,7 @@ class ClusterEndpoint(object):
     """
     Estos objetos comunican un servidor de cluster con la web
     """    
-    def __init__(self):
+    def __init__(self, codeTranslator):
         """
         Inicializa el estado del endpoint
         Argumentos:
@@ -75,6 +75,7 @@ class ClusterEndpoint(object):
         self.__webPacketHandler = None
         self.__commandExecutionThread = None
         self.__updateRequestThread = None
+        self.__codeTranslator = codeTranslator
     
     def connectToDatabases(self, mysqlRootsPassword, endpointDBName, commandsDBName, endpointdbSQLFilePath, commandsDBSQLFilePath,
                            websiteUser, websiteUserPassword, endpointUser, endpointUserPassword, minCommandInterval):
@@ -199,9 +200,11 @@ class ClusterEndpoint(object):
             return
         data = self.__webPacketHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
-            self.__endpointDBConnector.processVMServerSegment(data["Segment"], data["SequenceSize"], data["Data"])
+            processedData = self.__codeTranslator.processVMServerSegment(data["Data"])
+            self.__endpointDBConnector.processVMServerSegment(data["Segment"], data["SequenceSize"], processedData)
         elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
-            self.__endpointDBConnector.processVMDistributionSegment(data["Segment"], data["SequenceSize"], data["Data"])
+            processedData = self.__codeTranslator.processVMDistributionSegment(data["Data"])
+            self.__endpointDBConnector.processVMDistributionSegment(data["Segment"], data["SequenceSize"], processedData)
         elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
             self.__endpointDBConnector.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])
         else :

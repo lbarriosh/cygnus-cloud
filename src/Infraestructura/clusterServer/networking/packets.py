@@ -6,7 +6,6 @@ Gestor de paquetes del servidor de cluster
 '''
 
 from ccutils.enums import enum
-from clusterServer.database.clusterServerDB import SERVER_STATE_T
 
 CLUSTER_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERROR", "QUERY_VM_SERVERS_STATUS",
                             "VM_SERVERS_STATUS_DATA", "QUERY_VM_DISTRIBUTION", "VM_DISTRIBUTION_DATA",
@@ -113,7 +112,7 @@ class ClusterServerPacketHandler(object):
         p.writeInt(sequenceSize)
         for row in data :
             p.writeString(row["ServerName"])
-            p.writeString(ClusterServerPacketHandler.__server_status_to_string(row["ServerStatus"]))
+            p.writeInt(row["ServerStatus"])
             p.writeString(row["ServerIP"])
             p.writeInt(int(row["ServerPort"]))   
             p.writeBool(int(row["IsVanillaServer"]) == 1)         
@@ -135,7 +134,8 @@ class ClusterServerPacketHandler(object):
         p.writeInt(sequenceSize)
         for row in data :
             p.writeString(row["ServerName"])
-            p.writeInt(row["VMID"])
+            p.writeInt(row["ImageID"])
+            p.writeInt(row["CopyStatus"])
         return p
     
     def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, isShutDown, unregister, commandID):
@@ -257,28 +257,8 @@ class ClusterServerPacketHandler(object):
         p.writeInt(CLUSTER_SERVER_PACKET_T.REPOSITORY_STATUS)
         p.writeInt(freeDiskSpace)
         p.writeInt(availableDiskSpace)
-        p.writeString(ClusterServerPacketHandler.__server_status_to_string(status))
+        p.writeInt(status)
         return p
-    
-    @staticmethod
-    def __server_status_to_string(status):
-        """
-        Convierte a string el código de estado de un servidor de máquinas virtuales.
-        Argumentos:
-            status: código de estado.
-        Devuelve:
-            string correspondiente al código de estado
-        """
-        if (status == SERVER_STATE_T.BOOTING) :
-            return "Booting"
-        elif (status == SERVER_STATE_T.READY) :
-            return "Ready"
-        elif (status == SERVER_STATE_T.SHUT_DOWN) :
-            return "Shut down"
-        elif (status == SERVER_STATE_T.RECONNECTING) :
-            return "Reconnecting"
-        else :
-            return "Connection lost"
         
     def createVMServerConfigurationChangePacket(self, serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior, commandID):
         p = self.__packetCreator.createPacket(2)
@@ -338,7 +318,7 @@ class ClusterServerPacketHandler(object):
             result["SequenceSize"] = p.readInt()
             data = []
             while (p.hasMoreData()) :
-                data.append((p.readString(), p.readString(), p.readString(), p.readInt(), p.readBool()))
+                data.append((p.readString(), p.readInt(), p.readString(), p.readInt(), p.readBool()))
             result["Data"] = data
             
         elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_DISTRIBUTION_DATA) :
@@ -346,7 +326,7 @@ class ClusterServerPacketHandler(object):
             result["SequenceSize"] = p.readInt()
             data = []
             while (p.hasMoreData()) :
-                data.append((p.readString(), p.readInt()))
+                data.append((p.readString(), p.readInt(), p.readInt()))
             result["Data"] = data
             
         elif (packet_type == CLUSTER_SERVER_PACKET_T.ACTIVE_VM_DATA) :
@@ -406,7 +386,7 @@ class ClusterServerPacketHandler(object):
         elif (packet_type == CLUSTER_SERVER_PACKET_T.REPOSITORY_STATUS) :
             result["FreeDiskSpace"] = p.readInt()
             result["AvailableDiskSpace"] = p.readInt()
-            result["ConnectionStatus"] = p.readString()
+            result["RepositoryStatus"] = p.readInt()
             
         elif (packet_type == CLUSTER_SERVER_PACKET_T.CREATE_IMAGE or 
               packet_type == CLUSTER_SERVER_PACKET_T.EDIT_IMAGE):

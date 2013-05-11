@@ -15,7 +15,7 @@ COMMAND_OUTPUT_TYPE = enum("VM_SERVER_REGISTRATION_ERROR", "VM_SERVER_BOOTUP_ERR
                            "VM_SERVER_SHUTDOWN_ERROR", "DOMAIN_DESTRUCTION_ERROR", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
                            "CONNECTION_ERROR", "COMMAND_TIMED_OUT")
 
-from clusterServer.networking.packets import MAIN_SERVER_PACKET_T as PACKET_T
+from clusterServer.networking.packets import CLUSTER_SERVER_PACKET_T as PACKET_T
 
 class CommandsHandler(object):
     """

@@ -262,7 +262,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         #Guardamos en una lista los ids resultantes
         retrievedData = []
         for r in results:
-            retrievedData.append({"ServerName" : str(r[0]), "VMID" : int(r[1]), "Status": int(r[2])})
+            retrievedData.append({"ServerName" : str(r[0]), "ImageID" : int(r[1]), "CopyStatus": int(r[2])})
         #Devolvemos la lista resultado
         return retrievedData
     

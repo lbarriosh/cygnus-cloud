@@ -65,7 +65,8 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         for row in results :
             d = dict()
             d["VMServerName"] = row[0]
-            d["VMID"] = int(row[1])
+            d["ImageID"] = int(row[1])
+            d["CopyStatus"] = row[2]
             retrievedData.append(d)
         return retrievedData 
     

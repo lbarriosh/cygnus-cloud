@@ -96,6 +96,8 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
     def removeOldCommands(self, timeout):        
         query = "SELECT * FROM PendingCommand WHERE time - {0} >= {1};".format(time.time(), timeout)
         results = self._executeQuery(query, False)
+        if (results == None) :
+            return []
         commandIDs = []
         for row in results :
             commandIDs.append((row[0], row[1]))
