@@ -93,16 +93,36 @@ def createVanillaVM():
         subTable = createVanillaImageTable(vanillaInfo["RAMSize"],
                     vanillaInfo["VCPUs"],vanillaInfo["OSDiskSize"],vanillaInfo["DataDiskSize"],
                     maxValues["RAMSize"],maxValues["VCPUs"],maxValues["OSDiskSize"],maxValues["DataDiskSize"])
-        table.append(TR(TH(LABEL(vanillaInfo["Name"]),_style="font-size:17px;")))
-        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = 0,_id = "c"+str(j) )),subTable))
+        table.append(TR(TH(LABEL(vanillaInfo["Name"]),_style="font-size:17px;"),_id="t" + str(j)))
+        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = 0,_id = "c"+str(j) )),subTable,_id="r" + str(j)
+            ,_value=str(connector.getImageData(id["ImageID"])["OSFamily"]) + 'c' + str(connector.getImageData(id["ImageID"])["OSVariant"]) ))
         j = j + 1
+        
+    osFamily = SELECT(_name = 'osType',_id= 'osTypeSelect')
+    osFamilyData = connector.getOSTypes()
+    osFamily.append(OPTION(T("Todos"), _value = '-1' ,_selected="selected"))
+    for osf in  osFamilyData:
+        osFamily.append(OPTION(osf["FamilyName"],_value = osf["FamilyID"]))
+        
+    osFamilyVariant = SELECT(_name = 'osVariant',_id= 'osVariantSelect')
+    num = 0
+    osFamilyVariant.append(OPTION(T("Todas"),_id= num, _value = '-1c-1' ,_selected="selected"))
+    for o in  osFamilyData:
+        osFamilyVariantData = connector.getOSTypeVariants(o["FamilyID"])
+        for osf in  osFamilyVariantData:
+            num = num + 1
+            print str(o["FamilyID"]) + 'c' + str(osf["VariantID"])
+            osFamilyVariant.append(OPTION(osf["VariantName"],_id = num , _value = str(o["FamilyID"]) + 'c' + str(osf["VariantID"])))
+               
     
     form = FORM(DIV( T('Nombre: '),BR(),INPUT(_name = 'newVMName')),BR(),
                 DIV( T('Descripcion: '),BR(),TEXTAREA(_name = 'description')),BR(),
-                LABEL(H2(T('Máquinas vanila disponibles:'))),table,
+                LABEL(H2(T('Máquinas vanila disponibles:'))),
+                DIV(H3(T("Seleccione el Sistema operativo")),BR(),osFamily,osFamilyVariant),BR(),
+                table,
                 CENTER(INPUT(_type='submit',_name = 'createVM',  _value = T('Crear máquina virtual')
                     ,_class="button button-blue",_style="width:180px;")))
-    return dict(form = form,progressBarStyle=progressBarStyle)
+    return dict(form = form,progressBarStyle=progressBarStyle,num = num,num2 = j)
           
        
    

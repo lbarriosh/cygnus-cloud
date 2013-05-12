@@ -7,8 +7,8 @@ Commands database connector unit tests.
 
 import unittest
 
-from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
-from database.utils.configuration import DBConfigurator
+from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
+from ccutils.databases.configuration import DBConfigurator
 
 class CommandsDBTests(unittest.TestCase):
     
@@ -18,12 +18,11 @@ class CommandsDBTests(unittest.TestCase):
         self.__dbConfigurator.runSQLScript("CommandsDBTest", "./CommandsDBTest.sql")
         # Add a user to it
         self.__dbConfigurator.addUser("cygnuscloud", "cygnuscloud", "CommandsDBTest")
-        self.__connector = CommandsDatabaseConnector("cygnuscloud", "cygnuscloud", "CommandsDBTest", 1)     
-        self.__connector.connect()   
+        self.__connector = CommandsDatabaseConnector("cygnuscloud", "cygnuscloud", "CommandsDBTest", 1)    
         
     def tearDown(self):
-        self.__connector.disconnect()
-        self.__dbConfigurator.dropDatabase("CommandsDBTest")
+        #self.__dbConfigurator.dropDatabase("CommandsDBTest")
+        pass
         
     def test_addAndRemoveCommands(self):
         self.__connector.addCommand(1, 0, "command arguments")
@@ -50,6 +49,18 @@ class CommandsDBTests(unittest.TestCase):
         result = self.__connector.getCommandOutput(commandID)
         expectedResult = (0, "commandOutput")
         self.assertEquals(result, expectedResult, "either addCommandOutput or getCommandOutput does not work")       
+
+    def test_getPendingNotifications(self):
+        commandID = self.__connector.addCommand(1, 0, "commandArguments")
+        self.__connector.popCommand()
+        self.__connector.addCommandOutput(commandID, 0, "Args1", False, True)
+        commandID = self.__connector.addCommand(1, 0, "commandArguments1")
+        self.__connector.popCommand()
+        self.__connector.addCommandOutput(commandID, 0, "Args2", False, True)
+        result = self.__connector.getPendingNotifications(1)
+        expectedResult = [(0, u'Args1'), (0, u'Args2')]
+        self.assertEquals(result, expectedResult, "getPendingNotifications() error")
+        
     
 if __name__ == "__main__" :
     unittest.main()

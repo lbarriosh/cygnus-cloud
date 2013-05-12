@@ -2,3 +2,40 @@
 <h1>{{=T('Crear nueva máquina virtual')}}</h1>
 {{=progressBarStyle}}
 {{=form}}
+<script>
+jQuery(document).ready(function(){
+    jQuery('#osTypeSelect').change(function(){
+   		var i;
+   		var actualValue;
+        //Actualizamos los selects
+        var id = jQuery('#osTypeSelect').val();
+        for(i = 0 ; i <= {{=num}}; i++){  
+            actualValue = jQuery('#' +i).val();
+            if((actualValue.split('c')[0] == id) || (actualValue.split('c')[0] == '-1') ||
+            	id == '-1'){
+            	jQuery('#' + i).show();
+            }else{
+                jQuery('#' + i).hide();
+            }   
+        }
+        jQuery('#osVariantSelect').val(0);
+        
+        //Actualizamos la tabla
+        for(i = 0 ; i <= {{=num2}}; i++){  
+            actualValue = jQuery('#r' +i).val();
+            if((actualValue.split('c')[0] == id) || (id == '-1')){
+            	jQuery('#t' + i).show();
+            	jQuery('#r' + i).show();
+            }else{
+                jQuery('#t' + i).hide();
+                jQuery('#r' + i).hide();
+            }   
+        }        
+
+
+   		
+   				
+    });
+
+});
+</script>
