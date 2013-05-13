@@ -586,4 +586,30 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             d["AvailableTemporarySpace"] = int(result[6])
             d["ActiveVCPUs"] = int(result[7])
             d["PhysicalCPUs"] = int(result[8])
-            return d         
+            return d  
+   
+    def getOSTypes(self):
+        query = "SELECT familyID, familyName FROM OSFamily;"
+        results = self._executeQuery(query, False)
+        if (results == None) :
+            return []
+        retrievedData = []
+        for row in results :
+            d = dict()
+            d["FamilyID"] = row[0]
+            d["FamilyName"] = row[1]
+            retrievedData.append(d)
+        return retrievedData
+        
+    def getOSTypeVariants(self,familyID):
+        query = "SELECT variantID, variantName FROM OSVariant WHERE familyID = '{0}';".format(familyID)
+        results = self._executeQuery(query, False)
+        if (results == None) :
+            return []
+        retrievedData = []
+        for row in results :
+            d = dict()
+            d["VariantID"] = row[0]
+            d["VariantName"] = row[1]
+            retrievedData.append(d)
+        return retrievedData    

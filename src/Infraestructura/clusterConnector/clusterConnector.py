@@ -294,6 +294,15 @@ class ClusterConnector(object):
     def getVirtualMachineServerStatus(self, serverName):
         return self.__endpointDBConnector.getVirtualMachineServerStatus(serverName)
     
+    def getOSTypes(self):
+        return self.__endpointDBConnector.getOSTypes()
+    
+    def getOSTypeVariants(self,familyID):
+        return self.__endpointDBConnector.getOSTypeVariants(familyID)
+    
+    def getImageData(self,imageID):
+        return self.__endpointDBConnector.getImageData(imageID)
+    
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "connector_user", "CygnusCloud")
