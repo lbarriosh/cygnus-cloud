@@ -20,6 +20,8 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         self.__vmServerSegmentsData = []
         self.__vmServerSegments = 0
+        self.__vmServerResourceUsageData = []
+        self.__vmServerResourceUsageSegments = 0
         self.__imageDistributionSegmentsData = []
         self.__imageDistributionSegments = 0
         self.__activeVMSegmentsData = dict()
@@ -65,7 +67,8 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         for row in results :
             d = dict()
             d["VMServerName"] = row[0]
-            d["VMID"] = int(row[1])
+            d["ImageID"] = int(row[1])
+            d["CopyStatus"] = row[2]
             retrievedData.append(d)
         return retrievedData 
     
@@ -98,6 +101,53 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             d["VNCPassword"] = row[6]
             retrievedData.append(d)
         return retrievedData 
+    
+    def processVMServerResourceUsageSegment(self, segmentNumber, segmentCount, data):
+        if (data != []) :
+            self.__vmServerResourceUsageData += data
+            self.__vmServerResourceUsageSegments += 1
+            
+        if (self.__vmServerResourceUsageSegments == segmentCount) :
+            # Hemos recibido la secuencia completa => la procesamos
+            receivedData = ClusterEndpointDBConnector.__getVMServersDictionary(self.__vmServerResourceUsageData)
+            registeredIDs = self.__getKnownVMServerIDs("VirtualMachineServerStatus")
+            
+            # Quitar las filas que no existen
+            if (registeredIDs != None) :
+                for ID in registeredIDs :
+                    if not (receivedData.has_key(ID)) :
+                        self.__deleteVMServerStatusData(ID)
+                        
+            # Determinar qué hay que insertar y qué hay que modificar
+            inserts = []
+            for ID in receivedData.keys() :
+                if (registeredIDs != None and ID in registeredIDs) :
+                    self.__updateVMServerStatusData(receivedData[ID])
+                else :
+                    inserts.append(receivedData[ID])
+                    
+            # Realizar las inserciones de golpe
+            if (inserts != []) :
+                self.__insertVMServerStatusData(inserts)
+            self.__vmServerResourceUsageData = []
+            self.__vmServerResourceUsageSegments = 0
+            
+    def __insertVMServerStatusData(self, tupleList):
+        update = "INSERT INTO VirtualMachineServerStatus VALUES {0};"\
+            .format(ClusterEndpointDBConnector.__convertTuplesToSQLStr(tupleList))
+        self._executeUpdate(update)
+            
+    def __updateVMServerStatusData(self, receivedData):
+        update = "UPDATE VirtualMachineServerStatus SET hosts = {0}, ramInUse = {1}, ramSize = {2},\
+            freeStorageSpace = {3}, availableStorageSpace = {4}, freeTemporarySpace = {5}, availableTemporarySpace = {6},\
+            activeVCPUs = {7}, physicalCPUs = {8} WHERE serverName = '{9}';".format(receivedData[1], receivedData[2], receivedData[3],
+                                                           receivedData[4], receivedData[5], receivedData[6], receivedData[7],
+                                                           receivedData[8], receivedData[9], receivedData[0])
+        self._executeUpdate(update)
+            
+    def __deleteVMServerStatusData(self, serverID):
+        update = "DELETE FROM VirtualMachineServerStatus WHERE serverID = '{0}';".format(serverID)
+        self._executeUpdate(update)
     
     def processVMServerSegment(self, segmentNumber, segmentCount, data):
         """
@@ -229,7 +279,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             result[(segment[0], segment[1], segment[2])] = segment
         return result
                 
-    def __getKnownVMServerIDs(self):
+    def __getKnownVMServerIDs(self, table="VirtualMachineServer"):
         """
         Devuelve los identificadores de los servidores de máquinas virtuales conocidos.
         Argumentos:
@@ -237,7 +287,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         Devuelve:
             Una lista con los identificadores de los servidores de máquinas virtuales conocidos.
         """
-        query = "SELECT serverName FROM VirtualMachineServer;";
+        query = "SELECT serverName FROM {0};".format(table)
         result = set()
         output = self._executeQuery(query, False)
         if (output == None) :
@@ -495,3 +545,45 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             return None
         else :
             return {"RAMSize" : result[0], "VCPUs": result[1], "OSDiskSize" : result[2], "DataDiskSize" : result[3]}
+        
+    def updateImageRepositoryStatus(self, freeDiskSpace, availableDiskSpace, status) :
+        query = "SELECT * FROM ImageRepositoryStatus;"
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            command = "INSERT INTO ImageRepositoryStatus VALUES (1, {0}, {1}, '{2}');".format(freeDiskSpace, availableDiskSpace, status)
+        else :
+            command = "UPDATE ImageRepositoryStatus SET freeDiskSpace = {0}, availableDiskSpace = {1}, repositoryStatus = '{2}';"\
+                .format(freeDiskSpace, availableDiskSpace, status)
+        self._executeUpdate(command)
+        
+    def getImageRepositoryStatus(self):
+        query = "SELECT freeDiskSpace, availableDiskSpace, repositoryStatus FROM ImageRepositoryStatus;"
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else :
+            d = dict()
+            d["FreeDiskSpace"] = result[0]
+            d["AvailableDiskSpace"] = result[1]
+            d["RepositoryStatus"] = str(result[2])
+            return d
+        
+    def getVirtualMachineServerStatus(self, serverName):
+        query = "SELECT hosts, ramInUse, ramSize, freeStorageSpace, availableStorageSpace, \
+            freeTemporarySpace, availableTemporarySpace, activeVCPUs, physicalCPUs\
+            FROM VirtualMachineServerStatus WHERE serverName = '{0}';".format(serverName)
+        result = self._executeQuery(query, True)
+        if (result == None) :
+            return None
+        else :
+            d = dict()
+            d["ActiveHosts"] = int(result[0])
+            d["RAMInUse"] = int(result[1])
+            d["RAMSize"] = int(result[2])
+            d["FreeStorageSpace"] = int(result[3])
+            d["AvailableStorageSpace"] = int(result[4])
+            d["FreeTemporarySpace"] = int(result[5])
+            d["AvailableTemporarySpace"] = int(result[6])
+            d["ActiveVCPUs"] = int(result[7])
+            d["PhysicalCPUs"] = int(result[8])
+            return d         

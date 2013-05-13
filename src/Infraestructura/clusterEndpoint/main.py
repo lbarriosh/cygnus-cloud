@@ -8,6 +8,7 @@ Created on Apr 3, 2013
 import sys
 from constants import ClusterEndpointConstantsManager
 from clusterEndpoint.endpoint import ClusterEndpoint, EndpointException
+from clusterEndpoint.codes.spanishCodesTranslator import SpanishCodesTranslator
 
 if __name__ == "__main__" :
     # Parsear el fichero de configuración
@@ -21,7 +22,7 @@ if __name__ == "__main__" :
         print "Error: " + e.message
         sys.exit()
         
-    endpoint = ClusterEndpoint()
+    endpoint = ClusterEndpoint(SpanishCodesTranslator())
     
     endpoint.connectToDatabases(cm.getConstant("mysqlRootsPassword"), cm.getConstant("endpointDBName"), 
                                 cm.getConstant("commandsDBName"), cm.getConstant("endpointdbSQLFilePath"), 

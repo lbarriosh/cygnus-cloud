@@ -64,7 +64,7 @@ class EndpointPacketReactor(object):
             self.__destroyDomain(data)
         elif (data["packet_type"] == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE):
             self.__changeVMServerConfiguration(data)
-        elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS_REQUEST):
+        elif (data["packet_type"] == PACKET_T.QUERY_REPOSITORY_STATUS):
             self.__sendRepositoryStatusData()
         elif (data["packet_type"] == PACKET_T.DEPLOY_IMAGE or data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER):
             self.__deployOrDeleteImage(data)
@@ -74,6 +74,9 @@ class EndpointPacketReactor(object):
             self.__deleteImageFromInfrastructure(data)
         elif (data["packet_type"] == PACKET_T.AUTO_DEPLOY):
             self.__auto_deploy_image(data)
+        elif (data["packet_type"] == PACKET_T.QUERY_VM_SERVERS_RESOURCE_USAGE):
+            self.__sendStatusData(self.__dbConnector.getVMServerResouceUsage, self.__webPacketHandler.createVMServerResourceUsagePacket)
+        
             
     def __registerVMServer(self, data):
         """
@@ -522,7 +525,7 @@ class EndpointPacketReactor(object):
         # La información de las tablas se fragmenta en varios segmentos para no superar
         # el tamaño máximo del paquete (64 KB)
         
-        segmentSize = 200 # Cada segmento llevará 200 filas de la tabla
+        segmentSize = 100 # Cada segmento llevará 100 filas de la tabla
         outgoingData = []
         serverIDs = self.__dbConnector.getVMServerIDs()
         if (len(serverIDs) == 0) :
@@ -544,6 +547,8 @@ class EndpointPacketReactor(object):
         # Crear los segmentos y enviarlos cuando estén llenos
         for serverID in serverIDs :
             row = queryMethod(serverID)
+            if (row == None):
+                break
             if (isinstance(row, dict)) :
                 outgoingData.append(row)
             else :
