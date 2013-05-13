@@ -240,6 +240,17 @@ tr.notAvaible{
     text-align: justify;
 }
 
+.vanillaTR{
+    background-color: #e0f0ff;
+   	border: 3px solid #142cb0;  
+	border-radius:20px;
+    -o-border-radius: 20px;
+    -moz-border-radius:20px;
+    -webkit-border-radius:20px;
+    padding-left:50px;
+    padding-right:50px;
+}
+
 td{
     padding: 10px;
     text-align: center;

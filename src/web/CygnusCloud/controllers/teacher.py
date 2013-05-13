@@ -93,10 +93,10 @@ def createVanillaVM():
         subTable = createVanillaImageTable(vanillaInfo["RAMSize"],
                     vanillaInfo["VCPUs"],vanillaInfo["OSDiskSize"],vanillaInfo["DataDiskSize"],
                     maxValues["RAMSize"],maxValues["VCPUs"],maxValues["OSDiskSize"],maxValues["DataDiskSize"])
-        table.append(TR(TH(LABEL(vanillaInfo["Name"]),_style="font-size:17px;"),_id="t" + str(j)))
-        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = 0,_id = "c"+str(j) )),subTable,_id="r" + str(j)
-            ,_value=str(connector.getImageData(id["ImageID"])["OSFamily"]) + 'c' + str(connector.getImageData(id["ImageID"])["OSVariant"]) ))
+        table.append(TR(TH(LABEL(vanillaInfo["Name"]),_style="font-size:17px;"),_id="t"+str(j)))
+        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value=str(connector.getImageData(id["ImageID"])["OSFamily"]) + 'c' + str(connector.getImageData(id["ImageID"])["OSVariant"]),_id = "c"+str(j))),DIV(subTable,_class='vanillaTR'),_id="r" + str(j)))
         j = j + 1
+        
         
     osFamily = SELECT(_name = 'osType',_id= 'osTypeSelect')
     osFamilyData = connector.getOSTypes()
@@ -111,7 +111,6 @@ def createVanillaVM():
         osFamilyVariantData = connector.getOSTypeVariants(o["FamilyID"])
         for osf in  osFamilyVariantData:
             num = num + 1
-            print str(o["FamilyID"]) + 'c' + str(osf["VariantID"])
             osFamilyVariant.append(OPTION(osf["VariantName"],_id = num , _value = str(o["FamilyID"]) + 'c' + str(osf["VariantID"])))
                
     
@@ -119,9 +118,10 @@ def createVanillaVM():
                 DIV( T('Descripcion: '),BR(),TEXTAREA(_name = 'description')),BR(),
                 LABEL(H2(T('Máquinas vanila disponibles:'))),
                 DIV(H3(T("Seleccione el Sistema operativo")),BR(),osFamily,osFamilyVariant),BR(),
-                table,
+                CENTER(table),BR(),
                 CENTER(INPUT(_type='submit',_name = 'createVM',  _value = T('Crear máquina virtual')
                     ,_class="button button-blue",_style="width:180px;")))
+    print j
     return dict(form = form,progressBarStyle=progressBarStyle,num = num,num2 = j)
           
        

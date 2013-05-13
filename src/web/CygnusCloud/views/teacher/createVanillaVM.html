@@ -6,7 +6,9 @@
 jQuery(document).ready(function(){
     jQuery('#osTypeSelect').change(function(){
    		var i;
+   		var j;
    		var actualValue;
+        var actualValueS;
         //Actualizamos los selects
         var id = jQuery('#osTypeSelect').val();
         for(i = 0 ; i <= {{=num}}; i++){  
@@ -20,21 +22,43 @@ jQuery(document).ready(function(){
         }
         jQuery('#osVariantSelect').val(0);
         
+        
         //Actualizamos la tabla
-        for(i = 0 ; i <= {{=num2}}; i++){  
-            actualValue = jQuery('#r' +i).val();
-            if((actualValue.split('c')[0] == id) || (id == '-1')){
-            	jQuery('#t' + i).show();
-            	jQuery('#r' + i).show();
+        for(j = 0 ; j < {{=num2}}; j++){  
+            actualValueS = jQuery('#c'+ j).val();
+            if((actualValueS.split('c')[0] == id) || (id == '-1')){
+            	jQuery('#t' + j).show("slow");
+            	jQuery('#r' + j).show("slow");
             }else{
-                jQuery('#t' + i).hide();
-                jQuery('#r' + i).hide();
-            }   
-        }        
+                jQuery('#t' + j).hide("slow");
+                jQuery('#r' + j).hide("slow");
+            }
+  
+        } 
+	       
 
 
    		
    				
+    });
+    
+    jQuery('#osVariantSelect').change(function(){
+        var j;
+        var actualValueS;
+        //Actualizamos la tabla
+        var id = jQuery('#osVariantSelect').val();
+        for(j = 0 ; j < {{=num2}}; j++){  
+            actualValueS = jQuery('#c'+ j).val();
+            if((actualValueS == id) || ((id == '-1c-1') && 
+            	((actualValueS.split('c')[0] == jQuery('#osTypeSelect').val()) || (jQuery('#osTypeSelect').val() == '-1')))){
+            	jQuery('#t' + j).show("slow");
+            	jQuery('#r' + j).show("slow");
+            }else{
+                jQuery('#t' + j).hide("slow");
+                jQuery('#r' + j).hide("slow");
+            }
+  
+        }     	
     });
 
 });
