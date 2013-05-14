@@ -13,12 +13,12 @@ def runVM():
     j = 0
     [readyTable,j] = createReadyTable(j)
     #TODO: Descomentar cuando proceda
-    #[editingTable,waitingTable,j] = createDisabledTables(j)
+    [editingTable,waitingTable] = createDisabledTables()
     #Creamos el formulario
     form = FORM(HR(),_target='_blank')
     form.append(DIV(H2("Máquinas disponibles"),H4(readyTable),BR()))
-    #form.append(DIV(H2("Máquinas en edicion"),H4(editingTable),BR()))
-    #form.append(DIV(H2("Máquinas no registradas"),H4(waitingTable),BR()))
+    form.append(DIV(H2("Máquinas en edicion"),H4(editingTable),BR()))
+    form.append(DIV(H2("Máquinas no registradas"),H4(waitingTable),BR()))
     i = 0
     divMaquinas = DIV(_id='maquinas')   
     
@@ -90,11 +90,19 @@ def createVanillaVM():
     j= 0
     for id in vanillaImagesIds:
         vanillaInfo = connector.getVanillaImageFamiliyData(id["VanillaImageFamilyID"])
+        osId = connector.getImageData(id["ImageID"])["OSFamily"]
+        variantId = connector.getImageData(id["ImageID"])["OSVariant"]
+        picturePath = userDB((userDB.pictureByOSId.osId == osId) & (userDB.pictureByOSId.variantId == variantId)
+                             & (userDB.pictureByOSId.pictureId == userDB.osPictures.osPictureId )).select(userDB.osPictures.picturePath)[0].picturePath
+        print picturePath
         subTable = createVanillaImageTable(vanillaInfo["RAMSize"],
                     vanillaInfo["VCPUs"],vanillaInfo["OSDiskSize"],vanillaInfo["DataDiskSize"],
                     maxValues["RAMSize"],maxValues["VCPUs"],maxValues["OSDiskSize"],maxValues["DataDiskSize"])
-        table.append(TR(TH(LABEL(vanillaInfo["Name"]),_style="font-size:17px;"),_id="t"+str(j)))
-        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value=str(connector.getImageData(id["ImageID"])["OSFamily"]) + 'c' + str(connector.getImageData(id["ImageID"])["OSVariant"]),_id = "c"+str(j))),DIV(subTable,_class='vanillaTR'),_id="r" + str(j)))
+        table.append(TR(
+            TH(IMG(_src=URL('static',str(picturePath)), _alt="memoryIcon",_style="width:35px;"),_style="text-align: right;"),
+            TH(LABEL(vanillaInfo["Name"]),_style="font-size:17px;text-align: left;"),_id="t"+str(j)))
+        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value=str(osId) + 'c' + str(variantId),_id ="s"+str(j))),
+        DIV(subTable,_class='vanillaTR'),_id="r" + str(j)))
         j = j + 1
         
         
@@ -155,28 +163,40 @@ def createReadyTable(j):
     pass
     return [table,j]
     
-def createDisabledTables(j):
+def createDisabledTables():
     connector = conectToServer()
-    disabledImages = connector.getEditedImages(auth.user_id)
+    editingImages = connector.getEditedImageIDs(auth.user_id)
     editingTable = TABLE(_class='data', _name='table')
     editingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
-            TH("Grupo"),TH('Descripcion',_class='izquierda')))
-    waitingTable = editingTable = TABLE(_class='data', _name='table')
-    waitingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
-            TH("Grupo"),TH('Descripcion',_class='izquierda')))
-    for image in disabledImages:
-        imageInfo = connector.getBootableImagesData(image)
-        if imageInfo["bootable"]:
-               subjectsInfo = userDB((VMByGroup.VMId == image)).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)
-               for s in subjectsInfo:
-                   subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
-                   waitingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId,_id = "c"+str(i + j) )),
+            TH("Grupo")))
+    for image in editingImages:
+        imageInfo = connector.getImageData(image)
+        subjectsInfo = userDB((userDB.VMByGroup.VMId == image)).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)
+        for s in subjectsInfo:
+            subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
+            editingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = image,_disabled="disabled" )),
                          TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda'),TD(LABEL(s.curseGroup)),
-                         TD(DIV(P(imageInfo["ImageDescription"]),_id = str(i + j)),_class='izquierda'),_class='notAvaible'))
-        else:
-           editingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId,_id = "c"+str(i + j) )),
-              TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(""),_class='izquierda'),TD(LABEL("")),
-              TD(DIV(P(imageInfo["ImageDescription"]),_id = str(i + j)),_class='izquierda'),_class='notAvaible'))            
+                         _class='notAvaible'))
+
+
+    waitingImages = connector.getNewImageIDs(auth.user_id)
+    waitingTable  = TABLE(_class='data', _name='table')
+    waitingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
+            TH("Grupo")))                                                 
+    for image in editingImages:
+           print image
+           imageInfo = connector.getImageData(image)
+           subjectsInfo = userDB((userDB.VMByGroup.VMId == image)).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)
+           
+           for s in subjectsInfo:    
+               subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
+               waitingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = image,_disabled="disabled" )),
+                  TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(""),_class='izquierda'),TD(LABEL("")),
+                  _class='notAvaible')) 
+
+    return (editingTable,waitingTable)
+              
+             
             
     
 def conectToServer():

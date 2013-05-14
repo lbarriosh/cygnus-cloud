@@ -25,7 +25,7 @@ jQuery(document).ready(function(){
         
         //Actualizamos la tabla
         for(j = 0 ; j < {{=num2}}; j++){  
-            actualValueS = jQuery('#c'+ j).val();
+            actualValueS = jQuery('#s'+ j).val();
             if((actualValueS.split('c')[0] == id) || (id == '-1')){
             	jQuery('#t' + j).show("slow");
             	jQuery('#r' + j).show("slow");
@@ -48,7 +48,7 @@ jQuery(document).ready(function(){
         //Actualizamos la tabla
         var id = jQuery('#osVariantSelect').val();
         for(j = 0 ; j < {{=num2}}; j++){  
-            actualValueS = jQuery('#c'+ j).val();
+            actualValueS = jQuery('#s'+ j).val();
             if((actualValueS == id) || ((id == '-1c-1') && 
             	((actualValueS.split('c')[0] == jQuery('#osTypeSelect').val()) || (jQuery('#osTypeSelect').val() == '-1')))){
             	jQuery('#t' + j).show("slow");

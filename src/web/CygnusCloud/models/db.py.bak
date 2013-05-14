@@ -4,7 +4,7 @@ from gluon import *
 
 from configuration import DBConfigurator
 from gluon.tools import Auth
-from webConstants import rootPassword
+from userInputConstants import rootPassword
 import os
 
 print os.getcwd()
@@ -57,4 +57,15 @@ userDB.define_table('VMByGroup',
    Field('VMId','integer','reference Images'),
    Field('cod','integer','reference UserGroup'),
    Field('curseGroup',length=1 ),
+   primarykey=['cod','curseGroup','VMId'],migrate= True)
+   
+userDB.define_table('osPictures',
+   Field('osPictureId','integer'),
+   Field('picturePath',length=100 ),
+   primarykey=['osPictureId'],migrate= True)
+   
+userDB.define_table('pictureByOSId',
+   Field('osId','integer'),
+   Field('varianId','integer'),
+   Field('pictureId','integer','reference osPictures'),
    primarykey=['cod','curseGroup','VMId'],migrate= True)

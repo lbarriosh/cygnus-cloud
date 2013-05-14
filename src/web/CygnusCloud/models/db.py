@@ -58,3 +58,14 @@ userDB.define_table('VMByGroup',
    Field('cod','integer','reference UserGroup'),
    Field('curseGroup',length=1 ),
    primarykey=['cod','curseGroup','VMId'],migrate= True)
+   
+userDB.define_table('osPictures',
+   Field('osPictureId','integer'),
+   Field('picturePath',length=100 ),
+   primarykey=['osPictureId'],migrate= True)
+   
+userDB.define_table('pictureByOSId',
+   Field('osId','integer'),
+   Field('variantId','integer'),
+   Field('pictureId','integer','reference osPictures'),
+   primarykey=['osId','variantId'],migrate= True)

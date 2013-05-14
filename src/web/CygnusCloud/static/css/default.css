@@ -227,9 +227,9 @@ a:hover {
 }
 
 tr.notAvaible{
-    background-color: #e0e6ff;
+    //background-color: #e3e5f0;
      opacity:.7;
-    color: #959bb4;
+    color: #8489a0;
     font-family:  Arial, MS Sans Serif, Tahoma, Helvetica, sans-serif;
     font-size: 15px;
     line-height: 1.6em;
@@ -242,11 +242,11 @@ tr.notAvaible{
 
 .vanillaTR{
     background-color: #e0f0ff;
-   	border: 3px solid #142cb0;  
-	border-radius:20px;
-    -o-border-radius: 20px;
-    -moz-border-radius:20px;
-    -webkit-border-radius:20px;
+   	border: 3px solid #0064c9;  
+	border-radius:25px;
+    -o-border-radius: 25px;
+    -moz-border-radius:25px;
+    -webkit-border-radius:25px;
     padding-left:50px;
     padding-right:50px;
 }

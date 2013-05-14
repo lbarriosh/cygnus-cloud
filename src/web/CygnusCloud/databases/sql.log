@@ -1304,3 +1304,16 @@ UPDATE UserGroup SET cursegroup=cursegroup__tmp;
 success!
 ALTER TABLE UserGroup DROP COLUMN cursegroup__tmp;
 success!
+timestamp: 2013-05-14T02:26:42.106026
+CREATE TABLE osPictures(
+    osPictureId INT NOT NULL,
+    picturePath VARCHAR(100),
+    PRIMARY KEY(osPictureId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-05-14T02:27:13.726392
+CREATE TABLE pictureByOSId(
+    osId INT NOT NULL,
+    variantId INT NOT NULL,
+    pictureId INT,
+    PRIMARY KEY(osId, variantId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
