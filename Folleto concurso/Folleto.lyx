@@ -1,0 +1,471 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\options a4paper
+\use_default_options true
+\begin_modules
+tabs-within-sections
+figs-within-sections
+fixltx2e
+\end_modules
+\maintain_unincluded_children false
+\language spanish
+\language_package auto
+\inputencoding auto
+\fontencoding global
+\font_roman charter
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format pdf2
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement h
+\paperfontsize 10
+\spacing single
+\use_hyperref true
+\pdf_title "Cygnus Cloud: folleto CUSL"
+\pdf_author "Luis Barrios, Adrián Fernández, Samuel Guayerbas"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+
+\emph on
+CygnusCloud
+\emph default
+: provisión de puestos de laboratorio virtuales bajo demanda
+\end_layout
+
+\begin_layout Author
+Luis Barrios Hernández
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+luisbarrioshdez [arroba] gmail [punto] com
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Adrián Fernández Hernández
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+adrianfernandez905 [arroba] gmail [punto] com
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Samuel Guayerbas Martín
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+saguma [arroba] gmail [punto] com
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+Facultad de Informática - Universidad Complutense de Madrid
+\end_layout
+
+\begin_layout Subsection*
+¿Por qué hemos desarrollado 
+\emph on
+CygnusCloud
+\emph default
+?
+\end_layout
+
+\begin_layout Standard
+La Facultad de Informática de la Universidad Complutense se nos ha quedado
+ pequeña.
+ En ella, se imparten, entre otras titulaciones, una ingeniería superior
+ en informática, dos ingenierías técnicas, cuatro grados y dos másters.
+\end_layout
+
+\begin_layout Standard
+Para hacer nuestras prácticas, los alumnos podemos utilizar doce aulas de
+ informática.
+ Ahora bien, las características de los equipos de cada aula son distintas,
+ al igual que los programas instalados en ellos.
+ Además, cuando se está dando clase en cualquiera de ellas, sólo los alumnos
+ matriculados en la asignatura correspondiente podrán utilizarla.
+ 
+\end_layout
+
+\begin_layout Standard
+Así, si queremos hacer prácticas en la Facultad y no hay aulas de informática
+ disponibles, no tenemos más remedio que utilizar nuestros propios portátiles,
+ incluso si hay sitio en las aulas de informática de otras facultades: como
+ en ellas no están instalados la gran mayoría de programas que necesitamos,
+ no las podemos usar.
+ 
+\end_layout
+
+\begin_layout Standard
+Con 
+\emph on
+CygnusCloud
+\emph default
+, queremos sacar partido a estas aulas de informática, de forma que cualquier
+ estudiante, sea de la carrera que sea, pueda trabajar en ellas.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la instalación, desinstalación y configuración de los programas
+ que están instalados en los equipos de las aulas de informática se ha convertid
+o en un tedioso proceso burocrático.
+ Ahora, los profesores tienen que especificar los programas que van a utilizar
+ al principio del semestre, y sólo tienen 
+\emph on
+una
+\emph default
+ semana para comprobar que todo funciona.
+ Si después tienen que introducir algún cambio, no tendrán más remedio que
+ esperar por un mínimo de cuatro semanas.
+\end_layout
+
+\begin_layout Standard
+En 
+\emph on
+CygnusCloud
+\emph default
+, los profesores tendrán el control total sobre los programas que utilizan,
+ y podrán introducir cambios en cuestión de 
+\emph on
+horas
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Por último, 
+\emph on
+CygnusCloud
+\emph default
+ también permite reducir costes:
+\end_layout
+
+\begin_layout Itemize
+varias facultades pueden compartir licencias de 
+\emph on
+software
+\emph default
+.
+ Por ejemplo, si entre las facultades de Matemáticas, Físicas e Informática
+ hay 400 PCs y sólo se usan 100 licencias de 
+\emph on
+Microsoft Office
+\emph default
+ a la vez, no será necesario comprar una licencia para cada equipo (es decir,
+ 400 licencias), sino sólo 100.
+\end_layout
+
+\begin_layout Itemize
+como los programas se ejecutan en nuestros servidores, varios alumnos pueden
+ compartir un mismo servidor, por lo que ahorramos energía eléctrica.
+ Además, los equipos de las aulas de informática pueden ser mucho menos
+ potentes, por lo que su coste de compra y su consumo eléctrico serán menores.
+\end_layout
+
+\begin_layout Subsection*
+¿Qué ofrece 
+\emph on
+CygnusCloud
+\emph default
+ a los usuarios?
+\end_layout
+
+\begin_layout Standard
+En 
+\emph on
+CygnusCloud
+\emph default
+ existen tres tipos de usuario: alumnos, profesores y administradores.
+\end_layout
+
+\begin_layout Itemize
+los 
+\series bold
+alumnos
+\series default
+ pueden arrancar y detener cualquier máquina virtual asociada a sus asignaturas.
+ En ella, estarán instalados los programas que necesiten para trabajar (como
+ un procesador de textos o un entorno de desarrollo integrado).
+ Además, podrán introducir y sacar datos de las máquinas virtuales utilizando
+ las herramientas de almacenamiento en la nube más populares (como 
+\emph on
+Dropbox
+\emph default
+ o 
+\emph on
+Google Drive
+\emph default
+).
+\end_layout
+
+\begin_layout Itemize
+los 
+\series bold
+profesores
+\series default
+ pueden hacer lo mismo que los alumnos.
+ Además, también pueden crear nuevas máquinas virtuales, modificar la configurac
+ión de las máquinas existentes o incluso borrarlas.
+\end_layout
+
+\begin_layout Itemize
+los 
+\series bold
+administradores
+\series default
+ pueden hacer lo mismo que los profesores, realizar las altas y bajas de
+ usuarios y asignaturas y modificar la configuración de los servidores de
+ la infraestructura.
+\end_layout
+
+\begin_layout Standard
+Todos los usuarios utilizan 
+\emph on
+CygnusCloud
+\emph default
+ a través de una interfaz web, por lo que sólo es necesario que tengan instalado
+ en su equipo un navegador web reciente con un buen motor de JavaScript.
+\end_layout
+
+\begin_layout Subsection*
+¿A quién está dirigido 
+\emph on
+CygnusCloud
+\emph default
+?
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+CygnusCloud
+\emph default
+ está dirigido a cualquier tipo de institución académica de tamaño pequeño
+ o mediano.
+ No obstante, también es posible utilizarlo en instituciones de mayor tamaño,
+ siempre y cuando se usen varias réplicas del sistema.
+\end_layout
+
+\begin_layout Subsection*
+¿Para qué no sirve 
+\emph on
+CygnusCloud
+\emph default
+?
+\end_layout
+
+\begin_layout Standard
+Debido a las limitaciones que imponen los protocolos de escritorio remoto,
+ las máquinas virtuales de 
+\emph on
+CygnusCloud
+\emph default
+ 
+\emph on
+no
+\emph default
+ pueden utilizarse en tareas que requieran refrescar mucho la pantalla,
+ como la renderización de gráficos 3D y la edición y reproducción de vídeos.
+\end_layout
+
+\begin_layout Subsection*
+¿Qué hace falta para utilizar 
+\emph on
+CygnusCloud
+\emph default
+?
+\end_layout
+
+\begin_layout Standard
+Para utilizar 
+\emph on
+CygnusCloud
+\emph default
+ son necesarias dos cosas: servidores y ancho de banda.
+\end_layout
+
+\begin_layout Itemize
+las máquinas virtuales pueden alojarse en servidores con hasta cinco años
+ de antigüedad, con una CPU Intel Core 2 Duo o superior y 2 GB de RAM.
+ Los requisitos técnicos del resto de servidores son inferiores: basta con
+ que cuenten con una CPU Intel Pentium 4 a 2,4 GHz, 1 GB de RAM y 2 ó 20
+ GB de espacio libre en disco.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+En cualquier caso, todas estas máquinas deben tener instalado una distribución
+ 
+\emph on
+Linux
+\emph default
+ cuya versión del 
+\emph on
+kernel 
+\emph default
+sea igual o superior a la versión 3.2.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+la institución debe contar con una red de área local con una tasa de bits
+ de 100 Mb/s.
+ No obstante, para alojar un número razonable de máquinas virtuales es necesario
+ que la tasa de bits de la red sea, como mínimo, de 1 Gb/s.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los usuarios pueden utilizar un equipo de sobremesa con
+ una CPU Intel Pentium 4 a 2,4 GHz o superior, 1 GB de RAM y con cualquier
+ sistema operativo instalado.
+ También es posible acceder a 
+\emph on
+CygnusCloud
+\emph default
+ utilizando móviles o tabletas.
+\end_layout
+
+\begin_layout Standard
+Además, como la gran mayoría de errores que se pueden producir se detectan
+ y tratan, 
+\emph on
+CygnusCloud
+\emph default
+ puede utilizarse en pruebas piloto o incluso en producción.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en las máquinas virtuales puede estar instalado cualquier sistema
+ operativo soportado por KVM: 
+\emph on
+Windows 7
+\emph default
+, 
+\emph on
+Windows 8
+\emph default
+, cualquier distribución 
+\emph on
+Linux
+\emph default
+, 
+\emph on
+FreeBSD
+\emph default
+,\SpecialChar \ldots{}
+ 
+\end_layout
+
+\begin_layout Subsection*
+¿Cuánto cuesta implantar 
+\emph on
+CygnusCloud
+\emph default
+?
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+CygnusCloud
+\emph default
+ no cuesta 
+\emph on
+nada
+\emph default
+: es software libre y gratuito, y está construido sobre software libre y
+ gratuito.
+ Para implantarlo, sólo es necesario asumir el coste de los servidores,
+ del equipo de red y del consumo eléctrico de todas estas máquinas.
+\end_layout
+
+\begin_layout Standard
+Además, si se desea utilizar máquinas virtuales con el sistema operativo
+ 
+\emph on
+Windows
+\emph default
+ también será necesario afrontar los costes adicionales de la licencia 
+\emph on
+Windows Virtual Desktop Access
+\emph default
+.
+\end_layout
+
+\end_body
+\end_document

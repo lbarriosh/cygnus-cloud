@@ -140,20 +140,11 @@ CygnusCloud
 \begin_layout Enumerate
 
 \series bold
-Subsistemas de 
-\emph on
-CygnusCloud
+Decisiones de diseño
 \series default
-\emph default
 .
- En esta sección mostraremos, en términos generales, qué subsistemas componen
- 
-\emph on
-CygnusCloud 
-\emph default
-y qué responsabilidades tienen asignadas.
- Esta información es fundamental para comprender la arquitectura, y por
- ello aparece antes de presentar todas las vistas de la misma.
+ En esta sección justificaremos las decisiones más relevantes que hemos
+ tomado en el proceso de diseño.
 \end_layout
 
 \begin_layout Enumerate
@@ -226,14 +217,10 @@ El comando de
 \emph on
 IBM Rational Software Architect 7.5
 \emph default
- que los genera usa degradados para mejorar la presentación de los diagramas
- de clase y de los diagramas de paquetes, haciendo que los elementos que
- aparecen en la parte superior del diagrama sean más oscuros que los que
- aparecen en la parte inferior del mismo.
-\end_layout
-
-\begin_layout Standard
-En cualquier caso, este efecto 
+ que los genera usa degradados para mejorar la presentación de los diagramas,
+ haciendo que los elementos que aparecen en la parte superior del diagrama
+ sean más oscuros que los que aparecen en la parte inferior del mismo.
+ En cualquier caso, este efecto 
 \emph on
 no
 \emph default
@@ -251,7 +238,14 @@ En esta sección describiremos todos los objetivos que consideramos a la
 \end_layout
 
 \begin_layout Subsection
-Objetivos
+Objetivos 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Objetivos-arquitectura"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -259,49 +253,42 @@ Con
 \emph on
 CygnusCloud
 \emph default
- no sólo queremos proporcionar a los estudiantes de la Facultad de Informática
- más laboratorios en los que trabajar: también queremos ofrecer una alternativa
- viable para que cualquier alumno pueda sacar el máximo partido a cualquier
+ queremos hacer posible que cualquier estudiante de la Universidad Complutense,
+ sea de la titulación que sea, pueda sacar el máximo partido a cualquier
  aula de informática infrautilizada del campus.
- Por ello, la 
+ Para ello, es necesario que
+\end_layout
+
+\begin_layout Itemize
+el sistema pueda atender a más alumnos utilizando más servidores y más ancho
+ de banda.
+ Por tanto, la 
 \emph on
-escalabilidad 
+escalabilidad
 \emph default
-es una característica fundamental del diseño: utilizando más servidores
- y más ancho de banda, es posible que 
+ debe considerarse en el diseño.
+\end_layout
+
+\begin_layout Itemize
+los alumnos y profesores puedan utilizar 
 \emph on
 CygnusCloud
 \emph default
- atienda a un mayor número de usuarios.
- 
-\end_layout
-
-\begin_layout Standard
-Además, para que alumnos y profesores de cualquier titulación sean capaces
- de utilizar 
-\emph on
-CygnusCloud 
-\emph default
-en cualquier aula de informática, nuestro sistema debe ser 
-\emph on
-fácil de usar
-\emph default
-, y también debe poder utilizarse sin necesidad de instalar 
+ sin necesidad de instalar ningún 
 \emph on
 software
 \emph default
- en dichas aulas.
+ adicional en las aulas de informática.
+ De no ser así, no es posible aprovechar los equipos de las aulas que no
+ tienen instalado el 
+\emph on
+software
+\emph default
+ adicional.
 \end_layout
 
 \begin_layout Standard
-Por otra parte, considerando la actual situación de crisis económica, también
- deseamos que 
-\emph on
-CygnusCloud
-\emph default
- sirva para mostrar cómo sacar el máximo partido a los recursos informáticos
- existentes en la Universidad.
- Así, 
+Además, dada la actual situación de crisis económica, 
 \emph on
 CygnusCloud
 \emph default
@@ -309,11 +296,36 @@ CygnusCloud
 \emph on
 coste cero
 \emph default
-, lo que nos ha obligado a buscar la 
+.
+ Para ello,
+\end_layout
+
+\begin_layout Itemize
+debemos utilizar exclusivamente software gratuito, y
+\end_layout
+
+\begin_layout Itemize
+el 
 \emph on
-eficiencia
+software
 \emph default
- a la hora de diseñarlo.
+ debe ejecutarse sobre servidores antiguos.
+ Así, resulta imprescindible que el 
+\emph on
+software
+\emph default
+ sea tan eficiente como sea posible.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el sistema sólo podrá utilizarse con garantías cuando detecte
+ y trate un número suficiente de errores.
+ Por ello, 
+\emph on
+el diseño debe contemplar y tratar el mayor número de errores posible
+\emph default
+.
 \end_layout
 
 \begin_layout Standard
@@ -328,9 +340,7 @@ sólo se extiende a lo largo de un curso académico, también queremos que
 \emph on
 simplicidad
 \emph default
-: en todos los procesos se sigue siempre una secuencia de pasos muy marcados,
- que sólo varía en función de las características de las máquinas que intervenga
-n.
+.
 \end_layout
 
 \begin_layout Subsection
@@ -345,39 +355,50 @@ name "sub:Restricciones-arquitectura"
 \end_layout
 
 \begin_layout Standard
-Tal y como mencionamos en el apartado anterior, 
+Tal y como mencionamos en el apartado 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Objetivos-arquitectura"
+
+\end_inset
+
+, 
 \emph on
 CygnusCloud
 \emph default
- debe poder implantarse con coste cero.
- Para ello, es imprescindible construir este sistema con 
+ debe poder implantarse con coste cero, por lo que debemos construirlo utilizand
+o 
 \emph on
 software
 \emph default
  gratuito.
- Como los hipervisores deben instalarse en un sistema operativo en concreto,
- que tiene que ser gratuito, esto ha impuesto la primera restricción importante:
- la 
+ Puesto que los hipervisores deben instalarse en un sistema operativo en
+ concreto, que tiene que ser gratuito, esto ha impuesto la primera restricción
+ importante: la 
 \emph on
-dependencia de la plataforma GNU/Linux
+dependencia de la plataforma Linux
 \emph default
 .
  
 \end_layout
 
 \begin_layout Standard
-Y dado que existe una ingente cantidad de distribuciones 
+Por otra parte, existe una ingente cantidad de distribuciones 
 \emph on
-GNU/Linux
+Linux
 \emph default
- que pueden requerir procedimientos de configuración diferentes, es fundamental
- utilizar mecanismos estándar para interactuar con los hipervisores y, a
- ser posible, lenguajes interpretados, para garantizar que nuestro sistema
- funcione sin problemas en cualquier sistema 
+, que utilizan distintos sistemas de gestión de paquetes y distintos procedimien
+tos de configuración.
+ Para garantizar que 
 \emph on
-GNU/Linux
+CygnusCloud
 \emph default
-.
+ funciona correctamente en el mayor número posible de distribuciones 
+\emph on
+Linux
+\emph default
+, resulta fundamental utilizar mecanismos estándar para interactuar con
+ los hipervisores y, a ser posible, lenguajes interpretados.
  Esto ha impuesto una doble restricción: 
 \end_layout
 
@@ -386,7 +407,8 @@ el uso obligatorio de la librería
 \emph on
 libvirt 
 \emph default
-para interactuar con los hipervisores y configurar las redes virtuales.
+para interactuar con los hipervisores y configurar las redes virtuales,
+ y
 \end_layout
 
 \begin_layout Itemize
@@ -395,1036 +417,411 @@ el uso de un lenguaje de tipo interpretado, como Java o Python, como principal
 \end_layout
 
 \begin_layout Standard
-Por otra parte, la práctica totalidad de los 
+Además, la práctica totalidad de los 
 \emph on
 frameworks
 \emph default
- que hemos considerado para implementar la web se basan en el modelo vista-contr
-olador o en otros patrones de diseño derivados de él, lo que nos ha obligado
- a utilizar dicho patrón de en el servidor web.
+ que hemos evaluado al diseñar la web se basan en el modelo vista-controlador
+ o en otros patrones de diseño derivados de él, lo que nos ha obligado a
+ utilizar dicho patrón de diseño.
 \end_layout
 
 \begin_layout Standard
-Finalmente, para evitar la aparición de incompatibilidades entre formatos
- de paquete hemos tenido que utilizar la misma librería de red para comunicar
- todos los subsistemas que componen 
+Finalmente, para reducir el tiempo de implementación de 
 \emph on
 CygnusCloud
 \emph default
-.
- Puesto que cada librería de red está implementada en cierto lenguaje, nos
- hemos visto obligados a emplear el mismo lenguaje de programación para
- implementar la mayoría de subsistemas, lo que también ha restringido significat
-ivamente el número de 
+ resulta imprescindible que todos los subsistemas compartan tanta funcionalidad
+ como sea posible.
+ De esta manera, todos ellos utilizan el mismo código para realizar, entre
+ otras cosas, operaciones básicas sobre una base de datos y comunicaciones
+ a través de una red.
+\end_layout
+
+\begin_layout Standard
+Pero esto sólo es posible si 
 \emph on
-frameworks
+todos los subsistemas se implementan utilizando el mismo lenguaje de programació
+n
 \emph default
- que hemos podido considerar para implementar la web.
+, lo que ha restringido considerablemente el número de librerías y 
+\emph on
+frameworks 
+\emph default
+que hemos podido considerar.
 \end_layout
 
 \begin_layout Section
-Subsistemas de 
-\emph on
-CygnusCloud 
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Subsistemas-de-CygnusCloud"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-El sistema 
-\emph on
-CygnusCloud
-\emph default
- está formado por un conjunto de susbsistemas conectados a una misma red
- que cooperan entre sí para suministrar servicios a los usuarios.
- Cada uno de estos subsistemas tiene una funcionalidad claramente delimitada,
- y residirá en una máquina posiblemente distinta.
-\end_layout
-
-\begin_layout Standard
-Los subsistemas básicos que componen 
-\emph on
-CygnusCloud
-\emph default
- y sus principales responsabilidades son los siguientes:
-\end_layout
-
-\begin_layout Itemize
-el 
-\series bold
-servidor de máquinas virtuales
-\series default
- reside en todas las máquinas que alojarán las máquinas virtuales de los
- usuarios.
- Su misión es interactuar con el hipervisor en respuesta a las peticiones
- recibidas para instanciar y destruir máquinas virtuales, enviar los datos
- de conexión a cada máquina virtual, suministrar estadísticas que reflejen
- su estado actual,\SpecialChar \ldots{}
-
-\end_layout
-
-\begin_layout Itemize
-el 
-\series bold
-servidor del 
-\emph on
-cluster
-\series default
-\emph default
- reside en una máquina asignada a cada 
-\emph on
-cluster
-\emph default
- de servidores de máquinas virtuales.
- Además de realizar el balanceado de carga para distribuir las máquinas
- virtuales entre los distintos servidores de máquinas virtuales del 
-\emph on
-cluster
-\emph default
-, también recopila periódicamente el estado de todos sus servidores de máquinas
- virtuales.
-\end_layout
-
-\begin_layout Itemize
-el 
-\series bold
-servidor web
-\series default
- reside en una única máquina.
- Su misión es alojar la web, que permite a los usuarios utilizar el sistema
- 
-\emph on
-CygnusCloud
-\emph default
-.
- Este sistema realiza el control de acceso, recopila periódicamente información
- de estado desde todos los servidores de 
-\emph on
-cluster
-\emph default
- y envía a los mismos todas las peticiones de los usuarios.
-\end_layout
-
-\begin_layout Standard
-
-\emph on
-CygnusCloud
-\emph default
- también está compuesto por dos subsistemas adicionales: el 
-\series bold
-cliente de escritorio remoto noVNC
-\series default
- y el 
-\series bold
-hipervisor
-\series default
- 
-\series bold
-KVM
-\series default
-.
- Puesto que ambos han sido desarrollados por terceros, en este capítulo
- sólo hablaremos de ellos en líneas generales y sólo cuando sea imprescindible
- para comprender el funcionamiento del sistema.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Newpage clearpage
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Vista lógica
-\end_layout
-
-\begin_layout Subsection
-Visión general
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaPaquetes.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Diagrama-de-paquetes-CygnusCloud"
-
-\end_inset
-
-Diagrama de paquetes de 
-\emph on
-CygnusCloud
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-La funcionalidad del sistema 
-\emph on
-CygnusCloud 
-\emph default
-está distribuida entre siete paquetes:
-\end_layout
-
-\begin_layout Itemize
-en los módulos del paquete 
-\family sans
-utils
-\family default
- se definen clases que se utilizan en varios módulos distintos, como estructuras
- de datos sin problemas de sincronización o clases que ejecutan comandos.
- 
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-database
-\family default
- contiene todas las clases que interactuarán con las bases de datos de los
- tres subsistemas básicos.
- 
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-network
-\family default
- contiene las clases que permiten comunicar un conjunto de máquinas distintas
- a través de una red de área local.
- Dichas comunicaciones se realizan utilizando el protocolo TCP a través
- de la librería de red 
-\emph on
-twisted
-\emph default
-.
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-virtualMachineServer
-\family default
- contiene las clases que, junto con algunas de los paquetes de los que este
- depende, implementan el subsistema servidor de máquinas virtuales.
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-clusterServer
-\family default
- contiene todas las clases que, junto con algunas de los paquetes de los
- que este depende, implementan el susbsistema servidor del 
-\emph on
-cluster
-\emph default
-.
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-webServer
-\family default
- contiene todas las clases que, junto con algunas de los paquetes de los
- que este depende, implementan el susbsistema servidor web.
-\end_layout
-
-\begin_layout Itemize
-finalmente, el paquete 
-\family sans
-testing
-\family default
- contiene clases utilizadas para depurar los sistemas servidor de máquinas
- virtuales y servidor del 
-\emph on
-cluster
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-Las relaciones existentes entre estos paquetes aparecen en la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Diagrama-de-paquetes-CygnusCloud"
-
-\end_inset
-
-.
- Por claridad, las dependencias del paquete 
-\family sans
-virtualMachineServer
-\family default
- aparecen en 
-\color red
-rojo
-\color inherit
-, las del paquete 
-\family sans
-clusterServer
-\family default
- aparecen en 
-\color blue
-azul
-\color inherit
- y las del resto de paquetes aparecen en negro.
-\end_layout
-
-\begin_layout Standard
-Los paquetes que acabamos de presentar se descomponen en otros paquetes
- más pequeños.
- Para facilitar la visualización de las dependencias principales entre paquetes,
- hemos optado por no mostrar aquí dicha dicha descomposición.
- Mostraremos la descomposición de cada paquete y las relaciones entre clases
- que justifican la dependencia entre esos paquetes a medida que presentemos
- el diseño.
-\end_layout
-
-\begin_layout Subsection
-Paquetes y clases significativos de la arquitectura
-\end_layout
-
-\begin_layout Standard
-En este apartado mostraremos las clases más importantes de cada paquete
- junto con una breve descripción de sus responsabilidades.
-\end_layout
-
-\begin_layout Subsubsection
-
-\family sans
-utils
-\end_layout
-
-\begin_layout Standard
-Como ya hemos mencionado, este paquete define un conjunto de clases que
- se utilizan en muchos otros y que, por conveniencia, es mejor tener agrupadas.
- Las clases más relevantes de este paquete son las siguientes:
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-Commands
-\family default
-.
- Esta clase suministra métodos estáticos que permiten ejecutar comandos
- en 
-\emph on
-foreground
-\emph default
- y 
-\emph on
-background
-\emph default
-, y también como 
-\emph on
-root
-\emph default
- o como un usuario estándar.
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-MultithreadingCounter
-\family default
-.
- Esta clase almacena el valor de un contador, y dispone de métodos para
- incrementarlo, decrementarlo y leer su valor de forma segura cuando varios
- hilos lo utilizan.
-\end_layout
-
-\begin_layout Itemize
-Las clases 
-\family sans
-MultithreadingDictionary
-\family default
- y 
-\family sans
-MultithreadingList
-\family default
- definen métodos para manipular de forma segura diccionarios y listas Python
- utilizados por varios hilos.
-\end_layout
-
-\begin_layout Itemize
-La clase 
-\family sans
-MultithreadingPriorityQueue
-\family default
- define métodos para manipular una cola de prioridad utilizada por varios
- hilos.
-\end_layout
-
-\begin_layout Itemize
-Las clases 
-\family sans
-BasicThread
-\family default
- y 
-\family sans
-QueueProcessingThread
-\family default
- añaden funcionalidad adicional a los hilos estándar de Python para que
- estos se detengan ante las peticiones de otros y para que procesen una
- cola de elementos respectivamente.
-\end_layout
-
-\begin_layout Subsubsection
-
-\family sans
-database
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaPaquetesDatabase.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:El-paquete-database"
-
-\end_inset
-
-El paquete 
-\family sans
-database
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Este paquete contiene todas las clases que interactuarán con las bases de
- datos de los distintos susbsistemas de 
-\emph on
-CygnusCloud
-\emph default
-.
- Tal y como se muestra en la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:El-paquete-database"
-
-\end_inset
-
-, estas clases se distribuyen en cinco subpaquetes:
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-utils
-\family default
- contiene todas las clases que permiten interactuar con una base de datos
- MySQL desde Python.
- De entre todas ellas, destacan
-\family sans
- DBConfigurator
-\family default
- y 
-\family sans
-BasicDatabaseConnector
-\family default
-, que permiten configurar el esquema de una base de datos y realizar consultas
- y actualizaciones sobre una base de datos respectivamente.
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-clusterServer
-\family default
- contiene la clase 
-\family sans
-ClusterServerDatabaseConnector
-\family default
-, que permite manipular la base de datos del servidor del 
-\emph on
-cluster
-\emph default
-.
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-systemStatus
-\family default
- contiene la clase 
-\family sans
-SystemStatusDBWriter
-\family default
-, que permite actualizar la base de datos que almacena el estado de todo
- el sistema.
-\end_layout
-
-\begin_layout Itemize
-el paquete
-\family sans
- vmServer
-\family default
- contiene las clases 
-\family sans
-ImageManager
-\family default
- y 
-\family sans
-RuntimeData
-\family default
-, que permiten manipular la base de datos del servidor de máquinas virtuales.
-\end_layout
-
-\begin_layout Itemize
-finalmente, el paquete 
-\family sans
-tests
-\family default
- contiene pruebas unitarias de todas las clases que manipulan una base de
- datos.
-\end_layout
-
-\begin_layout Subsubsection
-
-\family sans
-network
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaPaquetesNetwork.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:El-paquete-network"
-
-\end_inset
-
-El paquete 
-\family sans
-network
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Las clases del paquete 
-\family sans
-network
-\family default
- interactúan con la librería de red 
-\emph on
-twisted
-\emph default
- para comunicar una máquina con otra u otras conectadas a la misma red.
- La figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:El-paquete-network"
-
-\end_inset
-
- muestra que este paquete se descompone en seis subpaquetes:
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-exceptions
-\family default
- contiene todas las clases de excepción que utilizan las clases del paquete
- 
-\family sans
-network
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-packets
-\family default
- contiene la clase 
-\family sans
-Packet
-\family default
-, que ofrece una interfaz de alto nivel para enviar elementos de los tipos
- de datos básicos (como valores enteros y 
-\emph on
-strings
-\emph default
-) a través de la red.
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-threads
-\family default
- contiene las clases 
-\family sans
-ConnectionMonitoringThread
-\family default
-, 
-\family sans
-DataProcessingThread
-\family default
-, 
-\family sans
-TwistedReactorThread
-\family default
- y 
-\family sans
-ServerWaitThread
-\family default
-, correspondientes a los distintos tipos de hilo que se utilizan en la implement
-ación de la red.
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-twistedInteraction
-\family default
- contiene las clases 
-\family sans
-NetworkConnection
-\family default
- y 
-\family sans
-CygnusCloudProtocol
-\family default
-, que se utilizan para establecer conexiones y para realizar el envío y
- la recepción de datos utilizando la librería de red 
-\emph on
-twisted
-\emph default
-.
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-manager
-\family default
- contiene las clases 
-\family sans
-NetworkManager
-\family default
- y 
-\family sans
-NetworkCallback
-\family default
-.
- La primera ofrece una interfaz de alto nivel para establecer una conexión
- entre dos máquinas y enviar datos entre las mismas, y la segunda define
- la interfaz que se utiliza para procesar los datos recibidos a través de
- la red.
-\end_layout
-
-\begin_layout Itemize
-finalmente, el paquete
-\family sans
- tests
-\family default
- contiene pruebas de los módulos de este paquete.
-\end_layout
-
-\begin_layout Subsubsection
-
-\family sans
-virtualMachineServer
-\end_layout
-
-\begin_layout Standard
-Este paquete contiene las clases del subsistema servidor de máquinas virtuales
- que interactuan con el hipervisor y también las de mayor nivel de abstracción
- de dicho subsistema.
- Las más importante son las siguientes:
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-LibvirtConnector
-\family default
-, que interactúa con el hipervisor KVM a través de la librería 
-\emph on
-libvir
-\emph default
-t para instanciar y destruir máquinas virtuales.
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-VMClient
-\family default
-, que atiende las peticiones recibidas por el servidor de máquinas virtuales.
- Entre otras cosas, se ocupa de asignar y liberar los recursos asociados
- a cada máquina virtual y de ordenar la instanciación y la destrucción de
- las mismas.
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-ConfigurationFileEditor
-\family default
-, que manipula los ficheros 
-\family typewriter
-.xml
-\family default
- que definen la configuración de una máquina virtual para incluir los recursos
- asociados a dicha máquina.
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-VMServerPacketHandler
-\family default
-, que proporciona métodos para crear y leer los paquetes utilizados por
- el subsistema servidor de máquinas virtuales.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-VirtualNetworkManager
-\family default
-, que configura la red virtual a la que se conectarán las máquinas virtuales.
-\end_layout
-
-\begin_layout Subsubsection
-
-\family sans
-clusterServer
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaPaquetesClusterServer.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:El-paquete-clusterServer"
-
-\end_inset
-
-El paquete 
-\family sans
-clusterServer
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Tal y como se muestra en la figura , el paquete 
-\family sans
-clusterServer
-\family default
-, que contiene las clases del subsistema servidor del cluster de mayor nivel
- de abstracción, consta de tres subpaquetes:
-\end_layout
-
-\begin_layout Itemize
-el paquete 
-\family sans
-network
-\family default
- contiene las clases 
-\family sans
-WebCallback
-\family default
-, 
-\family sans
-VMServerCallback
-\family default
- y 
-\family sans
-MainServerPacketHandle
-\family default
-r.
- Las dos primeras definen los métodos a los que se llamará cuando se reciba
- un paquete procedente del servidor web y de un servidor de máquinas virtuales
- respectivamente, y la última se comporta igual que la clase 
-\family sans
-VMServerPacketHandler
-\family default
-, proporcionando métodos para leer y crear los paquetes que utiliza el servidor
- del 
-\emph on
-cluster
-\emph default
- para comunicarse con el servidor web.
-\end_layout
-
-\begin_layout Itemize
-el paquete l
-\family sans
-oadBalancing
-\family default
- contiene la clase 
-\family sans
-LoadBalancer
-\family default
-, que define la interfaz que usarán todos los distintos algoritmos que realizan
- el balanceado de carga entre distintos servidores de máquinas virtuales.
-\end_layout
-
-\begin_layout Itemize
-finalmente, el paquete 
-\family sans
-reactor
-\family default
- contiene la clase 
-\family sans
-MainServerReactor
-\family default
-, que procesa adecuadamente los paquetes recibidos desde un servidor de
- máquinas virtuales o desde el servidor web.
-\end_layout
-
-\begin_layout Subsubsection
-
-\family sans
-webServer
-\end_layout
-
-\begin_layout Standard
-El paquete webServer se encuentra distribuido en un conjunto de paquetes
- que hacen referencia a los diferentes tipos de elementos necesarios para
- implementar la funcionalidad de la web.
- Estos paquetes son:
-\end_layout
-
-\begin_layout Itemize
-Vistas : Paquetes con el conjunto de vistas que definen la representación
- de las páginas
-\end_layout
-
-\begin_layout Itemize
-Controladores : Paquete que contiene los módulos python encargados de manejar
- las diferentes funcionalidades de la web.
-\end_layout
-
-\begin_layout Itemize
-Modelos : Incluye dos módulos python encargados de definir dos aspectos
- importantes de la web.
- El primer módulo, menu, introduce la información sobre la versión , las
- palabras clave y todos los aspectos generales de la web.
- El segundo, db, se encarga de crear las tablas necesarias que serán utilizadas
- para almacenar la información manejada por la web.
-\end_layout
-
-\begin_layout Itemize
-Lenguajes : Incluye un conjunto de diccionarios que permiten traducir la
- web a diferentes idiomas.
-\end_layout
-
-\begin_layout Itemize
-Archivos estáticos : Este paquete incluye las css , js e imagenes necesarias
- para definir el aspecto de la web.
- También incluye el controlador noVNC.
-\end_layout
-
-\begin_layout Itemize
-Módulos : En este paquete se encuentran todos los módulos python secundarios
- que serán utilizados por los controladores.
-\end_layout
-
-\begin_layout Subsubsection
-
-\family sans
-testing
-\end_layout
-
-\begin_layout Standard
-El paquete 
-\family sans
-testing
-\family default
- contiene clases que permiten comprobar el correcto funcionamiento de los
- subsistemas servidor de máquinas virtuales y servidor del cluster.
- Sus clases son las siguientes:
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-DummyVMServer
-\family default
-, que imita el comportamiento de un servidor de máquinas virtuales y no
- instancia máquinas.
- Esta clase se utiliza para comprobar el funcionamiento del subsistema servidor
- del cluster.
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-VirtualMachineServerTester
-\family default
-.
- Esta clase imita al servidor principal, haciendo posible el envío de cualquier
- secuencia de órdenes a un servidor de máquinas virtuales.
- Por ello, se utiliza para depurar dicho subsistema.
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-ClusterServerTester
-\family default
-.
- Esta clase imita al servidor web, lo que permite enviar cualquier secuencia
- de órdenes a un servidor de 
-\emph on
-cluster
-\emph default
-.
- Así, esta clase se utiliza para depurar este subsistema.
-\end_layout
-
-\begin_layout Subsection
 Decisiones de diseño
 \end_layout
 
+\begin_layout Subsection
+Uso de una aplicación web para interactuar con 
+\emph on
+CygnusCloud
+\end_layout
+
 \begin_layout Standard
-En esta sección discutiremos brevemente las decisiones de diseño más importantes
- que hemos tomado a lo largo del desarrollo del proyecto.
+En la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Objetivos-arquitectura"
+
+\end_inset
+
+ dijimos, entre otras cosas, que 
+\emph on
+CygnusCloud
+\emph default
+ debe poder utilizarse sin necesidad de instalar 
+\emph on
+software
+\emph default
+ adicional en las aulas de informática.
+ Para ello, existen dos alternativas: crear una aplicación web o crear una
+ aplicación convencional que pueda utilizarse sin necesidad de ser instalada.
+\end_layout
+
+\begin_layout Standard
+El uso de una aplicación de escritorio tiene una gran ventaja: no es necesario
+ utilizar tecnologías web, totalmente desconocidas para nosotros al inicio
+ del proyecto.
+ No obstante, también tiene asociados algunos inconvenientes considerables:
+\end_layout
+
+\begin_layout Itemize
+el proceso de actualización es más complejo.
+ Para actualizar una aplicación web, basta con parar los servidores que
+ la alojan, modificar los ficheros binarios y volverlos a arrancar.
+ En el caso de una aplicación de escritorio, es necesario buscar actualizaciones
+ periódicamente y aplicarlas causando el menor número de molestias a los
+ usuarios.
+\end_layout
+
+\begin_layout Itemize
+la seguridad del sistema se compromete más fácilmente que con una aplicación
+ web.
+ Si no se cifra el tráfico, cualquier usuario malintencionado que use un
+ analizador de paquetes puede llegar a tomar el control del sistema.
+ Por otra parte, aunque el tráfico viaje cifrado, siempre será posible realizar
+ inyecciones de código.
+\end_layout
+
+\begin_layout Subsection
+Descomposición del sistema 
+\emph on
+CygnusCloud
+\emph default
+ en cuatro subsistemas
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Descomposición-del-sistema"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para atender las peticiones de los usuarios, en la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+ colaboran hasta cuatro subsistemas distintos.
+ En esta sección, mostraremos, de forma general, las responsabilidades de
+ cada uno de ellos.
+ Además, también expondremos los motivos que nos llevaron a hacer esta descompos
+ición.
 \end_layout
 
 \begin_layout Subsubsection
+Los servidores de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+Instanciar una máquina virtual requiere muchos recursos.
+ No basta con asignarle memoria RAM y tiempo de CPU: también es necesario
+ reservar espacio en disco en el que almacenar los datos de los usuarios
+ y los archivos de paginación.
+ 
+\end_layout
+
+\begin_layout Standard
+Por muy potente que sea el 
+\emph on
+hardware 
+\emph default
+del servidor que alojará las máquinas virtuales, el número máximo de máquinas
+ virtuales estará siempre limitado.
+ Por tanto, la única forma de superar esta limitación y aumentar el número
+ de máquinas virtuales que pueden estar activas a la vez es utilizando varios
+ servidores para albergarlas.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el arranque y la creación o edición de máquinas virtuales
+ son operaciones que requieren mucha entrada/salida.
+ Para garantizar que el tiempo de respuesta del sistema es adecuado, lo
+ más conveniente es que los nodos que albergan máquinas virtuales se dediquen
+ a ello en exclusiva.
+ De ahora en adelante, llamaremos 
+\series bold
+servidores de máquinas virtuales
+\series default
+ a los nodos que albergan exclusivamente máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, una vez creadas las las máquinas virtuales, el
+ servidor VNC que utilizarán los usuarios para interactuar con ellas reside
+ en el propio servidor de máquinas virtuales, por lo que el tráfico VNC
+ circulará exclusivamente entre los PCs de los usuarios y los servidores
+ de máquinas virtuales.
+ Además, el tráfico que los usuarios generan para conectarse a internet
+ se vuelca directamente a la red, es decir, no atraviesa ninguna otra máquina
+ de la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+El repositorio de imágenes
+\end_layout
+
+\begin_layout Standard
+Los usuarios sólo pueden arrancar, crear y editar máquinas virtuales cuando
+ sus imágenes de disco están desplegadas en un servidor de máquinas virtuales.
+ No obstante, hay imágenes de disco que no deben estar desplegadas en ningún
+ servidor de máquinas virtuales.
+ Este es el caso de
+\end_layout
+
+\begin_layout Itemize
+las imágenes 
+\emph on
+vanilla
+\emph default
+, que sólo tienen el sistema operativo configurado con los programas más
+ básicos instalados, y
+\end_layout
+
+\begin_layout Itemize
+las imágenes que no han terminado de editarse.
+ 
+\end_layout
+
+\begin_layout Standard
+Estas imágenes no están completamente configuradas, por lo que ningún alumno
+ las podrá arrancar.
+ Así, su presencia en un servidor de máquinas virtuales supone un desperdicio
+ de espacio en disco.
+\end_layout
+
+\begin_layout Standard
+Además, para simplificar la administración del sistema no resulta conveniente
+ que las imágenes de disco se dispersen entre múltiples máquinas.
+ Si existe una máquina que almacena una copia de todas las imágenes de disco
+ existentes, para modificar todas las copias existentes de una de ellas
+ sólo será necesario acudir a esta máquina, modificar los ficheros correspondien
+tes y volver a desplegar la imagen de disco.
+\end_layout
+
+\begin_layout Standard
+Esta máquina, a la que llamaremos 
+\series bold
+repositorio de imágenes
+\series default
+, almacenará una copia de todas las imágenes de disco existentes.
+ Es importante notar que la única copia de las imágenes 
+\emph on
+vanilla
+\emph default
+ y de las imágenes de disco que se están editando se encuentra en el repositorio
+ de imágenes.
+\end_layout
+
+\begin_layout Subsubsection
+El servidor de 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+En un momento dado, varios servidores de máquinas virtuales pueden albergar
+ una nueva instancia de cierta máquina virtual.
+ Ahora bien, no todos ellos tienen por qué encontrarse en las mismas condiciones.
+\end_layout
+
+\begin_layout Standard
+Por ejemplo, si los servidores 
+\family sans
+A
+\family default
+ y 
+\family sans
+B
+\family default
+ pueden albergar una nueva instancia de la máquina virtual 
+\family sans
+Debian-LSO
+\family default
+ y el servidor 
+\family sans
+A
+\family default
+ alberga más instancias que el servidor 
+\family sans
+B
+\family default
+, la experiencia del usuario mejorará si alojamos la nueva instancia la
+ nueva instancia en el servidor 
+\family sans
+B
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por tanto, necesitamos utilizar una máquina que
+\end_layout
+
+\begin_layout Itemize
+averigüe periódicamente el estado de todos los servidores de máquinas virtuales
+ y del repositorio de imagenes,
+\end_layout
+
+\begin_layout Itemize
+al atender las peticiones del usuario, compruebe que estas se pueden satisfacer.
+ Esto resulta fundamental para ahorrar ancho de banda.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Por ejemplo, si el repositorio de imágenes no tiene suficiente espacio en
+ disco para alojar una nueva máquina virtual, no tiene sentido transferir
+ sus imágenes de disco a un servidor de máquinas virtuales y configurar
+ en él la máquina virtual, ya que estas no podrán subirse al repositorio
+ de imágenes.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+realice el balanceado de carga entre todos los servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Además, para facilitar la administración del sistema, esta máquina también
+ se ocupará de arrancar, parar, dar de alta y borrar servidores de máquinas
+ virtuales.
+ De ahora en adelante, llamaremos a esta máquina 
+\series bold
+servidor de 
+\emph on
+cluster
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+Como el lector habrá notado ya, este diseño tiene un serio inconveniente:
+ el servidor de 
+\emph on
+cluster
+\emph default
+ se convierte un cuello de botella que limita el número máximo de servidores
+ de máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Standard
+Para superar esta limitación, podemos crear varias agrupaciones (
+\emph on
+clusters
+\emph default
+) de servidores de máquinas virtuales, cada una de las cuales tendrá asociado
+ su propio servidor de 
+\emph on
+cluster
+\emph default
+ y su propio repositorio de imágenes.
+ De esta manera, para atender a un número mayor de usuarios bastará con
+ utilizar más 
+\emph on
+clusters
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que cada 
+\emph on
+cluster
+\emph default
+ es completamente autónomo, por lo que no tiene por qué compartir máquinas
+ virtuales con otros 
+\emph on
+clusters
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+El servidor web
+\end_layout
+
+\begin_layout Standard
+Como los servidores de 
+\emph on
+cluster
+\emph default
+ son ya un cuello de botella y puede haber varios, la página web de 
+\emph on
+CygnusCloud
+\emph default
+ no puede residir en ninguno de ellos.
+ Además, por motivos de eficiencia, los servidores de 
+\emph on
+cluster
+\emph default
+ no realizan ningún tipo de control de acceso, por lo que no pueden atender
+ directamente las peticiones de los usuarios.
+ 
+\end_layout
+
+\begin_layout Standard
+Así pues, es necesario utilizar una máquina adicional, el 
+\series bold
+servidor web
+\series default
+, para alojar la página web de 
+\emph on
+CygnusCloud
+\emph default
+.
+ A través de ella,
+\end_layout
+
+\begin_layout Itemize
+se realizará el control de acceso,
+\end_layout
+
+\begin_layout Itemize
+se enviarán las peticiones de los usuarios a un servidor de 
+\emph on
+cluster
+\emph default
+, y
+\end_layout
+
+\begin_layout Itemize
+se administrará el sistema.
+\end_layout
+
+\begin_layout Subsection
 Uso de 
 \emph on
 Python
@@ -1601,160 +998,7 @@ Python
  como principal lenguaje de programación.
 \end_layout
 
-\begin_layout Subsubsection
-Descomposición del sistema 
-\emph on
-CygnusCloud
-\emph default
- en tres subsistemas
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Descomposición-del-sistema-3"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Instanciar una máquina virtual requiere muchos recursos.
- No basta con asignarle memoria RAM y tiempo de CPU: también es necesario
- reservar espacio en disco en el que almacenar los datos de los usuarios
- y los archivos de paginación, conectar la máquina a una red, configurar
- un servidor de escritorio remoto o un servidor SSH para poder acceder a
- ella,\SpecialChar \ldots{}
-
-\end_layout
-
-\begin_layout Standard
-Así pues, para que nuestro sistema sea escalable, es imprescindible la existenci
-a de nodos que alberguen exclusivamente máquinas virtuales y que se ocupen
- de su instanciación y descomposición: los 
-\series bold
-servidores de máquinas virtuales
-\series default
-.
- 
-\end_layout
-
-\begin_layout Standard
-Por otra parte, es necesario distribuir las máquinas virtuales activas entre
- todos estos nodos y recopilar información de estado, por lo que es necesario
- utilizar al menos una máquina adicional, a la que llamaremos por ahora
- 
-\begin_inset Quotes eld
-\end_inset
-
-servidor principal
-\begin_inset Quotes erd
-\end_inset
-
-.
- Esta hipotética máquina también debería albergar la web, a través de la
- cual los usuarios utilizan el sistema.
- 
-\end_layout
-
-\begin_layout Standard
-Es importante notar que, una vez instanciadas las máquinas virtuales, los
- usuarios se comunican directamente con un servidor de máquinas virtuales,
- es decir, el tráfico generado por el protocolo VNC y el tráfico generado
- para conectarse a internet no atraviesa el servidor de máquinas virtuales.
-\end_layout
-
-\begin_layout Standard
-Esta arquitectura, a pesar de ser sencilla, tiene un serio inconveniente:
- al aumentar el número de usuarios (y, por tanto, el número de servidores
- de máquinas virtuales) el 
-\begin_inset Quotes eld
-\end_inset
-
-servidor principal
-\begin_inset Quotes erd
-\end_inset
-
- se convierte en un cuello de botella: no sólo debe atender un número de
- peticiones procedentes de la web cada vez mayor, sino que también debe
- procesar cada vez más tráfico procedente de los servidores de máquinas
- virtuales.
-\end_layout
-
-\begin_layout Standard
-Este problema puede resolverse distribuyendo la funcionalidad de nuestro
- 
-\begin_inset Quotes eld
-\end_inset
-
-servidor principal
-\begin_inset Quotes erd
-\end_inset
-
- en dos máquinas: el 
-\series bold
-servidor de 
-\emph on
-cluster
-\emph default
- 
-\series default
-y el 
-\series bold
-servidor web
-\series default
-.
- Así, 
-\end_layout
-
-\begin_layout Itemize
-cada usuario tendrá asignado un servidor de 
-\emph on
-cluster
-\emph default
-, al que se dirigirán todas sus peticiones.
-\end_layout
-
-\begin_layout Itemize
-los servidores de 
-\emph on
-cluster
-\emph default
- se encargarán exclusivamente de coordinar el funcionamiento de todos los
- servidores de máquinas virtuales que tienen asignados.
-\end_layout
-
-\begin_layout Itemize
-el servidor web atenderá exclusivamente todas las peticiones que se reciban
- desde la web.
- Para ello, intercambiará datos con los servidores de 
-\emph on
-cluster
-\emph default
- correspondientes.
-\end_layout
-
-\begin_layout Standard
-La nueva alternativa tiene un serio inconveniente: el tráfico total que
- se genera es mayor, ya que hay que comunicar el servidor web con los distintos
- servidores de cluster.
- Pero su gran ventaja es la escalabilidad: añadiendo más servidores de máquinas
- virtuales y más servidores de 
-\emph on
-cluster 
-\emph default
-es posible atender a un número mucho mayor de alumnos.
-\end_layout
-
-\begin_layout Standard
-Considerando el elevado número de estudiantes de la Universidad Complutense,
- nos pareció fundamental hacer 
-\emph on
-CygnusCloud
-\emph default
- tan escalable como fuese posible, por lo que nos decantamos por el segundo
- modelo de arquitectura.
-\end_layout
-
-\begin_layout Subsubsection
+\begin_layout Subsection
 Uso de la librería de virtualización 
 \emph on
 libvirt
@@ -1830,7 +1074,7 @@ key "LibvirtBindings"
 .
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Uso de la librería de red 
 \emph on
 twisted
@@ -1942,7 +1186,7 @@ es imprescindible utilizar mecanismos estandarizados, por lo que nos acabamos
  decantando por utilizar esta librería.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Cifrado selectivo del tráfico
 \end_layout
 
@@ -2013,7 +1257,7 @@ CygnusCloud
 .
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Uso del 
 \emph on
 framework
@@ -2053,7 +1297,7 @@ Además web2py ofrece una capa de abstracción de base de datos (DAL por su
  de gestión de datos utilizado (SQLite, MySQL, PostgreSQL, Oracle ...).
 \end_layout
 
-\begin_layout Paragraph*
+\begin_layout Subsubsection*
 Modelo Vista-Controlador
 \end_layout
 
@@ -2179,7 +1423,7 @@ key "Web2PyBook"
 
 \end_layout
 
-\begin_layout Paragraph*
+\begin_layout Subsubsection*
 Ventajas
 \end_layout
 
@@ -2254,7 +1498,7 @@ FIN
 
 \end_layout
 
-\begin_layout Paragraph*
+\begin_layout Subsubsection*
 Seguridad
 \end_layout
 
@@ -2333,7 +1577,7 @@ Este paquete contiene los módulos y scripts sql necesarios para la gestión
 Como ya se dijo en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Descomposición-del-sistema-3"
+reference "sub:Descomposición-del-sistema"
 
 \end_inset
 
@@ -6256,6 +5500,880 @@ Sección sobre el conector
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Vista lógica
+\end_layout
+
+\begin_layout Subsection
+Visión general
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/DiagramaPaquetes.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-de-paquetes-CygnusCloud"
+
+\end_inset
+
+Diagrama de paquetes de 
+\emph on
+CygnusCloud
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La funcionalidad del sistema 
+\emph on
+CygnusCloud 
+\emph default
+está distribuida entre siete paquetes:
+\end_layout
+
+\begin_layout Itemize
+en los módulos del paquete 
+\family sans
+utils
+\family default
+ se definen clases que se utilizan en varios módulos distintos, como estructuras
+ de datos sin problemas de sincronización o clases que ejecutan comandos.
+ 
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+database
+\family default
+ contiene todas las clases que interactuarán con las bases de datos de los
+ tres subsistemas básicos.
+ 
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+network
+\family default
+ contiene las clases que permiten comunicar un conjunto de máquinas distintas
+ a través de una red de área local.
+ Dichas comunicaciones se realizan utilizando el protocolo TCP a través
+ de la librería de red 
+\emph on
+twisted
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+virtualMachineServer
+\family default
+ contiene las clases que, junto con algunas de los paquetes de los que este
+ depende, implementan el subsistema servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+clusterServer
+\family default
+ contiene todas las clases que, junto con algunas de los paquetes de los
+ que este depende, implementan el susbsistema servidor del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+webServer
+\family default
+ contiene todas las clases que, junto con algunas de los paquetes de los
+ que este depende, implementan el susbsistema servidor web.
+\end_layout
+
+\begin_layout Itemize
+finalmente, el paquete 
+\family sans
+testing
+\family default
+ contiene clases utilizadas para depurar los sistemas servidor de máquinas
+ virtuales y servidor del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Las relaciones existentes entre estos paquetes aparecen en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagrama-de-paquetes-CygnusCloud"
+
+\end_inset
+
+.
+ Por claridad, las dependencias del paquete 
+\family sans
+virtualMachineServer
+\family default
+ aparecen en 
+\color red
+rojo
+\color inherit
+, las del paquete 
+\family sans
+clusterServer
+\family default
+ aparecen en 
+\color blue
+azul
+\color inherit
+ y las del resto de paquetes aparecen en negro.
+\end_layout
+
+\begin_layout Standard
+Los paquetes que acabamos de presentar se descomponen en otros paquetes
+ más pequeños.
+ Para facilitar la visualización de las dependencias principales entre paquetes,
+ hemos optado por no mostrar aquí dicha dicha descomposición.
+ Mostraremos la descomposición de cada paquete y las relaciones entre clases
+ que justifican la dependencia entre esos paquetes a medida que presentemos
+ el diseño.
+\end_layout
+
+\begin_layout Subsection
+Paquetes y clases significativos de la arquitectura
+\end_layout
+
+\begin_layout Standard
+En este apartado mostraremos las clases más importantes de cada paquete
+ junto con una breve descripción de sus responsabilidades.
+\end_layout
+
+\begin_layout Subsubsection
+
+\family sans
+utils
+\end_layout
+
+\begin_layout Standard
+Como ya hemos mencionado, este paquete define un conjunto de clases que
+ se utilizan en muchos otros y que, por conveniencia, es mejor tener agrupadas.
+ Las clases más relevantes de este paquete son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+Commands
+\family default
+.
+ Esta clase suministra métodos estáticos que permiten ejecutar comandos
+ en 
+\emph on
+foreground
+\emph default
+ y 
+\emph on
+background
+\emph default
+, y también como 
+\emph on
+root
+\emph default
+ o como un usuario estándar.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+MultithreadingCounter
+\family default
+.
+ Esta clase almacena el valor de un contador, y dispone de métodos para
+ incrementarlo, decrementarlo y leer su valor de forma segura cuando varios
+ hilos lo utilizan.
+\end_layout
+
+\begin_layout Itemize
+Las clases 
+\family sans
+MultithreadingDictionary
+\family default
+ y 
+\family sans
+MultithreadingList
+\family default
+ definen métodos para manipular de forma segura diccionarios y listas Python
+ utilizados por varios hilos.
+\end_layout
+
+\begin_layout Itemize
+La clase 
+\family sans
+MultithreadingPriorityQueue
+\family default
+ define métodos para manipular una cola de prioridad utilizada por varios
+ hilos.
+\end_layout
+
+\begin_layout Itemize
+Las clases 
+\family sans
+BasicThread
+\family default
+ y 
+\family sans
+QueueProcessingThread
+\family default
+ añaden funcionalidad adicional a los hilos estándar de Python para que
+ estos se detengan ante las peticiones de otros y para que procesen una
+ cola de elementos respectivamente.
+\end_layout
+
+\begin_layout Subsubsection
+
+\family sans
+database
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/DiagramaPaquetesDatabase.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:El-paquete-database"
+
+\end_inset
+
+El paquete 
+\family sans
+database
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Este paquete contiene todas las clases que interactuarán con las bases de
+ datos de los distintos susbsistemas de 
+\emph on
+CygnusCloud
+\emph default
+.
+ Tal y como se muestra en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:El-paquete-database"
+
+\end_inset
+
+, estas clases se distribuyen en cinco subpaquetes:
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+utils
+\family default
+ contiene todas las clases que permiten interactuar con una base de datos
+ MySQL desde Python.
+ De entre todas ellas, destacan
+\family sans
+ DBConfigurator
+\family default
+ y 
+\family sans
+BasicDatabaseConnector
+\family default
+, que permiten configurar el esquema de una base de datos y realizar consultas
+ y actualizaciones sobre una base de datos respectivamente.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+clusterServer
+\family default
+ contiene la clase 
+\family sans
+ClusterServerDatabaseConnector
+\family default
+, que permite manipular la base de datos del servidor del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+systemStatus
+\family default
+ contiene la clase 
+\family sans
+SystemStatusDBWriter
+\family default
+, que permite actualizar la base de datos que almacena el estado de todo
+ el sistema.
+\end_layout
+
+\begin_layout Itemize
+el paquete
+\family sans
+ vmServer
+\family default
+ contiene las clases 
+\family sans
+ImageManager
+\family default
+ y 
+\family sans
+RuntimeData
+\family default
+, que permiten manipular la base de datos del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+finalmente, el paquete 
+\family sans
+tests
+\family default
+ contiene pruebas unitarias de todas las clases que manipulan una base de
+ datos.
+\end_layout
+
+\begin_layout Subsubsection
+
+\family sans
+network
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/DiagramaPaquetesNetwork.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:El-paquete-network"
+
+\end_inset
+
+El paquete 
+\family sans
+network
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Las clases del paquete 
+\family sans
+network
+\family default
+ interactúan con la librería de red 
+\emph on
+twisted
+\emph default
+ para comunicar una máquina con otra u otras conectadas a la misma red.
+ La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:El-paquete-network"
+
+\end_inset
+
+ muestra que este paquete se descompone en seis subpaquetes:
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+exceptions
+\family default
+ contiene todas las clases de excepción que utilizan las clases del paquete
+ 
+\family sans
+network
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+packets
+\family default
+ contiene la clase 
+\family sans
+Packet
+\family default
+, que ofrece una interfaz de alto nivel para enviar elementos de los tipos
+ de datos básicos (como valores enteros y 
+\emph on
+strings
+\emph default
+) a través de la red.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+threads
+\family default
+ contiene las clases 
+\family sans
+ConnectionMonitoringThread
+\family default
+, 
+\family sans
+DataProcessingThread
+\family default
+, 
+\family sans
+TwistedReactorThread
+\family default
+ y 
+\family sans
+ServerWaitThread
+\family default
+, correspondientes a los distintos tipos de hilo que se utilizan en la implement
+ación de la red.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+twistedInteraction
+\family default
+ contiene las clases 
+\family sans
+NetworkConnection
+\family default
+ y 
+\family sans
+CygnusCloudProtocol
+\family default
+, que se utilizan para establecer conexiones y para realizar el envío y
+ la recepción de datos utilizando la librería de red 
+\emph on
+twisted
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+manager
+\family default
+ contiene las clases 
+\family sans
+NetworkManager
+\family default
+ y 
+\family sans
+NetworkCallback
+\family default
+.
+ La primera ofrece una interfaz de alto nivel para establecer una conexión
+ entre dos máquinas y enviar datos entre las mismas, y la segunda define
+ la interfaz que se utiliza para procesar los datos recibidos a través de
+ la red.
+\end_layout
+
+\begin_layout Itemize
+finalmente, el paquete
+\family sans
+ tests
+\family default
+ contiene pruebas de los módulos de este paquete.
+\end_layout
+
+\begin_layout Subsubsection
+
+\family sans
+virtualMachineServer
+\end_layout
+
+\begin_layout Standard
+Este paquete contiene las clases del subsistema servidor de máquinas virtuales
+ que interactuan con el hipervisor y también las de mayor nivel de abstracción
+ de dicho subsistema.
+ Las más importante son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+LibvirtConnector
+\family default
+, que interactúa con el hipervisor KVM a través de la librería 
+\emph on
+libvir
+\emph default
+t para instanciar y destruir máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+VMClient
+\family default
+, que atiende las peticiones recibidas por el servidor de máquinas virtuales.
+ Entre otras cosas, se ocupa de asignar y liberar los recursos asociados
+ a cada máquina virtual y de ordenar la instanciación y la destrucción de
+ las mismas.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+ConfigurationFileEditor
+\family default
+, que manipula los ficheros 
+\family typewriter
+.xml
+\family default
+ que definen la configuración de una máquina virtual para incluir los recursos
+ asociados a dicha máquina.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+VMServerPacketHandler
+\family default
+, que proporciona métodos para crear y leer los paquetes utilizados por
+ el subsistema servidor de máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+VirtualNetworkManager
+\family default
+, que configura la red virtual a la que se conectarán las máquinas virtuales.
+\end_layout
+
+\begin_layout Subsubsection
+
+\family sans
+clusterServer
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/DiagramaPaquetesClusterServer.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:El-paquete-clusterServer"
+
+\end_inset
+
+El paquete 
+\family sans
+clusterServer
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tal y como se muestra en la figura , el paquete 
+\family sans
+clusterServer
+\family default
+, que contiene las clases del subsistema servidor del cluster de mayor nivel
+ de abstracción, consta de tres subpaquetes:
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family sans
+network
+\family default
+ contiene las clases 
+\family sans
+WebCallback
+\family default
+, 
+\family sans
+VMServerCallback
+\family default
+ y 
+\family sans
+MainServerPacketHandle
+\family default
+r.
+ Las dos primeras definen los métodos a los que se llamará cuando se reciba
+ un paquete procedente del servidor web y de un servidor de máquinas virtuales
+ respectivamente, y la última se comporta igual que la clase 
+\family sans
+VMServerPacketHandler
+\family default
+, proporcionando métodos para leer y crear los paquetes que utiliza el servidor
+ del 
+\emph on
+cluster
+\emph default
+ para comunicarse con el servidor web.
+\end_layout
+
+\begin_layout Itemize
+el paquete l
+\family sans
+oadBalancing
+\family default
+ contiene la clase 
+\family sans
+LoadBalancer
+\family default
+, que define la interfaz que usarán todos los distintos algoritmos que realizan
+ el balanceado de carga entre distintos servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+finalmente, el paquete 
+\family sans
+reactor
+\family default
+ contiene la clase 
+\family sans
+MainServerReactor
+\family default
+, que procesa adecuadamente los paquetes recibidos desde un servidor de
+ máquinas virtuales o desde el servidor web.
+\end_layout
+
+\begin_layout Subsubsection
+
+\family sans
+webServer
+\end_layout
+
+\begin_layout Standard
+El paquete webServer se encuentra distribuido en un conjunto de paquetes
+ que hacen referencia a los diferentes tipos de elementos necesarios para
+ implementar la funcionalidad de la web.
+ Estos paquetes son:
+\end_layout
+
+\begin_layout Itemize
+Vistas : Paquetes con el conjunto de vistas que definen la representación
+ de las páginas
+\end_layout
+
+\begin_layout Itemize
+Controladores : Paquete que contiene los módulos python encargados de manejar
+ las diferentes funcionalidades de la web.
+\end_layout
+
+\begin_layout Itemize
+Modelos : Incluye dos módulos python encargados de definir dos aspectos
+ importantes de la web.
+ El primer módulo, menu, introduce la información sobre la versión , las
+ palabras clave y todos los aspectos generales de la web.
+ El segundo, db, se encarga de crear las tablas necesarias que serán utilizadas
+ para almacenar la información manejada por la web.
+\end_layout
+
+\begin_layout Itemize
+Lenguajes : Incluye un conjunto de diccionarios que permiten traducir la
+ web a diferentes idiomas.
+\end_layout
+
+\begin_layout Itemize
+Archivos estáticos : Este paquete incluye las css , js e imagenes necesarias
+ para definir el aspecto de la web.
+ También incluye el controlador noVNC.
+\end_layout
+
+\begin_layout Itemize
+Módulos : En este paquete se encuentran todos los módulos python secundarios
+ que serán utilizados por los controladores.
+\end_layout
+
+\begin_layout Subsubsection
+
+\family sans
+testing
+\end_layout
+
+\begin_layout Standard
+El paquete 
+\family sans
+testing
+\family default
+ contiene clases que permiten comprobar el correcto funcionamiento de los
+ subsistemas servidor de máquinas virtuales y servidor del cluster.
+ Sus clases son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+DummyVMServer
+\family default
+, que imita el comportamiento de un servidor de máquinas virtuales y no
+ instancia máquinas.
+ Esta clase se utiliza para comprobar el funcionamiento del subsistema servidor
+ del cluster.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+VirtualMachineServerTester
+\family default
+.
+ Esta clase imita al servidor principal, haciendo posible el envío de cualquier
+ secuencia de órdenes a un servidor de máquinas virtuales.
+ Por ello, se utiliza para depurar dicho subsistema.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+ClusterServerTester
+\family default
+.
+ Esta clase imita al servidor web, lo que permite enviar cualquier secuencia
+ de órdenes a un servidor de 
+\emph on
+cluster
+\emph default
+.
+ Así, esta clase se utiliza para depurar este subsistema.
 \end_layout
 
 \begin_layout Section
