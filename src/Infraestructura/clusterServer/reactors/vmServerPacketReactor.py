@@ -85,7 +85,7 @@ class VMServerPacketReactor(object):
             self.__dbConnector.registerFamilyID(data["ImageID"], familyID)        
         
             # Enviar la respuesta
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            p = self.__webPacketHandler.createImageEditedPacket(data["CommandID"], data["ImageID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :
             self.__dbConnector.removeImageEditionCommand(data["CommandID"])

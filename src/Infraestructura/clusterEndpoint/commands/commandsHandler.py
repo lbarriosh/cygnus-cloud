@@ -16,7 +16,7 @@ COMMAND_OUTPUT_TYPE = enum("VM_SERVER_REGISTRATION_ERROR", "VM_SERVER_BOOTUP_ERR
                            "VM_SERVER_SHUTDOWN_ERROR", "DOMAIN_DESTRUCTION_ERROR", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
                            "CONNECTION_ERROR", "COMMAND_TIMED_OUT", "IMAGE_DEPLOYMENT_ERROR", "DELETE_IMAGE_FROM_SERVER_ERROR",
                            "IMAGE_CREATION_ERROR", "IMAGE_EDITION_ERROR", "DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR",
-                           "AUTO_DEPLOY_ERROR", "VM_SERVER_INTERNAL_ERROR", "IMAGE_DEPLOYED", "IMAGE_CREATED", "IMAGE_EDITED")
+                           "AUTO_DEPLOY_ERROR", "VM_SERVER_INTERNAL_ERROR", "IMAGE_DEPLOYED", "IMAGE_CREATED", "IMAGE_EDITED", "IMAGE_DELETED")
 
 from clusterServer.networking.packets import CLUSTER_SERVER_PACKET_T as PACKET_T
 
@@ -35,13 +35,15 @@ class CommandsHandler(object):
     def createDeleteImageFromInfrastructureCommand(self, imageID):
         args = str(imageID)
         return (COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE, args)
+    
+    def createImageAdditionCommand(self, userID, baseImageID, imageName, imageDescription):
+        args = "{0}${1}${2}${3}".format(userID, baseImageID, imageName, imageDescription)
+        return (COMMAND_TYPE.CREATE_IMAGE, args)
         
-    def createImageEditionCommand(self, create, imageID, userID):
+    def createImageEditionCommand(self, imageID, userID):
         args = "{0}${1}".format(imageID, userID)
-        if (create) :
-            return (COMMAND_TYPE.CREATE_IMAGE, args)
-        else :
-            return (COMMAND_TYPE.EDIT_IMAGE, args)
+        return (COMMAND_TYPE.EDIT_IMAGE, args)
+            
         
     def createImageDeploymentCommand(self, deploy, serverNameOrIPAddress, imageID):
         args = "{0}${1}".format(serverNameOrIPAddress, imageID)
@@ -166,8 +168,12 @@ class CommandsHandler(object):
               commandType == COMMAND_TYPE.DELETE_IMAGE):
             result["VMServerNameOrIPAddress"] = l[0]
             result["ImageID"] = int(l[1])
-        elif (commandType == COMMAND_TYPE.CREATE_IMAGE or
-              commandType == COMMAND_TYPE.EDIT_IMAGE):
+        elif (commandType == COMMAND_TYPE.CREATE_IMAGE):
+            result["OwnerID"] = int(l[0])
+            result["BaseImageID"] = int(l[1])
+            result["ImageName"] = l[2]
+            result["ImageDescription"] = l[3]
+        elif (commandType == COMMAND_TYPE.EDIT_IMAGE) :
             result["ImageID"] = int(l[0])
             result["OwnerID"] = int(l[1])
         elif (commandType == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE):
@@ -220,6 +226,10 @@ class CommandsHandler(object):
             Una tupla (tipo de salida, salida del comando) con el tipo de la salida del comando y su contenido serializado
         """
         return (self.__getErrorOutputType(packet_type), self.__codesTranslator.translateErrorDescriptionCode(errorCode))
+    
+    def createVMConnectionDataOutput(self, VNCServerIP, VNCServerPort, VNCServerPassword):
+        output = "{0}${1}${2}".format(VNCServerIP, VNCServerPort, VNCServerPassword)
+        return (COMMAND_OUTPUT_TYPE.VM_CONNECTION_DATA, output)
     
     def deserializeCommandOutput(self, commandOutputType, content):
         """

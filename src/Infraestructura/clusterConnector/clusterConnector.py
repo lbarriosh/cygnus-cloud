@@ -179,12 +179,12 @@ class ClusterConnector(object):
         (commandType, commandArgs) = self.__commandsHandler.createImageDeploymentCommand(False, serverNameOrIPAddress, imageID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def createImage(self, imageID):
-        (commandType, commandArgs) = self.__commandsHandler.createImageEditionCommand(True, imageID, self.__userID)
+    def createImage(self, baseImageID, imageName, imageDescription, imageID):
+        (commandType, commandArgs) = self.__commandsHandler.createImageAdditionCommand(self.__userID, baseImageID, imageName, imageDescription)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def editImage(self, imageID):
-        (commandType, commandArgs) = self.__commandsHandler.createImageEditionCommand(False, imageID, self.__userID)
+        (commandType, commandArgs) = self.__commandsHandler.createImageEditionCommand(imageID, self.__userID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def deleteImageFromInfrastructure(self, imageID):

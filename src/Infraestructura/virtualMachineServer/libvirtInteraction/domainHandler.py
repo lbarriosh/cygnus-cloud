@@ -198,7 +198,7 @@ class DomainHandler(object):
                 ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(newOSDisk), None)
             if (websockifyPID != None) :
                 ChildProcessManager.runCommandInForeground("kill " + websockifyPID, None)
-            p = self.__packetManager.createInternalErrorPacket()
+            p = self.__packetManager.createInternalErrorPacket(commandID)
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             
         # Todo ha ido bien => registramos los recursos de la máquina como siempre        

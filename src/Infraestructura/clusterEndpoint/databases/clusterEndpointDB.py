@@ -436,10 +436,14 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         
         if (isinstance(imageID, int)) :
             query = "SELECT name, description, vanillaImageFamilyID,\
-                osFamily, osVariant, isBaseImage, bootable, edited,\
-                ownerID FROM Image WHERE imageID = {0}".format(imageID)
+                osFamily, osVariant, isBaseImage, imageID FROM Image WHERE imageID = {0}".format(imageID)
             result = self._executeQuery(query, True)
-            if (result == None) : return None
+            if (result == None) : 
+                query = "SELECT name, description, vanillaImageFamilyID,\
+                osFamily, osVariant, isBaseImage, imageID FROM EditedImage WHERE imageID = {0}".format(imageID)
+                result = self._executeQuery(query, True)
+                if (result == None) :
+                    return None
             d = dict()
             d["ImageName"] = str(result[0])
             d["ImageDescription"] = str(result[1])
@@ -448,12 +452,10 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             d["OSFamily"] = result[3]
             d["OSVariant"] = result[4]
             d["IsBaseImage"] = result[5] == 1
-            d["IsBootable"] = result[6] == 1
-            d["IsEdited"] = result[7] == 1
-            d["OwnerID"] = result[8]
+            d["ImageID"] = int(result[9])
         else :
             query = "SELECT name, description, vanillaImageFamilyID,\
-                osFamily, osVariant, ownerID FROM NewImage WHERE temporaryID = '{0}'".format(imageID)
+                osFamily, osVariant, ownerID, imageID FROM EditedImage WHERE temporaryID = '{0}'".format(imageID)
             result = self._executeQuery(query, True)
             d = dict()
             d["ImageName"] = str(result[0])
@@ -463,15 +465,13 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             d["OSFamily"] = result[3]
             d["OSVariant"] = result[4]
             d["IsBaseImage"] = False
-            d["IsBootable"] = False
-            d["IsEdited"] = True
-            d["OwnerID"] = result[5]
+            d["ImageID"] = int(result[6])
         
         return d       
         
     def getBootableImagesData(self, imageIDs):
         query = "SELECT imageID, name, description, vanillaImageFamilyID,\
-                osFamily, osVariant FROM Image WHERE bootable = 1"
+                osFamily, osVariant FROM Image WHERE isBaseImage = 0"
         if (imageIDs != []) :
             query += " AND ("
             i = 0
@@ -506,7 +506,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             return rows
         
     def getEditedImageIDs(self, userID):
-        query = "SELECT imageID FROM Image WHERE edited = 1 AND ownerID = {0};".format(userID)
+        query = "SELECT imageID FROM EditedImage WHERE ownerID = {0};".format(userID)
         result = self._executeQuery(query, False)
         rows = []
         if (result != None) :
@@ -515,7 +515,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         return rows
     
     def getNewImageIDs(self, userID):
-        query = "SELECT temporaryID FROM NewImage WHERE ownerID = {0};".format(userID)
+        query = "SELECT temporaryID FROM EditedImage WHERE ownerID = {0};".format(userID)
         result = self._executeQuery(query, False)
         rows = []
         if (result != None) :
@@ -526,9 +526,14 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
     def getVanillaImageFamilyID(self, imageID):
         if (isinstance(imageID, int)) :
             query = "SELECT vanillaImageFamilyID FROM Image WHERE imageID = {0}".format(imageID)
+            result = self._executeQuery(query, True)
+            if (result == None) :
+                query = "SELECT vanillaImageFamilyID FROM EditedImage WHERE imageID = {0}".format(imageID)
+                result = self._executeQuery(query, True)
+            return result
         else :
-            query = "SELECT vanillaImageFamilyID FROM NewImage WHERE temporaryID = '{0}'".format(imageID)
-        return self._executeQuery(query, True)
+            query = "SELECT vanillaImageFamilyID FROM EditedImage WHERE temporaryID = '{0}'".format(imageID)
+            return self._executeQuery(query, True)
     
     def getVanillaImageFamilyData(self, vanillaImageFamilyID):
         query = "SELECT familyName, ramSize, vCPUs, osDiskSize, dataDiskSize FROM VanillaImageFamily WHERE familyID = {0}".format(vanillaImageFamilyID)
@@ -613,3 +618,43 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             d["VariantName"] = row[1]
             retrievedData.append(d)
         return retrievedData    
+    
+    def addNewImage(self, temporaryID, baseImageID, ownerID, imageName, imageDescription):
+        # Sacar los datos de la imagen base
+        baseImageData = self.getImageData(baseImageID)
+        update = "INSERT INTO EditedImage VALUES('{0}', {1}, '{2}', '{3}', {4}, {5}, {6};"\
+            .format(temporaryID, baseImageData["VanillaImageFamilyID"], -1, imageName, imageDescription,
+                    baseImageData["OSFamily"], baseImageData["OSVariant"], ownerID)
+        self._executeUpdate(update)
+        
+    def editImage(self, commandID, imageID, ownerID):
+        imageData = self.getImageData(imageID)
+        update = "DELETE FROM Image WHERE imageID = {0};".format(imageID)
+        self._executeUpdate(update)
+        update = "INSERT INTO EditedImage VALUES('{0}', {1}, '{2}', '{3}', {4}, {5}, {6};"\
+            .format(commandID, imageData["VanillaImageFamilyID"], imageData["ImageName"], imageData["ImageDescription"],
+                    imageData["OSFamily"], imageData["OSVariant"], ownerID)
+        self._executeUpdate(update)
+        
+    def deleteNewImage(self, temporaryID):
+        update = "DELETE FROM NewImage WHERE temporaryID = '{0}';".format(temporaryID)
+        self._executeUpdate(update)
+        
+    def cancelImageEdition(self, commandID):
+        imageData = self.getImageData(commandID)
+        update = "DELETE FROM NewImage WHERE temporaryID = '{0}';".format(commandID)
+        self._executeUpdate(update)
+        update = "INSERT INTO Image VALUES({0}, {1}, '{2}', '{3}', {4}, {5}, 0)"\
+            .format(imageData["ImageID"], imageData["VanillaImageFamilyID"],
+                    imageData["ImageName"], imageData["ImageDescription"],
+                    imageData["OSFamily"], imageData["OSVariant"])
+        self._executeUpdate(update)
+        
+    def registerImageID(self, temporaryID, imageID):
+        imageData = self.getImageData(temporaryID)
+        update = "DELETE FROM NewImage WHERE temporaryID = '{0}';".format(temporaryID)
+        self._executeUpdate(update)
+        update = "INSERT INTO Image VALUES ({0}, {1}, '{2}', '{3}', {4}, {5}, 0)"\
+            .format(imageID, imageData["VanillaImageFamilyID"], imageData["ImageName"], 
+                    imageData["ImageDescription"], imageData["OSFamily"], imageData["OSVariant"])
+        self._executeUpdate(update)
