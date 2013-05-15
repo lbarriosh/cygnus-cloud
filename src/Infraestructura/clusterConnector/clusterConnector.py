@@ -301,7 +301,7 @@ class ClusterConnector(object):
         return self.__endpointDBConnector.getOSTypeVariants(familyID)
     
     def getImageData(self,imageID):
-        return self.__endpointDBConnector.getImageData(imageID)
+        return self.__endpointDBConnector.getImageData(imageID)        
     
 if __name__ == "__main__" :
     connector = ClusterConnector(1)

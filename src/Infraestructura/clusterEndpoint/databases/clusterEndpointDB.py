@@ -436,7 +436,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         
         if (isinstance(imageID, int)) :
             query = "SELECT name, description, vanillaImageFamilyID,\
-                osFamily, osVariant, isBaseImage, imageID FROM Image WHERE imageID = {0}".format(imageID)
+                osFamily, osVariant, isBaseImage, isBootable, imageID FROM Image WHERE imageID = {0}".format(imageID)
             result = self._executeQuery(query, True)
             if (result == None) : 
                 query = "SELECT name, description, vanillaImageFamilyID,\
@@ -447,12 +447,14 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             d = dict()
             d["ImageName"] = str(result[0])
             d["ImageDescription"] = str(result[1])
-            d["AssignedToSubject"] = True
-            d["VanillaImageFamilyID"] = result[2]
-            d["OSFamily"] = result[3]
-            d["OSVariant"] = result[4]
+            d["VanillaImageFamilyID"] = int(result[2])
+            d["OSFamily"] = int(result[3])
+            d["OSVariant"] = int(result[4])
             d["IsBaseImage"] = result[5] == 1
-            d["ImageID"] = int(result[9])
+            d["IsBootable"] = result[6] == 1
+            d["Edited"] = False
+            d["ImageID"] = int(result[7])
+            d["IsDeploy"]
         else :
             query = "SELECT name, description, vanillaImageFamilyID,\
                 osFamily, osVariant, ownerID, imageID FROM EditedImage WHERE temporaryID = '{0}'".format(imageID)
@@ -460,18 +462,20 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             d = dict()
             d["ImageName"] = str(result[0])
             d["ImageDescription"] = str(result[1])
-            d["AssignedToSubject"] = False
-            d["VanillaImageFamilyID"] = result[2]
-            d["OSFamily"] = result[3]
-            d["OSVariant"] = result[4]
+            d["VanillaImageFamilyID"] = int(result[2])
+            d["OSFamily"] = int(result[3])
+            d["OSVariant"] = int(result[4])
             d["IsBaseImage"] = False
+            d["IsBootable"] = False
+            d["Edited"] = True
+            d["OwnerID"] = int(result[5])
             d["ImageID"] = int(result[6])
         
         return d       
         
     def getBootableImagesData(self, imageIDs):
         query = "SELECT imageID, name, description, vanillaImageFamilyID,\
-                osFamily, osVariant FROM Image WHERE isBaseImage = 0"
+                osFamily, osVariant FROM Image WHERE isBootable = 0"
         if (imageIDs != []) :
             query += " AND ("
             i = 0
@@ -504,17 +508,8 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
                 rows.append({"ImageID": row[0], "ImageName" : str(row[1]), "ImageDescription" : str(row[2]),
                              "VanillaImageFamilyID" : row[3], "OSFamily" : row[4], "OSVariant" : row[5]})
             return rows
-        
+            
     def getEditedImageIDs(self, userID):
-        query = "SELECT imageID FROM EditedImage WHERE ownerID = {0};".format(userID)
-        result = self._executeQuery(query, False)
-        rows = []
-        if (result != None) :
-            for row in result :
-                rows.append(row)
-        return rows
-    
-    def getNewImageIDs(self, userID):
         query = "SELECT temporaryID FROM EditedImage WHERE ownerID = {0};".format(userID)
         result = self._executeQuery(query, False)
         rows = []
@@ -644,7 +639,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         imageData = self.getImageData(commandID)
         update = "DELETE FROM NewImage WHERE temporaryID = '{0}';".format(commandID)
         self._executeUpdate(update)
-        update = "INSERT INTO Image VALUES({0}, {1}, '{2}', '{3}', {4}, {5}, 0)"\
+        update = "INSERT INTO Image VALUES({0}, {1}, '{2}', '{3}', {4}, {5}, 0, 1)"\
             .format(imageData["ImageID"], imageData["VanillaImageFamilyID"],
                     imageData["ImageName"], imageData["ImageDescription"],
                     imageData["OSFamily"], imageData["OSVariant"])
@@ -654,7 +649,11 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         imageData = self.getImageData(temporaryID)
         update = "DELETE FROM NewImage WHERE temporaryID = '{0}';".format(temporaryID)
         self._executeUpdate(update)
-        update = "INSERT INTO Image VALUES ({0}, {1}, '{2}', '{3}', {4}, {5}, 0)"\
+        update = "INSERT INTO Image VALUES ({0}, {1}, '{2}', '{3}', {4}, {5}, 0, 0)"\
             .format(imageID, imageData["VanillaImageFamilyID"], imageData["ImageName"], 
                     imageData["ImageDescription"], imageData["OSFamily"], imageData["OSVariant"])
+        self._executeUpdate(update)
+        
+    def makeBootable(self, imageID):
+        update = "UPDATE Image SET isBootable = 1 WHERE imageID = {0};".format(imageID)
         self._executeUpdate(update)

@@ -227,6 +227,7 @@ class ClusterEndpoint(object):
                     output_type = COMMAND_OUTPUT_TYPE.IMAGE_EDITED
                 elif (commandData["CommandType"] == COMMAND_TYPE.DEPLOY_IMAGE or commandData["CommandType"] == COMMAND_TYPE.AUTO_DEPLOY_IMAGE) :
                     output_type = COMMAND_OUTPUT_TYPE.IMAGE_DEPLOYED
+                    # TODO: hacer la imagen arrancable
                 elif (commandData["CommandType"] == COMMAND_TYPE.DELETE_IMAGE or commandData["CommandType"] == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE) :
                     output_type = COMMAND_OUTPUT_TYPE.IMAGE_DELETED
                     
