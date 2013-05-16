@@ -76,7 +76,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         result = self._executeQuery(query, True)     
         return {"CommandType": result[0], "CommandArgs":result[1]}   
     
-    def addCommandOutput(self, commandID, outputType, commandOutput, force = False, isNotification = False):
+    def addCommandOutput(self, commandID, outputType, commandOutput, isNotification = False):
         """
         Registers a command's output
         Args:
@@ -86,13 +86,6 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         Returns:
             Nothing
         """
-        if (not force) :
-            query = "SELECT * FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
-            result = self._executeQuery(query, True)
-        
-            if (result == None) :
-                # Nos hemos cargado el comando por timeout => descartamos la salida que haya
-                return
         if (isNotification) :
             flag = 1
         else :

@@ -234,9 +234,9 @@ class ClusterEndpoint(object):
                     output_type = COMMAND_OUTPUT_TYPE.IMAGE_DELETED
                     
                 if (output_type != None) :
-                    self.__commandsDBConnector.addCommandOutput(data["CommandID"], output_type, 
+                    self.__commandsDBConnector.addCommandOutput(commandID, output_type, 
                                                                 self.__codeTranslator.translateNotificationCode(commandData["CommandType"]), 
-                                                                False, True)
+                                                                True)
             else :           
                 # El resto de paquetes contienen el resultado de ejecutar comandos => los serializamos y los añadimos
                 # a la base de datos de comandos para que los conectores se enteren        
@@ -248,7 +248,7 @@ class ClusterEndpoint(object):
                         self.__endpointDBConnector.registerImageID(data["CommandID"], data["ImageID"])
                         self.__commandExecutionThread.addCommandOutput(data["CommandID"], COMMAND_OUTPUT_TYPE.IMAGE_CREATED,
                                                                        self.__codeTranslator.translateNotificationCode(COMMAND_TYPE.CREATE_IMAGE),
-                                                                       False, True)
+                                                                       True)
                 else :
                     # Errores
                     if (data["packet_type"] == PACKET_T.IMAGE_CREATION_ERROR) :
@@ -266,7 +266,7 @@ class ClusterEndpoint(object):
                     (outputType, outputContent) = self.__commandsHandler.createErrorOutput(data['packet_type'], 
                         data["ErrorDescription"])
                 
-                    self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent, False, isNotification)
+                    self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent, isNotification)
                 
     def processCommands(self):
         """
