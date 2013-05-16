@@ -145,15 +145,8 @@ CygnusCloud
 \end_layout
 
 \begin_layout Standard
-La Facultad de Informática de la Universidad Complutense se nos ha quedado
- bastante pequeña.
- En ella, se imparten, entre otras titulaciones, una ingeniería superior
- en informática, dos ingenierías técnicas, cuatro grados y dos másters.
-\end_layout
-
-\begin_layout Standard
-Para hacer nuestras prácticas, los alumnos disponemos de doce aulas de informáti
-ca.
+Los alumnos de la Facultad de Informática de la UCM podemos hacer nuestras
+ prácticas en doce aulas de informática.
  Ahora bien, las características de los equipos de cada aula son distintas,
  al igual que los programas instalados en ellos.
  Además, cuando se está dando clase en cualquiera de ellas, sólo los alumnos
@@ -163,10 +156,10 @@ ca.
 
 \begin_layout Standard
 Así, si queremos hacer prácticas en la Facultad y no hay aulas de informática
- disponibles, no tenemos más remedio que utilizar nuestros propios portátiles,
- incluso si hay sitio en las aulas de informática de otras facultades: como
- en ellas no están instalados la gran mayoría de programas que necesitamos,
- no las podemos usar.
+ disponibles, cosa que ocurre con mucha frecuencia, no tenemos más remedio
+ que utilizar nuestros propios portátiles, incluso si hay sitio en las aulas
+ de informática de otras facultades: como en ellas no están instalados la
+ gran mayoría de programas que necesitamos, no las podemos usar.
  
 \end_layout
 
@@ -191,7 +184,7 @@ una
 \emph default
  semana para comprobar que todo funciona.
  Si después tienen que introducir algún cambio, no tendrán más remedio que
- esperar al menos cuatro semanas para poder disponer de dicho cambio.
+ esperar al menos cuatro semanas hasta que los técnicos lo hagan.
 \end_layout
 
 \begin_layout Standard
@@ -469,7 +462,7 @@ Windows Virtual Desktop Access
 \end_layout
 
 \begin_layout Subsection*
-¿Como usar 
+¿Cómo usar 
 \emph on
 CygnusCloud
 \emph default
@@ -477,29 +470,26 @@ CygnusCloud
 \end_layout
 
 \begin_layout Standard
-Con la finalidad de ofrecer al usuario un medio rápido y sencillo para poder
- acceder y gestionar sus máquinas virtuales, la interfaz de 
-\shape italic
+La interfaz web de 
+\emph on
 CygnusCloud
-\shape default
- ha sido diseñada buscando la mayor claridad de uso posible.
- 
+\emph default
+ permite que los usuarios interactúen con el sistema de forma rápida y sencilla.
 \end_layout
 
 \begin_layout Standard
-A continuación os mostramos algunas de las páginas más relevantes de la
- web de CygnusCloud.
-\end_layout
-
-\begin_layout Standard
-Para acceder a 
+Antes de utilizar 
 \shape italic
 CygnusCloud
 \shape default
- primero tendremos que loguearnos.
- Como CygnusCloud está orientado a un uso académico, resulta lógico que
- sean los administradores los encargados de dar de alta a los usuarios,
- no existiendo la posibilidad de registrarse en el sistema.
+ tendremos que iniciar sesión.
+ Como 
+\emph on
+CygnusCloud 
+\emph default
+está diseñado para una institución académica, los administradores serán
+ los encargados de dar de alta a los usuarios, no existiendo la posibilidad
+ de registrarse en el sistema.
  La figura 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -518,7 +508,7 @@ CygnusCloud
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -560,9 +550,9 @@ Página de inicio de sesión
 \end_layout
 
 \begin_layout Standard
-Los alumnos pueden arrancar las máquinas virtuales asociadas a las asignaturas
- en las que están matriculados por medio de la página que se muestra en
- la figura 
+Tras iniciar sesión, los alumnos pueden arrancar las máquinas virtuales
+ asociadas a las asignaturas en las que están matriculados por medio de
+ la página de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Página-de-arranque"
@@ -570,8 +560,8 @@ reference "fig:Página-de-arranque"
 \end_inset
 
 .
- Esta página también sera accesible para profesores y administradores, ajustándo
-se en cada caso para facilitar su manejo.
+ Esta página también podrán utilizarla los profesores y administradores,
+ y se ajustará en cada caso para facilitar su manejo.
 \end_layout
 
 \begin_layout Standard
@@ -622,16 +612,24 @@ Página de arranque de máquinas virtuales
 \end_layout
 
 \begin_layout Standard
-Un administrador puede gestionar usuarios, asignaturas y servidores por
- medio de páginas creadas con este fin.
- Un ejemplo, es la página de creación de usuarios que se muestra en la figura
- 
+Además, los usuarios pueden utilizar las máquinas virtuales sin necesidad
+ de instalar nada en sus equipos: hemos modificado el cliente noVNC, escrito
+ íntegramente en JavaScript, para integrarlo con la web de 
+\emph on
+CygnusCloud
+\emph default
+.
+ La figura 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Página-de-creación-usuario"
+reference "fig:Página-noVNC"
 
 \end_inset
 
+ muestra el escritorio de una máquina virtual 
+\emph on
+Debian Squeeze
+\emph default
 .
 \end_layout
 
@@ -643,8 +641,9 @@ status open
 
 \begin_layout Plain Layout
 \noindent
+\align center
 \begin_inset Graphics
-	filename figuras/CreaciónUsuario.png
+	filename figuras/MáquinaArrancada.png
 	scale 40
 
 \end_inset
@@ -654,24 +653,21 @@ status open
 
 \begin_layout Plain Layout
 \noindent
+\align center
 \begin_inset Caption
 
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Página-de-creación-usuario"
+name "fig:Página-noVNC"
 
 \end_inset
 
-Página de creación de un nuevo usuario
+Uso de una máquina virtual a través de noVNC
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -681,8 +677,8 @@ Página de creación de un nuevo usuario
 \end_layout
 
 \begin_layout Standard
-Un profesor puede crear, editar y borrar máquinas virtuales, así como asociarlas
- a las asignaturas que imparte.
+Un profesor también puede crear, editar y borrar máquinas virtuales, así
+ como asociarlas a las asignaturas que imparte.
  En la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -690,7 +686,7 @@ reference "fig:Página-de-creación-maquina"
 
 \end_inset
 
-, se muestra la página de creación de máquinas virtuales, donde el profesor
+ se muestra la página de creación de máquinas virtuales, donde el profesor
  puede crear nuevas máquinas indicando su nombre, dirección y seleccionando
  el tipo de imagen que más se adapte a sus necesidades.
 \end_layout
@@ -699,7 +695,7 @@ reference "fig:Página-de-creación-maquina"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -734,6 +730,62 @@ Página de creación de una máquina virtual
 \end_layout
 
 \begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por último, un administrador también puede gestionar usuarios, asignaturas
+ y servidores por medio de las páginas creadas para este fin.
+ Una de ellas es la página de creación de usuarios, que se muestra en la
+ figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Página-de-creación-usuario"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename figuras/CreaciónUsuario.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Página-de-creación-usuario"
+
+\end_inset
+
+Página de creación de un nuevo usuario
+\end_layout
+
+\end_inset
+
 
 \end_layout
 

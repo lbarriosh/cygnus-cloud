@@ -1153,6 +1153,13 @@ Route : En este modo el switch virtual se conecta a la LAN física del anfitrió
 
 \begin_layout Section
 Xen frente a KVM
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Xen-vs-KVM"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
