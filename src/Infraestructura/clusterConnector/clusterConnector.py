@@ -330,7 +330,7 @@ if __name__ == "__main__" :
     commandID = connector.bootUpVMServer("Server1")
     print connector.waitForCommandOutput(commandID)   
     sleep(5)
-    connector.deployImage("Server1", 1)
+    connector.autoDeployImage(5, 2)
     notifications = []
     while (notifications == []):
         notifications = connector.getPendingNotifications()

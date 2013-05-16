@@ -216,6 +216,11 @@ class EndpointPacketReactor(object):
             return  
         
         familyID = self.__dbConnector.getFamilyID(data["ImageID"])
+        if (familyID == None) :
+            p = self.__webPacketHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE, data["CommandID"])
+            self.__networkManager.sendPacket('', self.__listenningPort, p)        
+            return  
+        
         familyFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(familyID)
          
         if (data["Instances"] == -1) :
