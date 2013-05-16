@@ -479,7 +479,8 @@ software
 \emph default
  adicional en las aulas de informática.
  Para ello, existen dos alternativas: crear una aplicación web o crear una
- aplicación convencional que pueda utilizarse sin necesidad de ser instalada.
+ aplicación de escritorio convencional que pueda utilizarse sin necesidad
+ de ser instalada.
 \end_layout
 
 \begin_layout Standard
@@ -490,21 +491,96 @@ El uso de una aplicación de escritorio tiene una gran ventaja: no es necesario
 \end_layout
 
 \begin_layout Itemize
-el proceso de actualización es más complejo.
- Para actualizar una aplicación web, basta con parar los servidores que
- la alojan, modificar los ficheros binarios y volverlos a arrancar.
- En el caso de una aplicación de escritorio, es necesario buscar actualizaciones
- periódicamente y aplicarlas causando el menor número de molestias a los
- usuarios.
+para utilizar 
+\emph on
+CygnusCloud
+\emph default
+ en móviles o tabletas es necesario crear una una aplicación específica,
+ muy dependiente de la plataforma del dispositivo.
+ 
 \end_layout
 
 \begin_layout Itemize
-la seguridad del sistema se compromete más fácilmente que con una aplicación
- web.
- Si no se cifra el tráfico, cualquier usuario malintencionado que use un
- analizador de paquetes puede llegar a tomar el control del sistema.
- Por otra parte, aunque el tráfico viaje cifrado, siempre será posible realizar
- inyecciones de código.
+puesto que los usuarios no tienen por qué descargarse siempre la aplicación
+ antes de utilizar 
+\emph on
+CygnusCloud
+\emph default
+, es posible que convivan varias versiones de esta, lo que puede dar lugar
+ a conflictos y, sobre todo, a problemas de seguridad.
+ Para evitar todos estos problemas, es necesario crear un sistema de actualizaci
+ones periódicas, por lo que el diseño y la implementación de la aplicación
+ se complican.
+\end_layout
+
+\begin_layout Itemize
+para poder enviar las peticiones al sistema, la aplicación necesita averiguar
+ la dirección IP y el puerto de la máquina que las tratará.
+ Para ello, existen dos alternativas: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+incrustar estos datos en el código.
+ Esto dificulta el cambio de la IP y el puerto de la máquina que tratará
+ las peticiones.
+\end_layout
+
+\begin_layout Itemize
+anunciarlos periódicamente a través de la red.
+ Con esto, además de desperdiciar ancho de banda, estamos comprometiendo
+ la seguridad del sistema, ya que cualquier usuario malintencionado podrá
+ recibir estos mensajes.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+aunque el tráfico viaje cifrado, cualquier usuario que utilice un analizador
+ de tráfico podrá averiguar la dirección IP y el puerto de la máquina que
+ trata sus peticiones, lo que facilita mucho la realización de ataques de
+ denegación de servicio.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, al utilizar una aplicación web desaparecen muchos de estos
+ inconvenientes, ya que
+\end_layout
+
+\begin_layout Itemize
+para utilizar 
+\emph on
+CygnusCloud
+\emph default
+ en móviles o tabletas sólo es necesario introducir cambios en el 
+\emph on
+layout
+\emph default
+ o la disposición de elementos de la página.
+\end_layout
+
+\begin_layout Itemize
+no es necesario descargar ningún programa en los PCs que usan los usuarios.
+ Esto hace el sistema más fácil de usar (basta con utilizar un navegador
+ web) y permite ahorrar ancho de banda.
+\end_layout
+
+\begin_layout Itemize
+las actualizaciones son muy fáciles de aplicar: basta con parar el servidor
+ web, copiar en él los ficheros binarios y reiniciarlo.
+\end_layout
+
+\begin_layout Itemize
+aunque sigue siendo posible realizar ataques de denegación de servicio,
+ estos sólo afectarán al servidor web y no a los servidores de la infraestructur
+a, por lo que esta seguirá procesando las peticiones ya recibidas correctamente.
+\end_layout
+
+\begin_layout Standard
+Finalmente, el uso de una aplicación web tiene un serio inconveniente: debido
+ a nuestra inexperiencia en este campo, es posible que no detectemos algunas
+ alternativas para comprometer la seguridad del sistema.
+ De todas formas, podemos considerar que la red troncal de la UCM es segura,
+ por lo que este tipo de prácticas no serán muy frecuentes.
 \end_layout
 
 \begin_layout Subsection
@@ -822,6 +898,172 @@ se administrará el sistema.
 \end_layout
 
 \begin_layout Subsection
+Implementación de una infraestructura 
+\emph on
+ad-hoc
+\end_layout
+
+\begin_layout Standard
+Para realizar la gestión de las máquinas de la infraestructura podemos utilizar
+ soluciones gratuitas como 
+\emph on
+OpenStack 
+\emph default
+y 
+\emph on
+OpenNebula.
+\end_layout
+
+\begin_layout Standard
+Muchas organizaciones utilizan estas soluciones para gestionar 
+\emph on
+clouds
+\emph default
+ de gran tamaño.
+ Además, 
+\emph on
+OpenStack 
+\emph default
+y 
+\emph on
+OpenNebula.
+
+\emph default
+ implementan toda la funcionalidad que necesitamos en lo que a la gestión
+ de máquinas virtuales se refiere: arranques y apagados, despliegues, borrados,\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Standard
+No obstante, hemos preferido diseñar e implementar una infraestructura 
+\emph on
+ad-hoc
+\emph default
+ por las siguientes razones:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+OpenStack
+\emph default
+ y 
+\emph on
+OpenNebula
+\emph default
+ proporcionan muchas funciones a costa de consumir muchos recursos.
+ Tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Objetivos-arquitectura"
+
+\end_inset
+
+, 
+\emph on
+CygnusCloud
+\emph default
+ debe poder implantarse con coste cero, y para ello es imprescindible que
+ consuma muy pocos recursos.
+ Esto nos permite aprovechar servidores antiguos para implantar 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+OpenStack
+\emph default
+ y 
+\emph on
+OpenNebula
+\emph default
+ son excesivamente grandes.
+ Sólo hemos tenido un curso académico para desarrollar 
+\emph on
+CygnusCloud
+\emph default
+, y aprender a utilizar estas soluciones nos habría llevado fácilmente la
+ mitad de él.
+ 
+\end_layout
+
+\begin_layout Itemize
+al implantar una infraestructura 
+\emph on
+ad-hoc
+\emph default
+, hemos podido descubrir por nosotros mismos qué hace falta para suministrar
+ un servicio del tipo infraestructura como servicio.
+ Así, nos hemos familizarizado con muchas de las tecnologías de virtualización
+ existentes en el mercado.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Además, puesto que ya sabemos qué es necesario hacer en muchos casos, el
+ tiempo que tardemos en familiarizarnos con 
+\emph on
+OpenStack
+\emph default
+ y 
+\emph on
+OpenNebula
+\emph default
+ en el futuro será menor.
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Uso del gestor de bases de datos MariaDB
+\end_layout
+
+\begin_layout Standard
+MySQL y MariaDB son los dos gestores de bases de datos relacionales gratuitos
+ más completos del mercado.
+ Por ello, en su momento decidimos utilizar uno de ellos para manipular
+ las bases de datos de todos los servidores de la infraestructura.
+\end_layout
+
+\begin_layout Standard
+MariaDB es un 
+\emph on
+fork
+\emph default
+ de la versión 5.5 de MySQL, por lo que es compatible a nivel binario con
+ ella.
+ En principio, estos dos sistemas pueden parecer iguales, pero no lo son.
+\end_layout
+
+\begin_layout Standard
+Tras la compra de Sun Microsystems por parte de Oracle en 2009, el desarrollo
+ de MySQL se ha ido abandonando de forma progresiva, y en la actualidad
+ todo parece indicar que Oracle va a dejar de dar soporte al proyecto.
+\end_layout
+
+\begin_layout Standard
+En cambio, el desarrollo de MariaDB se ha intensificado mucho en los últimos
+ meses, y cada vez más organizaciones pasan a utilizarlo, por lo que el
+ soporte de MariaDB es ya igual o incluso mejor que el de MySQL.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, MariaDB es totalmente compatible con la sintaxis de MySQL y permite
+ utilizar los propios conectores de MySQL para interactuar con las bases
+ de datos.
+ 
+\end_layout
+
+\begin_layout Standard
+Por todas estas razones, hemos decidido utilizar MariaDB en lugar de MySQL.
+\end_layout
+
+\begin_layout Subsection
 Uso de 
 \emph on
 Python
@@ -840,7 +1082,7 @@ reference "sub:Restricciones-arquitectura"
 , debido a las distintas características y procedimientos de configuración
  de las distribuciones 
 \emph on
-GNU/Linux
+Linux
 \emph default
 , es altamente recomendable utilizar lenguajes interpretados para facilitar
  la portabilidad del sistema.
@@ -921,7 +1163,7 @@ Python
 \emph on
 Java
 \emph default
-, lo que facilita la comprensión del código y su depuración.
+, lo que facilita la comprensión del código.
  
 \end_layout
 
@@ -960,8 +1202,8 @@ Python
 \end_layout
 
 \begin_layout Itemize
-era necesario aprender a utilizar una tecnología nueva, cosa que no ocurría
- en el caso de 
+era necesario aprender a utilizar un lenguaje totalmente nuevo para nosotros,
+ cosa que no ocurría en el caso de 
 \emph on
 Java
 \emph default
@@ -995,7 +1237,15 @@ Python
 \emph on
 Python
 \emph default
- como principal lenguaje de programación.
+ como el principal lenguaje de programación de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Uso del hipervisor KVM
 \end_layout
 
 \begin_layout Subsection
@@ -1014,12 +1264,38 @@ name "sub:Uso-de-libvirt"
 \end_layout
 
 \begin_layout Standard
-Ya que 
+Para utilizar una máquina virtual no basta con crearla: también hay que
+ conectarla a una red virtual, a través de la cual su usuario podrá acceder
+ a internet.
+\end_layout
+
+\begin_layout Standard
+Ahora bien, tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Restricciones-arquitectura"
+
+\end_inset
+
+, cada distribución
 \emph on
-CygnusCloud
+ Linux
 \emph default
- se basa en la virtualización, tanto de máquinas como de redes, por ello
- necesitamos una forma de gestionar esto.
+ tiene sus propios procedimientos de configuración por lo que, aunque utilicemos
+ el mismo hipervisor, la forma de crear las máquinas y redes virtuales será
+ distinta.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, no es conveniente interactuar directamente con el hipervisor
+ ya que, si pasamos a utilizar otro distinto, será necesario introducir
+ muchas modificaciones.
+ Para superar estas limitaciones, creamos las redes virtuales e interactuamos
+ con el hipervisor a través de una librería, 
+\emph on
+libvirt
+\emph default
+.
 \end_layout
 
 \begin_layout Standard
