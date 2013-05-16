@@ -60,7 +60,7 @@ class SpanishCodesTranslator(CodesTranslator):
             return "La imagen no se está editando. No se puede sobreescribir la copia del repositorio"
         elif (code == ERROR_DESC_T.VMSRVR_INTERNAL_ERROR) :
             return "Error interno del servidor de máquinas virtuales"
-        elif (code == ERROR_DESC_T.VMSRVR_UNKNOWN_IMAGE or ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE) :
+        elif (code == ERROR_DESC_T.VMSRVR_UNKNOWN_IMAGE or code == ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE) :
             return "Imagen desconocida"
         elif (code == ERROR_DESC_T.VMSRVR_COMPRESSION_ERROR) :
             return "Error al comprimir o descomprimir la imagen"
@@ -80,16 +80,16 @@ class SpanishCodesTranslator(CodesTranslator):
             return "La imagen se está borrando"
         elif (code == ERROR_DESC_T.CLSRVR_IR_NO_DISK_SPACE) :
             return "No hay suficiente espacio en disco en el repositorio"   
-        elif (code == ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR) :
-            return "El servidor de máquinas virtuales no está registrado"    
         elif (code == ERROR_DESC_T.CLSRVR_VMSRVR_NOT_READY) :
-            return "El servidor de máquinas virtuales no está listo"    
+            return "No hay servidores de máquinas virtuales preparados"    
         elif (code == ERROR_DESC_T.CLSRVR_IMAGE_HOSTED_ON_VMSRVR) :
             return "La imagen ya está desplegada en el servidor de máquinas virtuales"   
         elif (code == ERROR_DESC_T.CLSRVR_IMAGE_NOT_HOSTED_ON_VMSRVR) :
             return "La imagen no está desplegada en el servidor de máquinas virtuales"   
         elif (code == ERROR_DESC_T.CLSRVR_VMSRVR_NO_DISK_SPACE) :
             return "No hay suficiente espacio en disco en el servidor de máquinas virtuales"   
+        elif (code == ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR):
+            return "El servidor de máquinas virtuales no está registrado"
         elif (code == ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR) :
             return "No se puede establecer la conexión con el servidor de máquinas virtuales"   
         elif (code == ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_LOST) :

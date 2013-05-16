@@ -2,7 +2,7 @@
 '''
 Conector que usará la web para interactuar con el sistema
 @author: Luis Barrios Hernández
-@version: 4.0
+@version: 6.0
 '''
 from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
 from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
@@ -155,7 +155,8 @@ class ClusterConnector(object):
             haltVMServers: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
             máquinas virtuales.
         Devuelve: 
-            Nada
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
         (commandType, commandArgs) = self.__commandsHandler.createHaltCommand(haltVMServers)
         self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
@@ -166,12 +167,22 @@ class ClusterConnector(object):
         Argumentos:
             domainID: el identificador único de la máquina virtual a destruir
         Devuelve:
-            Nada
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
         (commandType, commandArgs) = self.__commandsHandler.createDomainDestructionCommand(domainID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def deployImage(self, serverNameOrIPAddress, imageID):
+        """
+        Realiza el despliegue manual de una imagen
+        Argumentos:
+            serverNameOrIPAddress: el nombre o la dirección IP del servidor en el que queremos desplegar la imagen
+            imageID: el identificaodr único de la imagen a desplegar
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        """
         (commandType, commandArgs) = self.__commandsHandler.createImageDeploymentCommand(True, serverNameOrIPAddress, imageID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
@@ -303,9 +314,26 @@ class ClusterConnector(object):
     def getImageData(self,imageID):
         return self.__endpointDBConnector.getImageData(imageID)        
     
+    def getPendingNotifications(self):
+        """
+        Devuelve las notificaciones pendientes del usuario.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Una lista con las notificaciones pendientes del usuario.
+        """
+        return self.__commandsDBConnector.getPendingNotifications(self.__userID)
+    
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "connector_user", "CygnusCloud")
-    commandID = connector.bootUpVM(1)
-    print connector.waitForCommandOutput(commandID)
-        
+    commandID = connector.bootUpVMServer("Server1")
+    print connector.waitForCommandOutput(commandID)   
+    sleep(5)
+    connector.deployImage("Server1", 1)
+    notifications = []
+    while (notifications == []):
+        notifications = connector.getPendingNotifications()
+        if (notifications == []):
+            sleep(0.5)
+    print notifications     

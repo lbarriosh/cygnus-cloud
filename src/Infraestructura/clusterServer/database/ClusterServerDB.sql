@@ -75,10 +75,7 @@ CREATE TABLE IF NOT EXISTS ImageDeletionCommand(commandID VARCHAR(70) PRIMARY KE
 
 CREATE TABLE IF NOT EXISTS AutoDeploymentCommand(commandID VARCHAR(70) PRIMARY KEY, imageID INTEGER, remainingMessages SMALLINT, error BOOL)
 	ENGINE=MEMORY;
-
-INSERT IGNORE INTO VMServer VALUES
-    (1, 'Server1', 2, '192.168.0.4', 15800, 1);
-
+	
 /*
  * Características de las familias de imágenes vanilla
  */

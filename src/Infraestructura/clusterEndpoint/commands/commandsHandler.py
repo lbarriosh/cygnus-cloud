@@ -2,7 +2,7 @@
 '''
 Definiciones del gestor de comandos
 @author: Luis Barrios Hernández
-@version: 1.5
+@version: 4.0
 '''
 
 from ccutils.enums import enum
@@ -46,6 +46,14 @@ class CommandsHandler(object):
             
         
     def createImageDeploymentCommand(self, deploy, serverNameOrIPAddress, imageID):
+        """
+        Crea un comando de despliegue manual o borrado de una imagen.
+        Argumentos:
+            deploy: cuando es True, indica que hay que despliegar la imagen en el servidor.
+            Cuando es False, indica que hay que borrarla de él.
+            serverNameOrIPAddress: el nombre o la dirección IP del servidor
+            imageID: el identificador único de la imagen
+        """
         args = "{0}${1}".format(serverNameOrIPAddress, imageID)
         if (deploy) :
             return (COMMAND_TYPE.DEPLOY_IMAGE, args)

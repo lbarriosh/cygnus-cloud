@@ -68,8 +68,8 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         userID = int(result[0])
         update = "DELETE FROM QueuedCommand WHERE userID = {0} AND TIME = {1};".format(userID, result[1])
         self._executeUpdate(update)
-        commandArgs = self.getCommandData((userID, result[1]))
-        return ((userID, result[1]), int(commandArgs[0]), commandArgs[1])
+        commandData = self.getCommandData((userID, result[1]))
+        return ((userID, result[1]), int(commandData["CommandType"]), commandData["CommandArgs"])
     
     def getCommandData(self, commandID):
         query = "SELECT commandType, commandArgs FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])

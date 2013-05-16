@@ -126,42 +126,42 @@ class EndpointPacketReactor(object):
             serverNameOrIPAddress = data["ServerNameOrIPAddress"]
             serverId = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
             if (serverId == None) :
-                raise Exception("The virtual machine server is not registered")
-            serverData = self.__dbConnector.getVMServerBasicData(serverId)
-            
-            if (serverData["ServerStatus"] != SERVER_STATE_T.SHUT_DOWN and 
-                serverData["ServerStatus"] != SERVER_STATE_T.CONNECTION_TIMED_OUT) :
-                # El servidor ya está arrancado => ignoramos la petición
-                return
-            
-            # Establecer la conexión            
-            self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 
-                                                20, self.__vmServerCallback, True, True)
-            while not self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"]) :
-                sleep(0.1)
+                p = self.__webPacketHandler.createErrorPacket(PACKET_T.VM_SERVER_BOOTUP_ERROR, 
+                                                              ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR, data["CommandID"])
+            else :
+                serverData = self.__dbConnector.getVMServerBasicData(serverId)
                 
-            # Solicitar el estado al servidor de máquinas virtuales            
-            self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)       
-            
-            # Hacer que el servidor de máquinas virtuales sincronice sus imágenes con las del repositorio
-            imagesToDeploy = self.__dbConnector.getHostedImagesWithStatus(serverId, IMAGE_STATE_T.DEPLOY)
-            for imageID in imagesToDeploy :
-                familyID = self.__dbConnector.getFamilyID(imageID)
-                familyFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(familyID)
-                p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, imageID, 
-                                                                             self.__dbConnector.getImageEditionCommandID(imageID))
-                self.__dbConnector.allocateVMServerResources(data["CommandID"], serverId, 
-                                                         0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
-                                                         0, 0, 1)
-                self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
+                if (serverData["ServerStatus"] == SERVER_STATE_T.SHUT_DOWN or 
+                    serverData["ServerStatus"] == SERVER_STATE_T.CONNECTION_TIMED_OUT) :                   
                 
-            imagesToDelete = self.__dbConnector.getHostedImagesWithStatus(serverId, IMAGE_STATE_T.DELETE)            
-            for imageID in imagesToDelete :
-                p = self.__vmServerPacketHandler.createDeleteImagePacket(imageID, self.__dbConnector.getImageDeletionCommandID(imageID))
-                self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
-            
-            # Indicar al endpoint que el comando se ha ejecutado con éxito
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+                    # Establecer la conexión            
+                    self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 
+                                                        20, self.__vmServerCallback, True, True)
+                    while not self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"]) :
+                        sleep(0.1)
+                        
+                    # Solicitar el estado al servidor de máquinas virtuales            
+                    self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)       
+                    
+                    # Hacer que el servidor de máquinas virtuales sincronice sus imágenes con las del repositorio
+                    imagesToDeploy = self.__dbConnector.getHostedImagesWithStatus(serverId, IMAGE_STATE_T.DEPLOY)
+                    for imageID in imagesToDeploy :
+                        familyID = self.__dbConnector.getFamilyID(imageID)
+                        familyFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(familyID)
+                        p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, imageID, 
+                                                                                     self.__dbConnector.getImageEditionCommandID(imageID))
+                        self.__dbConnector.allocateVMServerResources(data["CommandID"], serverId, 
+                                                                 0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
+                                                                 0, 0, 1)
+                        self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
+                        
+                    imagesToDelete = self.__dbConnector.getHostedImagesWithStatus(serverId, IMAGE_STATE_T.DELETE)            
+                    for imageID in imagesToDelete :
+                        p = self.__vmServerPacketHandler.createDeleteImagePacket(imageID, self.__dbConnector.getImageDeletionCommandID(imageID))
+                        self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
+                
+                # Indicar al endpoint que el comando se ha ejecutado con éxito
+                p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
         except Exception:
             p = self.__webPacketHandler.createErrorPacket(PACKET_T.VM_SERVER_BOOTUP_ERROR,
                                                           ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR, data["CommandID"])

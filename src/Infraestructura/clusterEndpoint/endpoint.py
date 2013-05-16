@@ -227,6 +227,8 @@ class ClusterEndpoint(object):
                     output_type = COMMAND_OUTPUT_TYPE.IMAGE_EDITED
                 elif (commandData["CommandType"] == COMMAND_TYPE.DEPLOY_IMAGE or commandData["CommandType"] == COMMAND_TYPE.AUTO_DEPLOY_IMAGE) :
                     output_type = COMMAND_OUTPUT_TYPE.IMAGE_DEPLOYED
+                    parsedArgs = self.__commandsHandler.deserializeCommandArgs(commandData["CommandType"], commandData["CommandArgs"])
+                    self.__endpointDBConnector.makeBootable(parsedArgs["ImageID"])
                     # TODO: hacer la imagen arrancable
                 elif (commandData["CommandType"] == COMMAND_TYPE.DELETE_IMAGE or commandData["CommandType"] == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE) :
                     output_type = COMMAND_OUTPUT_TYPE.IMAGE_DELETED
@@ -262,7 +264,7 @@ class ClusterEndpoint(object):
                         data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR                            
                                           
                     (outputType, outputContent) = self.__commandsHandler.createErrorOutput(data['packet_type'], 
-                        self.__codeTranslator.translateErrorDescriptionCode(data["ErrorDescription"]))
+                        data["ErrorDescription"])
                 
                     self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent, False, isNotification)
                 
