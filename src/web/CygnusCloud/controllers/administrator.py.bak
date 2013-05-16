@@ -599,6 +599,6 @@ def selectRadioButton():
     
 def conectToServer():
     #Establecemos la conexión con el servidor principal
-    connector = ClusterServerConnector(auth.user_id)
+    connector = ClusterConnector(auth.user_id)
     connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
     return connector

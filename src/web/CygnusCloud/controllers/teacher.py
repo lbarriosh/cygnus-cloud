@@ -132,7 +132,30 @@ def createVanillaVM():
     print j
     return dict(form = form,progressBarStyle=progressBarStyle,num = num,num2 = j)
           
-       
+def editVM():
+    #Creamos fromulario para asociar las máquinas en espera
+    #TODO: Cambiar por waiting
+    connector = conectToServer()
+    waitingImages = connector.getEditedImageIDs(auth.user_id)
+    waitingSelect = SELECT(_name = 'waitingImagesSelect')
+    for image in waitingImages:
+        imageInfo = connector.getImageData(image)
+        waitingSelect.append(OPTION(imageInfo["ImageName"],_value = image))
+             
+    subjects = userDB((userDB.UserGroup.userId==auth.user['email']) & (userDB.UserGroup.cod == userDB.Subjects.code)
+        ).select(userDB.UserGroup.cod,userDB.Subjects.name,userDB.UserGroup.curseGroup)
+    print subjects
+    subjectsSelect = SELECT(_name = 'userSubjectsSelect')
+    for s in subjects:
+        subjectsSelect.append(OPTION(str(s.UserGroup.cod) + " " + s.Subjects.name + "- Grupo: " + s.UserGroup.curseGroup ,_value = s.UserGroup.cod))
+         
+    form = FORM(H2(T('Etiquetar máquinas virtuales')),DIV(LABEL("Nombre :"),waitingSelect),
+        DIV(LABEL("Grupo de asignatura :"),subjectsSelect),
+        CENTER(INPUT(_type='submit',_name = 'asociateSubject',  _value = T('Asociar asignatura')
+        ,_class="button button-blue",_style="width:180px;")))
+    return dict(form=form)
+            
+         
    
 def createAdressBar():
     response.menu=[[T('Arrancar máquina'),False,URL('runVM')],[T('Detener máquina'),False,URL('stopVM')],
@@ -182,7 +205,8 @@ def createDisabledTables():
     waitingImages = connector.getNewImageIDs(auth.user_id)
     waitingTable  = TABLE(_class='data', _name='table')
     waitingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
-            TH("Grupo")))                                                 
+            TH("Grupo"))) 
+    #TODO: cambiar por waiting                                                
     for image in editingImages:
            print image
            imageInfo = connector.getImageData(image)
@@ -195,8 +219,8 @@ def createDisabledTables():
                   _class='notAvaible')) 
 
     return (editingTable,waitingTable)
-              
-             
+
+                          
             
     
 def conectToServer():
