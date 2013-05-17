@@ -74,7 +74,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
     def getCommandData(self, commandID):
         query = "SELECT commandType, commandArgs FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         result = self._executeQuery(query, True)     
-        return {"CommandType": result[0], "CommandArgs":result[1]}   
+        return {"CommandType": result[0], "CommandArgs": result[1]}   
     
     def addCommandOutput(self, commandID, outputType, commandOutput, isNotification = False):
         """
@@ -138,7 +138,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         
         query = "SELECT outputType, commandOutput FROM RunCommandOutput WHERE userID = {0} AND isNotification = 1 AND time <= {1};"\
             .format(userID, max_time)
-        results = self._executeQuery(query, False)     
+        results = self._executeQuery(query, False)
            
         update = "DELETE FROM RunCommandOutput WHERE userID = {0} AND isNotification = 1 AND time <= {1};".format(userID, max_time)
         self._executeUpdate(update)

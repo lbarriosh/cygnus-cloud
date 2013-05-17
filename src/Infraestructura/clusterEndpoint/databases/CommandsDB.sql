@@ -1,8 +1,8 @@
 DROP DATABASE IF EXISTS CommandsDB;
 
 CREATE DATABASE CommandsDB;
-
 USE CommandsDB;
+
 
 CREATE TABLE QueuedCommand(
 	userID INT,
@@ -26,3 +26,5 @@ CREATE TABLE RunCommandOutput(
 	isNotification BOOL,
 	PRIMARY KEY(userID, time))
 	ENGINE=MEMORY;
+
+ALTER DATABASE CommandsDB CHARACTER SET utf8 COLLATE utf8_general_ci;

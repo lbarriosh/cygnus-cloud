@@ -243,10 +243,10 @@ class ClusterEndpoint(object):
                 if (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
                     (outputType, outputContent) = self.__commandsHandler.createVMConnectionDataOutput(
                         data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"]) 
-                    self.__commandsDBConnector.addCommandOutput(data["CommandID"], outputType, outputContent)
+                    self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
                 elif (data["packet_type"] == PACKET_T.IMAGE_CREATED) :
                         self.__endpointDBConnector.registerImageID(data["CommandID"], data["ImageID"])
-                        self.__commandExecutionThread.addCommandOutput(data["CommandID"], COMMAND_OUTPUT_TYPE.IMAGE_CREATED,
+                        self.__commandExecutionThread.addCommandOutput(commandID, COMMAND_OUTPUT_TYPE.IMAGE_CREATED,
                                                                        self.__codeTranslator.translateNotificationCode(COMMAND_TYPE.CREATE_IMAGE),
                                                                        True)
                 else :
