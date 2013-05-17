@@ -1540,15 +1540,12 @@ benchmark
 \end_layout
 
 \begin_layout Itemize
-usamos una CPU, la misma máquina y la misma versión del 
-\emph on
-kernel
-\emph default
- 
-\emph on
-Linux
-\emph default
-.
+utilizamos la misma máquina, con una CPU Intel Core i7 2330QM, 8 GB de memoria
+ RAM DDR3 a 1333 MHz y un disco duro Serial-ATA 2 a 7200 RPM.
+\end_layout
+
+\begin_layout Itemize
+utilizamos la misma versión del kernel Linux, la 3.2.0.
 \end_layout
 
 \begin_layout Itemize
@@ -1562,8 +1559,47 @@ time
 \end_layout
 
 \begin_layout Itemize
-el uso medio de la CPU, de la RAM y del disco se determinaron con las herramient
-as 
+el uso promedio medio de la CPU, de la RAM y del disco se midieron con las
+ herramientas 
+\family typewriter
+iostat
+\family default
+ y 
+\family typewriter
+pidstat
+\family default
+, pertenecientes al paquete 
+\family typewriter
+sysstat
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+El paquete 
+\family typewriter
+sysstat
+\family default
+ puede descargarse desde 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://sebastien.godard.pagesperso-orange.fr/"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\family default
+.
+ Estas herramientas obtienen la información que muestran del pseudo-sistema
+ de ficheros 
+\family typewriter
+/proc
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
@@ -1571,10 +1607,49 @@ se especificó un nivel de compresión medio.
 \end_layout
 
 \begin_layout Standard
-Los resultados de las pruebas aparecen en la figura 
+Los resultados del 
+\emph on
+benchmark
+\emph default
+ aparecen en las figuras 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Resultados-pruebas"
+reference "fig:Tiempos-de-compresión-desc-benchmark"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Tamaño-del-fichero-benchmark"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Uso-promedio-CPU-benchmark"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Uso-promedio-RAM-benchmark"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Tasa-de-lectura-benchmark"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Tasa-de-escritura-benchmark"
 
 \end_inset
 
@@ -1582,12 +1657,6 @@ reference "fig:Resultados-pruebas"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Float figure
@@ -1599,8 +1668,8 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../Arquitectura/Transferencia de imágenes/Gráficos/prueba tiempos.png
-	scale 60
+	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Tiempos compresión y descompresión.pdf
+	scale 50
 
 \end_inset
 
@@ -1611,6 +1680,12 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Tiempos-de-compresión-desc-benchmark"
+
+\end_inset
+
 Tiempos de compresión y descompresión
 \end_layout
 
@@ -1624,7 +1699,7 @@ Tiempos de compresión y descompresión
 
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 \noindent
 \align center
 \begin_inset Float figure
@@ -1636,7 +1711,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename ../Arquitectura/Transferencia de imágenes/Gráficos/prueba tamaños.png
+	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Tamaño fichero comprimido.pdf
 	scale 60
 
 \end_inset
@@ -1648,6 +1723,12 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Tamaño-del-fichero-benchmark"
+
+\end_inset
+
 Tamaño del fichero comprimido
 \end_layout
 
@@ -1661,75 +1742,20 @@ Tamaño del fichero comprimido
 
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 \noindent
 \align center
 \begin_inset Float figure
 wide false
 sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Uso medio de CPU
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Uso medio de memoria RAM
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Uso medio del disco
-\end_layout
-
-\end_inset
-
-
-\end_layout
+\begin_inset Graphics
+	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Uso promedio CPU.pdf
+	scale 60
 
 \end_inset
 
@@ -1742,13 +1768,11 @@ Uso medio del disco
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Resultados-pruebas"
+name "fig:Uso-promedio-CPU-benchmark"
 
 \end_inset
 
-Resultados del mini-
-\emph on
-benchmark
+Uso promedio de CPU
 \end_layout
 
 \end_inset
@@ -1762,37 +1786,343 @@ benchmark
 \end_layout
 
 \begin_layout Standard
-Podemos concluir que
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Uso promedio RAM.pdf
+	scale 60
+
+\end_inset
+
+
 \end_layout
 
-\begin_layout Itemize
-el formato 7zip consigue la tasa de compresión más alta, aunque lo hace
- a costa de aumentar muchísimo el tiempo de CPU.
- Por eso, creo que deberíamos descartarlo.
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Uso-promedio-RAM-benchmark"
+
+\end_inset
+
+Uso promedio de memoria RAM
 \end_layout
 
-\begin_layout Itemize
-los formatos zip y .tar.gz se comportan prácticamente igual (es lógico: los
- dos usan el algoritmo de Lempel-Ziv).
- 
+\end_inset
+
+
 \end_layout
 
-\begin_layout Itemize
-los formatos lzma y xz son incluso dos veces más lentos que 7zip.
- Por eso los formatos .lzma, .tar.lzma y .tar.xz no aparecen en las gráficas:
- no vale la pena utilizarlos.
-\end_layout
+\end_inset
 
-\begin_layout Itemize
-el formato tar es el más rápido comprimiendo, aunque eso tiene un efecto
- importante sobre la tasa de compresión.
- 
+
 \end_layout
 
 \begin_layout Standard
-Parece que lo más razonable es utilizar el formato zip para comprimir las
- imágenes, permitiendo que en la implementación se pueda cambiar fácilmente
- (creando una clase).
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Tasa lectura disco.pdf
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Tasa-de-lectura-benchmark"
+
+\end_inset
+
+Tasa de lectura de disco (promedio)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Tasa escritura disco.pdf
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Tasa-de-escritura-benchmark"
+
+\end_inset
+
+Tasa de escritura a disco (promedio)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como el lector habrá observado ya, en las gráficas no aparecen los formatos
+ 
+\family sans
+lzma
+\family default
+, 
+\family sans
+tar.lzma
+\family default
+ y 
+\family sans
+tar.xz
+\family default
+.
+ Esto se debe a que 
+\end_layout
+
+\begin_layout Itemize
+la compresión y la descompresión de ficheros son mucho más lentas que las
+ del formato 
+\family sans
+7-zip
+\family default
+,
+\end_layout
+
+\begin_layout Itemize
+la tasa de compresión es muy similar a la del formato 
+\family sans
+zip
+\family default
+, y
+\end_layout
+
+\begin_layout Itemize
+el uso de CPU y de memoria RAM es superior al del formato 
+\family sans
+zip
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por ello, los descartamos.
+ Si observamos las gráficas de las figuras 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Tiempos-de-compresión-desc-benchmark"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Tamaño-del-fichero-benchmark"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Uso-promedio-CPU-benchmark"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Uso-promedio-RAM-benchmark"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Tasa-de-lectura-benchmark"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Tasa-de-escritura-benchmark"
+
+\end_inset
+
+, podemos concluir que 
+\end_layout
+
+\begin_layout Itemize
+el formato 
+\family sans
+7-zip
+\family default
+ consigue la tasa de compresión más alta, aunque lo hace a costa de aumentar
+ muchísimo el tiempo de compresión y extracción, el uso promedio de CPU
+ y el uso promedio de memoria RAM.
+\end_layout
+
+\begin_layout Itemize
+los formatos 
+\family sans
+zip
+\family default
+, 
+\family sans
+.tar.gz
+\family default
+ y 
+\family sans
+.tar.bz2
+\family default
+ alcanzan tasas de compresión muy similares.
+ Esto se debe a que los tres usan variantes del algoritmo de Lempel-Ziv.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+No obstante, los compresores y descompresores de los dos últimos son algo
+ más lentos que los del formato 
+\family sans
+zip
+\family default
+, utilizan más tiempo de CPU y realizan más accesos a disco.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+el formato 
+\family sans
+tar
+\family default
+ alcanza la tasa de compresión más baja.
+ Por ello, es el que menos recursos usa.
+ Las elevadas tasas de lectura y escritura en disco se deben a que, al comprimir
+ un fichero utilizando el formato 
+\family sans
+tar
+\family default
+, se escribe prácticamente una copia del fichero original a disco.
+\end_layout
+
+\begin_layout Standard
+A la vista de estos resultados, descartamos el formato 
+\family sans
+7-zip
+\family default
+ por ser demasiado lento y consumir demasiados recursos, y el formato 
+\family sans
+tar
+\family default
+ por alcanzar tasas de compresión demasiado bajas.
+\end_layout
+
+\begin_layout Standard
+Así pues, tuvimos que elegir entre los formatos 
+\family sans
+zip
+\family default
+, 
+\family sans
+tar.gz
+\family default
+ y 
+\family sans
+.tar.bz2
+\family default
+.
+ De todos ellos, escogimos el formato 
+\family sans
+zip
+\family default
+ por las siguientes razones:
+\end_layout
+
+\begin_layout Itemize
+aunque al comprimir y descomprimir se utiliza más memoria RAM que en el
+ caso del formato 
+\family sans
+.tar.gz
+\family default
+, los usos de la CPU y del disco son inferiores, por lo que los procesos
+ de compresión afectarán menos al rendimiento global del servidor.
+\end_layout
+
+\begin_layout Itemize
+es posible añadir ficheros a un fichero 
+\family sans
+zip 
+\family default
+ya creado sin necesidad de descomprimirlo.
+ En el caso de los formatos 
+\family sans
+.tar.gz
+\family default
+ y 
+\family sans
+.tar.bz2
+\family default
+, esto no es posible.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
