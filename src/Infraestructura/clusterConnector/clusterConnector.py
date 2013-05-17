@@ -327,8 +327,5 @@ class ClusterConnector(object):
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "connector_user", "CygnusCloud")
-    commandID = connector.bootUpVMServer("Server1")
-    print connector.waitForCommandOutput(commandID)   
-    sleep(5)
-    commandID = connector.bootUpVM(1)
+    commandID = connector.destroyDomain("1|1368777156.9")    
     print connector.waitForCommandOutput(commandID)
