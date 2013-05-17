@@ -72,6 +72,11 @@ CygnusCloud: Provisión de puestos de laboratorio virtuales bajo demanda
 ¿Quienes somos?
 \end_layout
 
+\begin_layout Standard
+Estudiantes de la facultad de informática de la Universidad Complutense
+ de Madrid.
+\end_layout
+
 \begin_layout Itemize
 Luis Barrios Hernández
 \end_layout
@@ -93,28 +98,58 @@ Samuel Guayerbas Martín
 \end_layout
 
 \begin_layout Standard
-En la Facultad de Informática de la Universidad Complutense se imparten,
- entre otras titulaciones: 
+Los alumnos de la Facultad de informática disponemos de 12 aulas de informática
+ para realizar nuestras prácticas.
+ Sin embargo,
 \end_layout
 
 \begin_layout Itemize
-Una ingeniería superior en informática
+Las características de los equipos son diferentes.
 \end_layout
 
 \begin_layout Itemize
-Dos ingenierías técnicas
+También se imparten clases prácticas en estas aulas.
 \end_layout
 
-\begin_layout Itemize
-Cuatro grados
+\begin_layout Standard
+Por ello, si queremos realizar nuestras prácticas tendremos que ir a las
+ aulas de informática de otras facultades
 \end_layout
 
-\begin_layout Itemize
-Dos másters
+\begin_layout Standard
+Problema: ¡No tienen el software que necesitamos!
 \end_layout
 
 \begin_layout EndFrame
 
+\end_layout
+
+\begin_layout BeginFrame
+¿Por qué hemos desarrollado CygnusCloud?
+\end_layout
+
+\begin_layout Standard
+la instalación, desinstalación y conﬁguración de los programas que están
+ instalados en los diferentes equipos de las aulas de informática se ha
+ convertido en un tedioso proceso burocrático.
+\end_layout
+
+\begin_layout Standard
+Los profesores no pueden modificar ni instalar el software que necesitan
+ en sus asignaturas.
+\end_layout
+
+\begin_layout Standard
+Problema: !En caso de tener que cambiar algún programa los alumnos tendremos
+ que esperar al menos 2 meses para disponer de él!
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Por qué hemos desarrollado CygnusCloud?
 \end_layout
 
 \end_body
