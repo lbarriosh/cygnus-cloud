@@ -327,5 +327,10 @@ class ClusterConnector(object):
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "connector_user", "CygnusCloud")
-    commandID = connector.destroyDomain("1|1368777156.9")    
-    print connector.waitForCommandOutput(commandID)
+    connector.deleteImageFromInfrastructure(1)
+    notifications = []
+    while (notifications == []):
+        notifications = connector.getPendingNotifications()
+        if (notifications == []) :
+            sleep(0.5)
+    print notifications

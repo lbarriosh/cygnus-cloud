@@ -295,14 +295,14 @@ class EndpointPacketReactor(object):
                         self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)     
 
     def __deleteImageFromInfrastructure(self, data):
-        error = False
+        errorDescription = None
         if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
-            error = True
             errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
         elif (self.__dbConnector.isBeingDeleted(data["ImageID"])) :
-            error = True
             errorDescription = ERROR_DESC_T.CLSRVR_DELETED_IMAGE
-        if (error) :
+        elif (self.__dbConnector.getFamilyID(data["ImageID"]) == None) :
+            errorDescription = ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE
+        if (errorDescription != None) :
             p = self.__webPacketHandler.createErrorPacket(PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :
@@ -402,6 +402,8 @@ class EndpointPacketReactor(object):
             errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
         elif (self.__dbConnector.isBeingDeleted(data["ImageID"])):
             errorDescription = ERROR_DESC_T.CLSRVR_DELETED_IMAGE
+        elif (self.__dbConnector.getFamilyID(data["ImageID"]) == None) :
+            errorDescription = ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE
         elif (serverID == None) :
             errorDescription =  ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR
         elif (serverData["ServerStatus"] != SERVER_STATE_T.READY):
