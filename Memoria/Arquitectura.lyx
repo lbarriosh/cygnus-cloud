@@ -904,38 +904,25 @@ ad-hoc
 \end_layout
 
 \begin_layout Standard
-Para realizar la gestión de las máquinas de la infraestructura podemos utilizar
- soluciones gratuitas como 
+Para gestionar los servidores de la infraestructura y las máquinas virtuales,
+ es posible utilizar dos soluciones gratuitas y muy populares: 
 \emph on
-OpenStack 
+OpenStack
 \emph default
-y 
+ y 
 \emph on
-OpenNebula.
-\end_layout
-
-\begin_layout Standard
-Muchas organizaciones utilizan estas soluciones para gestionar 
+OpenNebula
+\emph default
+.
+ Estas herramientas permiten gestionar 
 \emph on
 clouds
 \emph default
- de gran tamaño.
- Además, 
-\emph on
-OpenStack 
-\emph default
-y 
-\emph on
-OpenNebula.
-
-\emph default
- implementan toda la funcionalidad que necesitamos en lo que a la gestión
- de máquinas virtuales se refiere: arranques y apagados, despliegues, borrados,\SpecialChar \ldots{}
-
-\end_layout
-
-\begin_layout Standard
-No obstante, hemos preferido diseñar e implementar una infraestructura 
+ de gran tamaño, e implementan toda la funcionalidad que necesitamos para
+ realizar la gestión de los servidores de la infraestructura y de las máquinas
+ virtuales.
+ No obstante, hemos preferido diseñar e implementar una infraestructura
+ 
 \emph on
 ad-hoc
 \emph default
@@ -963,13 +950,9 @@ reference "sub:Objetivos-arquitectura"
 \emph on
 CygnusCloud
 \emph default
- debe poder implantarse con coste cero, y para ello es imprescindible que
- consuma muy pocos recursos.
- Esto nos permite aprovechar servidores antiguos para implantar 
-\emph on
-CygnusCloud
-\emph default
-.
+ debe poder implantarse con coste cero, y para ello es imprescindible aprovechar
+ servidores antiguos, para los que estas soluciones pueden ser demasiado
+ pesadas.
 \end_layout
 
 \begin_layout Itemize
@@ -982,31 +965,12 @@ OpenStack
 OpenNebula
 \emph default
  son excesivamente grandes.
- Sólo hemos tenido un curso académico para desarrollar 
+ Para implementar 
 \emph on
 CygnusCloud
 \emph default
-, y aprender a utilizar estas soluciones nos habría llevado fácilmente la
- mitad de él.
- 
-\end_layout
-
-\begin_layout Itemize
-al implantar una infraestructura 
-\emph on
-ad-hoc
-\emph default
-, hemos podido descubrir por nosotros mismos qué hace falta para suministrar
- un servicio del tipo infraestructura como servicio.
- Así, nos hemos familizarizado con muchas de las tecnologías de virtualización
- existentes en el mercado.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-Además, puesto que ya sabemos qué es necesario hacer en muchos casos, el
- tiempo que tardemos en familiarizarnos con 
+, sólo es necesario utilizar un pequeño subconjunto de la funcionalidad
+ que ofrecen 
 \emph on
 OpenStack
 \emph default
@@ -1014,53 +978,119 @@ OpenStack
 \emph on
 OpenNebula
 \emph default
- en el futuro será menor.
+.
+ Ahora bien, para fijar dicho subcojunto y familiarizarnos con estas soluciones
+ habríamos necesitado, como mínimo, tres meses.
+ Esto supone casi la tercera parte del tiempo de desarrollo del proyecto,
+ por lo que no es aceptable.
 \end_layout
 
-\end_deeper
+\begin_layout Itemize
+al implantar una infraestructura 
+\emph on
+ad-hoc
+\emph default
+, podemos descubrir por nosotros mismos qué hace falta para suministrar
+ un servicio del tipo infraestructura como servicio.
+ Así, nos podemos familiarizar con muchas de las tecnologías de virtualización
+ existentes en el mercado.
+ Además, este conocimiento nos permitirá, en un futuro próximo, comprender
+ mejor y más rápidamente el funcionamiento de 
+\emph on
+OpenStack 
+\emph default
+y 
+\emph on
+OpenNebula.
+\end_layout
+
 \begin_layout Subsection
 Uso del gestor de bases de datos MariaDB
 \end_layout
 
 \begin_layout Standard
-MySQL y MariaDB son los dos gestores de bases de datos relacionales gratuitos
- más completos del mercado.
- Por ello, en su momento decidimos utilizar uno de ellos para manipular
- las bases de datos de todos los servidores de la infraestructura.
+Al inicio del proyecto, estábamos mucho más familiarizados con los gestores
+ de bases de datos relacionales que con los no relacionales.
+ Por ello, decidimos utilizar un gestor de bases de datos relacional para
+ manipular todas las bases de datos de la infraestructura.
 \end_layout
 
 \begin_layout Standard
-MariaDB es un 
+En la actualidad, los gestores gratuitos de bases de datos relacionales
+ más completos son dos: MySQL y MariaDB.
+\end_layout
+
+\begin_layout Itemize
+MySQL es el gestor de bases de datos relacionales de código abierto más
+ extendido, y se utiliza en servicios web con un gran número de usuarios
+ (como 
 \emph on
-fork
+Facebook
 \emph default
- de la versión 5.5 de MySQL, por lo que es compatible a nivel binario con
- ella.
- En principio, estos dos sistemas pueden parecer iguales, pero no lo son.
+, 
+\emph on
+Wordpress
+\emph default
+ y 
+\emph on
+YouTube
+\emph default
+) y también en muchos otros sistemas de menor tamaño.
 \end_layout
 
-\begin_layout Standard
-Tras la compra de Sun Microsystems por parte de Oracle en 2009, el desarrollo
- de MySQL se ha ido abandonando de forma progresiva, y en la actualidad
- todo parece indicar que Oracle va a dejar de dar soporte al proyecto.
+\begin_layout Itemize
+MariaDB es un gestor de bases de datos relacionales cuya popularidad en
+ la comunidad del 
+\emph on
+software libre
+\emph default
+ no ha parado de crecer.
+ En los últimos meses, la mayoría de distribuciones 
+\emph on
+Linux
+\emph default
+ han decidido reemplazar MySQL por MariaDB, y muchas organizaciones como
+ la 
+\emph on
+Wikimedia Foundation
+\emph default
+ han decidido migrar sus bases de datos a MariaDB.
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
-En cambio, el desarrollo de MariaDB se ha intensificado mucho en los últimos
- meses, y cada vez más organizaciones pasan a utilizarlo, por lo que el
- soporte de MariaDB es ya igual o incluso mejor que el de MySQL.
+Aunque inicialmente tomó como base la versión 5.5 de MySQL, las nuevas versiones
+ incluyen un gran número de mejoras enfocadas, sobre todo, a conseguir un
+ rendimiento superior al de MySQL.
+ Además, como MariaDB es totalmente compatible a nivel sintáctico y a nivel
+ binario la versión 5.5 de MySQL, resulta muy sencillo reemplazar MySQL por
+ MariaDB.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Tras examinar lo que ha sucedido tras la compra de 
+\emph on
+Sun Microsystems
+\emph default
+ por parte de 
+\emph on
+Oracle
+\emph default
+ en 2009, nos parece que el desarrollo de MySQL ha sufrido un abandono progresiv
+o, de forma que en la actualidad todo parece indicar que, a medio plazo,
  
+\emph on
+Oracle
+\emph default
+ va a dejar de dar soporte al proyecto.
 \end_layout
 
 \begin_layout Standard
-Además, MariaDB es totalmente compatible con la sintaxis de MySQL y permite
- utilizar los propios conectores de MySQL para interactuar con las bases
- de datos.
- 
-\end_layout
-
-\begin_layout Standard
-Por todas estas razones, hemos decidido utilizar MariaDB en lugar de MySQL.
+Considerando nuestras necesidades, MariaDB y MySQL son totalmente equivalentes.
+ Además, el soporte a medio y a largo plazo de MariaDB parece estar garantizado,
+ cosa que no ocurre en el caso de MySQL.
+ Por ello, decidimos utilizar MariaDB.
 \end_layout
 
 \begin_layout Subsection
@@ -1258,7 +1288,7 @@ reference "sec:Xen-vs-KVM"
 
 \end_inset
 
- hicimos una comparativa de ambos y explicamos que, por contar con un rendimient
+ hicimos una comparativa de ambas y explicamos que, por contar con un rendimient
 o muy similar, mejor documentación y mejor soporte que Xen, optamos por
  utilizar KVM.
 \end_layout
@@ -1279,13 +1309,7 @@ name "sub:Uso-de-libvirt"
 \end_layout
 
 \begin_layout Standard
-Para utilizar una máquina virtual no basta con crearla: también hay que
- conectarla a una red virtual, a través de la cual su usuario podrá acceder
- a internet.
-\end_layout
-
-\begin_layout Standard
-Ahora bien, tal y como dijimos en la sección 
+Tal y como mencionamos en la sección
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Restricciones-arquitectura"
@@ -1296,17 +1320,22 @@ reference "sub:Restricciones-arquitectura"
 \emph on
  Linux
 \emph default
- tiene sus propios procedimientos de configuración por lo que, aunque utilicemos
- el mismo hipervisor, la forma de crear las máquinas y redes virtuales será
- distinta.
+ tiene sus propios procedimientos de configuración.
+ Así, aunque utilicemos el mismo hipervisor, la forma de manipular las máquinas
+ y redes virtuales puede variar de unas distribuciones a otras.
+ 
 \end_layout
 
 \begin_layout Standard
-Por otra parte, no es conveniente interactuar directamente con el hipervisor
- ya que, si pasamos a utilizar otro distinto, será necesario introducir
- muchas modificaciones.
- Para superar estas limitaciones, creamos las redes virtuales e interactuamos
- con el hipervisor a través de una librería, 
+Además, interactuar directamente con el hipervisor no es nada conveniente
+ ya que, para utilizar otro diferente, será necesario introducir muchas
+ modificaciones.
+ 
+\end_layout
+
+\begin_layout Standard
+Para resolver estos dos problemas, no manipulamos las máquinas y las redes
+ virtuales directamente: lo hacemos a través de la librería 
 \emph on
 libvirt
 \emph default
@@ -1328,36 +1357,50 @@ soporta muchos sistemas de virtualización, entre los que están Xen, KVM,
 \end_layout
 
 \begin_layout Itemize
-aunque 
-\emph on
-libvirt
-\emph default
- está escrita en C, dispone de 
+aunque está escrita en C, dispone de 
 \emph on
 bindings
 \emph default
- para muchos otros lenguajes como Java y Python.
+ para muchos otros lenguajes, como Java o Python.
 \end_layout
 
 \begin_layout Itemize
-a través de ella, podemos crear y destruir redes virtuales, y también crear,
- destruir y migrar (mover de servidor) máquinas virtuales
+se distribuye bajo licencia LGPL, por lo que es posible utilizarla incluso
+ desde 
+\emph on
+software
+\emph default
+ privativo.
+\end_layout
+
+\begin_layout Itemize
+a través de ella, es posible crear y destruir redes virtuales, y también
+ crear, destruir y migrar (mover de servidor) máquinas virtuales en ejecución.
 \end_layout
 
 \begin_layout Standard
-
+Tras examinar las características de 
 \emph on
 libvirt
 \emph default
- nos proporciona todas las funciones que necesitamos para implementar 
+ y evaluar nuestras necesidades, concluimos que esta librería nos proporcionaba
+ todas las funciones que necesitábamos para utilizar máquinas y redes virtuales
+ en 
 \emph on
 CygnusCloud
 \emph default
 .
- Además, al inicio del proyecto no encontramos librerías similares, por
- lo que la única alternativa disponible era interactuar directamente con
- el hipervisor.
- Por tanto, decidimos utilizar 
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, al inicio del proyecto no encontramos ninguna librería similar,
+ por lo que la única alternativa al uso de 
+\emph on
+libvirt
+\emph default
+ era interactuar directamente con el hipervisor.
+ Así pues, decidimos utilizar 
 \emph on
 libvirt
 \emph default
@@ -2119,10 +2162,252 @@ ya creado sin necesidad de descomprimirlo.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage clearpage
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Pendiente: uso de imágenes de disco frente a LVM
+\end_layout
+
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Uso de imágenes 
+\emph on
+copy-on-write
+\end_layout
+
+\begin_layout Standard
+El sistema operativo y los programas instalados en cada máquina virtual
+ ocupan una cantidad considerable de espacio en disco.
+ Además, el sistema operativo y las utilidades básicas no suelen ser suficientes
+ para trabajar, por lo que frecuentemente es necesario instalar 
+\emph on
+software 
+\emph default
+adicional.
+ Esto requiere aún más espacio en disco.
+\end_layout
+
+\begin_layout Standard
+Supongamos que el sistema operativo y los programas que se van a utilizar
+ en la máquina virtual ocupan 12 GB, que el fichero de paginación ocupa
+ 1 GB y los usuarios disponen de 2 GB para almacenar sus datos temporales.
+ En este caso, cada máquina virtual activa requerirá
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+12+1+2=15\textrm{ GB de espacio en disco}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como varios usuarios pueden compartir el mismo servidor de máquinas virtuales,
+ es posible que existan varias máquinas virtuales activas de este tipo.
+ Por ejemplo, si existen tres, serán necesarios
+\begin_inset Formula 
+\[
+15\cdot3=45\textrm{ GB de espacio libre en disco}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Este comportamiento presenta dos graves inconvenientes:
+\end_layout
+
+\begin_layout Itemize
+las máquinas virtuales activas consumen mucho espacio en disco, lo que limitará
+ el número de máquinas virtuales activas, y también el número de máquinas
+ virtuales diferentes que puede albergar un mismo servidor de máquinas virtuales.
+ Esto último no es nada conveniente para sacar el máximo partido a los servidore
+s de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+el arranque de una máquina virtual será muy lento.
+ Retomando el ejemplo anterior, la máquina sólo se podrá arrancar cuando
+ se copien los 12 GB que ocupan el sistema operativo y los programas.
+ Esto, en un disco duro relativamente moderno, puede llevar más de cinco
+ minutos.
+\end_layout
+
+\begin_layout Standard
+Para superar estas limitaciones, sólo existen dos alternativas:
+\end_layout
+
+\begin_layout Itemize
+limitar el tamaño máximo de las imágenes, lo que limita también la versatilidad
+ de 
+\emph on
+CygnusCloud
+\emph default
+, o
+\end_layout
+
+\begin_layout Itemize
+hacer que todas las máquinas virtuales activas del mismo tipo compartan
+ la instalación del sistema operativo y de los programas.
+ Esto es posible utilizando imágenes 
+\emph on
+copy-on-write
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Tras considerar la gran cantidad de espacio en disco que ocupan las instalacione
+s de 
+\emph on
+Windows
+\emph default
+, la primera alternativa no nos pareció aceptable.
+ Por ello, decidimos utilizar imágenes 
+\emph on
+copy-on-write
+\emph default
+ para almacenar el sistema operativo y los programas instalados en las máquinas
+ virtuales.
+\end_layout
+
+\begin_layout Standard
+Así, si en el ejemplo anterior utilizásemos imágenes 
+\emph on
+copy-on-write
+\emph default
+, para alojar las tres máquinas virtuales activas necesitaríamos, aproximadament
+e,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+12+3\cdot(1+2)=21\textrm{ GB de espacio libre en disco}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+cantidad muy inferior a la del del caso anterior.
+\end_layout
+
+\begin_layout Subsection
+Uso de dos discos duros en cada máquina virtual
+\end_layout
+
+\begin_layout Standard
+El uso de imágenes 
+\emph on
+copy-on-write
+\emph default
+ nos permite ahorrar una gran cantidad de espacio en disco, pero también
+ tiene un serio inconveniente: las escrituras a disco son mucho más lentas
+ que en el caso de las imágenes normales.
+ Esta diferencia se debe al propio funcionamiento de las escrituras.
+ 
+\end_layout
+
+\begin_layout Standard
+Cuando se escribe en una imagen de disco normal, se consulta una cabecera
+ y se actualizan los 
+\emph on
+bytes
+\emph default
+ correspondientes del fichero.
+ Así, las escrituras en este tipo de imágenes son prácticamente igual de
+ rápidas que las escrituras directas a disco.
+ 
+\end_layout
+
+\begin_layout Standard
+En cambio, cuando se escribe en una imagen de disco 
+\emph on
+copy-on-write
+\emph default
+,
+\end_layout
+
+\begin_layout Enumerate
+se calculan los cambios que introduce la escritura con respecto a la imagen
+ original.
+\end_layout
+
+\begin_layout Enumerate
+los cambios se escriben a disco, pero no en el fichero de imagen original.
+\end_layout
+
+\begin_layout Standard
+Debido a esto, las escrituras en imágenes 
+\emph on
+copy-on-write
+\emph default
+ son más lentas.
+ Asimismo, también serán más lentas las posteriores lecturas de los datos
+ escritos: para obtenerlos, hay que aplicar los cambios sobre el contenido
+ del fichero de imagen original.
+\end_layout
+
+\begin_layout Standard
+Por tanto, si nos limitamos a utilizar imágenes 
+\emph on
+copy-on-write
+\emph default
+, el rendimiento de la máquina virtual se resentirá mucho, ya que las lecturas
+ y escrituras en el fichero de paginación son muy frecuentes, sobre todo
+ en el caso de sistemas operativos 
+\emph on
+Windows
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Para superar esta limitación, decidimos utilizar dos imágenes de disco en
+ cada máquina virtual:
+\end_layout
+
+\begin_layout Itemize
+una imagen del tipo 
+\emph on
+copy-on-write
+\emph default
+, para almacenar el sistema operativo y los programas, y
+\end_layout
+
+\begin_layout Itemize
+una imagen normal para almacenar el fichero de paginación y los datos temporales
+ de los usuarios.
+\end_layout
+
+\begin_layout Standard
+Tras realizar esta separación, siguen realizándose escrituras en la imagen
+ 
+\emph on
+copy-on-write
+\emph default
+.
+ No obstante, estas son muy poco frecuentes, por lo que esta solución nos
+ permite ahorrar espacio en disco y garantizar que el rendimiento de la
+ máquina virtual no se resentirá de forma apreciable.
+\end_layout
+
+\begin_layout Subsection
+Creación de seis familias de máquinas virtuales
 \end_layout
 
 \begin_layout Subsection
