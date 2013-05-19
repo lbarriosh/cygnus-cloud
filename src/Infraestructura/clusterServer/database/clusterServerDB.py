@@ -625,7 +625,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
         allocatedSpace = self._executeQuery(query, True)
         status =  {"FreeDiskSpace" : result[0], "AvailableDiskSpace" : result[1], "ConnectionStatus" : result[2]}
         if (allocatedSpace != None) :
-            status["FreeDiskSpace"] += round(allocatedSpace[0])
+            status["FreeDiskSpace"] += int(round(allocatedSpace))
         return status
         
     def allocateImageRepositoryResources(self, repositoryIP, repositoryPort, commandID, diskSpace):

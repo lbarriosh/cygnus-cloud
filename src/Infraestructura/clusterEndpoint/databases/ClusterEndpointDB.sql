@@ -77,6 +77,6 @@ INSERT IGNORE INTO Image VALUES
 	
 CREATE TABLE IF NOT EXISTS EditedImage(temporaryID VARCHAR(70) PRIMARY KEY, vanillaImageFamilyID SMALLINT, 
 	imageID INTEGER, name VARCHAR(20), description VARCHAR(200),
-	osFamily SMALLINT, osVariant SMALLINT, ownerID INTEGER,
+	osFamily SMALLINT, osVariant SMALLINT, ownerID INTEGER, state TINYINT,
 	FOREIGN KEY(vanillaImageFamilyID) REFERENCES VanillaImageFamily(familyID),
 	FOREIGN KEY(osFamily, osVariant) REFERENCES OSVariant(familyID, variantID) ON DELETE CASCADE ON UPDATE CASCADE);

@@ -90,7 +90,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
             flag = 1
         else :
             flag = 0
-        update = "INSERT INTO RunCommandOutput VALUES ({0}, {1}, {2}, '{3}', {4});".format(commandID[0], commandID[1], outputType, commandOutput, flag)
+        update = "REPLACE RunCommandOutput VALUES ({0}, {1}, {2}, '{3}', {4});".format(commandID[0], commandID[1], outputType, commandOutput, flag)
         self._executeUpdate(update)
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)

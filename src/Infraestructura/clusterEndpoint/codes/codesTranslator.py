@@ -18,3 +18,6 @@ class CodesTranslator(object):
     
     def translateNotificationCode(self, code):
         raise NotImplementedError
+    
+    def translateEditionStateCode(self, code):
+        raise NotImplementedError

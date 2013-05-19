@@ -82,15 +82,14 @@ class VMServerPacketReactor(object):
         if (not self.__dbConnector.isImageEditionCommand(data["CommandID"])) :            
             familyID = self.__dbConnector.getNewVMVanillaImageFamily(data["CommandID"])
             self.__dbConnector.deleteNewVMVanillaImageFamily(data["CommandID"])
-            self.__dbConnector.registerFamilyID(data["ImageID"], familyID)        
-        
+            self.__dbConnector.registerFamilyID(data["ImageID"], familyID)                
             # Enviar la respuesta
             p = self.__webPacketHandler.createImageEditedPacket(data["CommandID"], data["ImageID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :
             self.__dbConnector.removeImageEditionCommand(data["CommandID"])
             # Evitar que todas las copias de la imagen puedan arrancarse
-            self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.EDITED)            
+            self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.EDITED)  
             p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)   
         

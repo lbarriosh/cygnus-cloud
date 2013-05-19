@@ -85,7 +85,7 @@ class ClusterServerPacketHandler(object):
     
     def createImageEditedPacket(self, commandID, imageID):  
         p = self.__packetCreator.createPacket(3)
-        p.writeInt(CLUSTER_SERVER_PACKET_T.COMMAND_EXECUTED)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.IMAGE_CREATED)
         p.writeString(commandID)
         p.writeInt(imageID)
         return p  
@@ -436,9 +436,6 @@ class ClusterServerPacketHandler(object):
             result["Instances"] = p.readInt()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_INTERNAL_ERROR):
-            result["CommandID"] = p.readString()
-            
         elif (packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_CREATED):
             result["CommandID"] = p.readString()
             result["ImageID"] = p.readInt()
@@ -455,7 +452,8 @@ class ClusterServerPacketHandler(object):
               packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_CREATION_ERROR or
               packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_EDITION_ERROR or
               packet_type == CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR or
-              packet_type == CLUSTER_SERVER_PACKET_T.AUTO_DEPLOY_ERROR) :
+              packet_type == CLUSTER_SERVER_PACKET_T.AUTO_DEPLOY_ERROR or
+              packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_INTERNAL_ERROR) :
             result["ErrorDescription"] = p.readInt()        
             result["CommandID"] = p.readString()                       
         return result

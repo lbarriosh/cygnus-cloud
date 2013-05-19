@@ -16,6 +16,7 @@ from clusterEndpoint.commands.commandsHandler import CommandsHandler, COMMAND_TY
 from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
 from network.exceptions.networkManager import NetworkManagerException
 from endpointException import EndpointException
+from clusterEndpoint.databases.editionState_t import EDITION_STATE_T
 
 class _ClusterEndpointCallback(NetworkCallback):
     """
@@ -221,10 +222,13 @@ class ClusterEndpoint(object):
                 # Comandos ejecutados => generar notificaciones cuando sea necesario
                 commandData = self.__commandsDBConnector.removeExecutedCommand(commandID)
                 output_type = None           
-                if (commandData["CommandType"] == COMMAND_TYPE.EDIT_IMAGE) :
+                if (commandData["CommandType"] == COMMAND_TYPE.EDIT_IMAGE or commandData["CommandType"] == COMMAND_TYPE.CREATE_IMAGE) :
                     # Una imagen se ha acabado de editar
-                    self.__endpointDBConnector.cancelImageEdition(data["CommandID"])
-                    output_type = COMMAND_OUTPUT_TYPE.IMAGE_EDITED
+                    self.__endpointDBConnector.updateNewImageStatus(data["CommandID"], EDITION_STATE_T.CHANGES_NOT_APPLIED)
+                    if (commandData["CommandType"] == COMMAND_TYPE.EDIT_IMAGE) :
+                        output_type = COMMAND_OUTPUT_TYPE.IMAGE_EDITED
+                    else :
+                        output_type == COMMAND_OUTPUT_TYPE.IMAGE_CREATED
                 elif (commandData["CommandType"] == COMMAND_TYPE.DEPLOY_IMAGE or commandData["CommandType"] == COMMAND_TYPE.AUTO_DEPLOY_IMAGE) :
                     output_type = COMMAND_OUTPUT_TYPE.IMAGE_DEPLOYED
                     parsedArgs = self.__commandsHandler.deserializeCommandArgs(commandData["CommandType"], commandData["CommandArgs"])
@@ -241,12 +245,18 @@ class ClusterEndpoint(object):
                 # El resto de paquetes contienen el resultado de ejecutar comandos => los serializamos y los añadimos
                 # a la base de datos de comandos para que los conectores se enteren        
                 if (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
-                    (outputType, outputContent) = self.__commandsHandler.createVMConnectionDataOutput(
-                        data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"]) 
-                    self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
+                    # Generar salida sólo si se trata de un comando de arranque de una máquina virtual
+                    commandData = self.__commandsDBConnector.getCommandData(commandID)
+                    if (commandData["CommandType"] == COMMAND_TYPE.VM_BOOT_REQUEST) :
+                        (outputType, outputContent) = self.__commandsHandler.createVMConnectionDataOutput(
+                            data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"]) 
+                        self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
+                    else :
+                        # Cambiar el estado de la imagen en edición
+                        self.__endpointDBConnector.updateNewImageStatus(data["CommandID"], EDITION_STATE_T.VM_ON)
                 elif (data["packet_type"] == PACKET_T.IMAGE_CREATED) :
                         self.__endpointDBConnector.registerImageID(data["CommandID"], data["ImageID"])
-                        self.__commandExecutionThread.addCommandOutput(commandID, COMMAND_OUTPUT_TYPE.IMAGE_CREATED,
+                        self.__commandsDBConnector.addCommandOutput(commandID, COMMAND_OUTPUT_TYPE.IMAGE_CREATED,
                                                                        self.__codeTranslator.translateNotificationCode(COMMAND_TYPE.CREATE_IMAGE),
                                                                        True)
                 else :
@@ -297,6 +307,7 @@ class ClusterEndpoint(object):
                         packet = self.__webPacketHandler.createVMBootRequestPacket(parsedArgs["VMID"], parsedArgs["UserID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.DESTROY_DOMAIN):
                         packet = self.__webPacketHandler.createDomainDestructionPacket(parsedArgs["DomainID"], serializedCommandID)
+                        self.__endpointDBConnector.unregisterDomain(parsedArgs["DomainUID"])
                     elif (commandType == COMMAND_TYPE.VM_SERVER_CONFIGURATION_CHANGE) :
                         packet = self.__webPacketHandler.createVMServerConfigurationChangePacket(parsedArgs["VMServerNameOrIPAddress"],  parsedArgs["NewServerName"],
                                                                                          parsedArgs["NewServerIPAddress"], parsedArgs["NewServerPort"],

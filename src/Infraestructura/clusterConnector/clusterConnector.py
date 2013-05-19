@@ -187,10 +187,29 @@ class ClusterConnector(object):
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def deleteImage(self, serverNameOrIPAddress, imageID):
+        """
+        Borra una imagen de un servidor de máquinas virtuales
+        Argumentos:
+            serverNameOrIPAddress: el nombre o la dirección IP del servidor de máuqinas virtuales
+            imageID: el identificador único de la imagen
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        """
         (commandType, commandArgs) = self.__commandsHandler.createImageDeploymentCommand(False, serverNameOrIPAddress, imageID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def createImage(self, baseImageID, imageName, imageDescription, imageID):
+    def createImage(self, baseImageID, imageName, imageDescription):
+        """
+        Crea una imagen a partir de otra
+        Argumentos:
+            baseImageID: la imagen que se usará como base para crear la nueva imagen
+            imageName: el nombre de la nueva imagen
+            imageDescription: la descripción de la nueva imagen
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        """
         (commandType, commandArgs) = self.__commandsHandler.createImageAdditionCommand(self.__userID, baseImageID, imageName, imageDescription)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
@@ -247,7 +266,7 @@ class ClusterConnector(object):
         es necesario utilizar el método getCommandOutput.
         """
         while (self.__commandsDBConnector.isRunning(commandID)) :
-                sleep(0.1)
+                sleep(0.5)
         result = self.__commandsDBConnector.getCommandOutput(commandID)
         if result == None :
             return None
@@ -327,10 +346,12 @@ class ClusterConnector(object):
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "connector_user", "CygnusCloud")
-    connector.deleteImageFromInfrastructure(1)
+    commandID = connector.bootUpVMServer("Server1")
+    print connector.waitForCommandOutput(commandID)
+    sleep(5)
+    connector.createImage(1, "foo", "foos description")
     notifications = []
-    while (notifications == []):
+    while notifications == [] :
         notifications = connector.getPendingNotifications()
-        if (notifications == []) :
+        if (notifications == []):
             sleep(0.5)
-    print notifications

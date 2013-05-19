@@ -9,6 +9,7 @@ from codesTranslator import CodesTranslator
 from clusterServer.database.clusterServerDB import SERVER_STATE_T, IMAGE_STATE_T
 from errors.codes import ERROR_DESC_T
 from clusterEndpoint.commands.commandsHandler import COMMAND_TYPE
+from clusterEndpoint.databases.editionState_t import EDITION_STATE_T
 
 class SpanishCodesTranslator(CodesTranslator):
     def processVMServerSegment(self, data):
@@ -126,3 +127,11 @@ class SpanishCodesTranslator(CodesTranslator):
             return "La edición de la imagen ha terminado"
         elif (code == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE):
             return "La imagen se ha borrado de la infraestructura"
+        
+    def translateEditionStateCode(self, code):
+        if (code == EDITION_STATE_T.DEPLOYMENT) :
+            return "Arrancando máquina virtual"
+        elif (code == EDITION_STATE_T.VM_ON):
+            return "Máquina virtual arrancada"
+        elif (code == EDITION_STATE_T.CHANGES_NOT_APPLIED) :
+            return "Máquina virtual apagada"
