@@ -235,13 +235,14 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             receivedData = ClusterEndpointDBConnector.__getActiveVMsDictionary(self.__activeVMSegmentsData[vmServerIP])
             registeredIDs = self.__getActiveVMIDs()
             
+            
             # Quitar las filas que haga falta
             if (registeredIDs != None) :
                 for ID in registeredIDs :                    
                     if not (receivedData.has_key(ID)) :
                         domainUID = self.__getDomainUID(ID[0], ID[1], ID[2])
                         self.__deleteActiveVM(ID)
-                        self.updateNewImageStatus(domainUID, EDITION_STATE_T.TRANSFER_TO_REPOSITORY, EDITION_STATE_T.VM_ON)
+                        self.updateEditedImageStatus(domainUID, EDITION_STATE_T.TRANSFER_TO_REPOSITORY, EDITION_STATE_T.VM_ON)
                         
             # Realizar las actualizaciones y preparar las inserciones
             inserts = []
@@ -630,31 +631,26 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         self._executeUpdate(update)
         
     def editImage(self, commandID, imageID, ownerID):
-        imageData = self.getImageData(imageID)
-        update = "DELETE FROM Image WHERE imageID = {0};".format(imageID)
-        self._executeUpdate(update)
-        update = "INSERT INTO EditedImage VALUES('{0}', {1}, '{2}', '{3}', {4}, {5}, {6}, {7});"\
-            .format(commandID, imageData["VanillaImageFamilyID"], imageData["ImageName"], imageData["ImageDescription"],
-                    imageData["OSFamily"], imageData["OSVariant"], ownerID, EDITION_STATE_T.DEPLOYMENT)
-        self._executeUpdate(update)
+        query = "SELECT * from EditedImage WHERE imageID = {0};".format(imageID)
+        if (self._executeQuery(query, True) != None) :
+            update = "UPDATE EditedImage SET temporaryID = '{0}', state = {2} WHERE imageID = {1};".format(commandID, imageID, EDITION_STATE_T.DEPLOYMENT)
+            self._executeUpdate(update)
+        else :
+            imageData = self.getImageData(imageID)
+            update = "DELETE FROM Image WHERE imageID = {0};".format(imageID)
+            self._executeUpdate(update)
+            update = "INSERT INTO EditedImage VALUES('{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, {7}, {8});"\
+                .format(commandID, imageData["VanillaImageFamilyID"], imageID, imageData["ImageName"], imageData["ImageDescription"],
+                        imageData["OSFamily"], imageData["OSVariant"], ownerID, EDITION_STATE_T.DEPLOYMENT)
+            self._executeUpdate(update)
         
-    def deleteNewImage(self, temporaryID):
+    def deleteEditedImage(self, temporaryID):
         update = "DELETE FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
         self._executeUpdate(update)
         
-    def cancelImageEdition(self, commandID):
-        imageData = self.getImageData(commandID)
-        update = "DELETE FROM EditedImage WHERE temporaryID = '{0}';".format(commandID)
-        self._executeUpdate(update)
-        update = "INSERT INTO Image VALUES({0}, {1}, '{2}', '{3}', {4}, {5}, 0, 1)"\
-            .format(imageData["ImageID"], imageData["VanillaImageFamilyID"],
-                    imageData["ImageName"], imageData["ImageDescription"],
-                    imageData["OSFamily"], imageData["OSVariant"])
-        self._executeUpdate(update)
-        
-    def updateNewImageStatus(self, temporaryID, newStatus, expectedStatus=None):
+    def updateEditedImageStatus(self, temporaryID, newStatus, expectedStatus=None):
         if (expectedStatus != None) : 
-            query = "SELECT state FROM EditeDimage WHERE WHERE temporaryID = '{0}';".format(temporaryID)
+            query = "SELECT state FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
             if (self._executeQuery(query, True) != expectedStatus) :
                 return
         update = "UPDATE EditedImage SET state = {1} WHERE temporaryID = '{0}';".format(temporaryID, newStatus)

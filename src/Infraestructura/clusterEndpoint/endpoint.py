@@ -224,7 +224,7 @@ class ClusterEndpoint(object):
                 output_type = None           
                 if (commandData["CommandType"] == COMMAND_TYPE.EDIT_IMAGE or commandData["CommandType"] == COMMAND_TYPE.CREATE_IMAGE) :
                     # Una imagen se ha acabado de editar
-                    self.__endpointDBConnector.updateNewImageStatus(data["CommandID"], EDITION_STATE_T.CHANGES_NOT_APPLIED)
+                    self.__endpointDBConnector.updateEditedImageStatus(data["CommandID"], EDITION_STATE_T.CHANGES_NOT_APPLIED)
                     if (commandData["CommandType"] == COMMAND_TYPE.EDIT_IMAGE) :
                         output_type = COMMAND_OUTPUT_TYPE.IMAGE_EDITED
                     else :
@@ -253,7 +253,7 @@ class ClusterEndpoint(object):
                         self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
                     else :
                         # Cambiar el estado de la imagen en edición
-                        self.__endpointDBConnector.updateNewImageStatus(data["CommandID"], EDITION_STATE_T.VM_ON)
+                        self.__endpointDBConnector.updateEditedImageStatus(data["CommandID"], EDITION_STATE_T.VM_ON)
                 elif (data["packet_type"] == PACKET_T.IMAGE_CREATED) :
                         self.__endpointDBConnector.registerImageID(data["CommandID"], data["ImageID"])
                         self.__commandsDBConnector.addCommandOutput(commandID, COMMAND_OUTPUT_TYPE.IMAGE_CREATED,
@@ -262,9 +262,9 @@ class ClusterEndpoint(object):
                 else :
                     # Errores
                     if (data["packet_type"] == PACKET_T.IMAGE_CREATION_ERROR) :
-                        self.__endpointDBConnector.deleteNewImage(data["CommandID"])
-                    elif (data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR):
-                        self.__endpointDBConnector.cancelImageEdition(data["CommandID"])                    
+                        self.__endpointDBConnector.deleteEditedImage(data["CommandID"])
+                    if (data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR):
+                        self.__endpointDBConnector.updateEditedImageStatus(data["CommandID"], EDITION_STATE_T.CHANGES_NOT_APPLIED, None)               
                     
                     isNotification = data["packet_type"] == PACKET_T.IMAGE_DEPLOYMENT_ERROR or\
                         data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR or\

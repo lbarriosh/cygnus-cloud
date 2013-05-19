@@ -214,6 +214,14 @@ class ClusterConnector(object):
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def editImage(self, imageID):
+        """
+        Edita una imagen existente
+        Argumentos:
+            imageID: el identificador único de la imagen a editar
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        """
         (commandType, commandArgs) = self.__commandsHandler.createImageEditionCommand(imageID, self.__userID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
@@ -349,7 +357,7 @@ if __name__ == "__main__" :
     commandID = connector.bootUpVMServer("Server1")
     print connector.waitForCommandOutput(commandID)
     sleep(5)
-    connector.createImage(1, "foo", "foos description")
+    connector.editImage(1)
     notifications = []
     while notifications == [] :
         notifications = connector.getPendingNotifications()
