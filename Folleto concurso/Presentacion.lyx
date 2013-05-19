@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass beamer
+\begin_preamble
+ \usetheme{Singapore}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language spanish
@@ -43,8 +46,8 @@
 \shortcut idx
 \color #008000
 \end_index
-\secnumdepth 3
-\tocdepth 3
+\secnumdepth 2
+\tocdepth 2
 \paragraph_separation indent
 \paragraph_indentation default
 \quotes_language english
@@ -72,11 +75,6 @@ CygnusCloud: Provisión de puestos de laboratorio virtuales bajo demanda
 ¿Quienes somos?
 \end_layout
 
-\begin_layout Standard
-Estudiantes de la facultad de informática de la Universidad Complutense
- de Madrid.
-\end_layout
-
 \begin_layout Itemize
 Luis Barrios Hernández
 \end_layout
@@ -89,6 +87,11 @@ Adrián Fernández Hernández
 Samuel Guayerbas Martín
 \end_layout
 
+\begin_layout Standard
+Estudiantes de la facultad de informática de la Universidad Complutense
+ de Madrid.
+\end_layout
+
 \begin_layout EndFrame
 
 \end_layout
@@ -98,26 +101,38 @@ Samuel Guayerbas Martín
 \end_layout
 
 \begin_layout Standard
-Los alumnos de la Facultad de informática disponemos de 12 aulas de informática
- para realizar nuestras prácticas.
- Sin embargo,
+CygnusCloud pretender abordar y solucionar 3 importantes problemas presentes
+ en la actual gestión de las aulas de informática de la Universidad Complutense
+ de Madrid.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Por qué hemos desarrollado CygnusCloud?
+\end_layout
+
+\begin_layout Standard
+Problema 1: Las diferentes facultades de la Universidad complutense disponen
+ de aulas de informática donde los alumnos pueden realizar sus prácticas.
+ Aunque son de gran ayuda, no siempre pueden ser utilizadas ya que:
 \end_layout
 
 \begin_layout Itemize
-Las características de los equipos son diferentes.
+Muchas asignaturas prácticas imparten sus clases en estas aulas.
 \end_layout
 
 \begin_layout Itemize
-También se imparten clases prácticas en estas aulas.
+No todos los equipos disponen de todo el software requerido por los alumnos
+ de las diferentes carreras.
 \end_layout
 
 \begin_layout Standard
-Por ello, si queremos realizar nuestras prácticas tendremos que ir a las
- aulas de informática de otras facultades
-\end_layout
-
-\begin_layout Standard
-Problema: ¡No tienen el software que necesitamos!
+Solución: CygnusCloud ofrece a los alumnos todas las herramientas que necesiten
+ para realizar sus prácticas, independientemente del ordenador desde donde
+ se conecten.
 \end_layout
 
 \begin_layout EndFrame
@@ -129,19 +144,27 @@ Problema: ¡No tienen el software que necesitamos!
 \end_layout
 
 \begin_layout Standard
-la instalación, desinstalación y conﬁguración de los programas que están
- instalados en los diferentes equipos de las aulas de informática se ha
- convertido en un tedioso proceso burocrático.
+Problema 2: La gestión de las herramientas necesarias para ciertas asignaturas
+ instaladas en los equipos no es llevada a cabo por los profesores que imparten
+ dichas asignaturas, sino por técnicos organizados por un tedioso proceso
+ burocrático.
+ Esto obliga al profesor a:
+\end_layout
+
+\begin_layout Itemize
+Indicar a principio de curso que herramientas va a necesitar durante todo
+ el año.
+\end_layout
+
+\begin_layout Itemize
+Comprobar que todas las herramientas funcionan correctamente y esperar al
+ menos 1 mes para la corrección de cualquier posible cambio.
 \end_layout
 
 \begin_layout Standard
-Los profesores no pueden modificar ni instalar el software que necesitan
- en sus asignaturas.
-\end_layout
-
-\begin_layout Standard
-Problema: !En caso de tener que cambiar algún programa los alumnos tendremos
- que esperar al menos 2 meses para disponer de él!
+Solución : CygnusCloud permite a los profesores ser dueños de sus máquinas
+ virtuales y aplicar los cambios que deseen sobre ellas, permitiendo disponer
+ de estos cambios en apenas unas horas.
 \end_layout
 
 \begin_layout EndFrame
@@ -150,6 +173,230 @@ Problema: !En caso de tener que cambiar algún programa los alumnos tendremos
 
 \begin_layout BeginFrame
 ¿Por qué hemos desarrollado CygnusCloud?
+\end_layout
+
+\begin_layout Standard
+Problema 3: El tratamiento independiente de cada puesto de las aulas de
+ informática provoca una serie de costes que podrían ser rebajados.
+\end_layout
+
+\begin_layout Standard
+Solución: CygnusCloud permiten reducir de forma significativa costes por
+ medio de:
+\end_layout
+
+\begin_layout Itemize
+Uso compartido de licencias por parte de varias facultades.
+\end_layout
+
+\begin_layout Itemize
+Necesidad de equipos menos potentes y uso compartido de los servidores.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Qué ofrece CygnusCloud a los usuarios?
+\end_layout
+
+\begin_layout Standard
+En CygnusCloud existen 3 tipos de usuarios:
+\end_layout
+
+\begin_layout Itemize
+Alumnos.
+ Pueden arrancar y detener las máquinas virtuales asociadas a sus asignaturas
+ matriculadas.
+\end_layout
+
+\begin_layout Itemize
+Profesores.
+ A parte de arrancar y detener máquinas, pueden crear nuevas máquinas a
+ partir de máquinas 
+\begin_inset Quotes eld
+\end_inset
+
+vacías
+\begin_inset Quotes erd
+\end_inset
+
+ o existentes, así como editar máquinas.
+\end_layout
+
+\begin_layout Itemize
+Administradores.
+ Incluye toda la gestión del sistema, tanto de máquinas virtuales como los
+ profesores, como de los posibles usuarios, servidores y asignaturas registradas.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿A quién está dirigido CygnusCloud?
+\end_layout
+
+\begin_layout Itemize
+A cualquier tipo de institución académica de tamaño pequeño o mediano.
+\end_layout
+
+\begin_layout Itemize
+A instituciones de gran tamaño, siempre y cuando se usen varias réplicas
+ del sistema.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Para qué no sirve CygnusCloud?
+\end_layout
+
+\begin_layout Itemize
+Para tareas que requieren refrescar mucho la pantalla, tales como la renderizaci
+ón de gráficos 3D y la edición y reproducción de vídeos.
+ 
+\end_layout
+
+\begin_layout Itemize
+Es debido a las limitaciones que imponen los protocolos de escritorio remoto.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Qué hace falta para utilizar CygnusCloud?
+\end_layout
+
+\begin_layout Standard
+Los requisitos para poder utilizar CygnusCloud son dos:
+\end_layout
+
+\begin_layout Itemize
+Servidores.
+ Los requisitos dependen del tipo de servidor:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Intel Core 2 Duo con 2GB de RAM para los servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+Intel Pentium 4 a 2,14 GHz y 1 GB de RAM para el resto de servidores.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Ancho de banda.
+ Es necesario una red con una tasa de al menos 100 Mb/s
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Qué hace falta para utilizar CygnusCloud?
+\end_layout
+
+\begin_layout Standard
+De cara a los usuarios:
+\end_layout
+
+\begin_layout Itemize
+Pueden utilizar un equipo con al menos una CPU intel Pentium 4 a 2,4 GHz
+ y 1 GB RAM.
+\end_layout
+
+\begin_layout Itemize
+Pueden tener cualquier sistema operativo instalado.
+\end_layout
+
+\begin_layout Itemize
+Es posible instalar cualquier sistema operativo soportado por KVM en las
+ máquinas virtuales.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Cuánto cuesta implantar CygnusCloud?
+\end_layout
+
+\begin_layout Standard
+CygnusCloud es software libre y gratuito, y está construido sobre software
+ libre y gratuito.
+\end_layout
+
+\begin_layout Standard
+Para implantarlo solo es necesario asumir los costes de:
+\end_layout
+
+\begin_layout Itemize
+Los servidores
+\end_layout
+
+\begin_layout Itemize
+El equipo de red
+\end_layout
+
+\begin_layout Itemize
+El consumo eléctrico
+\end_layout
+
+\begin_layout Itemize
+Las licencias 
+\shape italic
+Windows Virtual Desktop Access
+\shape default
+, en caso de querer ofrecer máquinas virtuales con el sistema operativo
+ windows instalado.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Como funciona CygnusCloud? : Servidores
+\end_layout
+
+\begin_layout Standard
+CygnusCloud se estructura en 3 tipos de servidores diferentes:
+\end_layout
+
+\begin_layout Itemize
+Los servidores de máquinas virtuales: Estos servidores se encargan de alojar
+ las diferentes máquinas virtuales ejecutadas por los usuarios.
+\end_layout
+
+\begin_layout Itemize
+Los servidores de cluster: Estos servidores se encargan de gestionar un
+ grupo de servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+El servidor web: Este servidor mantiene la web de CygnusCloud, la cual es
+ utilizada como punto de acceso al sistema por parte de los usuarios.
+\end_layout
+
+\begin_layout Standard
+Cada servidor puede funcionar de forma independiente y se pretende que su
+ interacción sea lo mínimo posible para poder aprovechar el máximo ancho
+ de banda en la ejecución de las máquinas virtuales.
+\end_layout
+
+\begin_layout EndFrame
+
 \end_layout
 
 \end_body
