@@ -399,5 +399,122 @@ Cada servidor puede funcionar de forma independiente y se pretende que su
 
 \end_layout
 
+\begin_layout BeginFrame
+¿Como funciona CygnusCloud? : Los servidores de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+Los servidores de máquinas virtuales se encargan de la gestión de todo los
+ relacionado con las máquinas virtuales que van a ejecutar los usuarios.
+ Sus principales funcionalidades son:
+\end_layout
+
+\begin_layout Itemize
+La creación y destrucción de máquinas virtuales por petición explícita de
+ los usuarios
+\end_layout
+
+\begin_layout Itemize
+La identificación de los propietarios de todas las máquinas virtuales activas.
+\end_layout
+
+\begin_layout Itemize
+La configuración de una red virtual interna en modo NAT.
+\end_layout
+
+\begin_layout Itemize
+La configuración del servidor VNC y de los websockets que usarán los usuarios
+ para comunicarse con sus máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+La asignación, liberación y monitorización continua del uso de todos los
+ recursos asignados a las máquinas virtuales.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Como funciona CygnusCloud? : Los servidores de cluster
+\end_layout
+
+\begin_layout Standard
+Los servidores de máquinas virtuales se agrupan en clusters, y cada cluster
+ tiene una máquina que se usará para gestionar sus servidores de máquinas
+ virtuales: el servidor de cluster
+\end_layout
+
+\begin_layout Standard
+Las principales funcionalidades que aportan los servidores de cluster son:
+\end_layout
+
+\begin_layout Itemize
+Añadir, eliminar, arrancar, parar y editar los parámetros generales de cada
+ servidor de máquinas virtuales del cluster.
+\end_layout
+
+\begin_layout Itemize
+Arrancar y detener máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+Crear nuevas imágenes o editar las imágenes ya existentes
+\end_layout
+
+\begin_layout Itemize
+Recopilar el estado de los servidores de máquinas virtuales, y usarlo para
+ hacer el balanceado de carga entre ellos
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Como funciona CygnusCloud? : El servidor web
+\end_layout
+
+\begin_layout Standard
+El servidor web es el encargado de 
+\begin_inset Quotes eld
+\end_inset
+
+hospedar
+\begin_inset Quotes erd
+\end_inset
+
+ la página web de CygnusCloud, la cual será el punto de acceso de todos
+ los usuarios.
+ Por ello es necesario que su diseño sea rápido y agradable.
+\end_layout
+
+\begin_layout Standard
+Las principales funcionalidades a las que pueden acceder los usuarios a
+ partir del servidor web son:
+\end_layout
+
+\begin_layout Itemize
+Gestión de las asignaturas, usuarios y servidores de máquinas virtuales
+ por parte de los administradores.
+\end_layout
+
+\begin_layout Itemize
+Arranque y detención de máquinas virtuales por parte de cualquier usuario.
+\end_layout
+
+\begin_layout Itemize
+Creación y modificación de máquinas virtuales por parte de los profesores.
+\end_layout
+
+\begin_layout Itemize
+Entorno de trabajo para las máquinas virtuales ejecutadas.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
 \end_body
 \end_document
