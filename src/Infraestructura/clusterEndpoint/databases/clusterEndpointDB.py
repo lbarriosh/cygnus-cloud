@@ -73,7 +73,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             retrievedData.append(d)
         return retrievedData 
     
-    def getActiveVMsData(self, ownerID):
+    def getActiveVMsData(self, ownerID, show_edited):
         """
         Devuelve los datos de las máquinas virtuales activas
         Argumentos:
@@ -82,10 +82,20 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         Devuelve: 
             una lista de diccionarios. Cada uno contiene los datos de una máquina
         """
-        if (ownerID == None) :
-            command = "SELECT * FROM ActiveVirtualMachines;"
+        if (ownerID == None):            
+            if (show_edited) :
+                modifier = ""
+            else :
+                modifier = "NOT"
+            command = "SELECT * FROM ActiveVirtualMachines ActVMs WHERE {0} EXISTS \
+                    (SELECT * FROM EditedImage WHERE ActVMs.domainUID = EditedImage.temporaryID);".format(modifier)
         else :
-            command = "SELECT * FROM ActiveVirtualMachines WHERE ownerID = {0};".format(ownerID)
+            if (show_edited) :
+                modifier = ""
+            else :
+                modifier = "NOT"
+            command = "SELECT * FROM ActiveVirtualMachines ActVMs WHERE ownerID = {0} AND {1} EXISTS \
+                    (SELECT * FROM EditedImage WHERE ActVMs.domainUID = EditedImage.temporaryID);".format(ownerID, modifier)
             
         results = self._executeQuery(command, False)
         if (results == None) :

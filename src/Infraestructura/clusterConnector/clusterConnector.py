@@ -48,19 +48,21 @@ class ClusterConnector(object):
         """
         pass
         
-    def getActiveVMsData(self, showAllVMs=False):
+    def getActiveVMsData(self, showAllVMs=False, showEditionVMs=False):
         """
         Devuelve los datos de las máquinas virtuales activas
         Argumentos:
             showAllVMs: si es True, se muestran los datos de todas las máquinas activas; si es False, sólo
             las del usuario registrado en el conector
+            showEditionVMs: indica si se deben devolver las máquinas virtuales activas correspondientes 
+            a las imágenes en edición o el resto de máquinas virtuales activas.
         Devuelve: una lista de diccionarios con los datos de las máquinas virtuales activas
         """
         if not showAllVMs :
             userID = self.__userID
         else :
             userID = None
-        return self.__endpointDBConnector.getActiveVMsData(userID)
+        return self.__endpointDBConnector.getActiveVMsData(userID, showEditionVMs)
     
     def getVMDistributionData(self):
         """
