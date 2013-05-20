@@ -253,6 +253,7 @@
 'Idiomas:': 'Langiages:',
 'import': 'importar',
 'Import/Export': 'Importar/Exportar',
+'Imágenes base disponibles:': 'Imágenes base disponibles:',
 'includes': 'incluye',
 'Index': 'Indice',
 'Información del servidor': 'Información del servidor',

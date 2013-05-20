@@ -5,6 +5,8 @@ from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 @auth.requires_membership('Administrator')
 def runVM():
     createAdressBar()
+    #Establecemos la conexión con el servidor 
+    connector = conectToServer()
     if(request.args(0) == 'run'):
         #Creamos el formulario de busqueda
         form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Asignatura: '),BR(),INPUT(_name = 'name')),
@@ -25,17 +27,15 @@ def runVM():
         j = 0
         for l in listSubjects:
             i = 0
-            for vm in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2]) \
-           & (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
-                descInfo = userDB((userDB.VMByGroup.cod == l[0]) & \
-                (userDB.VMByGroup.curseGroup == l[2]) & \
-                (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.VMId,userDB.Images.description)
-                table.append(TR(\
-                TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId ,_id = "c"+str(j))),\
-                TD(LABEL(str(l[0]) + '-' + l[1]),_class='izquierda'),
-                TD(LABEL(l[2].upper())),
-                TD(LABEL(vm.name)),\
-                TD(DIV(P(descInfo[i].description),CENTER(INPUT(_type='submit',_name = 'run',  _value = T('Arrancar'),_class="button button-blue")),_id = str(j)),_class='izquierda')))
+            subjectName = userDB(userDB.Subjects.code == l[0]).select(userDB.Subjects.name)[0].name
+            for s in userDB((userDB.VMByGroup.cod == l[0]) & (userDB.VMByGroup.curseGroup == l[2])).select(userDB.VMByGroup.VMId):
+                imageInfo = connector.getBootableImagesData([s.VMId])
+                if len(imageInfo) != 0:
+                    table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = s.VMId,_id = "c"+str(j) )),
+                    TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda')
+                    ,TD(LABEL(l[2])),TD(DIV(P(imageInfo[0]["ImageDescription"]),
+                    CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar')))
+                    ,_id = str(j)),_class='izquierda')))
                 i = i + 1
                 j = j + 1
         
@@ -71,8 +71,6 @@ def runVM():
         #Actuamos frente al arranque
         if(form2.accepts(request.vars)) and (form2.vars.run):
                if(form2.vars.selection != ""):
-                    #Establecemos la conexión con el servidor 
-                    connector = conectToServer()
                     #Mandamos la ejecución del cliente noVNC
                     commandId = connector.bootUpVM(form2.vars.selection)
                     #Esperamos la contestacion
@@ -121,10 +119,11 @@ def runVM():
             print vmListAux
             #Inicializamos la lista de asignaturas
             vmList = [] 
+            
             #Ejecutamos la busqueda
             for vm in vmListAux:
                 #Extraemos el nombre de la máquina
-                vmName = userDB(userDB.Images.VMId == vm['VMID']).select(userDB.Images.name)
+                vmName = connector.getBootableImagesData([vm['VMID']])[0]["ImageName"]
                 #Extraemos el nombre de usuario
                 userName = userDB(userDB.auth_user.id == vm['UserID']).select(userDB.auth_user.email)
                 #Comprobamos si añadimos este elemento a la lista resultado
@@ -590,12 +589,6 @@ def createSubjectTable(listSubjects):
     pass
     return table
     
-def selectRadioButton(): 
-    #Extraemos la descripcion actual
-    descriptionAct = userDB((userDB.VMByGroup.cod == eval(request.vars.selection)[0]) & \
-         (userDB.VMByGroup.curseGroup == eval(request.vars.selection)[1]) & \
-        (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.description)[eval(request.vars.selection)[2]].description
-    return descriptionAct
     
 def conectToServer():
     #Establecemos la conexión con el servidor principal

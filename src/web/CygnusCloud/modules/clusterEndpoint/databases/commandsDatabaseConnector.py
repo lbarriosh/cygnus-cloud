@@ -68,15 +68,15 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         userID = int(result[0])
         update = "DELETE FROM QueuedCommand WHERE userID = {0} AND TIME = {1};".format(userID, result[1])
         self._executeUpdate(update)
-        commandArgs = self.getCommandData((userID, result[1]))
-        return ((userID, result[1]), int(commandArgs[0]), commandArgs[1])
+        commandData = self.getCommandData((userID, result[1]))
+        return ((userID, result[1]), int(commandData["CommandType"]), commandData["CommandArgs"])
     
     def getCommandData(self, commandID):
         query = "SELECT commandType, commandArgs FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         result = self._executeQuery(query, True)     
-        return {"CommandType": result[0], "CommandArgs":result[1]}   
+        return {"CommandType": result[0], "CommandArgs": result[1]}   
     
-    def addCommandOutput(self, commandID, outputType, commandOutput, force = False, isNotification = False):
+    def addCommandOutput(self, commandID, outputType, commandOutput, isNotification = False):
         """
         Registers a command's output
         Args:
@@ -86,18 +86,11 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         Returns:
             Nothing
         """
-        if (not force) :
-            query = "SELECT * FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
-            result = self._executeQuery(query, True)
-        
-            if (result == None) :
-                # Nos hemos cargado el comando por timeout => descartamos la salida que haya
-                return
         if (isNotification) :
             flag = 1
         else :
             flag = 0
-        update = "INSERT INTO RunCommandOutput VALUES ({0}, {1}, {2}, '{3}', {4});".format(commandID[0], commandID[1], outputType, commandOutput, flag)
+        update = "REPLACE RunCommandOutput VALUES ({0}, {1}, {2}, '{3}', {4});".format(commandID[0], commandID[1], outputType, commandOutput, flag)
         self._executeUpdate(update)
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)
@@ -145,7 +138,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         
         query = "SELECT outputType, commandOutput FROM RunCommandOutput WHERE userID = {0} AND isNotification = 1 AND time <= {1};"\
             .format(userID, max_time)
-        results = self._executeQuery(query, False)     
+        results = self._executeQuery(query, False)
            
         update = "DELETE FROM RunCommandOutput WHERE userID = {0} AND isNotification = 1 AND time <= {1};".format(userID, max_time)
         self._executeUpdate(update)

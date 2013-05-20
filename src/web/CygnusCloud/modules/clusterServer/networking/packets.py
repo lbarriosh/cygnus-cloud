@@ -16,7 +16,7 @@ CLUSTER_SERVER_PACKET_T = enum("REGISTER_VM_SERVER", "VM_SERVER_REGISTRATION_ERR
                             "VM_SERVER_CONFIGURATION_CHANGE", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
                             "GET_IMAGE", "SET_IMAGE", "QUERY_REPOSITORY_STATUS", "REPOSITORY_STATUS",
                             "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR", "IMAGE_DEPLOYED", "DELETE_IMAGE_FROM_SERVER", "DELETE_IMAGE_FROM_SERVER_ERROR",
-                            "IMAGE_DELETED", "CREATE_IMAGE", "IMAGE_CREATION_ERROR", "EDIT_IMAGE", "IMAGE_EDITION_ERROR",
+                            "IMAGE_DELETED", "CREATE_IMAGE", "IMAGE_CREATION_ERROR", "IMAGE_CREATED", "EDIT_IMAGE", "IMAGE_EDITION_ERROR",
                             "DELETE_IMAGE_FROM_INFRASTRUCTURE", "DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR", "AUTO_DEPLOY", "AUTO_DEPLOY_ERROR",
                             "VM_SERVER_INTERNAL_ERROR", "QUERY_VM_SERVERS_RESOURCE_USAGE", "VM_SERVERS_RESOURCE_USAGE")
 
@@ -81,7 +81,14 @@ class ClusterServerPacketHandler(object):
         p = self.__packetCreator.createPacket(3)
         p.writeInt(CLUSTER_SERVER_PACKET_T.COMMAND_EXECUTED)
         p.writeString(commandID)
-        return p    
+        return p  
+    
+    def createImageEditedPacket(self, commandID, imageID):  
+        p = self.__packetCreator.createPacket(3)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.IMAGE_CREATED)
+        p.writeString(commandID)
+        p.writeInt(imageID)
+        return p  
     
     def createDataRequestPacket(self, query):
         """
@@ -429,8 +436,9 @@ class ClusterServerPacketHandler(object):
             result["Instances"] = p.readInt()
             result["CommandID"] = p.readString()
             
-        elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_INTERNAL_ERROR):
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_CREATED):
             result["CommandID"] = p.readString()
+            result["ImageID"] = p.readInt()
             
         elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_REGISTRATION_ERROR or 
               packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_BOOTUP_ERROR or 
@@ -444,7 +452,8 @@ class ClusterServerPacketHandler(object):
               packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_CREATION_ERROR or
               packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_EDITION_ERROR or
               packet_type == CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR or
-              packet_type == CLUSTER_SERVER_PACKET_T.AUTO_DEPLOY_ERROR) :
+              packet_type == CLUSTER_SERVER_PACKET_T.AUTO_DEPLOY_ERROR or
+              packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_INTERNAL_ERROR) :
             result["ErrorDescription"] = p.readInt()        
             result["CommandID"] = p.readString()                       
         return result

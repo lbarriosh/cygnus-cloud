@@ -1,4 +1,5 @@
 # -*- coding: UTF8 -*-
+from editionState_t import EDITION_STATE_T
 '''
 Lector de la base de datos de estado
 
@@ -229,18 +230,23 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             self.__activeVMSegmentsData[vmServerIP] += data
             self.__activeVMSegments[vmServerIP] += 1
         if (self.__activeVMSegments[vmServerIP] == segmentCount) :
+            # Sacar los IDs de las imágenes en edición            
+            
             receivedData = ClusterEndpointDBConnector.__getActiveVMsDictionary(self.__activeVMSegmentsData[vmServerIP])
             registeredIDs = self.__getActiveVMIDs()
             
+            
             # Quitar las filas que haga falta
             if (registeredIDs != None) :
-                for ID in registeredIDs :
+                for ID in registeredIDs :                    
                     if not (receivedData.has_key(ID)) :
+                        domainUID = self.__getDomainUID(ID[0], ID[1], ID[2])
                         self.__deleteActiveVM(ID)
+                        self.updateEditedImageStatus(domainUID, EDITION_STATE_T.TRANSFER_TO_REPOSITORY, EDITION_STATE_T.VM_ON)
                         
             # Realizar las actualizaciones y preparar las inserciones
             inserts = []
-            for ID in receivedData.keys() :
+            for ID in receivedData.keys() :             
                 if (registeredIDs != None and not (ID in registeredIDs)) :
                     inserts.append(receivedData[ID])
                     
@@ -333,7 +339,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         update = "DELETE FROM ActiveVirtualMachines WHERE serverName = '{0}';".format(serverID)
         self._executeUpdate(update)
         update = "DELETE FROM VirtualMachineServer WHERE serverName = '{0}'".format(serverID)
-        self._executeUpdate(update)        
+        self._executeUpdate(update)                
             
     def __getActiveVMIDs(self):
         """
@@ -436,42 +442,45 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         
         if (isinstance(imageID, int)) :
             query = "SELECT name, description, vanillaImageFamilyID,\
-                osFamily, osVariant, isBaseImage, bootable, edited,\
-                ownerID FROM Image WHERE imageID = {0}".format(imageID)
+                osFamily, osVariant, isBaseImage, isBootable, imageID FROM Image WHERE imageID = {0}".format(imageID)
             result = self._executeQuery(query, True)
-            if (result == None) : return None
+            if (result == None) : 
+                query = "SELECT name, description, vanillaImageFamilyID,\
+                osFamily, osVariant, isBaseImage, imageID FROM EditedImage WHERE imageID = {0}".format(imageID)
+                result = self._executeQuery(query, True)
+                if (result == None) :
+                    return None
             d = dict()
             d["ImageName"] = str(result[0])
             d["ImageDescription"] = str(result[1])
-            d["AssignedToSubject"] = True
-            d["VanillaImageFamilyID"] = result[2]
-            d["OSFamily"] = result[3]
-            d["OSVariant"] = result[4]
+            d["VanillaImageFamilyID"] = int(result[2])
+            d["OSFamily"] = int(result[3])
+            d["OSVariant"] = int(result[4])
             d["IsBaseImage"] = result[5] == 1
             d["IsBootable"] = result[6] == 1
-            d["IsEdited"] = result[7] == 1
-            d["OwnerID"] = result[8]
+            d["State"] = EDITION_STATE_T.NOT_EDITED
+            d["ImageID"] = int(result[7])
         else :
             query = "SELECT name, description, vanillaImageFamilyID,\
-                osFamily, osVariant, ownerID FROM NewImage WHERE temporaryID = '{0}'".format(imageID)
+                osFamily, osVariant, ownerID, imageID, state FROM EditedImage WHERE temporaryID = '{0}'".format(imageID)
             result = self._executeQuery(query, True)
             d = dict()
             d["ImageName"] = str(result[0])
             d["ImageDescription"] = str(result[1])
-            d["AssignedToSubject"] = False
-            d["VanillaImageFamilyID"] = result[2]
-            d["OSFamily"] = result[3]
-            d["OSVariant"] = result[4]
+            d["VanillaImageFamilyID"] = int(result[2])
+            d["OSFamily"] = int(result[3])
+            d["OSVariant"] = int(result[4])
             d["IsBaseImage"] = False
             d["IsBootable"] = False
-            d["IsEdited"] = True
-            d["OwnerID"] = result[5]
+            d["State"] = int(result[7])
+            d["OwnerID"] = int(result[5])
+            d["ImageID"] = int(result[6])
         
         return d       
         
     def getBootableImagesData(self, imageIDs):
         query = "SELECT imageID, name, description, vanillaImageFamilyID,\
-                osFamily, osVariant FROM Image WHERE bootable = 1"
+                osFamily, osVariant FROM Image WHERE isBootable = 0"
         if (imageIDs != []) :
             query += " AND ("
             i = 0
@@ -504,18 +513,12 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
                 rows.append({"ImageID": row[0], "ImageName" : str(row[1]), "ImageDescription" : str(row[2]),
                              "VanillaImageFamilyID" : row[3], "OSFamily" : row[4], "OSVariant" : row[5]})
             return rows
-        
-    def getEditedImageIDs(self, userID):
-        query = "SELECT imageID FROM Image WHERE edited = 1 AND ownerID = {0};".format(userID)
-        result = self._executeQuery(query, False)
-        rows = []
-        if (result != None) :
-            for row in result :
-                rows.append(row)
-        return rows
-    
-    def getNewImageIDs(self, userID):
-        query = "SELECT temporaryID FROM NewImage WHERE ownerID = {0};".format(userID)
+            
+    def getEditedImageIDs(self, userID=None):
+        if (userID != None) :
+            query = "SELECT temporaryID FROM EditedImage WHERE ownerID = {0};".format(userID)
+        else :
+            query = "SELECT temporaryID FROM EditedImage;"
         result = self._executeQuery(query, False)
         rows = []
         if (result != None) :
@@ -526,9 +529,14 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
     def getVanillaImageFamilyID(self, imageID):
         if (isinstance(imageID, int)) :
             query = "SELECT vanillaImageFamilyID FROM Image WHERE imageID = {0}".format(imageID)
+            result = self._executeQuery(query, True)
+            if (result == None) :
+                query = "SELECT vanillaImageFamilyID FROM EditedImage WHERE imageID = {0}".format(imageID)
+                result = self._executeQuery(query, True)
+            return result
         else :
-            query = "SELECT vanillaImageFamilyID FROM NewImage WHERE temporaryID = '{0}'".format(imageID)
-        return self._executeQuery(query, True)
+            query = "SELECT vanillaImageFamilyID FROM EditedImage WHERE temporaryID = '{0}'".format(imageID)
+            return self._executeQuery(query, True)
     
     def getVanillaImageFamilyData(self, vanillaImageFamilyID):
         query = "SELECT familyName, ramSize, vCPUs, osDiskSize, dataDiskSize FROM VanillaImageFamily WHERE familyID = {0}".format(vanillaImageFamilyID)
@@ -613,3 +621,54 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             d["VariantName"] = row[1]
             retrievedData.append(d)
         return retrievedData    
+    
+    def addNewImage(self, temporaryID, baseImageID, ownerID, imageName, imageDescription):
+        # Sacar los datos de la imagen base
+        baseImageData = self.getImageData(baseImageID)
+        update = "INSERT INTO EditedImage VALUES('{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, {7}, {8});"\
+            .format(temporaryID, baseImageData["VanillaImageFamilyID"], -1, imageName, imageDescription,
+                    baseImageData["OSFamily"], baseImageData["OSVariant"], ownerID, EDITION_STATE_T.DEPLOYMENT)
+        self._executeUpdate(update)
+        
+    def editImage(self, commandID, imageID, ownerID):
+        query = "SELECT * from EditedImage WHERE imageID = {0};".format(imageID)
+        if (self._executeQuery(query, True) != None) :
+            update = "UPDATE EditedImage SET temporaryID = '{0}', state = {2} WHERE imageID = {1};".format(commandID, imageID, EDITION_STATE_T.DEPLOYMENT)
+            self._executeUpdate(update)
+        else :
+            imageData = self.getImageData(imageID)
+            update = "DELETE FROM Image WHERE imageID = {0};".format(imageID)
+            self._executeUpdate(update)
+            update = "INSERT INTO EditedImage VALUES('{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, {7}, {8});"\
+                .format(commandID, imageData["VanillaImageFamilyID"], imageID, imageData["ImageName"], imageData["ImageDescription"],
+                        imageData["OSFamily"], imageData["OSVariant"], ownerID, EDITION_STATE_T.DEPLOYMENT)
+            self._executeUpdate(update)
+        
+    def deleteEditedImage(self, temporaryID):
+        update = "DELETE FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
+        self._executeUpdate(update)
+        
+    def updateEditedImageStatus(self, temporaryID, newStatus, expectedStatus=None):
+        if (expectedStatus != None) : 
+            query = "SELECT state FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
+            if (self._executeQuery(query, True) != expectedStatus) :
+                return
+        update = "UPDATE EditedImage SET state = {1} WHERE temporaryID = '{0}';".format(temporaryID, newStatus)
+        self._executeUpdate(update)
+        
+    def registerImageID(self, temporaryID, imageID):
+        update = "UPDATE EditedImage SET imageID = {1}, state = {2} WHERE temporaryID = '{0}';".format(temporaryID, imageID, EDITION_STATE_T.CHANGES_NOT_APPLIED)
+        self._executeUpdate(update)
+        
+    def makeBootable(self, imageID):
+        update = "UPDATE Image SET isBootable = 1 WHERE imageID = {0};".format(imageID)
+        self._executeUpdate(update)
+        
+    def __getDomainUID(self, serverName, ownerID, imageID):
+        query = "SELECT domainUID FROM ActiveVirtualMachines WHERE serverName = '{0}' AND ownerID = {1} AND imageID = {2};"\
+            .format(serverName, ownerID, imageID)
+        return self._executeQuery(query, True)
+        
+    def unregisterDomain(self, domainUID):
+        update = "DELETE FROM ActiveVirtualMachines WHERE domainUID = '{0}';".format(domainUID)
+        self._executeUpdate(update)

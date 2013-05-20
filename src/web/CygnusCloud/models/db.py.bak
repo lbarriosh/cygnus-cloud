@@ -66,6 +66,6 @@ userDB.define_table('osPictures',
    
 userDB.define_table('pictureByOSId',
    Field('osId','integer'),
-   Field('varianId','integer'),
+   Field('variantId','integer'),
    Field('pictureId','integer','reference osPictures'),
-   primarykey=['cod','curseGroup','VMId'],migrate= True)
+   primarykey=['osId','variantId'],migrate= True)

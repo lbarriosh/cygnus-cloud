@@ -13,12 +13,12 @@ def runVM():
     j = 0
     [readyTable,j] = createReadyTable(j)
     #TODO: Descomentar cuando proceda
-    [editingTable,waitingTable] = createDisabledTables()
+    editingTable = createDisabledTables()
     #Creamos el formulario
     form = FORM(HR(),_target='_blank')
     form.append(DIV(H2("Máquinas disponibles"),H4(readyTable),BR()))
     form.append(DIV(H2("Máquinas en edicion"),H4(editingTable),BR()))
-    form.append(DIV(H2("Máquinas no registradas"),H4(waitingTable),BR()))
+    #form.append(DIV(H2("Máquinas no registradas"),H4(waitingTable),BR()))
     i = 0
     divMaquinas = DIV(_id='maquinas')   
     
@@ -53,11 +53,11 @@ def stopVM():
         #Creamos la tabla con los resultados   
         if(vm['UserID'] == auth.user_id):
             #Extramos el nombre de la máquina y su descripcion
-            vminfo = userDB(userDB.Images.VMId == vm['VMID']).select(userDB.Images.name,userDB.Images.description)
+            vminfo =  connector.getBootableImagesData([vm['VMID']])
             table.append(TR(\
             TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
-            TD(LABEL(vminfo[0].name)),
-            TD(DIV(P(vminfo[0].description,_class='izquierda'),_id= 'd' + str(j))),
+            TD(LABEL(vminfo[0]["ImageName"])),
+            TD(DIV(P(vminfo[0]["ImageDescription"],_class='izquierda'),_id= 'd' + str(j))),
             TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = str(j)))))
             j = j + 1
 
@@ -124,7 +124,7 @@ def createVanillaVM():
     
     form = FORM(DIV( T('Nombre: '),BR(),INPUT(_name = 'newVMName')),BR(),
                 DIV( T('Descripcion: '),BR(),TEXTAREA(_name = 'description')),BR(),
-                LABEL(H2(T('Máquinas vanila disponibles:'))),
+                LABEL(H2(T('Imágenes base disponibles:'))),
                 DIV(H3(T("Seleccione el Sistema operativo")),BR(),osFamily,osFamilyVariant),BR(),
                 CENTER(table),BR(),
                 CENTER(INPUT(_type='submit',_name = 'createVM',  _value = T('Crear máquina virtual')
@@ -133,6 +133,7 @@ def createVanillaVM():
     return dict(form = form,progressBarStyle=progressBarStyle,num = num,num2 = j)
           
 def editVM():
+    createAdressBar()
     #Creamos fromulario para asociar las máquinas en espera
     #TODO: Cambiar por waiting
     connector = conectToServer()
@@ -149,9 +150,8 @@ def editVM():
     for s in subjects:
         subjectsSelect.append(OPTION(str(s.UserGroup.cod) + " " + s.Subjects.name + "- Grupo: " + s.UserGroup.curseGroup ,_value = s.UserGroup.cod))
          
-    form = FORM(H2(T('Etiquetar máquinas virtuales')),DIV(LABEL("Nombre :"),waitingSelect),
-        DIV(LABEL("Grupo de asignatura :"),subjectsSelect),
-        CENTER(INPUT(_type='submit',_name = 'asociateSubject',  _value = T('Asociar asignatura')
+    form = FORM(H2(T('Etiquetar máquinas virtuales')),TABLE(TR(TH("Nombre",_class='izquierda'),TH("Grupo de asignatura",_class='izquierda'),_style="margin:0;")
+       ,TR(waitingSelect,subjectsSelect)),CENTER(INPUT(_type='submit',_name = 'asociateSubject',  _value = T('Asociar asignatura')
         ,_class="button button-blue",_style="width:180px;")))
     return dict(form=form)
             
@@ -162,6 +162,7 @@ def createAdressBar():
                    [T('Crear nueva máquina'),False,URL('createVanillaVM')],[T('Editar máquina'),False,URL('editVM')]]
     
 def createReadyTable(j):
+    connector = conectToServer()
     listSubjects = userDB((userDB.UserGroup.userId == auth.user['email'])).select(userDB.UserGroup.cod,userDB.UserGroup.curseGroup)
     table = TABLE(_class='data', _name='table')
     table.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
@@ -170,14 +171,12 @@ def createReadyTable(j):
     for s in listSubjects:
         i = 0
         subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
-        for l in userDB((userDB.VMByGroup.cod == s.cod) & (userDB.VMByGroup.curseGroup == s.curseGroup) & \
-            (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
-            descInfo = userDB((userDB.VMByGroup.cod == s.cod) & \
-                 (userDB.VMByGroup.curseGroup == s.curseGroup) & \
-                 (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.VMId,userDB.Images.description)
-            
-            table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId,_id = "c"+str(i + j)
-                )),TD(LABEL(l.name),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda'),TD(LABEL(s.curseGroup)),TD(DIV(P(descInfo[i].description),
+        for l in userDB((userDB.VMByGroup.cod == s.cod) & (userDB.VMByGroup.curseGroup == s.curseGroup)).select(userDB.VMByGroup.VMId):
+            imageInfo = connector.getBootableImagesData([l.VMId])
+            if len(imageInfo) != 0:
+                table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = l.VMId,_id = "c"+str(i + j)            )),
+                TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda')
+                ,TD(LABEL(s.curseGroup)),TD(DIV(P(imageInfo[0]["ImageDescription"]),
                 CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar')))
                 ,_id = str(i + j)),_class='izquierda')))
             i = i + 1
@@ -188,26 +187,33 @@ def createReadyTable(j):
     
 def createDisabledTables():
     connector = conectToServer()
-    editingImages = connector.getEditedImageIDs(auth.user_id)
+    editingImageIds = connector.getEditedImageIDs(auth.user_id)
     editingTable = TABLE(_class='data', _name='table')
     editingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
             TH("Grupo")))
-    for image in editingImages:
+    print editingImageIds
+    for image in editingImageIds:
         imageInfo = connector.getImageData(image)
-        subjectsInfo = userDB((userDB.VMByGroup.VMId == image)).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)
-        for s in subjectsInfo:
-            subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
-            editingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = image,_disabled="disabled" )),
-                         TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda'),TD(LABEL(s.curseGroup)),
-                         _class='notAvaible'))
+        subjectsInfo = userDB((userDB.VMByGroup.VMId == imageInfo["ImageID"])).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)
+        if len(subjectsInfo) == 0 :
+            editingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = imageInfo["ImageID"],_disabled="disabled" )),
+                             TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),
+                             _class='notAvaible'))
+        else:
+            for s in subjectsInfo:
+                subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
+                editingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = imageInfo["ImageID"],_disabled="disabled" )),
+                             TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda'),TD(LABEL(s.curseGroup)),
+                             _class='notAvaible'))
 
-
-    waitingImages = connector.getNewImageIDs(auth.user_id)
+    """
+    waitingImages = connector.getEditedImageIDs(auth.user_id)
     waitingTable  = TABLE(_class='data', _name='table')
     waitingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
             TH("Grupo"))) 
+            
     #TODO: cambiar por waiting                                                
-    for image in editingImages:
+    for image in waitingImages:
            print image
            imageInfo = connector.getImageData(image)
            subjectsInfo = userDB((userDB.VMByGroup.VMId == image)).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)
@@ -217,8 +223,8 @@ def createDisabledTables():
                waitingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = image,_disabled="disabled" )),
                   TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(""),_class='izquierda'),TD(LABEL("")),
                   _class='notAvaible')) 
-
-    return (editingTable,waitingTable)
+    """
+    return editingTable
 
                           
             
@@ -239,7 +245,7 @@ def createVanillaImageTable(ramSize,cpuNumber,osDiskSize,dataDiskSize,maxRam,max
        table.append(TR(TD(IMG(_src=URL('static','images/memoryIcon.png'), _alt="memoryIcon",_style="width:35px;"),_class='vanillaData')
            ,TD(LABEL("Memoria Ram"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pRam) + "%;"),_class="meter animate"),_class='vanillaData')
-           ,TD(LABEL(str("%.0f" %(ramSize/1024))+" Mb"),_class='vanillaData'),_class='vanillaData'))
+           ,TD(LABEL(str("%.0f" %(ramSize/1024))+" MB"),_class='vanillaData'),_class='vanillaData'))
        table.append(TR(TD(IMG(_src=URL('static','images/cpuIcon.png'), _alt="cpuIcon",_style="width:35px;"),_class='vanillaData')
            ,TD(LABEL("Número Cpus"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pCPUs) + "%;"),_class="meter animate red"),_class='vanillaData')
@@ -247,11 +253,11 @@ def createVanillaImageTable(ramSize,cpuNumber,osDiskSize,dataDiskSize,maxRam,max
        table.append(TR(TD(IMG(_src=URL('static','images/osDiskIcon.png'), _alt="memoryIcon",_style="width:30px;"),_class='vanillaData')
            ,TD(LABEL("Espacio disco"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pOsDisk) + "%;"),_class="meter animate blue"),_class='vanillaData')
-           ,TD(LABEL(str("%.0f" %(osDiskSize/1024))+" Mb")),_class='vanillaData'))
+           ,TD(LABEL(str("%.0f" %(osDiskSize/1024))+" MB")),_class='vanillaData'))
        table.append(TR(TD(IMG(_src=URL('static','images/dataDiskIcon.png'), _alt="memoryIcon",_style="width:30px;"),_class='vanillaData')
            ,TD(LABEL("Espacio datos"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pDataDisk) + "%;"),_class="meter animate orange"),_class='vanillaData')
-           ,TD(LABEL(str("%.0f" %(dataDiskSize/1024))+" Mb")),_class='vanillaData'))
+           ,TD(LABEL(str("%.0f" %(dataDiskSize/1024))+" MB")),_class='vanillaData'))
            
        return table
 

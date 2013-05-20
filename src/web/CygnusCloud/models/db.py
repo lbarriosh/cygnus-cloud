@@ -26,12 +26,6 @@ auth.define_tables(migrate = True)
 
 #userDB.auth_user.email.requires = IS_NOT_IN_DB(userDB, userDB.auth_user.email)
 
-userDB.define_table('Images',
-            Field('VMId','integer' ),
-            Field('name',length=20 ),
-            Field('description',length=500 ),
-            primarykey=['VMId'],migrate= True)
-
 
 userDB.define_table('ClassGroup',
    Field('yearGroup','integer', 'reference auth_user'),
@@ -54,7 +48,7 @@ userDB.define_table('Subjects',
 
 
 userDB.define_table('VMByGroup',
-   Field('VMId','integer','reference Images'),
+   Field('VMId','integer'),
    Field('cod','integer','reference UserGroup'),
    Field('curseGroup',length=1 ),
    primarykey=['cod','curseGroup','VMId'],migrate= True)

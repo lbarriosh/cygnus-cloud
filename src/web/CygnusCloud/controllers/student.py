@@ -9,8 +9,8 @@ def runVM():
     #actualizamos la barra
     createAdressBar()
     #Creamos el formulario
-    print request.vars.actualDescription
-    listSubjects = userDB((userDB.UserGroup.userId == auth.user['email'])).select(userDB.UserGroup.cod,userDB.UserGroup.curseGroup)
+    listSubjects = userDB((userDB.UserGroup.userId == auth.user['email']) & \
+     (userDB.Subjects.code == userDB.UserGroup.cod)).select(userDB.Subjects.name,userDB.UserGroup.cod,userDB.UserGroup.curseGroup)
     #Calculamos las tablas
     tables = []
     j = 0
@@ -22,7 +22,8 @@ def runVM():
     i = 0
     divMaquinas = DIV(_id='maquinas')
     for table in tables:     
-        form.append(DIV(H3(B(T(userDB(userDB.Subjects.code == listSubjects[i].cod).select(userDB.Subjects.name)[0].name))),BR(),H4(table),BR()))
+        form.append(DIV(H3(B(T(userDB(userDB.Subjects.code == listSubjects[i].UserGroup.cod)
+            .select(userDB.Subjects.name)[0].name))),BR(),H4(table),BR()))
         i = i + 1
     if(form.accepts(request.vars)) and (form.vars.run):
             if(form.vars.selection != ""):
@@ -54,11 +55,11 @@ def stopVM():
         #Creamos la tabla con los resultados   
         if(vm['UserID'] == auth.user_id):
             #Extramos el nombre de la máquina y su descripcion
-            vminfo = userDB(userDB.Images.VMId == vm['VMID']).select(userDB.Images.name,userDB.Images.description)
+            vminfo =  connector.getBootableImagesData([vm['VMID']])
             table.append(TR(\
             TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
-            TD(LABEL(vminfo[0].name)),
-            TD(DIV(P(vminfo[0].description,_class='izquierda'),_id= 'd' + str(j))),
+            TD(LABEL(vminfo[0]["ImageName"])),
+            TD(DIV(P(vminfo[0]["ImageDescription"],_class='izquierda'),_id= 'd' + str(j))),
             TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = str(j)))))
             j = j + 1
 
@@ -84,19 +85,20 @@ def createAdressBar():
     response.menu=[[T('Arrancar máquina'),False,URL('runVM')],[T('Detener máquina'),False,URL('stopVM')]]
     
 def createTable(subject,j):
+    connector = conectToServer()
     table = TABLE(_class='data', _name='table')
     table.append(TR(TH('Selección'),TH(T('Nombre')),TH('Descripcion',_class='izquierda')))
     i = 0
-    for l in userDB((userDB.VMByGroup.cod == subject.cod) & (userDB.VMByGroup.curseGroup == subject.curseGroup) & \
-        (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.name):
-        descInfo = userDB((userDB.VMByGroup.cod == subject.cod) & \
-             (userDB.VMByGroup.curseGroup == subject.curseGroup) & \
-             (userDB.Images.VMId == userDB.VMByGroup.VMId)).select(userDB.Images.VMId,userDB.Images.description)
-        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = descInfo[i].VMId,_id = "c"+str(i + j)
-        ),TD(LABEL(l.name),_class='izquierda'),TD(DIV(P(descInfo[i].description),CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar'))),_id = str(i + j)),_class='izquierda'))))
-        i = i + 1
-        
-    pass
+    for l in userDB((userDB.VMByGroup.cod == subject.UserGroup.cod) & (userDB.VMByGroup.curseGroup == subject.UserGroup.curseGroup)).select(userDB.VMByGroup.VMId):
+        imageInfo = connector.getBootableImagesData([l.VMId])
+        if len(imageInfo) != 0:
+                table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = l.VMId,_id = "c"+str(i + j))),
+                TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda'),TD(LABEL(subject.Subjects.name),_class='izquierda')
+                ,TD(LABEL(subject.UserGroup.curseGroup)),TD(DIV(P(imageInfo[0]["ImageDescription"]),
+                CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar')))
+                ,_id = str(i + j)),_class='izquierda')))
+        i = i + 1  
+    
     return [table,i + j]
     
 def conectToServer():
