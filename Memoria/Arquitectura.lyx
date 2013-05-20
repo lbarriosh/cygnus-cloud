@@ -288,7 +288,7 @@ software
 \end_layout
 
 \begin_layout Standard
-Además, dada la actual situación de crisis económica, 
+Por otra parte, dada la actual situación de crisis económica, 
 \emph on
 CygnusCloud
 \emph default
@@ -319,11 +319,12 @@ software
 \end_layout
 
 \begin_layout Standard
-Por otra parte, el sistema sólo podrá utilizarse con garantías cuando detecte
+Asimismo, el sistema sólo podrá utilizarse con garantías cuando detecte
  y trate un número suficiente de errores.
  Por ello, 
 \emph on
-el diseño debe contemplar y tratar el mayor número de errores posible
+el sistema debe ser robusto, de forma que pueda detectar y trate el mayor
+ número de errores posible
 \emph default
 .
 \end_layout
@@ -427,19 +428,37 @@ frameworks
 \end_layout
 
 \begin_layout Standard
+Asimismo, puesto que la red troncal de la Complutense utiliza la versión
+ 4 del protocolo IP (
+\emph on
+Internet Protocol
+\emph default
+), 
+\emph on
+CygnusCloud
+\emph default
+ debe operar en redes IP versión 4.
+ No obstante, dado que esta versión del protocolo IP ha quedado totalmente
+ obsoleta, hemos decidido facilitar, en la medida de lo posible, la transición
+ a la versión 6 del protocolo IP, de forma que sólo sea necesario introducir
+ pequeños cambios en el código del módulo de comunicaciones y ajustar las
+ longitudes de ciertos campos en los esquemas de las bases de datos.
+\end_layout
+
+\begin_layout Standard
 Finalmente, para reducir el tiempo de implementación de 
 \emph on
 CygnusCloud
 \emph default
- resulta imprescindible que todos los subsistemas compartan tanta funcionalidad
- como sea posible.
- De esta manera, todos ellos utilizan el mismo código para realizar, entre
+ resulta imprescindible que 
+\emph on
+todos los subsistemas compartan tanta funcionalidad como sea posible
+\emph default
+.
+ De esta manera, todos ellos utilizarán el mismo código para realizar, entre
  otras cosas, operaciones básicas sobre una base de datos y comunicaciones
  a través de una red.
-\end_layout
-
-\begin_layout Standard
-Pero esto sólo es posible si 
+ No obstante, esto sólo es posible si 
 \emph on
 todos los subsistemas se implementan utilizando el mismo lenguaje de programació
 n
@@ -1094,11 +1113,144 @@ Considerando nuestras necesidades, MariaDB y MySQL son totalmente equivalentes.
 \end_layout
 
 \begin_layout Subsection
+Uso del hipervisor KVM
+\end_layout
+
+\begin_layout Standard
+Las dos soluciones de virtualización libres y gratuitas que cuentan con
+ el mejor rendimiento son dos: Xen y KVM.
+ En la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Xen-vs-KVM"
+
+\end_inset
+
+ hicimos una comparativa de ambas y explicamos que, por contar con un rendimient
+o muy similar, mejor documentación y mejor soporte que Xen, optamos por
+ utilizar KVM.
+\end_layout
+
+\begin_layout Subsection
+Uso de la librería de virtualización 
+\emph on
+libvirt
+\emph default
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-de-libvirt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tal y como mencionamos en la sección
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Restricciones-arquitectura"
+
+\end_inset
+
+, cada distribución
+\emph on
+ Linux
+\emph default
+ tiene sus propios procedimientos de configuración.
+ Así, aunque utilicemos el mismo hipervisor, la forma de manipular las máquinas
+ y redes virtuales puede variar de unas distribuciones a otras.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, interactuar directamente con el hipervisor no es nada conveniente
+ ya que, para utilizar otro diferente, será necesario introducir muchas
+ modificaciones.
+ 
+\end_layout
+
+\begin_layout Standard
+Para resolver estos dos problemas, no manipulamos las máquinas y las redes
+ virtuales directamente: lo hacemos a través de la librería 
+\emph on
+libvirt
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+libvirt
+\emph default
+ es la librería de virtualización por excelencia.
+ Sus principales características son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+soporta muchos sistemas de virtualización, entre los que están Xen, KVM,
+ VirtualBox y VMWare.
+\end_layout
+
+\begin_layout Itemize
+aunque está escrita en C, dispone de 
+\emph on
+bindings
+\emph default
+ para muchos otros lenguajes, como Java o Python.
+\end_layout
+
+\begin_layout Itemize
+se distribuye bajo licencia LGPL, por lo que es posible utilizarla incluso
+ desde 
+\emph on
+software
+\emph default
+ privativo.
+\end_layout
+
+\begin_layout Itemize
+a través de ella, es posible crear y destruir redes virtuales, y también
+ crear, destruir y migrar (mover de servidor) máquinas virtuales en ejecución.
+\end_layout
+
+\begin_layout Standard
+Tras examinar las características de 
+\emph on
+libvirt
+\emph default
+ y evaluar nuestras necesidades, concluimos que esta librería nos proporcionaba
+ todas las funciones que necesitábamos para utilizar máquinas y redes virtuales
+ en 
+\emph on
+CygnusCloud
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, al inicio del proyecto no encontramos ninguna librería similar,
+ por lo que la única alternativa al uso de 
+\emph on
+libvirt
+\emph default
+ era interactuar directamente con el hipervisor.
+ Así pues, decidimos utilizar 
+\emph on
+libvirt
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
 Uso de 
 \emph on
 Python
 \emph default
- como principal lenguaje de programación
+ 2.7 como principal lenguaje de programación
 \end_layout
 
 \begin_layout Standard
@@ -1274,137 +1426,40 @@ CygnusCloud
 .
 \end_layout
 
-\begin_layout Subsection
-Uso del hipervisor KVM
-\end_layout
-
 \begin_layout Standard
-Las dos soluciones de virtualización libres y gratuitas que cuentan con
- el mejor rendimiento son dos: Xen y KVM.
- En la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Xen-vs-KVM"
-
-\end_inset
-
- hicimos una comparativa de ambas y explicamos que, por contar con un rendimient
-o muy similar, mejor documentación y mejor soporte que Xen, optamos por
- utilizar KVM.
-\end_layout
-
-\begin_layout Subsection
-Uso de la librería de virtualización 
+Por otra parte, en la actualidad existen dos familias de versiones de 
 \emph on
-libvirt
+Python
 \emph default
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Uso-de-libvirt"
-
-\end_inset
-
-
+: las derivadas de la versión 2.7 y las derivadas de la versión 3.0.
+ Ambas familias son incompatibles a nivel sintáctico, aunque es cierto que
+ los cambios que es necesario introducir para utilizar código de la familia
+ 2.7 en la familia 3.0 suelen ser triviales.
 \end_layout
 
 \begin_layout Standard
-Tal y como mencionamos en la sección
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Restricciones-arquitectura"
-
-\end_inset
-
-, cada distribución
+Ahora bien, la gran mayoría de librerías escritas en 
 \emph on
- Linux
+Python
 \emph default
- tiene sus propios procedimientos de configuración.
- Así, aunque utilicemos el mismo hipervisor, la forma de manipular las máquinas
- y redes virtuales puede variar de unas distribuciones a otras.
- 
-\end_layout
-
-\begin_layout Standard
-Además, interactuar directamente con el hipervisor no es nada conveniente
- ya que, para utilizar otro diferente, será necesario introducir muchas
- modificaciones.
- 
-\end_layout
-
-\begin_layout Standard
-Para resolver estos dos problemas, no manipulamos las máquinas y las redes
- virtuales directamente: lo hacemos a través de la librería 
-\emph on
-libvirt
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-
-\emph on
-libvirt
-\emph default
- es la librería de virtualización por excelencia.
- Sus principales características son las siguientes:
-\end_layout
-
-\begin_layout Itemize
-soporta muchos sistemas de virtualización, entre los que están Xen, KVM,
- VirtualBox y VMWare.
-\end_layout
-
-\begin_layout Itemize
-aunque está escrita en C, dispone de 
+, entre las que se encuentran los 
 \emph on
 bindings
 \emph default
- para muchos otros lenguajes, como Java o Python.
-\end_layout
-
-\begin_layout Itemize
-se distribuye bajo licencia LGPL, por lo que es posible utilizarla incluso
- desde 
-\emph on
-software
-\emph default
- privativo.
-\end_layout
-
-\begin_layout Itemize
-a través de ella, es posible crear y destruir redes virtuales, y también
- crear, destruir y migrar (mover de servidor) máquinas virtuales en ejecución.
+ de libvirt y los conectores de MySQL, no han hecho aún la transición a
+ la familia 3.0, por lo que no pueden utilizarse con estas versiones.
+ Por ello, no hemos tenido más remedio que utilizar la sintaxis de la familia
+ 2.7.
 \end_layout
 
 \begin_layout Standard
-Tras examinar las características de 
-\emph on
-libvirt
-\emph default
- y evaluar nuestras necesidades, concluimos que esta librería nos proporcionaba
- todas las funciones que necesitábamos para utilizar máquinas y redes virtuales
- en 
+No obstante, hemos procurado no hacer uso de ninguna de las características
+ de la familia 2.7 que ha desaparecido en la familia 3.0.
+ Así, la conversión del código de 
 \emph on
 CygnusCloud
 \emph default
-.
- 
-\end_layout
-
-\begin_layout Standard
-Por otra parte, al inicio del proyecto no encontramos ninguna librería similar,
- por lo que la única alternativa al uso de 
-\emph on
-libvirt
-\emph default
- era interactuar directamente con el hipervisor.
- Así pues, decidimos utilizar 
-\emph on
-libvirt
-\emph default
-.
+ a la familia 3.0 resultará bastante sencilla.
 \end_layout
 
 \begin_layout Subsection
@@ -1491,8 +1546,19 @@ se trata de una librería de código abierto, distribuida bajo licencia MIT
 \end_layout
 
 \begin_layout Itemize
-proporciona toda la funcionalidad que hemos utilizado a lo largo del desarrollo
+soporta los protocolos de transporte TCP, UDP y TCP sobre SSL, por lo que
+ proporciona toda la funcionalidad que necesitábamos a lo largo del desarrollo
  del proyecto.
+\end_layout
+
+\begin_layout Itemize
+soporta IP versión 6.
+ Esto permite utilizar 
+\emph on
+CygnusCloud
+\emph default
+ en redes IP versión 4 y, a medida que las organizaciones que lo utilicen
+ hagan la transición, también en redes IP versión 6.
 \end_layout
 
 \begin_layout Standard
@@ -1517,6 +1583,195 @@ GNU/Linux
 \emph default
 es imprescindible utilizar mecanismos estandarizados, por lo que nos acabamos
  decantando por utilizar esta librería.
+\end_layout
+
+\begin_layout Subsection
+Uso del protocolo de transferencia de ficheros FTP
+\end_layout
+
+\begin_layout Standard
+En 
+\emph on
+CygnusCloud
+\emph default
+ es necesario transferir imágenes de disco entre el repositorio de imágenes
+ y los servidores de máquinas virtuales.
+ Para hacerlo, lo más adecuado es utilizar uno de los múltiples protocolos
+ de transferencia o de compartición de ficheros existentes.
+ En su momento, consideramos los siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+NFS
+\series default
+ (
+\emph on
+Network File System
+\emph default
+).
+ Se trata de un protocolo muy popular en sistemas tipo UNIX.
+ La principal ventaja de este protocolo es que, una vez establecida la conexión
+ con la máquina remota, es posible acceder a los ficheros compartidos como
+ si estuviesen almacenados en el sistema de ficheros de la máquina local.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Samba
+\series default
+.
+ Se trata de una reimplementación del protocolo conocido como SMB (
+\emph on
+Server Message Block
+\emph default
+) o CIFS (
+\emph on
+Common Internet File System
+\emph default
+), utilizado para compartir ficheros y dispositivos entre máquinas 
+\emph on
+Windows
+\emph default
+.
+ Al igual que en el caso de NFS, tras establecer la conexión los ficheros
+ compartidos son accesibles desde el sistema de ficheros de la máquina local.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+FTP
+\series default
+ (
+\emph on
+File Transfer Protocol
+\emph default
+).
+ Es uno de los primeros protocolos de transferencia de ficheros que se diseñaron
+, y por ello también uno de los más inseguros, eficientes y fáciles de utilizar.
+ La funcionalidad de FTP es muy básica comparada con la de NFS o Samba:
+ sólo permite transferir ficheros entre dos máquinas.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+FTPS
+\series default
+ (
+\emph on
+File Transfer Protocol Secure
+\emph default
+).
+ Se trata de una extensión del protocolo FTP que cifra todo el tráfico.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+SFTP
+\series default
+ (
+\emph on
+Secure File Transfer Protocol
+\emph default
+).
+ Aunque ambos tengan nombres parecidos, este protocolo no está relacionado
+ con el protocolo FTP.
+ Se trata de una extensión del protocolo SSH (
+\emph on
+Secure Shell
+\emph default
+) que permite transferir ficheros entre máquinas.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+HTTP
+\series default
+ (
+\emph on
+HyperText Transfer Protocol
+\emph default
+) o 
+\series bold
+HTTPS
+\series default
+ (
+\emph on
+HyperText Transfer Procol Secure
+\emph default
+).
+ Estos protocolos, que son la base de las comunicaciones en internet, también
+ pueden utilizarse para transferir ficheros entre máquinas.
+ La diferencia entre ambos está en el cifrado de los datos: en el caso de
+ HTTP, los datos viajan sin cifrar, a diferencia de lo que ocurre con HTTPS.
+\end_layout
+
+\begin_layout Standard
+Puesto que 
+\emph on
+CygnusCloud
+\emph default
+ se utilizará a través de una aplicación web, decidimos utilizar los protocolos
+ que más fácilmente pudiesen integrarse con ella.
+ Por ello, descartamos los protocolos NFS, Samba y SFTP.
+ De esta manera, tuvimos que elegir entre los protocolos FTP, FTPS, HTTP
+ y HTTPS.
+\end_layout
+
+\begin_layout Standard
+Tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Objetivos-arquitectura"
+
+\end_inset
+
+, 
+\emph on
+CygnusCloud
+\emph default
+ debe ser eficiente en el uso de los recursos.
+ Desde el punto de vista de la eficiencia, los protocolos FTP y FTPS son
+ mejores que HTTP y HTTPS, ya que envían mucha menos información a través
+ de la red, y requieren mucho menos procesamiento en las máquinas que intercambi
+an ficheros.
+ Por ello, descartamos los protocolos HTTP y HTTPS.
+\end_layout
+
+\begin_layout Standard
+Así pues, al final tuvimos que elegir entre los protocolos FTP y FTPS.
+ Finalmente, decidimos utilizar el protocolo FTP por ser el más eficiente
+ y rápido de los dos.
+ 
+\end_layout
+
+\begin_layout Standard
+Aunque es cierto que el protocolo FTP tiene serios problemas de seguridad,
+ no debemos olvidar que 
+\emph on
+CygnusCloud
+\emph default
+ se utilizará a través de la red troncal de la Complutense que es, en principio,
+ segura.
+ No obstante, para permitir el uso de 
+\emph on
+CygnusCloud
+\emph default
+ en redes menos seguras, hemos decidido adaptar el diseño y la implementación
+ para que sea posible utilizar el protocolo FTPS con poco esfuerzo.
+ 
+\end_layout
+
+\begin_layout Subsection
+Uso del servidor FTP 
+\family typewriter
+pyftpdlib
 \end_layout
 
 \begin_layout Subsection
@@ -1705,14 +1960,14 @@ reference "fig:Tasa-de-escritura-benchmark"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Tiempos compresión y descompresión.pdf
-	scale 50
+	scale 40
 
 \end_inset
 
@@ -1748,7 +2003,7 @@ Tiempos de compresión y descompresión
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -2408,6 +2663,924 @@ copy-on-write
 
 \begin_layout Subsection
 Creación de seis familias de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+Para cada familia de sistemas operativos (es decir, Windows y Linux) definiremos
+ tres tamaños de imágenes 
+\emph on
+vanilla
+\emph default
+: pequeña (
+\emph on
+small
+\emph default
+), mediana (
+\emph on
+medium
+\emph default
+) y grande 
+\emph on
+(big
+\emph default
+).
+ A medida que aumenta el 
+\begin_inset Quotes eld
+\end_inset
+
+tamaño
+\begin_inset Quotes erd
+\end_inset
+
+ de una imagen, también lo harán el tamaño del disco y de la RAM y el número
+ de CPUs virtuales.
+\end_layout
+
+\begin_layout Standard
+Las características de estas imágenes se recogen en los cuadros 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Características-vanilla-win"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Características-vanilla-linux"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="6">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+vCPUs
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+RAM
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Disco
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Variante SO
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+SO y 
+\emph on
+software
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Datos / paginación
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+small
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+1 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+20 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2 GB / 2 GB (4 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+32 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+medium
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+30 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+4 GB / 4 GB (8 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+32 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+big
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+3 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+40 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+8 GB / 8 GB (16 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+64 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Características-vanilla-win"
+
+\end_inset
+
+Características de las imágenes 
+\emph on
+vanilla 
+\emph default
+Windows
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="6">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+vCPUs
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+RAM
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Disco
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Variante SO
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+SO y 
+\emph on
+software
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\series bold
+Datos / paginación
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+small
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+1 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+5 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2 GB / 1 GB (3 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+64 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+medium
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+2 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+10 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+4 GB / 2 GB (6 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+64 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+big
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+3 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+15 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+8 GB / 4 GB (12 GB en total)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+64 bits
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Características-vanilla-linux"
+
+\end_inset
+
+Características de las imágenes 
+\emph on
+vanilla 
+\emph default
+Linux
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para rellenar las tablas, he considerado estos aspectos:
+\end_layout
+
+\begin_layout Itemize
+en 
+\emph on
+Windows
+\emph default
+, el tamaño recomendado para el fichero de paginación es el doble del tamaño
+ de la RAM.
+\end_layout
+
+\begin_layout Itemize
+la versión 
+\emph on
+Professional
+\emph default
+ de Windows 7, una vez instalada y capada (eliminando los gadgets, característic
+as multimedia, componentes de Tablet PC y la compresión diferencial remota,
+ requiere el siguiente espacio en disco:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+11 GB para la versión de 32 bits
+\end_layout
+
+\begin_layout Itemize
+15 GB para la versión de 64 bits
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+para instalar un programa complejo y razonablemente actual (como 
+\emph on
+Visual Studio 
+\emph default
+o 
+\emph on
+Microsoft Office
+\emph default
+) en Windows se requiere en media unos 4 GB de espacio en disco.
+\end_layout
+
+\begin_layout Itemize
+una instalación de Linux con mucho 
+\emph on
+software 
+\emph default
+suele ocupar unos 7 GB (menos si se usa un entorno de escritorio ligero).
+\end_layout
+
+\begin_layout Itemize
+las versiones de Windows de 64 bits usan el doble de RAM que las de 32 bits
+ y ocupan mucho más disco duro.
+ Como el uso de un SO de 64 bits no está justificado en las imágenes 
+\emph on
+small
+\emph default
+ y 
+\emph on
+medium 
+\emph default
+(no se va a direccionar más de 2 GB de RAM), he optado por asignarles la
+ versión de 32 bits.
+ 
+\end_layout
+
+\begin_layout Itemize
+siempre que no se hagan cálculos muy complejos, el rendimiento de las dos
+ versiones de Windows es prácticamente el mismo.
+\end_layout
+
+\begin_layout Itemize
+las versiones de 64 bits de Linux usan la misma cantidad de RAM y espacio
+ en disco.
+ Para no complicarnos la vida, todas las máquinas Linux utilizarán un sistema
+ operativo de 64 bits.
 \end_layout
 
 \begin_layout Subsection
