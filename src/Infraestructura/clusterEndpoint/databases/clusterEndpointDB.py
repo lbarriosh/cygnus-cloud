@@ -243,21 +243,18 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             # Sacar los IDs de las imágenes en edición            
             
             receivedData = ClusterEndpointDBConnector.__getActiveVMsDictionary(self.__activeVMSegmentsData[vmServerIP])
-            registeredIDs = self.__getActiveVMIDs()
-            
+            registeredIDs = self.__getActiveVMIDs()            
             
             # Quitar las filas que haga falta
-            if (registeredIDs != None) :
-                for ID in registeredIDs :                    
-                    if not (receivedData.has_key(ID)) :
-                        domainUID = self.__getDomainUID(ID[0], ID[1], ID[2])
-                        self.__deleteActiveVM(ID)
-                        self.updateEditedImageStatus(domainUID, EDITION_STATE_T.TRANSFER_TO_REPOSITORY, EDITION_STATE_T.VM_ON)
+            for ID in registeredIDs :                    
+                if not (receivedData.has_key(ID)) :
+                    self.__deleteActiveVM(ID)
+                    self.updateEditedImageStatus(ID, EDITION_STATE_T.TRANSFER_TO_REPOSITORY, EDITION_STATE_T.VM_ON)
                         
             # Realizar las actualizaciones y preparar las inserciones
             inserts = []
             for ID in receivedData.keys() :             
-                if (registeredIDs != None and not (ID in registeredIDs)) :
+                if (not (ID in registeredIDs)) :
                     inserts.append(receivedData[ID])
                     
             # Realizar las inserciones
@@ -292,7 +289,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         """
         result = {}
         for segment in segmentList :
-            result[(segment[0], segment[1], segment[2])] = segment
+            result[segment[0]] = segment
         return result
                 
     def __getKnownVMServerIDs(self, table="VirtualMachineServer"):
@@ -359,13 +356,13 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         Returns:
             una lista con los identificadores únicos de las máquinas virtuales activas
         """
-        query = "SELECT serverName, ownerID, imageID FROM ActiveVirtualMachines;"
+        query = "SELECT domainUID FROM ActiveVirtualMachines;"
         results = self._executeQuery(query)
         if (results == None) :
             return set()
         output = set()
         for row in results :
-            output.add((row[0], row[1], row[2]))
+            output.add(row)
         return output
     
     def __insertActiveVMData(self, vmServerIP, data):
@@ -381,7 +378,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             .format(ClusterEndpointDBConnector.__convertTuplesToSQLStr(data, [vmServerIP]))
         self._executeUpdate(update)
         
-    def __deleteActiveVM(self, machineID):
+    def __deleteActiveVM(self, domainUID):
         """
         Borra los datos de una máquina virtual activa
         Argumentos:
@@ -389,8 +386,8 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         Devuelve:
             Nada
         """
-        update = "DELETE FROM ActiveVirtualMachines WHERE serverName='{0}' AND ownerID={1} AND imageID={2};"\
-            .format(machineID[0], machineID[1], machineID[2])
+        update = "DELETE FROM ActiveVirtualMachines WHERE domainUID = '{0}';"\
+            .format(domainUID)
         self._executeUpdate(update)
             
     def __getVMServerName(self, serverIP):

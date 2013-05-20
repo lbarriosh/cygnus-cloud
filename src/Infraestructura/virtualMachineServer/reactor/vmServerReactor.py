@@ -240,7 +240,7 @@ class VMServerReactor(MainServerPacketReactor):
             segmentNumber += 1
             sendLastSegment = True
         else :
-            sendLastSegment = False # Para ahorrar tráfico
+            sendLastSegment = segmentNumber == 0 
         for connectionParameters in vncConnectionData :
             outgoingData.append(connectionParameters)
             if (len(outgoingData) >= segmentSize) :

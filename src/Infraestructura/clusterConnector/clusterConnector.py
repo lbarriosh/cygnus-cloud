@@ -448,15 +448,6 @@ if __name__ == "__main__" :
     commandID = connector.bootUpVMServer("Server1")
     print connector.waitForCommandOutput(commandID)
     sleep(5)
-    temporaryID = connector.createImage(1, "foo", "foos description")
-    notifications = []
-    while notifications == [] :
-        notifications = connector.getPendingNotifications()
-        if (notifications == []):
-            sleep(0.5)
-    notifications = []
-    connector.deployNewImage(str(temporaryID[0]) + "|" + str(temporaryID[1]), 1)
-    while notifications == [] :
-        notifications = connector.getPendingNotifications()
-        if (notifications == []):
-            sleep(0.5)
+    commandID = connector.bootUpVM(13)
+    print connector.waitForCommandOutput(commandID)
+    sleep(5)
