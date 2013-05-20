@@ -230,10 +230,13 @@ class ClusterEndpoint(object):
                     else :
                         output_type == COMMAND_OUTPUT_TYPE.IMAGE_CREATED
                 elif (commandData["CommandType"] == COMMAND_TYPE.DEPLOY_IMAGE or commandData["CommandType"] == COMMAND_TYPE.AUTO_DEPLOY_IMAGE) :
+                    if (self.__endpointDBConnector.affectsToNewOrEditedImage(data["CommandID"])) :
+                        # Mover la fila
+                        self.__endpointDBConnector.moveRowToImage(data["CommandID"])
+                    else:
+                        parsedArgs = self.__commandsHandler.deserializeCommandArgs(commandData["CommandType"], commandData["CommandArgs"])
+                        self.__endpointDBConnector.makeBootable(parsedArgs["ImageID"])
                     output_type = COMMAND_OUTPUT_TYPE.IMAGE_DEPLOYED
-                    parsedArgs = self.__commandsHandler.deserializeCommandArgs(commandData["CommandType"], commandData["CommandArgs"])
-                    self.__endpointDBConnector.makeBootable(parsedArgs["ImageID"])
-                    # TODO: hacer la imagen arrancable
                 elif (commandData["CommandType"] == COMMAND_TYPE.DELETE_IMAGE or commandData["CommandType"] == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE) :
                     output_type = COMMAND_OUTPUT_TYPE.IMAGE_DELETED
                     
@@ -263,8 +266,11 @@ class ClusterEndpoint(object):
                     # Errores
                     if (data["packet_type"] == PACKET_T.IMAGE_CREATION_ERROR) :
                         self.__endpointDBConnector.deleteEditedImage(data["CommandID"])
-                    if (data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR):
-                        self.__endpointDBConnector.updateEditedImageStatus(data["CommandID"], EDITION_STATE_T.CHANGES_NOT_APPLIED, None)               
+                    elif (data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR):
+                        self.__endpointDBConnector.updateEditedImageStatus(data["CommandID"], EDITION_STATE_T.CHANGES_NOT_APPLIED, None)     
+                    elif (data["packet_type"] == PACKET_T.AUTO_DEPLOY_ERROR):
+                        if (self.__endpointDBConnector.affectsToNewOrEditedImage(data["CommandID"])) :
+                            self.__endpointDBConnector.updateEditedImageStatus(data["CommandID"], EDITION_STATE_T.AUTO_DEPLOYMENT_ERROR)    
                     
                     isNotification = data["packet_type"] == PACKET_T.IMAGE_DEPLOYMENT_ERROR or\
                         data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR or\
@@ -331,6 +337,8 @@ class ClusterEndpoint(object):
                     elif (commandType == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE):
                         packet = self.__webPacketHandler.createImageDeletionPacket(parsedArgs["ImageID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.AUTO_DEPLOY_IMAGE):
+                        if (self.__endpointDBConnector.affectsToNewOrEditedImage(serializedCommandID)) :
+                            self.__endpointDBConnector.updateEditedImageStatus(serializedCommandID, EDITION_STATE_T.AUTO_DEPLOYMENT)
                         packet = self.__webPacketHandler.createAutoDeployPacket(parsedArgs["ImageID"], parsedArgs["MaxInstances"], serializedCommandID)
                                           
                     errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
