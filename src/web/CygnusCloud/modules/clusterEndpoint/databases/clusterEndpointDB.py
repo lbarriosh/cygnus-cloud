@@ -4,7 +4,7 @@ from editionState_t import EDITION_STATE_T
 Lector de la base de datos de estado
 
 @author: Luis Barrios Hernández
-@version: 2.5
+@version: 4.0
 '''
 
 from ccutils.databases.connector import BasicDatabaseConnector
@@ -13,7 +13,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
     """
     Inicializa el estado del lector
     Argumentos:
-        sqlUser: usuario SQL a utilizaqr
+        sqlUser: usuario SQL a utilizar
         sqlPassword: contraseña de ese usuario
         databaseName: nombre de la base de datos de estado
     """
@@ -73,7 +73,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             retrievedData.append(d)
         return retrievedData 
     
-    def getActiveVMsData(self, ownerID):
+    def getActiveVMsData(self, ownerID, show_edited):
         """
         Devuelve los datos de las máquinas virtuales activas
         Argumentos:
@@ -82,10 +82,20 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         Devuelve: 
             una lista de diccionarios. Cada uno contiene los datos de una máquina
         """
-        if (ownerID == None) :
-            command = "SELECT * FROM ActiveVirtualMachines;"
+        if (ownerID == None):            
+            if (show_edited) :
+                modifier = ""
+            else :
+                modifier = "NOT"
+            command = "SELECT * FROM ActiveVirtualMachines ActVMs WHERE {0} EXISTS \
+                    (SELECT * FROM EditedImage WHERE ActVMs.domainUID = EditedImage.temporaryID);".format(modifier)
         else :
-            command = "SELECT * FROM ActiveVirtualMachines WHERE ownerID = {0};".format(ownerID)
+            if (show_edited) :
+                modifier = ""
+            else :
+                modifier = "NOT"
+            command = "SELECT * FROM ActiveVirtualMachines ActVMs WHERE ownerID = {0} AND {1} EXISTS \
+                    (SELECT * FROM EditedImage WHERE ActVMs.domainUID = EditedImage.temporaryID);".format(ownerID, modifier)
             
         results = self._executeQuery(command, False)
         if (results == None) :
@@ -627,13 +637,13 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         baseImageData = self.getImageData(baseImageID)
         update = "INSERT INTO EditedImage VALUES('{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, {7}, {8});"\
             .format(temporaryID, baseImageData["VanillaImageFamilyID"], -1, imageName, imageDescription,
-                    baseImageData["OSFamily"], baseImageData["OSVariant"], ownerID, EDITION_STATE_T.DEPLOYMENT)
+                    baseImageData["OSFamily"], baseImageData["OSVariant"], ownerID, EDITION_STATE_T.TRANSFER_TO_VM_SERVER)
         self._executeUpdate(update)
         
     def editImage(self, commandID, imageID, ownerID):
         query = "SELECT * from EditedImage WHERE imageID = {0};".format(imageID)
         if (self._executeQuery(query, True) != None) :
-            update = "UPDATE EditedImage SET temporaryID = '{0}', state = {2} WHERE imageID = {1};".format(commandID, imageID, EDITION_STATE_T.DEPLOYMENT)
+            update = "UPDATE EditedImage SET temporaryID = '{0}', state = {2} WHERE imageID = {1};".format(commandID, imageID, EDITION_STATE_T.TRANSFER_TO_VM_SERVER)
             self._executeUpdate(update)
         else :
             imageData = self.getImageData(imageID)
@@ -641,8 +651,17 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
             self._executeUpdate(update)
             update = "INSERT INTO EditedImage VALUES('{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, {7}, {8});"\
                 .format(commandID, imageData["VanillaImageFamilyID"], imageID, imageData["ImageName"], imageData["ImageDescription"],
-                        imageData["OSFamily"], imageData["OSVariant"], ownerID, EDITION_STATE_T.DEPLOYMENT)
+                        imageData["OSFamily"], imageData["OSVariant"], ownerID, EDITION_STATE_T.TRANSFER_TO_VM_SERVER)
             self._executeUpdate(update)
+            
+    def moveRowToImage(self, temporaryID):
+        imageData = self.getImageData(temporaryID)
+        update = "INSERT INTO Image VALUES ({0}, {1}, '{2}', '{3}', {4}, {5}, 0, 1);"\
+            .format(imageData["ImageID"], imageData["VanillaImageFamilyID"], imageData["ImageName"], imageData["ImageDescription"],
+                    imageData["OSFamily"], imageData["OSVariant"], imageData["IsBaseImage"])
+        self._executeUpdate(update)
+        update = "DELETE FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
+        self._executeUpdate(update)
         
     def deleteEditedImage(self, temporaryID):
         update = "DELETE FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
@@ -672,3 +691,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
     def unregisterDomain(self, domainUID):
         update = "DELETE FROM ActiveVirtualMachines WHERE domainUID = '{0}';".format(domainUID)
         self._executeUpdate(update)
+        
+    def affectsToNewOrEditedImage(self, autoDeploymentCommandID):
+        query = "SELECT * FROM EditedImage WHERE temporaryID = '{0}';".format(autoDeploymentCommandID)
+        return self._executeQuery(query, True) != None

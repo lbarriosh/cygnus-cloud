@@ -45,11 +45,13 @@ jQuery(document).ready(function(){
     jQuery('#osVariantSelect').change(function(){
         var j;
         var actualValueS;
+        var auxName;
         //Actualizamos la tabla
         var id = jQuery('#osVariantSelect').val();
         for(j = 0 ; j < {{=num2}}; j++){  
             actualValueS = jQuery('#s'+ j).val();
-            if((actualValueS == id) || ((id == '-1c-1') && 
+            auxName = actualValueS.split('c')[0] + 'c' + actualValueS.split('c')[1];
+            if((auxName == id) || ((id == '-1c-1') && 
             	((actualValueS.split('c')[0] == jQuery('#osTypeSelect').val()) || (jQuery('#osTypeSelect').val() == '-1')))){
             	jQuery('#t' + j).show("slow");
             	jQuery('#r' + j).show("slow");

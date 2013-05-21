@@ -1,5 +1,6 @@
 # coding: utf8
 from gluon import *
+from clusterEndpoint.databases.editionState_t import EDITION_STATE_T
 from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 
@@ -101,7 +102,7 @@ def createVanillaVM():
         table.append(TR(
             TH(IMG(_src=URL('static',str(picturePath)), _alt="memoryIcon",_style="width:35px;"),_style="text-align: right;"),
             TH(LABEL(vanillaInfo["Name"]),_style="font-size:17px;text-align: left;"),_id="t"+str(j)))
-        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value=str(osId) + 'c' + str(variantId),_id ="s"+str(j))),
+        table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value=str(osId) + 'c' + str(variantId) + 'c' + str(id["ImageID"]) ,_id ="s"+str(j))),
         DIV(subTable,_class='vanillaTR'),_id="r" + str(j)))
         j = j + 1
         
@@ -131,8 +132,46 @@ def createVanillaVM():
                     ,_class="button button-blue",_style="width:180px;")))
     print j
     return dict(form = form,progressBarStyle=progressBarStyle,num = num,num2 = j)
+
           
 def editVM():
+    createAdressBar()
+    #Creamos la primera tabla
+    connector = conectToServer()
+    stoppedImages = TABLE(_class='data', _name = 'stoppedImagesSelect')
+    stoppedImages.append(TR(TH('Selección'),TH(T('Nombre'),_class='izquierda'),TH(T('Descripción')),_class='izquierda'))
+    runningImages = TABLE(_class='data',_name = 'runningImagesSelect')
+    runningImages.append(TR(TH('Selección'),TH(T('Nombre'),_class='izquierda'),TH(T('Descripción')),_class='izquierda'))
+    editedImages = connector.getEditedImageIDs(auth.user_id)
+    j= 0
+    for image in editedImages:
+        imageInfo = connector.getImageData(image)
+        if (imageInfo["State"] == EDITION_STATE_T.TRANSFER_TO_REPOSITORY) or (imageInfo["State"] == EDITION_STATE_T.VM_ON):
+            runningImages.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = str(imageInfo["State"]) + 'c' + image,_id="c"+str(j))),
+                TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),
+                TD(DIV(P(imageInfo["ImageDescription"]),_id = str(j)),_class='izquierda')))
+        else:
+            stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = str(imageInfo["State"]) + 'c' + image,_id="c"+str(j))),
+                TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),
+                TD(DIV(P(imageInfo["ImageDescription"]),_id = str(j)),_class='izquierda')))
+        j= j + 1  
+    #Creamos los formularios
+    form1 =  FORM(LABEL(H2(T('Máquinas detenidas'))),stoppedImages,BR(),
+        CENTER(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'edit',  _value = T('Editar'),_id='editButton'),
+        INPUT(_type='submit',_class="button button-blue",_name = 'continueEditing',
+              _value = T('Seguir editando'),_id='continueEditingButton',_style="width:140px;"),
+        INPUT(_type='submit',_class="button button-blue",_name = 'saveChanges',  _value = T('Aplicar cambios'),_id='saveChangesButton',
+            _style="width:140px;"))),
+        BR(),CENTER(LABEL("Máquina no disponible",_id='notAvaibleSMessage')))
+    
+    form2 =  FORM(LABEL(H2(T('Máquinas en ejecución'))),runningImages,BR(),
+        CENTER(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'open',  _value = T('Abrir'),_id='openButton'),
+        INPUT(_type='submit',_class="button button-blue",_name = 'stop',_value = T('Detener'),_id='stopButton'))),
+        BR(),CENTER(LABEL("Máquina no disponible",_id='notAvaibleRMessage')))
+    
+    return dict(form1=form1,form2=form2,num=j)
+    
+def associateSubjects():
     createAdressBar()
     #Creamos fromulario para asociar las máquinas en espera
     #TODO: Cambiar por waiting
@@ -159,7 +198,8 @@ def editVM():
    
 def createAdressBar():
     response.menu=[[T('Arrancar máquina'),False,URL('runVM')],[T('Detener máquina'),False,URL('stopVM')],
-                   [T('Crear nueva máquina'),False,URL('createVanillaVM')],[T('Editar máquina'),False,URL('editVM')]]
+                   [T('Crear nueva máquina'),False,URL('createVanillaVM')],[T('Editar máquina'),False,URL('editVM')]
+                   ,[T('Asociar asignaturas'),False,URL('associateSubjects')]]
     
 def createReadyTable(j):
     connector = conectToServer()

@@ -2,7 +2,7 @@
 '''
 Conector que usará la web para interactuar con el sistema
 @author: Luis Barrios Hernández
-@version: 6.0
+@version: 7.0
 '''
 from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
 from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
@@ -48,19 +48,21 @@ class ClusterConnector(object):
         """
         pass
         
-    def getActiveVMsData(self, showAllVMs=False):
+    def getActiveVMsData(self, showAllVMs=False, showEditionVMs=False):
         """
         Devuelve los datos de las máquinas virtuales activas
         Argumentos:
             showAllVMs: si es True, se muestran los datos de todas las máquinas activas; si es False, sólo
             las del usuario registrado en el conector
+            showEditionVMs: indica si se deben devolver las máquinas virtuales activas correspondientes 
+            a las imágenes en edición o el resto de máquinas virtuales activas.
         Devuelve: una lista de diccionarios con los datos de las máquinas virtuales activas
         """
         if not showAllVMs :
             userID = self.__userID
         else :
             userID = None
-        return self.__endpointDBConnector.getActiveVMsData(userID)
+        return self.__endpointDBConnector.getActiveVMsData(userID, showEditionVMs)
     
     def getVMDistributionData(self):
         """
@@ -229,18 +231,58 @@ class ClusterConnector(object):
         (commandType, commandArgs) = self.__commandsHandler.createDeleteImageFromInfrastructureCommand(imageID)        
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def deployEditedImage(self, imageID):
+    def deployEditedImage(self, temporaryID):
+        """
+        Reemplaza todas las copias existentes de una imagen en edición.
+        Argumentos:
+            temporaryID: el identificador temporal de la imagen
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        """
+        imageID = self.__endpointDBConnector.getImageData(temporaryID)["ImageID"]
         (commandType, commandArgs) = self.__commandsHandler.createAutoDeploymentCommand(imageID, -1)
-        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+        l = temporaryID.split("|")
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs, float(l[1]))
     
-    def autoDeployImage(self, imageID, max_instances):
+    def deployNewImage(self, temporaryID, max_instances):
+        """
+        Despliega una nueva imagen
+        Argumentos:
+            temporaryID: el identificador temporal de la imagen
+            max_instances: el número máximo de instancias de la imagen que estarán arrancadas
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        """
+        imageID = self.__endpointDBConnector.getImageData(temporaryID)["ImageID"]
         (commandType, commandArgs) = self.__commandsHandler.createAutoDeploymentCommand(imageID, max_instances)
+        l = temporaryID.split("|")
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs, float(l[1]))
+    
+    def autoDeployImage(self, imageID, instances):
+        """
+        Realiza el despliegue automático de una imagen
+        Argumentos:
+            imageID: el identificador único de la imagen
+            max_instances: el número de nuevas instancias de la imagen que se podrán crear tras el despliegue.
+        """
+        (commandType, commandArgs) = self.__commandsHandler.createAutoDeploymentCommand(imageID, instances)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def changeVMServerConfiguration(self, serverNameOrIPAddress, newName, newIPAddress, newPort, 
-                                    newVanillaImageEditionBehavior):
+                                    newImageEditionBehavior):
+        """
+        Modifica la configuración de un servidor de máquinas virtuales en el servidor de cluster.
+        Argumentos:
+            serverNameOrIPAddress: el nombre o la IP del servidor
+            newName: el nuevo nombre del servidor
+            newIPAddress: la nueva dirección IP del servidor
+            newPort: el nuevo puerto del servidor
+            newImageEditionBehavior: indica si se debe reservar el servidor para la edición de imágenes.
+        """
         (commandType, commandArgs) = self.__commandsHandler.createVMServerConfigurationChangeCommand(serverNameOrIPAddress, 
-            newName, newIPAddress, newPort, newVanillaImageEditionBehavior)
+            newName, newIPAddress, newPort, newImageEditionBehavior)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def getCommandOutput(self, commandID):
@@ -314,9 +356,23 @@ class ClusterConnector(object):
         return self.__endpointDBConnector.getNewImageIDs(userID)
     
     def getVanillaImageFamilyID(self, imageID):
+        """
+        Devuelve la familia de imágenes vanilla asociada a una imagen existente.
+        Argumentos:
+            imageID: el identificador único de la imagen
+        Devuelve:
+            el identificador de la familia de imágenes vanilla a la que pertenece la imagen
+        """
         return self.__endpointDBConnector.getVanillaImageFamilyID(imageID)
     
     def getVanillaImageFamiliyData(self, vanillaImageFamilyID):
+        """
+        Devuelve los datos de una familia de imágenes vanilla.
+        Argumentos:
+            vanillaImageFamilyID: el identificador único de la familia de imágenes vanilla
+        Devuelve:
+            un diccionario con los datos de la familia de imágenes vanilla
+        """
         return self.__endpointDBConnector.getVanillaImageFamilyData(vanillaImageFamilyID)
     
     def getMaxVanillaImageFamilyData(self):
@@ -327,18 +383,53 @@ class ClusterConnector(object):
         return self.__endpointDBConnector.getMaxVanillaImageFamilyData()
     
     def getImageRepositoryStatus(self):
+        """
+        Devuelve el estado del repositorio de imágenes.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            un diccionario con el estado del repositorio.
+        """
         return self.__endpointDBConnector.getImageRepositoryStatus()
     
     def getVirtualMachineServerStatus(self, serverName):
+        """
+        Devuelve el estado de un servidor de máquinas virtuales.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            un diccionario con el estado del servidor de máquinas virtuales
+        """
         return self.__endpointDBConnector.getVirtualMachineServerStatus(serverName)
     
     def getOSTypes(self):
+        """
+        Devuelve las familias de sistemas operativos registradas en la base de datos.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Una lista de diccionarios con las familias de sistemas operativos registradas en la base de datos.
+        """
         return self.__endpointDBConnector.getOSTypes()
     
     def getOSTypeVariants(self,familyID):
+        """
+        Devuelve las variantes de sistemas operativos registradas en la base de datos.
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Una lista de diccionarios con las variantes de sistemas operativos registradas en la base de datos.
+        """
         return self.__endpointDBConnector.getOSTypeVariants(familyID)
     
-    def getImageData(self,imageID):
+    def getImageData(self, imageID):
+        """
+        Devuelve los datos de una imagen.
+        Argumentos:
+            imageID: el identificador único o temporal de la imagen.
+        Devuelve:
+            Un diccionario con los datos de la imagen.
+        """
         return self.__endpointDBConnector.getImageData(imageID)        
     
     def getPendingNotifications(self):
@@ -357,8 +448,14 @@ if __name__ == "__main__" :
     commandID = connector.bootUpVMServer("Server1")
     print connector.waitForCommandOutput(commandID)
     sleep(5)
-    connector.editImage(1)
+    temporaryID = connector.createImage(1, "foo", "foos description")
     notifications = []
+    while notifications == [] :
+        notifications = connector.getPendingNotifications()
+        if (notifications == []):
+            sleep(0.5)
+    notifications = []
+    connector.deployNewImage(str(temporaryID[0]) + "|" + str(temporaryID[1]), 1)
     while notifications == [] :
         notifications = connector.getPendingNotifications()
         if (notifications == []):

@@ -26,7 +26,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, statusDBName)
         self.__minCommandInterval = minCommandInterval
     
-    def addCommand(self, userID, commandType, arguments):
+    def addCommand(self, userID, commandType, arguments, timestamp = None):
         """
         Inserts a command in the commands table.
         Args:
@@ -38,20 +38,27 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         @attention: DO NOT rely on the command ID's internal representation: it can change without
         prior notice.
         """
-        # Get the current date
-        timestamp = time.time()
-        # Get the newest command that was submitted by the user
-        query = "SELECT MIN(time) FROM PendingCommand WHERE userID = {0};".format(userID)
-        result = self._executeQuery(query, True)
-        if (result == None or (timestamp - result >= self.__minCommandInterval))  :
-            # Generate the updates
+        if (timestamp == None) :
+            # Get the current date
+            timestamp = time.time()
+            # Get the newest command that was submitted by the user
+            query = "SELECT MIN(time) FROM PendingCommand WHERE userID = {0};".format(userID)
+            result = self._executeQuery(query, True)
+            if (result == None or (timestamp - result >= self.__minCommandInterval))  :
+                # Generate the updates
+                command = "INSERT INTO PendingCommand VALUES ({0}, {1}, {2}, '{3}')".format(userID, timestamp, commandType, arguments)
+                self._executeUpdate(command)    
+                command = "INSERT INTO QueuedCommand VALUES ({0}, {1});".format(userID, timestamp)
+                self._executeUpdate(command)
+                return (userID, timestamp)
+            else :
+                return None
+        else :
             command = "INSERT INTO PendingCommand VALUES ({0}, {1}, {2}, '{3}')".format(userID, timestamp, commandType, arguments)
             self._executeUpdate(command)    
             command = "INSERT INTO QueuedCommand VALUES ({0}, {1});".format(userID, timestamp)
             self._executeUpdate(command)
             return (userID, timestamp)
-        else :
-            return None
         
     def popCommand(self):
         """
