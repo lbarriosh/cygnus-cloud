@@ -143,18 +143,24 @@ def editVM():
     runningImages = TABLE(_class='data',_name = 'runningImagesSelect')
     runningImages.append(TR(TH('Selección'),TH(T('Nombre'),_class='izquierda'),TH(T('Descripción')),_class='izquierda'))
     editedImages = connector.getEditedImageIDs(auth.user_id)
-    j= 0
+    num1= 0
+    num2= 0
     for image in editedImages:
         imageInfo = connector.getImageData(image)
-        if (imageInfo["State"] == EDITION_STATE_T.TRANSFER_TO_REPOSITORY) or (imageInfo["State"] == EDITION_STATE_T.VM_ON):
-            runningImages.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = str(imageInfo["State"]) + 'c' + image,_id="c"+str(j))),
+        print str(imageInfo["State"]) + 'w' + str(image)
+        if (imageInfo["State"] == EDITION_STATE_T.TRANSFER_TO_REPOSITORY) or (imageInfo["State"] == EDITION_STATE_T.VM_ON) or \
+                (imageInfo["State"] == EDITION_STATE_T.AUTO_DEPLOYMENT) or (imageInfo["State"] == EDITION_STATE_T.AUTO_DEPLOYMENT_ERROR):
+            runningImages.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = str(imageInfo["State"]) + 'w' + str(image),
+                _id="b"+str(num2))),
                 TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),
-                TD(DIV(P(imageInfo["ImageDescription"]),_id = str(j)),_class='izquierda')))
+                TD(DIV(P(imageInfo["ImageDescription"]),_id = "n2" + str(num2)),_class='izquierda')))
+            num2= num2 + 1
         else:
-            stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = str(imageInfo["State"]) + 'c' + image,_id="c"+str(j))),
+            stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = str(imageInfo["State"]) + 'w' + str(image),
+                _id="a"+str(num1))),
                 TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),
-                TD(DIV(P(imageInfo["ImageDescription"]),_id = str(j)),_class='izquierda')))
-        j= j + 1  
+                TD(DIV(P(imageInfo["ImageDescription"]),_id = "n1" + str(num1)),_class='izquierda')))
+            num1= num1 + 1  
     #Creamos los formularios
     form1 =  FORM(LABEL(H2(T('Máquinas detenidas'))),stoppedImages,BR(),
         CENTER(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'edit',  _value = T('Editar'),_id='editButton'),
@@ -162,14 +168,14 @@ def editVM():
               _value = T('Seguir editando'),_id='continueEditingButton',_style="width:140px;"),
         INPUT(_type='submit',_class="button button-blue",_name = 'saveChanges',  _value = T('Aplicar cambios'),_id='saveChangesButton',
             _style="width:140px;"))),
-        BR(),CENTER(LABEL("Máquina no disponible",_id='notAvaibleSMessage')))
+        CENTER(LABEL("Máquina no disponible",_id='notAvaibleSMessage')),BR())
     
     form2 =  FORM(LABEL(H2(T('Máquinas en ejecución'))),runningImages,BR(),
         CENTER(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'open',  _value = T('Abrir'),_id='openButton'),
         INPUT(_type='submit',_class="button button-blue",_name = 'stop',_value = T('Detener'),_id='stopButton'))),
-        BR(),CENTER(LABEL("Máquina no disponible",_id='notAvaibleRMessage')))
+        CENTER(LABEL("Máquina no disponible",_id='notAvaibleRMessage')),BR())
     
-    return dict(form1=form1,form2=form2,num=j)
+    return dict(form1=form1,form2=form2,num1=num1,num2=num2)
     
 def associateSubjects():
     createAdressBar()

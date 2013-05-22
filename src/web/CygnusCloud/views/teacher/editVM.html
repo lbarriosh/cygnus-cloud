@@ -6,16 +6,85 @@
 jQuery(document).ready(function(){
     var i;
     var j;
-    for(i=0;i<{{=num}};i++){
-    	jQuery('#'+i).hide();
-       jQuery('#c' +i).change(function(){
-            for(j = 0 ; j < {{=num}} ; j++){
-                if(jQuery('#c' +j).attr('checked'))
-                    jQuery('#' +j).show("slow");
-                else jQuery('#' +j).hide("slow");
-           }
-       });
+    clearComponentsT1();
+    clearComponentsT2();
+    for(i=0;i<{{=num1}};i++){
+    	jQuery('#n1'+i).hide();
+       jQuery('#a' +i).change(function(){
+            for(j = 0 ; j < {{=num1}} ; j++){
+                if(jQuery('#a' +j).attr('checked')){
+                    jQuery('#n1' +j).show("slow");
+					clearComponentsT1();
+                    //Mostramos solo lo que corresponda al estado 
+                    var actualValue = jQuery('#a' +j).val();
+                    var status = actualValue.split('w')[0];
+                    switch (parseInt(status)) {
+                        case 0:
+                            jQuery('#notAvaibleSMessage').show("slow");	
+                            break;
+                        case 3:
+                            jQuery('#saveChangesButton').show("slow");
+                            jQuery('#continueEditingButton' ).show("slow");
+                            break;
+                        default:
+                            jQuery('#editButton').show("slow");
+                    }
 
-        }
+               }else{
+               		jQuery('#n1' +j).hide("slow");
+               }
+       		}
+                       
+       });}
+       
+    for(i=0;i<{{=num2}};i++){
+       jQuery('#n2'+i).hide();
+       jQuery('#b' +i).change(function(){
+            for(j = 0 ; j < {{=num2}} ; j++){
+                if(jQuery('#b' +j).attr('checked')){
+                    jQuery('#n2' +j).show("slow");
+					clearComponentsT2();
+                    //Mostramos solo lo que corresponda al estado 
+                    var actualValue = jQuery('#b' +j).val();
+                    var status = actualValue.split('w')[0];
+                    switch (parseInt(status)) {
+                        case 1:
+                            jQuery('#openButton').show("slow");
+                            jQuery('#stopButton').show("slow");	
+                            break;
+                        case 2:
+                            jQuery('#notAvaibleRMessage').show("slow");
+                            break;
+                        case 4:
+                            jQuery('#notAvaibleRMessage').show("slow");
+                            break;
+                        default:
+                            jQuery('#notAvaibleRMessage').show("slow");
+                    }
+
+               }else{
+               		jQuery('#n2' +j).hide("slow");
+               }
+       		}
+                       
+       });}
 });
+
+function clearComponentsT1()
+{
+	//Ocultamos todos los botones  
+    jQuery('#continueEditingButton' ).hide();
+    jQuery('#editButton').hide();
+    jQuery('#saveChangesButton').hide();
+    jQuery('#notAvaibleSMessage').hide();
+
+}
+
+function clearComponentsT2()
+{
+	//Ocultamos todos los botones  
+    jQuery('#openButton').hide();
+    jQuery('#stopButton').hide();
+    jQuery('#notAvaibleRMessage').hide();
+}
 </script>

@@ -73,10 +73,28 @@ CREATE TABLE IF NOT EXISTS Image(imageID INTEGER PRIMARY KEY, vanillaImageFamily
 	FOREIGN KEY(osFamily, osVariant) REFERENCES OSVariant(familyID, variantID) ON DELETE CASCADE ON UPDATE CASCADE);
 
 INSERT IGNORE INTO Image VALUES
-	(1, 1, 'Debian-Squeeze', 'Imagen vanilla', 1, 1, 1, 0);
+  (1, 1, 'Debian-Squeeze', 'Imagen vanilla', 1, 1, 1, 0),
+  (2, 2, 'Debian-Squeeze', 'Imagen vanilla', 1, 1, 1, 0),
+  (3, 3, 'Debian-Squeeze', 'Imagen vanilla', 1, 1, 1, 0),
+  (4, 4, 'Windows 7', 'Imagen vanilla', 2, 1, 1, 0),
+  (5, 5, 'Windows 7', 'Imagen vanilla', 2, 1, 1, 0),
+  (6, 6, 'Windows 7', 'Imagen vanilla', 2, 1, 1, 0),
+  (7, 1, 'Debian-AISO', 'Imagen de AISO', 1, 1, 0, 0),
+  (8, 4, 'Windows-LEC', 'Imagen de LEC', 2, 1, 0, 0),
+  (9, 5, 'Windows-Xilinx', 'Imagen de Windows con Xilinx', 2, 1, 0, 1);
 	
 CREATE TABLE IF NOT EXISTS EditedImage(temporaryID VARCHAR(70) PRIMARY KEY, vanillaImageFamilyID SMALLINT, 
 	imageID INTEGER, name VARCHAR(20), description VARCHAR(200),
 	osFamily SMALLINT, osVariant SMALLINT, ownerID INTEGER, state TINYINT,
 	FOREIGN KEY(vanillaImageFamilyID) REFERENCES VanillaImageFamily(familyID),
 	FOREIGN KEY(osFamily, osVariant) REFERENCES OSVariant(familyID, variantID) ON DELETE CASCADE ON UPDATE CASCADE);
+
+INSERT IGNORE INTO EditedImage VALUES	
+	('command1',1,10, 'Debian-LRED', 'Imagen de LRED', 1, 1, 12, 0),
+	('command2',1,11, 'Windows-LP2', 'Imagen de LP2', 2, 1, 12, 1),
+	('command3',1,12, 'Windows-LTC', 'Imagen de LTC', 2, 1, 12, 2),
+	('command4',1,13, 'Windows-POO', 'Imagen de POO', 2, 1, 12, 3),
+	('command5',1,14, 'Windows-EDI', 'Imagen de EDI', 2, 1, 12, 4),
+	('command6',1,15, 'Debian-LSO', 'Imagen de LSO', 1, 1, 12, 6),
+	('command7',1,16, 'Windows-ISBC', 'Imagen de ISBC', 2, 1, 12, 6),
+	('command8',1,17, 'Debian-SO', 'Imagen de SO', 1, 1, 12, 1);
