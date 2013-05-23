@@ -1,3 +1,13 @@
 {{extend 'layout.html'}}
 <h1>{{=T('Asociar máquinas virtuales a asignaturas')}}</h1>
-{{=form}}
+{{=form1}}
+{{=form2}}
+<script>
+jQuery(document).ready(function(){
+  
+    jQuery('#editedImagesSelect').change(function(){
+		jQuery('#searchSolution').hide();    	
+    });
+
+});
+</script>

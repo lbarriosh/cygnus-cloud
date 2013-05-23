@@ -184,21 +184,78 @@ def associateSubjects():
     connector = conectToServer()
     waitingImages = connector.getEditedImageIDs(auth.user_id)
     waitingSelect = SELECT(_name = 'waitingImagesSelect')
+    editedSelect = SELECT(_name = 'editedImagesSelect',_id='editedImagesSelect')
     for image in waitingImages:
         imageInfo = connector.getImageData(image)
-        waitingSelect.append(OPTION(imageInfo["ImageName"],_value = image))
+        waitingSelect.append(OPTION(imageInfo["ImageName"],_value = imageInfo["ImageID"]))
+        if len(userDB(userDB.VMByGroup.VMId==imageInfo["ImageID"]).select()) > 0:
+            if request.vars.selectedIndex == str(imageInfo["ImageID"]):
+                editedSelect.append(OPTION(imageInfo["ImageName"],_value = imageInfo["ImageID"],_selected='selected'))
+            else:
+                editedSelect.append(OPTION(imageInfo["ImageName"],_value = imageInfo["ImageID"])) 
+             
              
     subjects = userDB((userDB.UserGroup.userId==auth.user['email']) & (userDB.UserGroup.cod == userDB.Subjects.code)
         ).select(userDB.UserGroup.cod,userDB.Subjects.name,userDB.UserGroup.curseGroup)
-    print subjects
     subjectsSelect = SELECT(_name = 'userSubjectsSelect')
     for s in subjects:
-        subjectsSelect.append(OPTION(str(s.UserGroup.cod) + " " + s.Subjects.name + "- Grupo: " + s.UserGroup.curseGroup ,_value = s.UserGroup.cod))
+        subjectsSelect.append(OPTION(str(s.UserGroup.cod) + " " + s.Subjects.name + "- Grupo: " + s.UserGroup.curseGroup 
+            ,_value = str(s.UserGroup.cod)+'-'+s.UserGroup.curseGroup))
+
          
-    form = FORM(H2(T('Etiquetar máquinas virtuales')),TABLE(TR(TH("Nombre",_class='izquierda'),TH("Grupo de asignatura",_class='izquierda'),_style="margin:0;")
+    form1 = FORM(H2(T('Asociar máquinas virtuales')),TABLE(TR(TH("Nombre",_class='izquierda'),TH("Grupo de asignatura",_class='izquierda'),_style="margin:0;")
        ,TR(waitingSelect,subjectsSelect)),CENTER(INPUT(_type='submit',_name = 'asociateSubject',  _value = T('Asociar asignatura')
         ,_class="button button-blue",_style="width:180px;")))
-    return dict(form=form)
+        
+    #Extraemos la lista de asignaturas si procede
+    listSubjectsAux = request.vars.subjectsFind or []
+    #Comprobamos si se ha tomado como una lista 
+    if(isinstance(listSubjectsAux,str)):
+        listSubjects = [eval(request.vars.subjectsFind)]
+    else:
+        listSubjects = []
+        for l in listSubjectsAux:
+            listSubjects.append(eval(l))
+            
+    searchTable = TABLE(TR(TH("Nombre",_class='izquierda'),_style="margin:0;")
+       ,TR(TD(editedSelect,INPUT(_type='submit',_name = 'search',  _value = T('Buscar')
+        ,_class="button button-blue",_style="width:100px;"),_class='izquierda')))
+    if listSubjectsAux != []:
+       
+        subjectsSelect = SELECT(_name = 'searchSubjectsSelect')
+        for s in listSubjects:
+           subjectName = userDB(userDB.Subjects.code==s[0]).select(userDB.Subjects.name)[0].name
+           subjectsSelect.append(OPTION(str(s[0]) + " " + subjectName + "- Grupo: " + s[1]
+               ,_value = str(s[0])+'-'+s[1]))
+        searchTable.append(TR(subjectsSelect,CENTER(INPUT(_type='submit',_name = 'remove',  _value = T('Desvincular máquina')
+        ,_class="button button-blue",_style="width:180px;")),_id='searchSolution'))
+
+    form2 = FORM(H2(T('Desvincular máquinas virtuales')),searchTable)    
+    
+            #Acción según el botón pulsado
+    if form1.accepts(request.vars,keepvalues=True) and form1.vars.asociateSubject:
+           if(len(form1.vars.userSubjectsSelect) >= 1) and (len(form1.vars.waitingImagesSelect) >= 1): 
+               userDB.VMByGroup.insert(VMId = form1.vars.waitingImagesSelect,cod = form1.vars.userSubjectsSelect.split('-')[0],
+                   curseGroup = form1.vars.userSubjectsSelect.split('-')[1])
+               response.flash = T('Máquina virtual asociada correctamente.')
+               
+    if form2.accepts(request.vars,keepvalues=True) and form2.vars.search:
+           #Buscamos las asignaturas asociadas a esta máquina
+           subjects =  userDB(userDB.VMByGroup.VMId == form2.vars.editedImagesSelect).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)
+           listSubjects = [] 
+           for s in subjects : 
+               listSubjects.append([s.cod,s.curseGroup])
+           redirect(URL(c='teacher', f = 'associateSubjects', vars = {'subjectsFind':listSubjects,
+               'selectedIndex':form2.vars.editedImagesSelect}))
+    if form2.accepts(request.vars,keepvalues=True) and form2.vars.remove:
+          #Borramos la entrada
+          userDB(userDB.VMByGroup.cod==form2.vars.searchSubjectsSelect.split('-')[0] and 
+                  userDB.VMByGroup.curseGroup==form2.vars.searchSubjectsSelect.split('-')[1] and
+                  userDB.VMByGroup.VMId==form2.vars.editedImagesSelect).delete()
+          response.flash = T('Máquina virtual desvinculada.')
+          redirect(URL(c='teacher',f='associateSubjects'))
+        
+    return dict(form1=form1,form2=form2)
             
          
    

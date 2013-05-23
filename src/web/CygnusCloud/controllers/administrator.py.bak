@@ -14,7 +14,7 @@ def runVM():
         #Creamos el segundo formulario
         listSubjectsAux = request.vars.subjectsFind or []
         #Comprobamos si se ha tomado como una lista
-            
+        print request.vars.subjectsFind    
         if(isinstance(listSubjectsAux,str)):
             listSubjects= [eval(request.vars.subjectsFind)]
         else:
@@ -302,7 +302,7 @@ def users():
               INPUT(_type="submit",_class="button button-blue",_name = 'remove',_value=T("Eliminar")))
         #Acción según el botón pulsado
         if form2.accepts(request.vars,keepvalues=True) and form2.vars.add:
-           if(len(form2.vars.code) >= 4) and (len(form2.vars.classGroup) == 1): 
+           if(len(form2.vars.code) >= 3) and (len(form2.vars.classGroup) == 1): 
                #Si no existia ya la relación la añadimos
                if(userDB((userDB.UserGroup.userId == form2.vars.usersSelect) & (userDB.UserGroup.cod == form2.vars.code) & \
                (userDB.UserGroup.curseGroup == form2.vars.classGroup)).count() == 0) and \
