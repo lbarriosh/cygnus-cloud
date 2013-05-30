@@ -1,0 +1,742 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+\usetheme{Madrid}
+\title[CygnusCloud]{CygnusCloud:\linebreak{} provisión de puestos de laboratorio virtuales bajo demanda}
+\author[Barrios, Fernández, Guayerbas]{Luis Barrios Hernández\linebreak{} Adrián Fernández Hernández\linebreak{} Samuel Guayerbas Martín}
+\institute[UCM]{Universidad Complutense de Madrid}
+\date[24/05/13]{Fase final, 7ª edición CUSL\linebreak{}Granada, mayo de 2013}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+maketitle
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Quienes somos?
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Luis Barrios Hernández
+\end_layout
+
+\begin_layout Itemize
+estudio Ingeniería Informática en la Universidad Complutense.
+\end_layout
+
+\begin_layout Itemize
+(feliz) usuario de 
+\emph on
+software libre
+\emph default
+ desde hace más de 11 años
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\SpecialChar \ldots{}
+ y desarrollador de 
+\emph on
+software libre 
+\emph default
+desde hace 2
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+me interesaría trabajar
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+diseñando e implementando sistemas distribuidos 
+\end_layout
+
+\begin_layout Itemize
+cacharreando con 
+\emph on
+hardware 
+\emph default
+y redes
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Quienes somos?
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Adrián Fernández Hernández
+\end_layout
+
+\begin_layout Itemize
+estudio Ingeniería Informática en la Universidad Complutense.
+\end_layout
+
+\begin_layout Itemize
+utilizo 
+\emph on
+software libre 
+\emph default
+de forma habitual desde hace más de 3 años
+\end_layout
+
+\begin_layout Itemize
+me interesaría trabajar en
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+diseño web
+\end_layout
+
+\begin_layout Itemize
+informática gráfica
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Quienes somos?
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Samuel Guayerbas Martín
+\end_layout
+
+\begin_layout Itemize
+estudio Ingeniería Informática en la Universidad Complutense.
+\end_layout
+
+\begin_layout Itemize
+llevo un año viviendo fuera de 
+\emph on
+Windows
+\emph default
+\SpecialChar \ldots{}
+ 
+\series bold
+\bar under
+y no pienso volver
+\end_layout
+
+\begin_layout Itemize
+he desarrollado videojuegos libres (
+\emph on
+IronHand
+\emph default
+)
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\SpecialChar \ldots{}
+ y quiero vivir de ello.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Por qué hemos desarrollado CygnusCloud?
+\end_layout
+
+\begin_layout Standard
+Para resolver tres problemas:
+\end_layout
+
+\begin_layout Enumerate
+escasez de aulas de informática
+\end_layout
+
+\begin_layout Enumerate
+exceso de burocracia para cambiar la configuración de los equipos
+\end_layout
+
+\begin_layout Enumerate
+sobrecoste de las aulas de informática
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Problema #1: no hay suficientes aulas de informática
+\end_layout
+
+\begin_layout Itemize
+En la Facultad de Informática de la UCM se imparten siete titulaciones distintas
+\end_layout
+
+\begin_layout Itemize
+Todos competimos por
+\series bold
+ 
+\series default
+11 aulas de informática
+\series bold
+, 
+\series default
+con 20 PCs cada una
+\end_layout
+
+\begin_layout Itemize
+Sólo podemos utilizarlas cuando no se da clase
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+Si no hay equipos disponibles
+\end_layout
+
+\begin_layout Itemize
+usamos nuestros portátiles o nos vamos a casa
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \ldots{}
+ aunque haya sitio en otras facultades
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Problema #2: mucha burocracia
+\end_layout
+
+\begin_layout Itemize
+la configuración de los equipos se modifica
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \ldots{}
+ a golpe de instancia
+\end_layout
+
+\end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+sólo es posible introducir cambios al principio del cuatrimestre
+\end_layout
+
+\begin_layout Itemize
+si después hay que introducir alguno
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \ldots{}
+tocará esperar durante 
+\emph on
+meses
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Problema #3: estamos perdiendo dinero
+\end_layout
+
+\begin_layout Itemize
+no es posible compartir licencias de pago entre distintas facultades
+\end_layout
+
+\begin_layout Itemize
+no aprovechamos las aulas de informática vacías
+\end_layout
+
+\begin_layout Itemize
+apenas explotamos la potencia de los PCs de estas aulas
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Demo
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\size larger
+Esta presentación se está visualizando desde CygnusCloud.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+El sistema CygnusCloud
+\end_layout
+
+\begin_layout Itemize
+Escrito en 
+\emph on
+Python
+\emph default
+, HTML5 y JavaScript
+\end_layout
+
+\begin_layout Itemize
+Construido sobre KVM, libvirt, MariaDB, Twisted, pyftpdlib y web2py
+\end_layout
+
+\begin_layout Itemize
+Software libre, liberado bajo licencia LGPL/Apache 2
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Dirigido a instituciones académicas
+\end_layout
+
+\begin_layout Itemize
+Simple y eficiente
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+aprovechando equipos antiguos, puede 
+\series bold
+implantarse
+\series default
+ con 
+\series bold
+coste cero
+\end_layout
+
+\end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Permite que
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+los alumnos de cualquier carrera trabajen en cualquier aula de informática
+ del campus.
+\end_layout
+
+\begin_layout Enumerate
+los profesores introduzcan cambios en la configuración de los equipos en
+ cuestión de 
+\emph on
+horas
+\end_layout
+
+\begin_layout Enumerate
+las aulas de informática se aprovechen al máximo.
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+Demo
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\size larger
+Esta presentación se está visualizando desde CygnusCloud.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Qué ofrece CygnusCloud?
+\end_layout
+
+\begin_layout Itemize
+Control de acceso
+\end_layout
+
+\begin_layout Itemize
+Gestión de usuarios y asignaturas
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Arranque y detención de máquinas virtuales
+\end_layout
+
+\begin_layout Itemize
+Creación y edición de máquinas virtuales, incluso en varias fases.
+\end_layout
+
+\begin_layout Itemize
+Borrado de máquinas virtuales
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Gestión de errores
+\series default
+: interrupciones en la edición de una imagen, caídas de conexión, errores
+ internos en los servidores,\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+podrá usarse en una prueba piloto o incluso en producción
+\end_layout
+
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Para qué no sirve CygnusCloud?
+\end_layout
+
+\begin_layout Standard
+CygnusCloud no puede utilizarse para realizar tareas
+\end_layout
+
+\begin_layout Itemize
+que refrescan mucho la pantalla (como la renderización de gráficos 3D) 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+limitación impuesta por el protocolo VNC
+\series default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+que requieren mucho tráfico entre el equipo del usuario y la máquina virtual
+ (como la edición de vídeos)
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Qué hace falta para utilizar CygnusCloud?
+\end_layout
+
+\begin_layout Standard
+Dos cosas:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Servidores
+\series default
+.
+ Pueden ser bastante antiguos
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+CPU Intel Core 2 Duo, 2 GB de RAM, 20 GB de espacio en disco para los que
+ albergan máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+CPU Intel Pentium 4 a 2 GHz, y 1 GB de RAM, 2 GB de disco duro para el resto.
+\end_layout
+
+\end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Ancho de banda
+\series default
+.
+ Como mínimo, una red a 100 Mb/s.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+¿Cuánto cuesta implantar CygnusCloud?
+\end_layout
+
+\begin_layout Standard
+Sólo hay que asumir el coste de
+\end_layout
+
+\begin_layout Itemize
+los servidores (ninguno si se reutilizan)
+\end_layout
+
+\begin_layout Itemize
+el equipo de red (ninguno si se reutiliza)
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+la energía eléctrica consumida
+\end_layout
+
+\begin_layout Itemize
+las licencias 
+\shape italic
+Windows Virtual Desktop Access
+\shape default
+, en caso de querer ofrecer máquinas virtuales con el sistema operativo
+ 
+\emph on
+Windows 
+\emph default
+instalado.
+\end_layout
+
+\begin_layout BeginFrame
+¿Qué haremos tras la 
+\emph on
+release
+\emph default
+ final?
+\end_layout
+
+\begin_layout Itemize
+Publicaremos la 
+\series bold
+versión final y toda su documentación
+\series default
+ el 
+\series bold
+21 de Junio de 2013
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Nos estamos planteando 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+crear nuestra propia 
+\emph on
+startup
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \ldots{}
+y dedicarnos a adaptar y modificar 
+\emph on
+CygnusCloud
+\emph default
+ para diversas organizaciones
+\end_layout
+
+\end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+introducir modificaciones para
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+incorporar soporte multi-
+\emph on
+cluster
+\end_layout
+
+\begin_layout Itemize
+hacer la 
+\emph on
+web
+\emph default
+ más escalable
+\end_layout
+
+\begin_layout Itemize
+tratar algunos errores más (pocos)
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\size larger
+Preguntas
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document
