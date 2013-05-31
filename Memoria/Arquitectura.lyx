@@ -5613,14 +5613,14 @@ network
 twisted
 \emph default
  para comunicar una máquina con otra u otras conectadas a la misma red.
- La figura 
+ El diagrama de paquetes de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:El-paquete-network"
 
 \end_inset
 
- muestra que este paquete se descompone en seis subpaquetes:
+ muestra que este paquete se descompone en siete subpaquetes:
 \end_layout
 
 \begin_layout Itemize
@@ -5650,6 +5650,56 @@ Packet
  que intercambian los equipos.
 \end_layout
 
+\begin_layout Itemize
+el paquete 
+\family typewriter
+ftp
+\family default
+.
+ Sus clases más importantes son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+FTPClient
+\family default
+, que permite interactuar con el cliente FTP de la librería estándar de
+ 
+\emph on
+Python
+\emph default
+ a un elevado nivel de abstracción.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ConfigurableFTPServer
+\family default
+, que ofrece una interfaz de alto nivel para interactuar con el servidor
+ FTP 
+\family typewriter
+pyftpdlib
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+FTPCallback
+\family default
+, que define la interfaz que se usará para procesar los eventos generados
+ por el servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+.
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 el paquete 
 \family typewriter
@@ -5757,26 +5807,128 @@ imageRepository
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de paquetes/Diagrama paquetes Image Repository.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Descomposición-del-paquete-imageRepository"
+
+\end_inset
+
+Descomposición del paquete 
+\family typewriter
+imageRepository
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Este paquete contiene las clases del subsistema repositorio de imágenes.
- Las más relevantes son las siguientes:
+ Como puede observarse en el diagrama de paquetes de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Descomposición-del-paquete-imageRepository"
+
+\end_inset
+
+, el paquete 
+\family typewriter
+imageRepository
+\family default
+ se descompone en cuatro subpaquetes:
 \end_layout
 
 \begin_layout Itemize
-ImageRepositoryDBConnector, que permite manipular la base de datos del repositor
-io de imágenes.
+el paquete 
+\family typewriter
+database
+\family default
+.
+ Contiene una única clase, 
+\family typewriter
+ImageRepositoryDBConnector
+\family default
+, que permite manipular la base de datos del repositorio de imágenes.
 \end_layout
 
 \begin_layout Itemize
-ImageRepositoryPacketHandler, que permite manipular los paquetes que se
- utilizan para interactuar con el repositorio.
+el paquete 
+\family typewriter
+packetHandling
+\family default
+.
+ La única clase que incluye, 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+, permite crear y leer los distintos tipos de paquete que se utilizan en
+ el repositorio de imágenes.
 \end_layout
 
 \begin_layout Itemize
-FTPServerCallback, 
+el paquete 
+\family typewriter
+callbacks
+\family default
+, que contiene dos clases: 
+\family typewriter
+CommandsCallback
+\family default
+, que procesa los paquetes recibidos en el repositorio, y 
+\family typewriter
+FTPServerCallback
+\family default
+, que trata los eventos generados por el servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
-CommandsCallback, que procesa los paquetes recibidos en el repositorio.
+el paquete 
+\family typewriter
+reactor
+\family default
+.
+ Su única clase, 
+\family typewriter
+ImageRepositoryReactor
+\family default
+, se ocupa de realizar los procesos de inicialización y apagado del demonio
+ del repositorio de imágenes.
+ 
 \end_layout
 
 \begin_layout Subsubsection
