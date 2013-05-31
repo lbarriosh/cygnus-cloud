@@ -8,7 +8,7 @@ Child process manager definitios
 
 from subprocess import Popen, PIPE, STDOUT
 
-from ccutils.rootPasswordHandler import RootPasswordHandler
+from ccutils.passwords.rootPasswordHandler import RootPasswordHandler
 from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
 from ccutils.processes.backgroundPollingThread import BackgroundProcessesPollingThread
 from time import sleep

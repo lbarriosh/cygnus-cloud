@@ -1,8 +1,8 @@
 #coding=utf-8
 
-from ccutils.configurationFiles.constantsManager import ConstantsManager
+from ccutils.configurationFiles.configParametersManager import ConfigParametersManager
 
-class ImageRepositoryConstantsManager(ConstantsManager):
+class ImageRepositoryConstantsManager(ConfigParametersManager):
     """
     Parser del fichero de configuración del repositorio
     """
@@ -13,7 +13,7 @@ class ImageRepositoryConstantsManager(ConstantsManager):
         Argumentos:
             Ninguno
         """
-        ConstantsManager.__init__(self)
+        ConfigParametersManager.__init__(self)
     
     def _specializeDataStructure(self):
         """

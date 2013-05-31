@@ -5,7 +5,7 @@ Connection monitoring thread definitions.
 @version: 3.6
 '''
 
-from ccutils.threads import BasicThread
+from ccutils.threads.basicThread import BasicThread
 from network.twistedInteraction.connection import CONNECTION_STATUS
 from time import sleep
 

@@ -1,12 +1,12 @@
 # -*- coding: utf8 -*
 
 
-from ccutils.configurationFiles.constantsManager import ConstantsManager
+from ccutils.configurationFiles.configParametersManager import ConfigParametersManager
 
-class ClusterServerConstantsManager(ConstantsManager):
+class ClusterServerConstantsManager(ConfigParametersManager):
     
     def __init__(self):
-        ConstantsManager.__init__(self)
+        ConfigParametersManager.__init__(self)
     
     def _specializeDataStructure(self):
         self._data["listenningPort"] = int(self._data["listenningPort"])

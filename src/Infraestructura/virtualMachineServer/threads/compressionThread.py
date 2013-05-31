@@ -5,7 +5,7 @@ Created on Apr 28, 2013
 @author: luis
 '''
 
-from ccutils.threads import BasicThread
+from ccutils.threads.basicThread import BasicThread
 from ccutils.compression.zipBasedCompressor import ZipBasedCompressor
 from virtualMachineServer.exceptions.vmServerException import VMServerException
 from os import path, listdir, makedirs

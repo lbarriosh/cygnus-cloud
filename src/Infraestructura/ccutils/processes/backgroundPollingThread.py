@@ -4,7 +4,7 @@ Created on Mar 29, 2013
 @author: luis
 '''
 
-from ccutils.threads import BasicThread
+from ccutils.threads.basicThread import BasicThread
 from time import sleep
 
 class BackgroundProcessesPollingThread(BasicThread):

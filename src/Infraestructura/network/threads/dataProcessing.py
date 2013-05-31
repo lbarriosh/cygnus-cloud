@@ -4,7 +4,7 @@ Data processing threads definitions.
 @author: Luis Barrios Hernández
 @version: 1.1
 '''
-from ccutils.threads import QueueProcessingThread
+from ccutils.threads.queueProcessingThread import QueueProcessingThread
 from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
 
 class IncomingDataThread(QueueProcessingThread):

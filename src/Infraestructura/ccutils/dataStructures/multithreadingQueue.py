@@ -4,8 +4,9 @@ Created on Apr 28, 2013
 @author: luis
 '''
 from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
+from ccutils.dataStructures.queue import Queue
 
-class GenericThreadSafeQueue(object):
+class GenericThreadSafeQueue(Queue):
     
     def __init__(self):
         self.__list = GenericThreadSafeList()

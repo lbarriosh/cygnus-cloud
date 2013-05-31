@@ -9,7 +9,7 @@ Punto de entrada del servidor de máquinas virtuales
 from ccutils.databases.configuration import DBConfigurator
 from reactor.vmServerReactor import VMServerReactor
 from time import sleep
-from ccutils.rootPasswordHandler import RootPasswordHandler
+from ccutils.passwords.rootPasswordHandler import RootPasswordHandler
 from constants import VMServerConstantsManager
 from ccutils.processes.childProcessManager import ChildProcessManager
 import sys

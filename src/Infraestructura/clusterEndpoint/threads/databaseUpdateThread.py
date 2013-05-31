@@ -5,7 +5,7 @@ Definiciones del hilo de actualización periódica de la base de datos de estado
 @version: 1.1
 '''
 
-from ccutils.threads import BasicThread
+from ccutils.threads.basicThread import BasicThread
 
 from time import sleep
 

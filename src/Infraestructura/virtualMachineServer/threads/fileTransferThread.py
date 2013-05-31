@@ -5,7 +5,7 @@ Created on Apr 28, 2013
 @author: luis
 '''
 
-from ccutils.threads import BasicThread
+from ccutils.threads.basicThread import BasicThread
 from network.manager.networkManager import NetworkCallback
 from network.ftp.ftpClient import FTPClient
 from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T as IR_PACKET_T

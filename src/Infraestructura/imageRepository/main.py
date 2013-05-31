@@ -4,11 +4,10 @@ Punto de entrada del repositorio de imágenes
 
 @author: luis
 '''
-
 import sys
 from constants import ImageRepositoryConstantsManager
 from ccutils.databases.configuration import DBConfigurator
-from imageRepository.reactor import ImageRepositoryReactor
+from imageRepository.reactor.imageRepositoryReactor import ImageRepositoryReactor
 
 if __name__ == "__main__" :
     

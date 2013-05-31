@@ -1,10 +1,10 @@
 # -*- coding: UTF8 -*-
-from ccutils.databases.connector import BasicDatabaseConnector
+from ccutils.databases.connector import BasicDBConnector
 from ccutils.enums import enum
 
 TRANSFER_T = enum("CREATE_IMAGE", "EDIT_IMAGE", "DEPLOY_IMAGE", "STORE_IMAGE", "CANCEL_EDITION") 
 
-class VMServerDBConnector(BasicDatabaseConnector):
+class VMServerDBConnector(BasicDBConnector):
     '''
         Esta clase permite gestionar las diferentes características de las imágenes 
          accesibles en el servidor de máquinas virtuales actual.
@@ -14,7 +14,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         '''
             Constructora de la clase
         '''
-        BasicDatabaseConnector.__init__(self, sqlUser, sqlPass, databaseName)
+        BasicDBConnector.__init__(self, sqlUser, sqlPass, databaseName)
         self.generateMACsAndUUIDs()
         self.generateVNCPorts()
         

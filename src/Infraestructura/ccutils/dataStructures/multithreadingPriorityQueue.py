@@ -7,11 +7,12 @@ A module that contains the thread-safe priority queue definitions
 
 from threading import BoundedSemaphore
 from threading import Thread
+from ccutils.dataStructures.queue import Queue
 
 class GenericThreadSafePriorityQueueException(Exception):
     pass
 
-class GenericThreadSafePriorityQueue(object):
+class GenericThreadSafePriorityQueue(Queue):
     """
     A priority queue with multi-threading support.
     @attention: This objects are NOT iterable to avoid nasty iterator issues.    

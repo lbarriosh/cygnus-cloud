@@ -7,9 +7,9 @@ Lector de la base de datos de estado
 @version: 4.0
 '''
 
-from ccutils.databases.connector import BasicDatabaseConnector
+from ccutils.databases.connector import BasicDBConnector
 
-class ClusterEndpointDBConnector(BasicDatabaseConnector):
+class ClusterEndpointDBConnector(BasicDBConnector):
     """
     Inicializa el estado del lector
     Argumentos:
@@ -18,7 +18,7 @@ class ClusterEndpointDBConnector(BasicDatabaseConnector):
         databaseName: nombre de la base de datos de estado
     """
     def __init__(self, sqlUser, sqlPassword, databaseName):
-        BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
+        BasicDBConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         self.__vmServerSegmentsData = []
         self.__vmServerSegments = 0
         self.__vmServerResourceUsageData = []

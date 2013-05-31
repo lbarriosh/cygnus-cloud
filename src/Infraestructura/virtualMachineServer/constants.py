@@ -5,12 +5,12 @@ Created on 14/01/2013
 @author: saguma
 '''
 
-from ccutils.configurationFiles.constantsManager import ConstantsManager
+from ccutils.configurationFiles.configParametersManager import ConfigParametersManager
 
-class VMServerConstantsManager(ConstantsManager):
+class VMServerConstantsManager(ConfigParametersManager):
     
     def __init__(self):
-        ConstantsManager.__init__(self)
+        ConfigParametersManager.__init__(self)
 
     def _specializeDataStructure(self):
         self._data["createVirtualNetworkAsRoot"] = self._data["createVirtualNetworkAsRoot"] == "Yes" or self._data["createVirtualNetworkAsRoot"] == "yes"

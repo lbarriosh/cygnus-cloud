@@ -1,6 +1,6 @@
 # -*- coding: UTF8 -*-
 
-from ccutils.databases.connector import BasicDatabaseConnector
+from ccutils.databases.connector import BasicDBConnector
 from re import sub
 from ccutils.enums import enum
 from os import path
@@ -10,7 +10,7 @@ IMAGE_STATUS_T = enum("NOT_RECEIVED", "READY", "EDITION")
 """
 Conector con la base de datos del repositorio
 """
-class ImageRepositoryDBConnector(BasicDatabaseConnector):
+class ImageRepositoryDBConnector(BasicDBConnector):
     
     """
     Establece la conexión con la base de datos
@@ -20,7 +20,7 @@ class ImageRepositoryDBConnector(BasicDatabaseConnector):
         databaseName: nombre de la base de datos
     """
     def __init__(self, sqlUser, sqlPassword, databaseName):
-        BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
+        BasicDBConnector.__init__(self, sqlUser, sqlPassword, databaseName)
     
     """
     Devuelve los datos asociados a una imagen

@@ -6,23 +6,23 @@ Created on 14/01/2013
 '''
 
 from network.manager.networkManager import NetworkManager
-from virtualMachineServer.networking.callback import ClusterServerCallback
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
 from virtualMachineServer.database.vmServerDB import VMServerDBConnector, TRANSFER_T
 from network.ftp.ftpClient import FTPClient
-from virtualMachineServer.networking.reactors import MainServerPacketReactor
+from virtualMachineServer.networking.reactors import VMServerPacketReactor
 from virtualMachineServer.threads.fileTransferThread import FileTransferThread
 from virtualMachineServer.threads.compressionThread import CompressionThread
 from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.domainHandler import DomainHandler
 from ccutils.processes.childProcessManager import ChildProcessManager
 from network.interfaces.ipAddresses import get_ip_address 
+from virtualMachineServer.networking.callback import ClusterServerCallback
 import os
 import multiprocessing
 import sys
 from errors.codes import ERROR_DESC_T
 
-class VMServerReactor(MainServerPacketReactor):
+class VMServerReactor(VMServerPacketReactor):
     """
     Clase del reactor del servidor de máquinas virtuales
     """

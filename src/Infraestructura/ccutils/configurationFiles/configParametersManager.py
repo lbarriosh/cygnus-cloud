@@ -7,7 +7,7 @@ Created on 14/01/2013
 
 from ccutils.configurationFiles.configurationFileReader import ConfigurationFileReader
 
-class ConstantsManager(object):
+class ConfigParametersManager(object):
     def __init__(self):
         self._data = {}
 

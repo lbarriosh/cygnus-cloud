@@ -1,4 +1,4 @@
-from ccutils.threads import BasicThread
+from ccutils.threads.basicThread import BasicThread
 
 from time import sleep
 

@@ -5,7 +5,7 @@ Created on Apr 11, 2013
 @author: luis
 '''
 from clusterServer.database.clusterServerDB import SERVER_STATE_T
-from ccutils.threads import BasicThread
+from ccutils.threads.basicThread import BasicThread
 from network.manager.networkManager import NetworkManager
 from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 

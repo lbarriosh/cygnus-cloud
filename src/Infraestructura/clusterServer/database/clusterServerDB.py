@@ -1,14 +1,14 @@
 # -*- coding: UTF8 -*-
 
 from ccutils.enums import enum
-from ccutils.databases.connector import BasicDatabaseConnector
+from ccutils.databases.connector import BasicDBConnector
 import time
 
 SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN", "RECONNECTING", "CONNECTION_TIMED_OUT")
 
 IMAGE_STATE_T = enum("READY", "EDITED", "DEPLOY", "DELETE")
 
-class ClusterServerDatabaseConnector(BasicDatabaseConnector):
+class ClusterServerDatabaseConnector(BasicDBConnector):
     """
     Nota: esta clase es ServerVMManager, con los métodos específicos
     de ImagesInServerManager.
@@ -28,7 +28,7 @@ class ClusterServerDatabaseConnector(BasicDatabaseConnector):
             Devuelve:
                 Nada
         '''
-        BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, databaseName)
+        BasicDBConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         
     def deleteVMServerStatistics(self, serverID):
         '''
