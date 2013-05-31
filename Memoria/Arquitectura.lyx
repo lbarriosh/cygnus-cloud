@@ -5875,7 +5875,7 @@ el paquete
 database
 \family default
 .
- Contiene una única clase, 
+ Contiene la clase 
 \family typewriter
 ImageRepositoryDBConnector
 \family default
@@ -5933,69 +5933,123 @@ ImageRepositoryReactor
 
 \begin_layout Subsubsection
 
-\family sans
+\family typewriter
 virtualMachineServer
 \end_layout
 
 \begin_layout Standard
-Este paquete contiene las clases del subsistema servidor de máquinas virtuales
- que interactuan con el hipervisor y también las de mayor nivel de abstracción
- de dicho subsistema.
- Las más importante son las siguientes:
-\end_layout
+\begin_inset Float figure
+wide false
+sideways false
+status open
 
-\begin_layout Itemize
+\begin_layout Plain Layout
+\begin_inset Caption
 
-\family sans
-LibvirtConnector
-\family default
-, que interactúa con el hipervisor KVM a través de la librería 
-\emph on
-libvir
-\emph default
-t para instanciar y destruir máquinas virtuales.
-\end_layout
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Descomposición-del-paquete-virtualMachineServer"
 
-\begin_layout Itemize
+\end_inset
 
-\family sans
-VMClient
-\family default
-, que atiende las peticiones recibidas por el servidor de máquinas virtuales.
- Entre otras cosas, se ocupa de asignar y liberar los recursos asociados
- a cada máquina virtual y de ordenar la instanciación y la destrucción de
- las mismas.
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-ConfigurationFileEditor
-\family default
-, que manipula los ficheros 
+Descomposición del paquete 
 \family typewriter
-.xml
+virtualMachineServer
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Este paquete contiene las clases del subsistema servidor de máquinas virtuales.
+ El diagrama de paquetes de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Descomposición-del-paquete-virtualMachineServer"
+
+\end_inset
+
+ muestra que el paquete 
+\family typewriter
+virtualMachineServer
 \family default
- que definen la configuración de una máquina virtual para incluir los recursos
- asociados a dicha máquina.
+ se descompone en siete subpaquetes:
 \end_layout
 
 \begin_layout Itemize
 
-\family sans
-VMServerPacketHandler
+\family typewriter
+database
 \family default
-, que proporciona métodos para crear y leer los paquetes utilizados por
- el subsistema servidor de máquinas virtuales.
- 
+.
+ Su clase más relevante, 
+\family typewriter
+VMServerDBConnector
+\family default
+, permite manipular la base de datos del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
-
-\family sans
-VirtualNetworkManager
+exceptions.
+ Este paquete contiene la clase 
+\family typewriter
+VMServerException
 \family default
-, que configura la red virtual a la que se conectarán las máquinas virtuales.
+, la clase de excepción asociada a la mayoría de clases del subsistema servidor
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+libvirtInteraction.
+ Este paquete contiene las clases DomainHandler, LibvirtConnector y Configuratio
+nFileEditor, que se utilizan para crear y destruir dominios interactuando
+ con la librería 
+\family typewriter
+libvirt
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+networking.
+ Este paquete contiene, entre otras, las clases
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+VMServerPacketReactor, que define la interfaz que se usará para procesar
+ los paquetes recibidos desde el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+ClusterServerCallback, que 
+\end_layout
+
+\begin_layout Itemize
+VMServerPacketHandler, que permite crear y leer los distintos tipos de paquete
+ asociados al servidor de máquinas virtuales.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+reactor.
+ Este paquete contiene la clase VMServerReactor, 
 \end_layout
 
 \begin_layout Subsubsection
