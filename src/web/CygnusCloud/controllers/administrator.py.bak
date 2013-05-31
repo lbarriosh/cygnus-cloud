@@ -162,11 +162,11 @@ def servers():
     if(request.args(0) == 'add_servers'):
         #Creamos el primer formulario
         form = FORM(HR(),H2(T('Añadir un nuevo servidor')),DIV(T('Nombre: '),BR(),INPUT(_name = 'name',
-                _style="width:220px;"),_style="position:absolute;left:10%;"),
-                DIV( T('Dirección IP: '),BR(),INPUT(_name ='ipDir',_style="width:220px;"),_style="position:absolute;left:30%;"),
-                DIV( T('Puerto: '),BR(),INPUT(_name ='port',_style="width:110px;"),_style="position:absolute;left:50%;"),
-                DIV(BR(), T('Vanila: '),INPUT(_type="checkbox",_name ='isVanilla',_style="width:30px;")
-                ,_style="position:absolute;left:65%;"),BR(),BR(),
+                _style="width:63%;"),_style="position:absolute;left:10%;"),
+                DIV( T('Dirección IP: '),BR(),INPUT(_name ='ipDir',_style="width:87%;"),_style="position:absolute;left:25%;"),
+                DIV( T('Puerto: '),BR(),INPUT(_name ='port',_style="width:40%;"),_style="position:absolute;left:45%;"),
+                DIV(BR(), T('Imagen base: '),INPUT(_type="checkbox",_name ='isVanilla',_style="width:30px;")
+                ,_style="position:absolute;left:58%;"),BR(),BR(),
                 DIV(HR(),CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'add' ,_value=T('Añadir Servidor'),_style="width:150px;"))))                
         
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
@@ -206,18 +206,18 @@ def servers():
             buttons.append(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'remove' ,_value=T('Eliminar servidor'),_style="width:170px;"),_style="position:relative;left:25%;float:left;"))
           
         # Si no está arrancado, añadimos el botón de arrancar
-        if(infoServer[3] == "Shut down"):
+        if(infoServer[3] == "Apagado"):
             buttons.append(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'run' ,_value=T('Arrancar servidor'),_style="width:170px;")
             ,_style="position:relative;left:30%;float:left;"))
             
         form1 = FORM(DIV(DIV(H4(T('Servidores')),select),
         DIV(INPUT(_type='submit',_class="button button-blue",_name = 'search' ,_value=T('Buscar servidor'),_style="width:150px;")
         ),BR(),
-        DIV( T('Nombre: '),BR(),INPUT(_name = 'name',_value=infoServer[0],_style="width:240px;"),_style="position:relative;float:left;"),
+        DIV( T('Nombre: '),BR(),INPUT(_name = 'name',_value=infoServer[0],_style="width:75%;"),_style="position:relative;float:left;"),
         DIV( T('Dirección IP: '),BR(),
-        INPUT(_name='ip',_value=infoServer[1],_style="width:220px;"),_style="position:relative;left:5%;float:left;"),
-        DIV( T('Puerto: '),BR(),INPUT(_name ='port',_value=infoServer[2],_style="width:100px;"),_style="position:relative;left:10%;float:left"),
-        DIV(BR(), T('Vanila: '),INPUT(_type="checkbox",_name ='isVanilla',_value=infoServer[4],_style="width:30px;")
+        INPUT(_name='ip',_value=infoServer[1],_style="width:95%;"),_style="position:absolute;left:25%;float:left;"),
+        DIV( T('Puerto: '),BR(),INPUT(_name ='port',_value=infoServer[2],_style="width:50%;"),_style="position:absolute;left:50%;float:left"),
+        DIV(BR(), T('Imagen base: '),INPUT(_type="checkbox",_name ='isVanilla',_value=infoServer[4],_style="width:30px;")
                 ,_style="position:absolute;left:65%;"),BR(),_style="margin-bottom:100px;"),DIV(buttons,BR(),_style="margin-bottom:10px;"))           
         
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
@@ -245,7 +245,7 @@ def servers():
             else:
                 sInfo = connector.getVMServersData()[int(infoServer[5])]
                 redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
-            sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"]]) ))
+            sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"],sInfo["IsVanillaServer"]]) ))
             
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.change:
             #Arrancamos el servidor
@@ -358,11 +358,11 @@ def subjects():
     createAdressBar()
     if(request.args(0) == 'add'):              
         #Creamos el primer formulario
-        form = FORM(HR(),H2(T('Añadir un nueva asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_style="width:80px;"),_style="position:absolute;left:10%;"),
+        form = FORM(HR(),H2(T('Añadir un nueva asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_style="width:30%;"),_style="position:absolute;left:10%;"),
                 DIV( T('Nombre: '),BR(),INPUT(_name ='name'),_style="position:absolute;left:18%;"),BR(),BR(),BR(),
-                DIV( T('Año: '),BR(),INPUT(_name ='year',_style="width:70px;"),_style="position:absolute;left:10%;"),
-                DIV( T('Curso: '),BR(),INPUT(_name ='curse',_style="width:50px;"),_style="position:absolute;left:18%;"),
-                DIV( T('Grupo: '),BR(),INPUT(_name ='group',_style="width:50px;"),_style="position:absolute;left:24%;"),BR(),BR(),BR(),
+                DIV( T('Año: '),BR(),INPUT(_name ='year',_style="width:35%;"),_style="position:absolute;left:10%;"),
+                DIV( T('Curso: '),BR(),INPUT(_name ='curse',_style="width:29%;"),_style="position:absolute;left:20%;"),
+                DIV( T('Grupo: '),BR(),INPUT(_name ='group',_style="width:10%;"),_style="position:absolute;left:28%;"),BR(),BR(),BR(),
                 HR(),CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'add' ,_value=T('Añadir'))))                
         
         if form.accepts(request.vars) and form.vars.add:
@@ -476,7 +476,7 @@ def createAdressBar():
                     [SPAN(T('Administrar servidores'), _class='highlighted'), False, URL(f = 'servers',args = ['add_servers']),[
                         (T('Añadir servidor'),False,URL(f = 'servers',args = ['add_servers'])),
                         (T('Editar servidor'),False,URL(f = 'servers',args = ['remove_servers']))]],
-                    [SPAN(T('Administrar usuarios'), _class='highlighted'), False, URL(f = 'initUsers',args = ['remove']),[
+                    [SPAN(T('Administrar usuarios'), _class='highlighted'), False, URL(f = 'users',args = ['add']),[
                         (T('Eliminar'),False,URL(f = 'users',args = ['remove'])),
                         (T('Añadir'),False,URL(f = 'users',args = ['add'])),
                         (T('Asociar asignaturas'),False,URL(f = 'users',args = ['associate_subjects']))]],
@@ -518,11 +518,11 @@ def createUserSearchForm(state):
 def createSubjectsSearchForm(state):        
 
         
-    form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_style="width:80px;"),_style="position:absolute;left:10%;"),
-                DIV( T('Nombre: '),BR(),INPUT(_name ='name'),_style="position:absolute;left:18%;"),BR(),BR(),BR(),
-                DIV( T('Año: '),BR(),INPUT(_name ='year',_style="width:70px;"),_style="position:absolute;left:10%;"),
-                DIV( T('Curso: '),BR(),INPUT(_name ='curse',_style="width:50px;"),_style="position:absolute;left:18%;"),
-                DIV( T('Grupo: '),BR(),INPUT(_name ='group',_style="width:50px;"),_style="position:absolute;left:24%;"),BR(),BR(),BR(),
+    form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_style="width:40%;"),_style="position:absolute;left:10%;"),
+                DIV( T('Nombre: '),BR(),INPUT(_name ='name'),_style="position:absolute;left:20%;"),BR(),BR(),BR(),
+                DIV( T('Año: '),BR(),INPUT(_name ='year',_style="width:25%;"),_style="position:absolute;left:10%;"),
+                DIV( T('Curso: '),BR(),INPUT(_name ='curse',_style="width:10%;"),_style="position:absolute;left:18%;"),
+                DIV( T('Grupo: '),BR(),INPUT(_name ='group',_style="width:10%;"),_style="position:absolute;left:24%;"),BR(),BR(),BR(),
                 INPUT(_type='submit',_class="button button-blue",_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
     
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:

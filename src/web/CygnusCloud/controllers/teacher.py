@@ -346,19 +346,19 @@ def createVanillaImageTable(ramSize,cpuNumber,osDiskSize,dataDiskSize,maxRam,max
        
        table = TABLE(_class='data', _name='table')
        table.append(TR(TD(IMG(_src=URL('static','images/memoryIcon.png'), _alt="memoryIcon",_style="width:35px;"),_class='vanillaData')
-           ,TD(LABEL("Memoria Ram"),_class='vanillaData'),
+           ,TD(LABEL("Memoria RAM"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pRam) + "%;"),_class="meter animate"),_class='vanillaData')
            ,TD(LABEL(str("%.0f" %(ramSize/1024))+" MB"),_class='vanillaData'),_class='vanillaData'))
        table.append(TR(TD(IMG(_src=URL('static','images/cpuIcon.png'), _alt="cpuIcon",_style="width:35px;"),_class='vanillaData')
-           ,TD(LABEL("Número Cpus"),_class='vanillaData'),
+           ,TD(LABEL("Número CPUs"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pCPUs) + "%;"),_class="meter animate red"),_class='vanillaData')
            ,TD(LABEL(cpuNumber),_class='vanillaData'),_class='vanillaData'))
        table.append(TR(TD(IMG(_src=URL('static','images/osDiskIcon.png'), _alt="memoryIcon",_style="width:30px;"),_class='vanillaData')
-           ,TD(LABEL("Espacio disco"),_class='vanillaData'),
+           ,TD(LABEL("Disco SO"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pOsDisk) + "%;"),_class="meter animate blue"),_class='vanillaData')
            ,TD(LABEL(str("%.0f" %(osDiskSize/1024))+" MB")),_class='vanillaData'))
        table.append(TR(TD(IMG(_src=URL('static','images/dataDiskIcon.png'), _alt="memoryIcon",_style="width:30px;"),_class='vanillaData')
-           ,TD(LABEL("Espacio datos"),_class='vanillaData'),
+           ,TD(LABEL("Disco datos"),_class='vanillaData'),
            TD(DIV(SPAN(SPAN(),_style="width:" + str(pDataDisk) + "%;"),_class="meter animate orange"),_class='vanillaData')
            ,TD(LABEL(str("%.0f" %(dataDiskSize/1024))+" MB")),_class='vanillaData'))
            

@@ -28,8 +28,10 @@
                 <table border=0 width="100%"><tr>
                     <td><div id="noVNC_status" style="color:#a5b1e8;">Loading</div></td>
                     <td width="1%"><div id="noVNC_buttons">
-                        <input type=button class="button button-blue" value="enviar Cntrl+Alt+Supr"
+                        <input type=button class="button button-blue" value="Enviar Contrl+ALt+Supr"
                         id="sendCtrlAltDelButton"  style="width:150px;">
+                            <input type=button class="button button-blue" value="Pantalla completa"
+                        id="fullScreenButton"  style="width:150px;">
                             </div></td>
                 </tr></table>
             </div>
@@ -71,6 +73,12 @@
             rfb.sendCtrlAltDel();
             return false;
         }
+        
+        function fullScreen() {
+            //Pantalla completa 
+            document.getElementById("noVNC_canvas").webkitRequestFullscreen();
+            return false;
+        }
         function updateState(rfb, state, oldstate, msg) {
             var s, sb, cad, level;
             s = $D('noVNC_status');
@@ -99,6 +107,8 @@
 
             $D('sendCtrlAltDelButton').style.display = "inline";
             $D('sendCtrlAltDelButton').onclick = sendCtrlAltDel;
+            $D('sendCtrlAltDelButton').style.display = "inline";
+            $D('fullScreenButton').onclick = fullScreen;
 
             WebUtil.init_logging(WebUtil.getQueryVar('logging', 'warn'));
             document.title = unescape(WebUtil.getQueryVar('title', 'Visor de escritorio remoto noVNC | CygnusCloud'));
@@ -133,6 +143,7 @@
                            'updateState':  updateState,
                            'onPasswordRequired':  passwordRequired});
             rfb.connect(host, port, password, path);
+            
         };
         </script>
     <body>

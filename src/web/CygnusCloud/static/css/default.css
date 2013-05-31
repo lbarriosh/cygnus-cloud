@@ -11,14 +11,15 @@ body {
     background: none repeat scroll 0 0 #939393;
     color: #00388d;
     font-family:  Arial, MS Sans Serif, Tahoma, Helvetica, sans-serif;
-    font-size: 15px;
+    font-size: 90%;
     line-height: 1.6em;
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
     padding: 0;    
     text-align: justify;
-    width: 1100px;
+    width: 90%;
+  	height: 90%;
 }
 
 h1{
@@ -106,11 +107,13 @@ a:hover {
 /** MENU */
 #menu {
     background: url("../images/image01.jpg") no-repeat  left top ;
-	width: 1100px;
+    background-size: 100% 150%;
+	width: 90%;
 	height: 40px;
 	margin: 0px auto;
 	margin-top:10px;
-	padding: 0 20px;
+	padding: 0 5%;
+	
 	
 }
 #menu ul {
@@ -126,6 +129,7 @@ a:hover {
 
 #menu li {    
 	background:url("../images/image04.jpg") no-repeat bottom left 100%; color:#232323;
+    background-size: 100% 100%;
     display: inline;
     width:auto;
     height:auto;
@@ -175,12 +179,13 @@ a:hover {
 #footer {
     /*background: url("../images/image04.jpg") no-repeat scroll left top transparent;*/
     background: url("../images/image02.jpg") no-repeat left top;
+    background-size: 100% 100%;
     /*
     color: #000000;
     font-size: 11px;
     height: 70px;
     margin: 0 auto;*/   
-    width: 1100px;
+    width: 100%;
 	height: 15px;
 	margin: 0 auto;
 	
@@ -223,7 +228,7 @@ a:hover {
 
 #maquinas {
     display: inline-block;
-    width: 800px;
+    width: 60%;
 }
 
 tr.notAvaible{
@@ -293,7 +298,7 @@ th.izquierda{
 .button
 			{
 	cursor:pointer;
-	margin: 0px;
+	margin: 5px;
 	margin-top:10px;
 	margin-bottom:10px;
 	text-decoration: none;
