@@ -2644,7 +2644,7 @@ reference "fig:Tasa-de-escritura-benchmark"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -2687,7 +2687,7 @@ Tiempos de compresión y descompresión
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -4663,6 +4663,62 @@ reference "sub:Uso-del-formato-qcow2"
  Por ello, el espacio libre en las imágenes no ocupará espacio en disco
  en el servidor ni en el repositorio de imágenes, y la existencia de discos
  duros de gran tamaño infrautilizados no supone un desperdicio de recursos.
+ 
+\end_layout
+
+\begin_layout Subsection
+Uso de los servidores de edición de imágenes
+\end_layout
+
+\begin_layout Standard
+La creación y edición de imágenes de disco requiere, entre otras cosas,
+\end_layout
+
+\begin_layout Itemize
+el intercambio de ficheros de gran tamaño entre el repositorio de imágenes
+ y un servidor de máquinas virtuales, lo que consume mucho ancho de banda,
+ y
+\end_layout
+
+\begin_layout Itemize
+la compresión y descompresión de ficheros de gran tamaño en el servidor
+ de máquinas virtuales, lo que consume mucho tiempo de CPU y realiza muchos
+ accesos a disco.
+\end_layout
+
+\begin_layout Standard
+Por tanto, si un servidor de máquinas virtuales que se utiliza para editar
+ imágenes alberga otras máquinas virtuales, el rendimiento de estas se degradará
+ cuando
+\end_layout
+
+\begin_layout Itemize
+se compriman y descompriman ficheros, o cuando
+\end_layout
+
+\begin_layout Itemize
+se transfieran ficheros entre el servidor de máquinas virtuales y el repositorio
+ de imágenes, ya que en estos casos el tráfico FTP, el tráfico VNC y el
+ tráfico generado por las propias máquinas virtuales competirán por el ancho
+ de banda del enlace que conecta el servidor de máquinas virtuales a la
+ red de la UCM.
+\end_layout
+
+\begin_layout Standard
+Así, si no tomamos medidas, un reducido número de usuarios que pueden crear
+ o editar imágenes de disco (los profesores y los administradores) pueden
+ perjudicar gravemente a la gran mayoría de usuarios, que se limitan a trabajar
+ con las máquinas virtuales ya configuradas.
+\end_layout
+
+\begin_layout Standard
+Para evitar esto, hemos decidido que los procesos de creación y edición
+ de imágenes sólo tengan lugar en cierto número de servidores de máquinas
+ virtuales, los 
+\series bold
+servidores de edición de imágenes
+\series default
+.
  
 \end_layout
 
