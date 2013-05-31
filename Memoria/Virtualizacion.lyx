@@ -691,6 +691,13 @@ Xen gestiona los dispositivos de bloque casi como los dispositivos de red.
 
 \begin_layout Section
 KVM
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:KVM"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

@@ -478,6 +478,13 @@ Decisiones de diseño
 Uso de una aplicación web para interactuar con 
 \emph on
 CygnusCloud
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-aplicacion-web"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1024,6 +1031,240 @@ OpenNebula.
 \end_layout
 
 \begin_layout Subsection
+Configuración de las redes virtuales en modo NAT
+\end_layout
+
+\begin_layout Standard
+Para que los usuarios de CygnusCloud puedan utilizar las máquinas virtuales
+ para trabajar, es imprescindible que estas accedan, a través de la red
+ troncal de la Complutense, al Campus Virtual y a Internet.
+ 
+\end_layout
+
+\begin_layout Standard
+La forma más sencilla de lograr esto es configurando un bridge para cada
+ máquina virtual.
+ Así, estas se conectarán a la red troncal de la Complutense como si fuesen
+ un equipo físico más.
+ 
+\end_layout
+
+\begin_layout Standard
+Tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Restricciones-arquitectura"
+
+\end_inset
+
+, la red troncal de la UCM sigue utilizando la versión 4 del protocolo IP
+ (Internet Protocol).
+ Con esta primera alternativa, cada máquina virtual debe tener una dirección
+ IP única.
+ Y dada la actual escasez de direcciones IP versión 4, esto limita el número
+ de máquinas virtuales que pueden estar activas a la vez: puesto que CygnusCloud
+ debe poder implantarse con coste cero, 
+\end_layout
+
+\begin_layout Itemize
+no es posible adquirir nuevos (y costosos) bloques de direcciones IP para
+ utilizarlo, y 
+\end_layout
+
+\begin_layout Itemize
+para que la red troncal de la UCM funcione con normalidad, CygnusCloud no
+ puede monopolizar el uso de las direcciones IP disponibles.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ello, la solución que acabamos de presentar no es viable.
+ 
+\end_layout
+
+\begin_layout Standard
+La alternativa se basa en el uso de NAT (
+\emph on
+Network Address Translation
+\emph default
+, traducción de direcciones de red) en los servidores de máquinas virtuales.
+ En este caso, 
+\end_layout
+
+\begin_layout Itemize
+sólo los servidores de máquinas virtuales (y no las máquinas virtuales)
+ se conectan a la red troncal de la UCM.
+ 
+\end_layout
+
+\begin_layout Itemize
+las máquinas virtuales se conectan a una red virtual, existente sólo en
+ el servidor de máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Itemize
+cuando una máquina virtual envíe un datagrama IP, el servidor reescribirá
+ su cabecera.
+ En la red troncal de la UCM, parecerá que es el servidor de máquinas virtuales
+ el que ha creado dicho datagrama.
+ 
+\end_layout
+
+\begin_layout Itemize
+cuando el servidor de máquinas virtuales reciba un datagrama IP, reescribirá
+ su cabecera y lo reenviará a la máquina virtual correspondiente.
+ En la máquina virtual, parecerá que se ha accedido directamente a la red
+ troncal de la UCM.
+ 
+\end_layout
+
+\begin_layout Standard
+Como cada servidor de máquinas virtuales puede contener varias máquinas
+ virtuales activas a la vez, el ahorro de direcciones IP con esta alternativa
+ es considerable.
+ Por ello, decidimos utilizarla.
+\end_layout
+
+\begin_layout Standard
+No obstante, nos hemos asegurado de que resulte sencillo crear un bridge
+ para cada máquina virtual.
+ Así, los administradores del sistema podrán utilizar una u otra alternativa
+ cuando lo estimen oportuno.
+ 
+\end_layout
+
+\begin_layout Subsection
+Uso del protocolo de escritorio remoto VNC
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-protocolo-VNC"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para que los usuarios puedan interactuar con la máquina virtual, es imprescindib
+le utilizar un pro- tocolo de escritorio remoto.
+ Estos permiten que los clientes interactúen con las máquinas virtuales
+ a través de las interfaces gráficas de usuario a las que están acostumbrados.
+ En su momento, consideramos dos alternativas: VNC y RDP.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+VNC
+\series default
+ (
+\emph on
+Virtual Network Computing
+\emph default
+, computación virtual en red) es un protocolo de escritorio remoto independiente
+ de la plataforma y desarrollado por Olivetti, Oracle Corporation y, posteriorme
+nte, por AT&T.
+ 
+\end_layout
+
+\begin_layout Standard
+Por su parte, 
+\series bold
+RDP 
+\series default
+(Remote Desktop Protocol, protocolo de escritorio remoto) es un protocolo
+ de escritorio remoto desarrollado por Microsoft, utilizado mayoritariamente
+ en sistemas Windows.
+ Existen clientes y servidores RDP para otros sistemas operativos, como
+ 
+\emph on
+Linux
+\emph default
+ y 
+\emph on
+Mac OS X
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+En términos generales, el funcionamiento de ambos protocolos es el siguiente:
+ 
+\end_layout
+
+\begin_layout Itemize
+la máquina que comparte su pantalla se denomina 
+\series bold
+servidor
+\series default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+la máquina en la que trabajan los usuarios se denomina 
+\series bold
+cliente
+\series default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+cuando el cliente mueve el ratón o pulsa una tecla, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+el cliente de escritorio remoto envía los datos correspondientes al servidor
+ de escritorio remoto.
+ 
+\end_layout
+
+\begin_layout Enumerate
+al recibirlos, el servidor de escritorio remoto generará el evento de teclado
+ o ratón correspondiente, que será atendido por el sistema operativo de
+ la máquina remota de la forma habitual.
+ 
+\end_layout
+
+\begin_layout Enumerate
+el servidor de escritorio remoto averigua qué zonas de la pantalla se han
+ actualizado, comprime esta información y se la envía al cliente de escritorio
+ remoto.
+\end_layout
+
+\begin_layout Enumerate
+a partir de esta información, el cliente de escritorio remoto actualiza
+ la imagen de la pantalla que ve el usuario.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Como 
+\emph on
+CygnusCloud 
+\emph default
+debe poder implantarse con coste cero, los clientes y servidores de escritorio
+ remoto que utilicemos deben ser gratuitos.
+ 
+\end_layout
+
+\begin_layout Standard
+En términos generales, las implementaciones libres y gratuitas de RDP y
+ VNC tienen un rendimiento bastante similar.
+ Además, VNC está integrado en la práctica totalidad de sistemas de virtualizaci
+ón, por lo que es posible utilizarlo sin necesidad de instalar nada en las
+ máquinas virtuales.
+ Por ello, decidimos utilizar el protocolo VNC.
+ 
+\end_layout
+
+\begin_layout Subsection
 Uso del gestor de bases de datos MariaDB
 \end_layout
 
@@ -1032,77 +1273,88 @@ Al inicio del proyecto, estábamos mucho más familiarizados con los gestores
  de bases de datos relacionales que con los no relacionales.
  Por ello, decidimos utilizar un gestor de bases de datos relacional para
  manipular todas las bases de datos de la infraestructura.
+ 
 \end_layout
 
 \begin_layout Standard
 En la actualidad, los gestores gratuitos de bases de datos relacionales
  más completos son dos: MySQL y MariaDB.
+ 
 \end_layout
 
-\begin_layout Itemize
-MySQL es el gestor de bases de datos relacionales de código abierto más
- extendido, y se utiliza en servicios web con un gran número de usuarios
- (como 
+\begin_layout Standard
+
+\series bold
+MySQL
+\series default
+ es el gestor de bases de datos relacionales de código abierto más extendido,
+ y se utiliza en servicios web con un gran número de usuarios (como 
 \emph on
 Facebook
 \emph default
 , 
 \emph on
-Wordpress
+Wordpress 
 \emph default
- y 
+y 
 \emph on
 YouTube
 \emph default
 ) y también en muchos otros sistemas de menor tamaño.
+ 
 \end_layout
 
-\begin_layout Itemize
-MariaDB es un gestor de bases de datos relacionales cuya popularidad en
- la comunidad del 
+\begin_layout Standard
+Por otra parte, 
+\series bold
+MariaDB 
+\series default
+es un gestor de bases de datos relacionales cuya popularidad entre las comunidad
+es de 
 \emph on
-software libre
+software libre 
 \emph default
- no ha parado de crecer.
+no ha parado de crecer.
  En los últimos meses, la mayoría de distribuciones 
 \emph on
 Linux
 \emph default
- han decidido reemplazar MySQL por MariaDB, y muchas organizaciones como
- la 
+ han decidido reemplazar MySQL por MariaDB, y organizaciones de gran tamaño
+ como la 
 \emph on
-Wikimedia Foundation
+Wikimedia Foundation 
 \emph default
- han decidido migrar sus bases de datos a MariaDB.
+han decidido migrar sus bases de datos a MariaDB.
+ 
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
-Aunque inicialmente tomó como base la versión 5.5 de MySQL, las nuevas versiones
- incluyen un gran número de mejoras enfocadas, sobre todo, a conseguir un
- rendimiento superior al de MySQL.
+Aunque inicialmente MariaDB estaba basada en la versión 5.5 de MySQL, sus
+ nuevas versiones incluyen un gran número de mejoras enfocadas, sobre todo,
+ a conseguir un rendimiento superior al de MySQL.
  Además, como MariaDB es totalmente compatible a nivel sintáctico y a nivel
  binario la versión 5.5 de MySQL, resulta muy sencillo reemplazar MySQL por
  MariaDB.
+ 
 \end_layout
 
-\end_deeper
 \begin_layout Standard
 Tras examinar lo que ha sucedido tras la compra de 
 \emph on
-Sun Microsystems
+Sun Microsystems 
 \emph default
- por parte de 
+por parte de 
 \emph on
-Oracle
+Oracle 
 \emph default
- en 2009, nos parece que el desarrollo de MySQL ha sufrido un abandono progresiv
-o, de forma que en la actualidad todo parece indicar que, a medio plazo,
+en 2009, nos parece que el desarrollo de MySQL ha sufrido un abandono progresivo
+, de forma que en la actualidad todo parece indicar que, a medio plazo,
  
 \emph on
-Oracle
+Oracle 
 \emph default
- va a dejar de dar soporte al proyecto.
+va a dejar de dar soporte al proyecto.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1110,6 +1362,7 @@ Considerando nuestras necesidades, MariaDB y MySQL son totalmente equivalentes.
  Además, el soporte a medio y a largo plazo de MariaDB parece estar garantizado,
  cosa que no ocurre en el caso de MySQL.
  Por ello, decidimos utilizar MariaDB.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -1129,6 +1382,237 @@ reference "sec:Xen-vs-KVM"
  hicimos una comparativa de ambas y explicamos que, por contar con un rendimient
 o muy similar, mejor documentación y mejor soporte que Xen, optamos por
  utilizar KVM.
+\end_layout
+
+\begin_layout Subsection
+Uso del servidor VNC integrado en KVM
+\end_layout
+
+\begin_layout Standard
+Tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-protocolo-VNC"
+
+\end_inset
+
+, para poder utilizar el protocolo de escritorio remoto VNC es necesaria
+ la existencia de un servidor VNC, que envíe periódicamente al cliente VNC
+ las actualizaciones de la pantalla de la máquina virtual.
+ 
+\end_layout
+
+\begin_layout Standard
+El uso del servidor VNC integrado en KVM tiene dos grandes ventajas: 
+\end_layout
+
+\begin_layout Itemize
+no es necesario instalar ni ejecutar código adicional en la máquina virtual,
+ lo que simplifica la creación y configuración de máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Itemize
+el usuario de la máquina virtual no puede detener por error el servidor
+ VNC.
+ Si el servidor VNC se ejecuta en la máquina virtual y el cliente mata su
+ proceso por error, la máquina virtual quedará inutilizada.
+ 
+\end_layout
+
+\begin_layout Itemize
+la gestión de los datos de conexión a las máquinas virtuales es muy sencilla.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el uso de un servidor VNC que resida en cada máquina virtual
+ tiene una gran ven- taja: aporta mucha más flexibilidad.
+ No obstante, en este caso la gestión de los datos de conexión es más compleja,
+ ya que estos se fijan en la máquina virtual y son, 
+\emph on
+a priori
+\emph default
+, desconocidos para los servidores de la infraestructura.
+ 
+\end_layout
+
+\begin_layout Standard
+Tras hacer pruebas para evaluar las dos alternativas, concluimos lo siguiente:
+ 
+\end_layout
+
+\begin_layout Itemize
+la gran mayoría de servidores VNC libres y gratuitos proporcionan las mismas
+ funciones que el servidor VNC integrado en KVM.
+ 
+\end_layout
+
+\begin_layout Itemize
+el rendimiento de ambas es prácticamente idéntico.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, como el uso del servidor VNC integrado en KVM simplificaba considerablem
+ente la implementación del sistema, finalmente decidimos utilizarlo.
+ 
+\end_layout
+
+\begin_layout Subsection
+Uso del cliente VNC noVNC
+\end_layout
+
+\begin_layout Standard
+Tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-aplicacion-web"
+
+\end_inset
+
+, CygnusCloud se utilizará a través de una aplicación web.
+ 
+\end_layout
+
+\begin_layout Standard
+Para que los usuarios puedan utilizar las máquinas virtuales, es necesario
+ disponer de un cliente VNC, que se conecte al servidor VNC correspondiente.
+ Además, este debe integrarse con la aplicación web de forma que, al arrancar
+ una máquina virtual, los usuarios puedan utilizarlo para interactuar con
+ ella.
+\end_layout
+
+\begin_layout Standard
+Inicialmente, consideramos modificar un cliente de escritorio VNC libre
+ y gratuito.
+ Este debía ser multiplataforma y funcionar, como mínimo, en los sistemas
+ operativos 
+\emph on
+Windows 
+\emph default
+y 
+\emph on
+Linux
+\emph default
+.
+ En su momento, consideramos tres distintos: TigerVNC, TightVNC y la versión
+ 
+\emph on
+open source
+\emph default
+ de RealVNC.
+ 
+\end_layout
+
+\begin_layout Standard
+La principal ventaja de esta alternativa es el rendimiento: dado que estos
+ clientes están escritos en C o C++, es posible utilizarlos en equipos poco
+ potentes de forma muy satisfactoria.
+ No obstante, el hecho de que estos clientes estén escritos en C o C++ supone
+ también su mayor inconveniente: es necesario crear una versión distinta
+ para cada sistema operativo, algo que no es trivial, y sólo es posible
+ utilizarlos en PCs.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ello, pensamos en una segunda alternativa: el uso de un cliente VNC
+ web.
+ Aunque el rendimien- to es menor, podemos utilizar una única versión, que
+ funcionará en cualquier sistema operativo y en cualquier dispositivo, incluyend
+o PCs, móviles, tabletas,.
+ .
+ .
+ Además, el cliente VNC se integrará mucho mejor con la web de 
+\emph on
+CygnusCloud
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Y puesto que los equipos antiguos que actualmente se utilizan en la UCM
+ tienen suficiente ca- pacidad de procesamiento para utilizar un cliente
+ VNC web, nos decantamos por esta segunda alternativa.
+ En su momento, valoramos dos clientes VNC web: el applet Java del proyecto
+ TigerVNC y noVNC.
+ 
+\end_layout
+
+\begin_layout Standard
+Aunque en términos generales el rendimiento del applet Java es satisfactorio,
+ su desarrollo ha estado detenido desde el año 2007, y en la actualidad
+ carece de todo tipo de soporte.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, noVNC es un cliente VNC relativamente nuevo, escrito íntegrament
+e en HTML5 y 
+\emph on
+JavaScript
+\emph default
+, que se ha integrado en un gran número de soluciones como 
+\emph on
+OpenStack
+\emph default
+, 
+\emph on
+OpenNebula
+\emph default
+, 
+\emph on
+CloudSigma
+\emph default
+, 
+\emph on
+Intel MeshCentral
+\emph default
+,.
+ .
+ .
+ 
+\end_layout
+
+\begin_layout Standard
+Sus principales características son las siguientes: 
+\end_layout
+
+\begin_layout Itemize
+para utilizarlo, sólo es necesario tener instalado un navegador web razonablemen
+te reciente.
+ 
+\end_layout
+
+\begin_layout Itemize
+se adapta a los tamaños de pantalla de móviles y tabletas, lo que permite
+ utilizarlo en PCs y en estos dispositivos, cada vez más extendidos.
+ 
+\end_layout
+
+\begin_layout Itemize
+se distribuye bajo licencia LGPL, lo que permite modificarlo cuanto sea
+ necesario a la hora de realizar su integración con la web de CygnusCloud.
+ 
+\end_layout
+
+\begin_layout Itemize
+soporta tráfico cifrado 
+\end_layout
+
+\begin_layout Itemize
+ajusta el número de colores y la resolución de la pantalla en función de
+ la potencia del dispositivo que utilizan los usuarios.
+ 
+\end_layout
+
+\begin_layout Standard
+Puesto que noVNC tiene características muy interesantes, requiere instalar
+ menos software en los PCs en los que trabajan los usuarios y, sobre todo,
+ cuenta con un buen soporte, decidimos utilizarlo en CygnusCloud.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -1774,6 +2258,206 @@ Uso del servidor FTP
 pyftpdlib
 \end_layout
 
+\begin_layout Standard
+Para transferir y recibir imágenes de disco en el repositorio de imágenes,
+ es necesario que este albergue un servidor FTP.
+ En su momento, consideramos dos: 
+\family typewriter
+pyftpdlib
+\family default
+ y un servidor FTP construido sobre la librería 
+\emph on
+twisted
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+pyftpdlib
+\family default
+ es un servidor FTP ligero íntegramente escrito en 
+\emph on
+Python
+\emph default
+.
+ Sus principales características son las siguientes: 
+\end_layout
+
+\begin_layout Itemize
+es gratuito, y se distribuye bajo licencia MIT.
+ 
+\end_layout
+
+\begin_layout Itemize
+es muy ligero, eficiente, estable y escalable.
+ 
+\end_layout
+
+\begin_layout Itemize
+funciona con cualquier versión de 
+\emph on
+Python
+\emph default
+ entre la 2.4 y la 3.3.
+ 
+\end_layout
+
+\begin_layout Itemize
+implementa, entre otras cosas, FTPS (FTP Secure, FTP Seguro), el soporte
+ de IP versión 6, el uso nombres de fichero Unicode, múltiples protocolos
+ de autenticación y el control del ancho de banda utilizado por el servidor
+ FTP.
+ 
+\end_layout
+
+\begin_layout Itemize
+dispone de callbacks para detectar múltiples eventos, tales como las conexiones
+ y desconexiones de clientes, el inicio y la finalización de transferencia
+ de archivos,.
+ .
+ .
+ 
+\end_layout
+
+\begin_layout Itemize
+está muy bien documentado.
+ 
+\end_layout
+
+\begin_layout Standard
+La alternativa a 
+\family typewriter
+pyftpdlib
+\family default
+, construida sobre la librería de red 
+\emph on
+twisted
+\emph default
+, tiene las siguientes características: 
+\end_layout
+
+\begin_layout Itemize
+es también gratuita, y también se distribuye bajo licencia MIT.
+ 
+\end_layout
+
+\begin_layout Itemize
+el servidor FTP consume muy pocos recursos.
+ 
+\end_layout
+
+\begin_layout Itemize
+funciona con cualquier versión de 
+\emph on
+Python
+\emph default
+ entre la 2.4 y la 2.7.
+ 
+\end_layout
+
+\begin_layout Itemize
+implementa el soporte de IP versión 6 y los protocolos de autenticación
+ más básicos.
+ 
+\end_layout
+
+\begin_layout Itemize
+también dispone de 
+\emph on
+callbacks 
+\emph default
+para detectar conexiones, desconexiones, errores de autenticación,\SpecialChar \ldots{}
+ 
+\end_layout
+
+\begin_layout Standard
+Para decidir entre ambos, los probamos durante algunos días, tras las cuales
+ concluimos lo siguiente: 
+\end_layout
+
+\begin_layout Itemize
+como viene siendo habitual en la librería de red 
+\emph on
+twisted
+\emph default
+, la documentación del servidor FTPconstruido sobre 
+\emph on
+twisted 
+\emph default
+es incompleta y en muchos casos incoherente.
+ 
+\end_layout
+
+\begin_layout Itemize
+el rendimiento del servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+ es superior al del servidor FTP basado en la librería 
+\emph on
+twisted
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+el servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+ era mucho más fácil de integrar con el repositorio de imágenes que el servidor
+ FTP que utiliza la librería 
+\emph on
+twisted
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, dado que el servidor 
+\family typewriter
+pyftpdlib
+\family default
+ 
+\end_layout
+
+\begin_layout Itemize
+ofrece muchas más funciones que la otra alternativa, y algunas, como el
+ control del ancho de banda utilizado por el servidor FTP son muy interesantes,
+ y que
+\end_layout
+
+\begin_layout Itemize
+soporta la versión 3 de 
+\emph on
+Python
+\emph default
+, lo que facilita la adaptación del código de 
+\emph on
+CygnusCloud
+\emph default
+ para que funcione con las nuevas versiones de 
+\emph on
+Python
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+decidimos utilizar 
+\family typewriter
+pyftpdlib 
+\family default
+como servidor FTP del repositorio de imágenes.
+ 
+\end_layout
+
 \begin_layout Subsection
 Almacenamiento de las imágenes de disco en formato comprimido
 \end_layout
@@ -2416,19 +3100,6 @@ ya creado sin necesidad de descomprimirlo.
 , esto no es posible.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Pendiente: uso de imágenes de disco frente a LVM
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Uso de imágenes 
 \emph on
@@ -2662,42 +3333,388 @@ copy-on-write
 \end_layout
 
 \begin_layout Subsection
+Uso del formato de imagen 
+\family typewriter
+qcow2
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-del-formato-qcow2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En la sección anterior concluimos que es necesario el uso de dos imágenes
+ de disco en cada máquina virtual: una 
+\emph on
+copy-on-write
+\emph default
+, que almacenará los datos del sistema operativo y de las aplicaciones instalada
+s, y una imagen normal, que almacenará el fichero de paginación y los datos
+ temporales de los usuarios.
+ 
+\end_layout
+
+\begin_layout Standard
+Para crear las imágenes 
+\emph on
+copy-on-write
+\emph default
+, tuvimos que decidir entre dos formatos: 
+\family typewriter
+qcow
+\family default
+ y 
+\family typewriter
+qcow2
+\family default
+ (
+\emph on
+Qemu Copy-On-Write 
+\emph default
+y 
+\emph on
+Qemu Copy-On-Write
+\emph default
+ 2).
+ Sus principales características son las siguientes: 
+\end_layout
+
+\begin_layout Itemize
+tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:KVM"
+
+\end_inset
+
+, el hipervisor KVM utiliza los modelos de dispositivo del emulador 
+\emph on
+Qemu
+\emph default
+.
+ Como 
+\family typewriter
+qcow
+\family default
+ y 
+\family typewriter
+qcow2
+\family default
+ son los formatos de imagen nativos de 
+\emph on
+Qemu
+\emph default
+, son también los formatos de imagen nativos de KVM.
+ 
+\end_layout
+
+\begin_layout Itemize
+pueden utilizarse como imágenes 
+\emph on
+copy-on-write
+\emph default
+ o como imágenes de disco normales.
+ 
+\end_layout
+
+\begin_layout Itemize
+soportan compresión 
+\family typewriter
+zlib
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+las imágenes 
+\family typewriter
+qcow
+\family default
+ y 
+\family typewriter
+qcow2 
+\family default
+crecen dinámicamente a medida que se escriben datos en el disco duro de
+ la máquina virtual.
+ Así, el espacio libre en las imágenes no ocupará espacio en disco en los
+ servidores de máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Standard
+La principal diferencia existente entre los formatos 
+\family typewriter
+qcow
+\family default
+ y 
+\family typewriter
+qcow2
+\family default
+ está en las escrituras en modo 
+\emph on
+copy-on-write
+\emph default
+.
+ No obstante, dado que este es un aspecto de muy bajo nivel, no lo discutiremos
+ aquí.
+ 
+\end_layout
+
+\begin_layout Standard
+Teniendo en cuenta que 
+\end_layout
+
+\begin_layout Itemize
+KVM soporta los formatos 
+\family typewriter
+qcow
+\family default
+ y 
+\family typewriter
+qcow2
+\family default
+ 
+\end_layout
+
+\begin_layout Itemize
+resulta muy sencillo hacer conversiones entre ambos formatos 
+\end_layout
+
+\begin_layout Itemize
+el formato 
+\family typewriter
+qcow2
+\family default
+ es el sucesor natural del formato 
+\family typewriter
+qcow 
+\end_layout
+
+\begin_layout Itemize
+con independencia de cuál de los dos formatos utilicemos, el rendimiento
+ es prácticamente idéntico 
+\end_layout
+
+\begin_layout Standard
+optamos por utilizar el formato 
+\family typewriter
+qcow2
+\family default
+ en las imágenes 
+\emph on
+copy-on-write
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, en el caso de las imágenes de disco que almacenan el fichero
+ de paginación y los datos temporales de los usuarios consideramos los siguiente
+s formatos: 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+raw
+\series default
+\emph default
+.
+ En realidad, no se trata de un formato de imagen, sino de un fichero que
+ contiene directamente los bytes almacenados en el disco duro de la máquina
+ virtual.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Puesto que para acceder a disco basta con leer o escribir directamente en
+ este fichero, esta es la alternativa que proporciona mejor rendimiento.
+ No obstante, tiene un serio inconveniente: el fichero de la imagen siempre
+ debe tener el mismo tamaño que el disco duro que representa, por lo que
+ el espacio libre en ese disco duro ocupa espacio en disco del servidor
+ de máquinas virtuales.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+qcow2
+\family default
+.
+ Para que el rendimiento sea adecuado, en estos casos hay que deshabilitar
+ el modo 
+\emph on
+copy-on-write
+\emph default
+, utilizando las imágenes 
+\family typewriter
+qcow2
+\family default
+ como imágenes normales.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+vmdk
+\family default
+.
+ Se trata del formato nativo del sistema de virtualización VMWare, también
+ soportado por 
+\emph on
+Qemu
+\emph default
+ (y, por tanto, por KVM).
+ 
+\end_layout
+
+\begin_layout Standard
+Nuevamente, resulta muy sencillo realizar conversiones entre estos formatos.
+ De todas formas, el hipervisor Xen no soporta el formato 
+\family typewriter
+vmdk
+\family default
+, por lo que, de cara a facilitar un hipotético cambio de hipervisor, resulta
+ más conveniente utilizar los formatos 
+\emph on
+raw 
+\emph default
+o 
+\family typewriter
+qcow2
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Y puesto que al utilizar el formato 
+\emph on
+raw
+\emph default
+ se está desperdiciando espacio en disco en muchos casos, decidimos utilizar
+ el formato 
+\family typewriter
+qcow2 
+\family default
+en las imágenes que almacenan el fichero de paginación y los datos temporales
+ del usuario.
+ 
+\end_layout
+
+\begin_layout Standard
+Finalmente, para que el rendimiento de las máquinas virtuales no se resienta
+ en exceso, decidimos deshabilitar la compresión 
+\family typewriter
+zlib
+\family default
+.
+ De esta manera, el rendimiento de la máquina virtual no se degradará de
+ forma apreciable con respecto al uso de imágenes 
+\emph on
+raw
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Subsection
 Creación de seis familias de máquinas virtuales
 \end_layout
 
 \begin_layout Standard
-Para cada familia de sistemas operativos (es decir, Windows y Linux) definiremos
- tres tamaños de imágenes 
-\emph on
-vanilla
-\emph default
-: pequeña (
-\emph on
-small
-\emph default
-), mediana (
-\emph on
-medium
-\emph default
-) y grande 
-\emph on
-(big
-\emph default
-).
- A medida que aumenta el 
-\begin_inset Quotes eld
-\end_inset
-
-tamaño
-\begin_inset Quotes erd
-\end_inset
-
- de una imagen, también lo harán el tamaño del disco y de la RAM y el número
- de CPUs virtuales.
+Las máquinas virtuales de CygnusCloud pueden utilizarse con fines muy diversos.
+ Por ejemplo, mientras que unas pueden tener instalada una suite ofimática
+ y las herramientas básicas para navegar por internet, otras pueden tener
+ instalado un entorno de desarrollo de desarrollo integrado.
+ 
 \end_layout
 
 \begin_layout Standard
-Las características de estas imágenes se recogen en los cuadros 
+En cualquier caso, todos estos usos no explotan igual la potencia del hardware
+ de la máquina virtual.
+ Retomando el ejemplo anterior, 
+\end_layout
+
+\begin_layout Itemize
+en la primera máquina, que tiene instalada la suite ofimática y las herramientas
+ básicas para navegar por internet, el uso de CPU y de memoria RAM será
+ bastante reducido.
+ Además, se utilizará poco espacio en disco.
+ 
+\end_layout
+
+\begin_layout Itemize
+en la segunda máquina, que tiene instalado el entorno de desarrollo integrado,
+ se utilizará más memoria RAM y espacio en disco.
+ Además, durante los procesos de compilación, el uso de CPU será muy superior
+ al de la máquina anterior.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, los recursos utilizados por el sistema operativo varían de unas
+ familias de sistemas operativos a otras.
+ Por ejemplo, 
+\end_layout
+
+\begin_layout Itemize
+los sistemas operativos 
+\emph on
+Windows
+\emph default
+ de última generación requieren un mínimo de 9 GB de espacio en disco, al
+ menos 1 GB de memoria RAM y un fichero de paginación que sea, como mínimo,
+ 1,5 veces el tamaño de la memoria RAM, y 
+\end_layout
+
+\begin_layout Itemize
+las distribuciones más recientes que utilizan el kernel 
+\emph on
+Linux
+\emph default
+ requieren, de media, unos 2 GB de espacio en disco, 512 MB de memoria RAM
+ y un fichero de paginación que sea tan grande como la memoria RAM.
+ 
+\end_layout
+
+\begin_layout Standard
+Así, desde el punto de vista del aprovechamiento de los recursos, no resulta
+ adecuado que todas las máquinas virtuales tengan las mismas características.
+ De hacerlo, 
+\end_layout
+
+\begin_layout Itemize
+se estarían desperdiciando recursos en las máquinas que tienen instalado
+ el software menos exigente en lo que al consumo de recursos se refiere,
+ y 
+\end_layout
+
+\begin_layout Itemize
+en muchos casos, no se dispondría de recursos suficientes en las máquinas
+ que tienen instalado 
+\emph on
+software 
+\emph default
+que consume muchos recursos.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ello, hemos creado seis familias de máquinas virtuales.
+ Tres de ellas están asociadas a los sistemas operativos Windows, y las
+ tres restantes están asociadas a los sistemas operativos Linux.
+ Sus características se recogen en los cuadros 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Características-vanilla-win"
@@ -2712,13 +3729,14 @@ reference "tab:Características-vanilla-linux"
 \end_inset
 
 .
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -3112,7 +4130,7 @@ Windows
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -3503,7 +4521,22 @@ Linux
 \end_layout
 
 \begin_layout Standard
-Para rellenar las tablas, he considerado estos aspectos:
+A la hora de fijar las características de las imágenes 
+\emph on
+Windows
+\emph default
+, hemos considerado los siguientes aspectos: 
+\end_layout
+
+\begin_layout Itemize
+tras desinstalar los componentes multimedia y las características del sistema
+ operativo que no se usan con frecuencia, una instalación de 
+\emph on
+Windows
+\emph default
+ 7 ocupa 9 GB (en el caso de una versión de 32 bits) o 12 GB (en el caso
+ de una versión de 64 bits).
+ 
 \end_layout
 
 \begin_layout Itemize
@@ -3511,76 +4544,126 @@ en
 \emph on
 Windows
 \emph default
-, el tamaño recomendado para el fichero de paginación es el doble del tamaño
- de la RAM.
-\end_layout
-
-\begin_layout Itemize
-la versión 
-\emph on
-Professional
-\emph default
- de Windows 7, una vez instalada y capada (eliminando los gadgets, característic
-as multimedia, componentes de Tablet PC y la compresión diferencial remota,
- requiere el siguiente espacio en disco:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-11 GB para la versión de 32 bits
-\end_layout
-
-\begin_layout Itemize
-15 GB para la versión de 64 bits
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-para instalar un programa complejo y razonablemente actual (como 
-\emph on
-Visual Studio 
-\emph default
-o 
-\emph on
-Microsoft Office
-\emph default
-) en Windows se requiere en media unos 4 GB de espacio en disco.
-\end_layout
-
-\begin_layout Itemize
-una instalación de Linux con mucho 
-\emph on
-software 
-\emph default
-suele ocupar unos 7 GB (menos si se usa un entorno de escritorio ligero).
-\end_layout
-
-\begin_layout Itemize
-las versiones de Windows de 64 bits usan el doble de RAM que las de 32 bits
- y ocupan mucho más disco duro.
- Como el uso de un SO de 64 bits no está justificado en las imágenes 
-\emph on
-small
-\emph default
- y 
-\emph on
-medium 
-\emph default
-(no se va a direccionar más de 2 GB de RAM), he optado por asignarles la
- versión de 32 bits.
+, se recomienda que el tamaño del fichero de paginación sea 1,5 veces el
+ tamaño de la memoria RAM.
+ De acuerdo a nuestra experiencia, en Windows se utiliza este fichero de
+ forma intensiva, por lo que hemos decidido que su tamaño sea 2 veces el
+ tamaño de la memoria RAM.
  
 \end_layout
 
 \begin_layout Itemize
-siempre que no se hagan cálculos muy complejos, el rendimiento de las dos
- versiones de Windows es prácticamente el mismo.
+las instalaciones de programas razonablemente complejos (como 
+\emph on
+Microsoft Office
+\emph default
+) ocupan, en media, unos 2 GB de espacio en disco.
+ 
+\end_layout
+
+\begin_layout Itemize
+las versiones de Windows de 64 bits utilizan, aproximadamente, el doble
+ de memoria RAM que las de 32 bits.
+ Siempre que no se utilicen las instrucciones de 64 bits de la CPU, cosa
+ que en la actualidad ocurre con muy poca frecuencia, el rendimiento de
+ todas las aplicaciones en ambas versiones es prácticamente el mismo.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Como las familias de imágenes 
+\emph on
+Windows small 
+\emph default
+y 
+\emph on
+medium 
+\emph default
+no cuentan con 4 GB de RAM, en principio no sacarán partido a un sistema
+ operativo de 64 bits, por lo que en estos casos recomendamos el uso de
+ sistemas operativos de 32 bits.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, aunque la familia de imágenes 
+\emph on
+Windows big
+\emph default
+ tampoco cuenta con 4 GB de memoria RAM, sí es posible que, por su complejidad,
+ el software instalado en estas máquinas saque partido a las instrucciones
+ de 64 bits de la CPU, por lo que en este caso recomendamos el uso de un
+ sistema operativo de 64 bits.
+ 
+\end_layout
+
+\begin_layout Standard
+De todas formas, estas recomendaciones no tienen por qué cumplirse y, en
+ caso de que se ignoren, el rendimiento de la infraestructura no se verá
+ afectado.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Por otra parte, cuando fijamos las características de las imágenes 
+\emph on
+Linux
+\emph default
+ consideramos los siguientes aspectos: 
+\end_layout
+
+\begin_layout Itemize
+en la mayoría de distribuciones Linux, cuando hay mucho software instalado
+ se suelen utilizar unos 7 GB de espacio en disco (menos si se usa un entorno
+ de escritorio ligero).
+ 
 \end_layout
 
 \begin_layout Itemize
 las versiones de 64 bits de Linux usan la misma cantidad de RAM y espacio
- en disco.
- Para no complicarnos la vida, todas las máquinas Linux utilizarán un sistema
- operativo de 64 bits.
+ en disco que las de 32 bits.
+ Además, permiten utilizar las instrucciones de 64 bits de los procesadores
+ del servidor.
+ Por ello, recomendamos el uso de versiones de 
+\emph on
+Linux
+\emph default
+ de 64 bits.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Nuevamente, el rendimiento de la infraestructura no se verá afectado si
+ se ignora esta recomendación.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Finalmente, como el lector habrá notado ya, todas las máquinas virtuales
+ tienen asignada una generosa cantidad de espacio en disco.
+ Con esto, pretendemos incentivar el uso de las máquinas virtuales con menos
+ CPUs y menos memoria RAM, ya que estos recursos son mucho más escasos que
+ el espacio en disco.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, tal y como contamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-del-formato-qcow2"
+
+\end_inset
+
+, las imágenes de disco que utilizamos crecen dinámicamente a medida que
+ se escribe en el disco duro de la máquina virtual.
+ Por ello, el espacio libre en las imágenes no ocupará espacio en disco
+ en el servidor ni en el repositorio de imágenes, y la existencia de discos
+ duros de gran tamaño infrautilizados no supone un desperdicio de recursos.
+ 
 \end_layout
 
 \begin_layout Subsection
