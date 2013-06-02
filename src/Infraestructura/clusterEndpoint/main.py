@@ -6,9 +6,8 @@ Created on Apr 3, 2013
 '''
 
 import sys
-from constants import ClusterEndpointConstantsManager
-from clusterEndpoint.endpoint import ClusterEndpoint, EndpointException
-from clusterEndpoint.codes.spanishCodesTranslator import SpanishCodesTranslator
+from clusterEndpoint.configurationFiles.configurationFileParser import ClusterEndpointConfigurationFileParser
+from clusterEndpoint.entryPoint.clusterEndpointEntryPoint import ClusterEndpointEntryPoint
 
 if __name__ == "__main__" :
     # Parsear el fichero de configuración
@@ -16,25 +15,25 @@ if __name__ == "__main__" :
         print "A configuration file path is needed"
         sys.exit()
     try :
-        cm = ClusterEndpointConstantsManager()
-        cm.parseConfigurationFile(sys.argv[1])
+        parser = ClusterEndpointConfigurationFileParser()
+        parser.parseConfigurationFile(sys.argv[1])
     except Exception as e:
-        print "Error: " + e.message
+        print e.message
         sys.exit()
         
-    endpoint = ClusterEndpoint(SpanishCodesTranslator())
+    endpoint = ClusterEndpointEntryPoint()
     
-    endpoint.connectToDatabases(cm.getConstant("mysqlRootsPassword"), cm.getConstant("endpointDBName"), 
-                                cm.getConstant("commandsDBName"), cm.getConstant("endpointdbSQLFilePath"), 
-                                cm.getConstant("commandsdbSQLFilePath"), cm.getConstant("websiteUser"), 
-                                cm.getConstant("websiteUserPassword"),  cm.getConstant("endpointUser"), 
-                                cm.getConstant("endpointUserPassword"), cm.getConstant("minCommandInterval"))
+    endpoint.connectToDatabases(parser.getConfigurationParameter("mysqlRootsPassword"), "ClusterEndpointDB", 
+                                "CommandsDB", "./databases/ClusterEndpointDB.sql", 
+                                "./databases/CommandsDB.sql", parser.getConfigurationParameter("websiteUser"), 
+                                parser.getConfigurationParameter("websiteUserPassword"),  parser.getConfigurationParameter("endpointUser"), 
+                                parser.getConfigurationParameter("endpointUserPassword"), parser.getConfigurationParameter("minCommandInterval"))
     try :
-        endpoint.connectToClusterServer(cm.getConstant("certificatePath"), cm.getConstant("clusterServerIP"), 
-                                        cm.getConstant("clusterServerListenningPort"), cm.getConstant("statusDBUpdateInterval"),
-                                        cm.getConstant("commandTimeout"), cm.getConstant("commandTimeoutCheckInterval"))
+        endpoint.connectToClusterServer(parser.getConfigurationParameter("certificatePath"), parser.getConfigurationParameter("clusterServerIP"), 
+                                        parser.getConfigurationParameter("clusterServerListenningPort"), parser.getConfigurationParameter("statusDBUpdateInterval"),
+                                        parser.getConfigurationParameter("commandTimeout"), parser.getConfigurationParameter("commandTimeoutCheckInterval"))
         endpoint.processCommands()
         endpoint.disconnectFromClusterServer()
-    except EndpointException as e:
+    except Exception as e:
         endpoint.doEmergencyStop()
         print "Error: " + e.message

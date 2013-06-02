@@ -17,12 +17,13 @@ from network.exceptions.networkManager import NetworkManagerException
 from clusterEndpoint.commands.commandsHandler import CommandsHandler
 from clusterEndpoint.reactors.commandsProcessor import CommandsProcessor
 from clusterEndpoint.reactors.packetReactor import ClusterEndpointPacketReactor
+from clusterEndpoint.codes.spanishCodesTranslator import SpanishCodesTranslator
 
 class ClusterEndpointEntryPoint(object):  
     """
     Estos objetos comunican un servidor de cluster con la web
     """    
-    def __init__(self, codeTranslator):
+    def __init__(self):
         """
         Inicializa el estado del endpoint
         Argumentos:
@@ -30,8 +31,8 @@ class ClusterEndpointEntryPoint(object):
         """
         self.__commandExecutionThread = None
         self.__updateRequestThread = None
-        self.__codeTranslator = codeTranslator 
-        self.__commandsHandler = CommandsHandler(codeTranslator)       
+        self.__codeTranslator = SpanishCodesTranslator()
+        self.__commandsHandler = CommandsHandler(self.__codeTranslator)       
     
     def connectToDatabases(self, mysqlRootsPassword, endpointDBName, commandsDBName, endpointdbSQLFilePath, commandsDBSQLFilePath,
                            websiteUser, websiteUserPassword, endpointUser, endpointUserPassword, minCommandInterval):
@@ -86,13 +87,14 @@ class ClusterEndpointEntryPoint(object):
         self.__packetHandler = ClusterServerPacketHandler(self.__networkManager)     
         self.__commandsProcessor = CommandsProcessor(self.__commandsHandler, self.__packetHandler, self.__networkManager, 
                  self.__clusterServerIP, self.__clusterServerPort, self.__commandsDBConnector, self.__endpointDBConnector)
-        packetReactor = ClusterEndpointPacketReactor(self.__codeTranslator, self.__commandsHandler, self.__commandsProcessor,
+        packetReactor = ClusterEndpointPacketReactor(self.__codeTranslator, self.__commandsHandler, self.__packetHandler, self.__commandsProcessor,
                                                      self.__endpointDBConnector, self.__commandsDBConnector)
         try :
             self.__networkManager.connectTo(clusterServerIP, clusterServerListenningPort, 5, packetReactor, True)
             while (not self.__networkManager.isConnectionReady(clusterServerIP, clusterServerListenningPort)) :
                 sleep(0.1)                   
-            self.__updateRequestThread = VMServerMonitoringThread(self.__packetHandler, self.__networkManager, self.__commandsProcessor, statusDBUpdateInterval)
+            self.__updateRequestThread = VMServerMonitoringThread(self.__packetHandler, self.__networkManager, self.__commandsProcessor, 
+                                                                  self.__clusterServerIP, self.__clusterServerPort, statusDBUpdateInterval)
             self.__updateRequestThread.start()            
             self.__commandExecutionThread = CommandsMonitoringThread(self.__commandsDBConnector, commandTimeout, self.__commandsHandler, commandTimeoutCheckInterval)
             self.__commandExecutionThread.start()
@@ -127,9 +129,9 @@ class ClusterEndpointEntryPoint(object):
         self.__commandExecutionThread.stop()
         
         # Cerrar las conexiones con las bases de datos
-        self.closeNetworkAndDBConnections()
+        self.closeNetworkConnections()
         
-    def closeNetworkAndDBConnections(self):
+    def closeNetworkConnections(self):
         """
         Cierra las conexiones con las bases de datos
         Argumentos:
@@ -139,6 +141,6 @@ class ClusterEndpointEntryPoint(object):
         """
         # Detener el servicio de red
         self.__networkManager.stopNetworkService()
-        # Borrar las bases de datos de comandos y de estado
-        dbConfigurator = DBConfigurator(self.__rootsPassword)
-        dbConfigurator.dropDatabase(self.__commandsDatabaseName)
+        
+    def processCommands(self):
+        self.__commandsProcessor.processCommands()

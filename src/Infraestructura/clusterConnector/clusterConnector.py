@@ -150,7 +150,7 @@ class ClusterConnector(object):
         (commandType, commandArgs) = self.__commandsHandler.createVMBootCommand(imageID, self.__userID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def isShutDown(self, haltVMServers):
+    def shutDownInfrastructure(self, haltVMServers):
         """
         Apaga toda la infraestructura
         Argumentos:
@@ -431,10 +431,5 @@ class ClusterConnector(object):
     
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
-    connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "connector_user", "CygnusCloud")
-    commandID = connector.bootUpVMServer("Server1")
-    print connector.waitForCommandOutput(commandID)
-    sleep(5)
-    commandID = connector.bootUpVM(13)
-    print connector.waitForCommandOutput(commandID)
-    sleep(5)
+    connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "website_user", "CygnusCloud")
+    connector.shutDownInfrastructure(True)

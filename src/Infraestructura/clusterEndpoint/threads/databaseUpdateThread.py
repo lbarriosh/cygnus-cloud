@@ -14,7 +14,7 @@ class VMServerMonitoringThread(BasicThread):
     """
     Estos hilos refrescan la base de datos de estado periódicamente.
     """
-    def __init__(self, webPacketHandler, networkManager, commandsProcessor, sleepTime):
+    def __init__(self, webPacketHandler, networkManager, commandsProcessor, clusterServerIP, clusterServerPort, sleepTime):
         """
         Inicializa el estado
         Argumentos:
@@ -25,6 +25,8 @@ class VMServerMonitoringThread(BasicThread):
         self.__packetHandler = webPacketHandler
         self.__networkManager = networkManager
         self.__commandsProcessor = commandsProcessor
+        self.__clusterServerIP = clusterServerIP
+        self.__clusterServerPort = clusterServerPort
         self.__sleepTime = sleepTime
         
     def run(self):

@@ -14,7 +14,7 @@ class ClusterEndpointPacketReactor(object):
     """
     Estos objetos comunican un servidor de cluster con la web
     """    
-    def __init__(self, codeTranslator, commandsHandler, commandsProcessor, endpointDBConnector, commandsDBConnector):
+    def __init__(self, codeTranslator, commandsHandler, packetHandler, commandsProcessor, endpointDBConnector, commandsDBConnector):
         """
         Inicializa el estado del endpoint
         Argumentos:
@@ -23,11 +23,12 @@ class ClusterEndpointPacketReactor(object):
         self.__packetHandler = None
         self.__codeTranslator = codeTranslator
         self.__commandsHandler = commandsHandler
+        self.__packetHandler = packetHandler
         self.__commandsProcessor = commandsProcessor
         self.__endpointDBConnector = endpointDBConnector
         self.__commandsDBConnector = commandsDBConnector
     
-    def processIncomingPacket(self, packet):
+    def processPacket(self, packet):
         """
         Procesa un paquete enviado desde el servidor de cluster
         Argumentos:
