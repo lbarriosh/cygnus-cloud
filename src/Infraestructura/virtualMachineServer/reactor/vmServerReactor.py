@@ -22,6 +22,7 @@ from virtualMachineServer.reactor.clusterServerCallback import ClusterServerCall
 import os
 import multiprocessing
 import sys
+import re
 from errors.codes import ERROR_DESC_T
 
 class VMServerReactor(ClusterServerPacketReactor):
@@ -46,7 +47,7 @@ class VMServerReactor(ClusterServerPacketReactor):
         self.__domainTimeout = 0
         try :
             self.__connectToDatabases("VMServerDB", self.__parser.getConfigurationParameter("databaseUserName"), 
-                                      self.__parser.getConfigurationParameter("databasePassword"), )
+                                      self.__parser.getConfigurationParameter("databasePassword"))
             self.__startListenning(self.__parser.getConfigurationParameter("vncNetworkInterface"), self.__parser.getConfigurationParameter("listenningPort"))
         except Exception as e:
             print e.message
@@ -95,10 +96,19 @@ class VMServerReactor(ClusterServerPacketReactor):
                                                   self.__parser.getConfigurationParameter("dhcpEndIP"), self.__parser.getConfigurationParameter("createVirtualNetworkAsRoot"))
             
         self.__domainHandler.doInitialCleanup()
+        self.__deleteTemporaryZipFiles()
         self.__compressionThread = CompressionThread(self.__parser.getConfigurationParameter("TransferDirectory"), self.__parser.getConfigurationParameter("sourceImagePath"),
                                                      self.__parser.getConfigurationParameter("configFilePath"),
                                                      self.__dbConnector, self.__domainHandler, self.__networkManager, self.__listenningPort, self.__packetManager)
         self.__compressionThread.start()
+        
+    def __deleteTemporaryZipFiles(self):
+        transfer_dir_path = self.__parser.getConfigurationParameter("TransferDirectory")
+        for filePath in os.listdir(transfer_dir_path) :
+            fileName = os.path.splitext(filePath)[0]
+            if re.match("[^0-9]", fileName):
+                # Fichero temporal: los nuestros sólo tienen números en el nombre
+                os.remove(os.path.join(transfer_dir_path, filePath))
     
     def shutdown(self):
         """
