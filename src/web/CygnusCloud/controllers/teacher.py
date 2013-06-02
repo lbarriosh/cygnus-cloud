@@ -68,7 +68,6 @@ def stopVM():
             #Establecemos la conexión con el servidor 
             connector = conectToServer()
             #Paramos la máquina virtual
-            print form.vars.selection
             commandId = connector.destroyDomain(form.vars.selection)
             #Esperamos la contestacion
             errorInfo = connector.waitForCommandOutput(commandId)
@@ -130,7 +129,19 @@ def createVanillaVM():
                 CENTER(table),BR(),
                 CENTER(INPUT(_type='submit',_name = 'createVM',  _value = T('Crear máquina virtual')
                     ,_class="button button-blue",_style="width:180px;")))
-    print j
+                    
+    if form.accepts(request.vars,keepvalues=True) and form.vars.createVM:
+           #Creamos la MV
+           if len(form.vars.selection) > 0:
+                       errorInfo = connector.createImage(form.vars.selection.split('c')[2], form.vars.newVMName, form.vars.description)
+                       if(len(connector.getCommandOutput(errorInfo))==0):
+                           response.flash = "Petición de creación enviada"
+                       else:
+                           response.flash = connector.getCommandOutput(errorInfo)
+           else:
+                   response.flash = "Debe seleccionar una imagen base"
+    
+           
     return dict(form = form,progressBarStyle=progressBarStyle,num = num,num2 = j)
 
           
@@ -150,13 +161,13 @@ def editVM():
         print str(imageInfo["State"]) + 'w' + str(image)
         if (imageInfo["State"] == EDITION_STATE_T.TRANSFER_TO_REPOSITORY) or (imageInfo["State"] == EDITION_STATE_T.VM_ON) or \
                 (imageInfo["State"] == EDITION_STATE_T.AUTO_DEPLOYMENT) or (imageInfo["State"] == EDITION_STATE_T.AUTO_DEPLOYMENT_ERROR):
-            runningImages.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = str(imageInfo["State"]) + 'w' + str(image),
+            runningImages.append(TR(TD(INPUT(_type='radio',_name = 'selection1',_value = str(imageInfo["State"]) + 'w' + str(image),
                 _id="b"+str(num2))),
                 TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),
                 TD(DIV(P(imageInfo["ImageDescription"]),_id = "n2" + str(num2)),_class='izquierda')))
             num2= num2 + 1
         else:
-            stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = str(imageInfo["State"]) + 'w' + str(image),
+            stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection2',_value = str(imageInfo["State"]) + 'w' + str(image),
                 _id="a"+str(num1))),
                 TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),
                 TD(DIV(P(imageInfo["ImageDescription"]),_id = "n1" + str(num1)),_class='izquierda')))
@@ -173,8 +184,57 @@ def editVM():
     form2 =  FORM(LABEL(H2(T('Máquinas en ejecución'))),runningImages,BR(),
         CENTER(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'open',  _value = T('Abrir'),_id='openButton'),
         INPUT(_type='submit',_class="button button-blue",_name = 'stop',_value = T('Detener'),_id='stopButton'))),
-        CENTER(LABEL("Máquina no disponible",_id='notAvaibleRMessage')),BR())
+        CENTER(LABEL("Máquina no disponible",_id='notAvaibleRMessage')),BR(),_target='_blank')
     
+    if form1.accepts(request.vars,keepvalues=True) and form1.vars.continueEditing:
+           #Creamos la MV
+           if len(form1.vars.selection2) > 0:
+                       errorInfo = connector.editImage(form1.vars.selection2.split('w')[1])
+                       evaluateCommand(connector,errorInfo,"Petición de arranque de máquina en edición enviada")
+           else:
+                   response.flash = "Debe seleccionar una imagen base"
+                   
+    if form1.accepts(request.vars,keepvalues=True) and form1.vars.edit:
+           #Creamos la MV
+           if len(form1.vars.selection2) > 0:
+                       errorInfo = connector.editImage(form1.vars.selection2.split('w')[1])
+                       evaluateCommand(connector,errorInfo,"Petición de edición enviada")
+
+           else:
+                   response.flash = "Debe seleccionar una imagen base"
+                   
+    if form1.accepts(request.vars,keepvalues=True) and form1.vars.saveChanges:
+           #Creamos la MV
+           if len(form1.vars.selection2) > 0:
+                       errorInfo = connector.deployEditedImage(form1.vars.selection2.split('w')[1])
+                       evaluateCommand(connector,errorInfo,"Petición de edición enviada")
+
+           else:
+                   response.flash = "Debe seleccionar una imagen base"
+    if form2.accepts(request.vars,keepvalues=True) and form2.vars.open:
+           #Creamos la MV
+           if len(form2.vars.selection1) > 0:
+                       #Mandamos la ejecución del cliente noVNC
+                        #TODO: Necesito una función que me de los datos de conexión
+                        redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
+
+           else:
+                   response.flash = "Debe seleccionar una imagen base"
+    
+    if form2.accepts(request.vars,keepvalues=True) and form2.vars.stop:
+           #Creamos la MV
+           if len(form2.vars.selection1) > 0:
+                #Paramos la máquina virtual
+                commandId = connector.destroyDomain(form2.vars.selection1.split('w')[1])
+                #Esperamos la contestacion
+                errorInfo = connector.waitForCommandOutput(commandId)
+                if(errorInfo != None):
+                    response.flash = T(errorInfo['ErrorMessage'])
+                else:
+                    redirect(URL(f = 'editVM'))
+
+           else:
+                   response.flash = "Debe seleccionar una imagen base"
     return dict(form1=form1,form2=form2,num1=num1,num2=num2)
     
 def associateSubjects():
@@ -249,9 +309,12 @@ def associateSubjects():
                'selectedIndex':form2.vars.editedImagesSelect}))
     if form2.accepts(request.vars,keepvalues=True) and form2.vars.remove:
           #Borramos la entrada
-          userDB(userDB.VMByGroup.cod==form2.vars.searchSubjectsSelect.split('-')[0] and 
-                  userDB.VMByGroup.curseGroup==form2.vars.searchSubjectsSelect.split('-')[1] and
-                  userDB.VMByGroup.VMId==form2.vars.editedImagesSelect).delete()
+          deleteInfo = userDB((userDB.VMByGroup.VMId==form2.vars.editedImagesSelect) &
+                  (userDB.VMByGroup.cod==form2.vars.searchSubjectsSelect.split('-')[0]) & 
+                  (userDB.VMByGroup.curseGroup==form2.vars.searchSubjectsSelect.split('-')[1])
+                  ).delete()
+
+
           response.flash = T('Máquina virtual desvinculada.')
           redirect(URL(c='teacher',f='associateSubjects'))
         
@@ -380,3 +443,9 @@ def searchMaxValues(rows):
         if(r["dataDiskSize"] > maxDataDisk):
             maxDataDisk = r["dataDiskSize"]
     return (maxRam,maxCPUs,maxOsDisk,maxDataDisk)
+    
+def evaluateCommand(connector,commandId,message):
+    if(len(connector.getCommandOutput(commandId))==0):
+        response.flash = message
+    else:
+        response.flash = connector.getCommandOutput(commandId)

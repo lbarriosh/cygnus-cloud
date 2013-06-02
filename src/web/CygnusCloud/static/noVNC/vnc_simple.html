@@ -76,7 +76,17 @@
         
         function fullScreen() {
             //Pantalla completa 
-            document.getElementById("noVNC_canvas").webkitRequestFullscreen();
+            if(document.getElementById("noVNC_canvas").requestFullscreen) {
+                document.getElementById("noVNC_canvas").requestFullscreen();
+            }
+            else if(document.getElementById("noVNC_canvas").mozRequestFullScreen) {
+                document.getElementById("noVNC_canvas").mozRequestFullScreen();
+            }
+            else if(document.getElementById("noVNC_canvas").webkitRequestFullScreen) {
+                document.getElementById("noVNC_canvas").webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+            }
+            //document.getElementById("noVNC_canvas").webkitRequestFullscreen();
+            //document.getElementById("noVNC_canvas").mozCancelFullScreen();
             return false;
         }
         function updateState(rfb, state, oldstate, msg) {
