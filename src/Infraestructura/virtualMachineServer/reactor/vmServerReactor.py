@@ -28,7 +28,7 @@ class VMServerReactor(ClusterServerPacketReactor):
     """
     Clase del reactor del servidor de máquinas virtuales
     """
-    def __init__(self, constantManager):
+    def __init__(self, configurationFileParser):
         """
         Inicializa el estado del reactor, establece las conexiones con las bases de datos, arranca el conector de libvirt
         y empieza a atender las peticiones del servidor de máquinas virtuales.
@@ -40,14 +40,14 @@ class VMServerReactor(ClusterServerPacketReactor):
         self.__fileTransferThread = None
         self.__compressionThread = None
         self.__networkManager = None
-        self.__cManager = constantManager
+        self.__parser = configurationFileParser
         self.__ftp = FTPClient()        
         self.__domainHandler = None
         self.__domainTimeout = 0
         try :
-            self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), 
-                                      self.__cManager.getConstant("databasePassword"), )
-            self.__startListenning(self.__cManager.getConstant("vncNetworkInterface"), self.__cManager.getConstant("listenningPort"))
+            self.__connectToDatabases("VMServerDB", self.__parser.getConfigurationParameter("databaseUserName"), 
+                                      self.__parser.getConfigurationParameter("databasePassword"), )
+            self.__startListenning(self.__parser.getConfigurationParameter("vncNetworkInterface"), self.__parser.getConfigurationParameter("listenningPort"))
         except Exception as e:
             print e.message
             self.__emergencyStop = True
@@ -73,30 +73,30 @@ class VMServerReactor(ClusterServerPacketReactor):
             self.__vncServerIP = get_ip_address(networkInterface)
         except Exception :
             raise Exception("Error: the network interface '{0}' is not ready. Exiting now".format(networkInterface))    
-        self.__ftpTimeout = self.__cManager.getConstant("FTPTimeout")
+        self.__ftpTimeout = self.__parser.getConfigurationParameter("FTPTimeout")
         self.__listenningPort = listenningPort
-        self.__networkManager = NetworkManager(self.__cManager.getConstant("certificatePath"))
+        self.__networkManager = NetworkManager(self.__parser.getConfigurationParameter("certificatePath"))
         self.__networkManager.startNetworkService()
         self.__packetManager = VMServerPacketHandler(self.__networkManager)        
         self.__networkManager.listenIn(self.__listenningPort, ClusterServerCallback(self), True)
         self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
-                                                       self.__cManager.getConstant("TransferDirectory"),
-                                                       self.__cManager.getConstant("FTPTimeout"), self.__dbConnector)
+                                                       self.__parser.getConfigurationParameter("TransferDirectory"),
+                                                       self.__parser.getConfigurationParameter("FTPTimeout"), self.__dbConnector)
         self.__fileTransferThread.start()
-        self.__connectToDatabases(self.__cManager.getConstant("databaseName"), self.__cManager.getConstant("databaseUserName"), self.__cManager.getConstant("databasePassword"))
+        self.__connectToDatabases("VMServerDB", self.__parser.getConfigurationParameter("databaseUserName"), self.__parser.getConfigurationParameter("databasePassword"))
             
         self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
-                                                 self.__cManager.getConstant("configFilePath"),
-                                                 self.__cManager.getConstant("sourceImagePath"), self.__cManager.getConstant("executionImagePath"),
-                                                 self.__cManager.getConstant("websockifyPath"), self.__cManager.getConstant("passwordLength"))
-        self.__domainHandler.connectToLibvirt(self.__cManager.getConstant("vncNetworkInterface"), 
-                                                  self.__cManager.getConstant("vnName"), self.__cManager.getConstant("gatewayIP"), 
-                                                  self.__cManager.getConstant("netMask"), self.__cManager.getConstant("dhcpStartIP"), 
-                                                  self.__cManager.getConstant("dhcpEndIP"), self.__cManager.getConstant("createVirtualNetworkAsRoot"))
+                                                 self.__parser.getConfigurationParameter("configFilePath"),
+                                                 self.__parser.getConfigurationParameter("sourceImagePath"), self.__parser.getConfigurationParameter("executionImagePath"),
+                                                 self.__parser.getConfigurationParameter("websockifyPath"), self.__parser.getConfigurationParameter("passwordLength"))
+        self.__domainHandler.connectToLibvirt(self.__parser.getConfigurationParameter("vncNetworkInterface"), 
+                                                  self.__parser.getConfigurationParameter("vnName"), self.__parser.getConfigurationParameter("gatewayIP"), 
+                                                  self.__parser.getConfigurationParameter("netMask"), self.__parser.getConfigurationParameter("dhcpStartIP"), 
+                                                  self.__parser.getConfigurationParameter("dhcpEndIP"), self.__parser.getConfigurationParameter("createVirtualNetworkAsRoot"))
             
         self.__domainHandler.doInitialCleanup()
-        self.__compressionThread = CompressionThread(self.__cManager.getConstant("TransferDirectory"), self.__cManager.getConstant("sourceImagePath"),
-                                                     self.__cManager.getConstant("configFilePath"),
+        self.__compressionThread = CompressionThread(self.__parser.getConfigurationParameter("TransferDirectory"), self.__parser.getConfigurationParameter("sourceImagePath"),
+                                                     self.__parser.getConfigurationParameter("configFilePath"),
                                                      self.__dbConnector, self.__domainHandler, self.__networkManager, self.__listenningPort, self.__packetManager)
         self.__compressionThread.start()
     
@@ -175,9 +175,9 @@ class VMServerReactor(ClusterServerPacketReactor):
         isBootable = self.__dbConnector.getBootableFlag(data["ImageID"])
         
         if(isBootable):            
-            osImagePath = os.path.join(self.__cManager.getConstant("sourceImagePath") 
+            osImagePath = os.path.join(self.__parser.getConfigurationParameter("sourceImagePath") 
                                    ,self.__dbConnector.getOSImagePath(data["ImageID"]))
-            definitionFilePath = os.path.join(self.__cManager.getConstant("configFilePath") 
+            definitionFilePath = os.path.join(self.__parser.getConfigurationParameter("configFilePath") 
                                    ,self.__dbConnector.getDefinitionFilePath(data["ImageID"]))
             
             try :
@@ -265,8 +265,8 @@ class VMServerReactor(ClusterServerPacketReactor):
         """
         info = self.__domainHandler.getLibvirtStatusInfo()
         realCPUNumber = multiprocessing.cpu_count()
-        diskStats_storage = os.statvfs(self.__cManager.getConstant("sourceImagePath"))
-        diskStats_temporaryData = os.statvfs(self.__cManager.getConstant("executionImagePath"))
+        diskStats_storage = os.statvfs(self.__parser.getConfigurationParameter("sourceImagePath"))
+        diskStats_temporaryData = os.statvfs(self.__parser.getConfigurationParameter("executionImagePath"))
         freeOutput = ChildProcessManager.runCommandInForeground("free -k", VMServerException)
         
         # free devuelve la siguiente salida

@@ -10,9 +10,10 @@ from ccutils.databases.configuration import DBConfigurator
 from reactor.vmServerReactor import VMServerReactor
 from time import sleep
 from ccutils.passwords.rootPasswordHandler import RootPasswordHandler
-from constants import VMServerConstantsManager
+from virtualMachineServer.configurationFiles.configurationFileParser import VMServerConfigurationFileParser
 from ccutils.processes.childProcessManager import ChildProcessManager
 import sys
+import os
 
 if __name__ == "__main__" :
     # Parsear el fichero de configuración
@@ -20,10 +21,10 @@ if __name__ == "__main__" :
         print "A configuration file path is needed"
         sys.exit()
     try :
-        parser = VMServerConstantsManager()
+        parser = VMServerConfigurationFileParser()
         parser.parseConfigurationFile(sys.argv[1])
     except Exception as e:
-        print "Error: " + e.message
+        print e.message
         sys.exit()
         
     # Pedir la contraseña de root. Es necesaria para poder cambiar los permisos
@@ -37,11 +38,19 @@ if __name__ == "__main__" :
             RootPasswordHandler().clear()
         
     # Crear la base de datos (si es necesario)
-    configurator = DBConfigurator(parser.getConstant("mysqlRootsPassword"))
-    configurator.runSQLScript(parser.getConstant("databaseName"), "./database/VMServerDB.sql")
+    configurator = DBConfigurator(parser.getConfigurationParameter("mysqlRootsPassword"))
+    configurator.runSQLScript("VMServerDB", "./database/VMServerDB.sql")
     # Crear un usuario y darle permisos
-    configurator.addUser(parser.getConstant("databaseUserName"), parser.getConstant("databasePassword"), parser.getConstant("databaseName"), True)
-    # Crear el servidor de máquinas virtuales
+    configurator.addUser(parser.getConfigurationParameter("databaseUserName"), parser.getConfigurationParameter("databasePassword"), "VMServerDB", True)
+    
+    # Crear los directorios
+    parameters = ["configFilePath", "sourceImagePath", "executionImagePath", "TransferDirectory"]
+    for param in parameters :
+        param_path = parser.getConfigurationParameter(param)
+        if (not os.path.exists(param_path)):
+            os.mkdir(param_path)
+    
+    # Terminar con la inicialización
     vmServer = VMServerReactor(parser)    
     # Dormir hasta que se apague
     while not vmServer.has_finished():

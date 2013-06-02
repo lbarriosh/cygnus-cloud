@@ -10,7 +10,8 @@ from __future__ import print_function
 
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
-from virtualMachineServer.networking.packets import VMServerPacketHandler, VM_SERVER_PACKET_T
+from virtualMachineServer.packetHandling.packetHandler import VMServerPacketHandler
+from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T
 from time import sleep
 
 class TesterCallback(NetworkCallback):
@@ -100,7 +101,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createImageEditionPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), tokens.pop(0) == "True", "1", 1)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "deployImage"):
-            p = pHandler.createImageDeployPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), "1")
+            p = pHandler.createImageDeploymentPacket(tokens.pop(0), int(tokens.pop(0)), int(tokens.pop(0)), "1")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "deleteImage") :
             p = pHandler.createDeleteImagePacket(int(tokens.pop(0)), "1")
@@ -135,7 +136,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Certificates")
+    networkManager = NetworkManager("/home/luis/Infraestructura/Certificates")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = VMServerPacketHandler(networkManager)
