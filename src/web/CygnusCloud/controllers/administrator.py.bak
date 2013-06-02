@@ -79,7 +79,7 @@ def runVM():
                     
         return dict(form1=form1,form2=form2,num = j)
         
-    if(request.args(0) == 'stop'):
+    else:
         #Creamos el formulario de busqueda
         form1 = FORM(HR(),H2(T('Buscar una máquina o usuario')),DIV( T('Nombre de la máquina: '),BR(),INPUT(_name = 'vmName')),
                DIV( T('Usuario: '),BR(),INPUT(_name = 'userName')),
@@ -97,23 +97,36 @@ def runVM():
         table = TABLE(_class='data', _name='table')
         table.append(TR(TH('Selección'),TH(T('Máquina virtual'),TH(T('Usuario')),TH(T('Servidor')),TH(T('Puerto')))))
         j = 0
-        for vm in vmList:            
-                table.append(TR(\
-                TD(INPUT(_type='radio',_name = 'selection',_value = vm[4],_id = "c"+str(j))),\
-                TD(LABEL(vm[0])),
-                TD(LABEL(vm[1])),
-                TD(LABEL(vm[2])),
-                TD(LABEL(vm[3])),
-                TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = str(j)),_class='izquierda')))
+        for vm in vmList:  
+                if(request.args(0) == 'stop'):          
+                    table.append(TR(\
+                    TD(INPUT(_type='radio',_name = 'selection',_value = vm[4],_id = "c"+str(j))),\
+                    TD(LABEL(vm[0])),
+                    TD(LABEL(vm[1])),
+                    TD(LABEL(vm[2])),
+                    TD(LABEL(vm[3])),
+                    TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue")
+                        ,_id = str(j)),_class='izquierda')))
+                else:
+                    table.append(TR(\
+                    TD(INPUT(_type='radio',_name = 'selection',_value = vm[4],_id = "c"+str(j))),\
+                    TD(LABEL(vm[0])),
+                    TD(LABEL(vm[1])),
+                    TD(LABEL(vm[2])),
+                    TD(LABEL(vm[3])),
+                    TD(DIV(INPUT(_type='submit',_name = 'open',  _value = T('Abrir'),_class="button button-blue")
+                        ,_id = str(j)),_class='izquierda')))                    
                 j = j + 1
         #Creamos el segundo formulario
-        form2 = FORM(LABEL(H2(T('Resultados'))),table)
+        if(request.args(0) == 'stop'):
+            form2 = FORM(LABEL(H2(T('Resultados'))),table)
+        else:
+            form2 = FORM(LABEL(H2(T('Resultados'))),table,_target='_blank')
             
         #Actuamos frente a la busqueda
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
             #Establecemos la conexión con el servidor 
             connector = conectToServer()
-            print "llegar"
             #Extraemos la informacion
             vmListAux = connector.getActiveVMsData()
             print vmListAux
@@ -128,15 +141,17 @@ def runVM():
                 userName = userDB(userDB.auth_user.id == vm['UserID']).select(userDB.auth_user.email)
                 #Comprobamos si añadimos este elemento a la lista resultado
                 toAdd = True
-                if((form1.vars.vmName != 0) and not ( form1.vars.vmName.lower() in vmName[0].name.lower())):
+                if((form1.vars.vmName != 0) and not ( form1.vars.vmName.lower() in vmName.lower())):
                     toAdd = False
                 if((form1.vars.userName != 0) and not (form1.vars.userName.lower() in userName[0].email.lower())):
                     toAdd = False
                 if(toAdd):
-                    vmList.append([vmName[0].name,userName[0].email,vm['VMServerName'],vm['VNCPort'],vm['DomainUID']])
-
-            #redireccinamos con los resultados
-            redirect(URL(c='administrator',f='runVM',args = ['stop'],vars = dict(vmList=vmList) ))
+                    vmList.append([vmName,userName[0].email,vm['VMServerName'],vm['VNCPort'],vm['DomainUID']])
+            if(request.args(0) == 'stop'):
+                #redireccinamos con los resultados
+                redirect(URL(c='administrator',f='runVM',args = ['stop'],vars = dict(vmList=vmList) ))
+            else:
+                redirect(URL(c='administrator',f='runVM',args = ['open'],vars = dict(vmList=vmList) )) 
         #Actuamos frente al arranque
         if(form2.accepts(request.vars)) and (form2.vars.stop):
                if(form2.vars.selection != ""):
@@ -151,6 +166,17 @@ def runVM():
                         response.flash = T(errorInfo['ErrorMessage'])
                     else:
                         redirect(URL(f = 'runVM',args = ['stop']))
+        if(form2.accepts(request.vars)) and (form2.vars.open):
+             if(form2.vars.selection != ""):
+                activeVMConectData = connector.getActiveVMsData(False,False)
+                for vmInfo in activeVMConectData:
+                    print form2.vars.selection
+                    if vmInfo["VMID"] == int(form2.vars.selection):
+                        serverIp = searchVMServerIp(connector.getVMServersData(), vmInfo["VMServerName"])
+                        vncInfo = dict(OutputType=2,VNCServerIPAddress=serverIp,VNCServerPort=int(vmInfo["VNCPort"])+1
+                                    ,VNCServerPassword=str(vmInfo["VNCPassword"]))
+                if vncInfo != None:            
+                    redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
                                     
         return dict(form1=form1,form2=form2,num=j)         
 @auth.requires_membership('Administrator')
@@ -472,7 +498,8 @@ def createAdressBar():
  
     response.menu=[[SPAN(T('Máquinas virtuales'), _class='highlighted'), False,URL(f ='runVM',args = ['run']),[
                         (T('Arrancar'),False,URL(f = 'runVM',args = ['run'])),
-                        (T('Detener'),False,URL(f = 'runVM',args = ['stop']))]],
+                        (T('Detener'),False,URL(f = 'runVM',args = ['stop'])),
+                        (T('Abrir'),False,URL(f = 'runVM',args = ['open']))]],
                     [SPAN(T('Administrar servidores'), _class='highlighted'), False, URL(f = 'servers',args = ['add_servers']),[
                         (T('Añadir servidor'),False,URL(f = 'servers',args = ['add_servers'])),
                         (T('Editar servidor'),False,URL(f = 'servers',args = ['remove_servers']))]],
@@ -521,8 +548,8 @@ def createSubjectsSearchForm(state):
     form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_style="width:40%;"),_style="position:absolute;left:10%;"),
                 DIV( T('Nombre: '),BR(),INPUT(_name ='name'),_style="position:absolute;left:20%;"),BR(),BR(),BR(),
                 DIV( T('Año: '),BR(),INPUT(_name ='year',_style="width:25%;"),_style="position:absolute;left:10%;"),
-                DIV( T('Curso: '),BR(),INPUT(_name ='curse',_style="width:10%;"),_style="position:absolute;left:18%;"),
-                DIV( T('Grupo: '),BR(),INPUT(_name ='group',_style="width:10%;"),_style="position:absolute;left:24%;"),BR(),BR(),BR(),
+                DIV( T('Curso: '),BR(),INPUT(_name ='curse',_style="width:15%;"),_style="position:absolute;left:18%;"),
+                DIV( T('Grupo: '),BR(),INPUT(_name ='group',_style="width:15%;"),_style="position:absolute;left:24%;"),BR(),BR(),BR(),
                 INPUT(_type='submit',_class="button button-blue",_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
     
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
@@ -595,3 +622,9 @@ def conectToServer():
     connector = ClusterConnector(auth.user_id)
     connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
     return connector
+    
+def searchVMServerIp(servers, serverName):
+    for s in servers:
+        if s["VMServerName"] == serverName:
+            return s["VMServerIP"]
+    return None

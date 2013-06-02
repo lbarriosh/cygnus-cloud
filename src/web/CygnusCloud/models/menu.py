@@ -3,6 +3,9 @@
 #########################################################################
 ## Customize your APP title, subtitle and menus here
 #########################################################################
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 response.logo = A(IMG(src=URL('static','images/favicon.png'),_alt="My Logo"),XML('&trade;&nbsp;'),
                   _class="brand",_href=URL('main','about'))

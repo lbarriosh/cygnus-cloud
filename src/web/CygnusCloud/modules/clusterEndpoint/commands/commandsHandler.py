@@ -4,21 +4,9 @@ Definiciones del gestor de comandos
 @author: Luis Barrios Hernández
 @version: 4.0
 '''
-
-from ccutils.enums import enum
-
-COMMAND_TYPE = enum("REGISTER_VM_SERVER", "UNREGISTER_OR_SHUTDOWN_VM_SERVER", "BOOTUP_VM_SERVER", 
-                     "VM_BOOT_REQUEST", "HALT", "DESTROY_DOMAIN", "VM_SERVER_CONFIGURATION_CHANGE", "DEPLOY_IMAGE", "DELETE_IMAGE",
-                     "CREATE_IMAGE", "EDIT_IMAGE", "DELETE_IMAGE_FROM_INFRASTRUCTURE", "AUTO_DEPLOY_IMAGE")
-
-COMMAND_OUTPUT_TYPE = enum("VM_SERVER_REGISTRATION_ERROR", "VM_SERVER_BOOTUP_ERROR", 
-                           "VM_CONNECTION_DATA", "VM_BOOT_FAILURE", "VM_SERVER_UNREGISTRATION_ERROR",
-                           "VM_SERVER_SHUTDOWN_ERROR", "DOMAIN_DESTRUCTION_ERROR", "VM_SERVER_CONFIGURATION_CHANGE_ERROR",
-                           "CONNECTION_ERROR", "COMMAND_TIMED_OUT", "IMAGE_DEPLOYMENT_ERROR", "DELETE_IMAGE_FROM_SERVER_ERROR",
-                           "IMAGE_CREATION_ERROR", "IMAGE_EDITION_ERROR", "DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR",
-                           "AUTO_DEPLOY_ERROR", "VM_SERVER_INTERNAL_ERROR", "IMAGE_DEPLOYED", "IMAGE_CREATED", "IMAGE_EDITED", "IMAGE_DELETED")
-
-from clusterServer.networking.packets import CLUSTER_SERVER_PACKET_T as PACKET_T
+from clusterEndpoint.commands.command_type import COMMAND_TYPE
+from clusterEndpoint.commands.command_output_type import COMMAND_OUTPUT_TYPE
+from clusterServer.packetHandling.packet_t import CLUSTER_SERVER_PACKET_T as PACKET_T
 
 class CommandsHandler(object):
     """

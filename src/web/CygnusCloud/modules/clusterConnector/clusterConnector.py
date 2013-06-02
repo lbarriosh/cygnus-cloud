@@ -4,7 +4,7 @@ Conector que usará la web para interactuar con el sistema
 @author: Luis Barrios Hernández
 @version: 7.0
 '''
-from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
+from clusterEndpoint.databases.minimalClusterEndpointDBConnector import MinimalClusterEndpointDBConnector
 from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
 from clusterEndpoint.commands.commandsHandler import CommandsHandler
 from clusterEndpoint.codes.spanishCodesTranslator import SpanishCodesTranslator
@@ -35,7 +35,7 @@ class ClusterConnector(object):
         Devuelve:
             Nada
         """
-        self.__endpointDBConnector = ClusterEndpointDBConnector(databaseUser, databasePassword, endpointDBName)
+        self.__endpointDBConnector = MinimalClusterEndpointDBConnector(databaseUser, databasePassword, endpointDBName)
         self.__commandsDBConnector = CommandsDatabaseConnector(databaseUser, databasePassword, commandsDBName, 1)
         
     def dispose(self):
@@ -150,7 +150,7 @@ class ClusterConnector(object):
         (commandType, commandArgs) = self.__commandsHandler.createVMBootCommand(imageID, self.__userID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def isShutDown(self, haltVMServers):
+    def shutDownInfrastructure(self, haltVMServers):
         """
         Apaga toda la infraestructura
         Argumentos:
@@ -323,12 +323,6 @@ class ClusterConnector(object):
         else :
             return self.__commandsHandler.deserializeCommandOutput(result[0], result[1])
         
-    def getImageBasicData(self, imageID):
-        """
-        Devuelve los datos de una imagen
-        """
-        return self.__endpointDBConnector.getImageBasicData(imageID)
-        
     def getBootableImagesData(self, imageIDs):
         """
         Devuelve los datos de las imágenes arrancables
@@ -348,13 +342,6 @@ class ClusterConnector(object):
         """
         return self.__endpointDBConnector.getEditedImageIDs(userID)
     
-    def getNewImageIDs(self, userID):
-        """
-        Devuelve los datos de las imágenes no asignadas a ninguna
-        asignatura que un usuario está editando.
-        """
-        return self.__endpointDBConnector.getNewImageIDs(userID)
-    
     def getVanillaImageFamilyID(self, imageID):
         """
         Devuelve la familia de imágenes vanilla asociada a una imagen existente.
@@ -365,7 +352,7 @@ class ClusterConnector(object):
         """
         return self.__endpointDBConnector.getVanillaImageFamilyID(imageID)
     
-    def getVanillaImageFamiliyData(self, vanillaImageFamilyID):
+    def getVanillaImageFamilyData(self, vanillaImageFamilyID):
         """
         Devuelve los datos de una familia de imágenes vanilla.
         Argumentos:
@@ -444,19 +431,7 @@ class ClusterConnector(object):
     
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
-    connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "connector_user", "CygnusCloud")
-    commandID = connector.bootUpVMServer("Server1")
-    print connector.waitForCommandOutput(commandID)
-    sleep(5)
-    temporaryID = connector.createImage(1, "foo", "foos description")
-    notifications = []
-    while notifications == [] :
-        notifications = connector.getPendingNotifications()
-        if (notifications == []):
-            sleep(0.5)
-    notifications = []
-    connector.deployNewImage(str(temporaryID[0]) + "|" + str(temporaryID[1]), 1)
-    while notifications == [] :
-        notifications = connector.getPendingNotifications()
-        if (notifications == []):
-            sleep(0.5)
+    connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "website_user", "CygnusCloud")
+    connector.bootUpVMServer("Server1")
+    # sleep(10)
+    # connector.bootUpVM(1)

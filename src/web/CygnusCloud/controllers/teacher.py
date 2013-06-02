@@ -39,11 +39,12 @@ def runVM():
        
 #Método encargado de manejar la página de arranque de máquinas para el usuario
 @auth.requires_membership('Teacher')
-def stopVM():
+def runningVM():
     #actualizamos la barra
     createAdressBar()
     #Establecemos la conexión con el servidor 
     connector = conectToServer()
+    
     #Extraemos las máquinas arrancadas por este usuario
     vmList = connector.getActiveVMsData(True)
     
@@ -55,29 +56,55 @@ def stopVM():
         if(vm['UserID'] == auth.user_id):
             #Extramos el nombre de la máquina y su descripcion
             vminfo =  connector.getBootableImagesData([vm['VMID']])
-            table.append(TR(\
-            TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
-            TD(LABEL(vminfo[0]["ImageName"])),
-            TD(DIV(P(vminfo[0]["ImageDescription"],_class='izquierda'),_id= 'd' + str(j))),
-            TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = str(j)))))
-            j = j + 1
-
-    #Creamos el formulario
-    form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table)
-    if(form.accepts(request.vars)) and (form.vars.stop):
-            #Establecemos la conexión con el servidor 
-            connector = conectToServer()
-            #Paramos la máquina virtual
-            commandId = connector.destroyDomain(form.vars.selection)
-            #Esperamos la contestacion
-            errorInfo = connector.waitForCommandOutput(commandId)
-            if(errorInfo != None):
-                response.flash = T(errorInfo['ErrorMessage'])
+            if(request.args(0) == 'stopVM'):
+                table.append(TR(\
+                TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
+                TD(LABEL(vminfo[0]["ImageName"])),
+                TD(DIV(P(vminfo[0]["ImageDescription"],_class='izquierda'),_id= 'd' + str(j))),
+                TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = 'o' +  str(j))),
+                ))
             else:
-                redirect(URL(f = 'stopVM'))
-                 
+                #Extramos el nombre de la máquina y su descripcion
+                table.append(TR(\
+                TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
+                TD(LABEL(vminfo[0]["ImageName"])),
+                TD(DIV(P(vminfo[0]["ImageDescription"],_class='izquierda'),_id= 'd' + str(j))),
+                TD(DIV(INPUT(_type='submit',_name = 'open',  _value = T('Abrir'),_class="button button-blue"),_id = 'o' +  str(j))),
+                ))
+            j = j + 1
+                
+
+    #Creamos el formulario 
+    if(request.args(0) == 'stopVM'):
+        form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table)
+        if(form.accepts(request.vars)) and (form.vars.stop):
+                #Establecemos la conexión con el servidor 
+                connector = conectToServer()
+                #Paramos la máquina virtual
+                commandId = connector.destroyDomain(form.vars.selection)
+                #Esperamos la contestacion
+                errorInfo = connector.waitForCommandOutput(commandId)
+                if(errorInfo != None):
+                    response.flash = T(errorInfo['ErrorMessage'])
+                else:
+                    redirect(URL(f = 'stopVM'))
+    else:
+        form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table,_target='_blank')
+        if(form.accepts(request.vars)) and (form.vars.open):
+            activeVMConectData = connector.getActiveVMsData(True,False)
+            for vmInfo in activeVMConectData:
+                if vmInfo["VMID"] == int(form.vars.selection):
+                    print activeVMConectData
+                    print "password tam:" + str(vmInfo["VNCPassword"])
+                    serverIp = searchVMServerIp(connector.getVMServersData(), vmInfo["VMServerName"])
+                    vncInfo = dict(OutputType=2,VNCServerIPAddress=serverIp,VNCServerPort=int(vmInfo["VNCPort"])+1
+                        ,VNCServerPassword=str(vmInfo["VNCPassword"]))
+            if vncInfo != None:            
+                redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
+                
+
     return dict(form = form,num = j)
-       
+
        
 def createVanillaVM():
     #actualizamos la barra
@@ -215,8 +242,12 @@ def editVM():
            #Creamos la MV
            if len(form2.vars.selection1) > 0:
                        #Mandamos la ejecución del cliente noVNC
-                        #TODO: Necesito una función que me de los datos de conexión
-                        redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
+                        activeVMConectData = connector.getActiveVMsData(False,True)
+                        for vmInfo in activeVMConectData:
+                            if vmInfo["VMID"] == form2.vars.selection1.split('w')[1]:
+                                vncInfo = dict(VNCServerIPAddress=vmInfo["DomainUID"],VNCServerPort=vmInfo["VNCPort"]
+                                        ,VNCServerPassword=vmInfo["VNCPassword"])
+                                redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
 
            else:
                    response.flash = "Debe seleccionar una imagen base"
@@ -323,7 +354,10 @@ def associateSubjects():
          
    
 def createAdressBar():
-    response.menu=[[T('Arrancar máquina'),False,URL('runVM')],[T('Detener máquina'),False,URL('stopVM')],
+    response.menu=[[T('Arrancar máquina'),False,URL('runVM')],
+                   [SPAN(T('Máquinas arrancadas'), _class='highlighted'), False,URL(f ='runVM',args = ['run']),[
+                        (T('Detener máquina'),False,URL(f = 'runningVM',args = ['stopVM'])),
+                        (T('Abrir máquina'),False,URL(f = 'runningVM',args = ['openVM']))]],
                    [T('Crear nueva máquina'),False,URL('createVanillaVM')],[T('Editar máquina'),False,URL('editVM')]
                    ,[T('Asociar asignaturas'),False,URL('associateSubjects')]]
     
@@ -449,3 +483,9 @@ def evaluateCommand(connector,commandId,message):
         response.flash = message
     else:
         response.flash = connector.getCommandOutput(commandId)
+        
+def searchVMServerIp(servers, serverName):
+    for s in servers:
+        if s["VMServerName"] == serverName:
+            return s["VMServerIP"]
+    return None

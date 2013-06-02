@@ -9,7 +9,7 @@ Conector básico con una base de datos
 import mysql.connector
 from threading import Lock
 
-class BasicDatabaseConnector(object):
+class BasicDBConnector(object):
     '''
     Conector básico con una base de datos
     '''

@@ -40,7 +40,7 @@ def runVM():
        
 #Método encargado de manejar la página de arranque de máquinas para el usuario
 @auth.requires_membership('Student')
-def stopVM():
+def runningVM():
     #actualizamos la barra
     createAdressBar()
     #Establecemos la conexión con el servidor 
@@ -56,33 +56,55 @@ def stopVM():
         if(vm['UserID'] == auth.user_id):
             #Extramos el nombre de la máquina y su descripcion
             vminfo =  connector.getBootableImagesData([vm['VMID']])
-            table.append(TR(\
-            TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
-            TD(LABEL(vminfo[0]["ImageName"])),
-            TD(DIV(P(vminfo[0]["ImageDescription"],_class='izquierda'),_id= 'd' + str(j))),
-            TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = str(j)))))
+            if(request.args(0) == 'stopVM'):
+                table.append(TR(\
+                TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
+                TD(LABEL(vminfo[0]["ImageName"])),
+                TD(DIV(P(vminfo[0]["ImageDescription"],_class='izquierda'),_id= 'd' + str(j))),
+                TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = str(j)))))
+            else:
+                table.append(TR(\
+                TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
+                TD(LABEL(vminfo[0]["ImageName"])),
+                TD(DIV(P(vminfo[0]["ImageDescription"],_class='izquierda'),_id= 'd' + str(j))),
+                TD(DIV(INPUT(_type='submit',_name = 'open',  _value = T('Abrir'),_class="button button-blue"),_id = str(j)))))
             j = j + 1
 
     #Creamos el formulario
-    form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table)
-    if(form.accepts(request.vars)) and (form.vars.stop):
-            #Establecemos la conexión con el servidor 
-            connector = conectToServer()
-            #Paramos la máquina virtual
-            print form.vars.selection
-            commandId = connector.destroyDomain(form.vars.selection)
-            #Esperamos la contestacion
-            errorInfo = connector.waitForCommandOutput(commandId)
-            if(errorInfo != None):
-                response.flash = T(errorInfo['ErrorMessage'])
-            else:
-                redirect(URL(f = 'stopVM'))
+   
+    if(request.args(0) == 'stopVM'):
+        form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table)
+        if(form.accepts(request.vars)) and (form.vars.stop):
+                #Paramos la máquina virtual
+                commandId = connector.destroyDomain(form.vars.selection)
+                #Esperamos la contestacion
+                errorInfo = connector.waitForCommandOutput(commandId)
+                if(errorInfo != None):
+                    response.flash = T(errorInfo['ErrorMessage'])
+                else:
+                    redirect(URL(f = 'stopVM'))
+    else:
+        form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table,_target='_blank')
+        if(form.accepts(request.vars)) and (form.vars.open):
+            activeVMConectData = connector.getActiveVMsData(False,False)
+            for vmInfo in activeVMConectData:
+                if vmInfo["VMID"] == int(form.vars.selection):
+                    print activeVMConectData
+                    print "password tam:" + str(vmInfo["VNCPassword"])
+                    serverIp = searchVMServerIp(connector.getVMServersData(), vmInfo["VMServerName"])
+                    vncInfo = dict(OutputType=2,VNCServerIPAddress=serverIp,VNCServerPort=int(vmInfo["VNCPort"])+1
+                        ,VNCServerPassword=str(vmInfo["VNCPassword"]))
+            if vncInfo != None:            
+                redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
                  
     return dict(form = form,num = j)
        
    
 def createAdressBar():
-    response.menu=[[T('Arrancar máquina'),False,URL('runVM')],[T('Detener máquina'),False,URL('stopVM')]]
+    response.menu=[[T('Arrancar máquina'),False,URL('runVM')],
+                        [SPAN(T('Máquinas arrancadas'), _class='highlighted'), False,URL(f ='runVM',args = ['run']),[
+                            (T('Detener máquina'),False,URL(f = 'runningVM',args = ['stopVM'])),
+                            (T('Abrir máquina'),False,URL(f = 'runningVM',args = ['openVM']))]]]
     
 def createTable(subject,j):
     connector = conectToServer()
@@ -92,11 +114,11 @@ def createTable(subject,j):
     for l in userDB((userDB.VMByGroup.cod == subject.UserGroup.cod) & (userDB.VMByGroup.curseGroup == subject.UserGroup.curseGroup)).select(userDB.VMByGroup.VMId):
         imageInfo = connector.getBootableImagesData([l.VMId])
         if len(imageInfo) != 0:
-                table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = l.VMId,_id = "c"+str(i))),
+                table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = l.VMId,_id = "c"+str(i + j))),
                 TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda'),TD(LABEL(subject.Subjects.name),_class='izquierda')
                 ,TD(LABEL(subject.UserGroup.curseGroup)),TD(DIV(P(imageInfo[0]["ImageDescription"]),
                 CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar')))
-                ,_id = str(i)),_class='izquierda')))
+                ,_id = str(i + j)),_class='izquierda')))
         i = i + 1  
     
     return [table,i + j]

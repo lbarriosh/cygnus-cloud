@@ -1,10 +1,9 @@
 # -*- coding: UTF8 -*-
-from ccutils.databases.connector import BasicDatabaseConnector
-from ccutils.enums import enum
+from ccutils.databases.connector import BasicDBConnector
 
-TRANSFER_T = enum("CREATE_IMAGE", "EDIT_IMAGE", "DEPLOY_IMAGE", "STORE_IMAGE", "CANCEL_EDITION") 
+from virtualMachineServer.database.transfer_t import TRANSFER_T
 
-class VMServerDBConnector(BasicDatabaseConnector):
+class VMServerDBConnector(BasicDBConnector):
     '''
         Esta clase permite gestionar las diferentes características de las imágenes 
          accesibles en el servidor de máquinas virtuales actual.
@@ -14,7 +13,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
         '''
             Constructora de la clase
         '''
-        BasicDatabaseConnector.__init__(self, sqlUser, sqlPass, databaseName)
+        BasicDBConnector.__init__(self, sqlUser, sqlPass, databaseName)
         self.generateMACsAndUUIDs()
         self.generateVNCPorts()
         
@@ -246,7 +245,7 @@ class VMServerDBConnector(BasicDatabaseConnector):
              como argumentos.
         '''
         sql = "INSERT INTO ActualVM VALUES('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', '{7}', '{8}', '{9}')" \
-            .format(domainName, ImageID, vncPort, vncPassword, userId, webSockifyPID,
+            .format(domainName, ImageID, vncPort, vncPassword[:-1], userId, webSockifyPID,
                     osImagePath, dataImagePath, mac, uuid);
         self._executeUpdate(sql)        
         return vncPort 

@@ -5,10 +5,10 @@ The commands database connector
 @version: 1.1
 '''
 
-from ccutils.databases.connector import BasicDatabaseConnector
+from ccutils.databases.connector import BasicDBConnector
 import time
 
-class CommandsDatabaseConnector(BasicDatabaseConnector):
+class CommandsDatabaseConnector(BasicDBConnector):
     """
     These objects register and delete commands (and their outputs)
     in the commands database.
@@ -23,7 +23,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
             minCommandInterval: the time interval that separates two requests
             sent by the same user.
         """
-        BasicDatabaseConnector.__init__(self, sqlUser, sqlPassword, statusDBName)
+        BasicDBConnector.__init__(self, sqlUser, sqlPassword, statusDBName)
         self.__minCommandInterval = minCommandInterval
     
     def addCommand(self, userID, commandType, arguments, timestamp = None):
