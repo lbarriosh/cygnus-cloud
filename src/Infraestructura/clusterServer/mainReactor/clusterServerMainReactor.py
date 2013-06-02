@@ -28,7 +28,7 @@ class ClusterServerMainReactor(object):
     Estos objetos reaccionan a los paquetes recibidos desde los servidores de máquinas
     virtuales y desde el endpoint de la web.
     '''
-    def __init__(self, loadBalancerSettings, compressionRatio, dataImageExpectedSize, timeout):
+    def __init__(self, loadBalancerSettings, averageCompressionRatio, timeout):
         """
         Inicializa el estado del packetReactor
         Argumentos:
@@ -38,8 +38,7 @@ class ClusterServerMainReactor(object):
         """        
         self.__exit = False
         self.__loadBalancerSettings = loadBalancerSettings
-        self.__compressionRatio = compressionRatio
-        self.__dataImageExpectedSize = dataImageExpectedSize
+        self.__averageCompressionRatio = averageCompressionRatio
         self.__timeout = timeout
         self.__statusMonitoringThread = None
         
@@ -102,7 +101,7 @@ class ClusterServerMainReactor(object):
                                                              imageRepositoryPacketHandler,
                                                              VMServerCallback(vmServerPacketReactor, networkEventsReactor),
                                                              listenningPort, repositoryIP, repositoryPort, self.__loadBalancerSettings,
-                                                             self.__compressionRatio, self.__dataImageExpectedSize) 
+                                                             self.__averageCompressionRatio) 
         clusterEndpointCallback = ClusterEndpointCallback(self.__endpointPacketReactor)
         self.__networkManager.listenIn(listenningPort, clusterEndpointCallback, True)
        

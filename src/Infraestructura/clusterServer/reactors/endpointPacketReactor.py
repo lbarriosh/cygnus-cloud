@@ -19,7 +19,7 @@ class EndpointPacketReactor(object):
     
     def __init__(self, dbConnector, networkManager, vmServerPacketHandler, webPacketHandler, imageRepositoryPacketHandler,
                  vmServerCallback, listenningPort, repositoryIP, repositoryPort, loadBalancerSettings, 
-                 compressionRatio, dataImageExpectedSize):
+                 averageCompressionRatio):
         self.__dbConnector = dbConnector
         self.__networkManager = networkManager
         self.__vmServerPacketHandler = vmServerPacketHandler
@@ -28,8 +28,7 @@ class EndpointPacketReactor(object):
         self.__loadBalancer = PenaltyBasedLoadBalancer(self.__dbConnector, loadBalancerSettings[1], 
             loadBalancerSettings[2], loadBalancerSettings[3], loadBalancerSettings[4], 
             loadBalancerSettings[5])
-        self.__compressionRatio = compressionRatio
-        self.__dataImageExpectedSize = dataImageExpectedSize
+        self.__averageCompressionRatio = averageCompressionRatio
         self.__vmServerCallback = vmServerCallback
         self.__listenningPort = listenningPort
         self.__repositoryIP = repositoryIP
@@ -340,8 +339,8 @@ class EndpointPacketReactor(object):
                 errorDescription = ERROR_DESC_T.CLSRVR_IR_CONNECTION_ERROR
             else :
                 imageFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(self.__dbConnector.getFamilyID(data["ImageID"]))
-                required_disk_space = imageFeatures["osDiskSize"] + imageFeatures["dataDiskSize"] * self.__dataImageExpectedSize
-                required_disk_space = self.__compressionRatio * required_disk_space
+                required_disk_space = imageFeatures["osDiskSize"] + imageFeatures["dataDiskSize"]
+                required_disk_space = self.__averageCompressionRatio * required_disk_space
                 remaining_disk_space = repositoryStatus["FreeDiskSpace"] - required_disk_space
                 if (remaining_disk_space < 0) :
                     errorDescription = ERROR_DESC_T.CLSRVR_IR_NO_DISK_SPACE

@@ -5,9 +5,9 @@ Main server entry point
 @version: 1.0
 '''
 
-from cServer import ClusterServer
+from clusterServer.mainReactor.clusterServerMainReactor import ClusterServerMainReactor
 import sys
-from constants import ClusterServerConstantsManager
+from clusterServer.configurationFiles.configurationFileParser import ClusterServerConfigurationFileParser
 
 if __name__ == "__main__":
     # Parsear el fichero de configuración
@@ -15,22 +15,22 @@ if __name__ == "__main__":
         print "A configuration file path is needed"
         sys.exit()
     try :
-        cm = ClusterServerConstantsManager()
-        cm.parseConfigurationFile(sys.argv[1])
+        parser = ClusterServerConfigurationFileParser()
+        parser.parseConfigurationFile(sys.argv[1])
     except Exception as e:
-        print "Error: " + e.message
+        print e.message
         sys.exit()
-    if (cm.getConstant("loadBalancingAlgorithm") == "penalty-based"):
-        loadBalancerSettings = ["penalty-based", cm.getConstant("vCPUsWeight"), cm.getConstant("vCPUsExcessThreshold"),
-                                cm.getConstant("ramWeight"), cm.getConstant("storageSpaceWeight"),
-                                cm.getConstant("temporarySpaceWeight")]
-    else :
-        loadBalancerSettings = ["simple"]
-    reactor = ClusterServer(loadBalancerSettings, cm.getConstant("imageCompressionRatio"),
-                                   cm.getConstant("dataImageExpectedSize"), cm.getConstant("vmBootTimeout"))
-    reactor.connectToDatabase(cm.getConstant("mysqlRootsPassword"), cm.getConstant("dbName"), 
-                              cm.getConstant("dbUser"), cm.getConstant("dbPassword"), cm.getConstant("scriptPath"))
-    reactor.startListenning(cm.getConstant("certificatePath"), cm.getConstant("listenningPort"), 
-                            cm.getConstant("imageRepositoryIP"), cm.getConstant("imageRepositoryPort"), cm.getConstant("statusUpdateInterval"))
+    loadBalancerSettings = [parser.getConfigurationParameter("loadBalancingAlgorithm"), 
+                            parser.getConfigurationParameter("vCPUsWeight"), parser.getConfigurationParameter("vCPUsExcessThreshold"),
+                            parser.getConfigurationParameter("ramWeight"), parser.getConfigurationParameter("storageSpaceWeight"),
+                            parser.getConfigurationParameter("temporarySpaceWeight")]
+    reactor = ClusterServerMainReactor(loadBalancerSettings, parser.getConfigurationParameter("averageCompressionRatio"),
+                                   parser.getConfigurationParameter("vmBootTimeout"))
+    reactor.connectToDatabase(parser.getConfigurationParameter("mysqlRootsPassword"), "ClusterServerDB", 
+                              parser.getConfigurationParameter("dbUser"), parser.getConfigurationParameter("dbUserPassword"), 
+                              "./database/ClusterServerDB.sql")
+    reactor.startListenning(parser.getConfigurationParameter("certificatePath"), parser.getConfigurationParameter("listenningPort"), 
+                            parser.getConfigurationParameter("imageRepositoryIP"), parser.getConfigurationParameter("imageRepositoryPort"), 
+                            parser.getConfigurationParameter("statusUpdateInterval"))
     reactor.monitorVMBootCommands()
     reactor.closeNetworkConnections()

@@ -31,6 +31,10 @@ class ConfigurationFileParser(object):
         
         expectedSections = self._getExpectedSections()
         readSections = self.__config.sections()
+        
+        if ("Uninitialized file" in readSections):
+            raise InvalidConfigurationFileException("Invalid configuration file: you must initialize it before proceeding")
+        
         for section in expectedSections:
             if (not section in readSections) :
                 raise InvalidConfigurationFileException("Invalid configuration file: the section {0} is missing".section)

@@ -6,7 +6,7 @@ Punto de entrada del repositorio de imágenes
 '''
 import sys
 import os
-from imageRepository.configurationFiles.configurationFileParser import VMServerConfigurationFileParser
+from imageRepository.configurationFiles.configurationFileParser import ImageRepositoryConfigurationFileParser
 from ccutils.databases.configuration import DBConfigurator
 from imageRepository.reactor.imageRepositoryReactor import ImageRepositoryReactor
 
@@ -16,7 +16,7 @@ if __name__ == "__main__" :
         print "A configuration file path is needed"
         sys.exit()
     try :
-        parser = VMServerConfigurationFileParser()
+        parser = ImageRepositoryConfigurationFileParser()
         parser.parseConfigurationFile(sys.argv[1])
     except Exception as e:
         print e.message

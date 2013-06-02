@@ -8,7 +8,8 @@ from __future__ import print_function
 
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
-from clusterServer.networking.packets import ClusterServerPacketHandler, CLUSTER_SERVER_PACKET_T as PACKET_T
+from clusterServer.packetHandling.packetHandler import ClusterServerPacketHandler
+from clusterServer.packetHandling.packet_t import CLUSTER_SERVER_PACKET_T as PACKET_T
 from time import sleep
 
 class TesterCallback(NetworkCallback):
@@ -187,7 +188,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Certificates")
+    networkManager = NetworkManager("/home/luis/Infraestructura/Certificates")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = ClusterServerPacketHandler(networkManager)

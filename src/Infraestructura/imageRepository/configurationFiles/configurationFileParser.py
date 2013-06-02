@@ -2,7 +2,7 @@
 
 from ccutils.configurationFiles.configurationFileParser import ConfigurationFileParser
 
-class VMServerConfigurationFileParser(ConfigurationFileParser):
+class ImageRepositoryConfigurationFileParser(ConfigurationFileParser):
     """
     Parser del fichero de configuración del repositorio
     """
