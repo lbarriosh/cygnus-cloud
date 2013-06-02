@@ -5,9 +5,9 @@ Created on May 10, 2013
 @author: luis
 '''
 
-from imageRepository.packets import PACKET_T
-from clusterServer.networking.packets import CLUSTER_SERVER_PACKET_T
-from clusterServer.database.clusterServerDB import IMAGE_STATE_T
+from imageRepository.packetHandling.packet_t import PACKET_T
+from clusterServer.packetHandling.packet_t import CLUSTER_SERVER_PACKET_T
+from clusterServer.database.image_state_t import IMAGE_STATE_T
 
 class ImageRepositoryPacketReactor(object):
     

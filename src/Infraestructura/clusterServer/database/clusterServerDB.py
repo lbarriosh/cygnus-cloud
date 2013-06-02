@@ -1,12 +1,10 @@
 # -*- coding: UTF8 -*-
 
-from ccutils.enums import enum
+
 from ccutils.databases.connector import BasicDBConnector
 import time
-
-SERVER_STATE_T = enum("BOOTING", "READY", "SHUT_DOWN", "RECONNECTING", "CONNECTION_TIMED_OUT")
-
-IMAGE_STATE_T = enum("READY", "EDITED", "DEPLOY", "DELETE")
+from clusterServer.database.image_state_t import IMAGE_STATE_T
+from clusterServer.database.server_state_t import SERVER_STATE_T
 
 class ClusterServerDatabaseConnector(BasicDBConnector):
     """

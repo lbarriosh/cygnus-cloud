@@ -5,14 +5,15 @@ Created on May 10, 2013
 @author: luis
 '''
 
-from clusterServer.networking.packets import CLUSTER_SERVER_PACKET_T as PACKET_T
+from clusterServer.packetHandling.packet_t import CLUSTER_SERVER_PACKET_T as PACKET_T
 from network.manager.networkManager import NetworkManager
 from errors.codes import ERROR_DESC_T
 from time import sleep
 from clusterServer.loadBalancing.loadBalancer import MODE_T
 from clusterServer.loadBalancing.penaltyBasedLoadBalancer import PenaltyBasedLoadBalancer
-from clusterServer.database.clusterServerDB import SERVER_STATE_T, IMAGE_STATE_T
-from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T as VMSRVR_PACKET_T
+from clusterServer.database.server_state_t import SERVER_STATE_T
+from clusterServer.database.image_state_t import IMAGE_STATE_T
+from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 
 class EndpointPacketReactor(object):
     

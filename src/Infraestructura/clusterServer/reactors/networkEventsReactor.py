@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-from clusterServer.database.clusterServerDB import SERVER_STATE_T
+from clusterServer.database.server_state_t import SERVER_STATE_T
 from network.twistedInteraction.clientConnection import RECONNECTION_T
 
 class NetworkEventsReactor(object):

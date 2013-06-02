@@ -4,10 +4,10 @@ Created on Apr 11, 2013
 
 @author: luis
 '''
-from clusterServer.database.clusterServerDB import SERVER_STATE_T
+from clusterServer.database.server_state_t import SERVER_STATE_T
 from ccutils.threads.basicThread import BasicThread
 from network.manager.networkManager import NetworkManager
-from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T as VMSRVR_PACKET_T
+from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 
 from time import sleep
 

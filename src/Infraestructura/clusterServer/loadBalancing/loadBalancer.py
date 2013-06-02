@@ -37,5 +37,3 @@ class LoadBalancer(object):
     
     def assignVMServers(self, imageID):
         raise NotImplementedError
-    
-    

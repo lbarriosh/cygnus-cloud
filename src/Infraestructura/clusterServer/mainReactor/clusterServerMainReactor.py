@@ -8,18 +8,22 @@ from time import sleep
 from errors.codes import ERROR_DESC_T
 from ccutils.databases.configuration import DBConfigurator
 from network.manager.networkManager import NetworkManager
-from networking.callbacks import VMServerCallback, WebCallback, ImageRepositoryCallback
-from reactors.endpointPacketReactor import EndpointPacketReactor
-from reactors.vmServerPacketReactor import VMServerPacketReactor
-from reactors.imageRepositoryReactor import ImageRepositoryPacketReactor
-from reactors.networkEventsReactor import NetworkEventsReactor
-from networking.packets import ClusterServerPacketHandler, CLUSTER_SERVER_PACKET_T
-from virtualMachineServer.networking.packets import VMServerPacketHandler
-from imageRepository.packets import ImageRepositoryPacketHandler
-from threads.clusterStatusMonitoringThread import ClusterStatusMonitoringThread
-from database.clusterServerDB import ClusterServerDatabaseConnector, SERVER_STATE_T
+from clusterServer.callbacks.clusterEndpointCallback import ClusterEndpointCallback
+from clusterServer.callbacks.imageRepositoryCallback import ImageRepositoryCallback
+from clusterServer.callbacks.vmServerCallback import VMServerCallback
+from clusterServer.reactors.endpointPacketReactor import EndpointPacketReactor
+from clusterServer.reactors.vmServerPacketReactor import VMServerPacketReactor
+from clusterServer.reactors.imageRepositoryReactor import ImageRepositoryPacketReactor
+from clusterServer.reactors.networkEventsReactor import NetworkEventsReactor
+from clusterServer.packetHandling.packetHandler import ClusterServerPacketHandler
+from clusterServer.packetHandling.packet_t import  CLUSTER_SERVER_PACKET_T
+from virtualMachineServer.packetHandling.packetHandler import VMServerPacketHandler
+from imageRepository.packetHandling.packetHandler import ImageRepositoryPacketHandler
+from clusterServer.threads.clusterStatusMonitoringThread import ClusterStatusMonitoringThread
+from clusterServer.database.clusterServerDB import ClusterServerDatabaseConnector
+from clusterServer.database.server_state_t import SERVER_STATE_T
 
-class ClusterServer(object):
+class ClusterServerMainReactor(object):
     '''
     Estos objetos reaccionan a los paquetes recibidos desde los servidores de máquinas
     virtuales y desde el endpoint de la web.
@@ -99,8 +103,8 @@ class ClusterServer(object):
                                                              VMServerCallback(vmServerPacketReactor, networkEventsReactor),
                                                              listenningPort, repositoryIP, repositoryPort, self.__loadBalancerSettings,
                                                              self.__compressionRatio, self.__dataImageExpectedSize) 
-        webCallback = WebCallback(self.__endpointPacketReactor)
-        self.__networkManager.listenIn(listenningPort, webCallback, True)
+        clusterEndpointCallback = ClusterEndpointCallback(self.__endpointPacketReactor)
+        self.__networkManager.listenIn(listenningPort, clusterEndpointCallback, True)
        
         # Creamos el hilo que envía las actualizaciones de estado
         self.__statusMonitoringThread = ClusterStatusMonitoringThread(vmServerStatusUpdateInterval,
