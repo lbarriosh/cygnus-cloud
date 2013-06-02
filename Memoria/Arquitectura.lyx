@@ -748,6 +748,13 @@ vanilla
 El servidor de 
 \emph on
 cluster
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:El-servidor-de-cluster"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5350,8 +5357,21 @@ Paquetes y clases significativos de la arquitectura
 \end_layout
 
 \begin_layout Standard
-En este apartado mostraremos las clases más importantes de cada paquete
- junto con una breve descripción de sus responsabilidades.
+En esta sección, mostraremos la estructura interna de los paquetes más significa
+tivos de la arquitectura.
+ También mostraremos sus clases más relevantes, junto con una breve descripción
+ de sus responsabilidades.
+\end_layout
+
+\begin_layout Standard
+Aunque el paquete 
+\family typewriter
+errors
+\family default
+ es significativo desde el punto de vista de la arquitectura, sólo contiene
+ un tipo enumerado, en el que se definen los códigos de error.
+ Por ello, lo omitiremos en esta sección.
+ 
 \end_layout
 
 \begin_layout Subsubsection
@@ -5539,15 +5559,24 @@ QueueProcessingThread
 \end_layout
 
 \begin_layout Itemize
-finalmente, la única clase del paquete 
+finalmente, las clases del paquete 
 \family typewriter
 configurationFiles
 \family default
-, 
+ se utilizan para procesar los distintos ficheros de configuración.
+ La más relevante de todas, 
 \family typewriter
-ConfigSettingsManager
+ConfigurationFileParser
 \family default
-, permite recuperar los ajustes leídos de un fichero de configuración.
+, procesa los ficheros de configuración haciendo uso del módulo 
+\family typewriter
+ConfigParser
+\family default
+ de la librería estándar de 
+\emph on
+Python
+\emph default
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -5866,7 +5895,7 @@ reference "fig:Descomposición-del-paquete-imageRepository"
 \family typewriter
 imageRepository
 \family default
- se descompone en cuatro subpaquetes:
+ se descompone en cinco subpaquetes:
 \end_layout
 
 \begin_layout Itemize
@@ -5885,35 +5914,46 @@ ImageRepositoryDBConnector
 \begin_layout Itemize
 el paquete 
 \family typewriter
-packetHandling
+callbacks
+\family default
+, que contiene las interfaces 
+\family typewriter
+FTPServerCallback
+\family default
+ y 
+\family typewriter
+CommandsCallback
 \family default
 .
- La única clase que incluye, 
-\family typewriter
-ImageRepositoryPacketHandler
-\family default
-, permite crear y leer los distintos tipos de paquete que se utilizan en
- el repositorio de imágenes.
+ Estas se utilizarán para procesar los eventos generados por el servidor
+ FTP pyftpdlib y para procesar los paquetes recibidos respectivamente.
 \end_layout
 
 \begin_layout Itemize
 el paquete 
 \family typewriter
-callbacks
-\family default
-, que contiene dos clases: 
-\family typewriter
-CommandsCallback
-\family default
-, que procesa los paquetes recibidos en el repositorio, y 
-\family typewriter
-FTPServerCallback
-\family default
-, que trata los eventos generados por el servidor FTP 
-\family typewriter
-pyftpdlib
+configurationFiles
 \family default
 .
+ Su única clase, 
+\family typewriter
+ImageRepositoryConfigurationFileParser
+\family default
+, parsea el fichero de configuración del demonio del repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family typewriter
+packetHandling
+\family default
+.
+ Incluye una única clase, 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+, permite crear y leer los distintos tipos de paquete que se utilizan en
+ el repositorio de imágenes.
 \end_layout
 
 \begin_layout Itemize
@@ -5942,6 +5982,18 @@ virtualMachineServer
 wide false
 sideways false
 status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de paquetes/Diagrama paquetes VM server.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
 
 \begin_layout Plain Layout
 \begin_inset Caption
@@ -5981,11 +6033,45 @@ reference "fig:Descomposición-del-paquete-virtualMachineServer"
 
 \end_inset
 
- muestra que el paquete 
+ muestra la descomposición del paquete 
+\family typewriter
+virtualMachineServer
+\family default
+.
+ Por claridad, las dependencias del paquete 
+\family typewriter
+libvirtInteraction
+\family default
+ aparecen en rojo, y el resto de dependencias aparecen en negro.
+\end_layout
+
+\begin_layout Standard
+Como puede observarse en el diagrama de paquetes de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Descomposición-del-paquete-virtualMachineServer"
+
+\end_inset
+
+, el paquete 
 \family typewriter
 virtualMachineServer
 \family default
  se descompone en siete subpaquetes:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+configurationFiles
+\family default
+.
+ La única clase que contiene, 
+\family typewriter
+VMServerConfigurationFileParser
+\family default
+, parsea el fichero de configuración del demonio del servidor de máquinas
+ virtuales.
 \end_layout
 
 \begin_layout Itemize
@@ -6002,7 +6088,11 @@ VMServerDBConnector
 \end_layout
 
 \begin_layout Itemize
-exceptions.
+
+\family typewriter
+exceptions
+\family default
+.
  Este paquete contiene la clase 
 \family typewriter
 VMServerException
@@ -6012,10 +6102,25 @@ VMServerException
 \end_layout
 
 \begin_layout Itemize
-libvirtInteraction.
- Este paquete contiene las clases DomainHandler, LibvirtConnector y Configuratio
-nFileEditor, que se utilizan para crear y destruir dominios interactuando
- con la librería 
+
+\family typewriter
+libvirtInteraction
+\family default
+.
+ Este paquete contiene las clases 
+\family typewriter
+DomainHandler
+\family default
+, 
+\family typewriter
+LibvirtConnector 
+\family default
+y 
+\family typewriter
+ConfigurationFileEditor
+\family default
+, que se utilizan para crear y destruir dominios interactuando con la librería
+ 
 \family typewriter
 libvirt
 \family default
@@ -6023,14 +6128,30 @@ libvirt
 \end_layout
 
 \begin_layout Itemize
-networking.
- Este paquete contiene, entre otras, las clases
+
+\family typewriter
+packetHandling
+\family default
+.
+ Este paquete contiene la clase 
+\family typewriter
+VMServerPacketHandler
+\family default
+, que permite crear y leer los distintos tipos de paquete asociados al servidor
+ de máquinas virtuales.
 \end_layout
 
-\begin_deeper
 \begin_layout Itemize
-VMServerPacketReactor, que define la interfaz que se usará para procesar
- los paquetes recibidos desde el servidor de 
+
+\family typewriter
+reactor
+\family default
+.
+ La principal clase de este paquete, 
+\family typewriter
+VMServerReactor
+\family default
+, procesa los paquetes enviados por el servidor de 
 \emph on
 cluster
 \emph default
@@ -6038,23 +6159,41 @@ cluster
 \end_layout
 
 \begin_layout Itemize
-ClusterServerCallback, que 
+
+\family typewriter
+threads
+\family default
+.
+ Este paquete contiene las clases de hilo 
+\family typewriter
+CompressionThread
+\family default
+ y 
+\family typewriter
+FileTransferThread
+\family default
+.
+ Estas están asociadas a la compresión y descompresión de imágenes de disco
+ y al intercambio de imágenes de disco con el repositorio de imágenes respectiva
+mente.
 \end_layout
 
 \begin_layout Itemize
-VMServerPacketHandler, que permite crear y leer los distintos tipos de paquete
- asociados al servidor de máquinas virtuales.
-\end_layout
 
-\end_deeper
-\begin_layout Itemize
-reactor.
- Este paquete contiene la clase VMServerReactor, 
+\family typewriter
+virtualNetwork
+\family default
+.
+ La única clase de este paquete, 
+\family typewriter
+VirtualNetworkManager
+\family default
+, dispone de métodos para crear y destruir redes virtuales.
 \end_layout
 
 \begin_layout Subsubsection
 
-\family sans
+\family typewriter
 clusterServer
 \end_layout
 
@@ -6068,7 +6207,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaPaquetesClusterServer.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de paquetes/Diagrama Paquetes Cluster Server.pdf
 	scale 80
 
 \end_inset
@@ -6082,12 +6221,12 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:El-paquete-clusterServer"
+name "fig:Descomposicionl-paquete-clusterServer"
 
 \end_inset
 
-El paquete 
-\family sans
+Descomposición del paquete 
+\family typewriter
 clusterServer
 \end_layout
 
@@ -6106,87 +6245,479 @@ clusterServer
 \end_layout
 
 \begin_layout Standard
-Tal y como se muestra en la figura , el paquete 
-\family sans
+Tal y como se muestra en el diagrama de paquetes de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Descomposicionl-paquete-clusterServer"
+
+\end_inset
+
+, el paquete 
+\family typewriter
 clusterServer
 \family default
-, que contiene las clases del subsistema servidor del cluster de mayor nivel
- de abstracción, consta de tres subpaquetes:
+ se descompone en ocho subpaquetes:
 \end_layout
 
 \begin_layout Itemize
-el paquete 
-\family sans
-network
+
+\family typewriter
+configurationFiles
 \family default
- contiene las clases 
-\family sans
-WebCallback
-\family default
-, 
-\family sans
-VMServerCallback
-\family default
- y 
-\family sans
-MainServerPacketHandle
-\family default
-r.
- Las dos primeras definen los métodos a los que se llamará cuando se reciba
- un paquete procedente del servidor web y de un servidor de máquinas virtuales
- respectivamente, y la última se comporta igual que la clase 
-\family sans
-VMServerPacketHandler
-\family default
-, proporcionando métodos para leer y crear los paquetes que utiliza el servidor
- del 
+.
+ Nuevamente, este paquete contiene la clase que procesa el fichero de configurac
+ión del demonio del servidor de 
 \emph on
 cluster
 \emph default
- para comunicarse con el servidor web.
+, 
+\family typewriter
+ClusterServerConfigurationFileParser
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
-el paquete l
-\family sans
-oadBalancing
+
+\family typewriter
+callbacks
 \family default
- contiene la clase 
-\family sans
+.
+ En él se definen las interfaces 
+\family typewriter
+ClusterEndpointCallback
+\family default
+, 
+\family typewriter
+ImageRepositoryCallback
+\family default
+ y 
+\family typewriter
+VMServerCallback
+\family default
+, que se usarán para procesar los paquetes recibidos desde el servidro web,
+ el repositorio de imágenes y los servidores de máquinas virtuales respectivamen
+te.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+database
+\family default
+.
+ Su clase más importante, 
+\family typewriter
+ClusterServerDBConnector
+\family default
+, permite manipular la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+loadBalancing
+\family default
+.
+ Contiene la interfaz 
+\family typewriter
 LoadBalancer
 \family default
-, que define la interfaz que usarán todos los distintos algoritmos que realizan
- el balanceado de carga entre distintos servidores de máquinas virtuales.
+, común a todos los algoritmos de balanceado de carga, y la clase 
+\family typewriter
+PenaltyBasedLoadBalancer
+\family default
+, asociada al algoritmo de balanceado de carga basado en penalizaciones.
+ 
 \end_layout
 
 \begin_layout Itemize
-finalmente, el paquete 
-\family sans
-reactor
+
+\family typewriter
+mainReactor
 \family default
- contiene la clase 
-\family sans
-MainServerReactor
+.
+ Contiene la clase 
+\family typewriter
+ClusterServerMainReactor
 \family default
-, que procesa adecuadamente los paquetes recibidos desde un servidor de
- máquinas virtuales o desde el servidor web.
+, el punto de entrada del demonio del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+packetHandling
+\family default
+.
+ Contiene la clase 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+, que permite manipular los paquetes que intercambian el servidor de 
+\emph on
+cluster
+\emph default
+ y el servidor web.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+reactors
+\family default
+.
+ Contiene las clases 
+\family typewriter
+EndointPacketReactor
+\family default
+, 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+, 
+\family typewriter
+VMServerPacketReactor
+\family default
+ y 
+\family typewriter
+NetworkEventsReactor
+\family default
+.
+ Las tres primeras procesan los paquetes recibidos desde el servidor web,
+ el repositorio de imágenes y el servidor de máquinas virtuales respectivamente.
+ La última procesa los eventos de desconexión y reconexión generados por
+ la red.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+threads
+\family default
+.
+ Su única clase, 
+\family typewriter
+ClusterStatusMonitoringThread
+\family default
+, se corresponde con un hilo que envía periódicamente las actualizaciones
+ de estado a todas las máquinas del 
+\emph on
+cluster.
 \end_layout
 
 \begin_layout Subsubsection
 
+\family typewriter
+clusterEndpoint
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de paquetes/Diagrama Paquetes Cluster Endpoint.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Descomposición del paquete 
+\family typewriter
+clusterEndpoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de paquetes de la figura muestra la descomposición del paquete
+ 
+\family typewriter
+clusterEndpoint
+\family default
+.
+ Como se puede apreciar en él, el paquete 
+\family typewriter
+clusterEndpoint
+\family default
+ se descompone en siete subpaquetes:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+codes
+\family default
+.
+ Este paquete contiene la interfaz 
+\family typewriter
+CodesTranslator
+\family default
+, que se utilizará para convertir a 
+\emph on
+strings
+\emph default
+ los códigos de error generados por la infraestructura, y la clase 
+\family typewriter
+SpanishCodesTranslator
+\family default
+, que genera esos 
+\emph on
+strings
+\emph default
+ en castellano.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+commands
+\family default
+.
+ Este paquete contiene la clase 
+\family typewriter
+CommandsHandler
+\family default
+, que realiza la serialización y deserialización de los comandos y de las
+ salidas de comandos que usa la página web para interactuar con la infraestructu
+ra.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+configurationFiles
+\family default
+.
+ Este paquete contiene la clase 
+\family typewriter
+ClusterEndpointConfigurationFileParser
+\family default
+, que manipula el fichero de configuración del demonio que conecta la página
+ web con la infraestructura.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+databases
+\family default
+.
+ Sus principales clases son 
+\family typewriter
+CommandsDBConnector
+\family default
+ y 
+\family typewriter
+ClusterEndpointDBConnector
+\family default
+, que permiten manipular las dos bases de datos que utiliza el servidor
+ web.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+entryPoint
+\family default
+.
+ Su única clase, 
+\family typewriter
+ClusterEndpointEntryPoint
+\family default
+, es el punto de entrada del demonio que conecta la página web con la infraestru
+ctura.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+reactors
+\family default
+.
+ Contiene las clases 
+\family typewriter
+CommandsProcessor
+\family default
+ y 
+\family typewriter
+PacketReactor
+\family default
+, que se usan para procesar las órdenes enviadas a través de la página web
+ y los paquetes enviados desde el servidor de 
+\emph on
+cluster
+\emph default
+ respectivamente.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+threads
+\family default
+.
+ Contiene las clases de hilo 
+\family typewriter
+CommandsMonitoringThread
+\family default
+ y 
+\family typewriter
+DatabaseUpdateThread
+\family default
+, que se utilizan para detectar 
+\emph on
+timeouts
+\emph default
+ en la ejecución de los comandos que envía la página web y para recopilar
+ periódicamente el estado de la infraestructura respectivamente.
+\end_layout
+
+\begin_layout Subsubsection
+
+\family typewriter
+clusterConnector
+\end_layout
+
+\begin_layout Standard
+El paquete 
+\family typewriter
+clusterConnector
+\family default
+ contiene una única clase, 
+\family typewriter
+ClusterConnector
+\family default
+, que permite manipular las bases de datos del servidor web y enviar peticiones
+ a la infraestructura desde la página web.
+\end_layout
+
+\begin_layout Subsubsection
+
+\family typewriter
+testing
+\end_layout
+
+\begin_layout Standard
+El paquete 
+\family typewriter
+testing
+\family default
+ contiene clases que permiten comprobar el correcto funcionamiento de los
+ demonios del repositorio de imágenes, del servidor de máquinas virtuales
+ y del servidor de 
+\emph on
+cluster
+\emph default
+.
+ Estas clases son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ImageRepositoryTester
 \family sans
+.
+ 
+\family default
+Esta clase interactúa con el demonio del repositorio de imágenes tal y como
+ lo harían el demonio del servidor de máquinas virtuales y el demonio del
+ servidor de 
+\emph on
+cluster
+\emph default
+.
+ Por ello, permite comprobar el correcto funcionamiento de todas las funciones
+ del repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+VirtualMachineServerTester
+\family default
+.
+ Esta clase interactúa con el demonio del servidor de máquinas virtuales
+ tal y como lo haría el demonio del servidor de 
+\emph on
+cluster
+\emph default
+.
+ Así pues, permite comprobar el correcto funcionamiento de todas las funciones
+ del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ClusterServerTester
+\family default
+.
+ Esta clase interactúa con el demonio del servidor de 
+\emph on
+cluster
+\emph default
+ tal y como lo haría el servidor web.
+ Esto permite comprobar el correcto funcionamiento de todas las funciones
+ del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+
+\family typewriter
 webServer
 \end_layout
 
 \begin_layout Standard
-El paquete webServer se encuentra distribuido en un conjunto de paquetes
- que hacen referencia a los diferentes tipos de elementos necesarios para
- implementar la funcionalidad de la web.
+El paquete 
+\family typewriter
+webServer
+\family default
+ se encuentra distribuido en un conjunto de paquetes que hacen referencia
+ a los diferentes tipos de elementos necesarios para implementar la funcionalida
+d de la web.
  Estos paquetes son:
 \end_layout
 
 \begin_layout Itemize
-Vistas : Paquetes con el conjunto de vistas que definen la representación
+Vistas: Paquetes con el conjunto de vistas que definen la representación
  de las páginas
 \end_layout
 
@@ -6220,177 +6751,10 @@ Módulos : En este paquete se encuentran todos los módulos python secundarios
  que serán utilizados por los controladores.
 \end_layout
 
-\begin_layout Subsubsection
-
-\family sans
-testing
-\end_layout
-
-\begin_layout Standard
-El paquete 
-\family sans
-testing
-\family default
- contiene clases que permiten comprobar el correcto funcionamiento de los
- subsistemas servidor de máquinas virtuales y servidor del cluster.
- Sus clases son las siguientes:
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-DummyVMServer
-\family default
-, que imita el comportamiento de un servidor de máquinas virtuales y no
- instancia máquinas.
- Esta clase se utiliza para comprobar el funcionamiento del subsistema servidor
- del cluster.
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-VirtualMachineServerTester
-\family default
-.
- Esta clase imita al servidor principal, haciendo posible el envío de cualquier
- secuencia de órdenes a un servidor de máquinas virtuales.
- Por ello, se utiliza para depurar dicho subsistema.
-\end_layout
-
-\begin_layout Itemize
-
-\family sans
-ClusterServerTester
-\family default
-.
- Esta clase imita al servidor web, lo que permite enviar cualquier secuencia
- de órdenes a un servidor de 
-\emph on
-cluster
-\emph default
-.
- Así, esta clase se utiliza para depurar este subsistema.
-\end_layout
-
-\begin_layout Subsection
-El paquete 
-\family typewriter
-database
-\end_layout
-
-\begin_layout Standard
-Este paquete contiene los módulos y scripts sql necesarios para la gestión
- de toda la información que es necesario almacenar y utilizar en CygnusCloud.
- Cada uno de estos tipos de archivos tendrán una finalidad concreta en la
- administración de información del sistema.
-\end_layout
-
-\begin_layout Standard
-Como ya se dijo en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Descomposición-del-sistema"
-
-\end_inset
-
-, CygnusCloud se encuentra dividido en tres grandes subsistema independientes,
- capaces de ejecutarse en diferentes máquinas conectadas por la red.
- Por ello, resulta necesario que la gestión de la información en cada uno
- de estos subsistemas se haga de forma particular.
- Así, será necesario una base de dato independiente para cada subsistema,
- así como clases independientes para gestionar cada una de estas bases de
- datos.
- 
-\end_layout
-
-\begin_layout Standard
-En este apartado profundizaremos sobre estos aspectos del paquetes database.
-\end_layout
-
-\begin_layout Subsubsection
-Tipo de ficheros
-\end_layout
-
-\begin_layout Standard
-Como ya hemos mencionado, el paquete database no solo se encuentra compuesto
- por un conjunto de módulos python, sino también por algunos scripts sql.
- El uso de un tipo u otro de fichero dependerá del tipo de acción que se
- quiera realizar.
- Así:
-\end_layout
-
-\begin_layout Itemize
-Los fichero sql son los encargados de definir y crear la estructura completa
- de las bases de datos.
- Existe un fichero sql por cada una de las bases de datos que son necesarias.
- Dentro de estos ficheros se incluyen la definición de las tablas que componen
- la base de datos, así como la información por defecto introducidas en las
- mismas.
-\end_layout
-
-\begin_layout Itemize
-Los módulos python son los encargados de introducir, borrar y actualizar
- la información de las tablas definidas.
- Así, estos módulos contienen funciones que permiten realizar acciones particula
-res con respecto a la base de datos concreta que debe manejar.
- Además de los módulos encargados del tratamiento de la información, este
- paquete también incluye algún módulo que permiten configurar las característica
-s básicas y establecer la conexión con el sistema de gestión de bases de
- datos.
-\end_layout
-
-\begin_layout Subsubsection
-Uso de mySql
-\end_layout
-
-\begin_layout Standard
-Para poder realizar las consultas y actualizaciones en la base de datos
- hemos optado por utilizar el sistema mySql, el cual nos ofrece una sintaxis
- simple y con todas las instrucciones que necesitamos.
- 
-\end_layout
-
-\begin_layout Standard
-Python no contempla este lenguaje por defecto, por lo que es necesario incorpora
-r una librería externa que nos permita enlazar los módulos python con la
- sintaxis de mySql.
- Con este fin, CygnusCloud utiliza MySQLdb, una librería muy simple y ligera
- que nos proporciona funciones para conectarnos a mySql y enviar los comandos
- con nuestras consultas.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Buscar info MySQLdb
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 El paquete 
 \family typewriter
 network
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: meter diagrama UML definitivo para las conexiones tras explicar los
- hilos de red
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -6563,13 +6927,13 @@ reference "fig:El-bucle-reactor"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/gráfico_twisted.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/Bucle reactor.pdf
 	scale 70
 
 \end_inset
@@ -6756,13 +7120,13 @@ Protocol2
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Procesamiento de datos entrantes (DS).pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Red/Procesamiento de datos entrantes (DS).pdf
 	scale 80
 
 \end_inset
@@ -6816,7 +7180,8 @@ Para establecer una conexión, es necesario tener en cuenta
 \end_layout
 
 \begin_layout Itemize
-el protocolo de transporte que hay que utilizar (TCP versión 4, SSL,\SpecialChar \ldots{}
+el protocolo de transporte que hay que utilizar (TCP versión 4, TCP versión
+ 4 sobre SSL,\SpecialChar \ldots{}
 ), y
 \end_layout
 
@@ -6893,13 +7258,13 @@ reference "fig:Relaciones-protocolos-endpoints-factorías"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Relaciones Endpoints.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Red/Relaciones Endpoints.pdf
 	scale 80
 
 \end_inset
@@ -6950,7 +7315,8 @@ endpoint
 \family typewriter
 network
 \family default
-, correspondientes a los protocolos TCP versión 4 y SSL versión 4.
+, correspondientes a los protocolos TCP versión 4 y TCP versión 4 sobre
+ SSL.
  Por otra parte, los 
 \emph on
 endpoints
@@ -6982,13 +7348,13 @@ endpoints
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Establecimiento conexión twisted (DS).pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Red/Procesamiento de datos entrantes (DS).pdf
 	scale 80
 
 \end_inset
@@ -7706,13 +8072,13 @@ CC
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagrama clases interacción twisted.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Red/Diagrama clases interacción twisted.pdf
 	scale 80
 
 \end_inset
@@ -7832,8 +8198,29 @@ CygnusCloudProtocol
 \end_layout
 
 \begin_layout Itemize
-serializar y enviar todos los paquetes del servidor a todos los clientes
- conectados, utilizando para ello las referencias a los objetos 
+serializar y enviar todos los paquetes del servidor 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+a todos los clientes conectados (envío 
+\emph on
+multicast
+\emph default
+), o
+\end_layout
+
+\begin_layout Itemize
+a uno de los clientes conectados (envío 
+\emph on
+unicast
+\emph default
+)
+\end_layout
+
+\begin_layout Standard
+según lo que especifique el código cliente.
+ Para ello, se utilizarán las referencias a los objetos 
 \family typewriter
 CygnusCloudProtocol
 \family default
@@ -7841,6 +8228,7 @@ CygnusCloudProtocol
  En caso de que no haya ninguna, los datos a enviar se descartarán.
 \end_layout
 
+\end_deeper
 \begin_layout Itemize
 procesar los datos recibidos a través de cualquier objeto 
 \family typewriter
@@ -7897,7 +8285,8 @@ CygnusCloudProtocolFactory
 \end_layout
 
 \begin_layout Itemize
-una dirección IP, un puerto y el protocolo a utilizar (TCP versión 4 o SSL).
+una dirección IP, un puerto y el protocolo a utilizar (TCP versión 4 o TCP
+ versión 4 sobre SSL).
  Esta información sólo se utiliza para establecerla.
 \end_layout
 
@@ -7958,7 +8347,7 @@ reference "fig:Diagrama-clases-conexiones"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -7966,7 +8355,7 @@ status open
 
 \family typewriter
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagrama Clases Conexiones.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Red/Diagrama Clases Conexiones.pdf
 	scale 80
 
 \end_inset
@@ -8018,8 +8407,8 @@ Para establecer una conexión de tipo cliente, basta con escoger un protocolo
 endpoint
 \emph default
  de tipo cliente que tiene asociado.
- Como nosotros sólo utilizamos los protocolos TCP versión 4 y SSL versión
- 4, estos 
+ Como nosotros sólo utilizamos los protocolos TCP versión 4 y TCP versión
+ 4 sobre SSL, estos 
 \emph on
 endpoints
 \emph default
@@ -8169,13 +8558,13 @@ reference "fig:Evolución-del-estado-cliente"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagrama estados conexión servidor.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/Diagrama estados conexión servidor.pdf
 	scale 90
 
 \end_inset
@@ -8210,13 +8599,13 @@ Evolución del estado de una conexión de tipo servidor
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagrama estados conexión cliente.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/Diagrama estados conexión cliente.pdf
 	scale 90
 
 \end_inset
@@ -8369,13 +8758,13 @@ CygnusCloud
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagrama clases Jerarquía hilos red.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Red/Diagrama clases Jerarquía hilos red.pdf
 	scale 80
 
 \end_inset
@@ -8556,22 +8945,22 @@ Si el número de conexiones de red de cada máquina es reducido, no habrá
 cluster
 \emph default
 .
- En la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Subsistemas-de-CygnusCloud"
-
-\end_inset
-
- dijimos que su principal función es realizar el balanceado de carga entre
- varios servidores de máquinas virtuales.
  
 \end_layout
 
 \begin_layout Standard
-A medida que el número de servidores de máquinas virtuales crece, el peso
- de los recursos asociados a los hilos y a los mecanismos de sincronización
- también lo hará, reduciendo considerablemente la escalabilidad.
+En la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:El-servidor-de-cluster"
+
+\end_inset
+
+ dijimos que una de sus funciones es realizar el balanceado de carga entre
+ varios servidores de máquinas virtuales.
+ A medida que el número de servidores de máquinas virtuales crece, los recursos
+ asociados a los hilos y a los mecanismos de sincronización también lo harán,
+ reduciendo considerablemente la escalabilidad.
  Por ejemplo, si el servidor de 
 \emph on
 cluster
@@ -8721,8 +9110,11 @@ proporcionar una fachada que permite establecer, utilizar y cerrar conexiones
 \end_layout
 
 \begin_layout Standard
-Las relaciones más relevantes de la clase NetworkManager aparecen en el
- diagrama de clases de la figura 
+Las relaciones más relevantes de la clase 
+\family typewriter
+NetworkManager
+\family default
+ aparecen en el diagrama de clases de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Relaciones-más-importantes-networkmanager"
@@ -8736,13 +9128,13 @@ reference "fig:Relaciones-más-importantes-networkmanager"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagrama clases NetworkManager.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Red/Diagrama clases NetworkManager.pdf
 	scale 80
 
 \end_inset
@@ -8783,6 +9175,14 @@ NetworkManager
 \family default
 : estos objetos están siempre asociados a una conexión de red, de la que
  se tomarán en caso de que deban compartirse.
+\end_layout
+
+\begin_layout Subsubsection
+El paquete 
+\family typewriter
+network
+\family default
+: visión general
 \end_layout
 
 \begin_layout Subsection
