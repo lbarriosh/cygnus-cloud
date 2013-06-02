@@ -11,8 +11,8 @@ from virtualMachineServer.exceptions.vmServerException import VMServerException
 from os import path, listdir, makedirs
 import shutil
 from ccutils.processes.childProcessManager import ChildProcessManager
-from virtualMachineServer.database.vmServerDB import TRANSFER_T
-from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T
+from virtualMachineServer.database.transfer_t import TRANSFER_T
+from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T
 from errors.codes import ERROR_DESC_T
 from time import sleep
 

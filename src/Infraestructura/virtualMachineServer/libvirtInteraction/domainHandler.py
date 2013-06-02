@@ -9,8 +9,8 @@ from virtualMachineServer.virtualNetwork.virtualNetworkManager import VirtualNet
 from ccutils.processes.childProcessManager import ChildProcessManager
 from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.exceptions.vmServerException import VMServerException
-from virtualMachineServer.libvirtInteraction.xmlEditor import ConfigurationFileEditor
-from virtualMachineServer.database.vmServerDB import TRANSFER_T
+from virtualMachineServer.libvirtInteraction.configurationFileEditor import ConfigurationFileEditor
+from virtualMachineServer.database.transfer_t import TRANSFER_T
 from os import path, listdir
 
 from time import sleep

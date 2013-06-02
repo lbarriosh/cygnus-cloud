@@ -4,7 +4,7 @@ Created on Apr 25, 2013
 
 @author: luis
 '''
-class VMServerPacketReactor():
+class ClusterServerPacketReactor():
     """
     Reactor del servidor de máquinas virtuales
     """

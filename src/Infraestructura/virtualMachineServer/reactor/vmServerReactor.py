@@ -6,23 +6,25 @@ Created on 14/01/2013
 '''
 
 from network.manager.networkManager import NetworkManager
-from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T, VMServerPacketHandler
-from virtualMachineServer.database.vmServerDB import VMServerDBConnector, TRANSFER_T
+from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T
+from virtualMachineServer.packetHandling.packetHandler import VMServerPacketHandler
+from virtualMachineServer.database.vmServerDB import VMServerDBConnector
+from virtualMachineServer.database.transfer_t import TRANSFER_T
 from network.ftp.ftpClient import FTPClient
-from virtualMachineServer.networking.reactors import VMServerPacketReactor
+from virtualMachineServer.reactor.clusterServerPacketReactor import ClusterServerPacketReactor
 from virtualMachineServer.threads.fileTransferThread import FileTransferThread
 from virtualMachineServer.threads.compressionThread import CompressionThread
 from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.domainHandler import DomainHandler
 from ccutils.processes.childProcessManager import ChildProcessManager
 from network.interfaces.ipAddresses import get_ip_address 
-from virtualMachineServer.networking.callback import ClusterServerCallback
+from virtualMachineServer.reactor.clusterServerCallback import ClusterServerCallback
 import os
 import multiprocessing
 import sys
 from errors.codes import ERROR_DESC_T
 
-class VMServerReactor(VMServerPacketReactor):
+class VMServerReactor(ClusterServerPacketReactor):
     """
     Clase del reactor del servidor de máquinas virtuales
     """
@@ -40,7 +42,6 @@ class VMServerReactor(VMServerPacketReactor):
         self.__networkManager = None
         self.__cManager = constantManager
         self.__ftp = FTPClient()        
-        self.__mainServerCallback = ClusterServerCallback(self)
         self.__domainHandler = None
         self.__domainTimeout = 0
         try :
@@ -77,7 +78,7 @@ class VMServerReactor(VMServerPacketReactor):
         self.__networkManager = NetworkManager(self.__cManager.getConstant("certificatePath"))
         self.__networkManager.startNetworkService()
         self.__packetManager = VMServerPacketHandler(self.__networkManager)        
-        self.__networkManager.listenIn(self.__listenningPort, self.__mainServerCallback, True)
+        self.__networkManager.listenIn(self.__listenningPort, ClusterServerCallback(self), True)
         self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
                                                        self.__cManager.getConstant("TransferDirectory"),
                                                        self.__cManager.getConstant("FTPTimeout"), self.__dbConnector)

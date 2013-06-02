@@ -5,13 +5,7 @@ Gestor de paquetes del servidor de máquinas virtuales
 @version: 4.0
 '''
 
-from ccutils.enums import enum
-
-VM_SERVER_PACKET_T = enum("CREATE_DOMAIN", "DESTROY_DOMAIN", "DOMAIN_CONNECTION_DATA", "SERVER_STATUS",
-                          "SERVER_STATUS_REQUEST", "USER_FRIENDLY_SHUTDOWN", 
-                          "QUERY_ACTIVE_VM_DATA", "ACTIVE_VM_DATA", "HALT", "QUERY_ACTIVE_DOMAIN_UIDS", "ACTIVE_DOMAIN_UIDS",
-                          "IMAGE_EDITION", "IMAGE_EDITION_ERROR", "DEPLOY_IMAGE", "IMAGE_DEPLOYMENT_ERROR","DELETE_IMAGE", "IMAGE_DELETION_ERROR",
-                          "IMAGE_EDITED", "IMAGE_DEPLOYED", "IMAGE_DELETED", "INTERNAL_ERROR")
+from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T
 
 class VMServerPacketHandler(object):
     """

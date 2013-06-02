@@ -8,10 +8,11 @@ Created on Apr 28, 2013
 from ccutils.threads.basicThread import BasicThread
 from network.manager.networkManager import NetworkCallback
 from network.ftp.ftpClient import FTPClient
-from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T as IR_PACKET_T
-from virtualMachineServer.networking.packets import VM_SERVER_PACKET_T
+from imageRepository.packetHandling.packetHandler import ImageRepositoryPacketHandler
+from imageRepository.packetHandling.packet_t import PACKET_T as IR_PACKET_T
+from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T
 from time import sleep
-from virtualMachineServer.database.vmServerDB import TRANSFER_T
+from virtualMachineServer.database.transfer_t import TRANSFER_T
 from errors.codes import ERROR_DESC_T
 from ccutils.processes.childProcessManager import ChildProcessManager
 from os import path

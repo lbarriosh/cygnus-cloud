@@ -1,8 +1,7 @@
 # -*- coding: UTF8 -*-
 from ccutils.databases.connector import BasicDBConnector
-from ccutils.enums import enum
 
-TRANSFER_T = enum("CREATE_IMAGE", "EDIT_IMAGE", "DEPLOY_IMAGE", "STORE_IMAGE", "CANCEL_EDITION") 
+from virtualMachineServer.database.transfer_t import TRANSFER_T
 
 class VMServerDBConnector(BasicDBConnector):
     '''

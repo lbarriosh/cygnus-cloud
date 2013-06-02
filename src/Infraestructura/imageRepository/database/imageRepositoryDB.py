@@ -2,10 +2,9 @@
 
 from ccutils.databases.connector import BasicDBConnector
 from re import sub
-from ccutils.enums import enum
 from os import path
 
-IMAGE_STATUS_T = enum("NOT_RECEIVED", "READY", "EDITION")
+from imageRepository.database.image_status_t import IMAGE_STATUS_T
 
 """
 Conector con la base de datos del repositorio
