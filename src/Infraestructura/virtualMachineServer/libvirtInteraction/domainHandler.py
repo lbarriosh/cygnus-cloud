@@ -187,6 +187,11 @@ class DomainHandler(object):
             webSockifyPID = self.__childProcessManager.runCommandInBackground([self.__websockifyPath,
                                             self.__vncServerIP + ":" + str(newPort + 1),
                                             self.__vncServerIP + ":" + str(newPort)])
+            
+            # Todo ha ido bien => registramos los recursos de la máquina como siempre        
+        
+            self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, webSockifyPID, newOSDisk,  newDataDisk, newMAC, newUUID)
+            self.__dbConnector.addVMBootCommand(newName, commandID)
        
         except Exception :
             # TODO: cancelar la edición en el repositorio
@@ -201,10 +206,7 @@ class DomainHandler(object):
             p = self.__packetManager.createInternalErrorPacket(commandID)
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             
-        # Todo ha ido bien => registramos los recursos de la máquina como siempre        
-        
-        self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, webSockifyPID, newOSDisk,  newDataDisk, newMAC, newUUID)
-        self.__dbConnector.addVMBootCommand(newName, commandID)
+
         
     def destroyDomain(self, domainUID):
         """
