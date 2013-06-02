@@ -73,7 +73,7 @@ class ClusterServerMainReactor(object):
         self.__networkManager = NetworkManager(certificatePath)        
         self.__networkManager.startNetworkService()    
         self.__listenningPort = listenningPort
-        self.__webPacketHandler = ClusterServerPacketHandler(self.__networkManager)    
+        self.__packetHandler = ClusterServerPacketHandler(self.__networkManager)    
         imageRepositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)
         vmServerPacketHandler = VMServerPacketHandler(self.__networkManager)        
         networkEventsReactor = NetworkEventsReactor(self.__dbConnector, repositoryIP, repositoryPort)
@@ -81,7 +81,7 @@ class ClusterServerMainReactor(object):
         # Nos conectamos al repositorio               
         imageRepositoryPacketReactor = ImageRepositoryPacketReactor(self.__dbConnector, self.__networkManager,
                                                                     listenningPort, repositoryIP, repositoryPort,
-                                                                    self.__webPacketHandler, vmServerPacketHandler, imageRepositoryPacketHandler)
+                                                                    self.__packetHandler, vmServerPacketHandler, imageRepositoryPacketHandler)
         try :
             imageRepositoryCallback = ImageRepositoryCallback(imageRepositoryPacketReactor, networkEventsReactor)
             self.__networkManager.connectTo(repositoryIP, repositoryPort, 10, imageRepositoryCallback, True, True)
@@ -94,10 +94,10 @@ class ClusterServerMainReactor(object):
         # Empezamos a escuchar las peticiones de la web
         
         vmServerPacketReactor = VMServerPacketReactor(self.__dbConnector, self.__networkManager, listenningPort,
-                                                      vmServerPacketHandler, self.__webPacketHandler)
+                                                      vmServerPacketHandler, self.__packetHandler)
         
         self.__endpointPacketReactor = EndpointPacketReactor(self.__dbConnector, self.__networkManager, 
-                                                             vmServerPacketHandler, self.__webPacketHandler,
+                                                             vmServerPacketHandler, self.__packetHandler,
                                                              imageRepositoryPacketHandler,
                                                              VMServerCallback(vmServerPacketReactor, networkEventsReactor),
                                                              listenningPort, repositoryIP, repositoryPort, self.__loadBalancerSettings,
@@ -130,7 +130,7 @@ class ClusterServerMainReactor(object):
                 # Borramos la máquina activa (sabemos que no existe)
                 self.__dbConnector.deleteActiveVMLocation(data[0])
                 # Creamos el paquete de error y se lo enviamos al endpoint de la web
-                p = self.__webPacketHandler.createErrorPacket(CLUSTER_SERVER_PACKET_T.VM_BOOT_FAILURE, ERROR_DESC_T.CLSRVR_VM_BOOT_TIMEOUT, data[0])
+                p = self.__packetHandler.createErrorPacket(CLUSTER_SERVER_PACKET_T.VM_BOOT_FAILURE, ERROR_DESC_T.CLSRVR_VM_BOOT_TIMEOUT, data[0])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
     
     def closeNetworkConnections(self):

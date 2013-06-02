@@ -23,7 +23,7 @@ class EndpointPacketReactor(object):
         self.__dbConnector = dbConnector
         self.__networkManager = networkManager
         self.__vmServerPacketHandler = vmServerPacketHandler
-        self.__webPacketHandler = webPacketHandler
+        self.__packetHandler = webPacketHandler
         self.__imageRepositoryPacketHandler = imageRepositoryPacketHandler
         self.__loadBalancer = PenaltyBasedLoadBalancer(self.__dbConnector, loadBalancerSettings[1], 
             loadBalancerSettings[2], loadBalancerSettings[3], loadBalancerSettings[4], 
@@ -43,11 +43,11 @@ class EndpointPacketReactor(object):
         Devuelve:
             Nada
         """
-        data = self.__webPacketHandler.readPacket(packet)
+        data = self.__packetHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.REGISTER_VM_SERVER) :
             self.__registerVMServer(data)
         elif (data["packet_type"] == PACKET_T.QUERY_VM_SERVERS_STATUS) :
-            self.__sendStatusData(self.__dbConnector.getVMServerBasicData, self.__webPacketHandler.createVMServerStatusPacket)
+            self.__sendStatusData(self.__dbConnector.getVMServerBasicData, self.__packetHandler.createVMServerStatusPacket)
         elif (data["packet_type"] == PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
             self.__unregisterOrShutdownVMServer(data)
         elif (data["packet_type"] == PACKET_T.BOOTUP_VM_SERVER) :
@@ -57,7 +57,7 @@ class EndpointPacketReactor(object):
         elif (data["packet_type"] == PACKET_T.HALT) :
             self.__doImmediateShutdown(data)
         elif (data["packet_type"] == PACKET_T.QUERY_VM_DISTRIBUTION) :
-            self.__sendStatusData(self.__dbConnector.getHostedImages, self.__webPacketHandler.createVMDistributionPacket)
+            self.__sendStatusData(self.__dbConnector.getHostedImages, self.__packetHandler.createVMDistributionPacket)
         elif (data["packet_type"] == PACKET_T.QUERY_ACTIVE_VM_DATA) :
             self.__requestVNCConnectionData()
         elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION) :
@@ -75,7 +75,7 @@ class EndpointPacketReactor(object):
         elif (data["packet_type"] == PACKET_T.AUTO_DEPLOY):
             self.__auto_deploy_image(data)
         elif (data["packet_type"] == PACKET_T.QUERY_VM_SERVERS_RESOURCE_USAGE):
-            self.__sendStatusData(self.__dbConnector.getVMServerResouceUsage, self.__webPacketHandler.createVMServerResourceUsagePacket)
+            self.__sendStatusData(self.__dbConnector.getVMServerResouceUsage, self.__packetHandler.createVMServerResourceUsagePacket)
         
             
     def __registerVMServer(self, data):
@@ -107,9 +107,9 @@ class EndpointPacketReactor(object):
                                                     data["VMServerPort"], data["IsVanillaServer"])            
             
             # Indicar al endpoint de la web que el comando se ha ejecutado con éxito
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
         except Exception:                
-            p = self.__webPacketHandler.createErrorPacket(PACKET_T.VM_SERVER_REGISTRATION_ERROR,
+            p = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_REGISTRATION_ERROR,
                                                           ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR, data["CommandID"])        
         self.__networkManager.sendPacket('', self.__listenningPort, p)
         
@@ -126,7 +126,7 @@ class EndpointPacketReactor(object):
             serverNameOrIPAddress = data["ServerNameOrIPAddress"]
             serverId = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
             if (serverId == None) :
-                p = self.__webPacketHandler.createErrorPacket(PACKET_T.VM_SERVER_BOOTUP_ERROR, 
+                p = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_BOOTUP_ERROR, 
                                                               ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR, data["CommandID"])
             else :
                 serverData = self.__dbConnector.getVMServerBasicData(serverId)
@@ -161,9 +161,9 @@ class EndpointPacketReactor(object):
                         self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
                 
                 # Indicar al endpoint que el comando se ha ejecutado con éxito
-                p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+                p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
         except Exception:
-            p = self.__webPacketHandler.createErrorPacket(PACKET_T.VM_SERVER_BOOTUP_ERROR,
+            p = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_BOOTUP_ERROR,
                                                           ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR, data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)       
         
@@ -182,7 +182,7 @@ class EndpointPacketReactor(object):
         (serverID, errorDescription) = self.__loadBalancer.assignVMServer(vmID, MODE_T.BOOT_DOMAIN)
         if (errorDescription != None) :
             # Error => avisar al usuario
-            p = self.__webPacketHandler.createErrorPacket(PACKET_T.VM_BOOT_FAILURE, errorDescription, data["CommandID"])
+            p = self.__packetHandler.createErrorPacket(PACKET_T.VM_BOOT_FAILURE, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :           
             # Registrar los recursos de la máquina virtual
@@ -196,7 +196,7 @@ class EndpointPacketReactor(object):
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
             error = self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
             if (error != None) :
-                p = self.__webPacketHandler.createErrorPacket(PACKET_T.VM_BOOT_FAILURE, 
+                p = self.__packetHandler.createErrorPacket(PACKET_T.VM_BOOT_FAILURE, 
                                                               ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_LOST, data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
                 self.__dbConnector.freeVMServerResources(data["CommandID"], True)
@@ -211,13 +211,13 @@ class EndpointPacketReactor(object):
     def __auto_deploy_image(self, data):       
         
         if (data["Instances"] == 0 or data["Instances"] < -1) :
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)        
             return  
         
         familyID = self.__dbConnector.getFamilyID(data["ImageID"])
         if (familyID == None) :
-            p = self.__webPacketHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE, data["CommandID"])
+            p = self.__packetHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)        
             return  
         
@@ -244,16 +244,16 @@ class EndpointPacketReactor(object):
                 else :
                     # No hay nada que hacer => hemos terminado si ningún servidor apagado tiene la imagen
                     if (not self.__dbConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.EDITED)) :
-                        p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+                        p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
                         self.__networkManager.sendPacket('', self.__listenningPort, p)
             else :
                 # Error => avisar de él
-                p = self.__webPacketHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_NOT_EDITED_IMAGE, 
+                p = self.__packetHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_NOT_EDITED_IMAGE, 
                                                                      data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
         elif (data["Instances"] > 0) :
             if (self.__dbConnector.isAffectedByAutoDeploymentCommand(data["ImageID"])) :
-                p = self.__webPacketHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTODEPLOYED, 
+                p = self.__packetHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTODEPLOYED, 
                                                                      data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
                 return
@@ -261,12 +261,12 @@ class EndpointPacketReactor(object):
             output = self.__loadBalancer.assignVMServer(data["ImageID"], MODE_T.DEPLOY_IMAGE)
             if (output[1] != None) :
                 # Error => informamos de él y terminamos
-                p = self.__webPacketHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, output[1], data["CommandID"])
+                p = self.__packetHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, output[1], data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
             else :
                 if (output[2] < data["Instances"]) :
                     # No podemos cumplir con lo que nos piden => error
-                    p = self.__webPacketHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, 
+                    p = self.__packetHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, 
                                                                   ERROR_DESC_T.CLSRVR_AUTOD_TOO_MANY_INSTANCES, data["CommandID"])
                     self.__networkManager.sendPacket('', self.__listenningPort, p)  
                 else :
@@ -303,7 +303,7 @@ class EndpointPacketReactor(object):
         elif (self.__dbConnector.getFamilyID(data["ImageID"]) == None) :
             errorDescription = ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE
         if (errorDescription != None) :
-            p = self.__webPacketHandler.createErrorPacket(PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, errorDescription, data["CommandID"])
+            p = self.__packetHandler.createErrorPacket(PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :
             # Impedimos que se arranquen más copias de la imagen
@@ -350,7 +350,7 @@ class EndpointPacketReactor(object):
                 packet_type = PACKET_T.IMAGE_CREATION_ERROR
             else :
                 packet_type = PACKET_T.IMAGE_EDITION_ERROR  
-            p = self.__webPacketHandler.createErrorPacket(packet_type, errorDescription, data["CommandID"])
+            p = self.__packetHandler.createErrorPacket(packet_type, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             return           
         
@@ -362,7 +362,7 @@ class EndpointPacketReactor(object):
                 packet_type = PACKET_T.IMAGE_CREATION_ERROR
             else :
                 packet_type = PACKET_T.IMAGE_EDITION_ERROR
-            p = self.__webPacketHandler.createErrorPacket(packet_type, errorDescription, data["CommandID"])
+            p = self.__packetHandler.createErrorPacket(packet_type, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             return
         
@@ -429,7 +429,7 @@ class EndpointPacketReactor(object):
                 error_type = PACKET_T.IMAGE_DEPLOYMENT_ERROR
             else:
                 error_type = PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR 
-            p = self.__webPacketHandler.createErrorPacket(error_type, errorDescription, data["CommandID"])
+            p = self.__packetHandler.createErrorPacket(error_type, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             return
            
@@ -449,7 +449,7 @@ class EndpointPacketReactor(object):
             
     def __sendRepositoryStatusData(self):
         repositoryStatus = self.__dbConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
-        p = self.__webPacketHandler.createRepositoryStatusPacket(repositoryStatus["FreeDiskSpace"], 
+        p = self.__packetHandler.createRepositoryStatusPacket(repositoryStatus["FreeDiskSpace"], 
                                                                  repositoryStatus["AvailableDiskSpace"], 
                                                                  repositoryStatus["ConnectionStatus"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)
@@ -480,7 +480,7 @@ class EndpointPacketReactor(object):
                 packet_type = PACKET_T.VM_SERVER_UNREGISTRATION_ERROR
             else :
                 packet_type = PACKET_T.VM_SERVER_SHUTDOWN_ERROR
-            p = self.__webPacketHandler.createErrorPacket(packet_type, key, ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR, commandID)
+            p = self.__packetHandler.createErrorPacket(packet_type, key, ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR, commandID)
             self.__networkManager.sendPacket('', self.__listenningPort, p)  
             return
         
@@ -497,7 +497,7 @@ class EndpointPacketReactor(object):
                     packet_type = PACKET_T.VM_SERVER_UNREGISTRATION_ERROR
                 else :
                     packet_type = PACKET_T.VM_SERVER_SHUTDOWN_ERROR
-                p = self.__webPacketHandler.createErrorPacket(packet_type, ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR, commandID)
+                p = self.__packetHandler.createErrorPacket(packet_type, ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR, commandID)
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
                 return
             
@@ -518,7 +518,7 @@ class EndpointPacketReactor(object):
             
         # Paso 4: respondemos a la web (sólo si es necesario)      
         if (useCommandID) :
-            p = self.__webPacketHandler.createCommandExecutedPacket(commandID)
+            p = self.__packetHandler.createCommandExecutedPacket(commandID)
         
     def __sendStatusData(self, queryMethod, packetCreationMethod):
         """
@@ -621,7 +621,7 @@ class EndpointPacketReactor(object):
         serverID = self.__dbConnector.getActiveVMHostID(data["DomainID"])
         if (serverID == None) :
             # Error
-            packet = self.__webPacketHandler.createErrorPacket(PACKET_T.DOMAIN_DESTRUCTION_ERROR, 
+            packet = self.__packetHandler.createErrorPacket(PACKET_T.DOMAIN_DESTRUCTION_ERROR, 
                                                                       ERROR_DESC_T.CLSRVR_DOMAIN_NOT_REGISTERED, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             return       
@@ -631,21 +631,21 @@ class EndpointPacketReactor(object):
         packet = self.__vmServerPacketHandler.createVMShutdownPacket(data["DomainID"])
         errorMessage = self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], packet)
         if (errorMessage != None) :
-            packet = self.__webPacketHandler.createErrorPacket(PACKET_T.DOMAIN_DESTRUCTION_ERROR, 
+            packet = self.__packetHandler.createErrorPacket(PACKET_T.DOMAIN_DESTRUCTION_ERROR, 
                                                                                 ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_LOST, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
         else :
             # Borrar la máquina virtual de la base de datos           
             self.__dbConnector.deleteActiveVMLocation(data["CommandID"])         
             # Indicar al endpoint que todo fue bien
-            packet = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            packet = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             
     def __changeVMServerConfiguration(self, data):
         serverID = self.__dbConnector.getVMServerID(data["ServerNameOrIPAddress"])
         
         if (serverID == None) :
-            packet = self.__webPacketHandler.createErrorPacket(PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
+            packet = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
                 ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             return
@@ -653,7 +653,7 @@ class EndpointPacketReactor(object):
         status = self.__dbConnector.getVMServerBasicData(serverID)["ServerStatus"]
         
         if (status == SERVER_STATE_T.BOOTING or status == SERVER_STATE_T.READY) :
-            packet = self.__webPacketHandler.createErrorPacket(PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
+            packet = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
                 ERROR_DESC_T.CLSRVR_ACTIVE_VMSRVR, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             return
@@ -661,10 +661,10 @@ class EndpointPacketReactor(object):
         try :
             self.__dbConnector.setServerBasicData(serverID, data["NewVMServerName"], SERVER_STATE_T.SHUT_DOWN, 
                                                   data["NewVMServerIPAddress"], data["NewVMServerPort"], data["NewVanillaImageEditionBehavior"])
-            packet = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            packet = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
         
         except Exception :
-            packet = self.__webPacketHandler.createErrorPacket(PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
+            packet = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
                ERROR_DESC_T.CLSRVR_VMSRVR_IDS_IN_USE, data["CommandID"])
             
         self.__networkManager.sendPacket('', self.__listenningPort, packet)    

@@ -19,7 +19,7 @@ class VMServerPacketReactor(object):
         self.__networkManager = networkManager
         self.__listenningPort = listenningPort
         self.__vmServerPacketHandler = vmServerPacketHandler
-        self.__webPacketHandler = webPacketHandler
+        self.__packetHandler = webPacketHandler
     
     def processVMServerIncomingPacket(self, packet):
         """
@@ -74,7 +74,7 @@ class VMServerPacketReactor(object):
         # Liberar los recursos asignados
         self.__dbConnector.freeVMServerResources(data["CommandID"], True)
         # Generar un paquete de error
-        p = self.__webPacketHandler.createErrorPacket(ENDPOINT_PACKET_T.VM_SERVER_INTERNAL_ERROR, ERROR_DESC_T.VMSRVR_INTERNAL_ERROR, data["CommandID"])
+        p = self.__packetHandler.createErrorPacket(ENDPOINT_PACKET_T.VM_SERVER_INTERNAL_ERROR, ERROR_DESC_T.VMSRVR_INTERNAL_ERROR, data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)
         
     def __processImageEditedPacket(self, data):
@@ -85,13 +85,13 @@ class VMServerPacketReactor(object):
             self.__dbConnector.deleteNewVMVanillaImageFamily(data["CommandID"])
             self.__dbConnector.registerFamilyID(data["ImageID"], familyID)                
             # Enviar la respuesta
-            p = self.__webPacketHandler.createImageEditedPacket(data["CommandID"], data["ImageID"])
+            p = self.__packetHandler.createImageEditedPacket(data["CommandID"], data["ImageID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :
             self.__dbConnector.removeImageEditionCommand(data["CommandID"])
             # Evitar que todas las copias de la imagen puedan arrancarse
             self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.EDITED)  
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)   
         
         # Liberar los recursos asignados a la máquina
@@ -108,7 +108,7 @@ class VMServerPacketReactor(object):
             self.__dbConnector.removeImageEditionCommand(data["CommandID"])
             packet_type = ENDPOINT_PACKET_T.IMAGE_EDITION_ERROR        
         # Enviar la respuesta
-        p = self.__webPacketHandler.createErrorPacket(packet_type, data["ErrorDescription"], data["CommandID"])
+        p = self.__packetHandler.createErrorPacket(packet_type, data["ErrorDescription"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)
         
         # Liberar los recursos asignados a la máquina
@@ -123,7 +123,7 @@ class VMServerPacketReactor(object):
         elif (self.__dbConnector.isAutoDeploymentCommand(data["CommandID"])) :
             (generateOutput, _unused) = self.__dbConnector.handleAutoDeploymentCommandOutput(data["CommandID"], True)
             if (generateOutput) :              
-                p = self.__webPacketHandler.createErrorPacket(ENDPOINT_PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTOD_ERROR, data["CommandID"])
+                p = self.__packetHandler.createErrorPacket(ENDPOINT_PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTOD_ERROR, data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
                 
         elif (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYMENT_ERROR) :
@@ -131,7 +131,7 @@ class VMServerPacketReactor(object):
         else :
             packet_type = ENDPOINT_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR
             
-        p = self.__webPacketHandler.createErrorPacket(packet_type, data["ErrorCode"], data["CommandID"])
+        p = self.__packetHandler.createErrorPacket(packet_type, data["ErrorCode"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)
         
         # Liberar los recursos asignados a la máquina
@@ -147,7 +147,7 @@ class VMServerPacketReactor(object):
             self.__dbConnector.changeImageCopyStatus(data["ImageID"], serverID, IMAGE_STATE_T.READY)
             # Si no hay más copias sucias, el comando de edición habrá terminado
             if (not self.__dbConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.DEPLOY)) :
-                p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+                p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
                 self.__dbConnector.removeImageEditionCommand(data["CommandID"])
         elif (self.__dbConnector.isImageDeletionCommand(data["CommandID"])) :
@@ -155,7 +155,7 @@ class VMServerPacketReactor(object):
             self.__dbConnector.deleteImageFromServer(serverID, data["ImageID"])
             # Si no hay más copias que eliminar, el comando de edición habrá terminado
             if (not self.__dbConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.DELETE)) :
-                p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+                p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
                 self.__dbConnector.removeImageDeletionCommand(data["CommandID"])
         elif (self.__dbConnector.isAutoDeploymentCommand(data["CommandID"])) :
@@ -164,16 +164,16 @@ class VMServerPacketReactor(object):
                 self.__dbConnector.assignImageToServer(serverID, data["ImageID"])
             if (generateOutput) :
                 if (error) :
-                    p = self.__webPacketHandler.createErrorPacket(ENDPOINT_PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTOD_ERROR, data["CommandID"])
+                    p = self.__packetHandler.createErrorPacket(ENDPOINT_PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTOD_ERROR, data["CommandID"])
                 else :
-                    p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])                
+                    p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])                
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :
             if (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYED) :
                 self.__dbConnector.assignImageToServer(serverID, data["ImageID"])                
             else :
                 self.__dbConnector.deleteImageFromServer(serverID, data["ImageID"])
-            p = self.__webPacketHandler.createCommandExecutedPacket(data["CommandID"])
+            p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             
     def __sendVMBootError(self, data):
@@ -181,7 +181,7 @@ class VMServerPacketReactor(object):
         commandData = self.__dbConnector.getVMBootCommandData(data["CommandID"])
         self.__dbConnector.removeVMBootCommand(data["CommandID"])
         self.__dbConnector.deleteActiveVMLocation(commandData[0])
-        p = self.__webPacketHandler.createErrorPacket(ENDPOINT_PACKET_T.VM_BOOT_FAILURE, ERROR_DESC_T.VMSRVR_INTERNAL_ERROR, commandData[0])
+        p = self.__packetHandler.createErrorPacket(ENDPOINT_PACKET_T.VM_BOOT_FAILURE, ERROR_DESC_T.VMSRVR_INTERNAL_ERROR, commandData[0])
         self.__networkManager.sendPacket('', self.__listenningPort, p)
         
     def __sendVMConnectionData(self, data):
@@ -196,7 +196,7 @@ class VMServerPacketReactor(object):
         # El comando ya se ha ejecutado. No tenemos que seguir controlando el tiempo que tarda.
         self.__dbConnector.removeVMBootCommand(data["CommandID"])
         
-        p = self.__webPacketHandler.createVMConnectionDataPacket(data["VNCServerIP"], 
+        p = self.__packetHandler.createVMConnectionDataPacket(data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)      
         # Preparar la "liberación" de los recursos asignados a la máquina.
@@ -215,5 +215,5 @@ class VMServerPacketReactor(object):
         Devuelve:
             Nada
         """
-        p = self.__webPacketHandler.createActiveVMsDataPacket(packet)
+        p = self.__packetHandler.createActiveVMsDataPacket(packet)
         self.__networkManager.sendPacket('', self.__listenningPort, p)
