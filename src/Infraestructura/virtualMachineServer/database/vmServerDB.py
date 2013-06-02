@@ -245,7 +245,7 @@ class VMServerDBConnector(BasicDBConnector):
              como argumentos.
         '''
         sql = "INSERT INTO ActualVM VALUES('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', '{7}', '{8}', '{9}')" \
-            .format(domainName, ImageID, vncPort, vncPassword, userId, webSockifyPID,
+            .format(domainName, ImageID, vncPort, vncPassword[:-1], userId, webSockifyPID,
                     osImagePath, dataImagePath, mac, uuid);
         self._executeUpdate(sql)        
         return vncPort 

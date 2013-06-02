@@ -432,4 +432,6 @@ class ClusterConnector(object):
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "website_user", "CygnusCloud")
-    connector.shutDownInfrastructure(True)
+    connector.bootUpVMServer("Server1")
+    # sleep(10)
+    # connector.bootUpVM(1)

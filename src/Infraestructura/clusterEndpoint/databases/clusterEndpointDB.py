@@ -289,7 +289,7 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         Devuelve:
             Nada
         """
-        update = "INSERT INTO ActiveVirtualMachines VALUES {0};"\
+        update = "REPLACE ActiveVirtualMachines VALUES {0};"\
             .format(ClusterEndpointDBConnector.__convertTuplesToSQLStr(data, [vmServerIP]))
         self._executeUpdate(update)
         
