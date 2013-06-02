@@ -4,7 +4,7 @@ Conector que usará la web para interactuar con el sistema
 @author: Luis Barrios Hernández
 @version: 7.0
 '''
-from clusterEndpoint.databases.clusterEndpointDB import ClusterEndpointDBConnector
+from clusterEndpoint.databases.minimalClusterEndpointDBConnector import MinimalClusterEndpointDBConnector
 from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
 from clusterEndpoint.commands.commandsHandler import CommandsHandler
 from clusterEndpoint.codes.spanishCodesTranslator import SpanishCodesTranslator
@@ -35,7 +35,7 @@ class ClusterConnector(object):
         Devuelve:
             Nada
         """
-        self.__endpointDBConnector = ClusterEndpointDBConnector(databaseUser, databasePassword, endpointDBName)
+        self.__endpointDBConnector = MinimalClusterEndpointDBConnector(databaseUser, databasePassword, endpointDBName)
         self.__commandsDBConnector = CommandsDatabaseConnector(databaseUser, databasePassword, commandsDBName, 1)
         
     def dispose(self):
@@ -323,12 +323,6 @@ class ClusterConnector(object):
         else :
             return self.__commandsHandler.deserializeCommandOutput(result[0], result[1])
         
-    def getImageBasicData(self, imageID):
-        """
-        Devuelve los datos de una imagen
-        """
-        return self.__endpointDBConnector.getImageBasicData(imageID)
-        
     def getBootableImagesData(self, imageIDs):
         """
         Devuelve los datos de las imágenes arrancables
@@ -348,13 +342,6 @@ class ClusterConnector(object):
         """
         return self.__endpointDBConnector.getEditedImageIDs(userID)
     
-    def getNewImageIDs(self, userID):
-        """
-        Devuelve los datos de las imágenes no asignadas a ninguna
-        asignatura que un usuario está editando.
-        """
-        return self.__endpointDBConnector.getNewImageIDs(userID)
-    
     def getVanillaImageFamilyID(self, imageID):
         """
         Devuelve la familia de imágenes vanilla asociada a una imagen existente.
@@ -365,7 +352,7 @@ class ClusterConnector(object):
         """
         return self.__endpointDBConnector.getVanillaImageFamilyID(imageID)
     
-    def getVanillaImageFamiliyData(self, vanillaImageFamilyID):
+    def getVanillaImageFamilyData(self, vanillaImageFamilyID):
         """
         Devuelve los datos de una familia de imágenes vanilla.
         Argumentos:
