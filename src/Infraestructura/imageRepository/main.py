@@ -5,7 +5,8 @@ Punto de entrada del repositorio de imágenes
 @author: luis
 '''
 import sys
-from constants import ImageRepositoryConstantsManager
+import os
+from imageRepository.configurationFiles.configurationFileParser import ImageRepositoryConfigurationFileParser
 from ccutils.databases.configuration import DBConfigurator
 from imageRepository.reactor.imageRepositoryReactor import ImageRepositoryReactor
 
@@ -15,23 +16,27 @@ if __name__ == "__main__" :
         print "A configuration file path is needed"
         sys.exit()
     try :
-        cm = ImageRepositoryConstantsManager()
-        cm.parseConfigurationFile(sys.argv[1])
+        parser = ImageRepositoryConfigurationFileParser()
+        parser.parseConfigurationFile(sys.argv[1])
     except Exception as e:
-        print "Error: " + e.message
+        print e.message
         sys.exit()
     
-    dbConfigurator = DBConfigurator(cm.getConstant('mysqlRootsPassword'))
-    dbConfigurator.runSQLScript("ImageRepositoryDB", cm.getConstant('scriptPath'))
-    dbConfigurator.addUser(cm.getConstant('dbUser'), cm.getConstant('dbUserPassword'), "ImageRepositoryDB")
+    dbConfigurator = DBConfigurator(parser.getConfigurationParameter('mysqlRootsPassword'))
+    dbConfigurator.runSQLScript("ImageRepositoryDB", "./database/ImageRepositoryDB.sql")
+    dbConfigurator.addUser(parser.getConfigurationParameter('dbUser'), parser.getConfigurationParameter('dbUserPassword'), "ImageRepositoryDB")
     
-    imageRepository = ImageRepositoryReactor(cm.getConstant('FTPRootDirectory'))
-    imageRepository.connectToDatabase("ImageRepositoryDB", cm.getConstant("dbUser"), cm.getConstant("dbUserPassword"))
+    imageRepository = ImageRepositoryReactor(parser.getConfigurationParameter('FTPRootDirectory'))
+    imageRepository.connectToDatabase("ImageRepositoryDB", parser.getConfigurationParameter("dbUser"), parser.getConfigurationParameter("dbUserPassword"))
     
-    imageRepository.startListenning(cm.getConstant("FTPListenningInterface"), cm.getConstant("certificatePath"), cm.getConstant("commandsPort"), 
-                                    cm.getConstant("FTPPort"), cm.getConstant('maxConnections'), cm.getConstant('maxConnectionsPerIP'),
-                                    cm.getConstant("uploadBandwidthRatio"), cm.getConstant("downloadBandwidthRatio"), cm.getConstant("FTPUserName"),
-                                    cm.getConstant("FTPPasswordLength"))
+    imageRepository.startListenning(parser.getConfigurationParameter("FTPListenningInterface"), parser.getConfigurationParameter("certificatePath"), parser.getConfigurationParameter("commandsPort"), 
+                                    parser.getConfigurationParameter("FTPPort"), parser.getConfigurationParameter('maxConnections'), parser.getConfigurationParameter('maxConnectionsPerIP'),
+                                    parser.getConfigurationParameter("uploadBandwidthRatio"), parser.getConfigurationParameter("downloadBandwidthRatio"), parser.getConfigurationParameter("FTPUserName"),
+                                    parser.getConfigurationParameter("FTPPasswordLength"))
+    
+    if (not os.path.exists(parser.getConfigurationParameter('FTPRootDirectory'))):
+        os.mkdir(parser.getConfigurationParameter('FTPRootDirectory'))
+        
     imageRepository.initTransfers() # Aprovechamos el hilo principal para inicializar las transferencias
     imageRepository.stopListenning() # Es imprescindible hacer esto en el hilo principal para que no se cuelgue
     

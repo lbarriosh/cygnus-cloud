@@ -6,6 +6,7 @@ Created on May 31, 2013
 '''
 
 from pyftpdlib.handlers import FTPHandler
+from os import remove
 
 class CygnusCloudFTPHandler(FTPHandler):
     """

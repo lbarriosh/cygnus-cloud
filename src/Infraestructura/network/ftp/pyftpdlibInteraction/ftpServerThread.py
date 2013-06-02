@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 '''
 Created on May 31, 2013
 
@@ -87,4 +88,4 @@ class FTPServerThread(Thread):
             raise RuntimeError("Server not started yet")
         self.__serving = False
         self.__stopped = True
-        self.join()        
+        self.join()

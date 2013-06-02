@@ -8,7 +8,8 @@ from __future__ import print_function
 
 from network.manager.networkManager import NetworkManager, NetworkCallback
 from network.exceptions.networkManager import NetworkManagerException
-from imageRepository.packets import ImageRepositoryPacketHandler, PACKET_T
+from imageRepository.packetHandling.packet_t import PACKET_T
+from imageRepository.packetHandling.packetHandler import ImageRepositoryPacketHandler
 from time import sleep
 from network.ftp.ftpClient import FTPClient
 
@@ -137,7 +138,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Certificates")
+    networkManager = NetworkManager("/home/luis/Infraestructura/Certificates")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = ImageRepositoryPacketHandler(networkManager)

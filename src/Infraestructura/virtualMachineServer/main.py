@@ -20,8 +20,8 @@ if __name__ == "__main__" :
         print "A configuration file path is needed"
         sys.exit()
     try :
-        cm = VMServerConstantsManager()
-        cm.parseConfigurationFile(sys.argv[1])
+        parser = VMServerConstantsManager()
+        parser.parseConfigurationFile(sys.argv[1])
     except Exception as e:
         print "Error: " + e.message
         sys.exit()
@@ -37,12 +37,12 @@ if __name__ == "__main__" :
             RootPasswordHandler().clear()
         
     # Crear la base de datos (si es necesario)
-    configurator = DBConfigurator(cm.getConstant("mysqlRootsPassword"))
-    configurator.runSQLScript(cm.getConstant("databaseName"), "./database/VMServerDB.sql")
+    configurator = DBConfigurator(parser.getConstant("mysqlRootsPassword"))
+    configurator.runSQLScript(parser.getConstant("databaseName"), "./database/VMServerDB.sql")
     # Crear un usuario y darle permisos
-    configurator.addUser(cm.getConstant("databaseUserName"), cm.getConstant("databasePassword"), cm.getConstant("databaseName"), True)
+    configurator.addUser(parser.getConstant("databaseUserName"), parser.getConstant("databasePassword"), parser.getConstant("databaseName"), True)
     # Crear el servidor de máquinas virtuales
-    vmServer = VMServerReactor(cm)    
+    vmServer = VMServerReactor(parser)    
     # Dormir hasta que se apague
     while not vmServer.has_finished():
         sleep(10) 

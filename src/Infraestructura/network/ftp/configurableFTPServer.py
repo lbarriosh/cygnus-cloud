@@ -12,6 +12,7 @@ from network.interfaces.ipAddresses import get_ip_address
 from ccutils.processes.childProcessManager import ChildProcessManager
 from re import sub  
 from network.ftp.pyftpdlibInteraction.ccFTPHandler import CygnusCloudFTPHandler
+from network.ftp.pyftpdlibInteraction.ftpServerThread import FTPServerThread
 
 class ConfigurableFTPServer(object):
     """

@@ -1,0 +1,14 @@
+'''
+Created on Jun 2, 2013
+
+@author: luis
+'''
+
+from ccutils.enums import enum
+
+
+PACKET_T = enum("HALT", "ADD_IMAGE", "ADDED_IMAGE_ID", "RETR_REQUEST", "RETR_REQUEST_RECVD", 
+                "RETR_REQUEST_ERROR", "RETR_START", "RETR_ERROR", "STOR_REQUEST", 
+                "STOR_REQUEST_RECVD", "STOR_REQUEST_ERROR", "STOR_START", "STOR_ERROR",
+                "DELETE_REQUEST", "DELETE_REQUEST_RECVD", "DELETE_REQUEST_ERROR", 
+                "STATUS_REQUEST", "STATUS_DATA", "CANCEL_EDITION", "IMAGE_EDITION_CANCELLED")

@@ -7,6 +7,7 @@ Created on May 31, 2013
 
 from network.ftp.ftpCallback import FTPCallback
 from os import remove, path
+from ccutils.processes.childProcessManager import ChildProcessManager
 
 class FTPServerCallback(FTPCallback):
     """

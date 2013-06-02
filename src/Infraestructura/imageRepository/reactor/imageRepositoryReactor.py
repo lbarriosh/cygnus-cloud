@@ -7,7 +7,6 @@ Created on Apr 21, 2013
 
 from network.manager.networkManager import NetworkManager
 from imageRepository.database.imageRepositoryDB import ImageRepositoryDBConnector
-from imageRepository.packetHandling.packets import ImageRepositoryPacketHandler, PACKET_T
 from network.ftp.configurableFTPServer import ConfigurableFTPServer
 from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
 from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
@@ -16,6 +15,8 @@ from ccutils.processes.childProcessManager import ChildProcessManager
 from errors.codes import ERROR_DESC_T
 from imageRepository.callbacks.ftpServerCallback import FTPServerCallback
 from imageRepository.callbacks.packetsCallback import CommandsCallback
+from imageRepository.packetHandling.packet_t import PACKET_T
+from imageRepository.packetHandling.packetHandler import ImageRepositoryPacketHandler
 from os import path, mkdir
 
 class ImageRepositoryReactor(object):

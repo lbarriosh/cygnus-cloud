@@ -6,6 +6,7 @@ Basic thread class definitions.
 '''
 
 from ccutils.threads.basicThread import BasicThread
+from time import sleep
 
 class QueueProcessingThread(BasicThread):
     """
