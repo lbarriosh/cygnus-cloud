@@ -91,7 +91,7 @@ class ImageRepositoryPacketHandler(object):
         Devuelve:
             un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
         """
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(3)
         p.writeInt(packet_t)
         p.writeInt(imageID)
         p.writeInt(FTPServerPort)
@@ -110,7 +110,7 @@ class ImageRepositoryPacketHandler(object):
         Devuelve:
             un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
         """
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(packet_t)
         p.writeInt(errorDescription)
         return p
@@ -124,7 +124,8 @@ class ImageRepositoryPacketHandler(object):
         Devuelve:
             un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
         """
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(2
+                                              )
         p.writeInt(PACKET_T.DELETE_REQUEST_ERROR)
         p.writeInt(imageID)
         p.writeInt(errorDescription)
