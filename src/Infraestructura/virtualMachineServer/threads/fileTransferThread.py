@@ -7,7 +7,7 @@ Created on Apr 28, 2013
 
 from ccutils.threads.basicThread import BasicThread
 from network.manager.networkManager import NetworkCallback
-from network.ftp.ftpClient import FTPClient
+from ftp.ftpClient import FTPClient
 from imageRepository.packetHandling.packetHandler import ImageRepositoryPacketHandler
 from imageRepository.packetHandling.packet_t import PACKET_T as IR_PACKET_T
 from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T

@@ -11,8 +11,8 @@ from pyftpdlib.handlers import ThrottledDTPHandler
 from network.interfaces.ipAddresses import get_ip_address
 from ccutils.processes.childProcessManager import ChildProcessManager
 from re import sub  
-from network.ftp.pyftpdlibInteraction.ccFTPHandler import CygnusCloudFTPHandler
-from network.ftp.pyftpdlibInteraction.ftpServerThread import FTPServerThread
+from ftp.pyftpdlibInteraction.ccFTPHandler import CygnusCloudFTPHandler
+from ftp.pyftpdlibInteraction.ftpServerThread import FTPServerThread
 
 class ConfigurableFTPServer(object):
     """

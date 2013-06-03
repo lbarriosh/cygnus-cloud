@@ -10,7 +10,7 @@ from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T
 from virtualMachineServer.packetHandling.packetHandler import VMServerPacketHandler
 from virtualMachineServer.database.vmServerDB import VMServerDBConnector
 from virtualMachineServer.database.transfer_t import TRANSFER_T
-from network.ftp.ftpClient import FTPClient
+from ftp.ftpClient import FTPClient
 from virtualMachineServer.reactor.clusterServerPacketReactor import ClusterServerPacketReactor
 from virtualMachineServer.threads.fileTransferThread import FileTransferThread
 from virtualMachineServer.threads.compressionThread import CompressionThread

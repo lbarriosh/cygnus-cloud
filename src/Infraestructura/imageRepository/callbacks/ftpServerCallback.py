@@ -5,7 +5,7 @@ Created on May 31, 2013
 @author: luis
 '''
 
-from network.ftp.ftpCallback import FTPCallback
+from ftp.ftpCallback import FTPCallback
 from os import remove, path
 from ccutils.processes.childProcessManager import ChildProcessManager
 

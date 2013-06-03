@@ -7,7 +7,7 @@ Created on Apr 21, 2013
 
 from network.manager.networkManager import NetworkManager
 from imageRepository.database.imageRepositoryDB import ImageRepositoryDBConnector
-from network.ftp.configurableFTPServer import ConfigurableFTPServer
+from ftp.configurableFTPServer import ConfigurableFTPServer
 from ccutils.dataStructures.multithreadingList import GenericThreadSafeList
 from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
 from time import sleep
