@@ -79,7 +79,14 @@ TODO: meter referencias noVNC, KVM y Twisted
 \end_layout
 
 \begin_layout Section
-Introducción
+Introducción 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Introducción"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2263,6 +2270,13 @@ CygnusCloud
 Uso del servidor FTP 
 \family typewriter
 pyftpdlib
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-del-servidor-pyftpdlib"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5649,7 +5663,7 @@ reference "fig:El-paquete-network"
 
 \end_inset
 
- muestra que este paquete se descompone en siete subpaquetes:
+ muestra que este paquete se descompone en ocho subpaquetes:
 \end_layout
 
 \begin_layout Itemize
@@ -5827,6 +5841,32 @@ el paquete
  tests
 \family default
 , que contiene las pruebas de los módulos de este paquete.
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family typewriter
+ftp
+\family default
+.
+ Sus principales clases son 
+\family typewriter
+FTPClient
+\family default
+, correspondiente a un cliente FTP basado en el de la librería estándar
+ de 
+\emph on
+Python
+\emph default
+, y 
+\family typewriter
+ConfigurableFTPServer
+\family default
+, un servidor FTP basado en 
+\family typewriter
+pyftpdlib
+\family default
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -9178,11 +9218,281 @@ NetworkManager
 \end_layout
 
 \begin_layout Subsubsection
-El paquete 
+El cliente y el servidor 
 \family typewriter
-network
+ftp
+\end_layout
+
+\begin_layout Standard
+Tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-del-servidor-pyftpdlib"
+
+\end_inset
+
+, 
+\family typewriter
+pyftpdlib
+\family default
+ es un servidor FTP ligero y escrito íntegramente en 
+\emph on
+Python
+\emph default
+.
+ En primer lugar, presentaremos sus clases más relevantes y mostraremos
+ cómo interactuar con él.
+ Posteriormente, mostraremos el diseño del cliente FTP.
+\end_layout
+
+\begin_layout Paragraph
+El servidor FTP 
+\family typewriter
+pyftpdlib
 \family default
 : visión general
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Red/Diagrama clases pyftpdlib.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-clases-pyftpdlib"
+
+\end_inset
+
+Principales clases del servidor FTP 
+\family typewriter
+pyftpdlib
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-clases-pyftpdlib"
+
+\end_inset
+
+ muestra las clases de 
+\family typewriter
+pyftpdlib
+\family default
+ que hemos utilizado para implementar nuestro servidor FTP y las relaciones
+ entre ellas.
+\end_layout
+
+\begin_layout Standard
+En primer lugar, la clase abstracta 
+\family typewriter
+Authorizer
+\family default
+ define la interfaz que se usará para restringir el acceso al servidor FTP.
+ Nuestro servidor FTP utiliza su subclase concreta 
+\family typewriter
+DummyAuthorizer
+\family default
+, que restringe el acceso al servidor FTP en base a un nombre de usuario
+ y a una contraseña.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la clase abstracta 
+\family typewriter
+Filesystem
+\family default
+ define la interfaz que se usará para manipular los permisos del sistema
+ de ficheros.
+ Nuestro servidor FTP utiliza su subclase concreta 
+\family typewriter
+UnixFilesystem
+\family default
+, ya que siempre se ejecutará en Linux, que es un sistema operativo tipo
+ UNIX.
+\end_layout
+
+\begin_layout Standard
+La clase abstracta Handler define la interfaz que se usará para procesar
+ los eventos asociados a las transferencias de ficheros.
+ Así,
+\end_layout
+
+\begin_layout Itemize
+su subclase 
+\family typewriter
+FTPHandler
+\family default
+ define la interfaz que se usará para generar los eventos asociados al servidor
+ FTP (como, por ejemplo, las conexiones y desconexiones de usuarios).
+ Creando una subclase concreta de 
+\family typewriter
+FTPHandler
+\family default
+, podemos determinar la forma en que se procesan estos eventos.
+\end_layout
+
+\begin_layout Itemize
+su subclase concreta 
+\family typewriter
+ThrottledDTPHandler
+\family default
+ permite controlar el ancho de banda consumido por el tráfico FTP.
+\end_layout
+
+\begin_layout Standard
+Finalmente, la clase 
+\family typewriter
+FTPServer
+\family default
+ se corresponde con un servidor FTP.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Arranque del servidor FTP
+\end_layout
+
+\begin_layout Standard
+Para arrancar cualquier servidor FTP basado en 
+\family typewriter
+pyftpdlib
+\family default
+, es necesario configurar
+\end_layout
+
+\begin_layout Itemize
+la autenticación del servidor
+\end_layout
+
+\begin_layout Itemize
+el procesamiento de los eventos FTP, y, opcionalmente,
+\end_layout
+
+\begin_layout Itemize
+el control del ancho de banda.
+\end_layout
+
+\begin_layout Standard
+Por tanto, basta con instanciar cuatro clases: la clase 
+\family typewriter
+FTPServer
+\family default
+, una subclase concreta de 
+\family typewriter
+Authorizer
+\family default
+, una subclase concreta de 
+\family typewriter
+FTPHandler
+\family default
+ y, opcionalmente, la clase 
+\family typewriter
+ThrottledDTPHandler
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Como nuestro servidor FTP utiliza la clase 
+\family typewriter
+DummyAuthorizer
+\family default
+, para configurar la autenticación basta con especificar uno o más nombres
+ de usuario junto con sus contraseñas.
+ 
+\end_layout
+
+\begin_layout Standard
+Finalmente, para realizar el control del ancho de banda basta con especificar
+ la fracción del ancho de banda de subida y la fracción del ancho de banda
+ de bajada que consumirá el tráfico FTP.
+\end_layout
+
+\begin_layout Paragraph
+Eventos FTP generados por el servidor FTP 
+\family typewriter
+pyftpdlib
+\end_layout
+
+\begin_layout Standard
+Los eventos generados por el servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+ y su información asociada son los siguientes:
+\end_layout
+
+\begin_layout Itemize
+desconexión inesperada de un cliente.
+ No tiene asociado ningún tipo de información.
+\end_layout
+
+\begin_layout Itemize
+conexión de un cliente.
+ Tiene asociado el nombre de usuario que ha empleado el cliente para conectarse
+ al servidor.
+\end_layout
+
+\begin_layout Itemize
+desconexión normal de un cliente.
+ Tiene asociado el nombre de usuario que ha empleado el cliente para conectarse
+ al servidor.
+\end_layout
+
+\begin_layout Itemize
+fin de envío de fichero.
+ Tiene asociado el nombre del fichero que ha terminado de enviarse.
+\end_layout
+
+\begin_layout Itemize
+fin de recepción de fichero.
+ Tiene asociado el nombre del fichero que se ha recibido.
+\end_layout
+
+\begin_layout Itemize
+error al enviar un fichero.
+ Tiene asociado el nombre del fichero que ha tratado de enviarse.
+\end_layout
+
+\begin_layout Itemize
+error al recibir un fichero.
+ Tiene asociado el nombre del fichero que se ha recibido parcialmente.
+\end_layout
+
+\begin_layout Subsection
+El paquete 
+\family typewriter
+imageRepository
 \end_layout
 
 \begin_layout Subsection
