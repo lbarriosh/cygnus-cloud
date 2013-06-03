@@ -2495,6 +2495,13 @@ como servidor FTP del repositorio de imágenes.
 
 \begin_layout Subsection
 Almacenamiento de las imágenes de disco en formato comprimido
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Almacenamiento-imágenes-zip"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -9884,7 +9891,8 @@ reference "sub:El-repositorio-de-imagenes"
 \end_inset
 
 , el repositorio de imágenes se ocupa de almacenar todas las imágenes de
- disco que pueden utilizarse en un 
+ disco asociadas a todas las máquinas virtuales que pueden utilizarse en
+ un 
 \emph on
 cluster
 \emph default
@@ -9892,8 +9900,8 @@ cluster
 \end_layout
 
 \begin_layout Itemize
-las imágenes de disco de las máquinas virtuales que utilizan los alumnos,
- y
+las imágenes de disco asociadas a las máquinas virtuales que utilizan los
+ alumnos, y
 \end_layout
 
 \begin_layout Itemize
@@ -9901,26 +9909,31 @@ las imágenes de disco base, que se usan para crear nuevas máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-En esta sección presentaremos detalladamente su diseño.
+En esta sección, mostraremos detalladamente el diseño del repositorio de
+ imágenes.
+ En primer lugar, mostraremos por qué un servidor FTP no puede utilizarse
+ directamente como repositorio de imágenes.
+ Posteriormente, mostraremos las funciones que añaden las clases del paquete
+ 
+\family typewriter
+imageRepository
+\family default
+ al servidor FTP, para continuar mostrando las relaciones entre estas clases
+ y las interacciones entre ellas.
+ Finalmente, mostraremos los formatos de paquete que emplea el repositorio
+ de imágenes para interactuar con el exterior y el esquema de su base de
+ datos.
 \end_layout
 
 \begin_layout Subsubsection
-Control de acceso al servidor FTP
-\end_layout
-
-\begin_layout Standard
-En la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Uso-del-protocolo-FTP"
+Adición de una capa adicional al servidor FTP 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Adición-capa-repositorio"
 
 \end_inset
 
- dijimos que las máquinas de la infraestructura utilizan el protocolo FTP
- para transferir y recibir imágenes de disco.
- Así pues, los servidores de máquinas virtuales y el repositorio de imágenes
- intercambian imágenes de disco mediante el protocolo FTP.
- 
+
 \end_layout
 
 \begin_layout Standard
@@ -9929,15 +9942,21 @@ Puesto que el repositorio de imágenes almacena todas las imágenes de disco
 \emph on
 cluster
 \emph default
-, lo más razonable es que el repositorio de imágenes sea el servidor FTP,
- y que todos los servidores de máquinas virtuales se conecten a él como
- clientes FTP.
+, lo más razonable es que el repositorio de imágenes se construya sobre
+ un servidor FTP, y que todos los servidores de máquinas virtuales se conecten
+ a él como clientes FTP.
+ 
 \end_layout
 
 \begin_layout Standard
-Ahora bien, para implementar el repositorio de imágenes no basta con utilizar
- un servidor FTP.
- Si, por ejemplo,
+Ahora bien, si usamos directamente un servidor FTP para implementar el repositor
+io de imágenes, tendremos que enfrentarnos con serios problemas.
+ Para ilustrarlos, daremos varios ejemplos.
+ 
+\end_layout
+
+\begin_layout Standard
+En primer lugar supongamos que, en un momento dado,
 \end_layout
 
 \begin_layout Itemize
@@ -9945,49 +9964,89 @@ el
 \emph on
 cluster
 \emph default
- contiene 100 servidores de máquinas virtuales, y
+ contiene 
+\begin_inset Formula $n$
+\end_inset
+
+ servidores de máquinas virtuales, que
 \end_layout
 
 \begin_layout Itemize
-se despliega una imagen de disco en cada uno de ellos,
+un administrador decide desplegar la misma imagen de disco en todos ellos,
+ y que
+\end_layout
+
+\begin_layout Itemize
+ningún servidor de máquinas virtuales tiene almacenada esa imagen de disco.
 \end_layout
 
 \begin_layout Standard
-el servidor FTP del repositorio de imágenes tendría que lidiar con 100 conexione
-s simultáneas.
- Si el ancho de banda del enlace no es lo suficientemente alto, se generarán
- errores por 
+Cuando se realiza el despliegue de la imagen, el repositorio de imágenes
+ tendrá que lidiar con 
+\begin_inset Formula $n$
+\end_inset
+
+ conexiones simultáneas, y debe transferir un fichero de gran tamaño por
+ cada una de ellas.
+ A medida que aumente el número de servidores de máquinas virtuales del
+ 
 \emph on
-timeouts
+cluster
 \emph default
-.
- Si el número de transferencias simultáneas fuese menor, muchos de estos
- errores no se habrían generado.
-\end_layout
-
-\begin_layout Standard
-Aunque es posible informar a los administradores para que consideren esta
- limitación, estamos obviando algo muy importante: los profesores, que serán
- mucho más numerosos que los administradores, también pueden desplegar imágenes
- (cuando, por ejemplo, crean una máquina virtual nueva para una de sus asignatur
-as).
- Por ello, este inconveniente limita mucho el uso de 
+, tarde o temprano se acabarán generando errores por 
 \emph on
-CygnusCloud
+timeout
 \emph default
 .
  
 \end_layout
 
 \begin_layout Standard
-Asimismo, el uso directo de un servidor FTP tiene otro serio inconveniente:
- se está desperdiciando el ancho de banda consumido por las transferencias
- FTP fallidas.
+Así, a medida que crece el número de servidores de máquinas virtuales del
+ 
+\emph on
+cluster
+\emph default
+,
+\end_layout
+
+\begin_layout Itemize
+la infraestructura se hace más difícil de implementar o administrar, ya
+ que hay que limitar el número de transferencias simultáneas entre el repositori
+o de imágenes y los servidores de máquinas virtuales, y
+\end_layout
+
+\begin_layout Itemize
+se está desperdiciando cada vez más ancho de banda: el que consumen las
+ transferencias de ficheros que fallan.
 \end_layout
 
 \begin_layout Standard
-Además, también pueden aparecer conflictos con mucha frecuencia.
- Supongamos que 
+Para que el sistema sea usable, resulta imprescindible limitar el número
+ máximo de servidores de máquinas virtuales del 
+\emph on
+cluster.
+ 
+\emph default
+Así, el número de servidores de máquinas virtuales del 
+\emph on
+cluster
+\emph default
+ pasará a estar limitado por el ancho de banda disponible para el tráfico
+ que intercambian estos y el repositorio de imágenes, y no por la capacidad
+ del servidor de 
+\emph on
+cluster
+\emph default
+ para atender a todos ellos.
+ Esto compromete la escalabilidad del sistema.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el uso directo de un servidor FTP en el repositorio de imágenes
+ tiene un inconveniente aún mayor: la aparición de conflictos en la edición
+ de imágenes de disco existentes.
+ Por ejemplo, supongamos que
 \end_layout
 
 \begin_layout Itemize
@@ -10019,11 +10078,7 @@ A
 \family sans
 B
 \family default
- descubren que cierto 
-\emph on
-software
-\emph default
- está mal configurado, y que
+ descubren que varias herramientas están mal configuradas, y que
 \end_layout
 
 \begin_layout Itemize
@@ -10039,59 +10094,463 @@ B
 \end_layout
 
 \begin_layout Standard
-Al editar la imagen de disco correspondiente,
-\family sans
- A
-\family default
- y 
-\family sans
-B
-\family default
- no tendrán problemas.
- Pero a la hora de transferirla de nuevo al repositorio, la versión de 
+Para resolver este problema, tanto 
 \family sans
 A
 \family default
- se sobreescribirá con la de 
+ como 
+\family sans
+B
+\family default
+ tendrán que editar las imágenes de disco asociadas a la máquina virtual
+ 
+\begin_inset Formula $\textsf{VM}_{1}$
+\end_inset
+
+.
+ Pero a la hora de transferirlas de nuevo al repositorio, las modificaciones
+ que ha hecho 
+\family sans
+A
+\family default
+ acabarán sobreescribiéndose con las que ha hecho 
 \family sans
 B
 \family default
  o viceversa.
- Por tanto, uno de los dos, 
-\family sans
-A
-\family default
- o 
-\family sans
-B
-\family default
-, ha perdido el tiempo editando la imagen.
+ Por tanto, uno de los profesores ha estado perdiendo el tiempo: los cambios
+ que ha introducido se perderán.
+\end_layout
+
+\begin_layout Standard
+En definitiva, el uso directo de un servidor FTP en el repositorio de imágenes
+ presenta serios inconvenientes.
+ Por ello, el repositorio de imágenes no sólo utiliza un servidor FTP, y
+ añade una capa adicional para resolverlos.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Funciones soportadas por el repositorio de imágenes
+\end_layout
+
+\begin_layout Standard
+El repositorio de imágenes está construido sobre un servidor FTP, al que
+ añade las siguientes funciones:
+\end_layout
+
+\begin_layout Itemize
+gestión de los identificadores de las imágenes de disco.
+ Todas las imágenes de disco que pueden utilizarse en el 
+\emph on
+cluster
+\emph default
+ tienen asociado un identificador único, y el repositorio de imágenes se
+ ocupa de la gestión de estos identificadores.
+\end_layout
+
+\begin_layout Itemize
+borrado de una imagen del servidor que actúa como repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+transferencia de un fichero 
+\emph on
+en exclusividad
+\emph default
+ a una máquina remota.
+ Tras realizar una de estas transferencias, el fichero no podrá transferirse
+ a ninguna otra máquina hasta que el repositorio reciba la copia modificada.
+ Esto nos permite evitar la aparición de conflictos como el del último ejemplo
+ de la sección anterior.
+\end_layout
+
+\begin_layout Itemize
+control del número de transferencias simultáneas, tratando con equidad a
+ todas las máquinas remotas que deseen intercambiar un fichero con el repositori
+o de imágenes.
+\end_layout
+
+\begin_layout Standard
+Naturalmente, el repositorio de imágenes también soporta la transferencia
+ y la recepción de ficheros.
+ Para realizar estas operaciones, delega en el servidor FTP.
+\end_layout
+
+\begin_layout Subsubsection
+La conexión de control
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-conexión-control"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El enlace que conecta el repositorio de imágenes a la red troncal de la
+ UCM será 
+\emph on
+full duplex
+\emph default
+.
+ Para aprovechar su ancho de banda al máximo, debemos utilizar todo el ancho
+ de banda de bajada y todo el ancho de banda de subida que podamos, por
+ lo que debemos intentar, en la medida de lo posible, realizar varias transferen
+cias de subida y de descarga de ficheros en paralelo.
  
 \end_layout
 
 \begin_layout Standard
-Estos tres inconvenientes hacen que el uso directo de un servidor FTP en
- el repositorio de imágenes sea totalmente inaceptable.
- Por ello, es necesario añadir, a ese servidor FTP,
-\end_layout
+Por otra parte, el ancho de banda del enlace está limitado.
+ Si permitimos que los servidores se conecten sin control al servidor FTP,
+ podrán generarse errores por 
+\emph on
+timeout
+\emph default
+ que supondrán, tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Adición-capa-repositorio"
 
-\begin_layout Itemize
-el control del número de conexiones simultáneas, para evitar así el desperdicio
- del ancho de banda
-\end_layout
+\end_inset
 
-\begin_layout Itemize
-la gestión del estado de las imágenes de disco, para evitar conflictos como
- el que acabamos de describir.
+, un desperdicio del ancho de banda del enlace.
 \end_layout
 
 \begin_layout Standard
-Estas son las principales aportaciones del código del paquete 
+Así pues, debemos restringir el número máximo de transferencias simultáneas
+ entre el servidor FTP y las máquinas remotas, y también debemos realizar
+ las transferencias de subida y de descarga en paralelo cuando sea posible.
+ Para ello, las máquinas remotas no se conectarán directamente al servidor
+ FTP, y dialogarán previamente con el repositorio de imágenes a través de
+ una conexión de control adicional.
+\end_layout
+
+\begin_layout Subsubsection
+Los 
+\emph on
+slots
+\emph default
+ de transferencia
+\end_layout
+
+\begin_layout Standard
+Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-conexión-control"
+
+\end_inset
+
+, para no desperdiciar el ancho de banda del enlace resulta imprescindible
+ restringir el número de transferencias simultáneas entre el repositorio
+ de imágenes y las máquinas remotas.
+ Para ello, hemos utilizado un mecanismo basado en 
+\emph on
+slots
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Cada 
+\emph on
+slot
+\emph default
+ estará asociado a una transferencia activa.
+ Por ejemplo, si en un instante dado existen 
+\begin_inset Formula $n$
+\end_inset
+
+ transferencias activas en total, se estarán utilizando 
+\begin_inset Formula $n$
+\end_inset
+
+ 
+\emph on
+slots
+\emph default
+.
+ El número máximo de 
+\emph on
+slots
+\emph default
+ de transferencia se configura durante el arranque del repositorio de imágenes.
+ 
+\end_layout
+
+\begin_layout Standard
+Así, cuando se recibe una nueva petición de transferencia,
+\end_layout
+
+\begin_layout Itemize
+si hay un 
+\emph on
+slot 
+\emph default
+libre, se marcará como ocupado y se iniciará la transferencia, y
+\end_layout
+
+\begin_layout Itemize
+si no hay ningún 
+\emph on
+slot 
+\emph default
+libre, la petición correspondiente se encolará.
+\end_layout
+
+\begin_layout Standard
+Tras finalizar una transferencia, se desencolará e iniciará la siguiente
+ petición.
+ Esto nos permite limitar el número máximo de transferencias activas entre
+ el repositorio de imágenes y el resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Clases principales
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-clases-repositorio"
+
+\end_inset
+
+ muestra las principales clases del repositorio de imágenes y sus relaciones
+ con otras clases.
+ Por claridad,
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ImageRepository
+\family default
+ aparece abrevidado como 
+\family typewriter
+IR,
+\end_layout
+
+\begin_layout Itemize
+las relaciones de la clase 
+\family typewriter
+FTPServerCallback
+\family default
+ aparecen en azul,
+\end_layout
+
+\begin_layout Itemize
+las relaciones de la clase 
+\family typewriter
+CommandsCallback
+\family default
+ aparecen en rojo,
+\end_layout
+
+\begin_layout Itemize
+hemos omitido las relaciones existentes entre las clases que no forman parte
+ del paquete 
+\family typewriter
+imageRepository
+\family default
+, y
+\end_layout
+
+\begin_layout Itemize
+no hemos indicado los paquetes a los que pertenecen las clases que no están
+ definidas en el paquete 
 \family typewriter
 imageRepository
 \family default
 .
- En primer lugar, mostraremos 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Repositorio/Diagrama clases repositorio.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-clases-repositorio"
+
+\end_inset
+
+Principales clases del repositorio de imágenes y sus relaciones
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Las principales clases que aparecen en el diagrama y sus responsabilidades
+ son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ImageRepositoryReactor
+\family default
+ es la clase principal del repositorio de imágenes.
+ Además de ocuparse de los procesos de arranque y apagado del demonio del
+ servidor de imágenes, también se encarga de asignación de 
+\emph on
+slots
+\emph default
+ a las transferencias encoladas.
+\end_layout
+
+\begin_layout Itemize
+la clase 
+\family typewriter
+CommandsCallback
+\family default
+ procesará todos los paquetes recibidos a través de la conexión de control.
+ Análogamente, la clase 
+\family typewriter
+FTPServerCallback
+\family default
+ procesará todos los eventos generados por el servidor FTP.
+\end_layout
+
+\begin_layout Itemize
+la clase 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+ dispone de métodos para crear y leer los paquetes que se intercambian a
+ través de la conexión de control.
+\end_layout
+
+\begin_layout Itemize
+la clase 
+\family typewriter
+ImageRepositoryDBConnector
+\family default
+ dispone de métodos para manipular la base de datos del repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+la clase 
+\family typewriter
+ImageRepositoryConfigurationFileParser
+\family default
+ procesa el fichero de configuración del demonio del repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Finalmente, 
+\end_layout
+
+\begin_layout Itemize
+las clases 
+\family typewriter
+ConfigurationFileParser
+\family default
+, 
+\family typewriter
+BasicDBConnector
+\family default
+ y 
+\family typewriter
+MultithreadingQueue
+\family default
+ forman parte del paquete 
+\family typewriter
+ccutils
+\family default
+,
+\end_layout
+
+\begin_layout Itemize
+las clases 
+\family typewriter
+Packet
+\family default
+, 
+\family typewriter
+NetworkManager
+\family default
+ y 
+\family typewriter
+NetworkCallback
+\family default
+ forman parte del paquete 
+\family typewriter
+network
+\family default
+, y
+\end_layout
+
+\begin_layout Itemize
+las clases 
+\family typewriter
+FTPCallback
+\family default
+ y 
+\family typewriter
+ConfigurableFTPServer
+\family default
+ forman parte del paquete 
+\family typewriter
+FTP
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Procesos del repositorio de imágenes
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos los procesos de arranque y apagado del repositorio
+ de imágenes, y también todas las interacciones posibles entre este y el
+ resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Paragraph
+Arranque del repositorio de imágenes
 \end_layout
 
 \begin_layout Subsubsection
@@ -10116,7 +10575,7 @@ reference "tab:Paquetes-repositorio-imágenes"
 \family typewriter
 PACKET_T
 \family default
- asociados a los distintos tipos de paquete del repositorio de imágenes.
+ asociados a los distintos tipos de paquete del repositorio de imágenes
 \end_layout
 
 \begin_layout Standard
