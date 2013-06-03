@@ -696,7 +696,14 @@ CygnusCloud
 \end_layout
 
 \begin_layout Subsubsection
-El repositorio de imágenes
+El repositorio de imágenes 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:El-repositorio-de-imagenes"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2084,7 +2091,14 @@ es imprescindible utilizar mecanismos estandarizados, por lo que nos acabamos
 \end_layout
 
 \begin_layout Subsection
-Uso del protocolo de transferencia de ficheros FTP
+Uso del protocolo de transferencia de ficheros FTP 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-del-protocolo-FTP"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5177,7 +5191,7 @@ La funcionalidad del sistema
 \emph on
 CygnusCloud 
 \emph default
-está distribuida en diez paquetes:
+está distribuida en once paquetes:
 \end_layout
 
 \begin_layout Itemize
@@ -5290,6 +5304,16 @@ webServer
 CygnusCloud
 \emph default
 .
+\end_layout
+
+\begin_layout Itemize
+el paquete 
+\family typewriter
+ftp
+\family default
+ contiene el cliente y el servidor FTP utilizados para transferir imágenes
+ de disco entre el repositorio de imágenes y los servidores de máquinas
+ virtuales.
 \end_layout
 
 \begin_layout Itemize
@@ -5867,6 +5891,60 @@ ConfigurableFTPServer
 pyftpdlib
 \family default
 .
+\end_layout
+
+\begin_layout Subsubsection
+
+\family typewriter
+ftp
+\end_layout
+
+\begin_layout Standard
+Este paquete contiene las clases del cliente y del servidor FTP que utilizan
+ el repositorio de imágenes y los servidores de máquinas virtuales para
+ intercambiar imágenes de disco.
+ Sus principales clases son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+FTPClient
+\family default
+.
+ Esta clase es un envoltorio del cliente FTP incluido en la biblioteca estándar
+ de 
+\emph on
+Python
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ConfigurableFTPServer
+\family default
+.
+ Esta clase es un envoltorio del servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Asimismo, el paquete 
+\family typewriter
+ftp
+\family default
+ incluye un único subpaquete, 
+\family typewriter
+pyftpdlibInteraction
+\family default
+.
+ Como su nombre indica, las clases de ese paquete realizan la interacción
+ con el servidor pyftpdlib a un bajo nivel de abstracción.
 \end_layout
 
 \begin_layout Subsubsection
@@ -7498,7 +7576,14 @@ bytes
 \begin_layout Subsubsection
 La clase 
 \family typewriter
-Packet
+Packet 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:La-clase-Packet"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -9217,10 +9302,18 @@ NetworkManager
  se tomarán en caso de que deban compartirse.
 \end_layout
 
-\begin_layout Subsubsection
-El cliente y el servidor 
+\begin_layout Subsection
+El paquete 
 \family typewriter
 ftp
+\end_layout
+
+\begin_layout Subsubsection
+El servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+: visión general
 \end_layout
 
 \begin_layout Standard
@@ -9240,17 +9333,17 @@ pyftpdlib
 Python
 \emph default
 .
- En primer lugar, presentaremos sus clases más relevantes y mostraremos
- cómo interactuar con él.
- Posteriormente, mostraremos el diseño del cliente FTP.
-\end_layout
+ En primer lugar, mostraremos las clases que hemos utilizado para implementar
+ nuestro servidor FTP.
+ Estas, junto con sus relaciones, aparecen en el diagrama de clases de la
+ figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-clases-pyftpdlib"
 
-\begin_layout Paragraph
-El servidor FTP 
-\family typewriter
-pyftpdlib
-\family default
-: visión general
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -9263,7 +9356,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Red/Diagrama clases pyftpdlib.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/FTP/Diagrama clases pyftpdlib.pdf
 	scale 80
 
 \end_inset
@@ -9297,22 +9390,6 @@ pyftpdlib
 \end_layout
 
 \begin_layout Standard
-El diagrama de clases de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Principales-clases-pyftpdlib"
-
-\end_inset
-
- muestra las clases de 
-\family typewriter
-pyftpdlib
-\family default
- que hemos utilizado para implementar nuestro servidor FTP y las relaciones
- entre ellas.
-\end_layout
-
-\begin_layout Standard
 En primer lugar, la clase abstracta 
 \family typewriter
 Authorizer
@@ -9322,8 +9399,8 @@ Authorizer
 \family typewriter
 DummyAuthorizer
 \family default
-, que restringe el acceso al servidor FTP en base a un nombre de usuario
- y a una contraseña.
+, que restringe el acceso al servidor FTP utilizando nombres de usuario
+ y sus contraseñas (sin cifrar).
 \end_layout
 
 \begin_layout Standard
@@ -9342,8 +9419,12 @@ UnixFilesystem
 \end_layout
 
 \begin_layout Standard
-La clase abstracta Handler define la interfaz que se usará para procesar
- los eventos asociados a las transferencias de ficheros.
+Asimismo, la clase abstracta 
+\family typewriter
+Handler
+\family default
+ define la interfaz que se usará para procesar los eventos asociados a las
+ transferencias de ficheros.
  Así,
 \end_layout
 
@@ -9354,7 +9435,7 @@ FTPHandler
 \family default
  define la interfaz que se usará para generar los eventos asociados al servidor
  FTP (como, por ejemplo, las conexiones y desconexiones de usuarios).
- Creando una subclase concreta de 
+ Creando una subclase de 
 \family typewriter
 FTPHandler
 \family default
@@ -9362,7 +9443,7 @@ FTPHandler
 \end_layout
 
 \begin_layout Itemize
-su subclase concreta 
+su subclase 
 \family typewriter
 ThrottledDTPHandler
 \family default
@@ -9374,32 +9455,33 @@ Finalmente, la clase
 \family typewriter
 FTPServer
 \family default
- se corresponde con un servidor FTP.
- 
+ implementa el resto del código del servidor FTP.
 \end_layout
 
 \begin_layout Paragraph
-Arranque del servidor FTP
+Configuración de un servidor FTP
 \end_layout
 
 \begin_layout Standard
-Para arrancar cualquier servidor FTP basado en 
+Para configurar un servidor FTP basado en 
 \family typewriter
 pyftpdlib
 \family default
-, es necesario configurar
+, es necesario determinar
 \end_layout
 
 \begin_layout Itemize
-la autenticación del servidor
+la forma en que se hará la autenticación en el servidor FTP,
 \end_layout
 
 \begin_layout Itemize
-el procesamiento de los eventos FTP, y, opcionalmente,
+la forma en que se procesarán los eventos asociados a las transferencias
+ FTP y, opcionalmente,
 \end_layout
 
 \begin_layout Itemize
-el control del ancho de banda.
+la porción del ancho de banda total que podrá ser utilizado por el tráfico
+ FTP.
 \end_layout
 
 \begin_layout Standard
@@ -9411,7 +9493,7 @@ FTPServer
 \family typewriter
 Authorizer
 \family default
-, una subclase concreta de 
+, una subclase de 
 \family typewriter
 FTPHandler
 \family default
@@ -9422,22 +9504,6 @@ ThrottledDTPHandler
 .
 \end_layout
 
-\begin_layout Standard
-Como nuestro servidor FTP utiliza la clase 
-\family typewriter
-DummyAuthorizer
-\family default
-, para configurar la autenticación basta con especificar uno o más nombres
- de usuario junto con sus contraseñas.
- 
-\end_layout
-
-\begin_layout Standard
-Finalmente, para realizar el control del ancho de banda basta con especificar
- la fracción del ancho de banda de subida y la fracción del ancho de banda
- de bajada que consumirá el tráfico FTP.
-\end_layout
-
 \begin_layout Paragraph
 Eventos FTP generados por el servidor FTP 
 \family typewriter
@@ -9445,54 +9511,1927 @@ pyftpdlib
 \end_layout
 
 \begin_layout Standard
-Los eventos generados por el servidor FTP 
+Como ya hemos mencionado, el servidor FTP 
 \family typewriter
 pyftpdlib
 \family default
- y su información asociada son los siguientes:
+ genera eventos para que el código cliente pueda responder a conexiones
+ de clientes, transferencias fallidas,\SpecialChar \ldots{}
+ Los eventos FTP que se generan y
+ su información asociada son los siguientes:
 \end_layout
 
 \begin_layout Itemize
-desconexión inesperada de un cliente.
+
+\series bold
+desconexión inesperada de un cliente
+\series default
+.
  No tiene asociado ningún tipo de información.
 \end_layout
 
 \begin_layout Itemize
-conexión de un cliente.
+
+\series bold
+conexión de un cliente
+\series default
+.
  Tiene asociado el nombre de usuario que ha empleado el cliente para conectarse
  al servidor.
 \end_layout
 
 \begin_layout Itemize
-desconexión normal de un cliente.
+
+\series bold
+desconexión normal de un cliente
+\series default
+.
  Tiene asociado el nombre de usuario que ha empleado el cliente para conectarse
  al servidor.
 \end_layout
 
 \begin_layout Itemize
-fin de envío de fichero.
+
+\series bold
+fin de envío de fichero
+\series default
+.
  Tiene asociado el nombre del fichero que ha terminado de enviarse.
 \end_layout
 
 \begin_layout Itemize
-fin de recepción de fichero.
+
+\series bold
+fin de recepción de fichero
+\series default
+.
  Tiene asociado el nombre del fichero que se ha recibido.
 \end_layout
 
 \begin_layout Itemize
-error al enviar un fichero.
+
+\series bold
+error en el envío de un fichero
+\series default
+.
  Tiene asociado el nombre del fichero que ha tratado de enviarse.
 \end_layout
 
 \begin_layout Itemize
-error al recibir un fichero.
+
+\series bold
+error en la recepción de un fichero
+\series default
+.
  Tiene asociado el nombre del fichero que se ha recibido parcialmente.
+\end_layout
+
+\begin_layout Subsubsection
+El servidor FTP de 
+\emph on
+CygnusCloud
+\end_layout
+
+\begin_layout Standard
+El servidor FTP de 
+\emph on
+CygnusCloud
+\emph default
+ utiliza como base el servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+.
+ Sus principales características son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+permite realizar la gestión de usuarios y contraseñas en tiempo de ejecución.
+ Estos datos siempre se transmitirán sin cifrar.
+\end_layout
+
+\begin_layout Itemize
+permite restringir el número total de conexiones al servidor FTP, y también
+ el número máximo de conexiones por cada dirección IP.
+\end_layout
+
+\begin_layout Itemize
+permite restringir el tráfico FTP a cierta interfaz de red.
+\end_layout
+
+\begin_layout Itemize
+permite configurar la fracción del ancho de banda que usará el tráfico FTP.
+ Para ello, detecta el ancho de banda del enlace por el que viajará el tráfico
+ FTP.
+\end_layout
+
+\begin_layout Itemize
+hace posible que los eventos FTP se atiendan en el código cliente cuando
+ sea oportuno.
+\end_layout
+
+\begin_layout Itemize
+utiliza un hilo dedicado para el servidor FTP.
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:El-servidor-FTP-CC"
+
+\end_inset
+
+ muestra las clases del servidor FTP y sus relaciones con las clases del
+ servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+.
+ Por claridad, en él hemos omitido las relaciones existentes entre las clases
+ de 
+\family typewriter
+pyftpdlib
+\family default
+.
+ Asimismo, hemos abreviado 
+\family typewriter
+CygnusCloud
+\family default
+ como 
+\family typewriter
+CC
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/FTP/Diagrama clases servidor FTP.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:El-servidor-FTP-CC"
+
+\end_inset
+
+El servidor FTP de 
+\emph on
+CygnusCloud
+\emph default
+: diagrama de clases
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\family typewriter
+ConfigurableFTPServer
+\family default
+ es la clase principal del servidor FTP.
+ Su misión es ocultar al código cliente el proceso de configuración del
+ servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+, haciendo posible que este pueda procesar los eventos generados por el
+ servidor FTP.
+\end_layout
+
+\begin_layout Standard
+El procesamiento de dichos eventos se realiza a través de la interfaz definida
+ por la clase abstracta 
+\family typewriter
+FTPCallback
+\family default
+.
+ La clase 
+\family typewriter
+CygnusCloudFTPHandler
+\family default
+, que hereda de 
+\family typewriter
+FTPHandler
+\family default
+, se encargará de invocar a los métodos de un objeto 
+\family typewriter
+FTPCallback
+\family default
+ a medida que se generen los eventos FTP.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la clase 
+\family typewriter
+ConfigurableFTPServer
+\family default
+ utiliza un objeto 
+\family typewriter
+DummyAuthorizer
+\family default
+ y un objeto 
+\family typewriter
+ThrottledDTPHandler
+\family default
+ durante el proceso de configuración del servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+, lo que significa que
+\end_layout
+
+\begin_layout Itemize
+la autenticación usará nombres de usuario y contraseñas en texto plano,
+ y
+\end_layout
+
+\begin_layout Itemize
+el ancho de banda utilizado por el tráfico FTP podrá restringirse.
+\end_layout
+
+\begin_layout Standard
+Finalmente, el código del servidor FTP se ejecuta en un hilo independiente,
+ que se corresponde con la clase de hilo 
+\family typewriter
+FTPServerThread
+\family default
+.
+ Así, el hilo en el que se haya configurado y arrancado el servidor FTP
+ podrá utilizarse con otros fines.
+ 
+\end_layout
+
+\begin_layout Standard
+El código de la clase 
+\family typewriter
+FTPServerThread
+\family default
+ está tomado de las pruebas unitarias de 
+\family typewriter
+pyftpdlib
+\family default
+: por ahora, no se encuentra integrado con el resto de código de 
+\family typewriter
+pyftpdlib
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+El cliente FTP de 
+\emph on
+CygnusCloud
+\end_layout
+
+\begin_layout Standard
+El cliente FTP de 
+\emph on
+CygnusCloud
+\emph default
+ no es más que un envoltorio del cliente FTP incluido en la librería estándar
+ de Python, 
+\family typewriter
+FTP
+\family default
+.
+ Esto permite que los clientes FTP puedan intercambiar información con un
+ servidor FTP a un mayor nivel de abstracción.
+\end_layout
+
+\begin_layout Standard
+La clase asociada al cliente FTP de 
+\emph on
+CygnusCloud
+\emph default
+ es 
+\family typewriter
+FTPClient
+\family default
+.
+ Permite, entre otras cosas,
+\end_layout
+
+\begin_layout Itemize
+crear y destruir conexiones con un servidor FTP,
+\end_layout
+
+\begin_layout Itemize
+subir un fichero a un determinado directorio del servidor FTP, y
+\end_layout
+
+\begin_layout Itemize
+descargar un fichero ubicado en cierto directorio del servidor FTP.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que la clase 
+\family typewriter
+FTP
+\family default
+ de la librería estándar de 
+\emph on
+Python
+\emph default
+ 
+\emph on
+no
+\emph default
+ soporta FTP seguro.
+ De todos modos, resulta muy sencillo utilizar otro cliente FTP que sí lo
+ soporte: basta con modificar la implementación de los métodos de la clase
+ 
+\family typewriter
+FTPClient
+\family default
+.
 \end_layout
 
 \begin_layout Subsection
 El paquete 
 \family typewriter
 imageRepository
+\end_layout
+
+\begin_layout Standard
+Tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:El-repositorio-de-imagenes"
+
+\end_inset
+
+, el repositorio de imágenes se ocupa de almacenar todas las imágenes de
+ disco que pueden utilizarse en un 
+\emph on
+cluster
+\emph default
+, es decir,
+\end_layout
+
+\begin_layout Itemize
+las imágenes de disco de las máquinas virtuales que utilizan los alumnos,
+ y
+\end_layout
+
+\begin_layout Itemize
+las imágenes de disco base, que se usan para crear nuevas máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+En esta sección presentaremos detalladamente su diseño.
+\end_layout
+
+\begin_layout Subsubsection
+Control de acceso al servidor FTP
+\end_layout
+
+\begin_layout Standard
+En la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-del-protocolo-FTP"
+
+\end_inset
+
+ dijimos que las máquinas de la infraestructura utilizan el protocolo FTP
+ para transferir y recibir imágenes de disco.
+ Así pues, los servidores de máquinas virtuales y el repositorio de imágenes
+ intercambian imágenes de disco mediante el protocolo FTP.
+ 
+\end_layout
+
+\begin_layout Standard
+Puesto que el repositorio de imágenes almacena todas las imágenes de disco
+ que pueden utilizarse en el 
+\emph on
+cluster
+\emph default
+, lo más razonable es que el repositorio de imágenes sea el servidor FTP,
+ y que todos los servidores de máquinas virtuales se conecten a él como
+ clientes FTP.
+\end_layout
+
+\begin_layout Standard
+Ahora bien, para implementar el repositorio de imágenes no basta con utilizar
+ un servidor FTP.
+ Si, por ejemplo,
+\end_layout
+
+\begin_layout Itemize
+el 
+\emph on
+cluster
+\emph default
+ contiene 100 servidores de máquinas virtuales, y
+\end_layout
+
+\begin_layout Itemize
+se despliega una imagen de disco en cada uno de ellos,
+\end_layout
+
+\begin_layout Standard
+el servidor FTP del repositorio de imágenes tendría que lidiar con 100 conexione
+s simultáneas.
+ Si el ancho de banda del enlace no es lo suficientemente alto, se generarán
+ errores por 
+\emph on
+timeouts
+\emph default
+.
+ Si el número de transferencias simultáneas fuese menor, muchos de estos
+ errores no se habrían generado.
+\end_layout
+
+\begin_layout Standard
+Aunque es posible informar a los administradores para que consideren esta
+ limitación, estamos obviando algo muy importante: los profesores, que serán
+ mucho más numerosos que los administradores, también pueden desplegar imágenes
+ (cuando, por ejemplo, crean una máquina virtual nueva para una de sus asignatur
+as).
+ Por ello, este inconveniente limita mucho el uso de 
+\emph on
+CygnusCloud
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, el uso directo de un servidor FTP tiene otro serio inconveniente:
+ se está desperdiciando el ancho de banda consumido por las transferencias
+ FTP fallidas.
+\end_layout
+
+\begin_layout Standard
+Además, también pueden aparecer conflictos con mucha frecuencia.
+ Supongamos que 
+\end_layout
+
+\begin_layout Itemize
+dos profesores 
+\family sans
+A
+\family default
+ y 
+\family sans
+B
+\family default
+ imparten la misma asignatura, que tiene asociada la máquina virtual 
+\begin_inset Formula $\textsf{VM}_{1}$
+\end_inset
+
+, que
+\end_layout
+
+\begin_layout Itemize
+tras utilizar la máquina virtual 
+\begin_inset Formula $\textsf{VM}_{1}$
+\end_inset
+
+ por separado, 
+\family sans
+A
+\family default
+ y 
+\family sans
+B
+\family default
+ descubren que cierto 
+\emph on
+software
+\emph default
+ está mal configurado, y que
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+A
+\family default
+ y 
+\family sans
+B
+\family default
+ deciden resolver por su cuenta el problema.
+\end_layout
+
+\begin_layout Standard
+Al editar la imagen de disco correspondiente,
+\family sans
+ A
+\family default
+ y 
+\family sans
+B
+\family default
+ no tendrán problemas.
+ Pero a la hora de transferirla de nuevo al repositorio, la versión de 
+\family sans
+A
+\family default
+ se sobreescribirá con la de 
+\family sans
+B
+\family default
+ o viceversa.
+ Por tanto, uno de los dos, 
+\family sans
+A
+\family default
+ o 
+\family sans
+B
+\family default
+, ha perdido el tiempo editando la imagen.
+ 
+\end_layout
+
+\begin_layout Standard
+Estos tres inconvenientes hacen que el uso directo de un servidor FTP en
+ el repositorio de imágenes sea totalmente inaceptable.
+ Por ello, es necesario añadir, a ese servidor FTP,
+\end_layout
+
+\begin_layout Itemize
+el control del número de conexiones simultáneas, para evitar así el desperdicio
+ del ancho de banda
+\end_layout
+
+\begin_layout Itemize
+la gestión del estado de las imágenes de disco, para evitar conflictos como
+ el que acabamos de describir.
+\end_layout
+
+\begin_layout Standard
+Estas son las principales aportaciones del código del paquete 
+\family typewriter
+imageRepository
+\family default
+.
+ En primer lugar, mostraremos 
+\end_layout
+
+\begin_layout Subsubsection
+Formatos de paquete
+\end_layout
+
+\begin_layout Standard
+Todas las máquinas de la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+ interactúan entre sí intercambiando paquetes, y el repositorio de imágenes
+ no es una excepción.
+ El cuadro 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Paquetes-repositorio-imágenes"
+
+\end_inset
+
+ muestra los códigos, prioridades y las constantes del tipo enumerado 
+\family typewriter
+PACKET_T
+\family default
+ asociados a los distintos tipos de paquete del repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+El tipo enumerado PACKET_T se encuentra definido en el paquete 
+\family typewriter
+imageRepository.packetHandling
+\family default
+, y se usa para manipular los códigos de paquete del repositorio de imágenes
+ de forma cómoda.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="21" columns="4">
+<features islongtable="true" longtabularalignment="center">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row endhead="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Tipo de paquete
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Código
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Prioridad
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Constante (tipo enumerado)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Apagado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+HALT
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Crear imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+ADD_IMAGE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Imagen creada
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+ADDED_IMAGE_ID
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solicitud 
+\family typewriter
+FTP RETR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+RETR_REQUEST
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solicitud 
+\family typewriter
+FTP RETR
+\family default
+ recibida
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+RETR_REQUEST_RECVD
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solicitud 
+\family typewriter
+FTP RETR
+\family default
+ errónea
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+RETR_REQUEST_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Inicio de transferencia 
+\family typewriter
+FTP RETR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+RETR_START
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Error en la transferencia 
+\family typewriter
+FTP RETR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+RETR_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solicitud 
+\family typewriter
+FTP STOR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+STOR_REQUEST
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solicitud 
+\family typewriter
+FTP STOR
+\family default
+ recibida
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+STOR_REQUEST_RECVD
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solicitud 
+\family typewriter
+FTP STOR
+\family default
+ errónea
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+11
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+STOR_REQUEST_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Inicio de transferencia 
+\family typewriter
+FTP STOR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+STOR_START
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Error en la transferencia 
+\family typewriter
+FTP STOR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+STOR_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solicitud de borrado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DELETE_REQUEST
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solicitud de borrado recibida
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+15
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DELETE_REQUEST_RECVD
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solicitud de borrado errónea
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+16
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DELETE_REQUEST_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solicitud de estado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+17
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+STATUS_REQUEST
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Estado del repositorio
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+18
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+STATUS_DATA
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Liberar imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+19
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+CANCEL_EDITION
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Imagen liberada
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+20
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_EDITION_CANCELLED
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Paquetes-repositorio-imágenes"
+
+\end_inset
+
+Características principales de los paquetes utilizados en el repositorio
+ de imágenes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Es importante recordar lo que dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:La-clase-Packet"
+
+\end_inset
+
+: cuanto menor es la valor numérico de la prioridad de un paquete, más prioritar
+io es.
+ 
+\end_layout
+
+\begin_layout Standard
+Los significados de los distintos tipos de paquete y la información que
+ contienen son los siguientes:
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\series bold
+Apagado 
+\series default
+no contienen información adicional.
+ Al recibirlos, el demonio del repositorio de imágenes terminará ordenadamente.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\series bold
+Crear imagen
+\series default
+ tampoco contienen información adicional.
+ Al recibirlos, el repositorio de imágenes reservará un nuevo identificador
+ de imagen, y lo devolverá a la máquina que envió la petición.
+ Para ello, usará un paquete del tipo 
+\series bold
+Imagen creada
+\series default
+, que contiene el nuevo identificador de imagen (un valor entero).
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\series bold
+Solicitud 
+\family typewriter
+FTP RETR
+\family default
+\series default
+ se utilizan para solicitar la descarga de una imagen de disco.
+ Además del identificador de la imagen de disco a descargar (un valor entero),
+ contienen un 
+\emph on
+flag
+\family typewriter
+\emph default
+ modify
+\family default
+, que indica si se pretende subir la imagen de disco modificada al repositorio
+ o no.
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\series bold
+Solicitud 
+\family typewriter
+FTP RETR 
+\family default
+recibida
+\series default
+ y 
+\series bold
+Solicitud 
+\family typewriter
+FTP RETR
+\family default
+ errónea
+\series default
+ se envían como respuesta a un paquete del tipo Solicitud 
+\family typewriter
+FTP RETR
+\family default
+.
+ El primero se utiliza cuando la petición es correcta, y el segundo cuando
+ se detecta algún error (por ejemplo, cuando se pretende descargar una imagen
+ que no existe).
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Sólo los paquetes del tipo Solicitud 
+\family typewriter
+FTP RETR
+\family default
+ errónea contienen información adicional: un código de error.
+ Estos se definen en el tipo enumerado 
+\family typewriter
+ERROR_DESC_T
+\family default
+ del paquete 
+\family typewriter
+errors
+\family default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los paquetes del tipo 
+\series bold
+Inicio de transferencia 
+\family typewriter
+FTP RETR
+\family default
+\series default
+ indican a una máquina que puede establecer la conexión con el servidor
+ FTP para descargarse una imagen de disco.
+ Estos paquetes contienen
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+el nombre de usuario y la contraseña del servidor FTP, que se genera aleatoriame
+nte en cada arranque,
+\end_layout
+
+\begin_layout Itemize
+el identificador de la imagen a descargar,
+\end_layout
+
+\begin_layout Itemize
+el puerto en el que escucha el servidor FTP,
+\end_layout
+
+\begin_layout Itemize
+el directorio del servidor donde se encuentra el fichero a descargar, y
+\end_layout
+
+\begin_layout Itemize
+el nombre del fichero a descargar.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los paquetes del tipo 
+\series bold
+Error en la transferencia 
+\family typewriter
+FTP RETR
+\family default
+\series default
+ se envían cuando, al habilitar la descarga de la imagen de disco, se ha
+ detectado un error (como, por ejemplo, que la imagen de disco no existe).
+ Nuevamente, estos paquetes contienen un código de error.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\series bold
+Solicitud 
+\family typewriter
+FTP STOR
+\family default
+\series default
+ se utilizan para solicitar la subida de una imagen de disco.
+ Estos paquetes contienen el identificador de la imagen a subir (un valor
+ entero).
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\series bold
+Solicitud 
+\family typewriter
+FTP STOR
+\family default
+ recibida
+\series default
+ y 
+\series bold
+Solicitud 
+\family typewriter
+FTP STOR
+\family default
+ errónea
+\series default
+ se envían como respuesta a un paquete del tipo Solicitud 
+\family typewriter
+FTP STOR
+\family default
+, y son idénticos a los paquetes Solicitud 
+\family typewriter
+FTP RETR
+\family default
+ recibida y Solicitud 
+\family typewriter
+FTP STOR
+\family default
+ errónea.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\series bold
+Inicio de transferencia 
+\family typewriter
+FTP STOR
+\family default
+ 
+\series default
+indican a una máquina que puede establecer la conexión con el servidor FTP
+ para subir una imagen de disco.
+ Estos paquetes tienen el mismo contenido que los paquetes Inicio de transferenc
+ia 
+\family typewriter
+FTP RETR
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\series bold
+Error en la transferencia 
+\family typewriter
+FTP STOR
+\family default
+\series default
+ se envían al detectar errores al habilitar la transferencia 
+\family typewriter
+FTP STOR
+\family default
+.
+ Nuevamente, estos paquetes contienen un código de error.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\series bold
+Solicitud de borrado
+\series default
+ se envían para solicitar el borrado de una imagen de disco del repositorio
+ de imágenes.
+ Estos paquetes contienen el identificador de la imagen a borrar (un valor
+ entero).
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\series bold
+Solicitud de borrado recibida
+\series default
+ y 
+\series bold
+Solicitud de borrado errónea
+\series default
+ se envían como respuesta a un paquete del tipo Solicitud de borrado.
+ Estos paquetes se usan de forma muy parecida a los paquetes Solicitud 
+\family typewriter
+FTP RETR
+\family default
+ recibida y Solicitud 
+\family typewriter
+FTP RETR
+\family default
+ errónea, y tienen el mismo contenido.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\series bold
+Solicitud de estado
+\series default
+ se utilizan para recopilar periódicamente el estado del repositorio de
+ imágenes.
+ Como respuesta a estos paquetes, el repositorio de imágenes envía un paquete
+ del tipo 
+\series bold
+Estado del repositorio
+\series default
+, que contiene el espacio en disco total y el espacio en disco utilizado.
+\end_layout
+
+\begin_layout Itemize
+finalmente, los paquetes del tipo 
+\series bold
+Liberar imagen
+\series default
+ se utilizan para eliminar la reserva de una imagen.
+ Estos contienen el identificador de la imagen liberada (un valor entero).
+ Como respuesta a estos paquetes, el repositorio de imágenes enviará un
+ paquete del tipo 
+\series bold
+Imagen liberada
+\series default
+.
 \end_layout
 
 \begin_layout Subsection
