@@ -20,9 +20,11 @@ def login():
     form.element("input",_type="submit")['_style'] = "width:120px;height:25px;"
     form.element(_name="email")['_style'] = "width:250px;"
     form.element(_name="password")['_style'] = "width:250px;"
+    form.element(_name="password")['_class'] = "inputText"
     form.element("td")['_style'] = "padding: 0px;text-align:center;"
-    
-    return dict(form=form)
+    infoTweets = LOAD(url=URL('static', 'tweetsViewer.html', scheme='http'),ajax=False)
+    print infoTweets
+    return dict(form=form,infoTweets=infoTweets)
     
 #Metodo encargado de la página "Acerca de"
 def about():

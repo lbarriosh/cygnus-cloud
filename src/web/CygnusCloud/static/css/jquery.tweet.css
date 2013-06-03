@@ -1,0 +1,45 @@
+/*
+ * Hoja CSS asociada al widget de los tweets, basada en el código original de Tweet!
+ * 	Copyright (c) 2008-2012 Todd Matthews & Steve Purcell
+ *	See http://tweet.seaofclouds.com/ or https://github.com/seaofclouds/tweet for more info
+ * Autores: Luis Barrios Hernández, Adrián Fernández Hernández
+ * Versión: 2.1
+ */
+.tweet, .query {
+	font: 90% Segoe UI, Garamond, Ubuntu, sans-serif;
+	color: #000000; // Color de fuente
+}
+
+.tweet_list {
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	border-radius: 0.5em;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	overflow-y: hidden;
+	background-color: #8EC1DA; // Color de fondo de los tweets pares
+}
+	
+.tweet_list li {
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 0.5em;
+	list-style-type: none;
+}
+		
+.tweet_list li a {
+	color: #264D99; // Color de los hipervínculos
+}
+		
+.tweet_list .tweet_even {
+	background-color: #AFC9D6; // Color de fondo de los tweets impares
+		}
+		
+.tweet_list .tweet_avatar {
+	padding-right: .5em; float: left;
+}
+		
+.tweet_list .tweet_avatar img {
+	vertical-align: middle;
+}

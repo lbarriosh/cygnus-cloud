@@ -1,6 +1,6 @@
 {{extend 'layout.html'}}
-<center><h1>{{=T('Bienvenido a CygnusCloud!')}}</h1></center>
+<center><h1>{{=T('Bienvenido a CygnusCloud')}}</h1></center>
 <div id="login_form">
     <center>{{=form}}</center>
- 
 </div>
+{{infoTweets}}
