@@ -116,12 +116,11 @@ def createVanillaVM():
     table = TABLE(_class='data', _name='table')
     j= 0
     for id in vanillaImagesIds:
-        vanillaInfo = connector.getVanillaImageFamiliyData(id["VanillaImageFamilyID"])
+        vanillaInfo = connector.getVanillaImageFamilyData(id["VanillaImageFamilyID"])
         osId = connector.getImageData(id["ImageID"])["OSFamily"]
         variantId = connector.getImageData(id["ImageID"])["OSVariant"]
         picturePath = userDB((userDB.pictureByOSId.osId == osId) & (userDB.pictureByOSId.variantId == variantId)
                              & (userDB.pictureByOSId.pictureId == userDB.osPictures.osPictureId )).select(userDB.osPictures.picturePath)[0].picturePath
-        print picturePath
         subTable = createVanillaImageTable(vanillaInfo["RAMSize"],
                     vanillaInfo["VCPUs"],vanillaInfo["OSDiskSize"],vanillaInfo["DataDiskSize"],
                     maxValues["RAMSize"],maxValues["VCPUs"],maxValues["OSDiskSize"],maxValues["DataDiskSize"])
@@ -161,6 +160,12 @@ def createVanillaVM():
            #Creamos la MV
            if len(form.vars.selection) > 0:
                        errorInfo = connector.createImage(form.vars.selection.split('c')[2], form.vars.newVMName, form.vars.description)
+                       #errorInfo = connector.waitForCommandOutput(commandId)
+                       #if errorInfo != None:
+                       #        response.flash = T(errorInfo['ErrorMessage'])
+                       #else:
+                       #         response.flash = "Petición de creación enviada"
+                                
                        if(len(connector.getCommandOutput(errorInfo))==0):
                            response.flash = "Petición de creación enviada"
                        else:
@@ -185,7 +190,7 @@ def editVM():
     num2= 0
     for image in editedImages:
         imageInfo = connector.getImageData(image)
-        print str(imageInfo["State"]) + 'w' + str(image)
+        print str(imageInfo["State"]) + 'W' + str(image)
         if (imageInfo["State"] == EDITION_STATE_T.TRANSFER_TO_REPOSITORY) or (imageInfo["State"] == EDITION_STATE_T.VM_ON) or \
                 (imageInfo["State"] == EDITION_STATE_T.AUTO_DEPLOYMENT) or (imageInfo["State"] == EDITION_STATE_T.AUTO_DEPLOYMENT_ERROR):
             runningImages.append(TR(TD(INPUT(_type='radio',_name = 'selection1',_value = str(imageInfo["State"]) + 'w' + str(image),
@@ -216,7 +221,8 @@ def editVM():
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.continueEditing:
            #Creamos la MV
            if len(form1.vars.selection2) > 0:
-                       errorInfo = connector.editImage(form1.vars.selection2.split('w')[1])
+                       print imageInfo["ImageID"]
+                       errorInfo = connector.editImage(imageInfo["ImageID"])
                        evaluateCommand(connector,errorInfo,"Petición de arranque de máquina en edición enviada")
            else:
                    response.flash = "Debe seleccionar una imagen base"
@@ -240,17 +246,24 @@ def editVM():
                    response.flash = "Debe seleccionar una imagen base"
     if form2.accepts(request.vars,keepvalues=True) and form2.vars.open:
            #Creamos la MV
+           vncInfo=None
            if len(form2.vars.selection1) > 0:
                        #Mandamos la ejecución del cliente noVNC
-                        activeVMConectData = connector.getActiveVMsData(False,True)
+                        activeVMConectData = connector.getActiveVMsData(True,True)
+                        print activeVMConectData
+                        print form2.vars.selection1.split('w')[1]
                         for vmInfo in activeVMConectData:
-                            if vmInfo["VMID"] == form2.vars.selection1.split('w')[1]:
-                                vncInfo = dict(VNCServerIPAddress=vmInfo["DomainUID"],VNCServerPort=vmInfo["VNCPort"]
-                                        ,VNCServerPassword=vmInfo["VNCPassword"])
-                                redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
+                            if vmInfo["DomainUID"] == form2.vars.selection1.split('w')[1]:
+                                
+                                serverIp = searchVMServerIp(connector.getVMServersData(), vmInfo["VMServerName"])
+                                vncInfo = dict(OutputType=2,VNCServerIPAddress=serverIp,VNCServerPort=int(vmInfo["VNCPort"])+ 1
+                                        ,VNCServerPassword=str(vmInfo["VNCPassword"]))
+                        if vncInfo != None:            
+                            redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
 
            else:
                    response.flash = "Debe seleccionar una imagen base"
+                   
     
     if form2.accepts(request.vars,keepvalues=True) and form2.vars.stop:
            #Creamos la MV
@@ -391,7 +404,6 @@ def createDisabledTables():
     editingTable = TABLE(_class='data', _name='table')
     editingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
             TH("Grupo")))
-    print editingImageIds
     for image in editingImageIds:
         imageInfo = connector.getImageData(image)
         subjectsInfo = userDB((userDB.VMByGroup.VMId == imageInfo["ImageID"])).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)

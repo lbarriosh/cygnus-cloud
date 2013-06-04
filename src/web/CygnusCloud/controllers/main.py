@@ -23,7 +23,6 @@ def login():
     form.element(_name="password")['_class'] = "inputText"
     form.element("td")['_style'] = "padding: 0px;text-align:center;"
     infoTweets = LOAD(url=URL('static', 'tweetsViewer.html', scheme='http'),ajax=False)
-    print infoTweets
     return dict(form=form,infoTweets=infoTweets)
     
 #Metodo encargado de la página "Acerca de"

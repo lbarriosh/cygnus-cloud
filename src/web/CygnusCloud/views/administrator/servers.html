@@ -8,3 +8,7 @@
 <h1>{{=T('Administración de servidores')}}</h1>
 {{=form1}}
 {{pass}}
+{{if(request.args(0) == 'stop_system'):}}
+<h1>{{=T('Detención de infraestructura')}}</h1>
+{{=form}}
+{{pass}}

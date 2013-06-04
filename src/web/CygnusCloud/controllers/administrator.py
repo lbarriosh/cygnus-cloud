@@ -168,7 +168,7 @@ def runVM():
                         redirect(URL(f = 'runVM',args = ['stop']))
         if(form2.accepts(request.vars)) and (form2.vars.open):
              if(form2.vars.selection != ""):
-                activeVMConectData = connector.getActiveVMsData(False,False)
+                activeVMConectData = connector.getActiveVMsData(True,False)
                 for vmInfo in activeVMConectData:
                     print form2.vars.selection
                     if vmInfo["VMID"] == int(form2.vars.selection):
@@ -282,9 +282,21 @@ def servers():
             else:
                 sInfo = connector.getVMServersData()[int(infoServer[5])]
                 redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
-                sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"],sInfo["IsVanillaServer"]]) ))            
-        
-        return dict(form1 = form1)
+                sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"],sInfo["IsVanillaServer"]]) ))  
+        return dict(form1= form1)   
+          
+    elif(request.args(0) == 'stop_system'):
+        #Creamos el primer formulario
+        form = FORM(HR(),H2(T('Parar infraestructura')),             
+                CENTER(DIV( T('Forzar detención de máquinas virtuales: '
+                    ),INPUT(_type="checkbox",_name ='stopVMs',_style="width:30px;"))),
+                DIV(CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'stopSystem' ,_value=T('Detener infraestructura'),_style="width:180px;")))
+                ) 
+        btn = form.element("input",_type="submit")
+        btn["_onclick"] = "return confirm('¿Esta seguro que desea detener la infraestructura?');"                                   
+        if form.accepts(request.vars,keepvalues=True) and form.vars.stopSystem:
+                    connector.shutDownInfrastructure(form.vars.stopVM=="on")
+        return dict(form = form)
 
 
       
@@ -502,7 +514,8 @@ def createAdressBar():
                         (T('Abrir'),False,URL(f = 'runVM',args = ['open']))]],
                     [SPAN(T('Administrar servidores'), _class='highlighted'), False, URL(f = 'servers',args = ['add_servers']),[
                         (T('Añadir servidor'),False,URL(f = 'servers',args = ['add_servers'])),
-                        (T('Editar servidor'),False,URL(f = 'servers',args = ['remove_servers']))]],
+                        (T('Editar servidor'),False,URL(f = 'servers',args = ['remove_servers'])),
+                        (T('Parar infraestructura'),False,URL(f = 'servers',args = ['stop_system']))]],
                     [SPAN(T('Administrar usuarios'), _class='highlighted'), False, URL(f = 'users',args = ['add']),[
                         (T('Eliminar'),False,URL(f = 'users',args = ['remove'])),
                         (T('Añadir'),False,URL(f = 'users',args = ['add'])),
