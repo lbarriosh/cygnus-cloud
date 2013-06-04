@@ -114,3 +114,7 @@ class ImageRepositoryDBConnector(BasicDBConnector):
         imageID = sub("[^0-9]", "", path.basename(fileName))
         update = "UPDATE Image SET imageStatus = {1}, compressedFilePath = '{2}' WHERE imageID = {0};".format(imageID, IMAGE_STATUS_T.READY, fileName)
         self._executeUpdate(update)    
+        
+    def handlePartialDownloadTransfer(self, fileName):
+        imageID = sub("[^0-9]", "", path.basename(fileName))
+        self.changeImageStatus(imageID, IMAGE_STATUS_T.READY)

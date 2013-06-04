@@ -145,6 +145,9 @@ class CommandsCallback(NetworkCallback):
         if (imageData == None) :
             p = self.__repositoryPacketHandler.createImageDeletionErrorPacket(data["imageID"], ERROR_DESC_T.IR_UNKNOWN_IMAGE)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
+        elif (imageData["imageStatus"] == IMAGE_STATUS_T.EDITION):
+            p = self.__repositoryPacketHandler.createImageDeletionErrorPacket(data["imageID"], ERROR_DESC_T.IR_EDITED_IMAGE)
+            self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else :            
             if (not "undefined" in imageData["compressedFilePath"]) :
                 imageDirectory = path.dirname(imageData["compressedFilePath"])

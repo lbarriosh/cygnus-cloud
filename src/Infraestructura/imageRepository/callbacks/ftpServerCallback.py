@@ -82,7 +82,7 @@ class FTPServerCallback(FTPCallback):
         Devuelve:
             Nada
         """
-        pass
+        self.__dbConnector.handlePartialDownloadTransfer(f)
 
     def on_incomplete_f_received(self, f):    
         """

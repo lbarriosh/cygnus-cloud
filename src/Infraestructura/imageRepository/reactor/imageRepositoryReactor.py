@@ -18,6 +18,7 @@ from imageRepository.callbacks.packetsCallback import CommandsCallback
 from imageRepository.packetHandling.packet_t import PACKET_T
 from imageRepository.packetHandling.packetHandler import ImageRepositoryPacketHandler
 from os import path, mkdir
+from imageRepository.database.image_status_t import IMAGE_STATUS_T
 
 class ImageRepositoryReactor(object):
     """
@@ -163,6 +164,13 @@ class ImageRepositoryReactor(object):
                     else :
                         packet_type = PACKET_T.RETR_ERROR
                     p = self.__repositoryPacketHandler.createErrorPacket(packet_type, ERROR_DESC_T.IR_IMAGE_DELETED)
+                    self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
+                elif (imageData["imageStatus"] == IMAGE_STATUS_T.EDITION):
+                    if (store) :
+                        packet_type = PACKET_T.STOR_ERROR
+                    else :
+                        packet_type = PACKET_T.RETR_ERROR
+                    p = self.__repositoryPacketHandler.createErrorPacket(packet_type, ERROR_DESC_T.IR_IMAGE_EDITED)
                     self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
                 else :
                     compressedFilePath = imageData["compressedFilePath"]    
