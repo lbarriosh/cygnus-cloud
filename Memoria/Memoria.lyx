@@ -74,6 +74,8 @@
       {.5\baselineskip}%
       {\normalfont\normalsize\bfseries}}
 \makeatother
+
+\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
 \end_preamble
 \options a4paper
 \use_default_options true
@@ -87,7 +89,7 @@ fixltx2e
 \language_package auto
 \inputencoding auto
 \fontencoding global
-\font_roman charter
+\font_roman lmodern
 \font_sans lmss
 \font_typewriter lmtt
 \font_default_family default

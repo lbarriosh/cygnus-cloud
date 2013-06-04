@@ -27,9 +27,20 @@
 \float_placement H
 \paperfontsize default
 \spacing single
-\use_hyperref false
-\papersize default
-\use_geometry false
+\use_hyperref true
+\pdf_title "CygnusCloud: provisión de puestos de laboratorio virtuales bajo demanda"
+\pdf_author "Luis Barrios Hernández, Adrián Fernández Hernández, Samuel Guayerbas Martín"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
 \use_amsmath 1
 \use_esint 1
 \use_mhchem 1
@@ -44,13 +55,17 @@
 \shortcut idx
 \color #008000
 \end_index
-\secnumdepth 3
-\tocdepth 3
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
+\secnumdepth 4
+\tocdepth 4
 \paragraph_separation skip
 \defskip smallskip
 \quotes_language english
 \papercolumns 1
-\papersides 1
+\papersides 2
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
@@ -10131,7 +10146,14 @@ En definitiva, el uso directo de un servidor FTP en el repositorio de imágenes
 \end_layout
 
 \begin_layout Subsubsection
-Funciones soportadas por el repositorio de imágenes
+Funciones soportadas por el repositorio de imágenes 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Funciones-soportadas-repositorio"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10313,7 +10335,14 @@ cluster
 \end_layout
 
 \begin_layout Subsubsection
-Clases principales
+Clases principales 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Clases-principales-repositorio"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10476,7 +10505,7 @@ ImageRepositoryConfigurationFileParser
 \end_layout
 
 \begin_layout Standard
-Finalmente, 
+Por otra parte, 
 \end_layout
 
 \begin_layout Itemize
@@ -10488,9 +10517,13 @@ ConfigurationFileParser
 \family typewriter
 BasicDBConnector
 \family default
- y 
+, 
 \family typewriter
 MultithreadingQueue
+\family default
+ y 
+\family typewriter
+MultithreadingCounter
 \family default
  forman parte del paquete 
 \family typewriter
@@ -10535,26 +10568,1556 @@ FTP
 .
 \end_layout
 
+\begin_layout Standard
+Más adelante, justificaremos el uso de estas clases, así como la cardinalidad
+ de las relaciones de agregación y composición.
+\end_layout
+
 \begin_layout Subsubsection
-Procesos del repositorio de imágenes
+Procesos de arranque y apagado
 \end_layout
 
 \begin_layout Standard
-En esta sección, mostraremos los procesos de arranque y apagado del repositorio
- de imágenes, y también todas las interacciones posibles entre este y el
- resto de máquinas del 
-\emph on
-cluster
-\emph default
-.
+En esta sección mostraremos en detalle los procesos de arranque y apagado
+ del demonio del repositorio de imágenes.
 \end_layout
 
 \begin_layout Paragraph
 Arranque del repositorio de imágenes
 \end_layout
 
+\begin_layout Standard
+El proceso de arranque del demonio del repositorio de imágenes aparece en
+ el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-del-repositorio-DS"
+
+\end_inset
+
+.
+ En él, 
+\family typewriter
+ImageRepository
+\family default
+ aparece abreviado como 
+\family typewriter
+IR
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Arranque repositorio.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-del-repositorio-DS"
+
+\end_inset
+
+Arranque del repositorio de imágenes: diagrama de secuencia
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como puede observarse en el diagrama, desde el punto de entrada del demonio
+ del repositorio de imágenes se invoca a varios métodos de la clase 
+\family typewriter
+ImageRepositoryReactor
+\family default
+.
+ Los pasos que se siguen son los siguientes:
+\end_layout
+
+\begin_layout Enumerate
+se crea la base de datos si no existe, y se registra un usuario que disponga
+ de todos los permisos sobre ella.
+\end_layout
+
+\begin_layout Enumerate
+se parsea el fichero de configuración.
+ El reactor del repositorio de imágenes utilizará esa información durante
+ el proceso de inicialización.
+\end_layout
+
+\begin_layout Enumerate
+se crean las dos colas de transferencias y el contador de 
+\emph on
+slots
+\emph default
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Aunque sería posible utilizar una única cola de transferencias y extraer
+ de ella peticiones de subida y de bajada, por eficiencia hemos utilizado
+ dos colas: una contiene las peticiones de subida, y otra las peticiones
+ de bajada.
+ Esto explica la cardinalidad de las relaciones de agregación del diagrama
+ de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-clases-repositorio"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el contador de 
+\emph on
+slots
+\emph default
+ indica cuántos 
+\emph on
+slots
+\emph default
+ de transferencia están ocupados en un momento dado.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+se establece la conexión con la base de datos del repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+se inicializan el gestor de red y el gestor de paquetes (una instancia de
+ 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+).
+ Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Clases-principales-repositorio"
+
+\end_inset
+
+, esta clase manipular los formatos de paquete asociados al repositorio
+ de imágenes.
+ Así, si es necesario modificar alguno de ellos basta con modificar el código
+ de esta clase.
+\end_layout
+
+\begin_layout Enumerate
+se configura y utiliza la conexión de control.
+ Para ello, es necesario disponer de un objeto 
+\emph on
+callback
+\emph default
+ que procese los paquetes recibidos por la conexión de control.
+ En el caso del repositorio de imágenes, se utiliza como objeto 
+\emph on
+callback 
+\emph default
+una instancia de la clase 
+\family typewriter
+CommandsCallback
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+se configura e inicia el servidor FTP.
+ Es importante notar que la contraseña se genera aleatoriamente en cada
+ arranque.
+\end_layout
+
+\begin_layout Enumerate
+se empieza a asignar 
+\emph on
+slots
+\emph default
+ a las peticiones de transferencia encoladas.
+\end_layout
+
+\begin_layout Standard
+Tras esto, el repositorio de imágenes está totalmente operativo.
+\end_layout
+
+\begin_layout Paragraph
+Apagado del repositorio de imágenes 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Apagado-del-repositorio"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-del-repositorio-DS"
+
+\end_inset
+
+ muestra el proceso de apagado del demonio del repositorio de imágenes.
+ Nuevamente, hemos abreviado 
+\family typewriter
+ImageRepository
+\family default
+ como 
+\family typewriter
+IR
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Apagado repositorio.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-del-repositorio-DS"
+
+\end_inset
+
+Apagado del repositorio de imágenes: diagrama de secuencia
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como puede observarse en el diagrama de secuencia, el apagado del repositorio
+ es bastante sencillo:
+\end_layout
+
+\begin_layout Enumerate
+cuando se recibe el comando de apagado, el método 
+\family typewriter
+initTransfers()
+\family default
+ termina.
+ 
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal invoca al método 
+\family typewriter
+stopListenning()
+\family default
+ del reactor del repositorio.
+ 
+\end_layout
+
+\begin_layout Enumerate
+el servidor FTP finaliza su ejecución.
+\end_layout
+
+\begin_layout Enumerate
+se cierran todas las conexiones de red.
+\end_layout
+
+\begin_layout Standard
+Tras esto, el demonio del repositorio de imágenes termina.
+ Así, esta máquina dejará de procesar peticiones.
+\end_layout
+
+\begin_layout Subsubsection
+Interacciones del repositorio de imágenes
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos cómo interactúa el repositorio de imágenes
+ con una máquina remota.
+ Todas estas interacciones tienen lugar intercambiando paquetes a través
+ de la conexión de control.
+ Además, las que requieran la transferencia de un fichero también involucrarán
+ al servidor FTP.
+\end_layout
+
+\begin_layout Standard
+Por claridad, en esta sección hemos preferido centrarnos en la secuencia
+ de acciones que se realizan en cada caso, y no en los formatos de los tipos
+ de paquete que se utilizan.
+ Más adelante, en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Formatos-de-paquete-repositorio"
+
+\end_inset
+
+, los describiremos con todo lujo de detalles.
+\end_layout
+
+\begin_layout Paragraph
+Registro de un identificador de imagen
+\end_layout
+
+\begin_layout Standard
+Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Funciones-soportadas-repositorio"
+
+\end_inset
+
+, el repositorio se ocupa de la gestión de los identificadores de las imágenes
+ de disco de la infraestructura.
+ Por ello, cuando se cree una nueva imagen, será necesario solicitar el
+ identificador de la misma al repositorio.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Registro-identificador-imagen"
+
+\end_inset
+
+ muestra la interacción que tiene lugar para reservar dicho identificador.
+ Nuevamente, hemos abreviado 
+\family typewriter
+ImageRepository
+\family default
+ como 
+\family typewriter
+IR
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Registro identificador imagen.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Registro-identificador-imagen"
+
+\end_inset
+
+Registro de un identificador de imagen: diagrama de secuencia
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como puede observarse en el diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+a través de la conexión de control, la máquina remota envía un paquete del
+ tipo 
+\family sans
+Crear Imagen
+\family default
+ al repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+la red invoca al método de procesamiento de paquetes del objeto 
+\family typewriter
+CommandsCallback
+\family default
+ del repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+CommandsCallback
+\family default
+ lee el contenido del paquete a través de un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+.
+ Acto seguido, solicita a un objeto 
+\family typewriter
+ImageRepositoryDBConnector
+\family default
+ la generación de un nuevo identificador de imagen.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+El objeto 
+\family typewriter
+ImageRepositoryDBConnector
+\family default
+ generará el identificador único utilizando el contenido de las tablas de
+ la base de datos del repositorio de imágenes.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+CommandsCallback
+\family default
+ construye el paquete con la respuesta, que es del tipo 
+\family sans
+Imagen Creada
+\family default
+.
+ Este paquete se crea a través de un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+, y contiene el identificador de imagen que se ha generado.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+CommandsHandler
+\family default
+ envía ese paquete a la máquina remota.
+ Para ello, utiliza un objeto 
+\family typewriter
+NetworkManager
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+En todas las interacciones, el repositorio de imágenes utiliza del modo
+ de envío 
+\emph on
+unicast
+\emph default
+ de la conexión de control para enviar las respuestas.
+ Por ello, sólo el cliente que envió la petición correspondiente (y no todos)
+ recibirá la respuesta.
+ Esto nos permite ahorrar mucho ancho de banda.
+\end_layout
+
+\begin_layout Paragraph
+Descarga de imágenes de disco
+\end_layout
+
+\begin_layout Standard
+En la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Almacenamiento-imágenes-zip"
+
+\end_inset
+
+ dijimos que, para ahorrar ancho de banda y espacio en disco, las máquinas
+ de la infraestructura no intercambian directamente ficheros de imagen,
+ sino ficheros 
+\family typewriter
+zip
+\family default
+ que contienen ficheros de imagen.
+\end_layout
+
+\begin_layout Standard
+Por ello, el repositorio de imágenes sólo intercambia ficheros 
+\family typewriter
+zip
+\family default
+ con las máquinas remotas.
+ En esta sección, mostraremos todas las posibles interacciones que tienen
+ lugar cuando una máquina remota intenta descargar uno de estos ficheros
+ comprimidos.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Transferencia-imagen-basica"
+
+\end_inset
+
+ muestra la interacción básica de inicio de la transferencia, en la que
+ no aparecen errores.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Inicio transferencia básico.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Transferencia-imagen-basica"
+
+\end_inset
+
+Inicio de la transferencia de una imagen a una máquina remota: secuencia
+ básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los pasos que se siguen son los siguientes:
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+CommandsCallback
+\family default
+ recibe el paquete del tipo 
+\family sans
+Petición 
+\family typewriter
+FTP RETR
+\family default
+, y lee su contenido mediante un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+.
+ Estos paquetes contienen el identificador único del fichero comprimido.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+CommandsCallback
+\family default
+ comprueba que el fichero existe y que no ha sido concedido en exclusividad
+ a otra máquina.
+ Como no se producen errores, confirma a la máquina remota la recepción
+ de su petición mediante un paquete del tipo 
+\family sans
+Petición 
+\family typewriter
+FTP RETR
+\family sans
+ Recibida
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+cuando un 
+\emph on
+slot 
+\emph default
+de transferencia queda libre y la petición llega a la cabecera de la cola,
+ desde el método 
+\family typewriter
+initTransfers()
+\family default
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se comprueba nuevamente que el fichero puede transferirse.
+ En la interacción del diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Transferencia-imagen-basica"
+
+\end_inset
+
+ no se detecta ningún error.
+\end_layout
+
+\begin_layout Enumerate
+se reserva un 
+\emph on
+slot
+\emph default
+ de transferencia
+\end_layout
+
+\begin_layout Enumerate
+se envía un paquete del tipo 
+\family sans
+Inicio transferencia
+\family default
+ 
+\family typewriter
+FTP RETR
+\family default
+ a la máquina remota.
+ Este contiene todo la la información que la máquina remota necesita para
+ descargar el fichero comprimido.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Para aprovechar al máximo el ancho de banda del enlace, las transferencias
+ se desencolan procurando que, cuando sea posible, se realicen transferencias
+ de subida y descarga en paralelo.
+ Así, las transferencias no siempre se inician en estricto orden de recepción.
+ Por claridad, hemos preferido no reflejar esto en el diagrama.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, no se podrá realizar la transferencia cuando 
+\end_layout
+
+\begin_layout Itemize
+el fichero a descargar no existe, o
+\end_layout
+
+\begin_layout Itemize
+este ha sido concedido en exclusividad a otra máquina.
+ 
+\end_layout
+
+\begin_layout Standard
+Estos errores pueden detectarse tanto al procesar el paquete 
+\family sans
+Petición 
+\family typewriter
+FTP RETR
+\family sans
+ 
+\family default
+como al habilitar la transferencia.
+ Los diagramas de secuencia de las figuras 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Detección-de-errores-peticion"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Detección-de-errores-peticion-1"
+
+\end_inset
+
+ muestran cómo interactúan el repositorio y la máquina remota al detectar
+ estos errores.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Errores transferencia imagen 1.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Detección-de-errores-peticion"
+
+\end_inset
+
+Detección de errores al recibir la petición de transferencia
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Error transferencia 2.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Detección-de-errores-peticion-1"
+
+\end_inset
+
+Detección de errores al habilitar la transferencia
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como puede observarse en los diagramas de secuencia de las figuras 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Detección-de-errores-peticion"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Detección-de-errores-peticion-1"
+
+\end_inset
+
+, al detectar un error el repositorio de imágenes envía un paquete de error
+ a la máquina remota, y esta no realiza la transferencia.
+ Todos los paquetes de error contienen, además del identificador de las
+ imágenes de disco del fichero comprimido, un código que indica la causa
+ del error.
+\end_layout
+
+\begin_layout Standard
+Finalmente, cuando no se producen errores se realizará una transferencia
+ FTP 
+\family typewriter
+RETR
+\family default
+ entre la máquina remota y el servidor FTP.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Transferencia-imagen"
+
+\end_inset
+
+ muestra la interacción que tiene lugar en este caso.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Transferencia FTP RETR.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Transferencia-imagen"
+
+\end_inset
+
+Transferencia de una imagen a una máquina remota
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tras finalizar la transferencia, se invocará al método 
+\family typewriter
+on_file_sent()
+\family default
+ del objeto 
+\family typewriter
+FTPServerCallback
+\family default
+, en el que se liberará el 
+\emph on
+slot 
+\emph default
+asignado a la transferencia.
+ Cuando se libera el 
+\emph on
+slot
+\emph default
+, se iniciará la siguiente transferencia encolada (si la hay).
+\end_layout
+
+\begin_layout Paragraph
+Uso de imágenes de disco en exclusividad
+\end_layout
+
+\begin_layout Standard
+Tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Funciones-soportadas-repositorio"
+
+\end_inset
+
+, el repositorio de imágenes puede transferir un fichero comprimido a una
+ máquina remota en exclusividad.
+ Esto significa que, mientras que esa máquina remota no lo libere, bien
+ subiendo una versión modificada del fichero o bien pidiendo al repositorio
+ que lo libere, ninguna otra máquina remota podrá descargarlo.
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos cómo una máquina remota descarga un fichero
+ en exclusividad, y también cómo lo puede liberar sin volver a subirlo.
+ En la siguiente sección, mostraremos cómo puede liberarlo subiendo una
+ copia modificada del mismo.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Descarga-fichero-exclusividad"
+
+\end_inset
+
+ muestra cómo el repositorio de imágenes recibe una petición de descarga
+ en exclusividad.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Inicio transferencia FTP RETR exclusiva.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Descarga-fichero-exclusividad"
+
+\end_inset
+
+Descarga de un fichero en exclusividad
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como se puede observar en el diagrama de secuencia, la petición se procesa
+ casi igual que una petición de descarga 
+\begin_inset Quotes eld
+\end_inset
+
+normal
+\begin_inset Quotes erd
+\end_inset
+
+.
+ No obstante, a diferencia del caso anterior,
+\end_layout
+
+\begin_layout Itemize
+el flag 
+\emph on
+modify
+\emph default
+, que forma parte todos los paquetes 
+\family sans
+Petición 
+\family typewriter
+FTP RETR
+\family default
+, está activado, y
+\end_layout
+
+\begin_layout Itemize
+al procesar la petición, el repositorio de imágenes registra en la base
+ de datos que la imagen se va a descargar en exclusividad.
+\end_layout
+
+\begin_layout Standard
+La descarga de la imagen y el tratamiento de los errores son idénticos a
+ los de una transferencia de descarga 
+\begin_inset Quotes eld
+\end_inset
+
+normal
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Liberación-imagen-dico"
+
+\end_inset
+
+ muestra cómo una máquina remota libera un fichero que tiene en exclusividad.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Liberación imagen.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Liberación-imagen-dico"
+
+\end_inset
+
+Liberación de una imagen de disco
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En este caso,
+\end_layout
+
+\begin_layout Enumerate
+la máquina remota envía un paquete del tipo 
+\family sans
+Liberar imagen
+\family default
+ al repositorio de imágenes.
+ Este contiene el identificador del fichero comprimido.
+\end_layout
+
+\begin_layout Enumerate
+al procesar el paquete, desde el objeto 
+\family typewriter
+CommandsCallback
+\family default
+ se modifica el estado de la imagen en la base de datos del repositorio
+ de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+finalmente, el objeto 
+\family typewriter
+CommandsCallback
+\family default
+ envía un paquete del tipo 
+\family sans
+Imagen liberada
+\family default
+ a la máquina remota.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, cuando se intenta liberar un fichero que no está
+ asignado en exclusividad a una máquina, la petición no tendrá efecto.
+ Por ello, en este caso no se generarán errores.
+\end_layout
+
+\begin_layout Paragraph
+Subida de imágenes de disco
+\end_layout
+
+\begin_layout Standard
+Las interacciones que tienen lugar para transferir una imagen de disco desde
+ una máquina remota al repositorio de imágenes son prácticamente idénticas
+ a las interaccioens de descarga.
+ Por ello, en este apartado las comentaremos de forma breve.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Inicio transferencia STOR basico.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Transferencia-imagen-basica-1"
+
+\end_inset
+
+Inicio de la transferencia de una imagen desde una máquina remota: secuencia
+ básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Transferencia-imagen-basica-1"
+
+\end_inset
+
+ muestra la interacción básica de inicio de transferencia.
+ En ella, no se produce ningún error.
+ Como puede observarse en el diagrama, el repositorio de imágenes y la máquina
+ remota intercambian los paquetes 
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+Petición 
+\family typewriter
+FTP STOR
+\family default
+, que contiene el identificador único del fichero comprimido a subir,
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+Petición 
+\family typewriter
+FTP STOR
+\family default
+ 
+\family sans
+Recibida
+\family default
+, e
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+Inicio Transferencia 
+\family typewriter
+FTP STOR
+\family default
+ que, nuevamente, contiene toda la información que necesita la máquina remota
+ para conectarse al servidor FTP e iniciar la transferencia.
+\end_layout
+
+\begin_layout Standard
+Además, también debemos recordar que, para aprovechar el ancho de banda
+ del enlace, las transferencias FTP 
+\family typewriter
+STOR
+\family default
+ y FTP 
+\family typewriter
+RETR
+\family default
+ no tienen por qué desencolarse en el mismo orden en que se reciben.
+ Por claridad, tampoco hemos reflejado esto en el diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Transferencia-imagen-basica-1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, en este caso sólo se producirán errores cuando el identificador
+ de la imagen a subir no exista.
+ Si una máquina tiene el fichero comprimido en exclusividad, sólo ella podrá
+ descargarlo y sólo ella podrá subirlo.
+ Así, en las transferencias de subida no es necesario detectar si otra máquina
+ tiene la imagen en exclusividad o no.
+ 
+\end_layout
+
+\begin_layout Standard
+Nuevamente, los errores pueden detectarse tanto al recibir la petición de
+ transferencia como al habilitar la subida del fichero.
+ Los diagramas de secuencia de las figuras 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Detección-de-errores-peticion-stor"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Detección-de-errores-peticion-stor-1"
+
+\end_inset
+
+ contienen las interacciones correspondientes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Errores FTP STOR 1.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Detección-de-errores-peticion-stor"
+
+\end_inset
+
+Detección de errores al recibir la petición de transferencia
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Errores FTP STOR 2.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Detección-de-errores-peticion-stor-1"
+
+\end_inset
+
+Detección de errores al habilitar la transferencia
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como puede observarse en los diagramas de secuencia de las figuras 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Detección-de-errores-peticion-stor"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Detección-de-errores-peticion-stor-1"
+
+\end_inset
+
+, cuando se suben ficheros al repositorio de imágenes se usan los paquetes
+ de error 
+\family sans
+Petición 
+\family typewriter
+FTP STOR
+\family sans
+ Errónea
+\family default
+ y 
+\family sans
+Error en transferencia 
+\family typewriter
+FTP STOR
+\family default
+.
+ Nuevamente, estos paquetes contienen el identificador asociado a las imágenes
+ de disco y un código de descripción del error.
+\end_layout
+
+\begin_layout Standard
+Finalmente, el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Transferencia-imagen-máquina-remota"
+
+\end_inset
+
+ muestra cómo interactúan el repositorio de imágenes durante la subida de
+ un fichero con imágenes de disco.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Transferencia FTP STOR.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Transferencia-imagen-máquina-remota"
+
+\end_inset
+
+Transferencia de una imagen desde una máquina remota
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como se puede observar en este último diagrama, cuando se invoca a la función
+ 
+\family typewriter
+on_file_received()
+\family default
+ del objeto 
+\family typewriter
+FTPServerCallback
+\family default
+, se invoca a un método del conector de la base de datos, que registra la
+ ruta del fichero comprimido y modifica el estado de la imagen.
+\end_layout
+
+\begin_layout Paragraph
+Transferencias parciales
+\end_layout
+
+\begin_layout Standard
+En las dos secciones anteriores, hemos mostrado las interacciones que tienen
+ lugar cuando una máquina remota intercambia un fichero comprimido con el
+ repositorio de imágenes.
+ Por claridad, en ambas hemos omitido el tratamiento de un tipo de error
+ adicional: las transferencias parciales.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura muestra cómo se procesan los eventos
+ de descarga parcial y de subida parcial en el repositorio de imágenes.
+\end_layout
+
+\begin_layout Paragraph
+Apagado del repositorio de imágenes
+\end_layout
+
+\begin_layout Standard
+Cuando se recibe un paquete del tipo 
+\family sans
+Apagado
+\family default
+, se desencadena la secuencia de apagado del repositorio de imágenes, que
+ mostramos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-del-repositorio"
+
+\end_inset
+
+.
+ Por ello, no volveremos a mostrar dicha secuencia.
+\end_layout
+
 \begin_layout Subsubsection
 Formatos de paquete
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Formatos-de-paquete-repositorio"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11612,8 +13175,11 @@ Los significados de los distintos tipos de paquete y la información que
 
 \begin_layout Itemize
 los paquetes del tipo 
+\family sans
 \series bold
-Apagado 
+Apagado
+\family default
+ 
 \series default
 no contienen información adicional.
  Al recibirlos, el demonio del repositorio de imágenes terminará ordenadamente.
@@ -11621,23 +13187,30 @@ no contienen información adicional.
 
 \begin_layout Itemize
 los paquetes del tipo 
+\family sans
 \series bold
 Crear imagen
+\family default
 \series default
  tampoco contienen información adicional.
  Al recibirlos, el repositorio de imágenes reservará un nuevo identificador
  de imagen, y lo devolverá a la máquina que envió la petición.
  Para ello, usará un paquete del tipo 
+\family sans
 \series bold
 Imagen creada
+\family default
 \series default
 , que contiene el nuevo identificador de imagen (un valor entero).
 \end_layout
 
 \begin_layout Itemize
 los paquetes del tipo 
+\family sans
 \series bold
-Solicitud 
+Solicitud
+\family default
+ 
 \family typewriter
 FTP RETR
 \family default
@@ -11657,22 +13230,36 @@ flag
 
 \begin_layout Itemize
 los paquetes de los tipos 
+\family sans
 \series bold
-Solicitud 
+Solicitud
+\family default
+ 
 \family typewriter
 FTP RETR 
-\family default
+\family sans
 recibida
+\family default
 \series default
  y 
+\family sans
 \series bold
-Solicitud 
+Solicitud
+\family default
+ 
 \family typewriter
 FTP RETR
 \family default
- errónea
+ 
+\family sans
+errónea
+\family default
 \series default
- se envían como respuesta a un paquete del tipo Solicitud 
+ se envían como respuesta a un paquete del tipo 
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP RETR
 \family default
@@ -11685,7 +13272,11 @@ FTP RETR
 
 \begin_deeper
 \begin_layout Standard
-Sólo los paquetes del tipo Solicitud 
+Sólo los paquetes del tipo 
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP RETR
 \family default
@@ -11704,8 +13295,11 @@ errors
 \end_deeper
 \begin_layout Itemize
 los paquetes del tipo 
+\family sans
 \series bold
-Inicio de transferencia 
+Inicio de transferencia
+\family default
+ 
 \family typewriter
 FTP RETR
 \family default
@@ -11740,8 +13334,11 @@ el nombre del fichero a descargar.
 \end_deeper
 \begin_layout Itemize
 los paquetes del tipo 
+\family sans
 \series bold
-Error en la transferencia 
+Error en la transferencia
+\family default
+ 
 \family typewriter
 FTP RETR
 \family default
@@ -11753,8 +13350,11 @@ FTP RETR
 
 \begin_layout Itemize
 los paquetes del tipo 
+\family sans
 \series bold
-Solicitud 
+Solicitud
+\family default
+ 
 \family typewriter
 FTP STOR
 \family default
@@ -11766,38 +13366,71 @@ FTP STOR
 
 \begin_layout Itemize
 los paquetes de los tipos 
+\family sans
 \series bold
-Solicitud 
+Solicitud
+\family default
+ 
 \family typewriter
 FTP STOR
 \family default
- recibida
+ 
+\family sans
+recibida
+\family default
 \series default
  y 
+\family sans
 \series bold
-Solicitud 
+Solicitud
+\family default
+ 
 \family typewriter
 FTP STOR
 \family default
- errónea
+ 
+\family sans
+errónea
+\family default
 \series default
- se envían como respuesta a un paquete del tipo Solicitud 
+ se envían como respuesta a un paquete del tipo 
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP STOR
 \family default
-, y son idénticos a los paquetes Solicitud 
+, y son idénticos a los paquetes 
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP RETR
 \family default
- recibida y Solicitud 
+ 
+\family sans
+recibida
+\family default
+ y 
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP STOR
 \family default
- errónea.
+ 
+\family sans
+errónea
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
 los paquetes del tipo 
+\family sans
 \series bold
 Inicio de transferencia 
 \family typewriter
@@ -11807,8 +13440,9 @@ FTP STOR
 \series default
 indican a una máquina que puede establecer la conexión con el servidor FTP
  para subir una imagen de disco.
- Estos paquetes tienen el mismo contenido que los paquetes Inicio de transferenc
-ia 
+ Estos paquetes tienen el mismo contenido que los paquetes 
+\family sans
+Inicio de transferencia 
 \family typewriter
 FTP RETR
 \family default
@@ -11817,15 +13451,16 @@ FTP RETR
 
 \begin_layout Itemize
 los paquetes del tipo 
+\family sans
 \series bold
 Error en la transferencia 
 \family typewriter
 FTP STOR
 \family default
 \series default
- se envían al detectar errores al habilitar la transferencia 
+ se envían al detectar errores al habilitar la transferencia FTP
 \family typewriter
-FTP STOR
+ STOR
 \family default
 .
  Nuevamente, estos paquetes contienen un código de error.
@@ -11833,8 +13468,10 @@ FTP STOR
 
 \begin_layout Itemize
 los paquetes del tipo 
+\family sans
 \series bold
 Solicitud de borrado
+\family default
 \series default
  se envían para solicitar el borrado de una imagen de disco del repositorio
  de imágenes.
@@ -11844,51 +13481,84 @@ Solicitud de borrado
 
 \begin_layout Itemize
 los paquetes de los tipos 
+\family sans
 \series bold
 Solicitud de borrado recibida
+\family default
 \series default
  y 
+\family sans
 \series bold
 Solicitud de borrado errónea
 \series default
- se envían como respuesta a un paquete del tipo Solicitud de borrado.
- Estos paquetes se usan de forma muy parecida a los paquetes Solicitud 
+ 
+\family default
+se envían como respuesta a un paquete del tipo 
+\family sans
+Solicitud de borrado
+\family default
+.
+ Estos paquetes se usan de forma muy parecida a los paquetes 
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP RETR
 \family default
- recibida y Solicitud 
+ 
+\family sans
+recibida
+\family default
+ y 
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP RETR
 \family default
- errónea, y tienen el mismo contenido.
+ 
+\family sans
+errónea
+\family default
+, y tienen el mismo contenido.
 \end_layout
 
 \begin_layout Itemize
 los paquetes del tipo 
+\family sans
 \series bold
 Solicitud de estado
+\family default
 \series default
  se utilizan para recopilar periódicamente el estado del repositorio de
  imágenes.
  Como respuesta a estos paquetes, el repositorio de imágenes envía un paquete
  del tipo 
+\family sans
 \series bold
 Estado del repositorio
+\family default
 \series default
 , que contiene el espacio en disco total y el espacio en disco utilizado.
 \end_layout
 
 \begin_layout Itemize
 finalmente, los paquetes del tipo 
+\family sans
 \series bold
 Liberar imagen
+\family default
 \series default
  se utilizan para eliminar la reserva de una imagen.
  Estos contienen el identificador de la imagen liberada (un valor entero).
  Como respuesta a estos paquetes, el repositorio de imágenes enviará un
  paquete del tipo 
+\family sans
 \series bold
 Imagen liberada
+\family default
 \series default
 .
 \end_layout
