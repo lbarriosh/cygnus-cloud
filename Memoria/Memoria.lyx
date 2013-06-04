@@ -89,7 +89,7 @@ fixltx2e
 \language_package auto
 \inputencoding auto
 \fontencoding global
-\font_roman lmodern
+\font_roman charter
 \font_sans lmss
 \font_typewriter lmtt
 \font_default_family default
