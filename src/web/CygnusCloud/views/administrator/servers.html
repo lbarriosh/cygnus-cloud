@@ -14,13 +14,57 @@
 {{pass}}
 {{if(request.args(0) == 'servers_state'):}}
 <h1>{{=T('Estado del sistema')}}</h1>
-<!--
 {{=form1}}
-<script type="text/javascript">
-    var ramPercentage = {{=statePercentages["RAMPercentage"]}};
-    var CPUPercentage = {{=statePercentages["CPUsPercentage"]}};
-    var diskPercentage = {{=statePercentages["diskPercentage"]}};
-    var temporalPercentage = {{=statePercentages["temporarySpacePercentage"]}};
-</script>-->
-{{=chartHtml}}
+<center><div id='server_chart_div'></div></center>
+<center>{{=form2}}</center>
+<h2>Estado del repositorio</h2>
+<center><div id='repo_chart_div'></div></center>
+<center>{{=form3}}</center>
+
+<script type='text/javascript' src='https://www.google.com/jsapi'></script>
+<script type='text/javascript'>
+      google.load('visualization', '1', {packages:['gauge']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          			['Label', 'Value'],
+          			['RAM', {{=statePercentages["RAMPercentage"]}}],
+          			['CPU', {{=statePercentages["CPUsPercentage"]}}],
+          			['Disco', {{=statePercentages["diskPercentage"]}}],
+          			['Temporal', {{=statePercentages["temporarySpacePercentage"]}}]
+					]);   
+		
+        var options = {
+          width: 550, height: 220,
+          redFrom: 85, redTo: 100,
+          yellowFrom:70, yellowTo: 85,
+          minorTicks: 5
+        };
+        
+
+        var chart = new google.visualization.Gauge(document.getElementById('server_chart_div'));
+        chart.draw(data, options);
+       }
+</script>
+<script type='text/javascript'>
+      google.load('visualization', '1', {packages:['gauge']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          			['Label', 'Value'],
+          			['Disco', {{=statePercentages["diskPercentage"]}}]
+					]);   
+		
+        var options = {
+          width: 250, height: 150,
+          redFrom: 85, redTo: 100,
+          yellowFrom:70, yellowTo: 85,
+          minorTicks: 5
+        };
+        
+
+        var chart = new google.visualization.Gauge(document.getElementById('repo_chart_div'));
+        chart.draw(data, options);
+       }
+</script>
 {{pass}}

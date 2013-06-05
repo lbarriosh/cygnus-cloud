@@ -291,23 +291,73 @@ def servers():
         for s in servers:
             select.append(OPTION(T(str(s["VMServerName"])),_value = i ,_selected="selected"))
             i = i + 1 
-        form1 = FORM(DIV(H4(T('Servidores')),select,
+        form1 = FORM(H2("Estado de los servidores"),DIV(H4(T('Servidores')),select,
             INPUT(_type='submit',_class="button button-blue",_name = 'search' ,_value=T('Mostrar estado'),_style="width:150px;")))
         #Extraemos información de estado
-        serverName = request.vars.serverName or servers[0]["VMServerName"]
-        serverInfo = connector.getVirtualMachineServerStatus(serverName)
+        serverInfo = None
+        if len(servers) > 0 :
+            
+            serverName = request.vars.serverName or servers[0]["VMServerName"]
+            serverInfo = connector.getVirtualMachineServerStatus(serverName)
+            print serverName
+            if serverInfo != None:
+                statePercentages=dict(RAMPercentage=100*serverInfo["RAMInUse"]/serverInfo["RAMSize"],
+                                    diskPercentage=100*serverInfo["FreeStorageSpace"]/serverInfo["AvailableStorageSpace"],
+                                    temporarySpacePercentage=100*serverInfo["FreeTemporarySpace"]/serverInfo["AvailableTemporarySpace"],
+                                    CPUsPercentage=100*serverInfo["ActiveVCPUs"]/serverInfo["PhysicalCPUs"])
+                
+                table = TABLE(_class='state_table', _name='table')
+                table.append(TR(TH(serverName,_class='izquierda state_table'),TH("Usado",_class='state_table'),TH("Total",_class='state_table')))
+                table.append(TR(TD("Maquinas activas",_class='izquierda state_table')
+                    ,TD(serverInfo["ActiveHosts"],_class='state_table'),TD("",_class='state_table')))
+                table.append(TR(TD("Memoria RAM",_class='izquierda state_table')
+                    ,TD(str(serverInfo["RAMInUse"]/1024)+ "MB",_class='state_table')
+                    ,TD(str(serverInfo["RAMSize"]/1024)+ "MB",_class='state_table')))
+                table.append(TR(TD("Espacio en disco",_class='izquierda state_table')
+                    ,TD(str((serverInfo["AvailableStorageSpace"]-serverInfo["FreeStorageSpace"])/1024)+ "MB",_class='state_table')
+                    ,TD(str(serverInfo["AvailableStorageSpace"]/1024)+ "MB",_class='state_table')))
+                table.append(TR(TD("Espacio temporal",_class='izquierda state_table')
+                    ,TD(str((serverInfo["AvailableTemporarySpace"]-serverInfo["FreeTemporarySpace"])/1024)+ "MB",_class='state_table')
+                    ,TD(str(serverInfo["AvailableTemporarySpace"]/1024)+ "MB",_class='state_table'))) 
+                table.append(TR(TD("Número de CPUs",_class='izquierda state_table'),TD(serverInfo["ActiveVCPUs"],_class='state_table')
+                    ,TD(serverInfo["PhysicalCPUs"],_class='state_table')))
+            
+        if serverInfo == None:
+                statePercentages=dict(RAMPercentage=0,
+                                    diskPercentage=0,
+                                    temporarySpacePercentage=0,
+                                    CPUsPercentage=0)
+                table = TABLE(_class='state_table', _name='table')
+                table.append(TR(TH(serverName,_class='izquierda state_table'),TH("Usado",_class='state_table'),TH("Total",_class='state_table')))
+                table.append(TR(TD("Maquinas activas",_class='izquierda state_table'),TD("0",_class='state_table'),TD("",_class='state_table')))
+                table.append(TR(TD("Memoria RAM",_class='izquierda state_table'),TD("0",_class='state_table'),TD("0",_class='state_table')))
+                table.append(TR(TD("Espacio en disco",_class='izquierda state_table'),TD("0",_class='state_table'),TD("0",_class='state_table')))
+                table.append(TR(TD("Espacio temporal",_class='izquierda state_table'),TD("0",_class='state_table'),TD("0",_class='state_table'))) 
+                table.append(TR(TD("Número de CPUs",_class='izquierda state_table'),TD("0",_class='state_table'),TD("0",_class='state_table')))                            
         
-        if serverInfo != None :
-            statePercentages=dict(RAMPercentage=100*serverInfo["RAMInUse"]/serverInfo["RAMSize"],
-                                diskPercentage=100*serverInfo["FreeStorageSpace"]/serverInfo["AvailableStorageSpace"],
-                                temporarySpacePercentage=100*serverInfo["FreeTemporarySpace"]/serverInfo["AvailableTemporarySpace"],
-                                CPUsPercentage=100*serverInfo["ActiveVCPUs"]/serverInfo["PhysicalCPUs"])
-        else:
-            statePercentages=None
-        print statePercentages 
-        chartHtml = LOAD(url=URL('static', 'serverStatusChart.html', scheme='http'),ajax=False)
-        return dict(form1 = form1,statePercentages=statePercentages,chartHtml=chartHtml)          
-          
+        #Formulario con la tabla
+        form2 = FORM(table) 
+        
+        #Extraemos información del repositorio
+        repositoryInfo = connector.getImageRepositoryStatus()
+        repoStatePercentage=dict(diskPercentage=100*repositoryInfo["FreeDiskSpace"]/repositoryInfo["AvailableDiskSpace"])
+        repoTable = TABLE(_class='state_table', _name='table')
+        repoTable.append(TR(TH("Repositorio",_class='izquierda state_table')
+                ,TH("Usado",_class='state_table'),TH("Total",_class='state_table')))
+        repoTable.append(TR(TD("Estado",_class='izquierda state_table')
+                ,TD(repositoryInfo["RepositoryStatus"],_class='state_table'),TD("",_class='state_table')))
+        repoTable.append(TR(TD("Espacio en disco",_class='izquierda state_table')
+                ,TD(str((repositoryInfo["AvailableDiskSpace"]-repositoryInfo["FreeDiskSpace"])/1024)+ "MB",_class='state_table')
+                ,TD(str(repositoryInfo["AvailableDiskSpace"]/1024)+ "MB",_class='state_table')))
+        form3=FORM(repoTable)
+        #Comprobamos si se ha pulsado en buscar
+        if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
+            if form1.vars.server:
+                redirect(URL(c='administrator',f='servers',args = ['servers_state']
+                         ,vars = dict(serverName=servers[int(form1.vars.server)]["VMServerName"]))) 
+                     
+        return dict(form1 = form1,form2=form2,form3=form3,statePercentages = statePercentages,repoStatePercentage=repoStatePercentage) 
+        
     elif(request.args(0) == 'stop_system'):
         #Creamos el primer formulario
         form = FORM(HR(),H2(T('Parar infraestructura')),             

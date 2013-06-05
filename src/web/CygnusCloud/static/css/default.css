@@ -497,3 +497,16 @@ a.externLink:link{
 a.externLink:hover{
 	text-decoration:underline;	
 }
+
+table.state_table{
+	margin:20px;	
+}
+td.state_table,th.state_table{
+	border: 1.5px solid #21669d;
+}
+
+th.state_table{
+	background-color:#1881d7;
+	border-radius:6px;
+	color:white;
+}
