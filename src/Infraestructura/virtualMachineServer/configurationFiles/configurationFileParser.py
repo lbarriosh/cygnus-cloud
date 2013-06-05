@@ -35,6 +35,6 @@ class VMServerConfigurationFileParser(ConfigurationFileParser):
         
         self._readInt('FTP Client Configuration', 'FTPTimeout')
         
-        keys = ['certificatePath', 'configFilePath', 'sourceImagePath', 'executionImagePath', 'websockifyPath', 'TransferDirectory']
+        keys = ['certificatePath', 'configFilePath', 'sourceImagePath', 'executionImagePath', 'TransferDirectory']
         for key in keys:
             self._readString('Paths', key)

@@ -89,7 +89,7 @@ class VMServerReactor(ClusterServerPacketReactor):
         self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
                                                  self.__parser.getConfigurationParameter("configFilePath"),
                                                  self.__parser.getConfigurationParameter("sourceImagePath"), self.__parser.getConfigurationParameter("executionImagePath"),
-                                                 self.__parser.getConfigurationParameter("websockifyPath"), self.__parser.getConfigurationParameter("passwordLength"))
+                                                 self.__parser.getConfigurationParameter("passwordLength"))
         self.__domainHandler.connectToLibvirt(self.__parser.getConfigurationParameter("vncNetworkInterface"), 
                                                   self.__parser.getConfigurationParameter("vnName"), self.__parser.getConfigurationParameter("gatewayIP"), 
                                                   self.__parser.getConfigurationParameter("netMask"), self.__parser.getConfigurationParameter("dhcpStartIP"), 
