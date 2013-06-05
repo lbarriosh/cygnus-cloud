@@ -159,13 +159,16 @@ def createVanillaVM():
     if form.accepts(request.vars,keepvalues=True) and form.vars.createVM:
            #Creamos la MV
            if len(form.vars.selection) > 0:
-                       errorInfo = connector.createImage(form.vars.selection.split('c')[2], form.vars.newVMName, form.vars.description)
-                       #errorInfo = connector.waitForCommandOutput(commandId)
-                       #if errorInfo != None:
-                       #        response.flash = T(errorInfo['ErrorMessage'])
-                       #else:
-                       #         response.flash = "Petición de creación enviada"
-                                
+                       """
+                       commandId = connector.createImage(form.vars.selection.split('c')[2], form.vars.newVMName, form.vars.description)
+                       errorInfo = connector.waitForCommandOutput(commandId)
+                       if errorInfo != None:
+                               response.flash = T(errorInfo['ErrorMessage'])
+                       else:
+                                response.flash = "Petición de creación enviada"
+                       """
+                              
+                       errorInfo = connector.createImage(form.vars.selection.split('c')[2], form.vars.newVMName, form.vars.description)  
                        if(len(connector.getCommandOutput(errorInfo))==0):
                            response.flash = "Petición de creación enviada"
                        else:

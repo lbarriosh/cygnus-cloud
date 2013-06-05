@@ -1,5 +1,24 @@
 {{extend 'layout.html'}}
 <center><h1>{{=T('Bienvenido a CygnusCloud')}}</h1></center>
 <div id="login_form">
-    <center>{{=form1}}</center>
+     <table>
+         <td> <div>{{=infoLinks}}</div></td>
+         <td> <div>{{=form}}</div></td>
+   <td> <div>
+        <a class="twitter-timeline" width="250" height="400" data-border-color="#9fdbf9" data-chrome="nofooter"
+             href="https://twitter.com/CygnusCloud" data-widget-id="342027051865362432">Tweets de @CygnusCloud</a>
+       </div></td>
+    </table>
 </div>
+
+<script>
+	!function(d,s,id){
+		var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+		if(!d.getElementById(id)){
+			js=d.createElement(s);
+			js.id=id;
+			js.src=p+"://platform.twitter.com/widgets.js";
+			fjs.parentNode.insertBefore(js,fjs);
+		}
+	}(document,"script","twitter-wjs");
+</script>

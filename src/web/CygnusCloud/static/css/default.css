@@ -384,6 +384,29 @@ th.izquierda{
 	background: #43c3d3;
 }
 
+.button-red
+{
+	background: #b90000;
+	background: -webkit-gradient(linear, left top, left bottom, from(#9b0000), to(#ea0000) );
+	background: -moz-linear-gradient(-90deg, #9b0000, #ea0000);
+	filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#9b0000', endColorstr='#ea0000');
+	height: 24px;
+	width: 75px;
+}
+
+.button-red:hover
+{
+	background: #1aa8e6;
+	background: -webkit-gradient(linear, left top, left bottom, from(#e00000), to(#f90000) );
+	background: -moz-linear-gradient(-90deg, #e00000, #f90000);
+	filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#e00000', endColorstr='#f90000');            
+}
+
+.button-red:active
+{
+	background: #ee0000;
+}
+
 div.flash {
     font-weight:bold;
     display:none;
@@ -464,4 +487,13 @@ select:after{
 textArea{
 	width: 70%;
 	height: 80px;
+}
+
+a.externLink:link{
+	text-decoration:none;
+	padding-top:0px;
+	padding-bottom:0px;	
+}
+a.externLink:hover{
+	text-decoration:underline;	
 }

@@ -235,7 +235,7 @@ def servers():
         if(infoServer[3] == "Apagado"):
             buttons.append(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'run' ,_value=T('Arrancar servidor'),_style="width:170px;")
             ,_style="position:relative;left:30%;float:left;"))
-            
+
         form1 = FORM(DIV(DIV(H4(T('Servidores')),select),
         DIV(INPUT(_type='submit',_class="button button-blue",_name = 'search' ,_value=T('Buscar servidor'),_style="width:150px;")
         ),BR(),
@@ -243,7 +243,7 @@ def servers():
         DIV( T('Dirección IP: '),BR(),
         INPUT(_name='ip',_value=infoServer[1],_style="width:95%;"),_style="position:absolute;left:25%;float:left;"),
         DIV( T('Puerto: '),BR(),INPUT(_name ='port',_value=infoServer[2],_style="width:50%;"),_style="position:absolute;left:50%;float:left"),
-        DIV(BR(), T('Imagen base: '),INPUT(_type="checkbox",_name ='isVanilla',_value=infoServer[4],_style="width:30px;")
+        DIV(BR(), T('Imagen base: '),INPUT(_type="checkbox",_name ='isVanilla',_checked=infoServer[4],_style="width:30px;")
                 ,_style="position:absolute;left:65%;"),BR(),_style="margin-bottom:100px;"),DIV(buttons,BR(),_style="margin-bottom:10px;"))           
         
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
@@ -284,19 +284,42 @@ def servers():
                 redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
                 sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"],sInfo["IsVanillaServer"]]) ))  
         return dict(form1= form1)   
+    elif(request.args(0) == 'servers_state'):  
+        select = SELECT(_name = 'server',_id= 'sId')
+        servers = connector.getVMServersData()
+        i=0
+        for s in servers:
+            select.append(OPTION(T(str(s["VMServerName"])),_value = i ,_selected="selected"))
+            i = i + 1 
+        form1 = FORM(DIV(H4(T('Servidores')),select,
+            INPUT(_type='submit',_class="button button-blue",_name = 'search' ,_value=T('Mostrar estado'),_style="width:150px;")))
+        #Extraemos información de estado
+        serverName = request.vars.serverName or servers[0]["VMServerName"]
+        serverInfo = connector.getVirtualMachineServerStatus(serverName)
+        
+        if serverInfo != None :
+            statePercentages=dict(RAMPercentage=100*serverInfo["RAMInUse"]/serverInfo["RAMSize"],
+                                diskPercentage=100*serverInfo["FreeStorageSpace"]/serverInfo["AvailableStorageSpace"],
+                                temporarySpacePercentage=100*serverInfo["FreeTemporarySpace"]/serverInfo["AvailableTemporarySpace"],
+                                CPUsPercentage=100*serverInfo["ActiveVCPUs"]/serverInfo["PhysicalCPUs"])
+        else:
+            statePercentages=None
+        print statePercentages 
+        chartHtml = LOAD(url=URL('static', 'serverStatusChart.html', scheme='http'),ajax=False)
+        print chartHtml
+        return dict(form1 = form1,statePercentages=statePercentages,chartHtml=chartHtml)          
           
     elif(request.args(0) == 'stop_system'):
         #Creamos el primer formulario
         form = FORM(HR(),H2(T('Parar infraestructura')),             
                 CENTER(DIV( T('Forzar detención de máquinas virtuales: '
                     ),INPUT(_type="checkbox",_name ='stopVMs',_style="width:30px;"))),
-                DIV(CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'stopSystem' ,_value=T('Detener infraestructura'),_style="width:180px;")))
+                DIV(CENTER(INPUT(_type='submit',_class="button button-red",_name = 'stopSystem' ,_value=T('Detener infraestructura'),_style="width:220px;height:40px;font-size:16px;-moz-border-radius: .8em;border-radius: .8em;")))
                 ) 
         btn = form.element("input",_type="submit")
         btn["_onclick"] = "return confirm('¿Esta seguro que desea detener la infraestructura?');"                                   
         if form.accepts(request.vars,keepvalues=True) and form.vars.stopSystem:
-                    print form.vars.stopVMs== "on"
-                    connector.shutDownInfrastructure(form.vars.stopVMs)
+                    connector.shutDownInfrastructure(form.vars.stopVM=="on")
         return dict(form = form)
 
 
@@ -516,6 +539,7 @@ def createAdressBar():
                     [SPAN(T('Administrar servidores'), _class='highlighted'), False, URL(f = 'servers',args = ['add_servers']),[
                         (T('Añadir servidor'),False,URL(f = 'servers',args = ['add_servers'])),
                         (T('Editar servidor'),False,URL(f = 'servers',args = ['remove_servers'])),
+                        (T('Estado del sistema'),False,URL(f = 'servers',args = ['servers_state'])),
                         (T('Parar infraestructura'),False,URL(f = 'servers',args = ['stop_system']))]],
                     [SPAN(T('Administrar usuarios'), _class='highlighted'), False, URL(f = 'users',args = ['add']),[
                         (T('Eliminar'),False,URL(f = 'users',args = ['remove'])),

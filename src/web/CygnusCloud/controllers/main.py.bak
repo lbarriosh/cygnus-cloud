@@ -22,9 +22,9 @@ def login():
     form.element(_name="password")['_style'] = "width:250px;"
     form.element(_name="password")['_class'] = "inputText"
     form.element("td")['_style'] = "padding: 0px;text-align:center;"
-    infoTweets = LOAD(url=URL('static', 'tweetsViewer.html', scheme='http'),ajax=False)
-    form1 = FORM(TABLE(TH(form),TH(infoTweets)))
-    return dict(form1=form1)
+    #infoTweets = LOAD(url=URL('static', 'tweetsViewer.html', scheme='http'),ajax=False)
+    infoLinks = LOAD(url=URL('static', 'externLinks.html', scheme='http'),ajax=False)
+    return dict(form=form)
     
 #Metodo encargado de la página "Acerca de"
 def about():

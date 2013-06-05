@@ -12,3 +12,15 @@
 <h1>{{=T('Detención de infraestructura')}}</h1>
 {{=form}}
 {{pass}}
+{{if(request.args(0) == 'servers_state'):}}
+<h1>{{=T('Estado del sistema')}}</h1>
+<!--
+{{=form1}}
+<script type="text/javascript">
+    var ramPercentage = {{=statePercentages["RAMPercentage"]}};
+    var CPUPercentage = {{=statePercentages["CPUsPercentage"]}};
+    var diskPercentage = {{=statePercentages["diskPercentage"]}};
+    var temporalPercentage = {{=statePercentages["temporarySpacePercentage"]}};
+</script>-->
+{{=chartHtml}}
+{{pass}}
