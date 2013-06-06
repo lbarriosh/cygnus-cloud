@@ -202,18 +202,38 @@ def editVM():
                 TD(DIV(P(imageInfo["ImageDescription"]),_id = "n2" + str(num2)),_class='izquierda')))
             num2= num2 + 1
         else:
-            stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection2',_value = str(imageInfo["State"]) + 'w' + str(image),
+            if imageInfo["State"] == EDITION_STATE_T.CHANGES_NOT_APPLIED:
+                imageId = imageInfo["ImageID"]
+            else:
+                 imageId = image
+            stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection2',_value = str(imageInfo["State"]) + 'w' + str(imageId),
                 _id="a"+str(num1))),
                 TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),
                 TD(DIV(P(imageInfo["ImageDescription"]),_id = "n1" + str(num1)),_class='izquierda')))
             num1= num1 + 1  
+    #Añadimos imagenes que no estan en edición (pueden comenzar a editarse o eliminarse)
+    listSubjects = userDB((userDB.UserGroup.userId == auth.user['email'])).select(userDB.UserGroup.cod,userDB.UserGroup.curseGroup)   
+    for s in listSubjects:
+       i = 0
+       subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
+       for l in userDB((userDB.VMByGroup.cod == s.cod) & (userDB.VMByGroup.curseGroup == s.curseGroup)).select(userDB.VMByGroup.VMId):
+           imageInfo =  connector.getBootableImagesData([l.VMId])
+           if len(imageInfo) != 0:
+               stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection2',_value = "1" + 'w' + str(l.VMId),
+                 _id="a"+str(num1))),
+                 TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda'),
+                 TD(DIV(P(imageInfo[0]["ImageDescription"]),_id = "n1" + str(num1)),_class='izquierda')))
+               num1= num1 + 1 
     #Creamos los formularios
     form1 =  FORM(LABEL(H2(T('Máquinas detenidas'))),stoppedImages,BR(),
         CENTER(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'edit',  _value = T('Editar'),_id='editButton'),
+        INPUT(_type='submit',_class="button button-blue",_name = 'delete',  _value = T('Eliminar'),_id='deleteButton',
+            _style="width:90px;"),
         INPUT(_type='submit',_class="button button-blue",_name = 'continueEditing',
               _value = T('Seguir editando'),_id='continueEditingButton',_style="width:140px;"),
         INPUT(_type='submit',_class="button button-blue",_name = 'saveChanges',  _value = T('Aplicar cambios'),_id='saveChangesButton',
             _style="width:140px;"))),
+       
         CENTER(LABEL("Máquina no disponible",_id='notAvaibleSMessage')),BR())
     
     form2 =  FORM(LABEL(H2(T('Máquinas en ejecución'))),runningImages,BR(),
@@ -224,8 +244,8 @@ def editVM():
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.continueEditing:
            #Creamos la MV
            if len(form1.vars.selection2) > 0:
-                       print imageInfo["ImageID"]
-                       errorInfo = connector.editImage(imageInfo["ImageID"])
+                       print form1.vars.selection2.split('w')[1]
+                       errorInfo = connector.editImage(form1.vars.selection2.split('w')[1])
                        evaluateCommand(connector,errorInfo,"Petición de arranque de máquina en edición enviada")
            else:
                    response.flash = "Debe seleccionar una imagen base"
@@ -238,7 +258,15 @@ def editVM():
 
            else:
                    response.flash = "Debe seleccionar una imagen base"
-                   
+    if form1.accepts(request.vars,keepvalues=True) and form1.vars.delete:
+           #Creamos la MV
+           if len(form1.vars.selection2) > 0:
+                       print form1.vars.selection2.split('w')[1]
+                       errorInfo = connector.deleteImageFromInfrastructure(form1.vars.selection2.split('w')[1])
+                       evaluateCommand(connector,errorInfo,"Petición de eliminación enviada")
+
+           else:
+                   response.flash = "Debe seleccionar una imagen base"                  
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.saveChanges:
            #Creamos la MV
            if len(form1.vars.selection2) > 0:

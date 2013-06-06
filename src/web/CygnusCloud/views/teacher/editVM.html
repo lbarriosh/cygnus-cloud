@@ -28,6 +28,7 @@ jQuery(document).ready(function(){
                             break;
                         default:
                             jQuery('#editButton').show("slow");
+                            jQuery('#deleteButton').show("slow");
                     }
 
                }else{
@@ -75,6 +76,7 @@ function clearComponentsT1()
 	//Ocultamos todos los botones  
     jQuery('#continueEditingButton' ).hide();
     jQuery('#editButton').hide();
+    jQuery('#deleteButton').hide();
     jQuery('#saveChangesButton').hide();
     jQuery('#notAvaibleSMessage').hide();
 

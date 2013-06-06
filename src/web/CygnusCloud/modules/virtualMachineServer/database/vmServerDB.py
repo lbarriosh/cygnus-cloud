@@ -196,16 +196,6 @@ class VMServerDBConnector(BasicDBConnector):
         if (result == None) : 
             return None
         return result
-
-    def getWebsockifyDaemonPID(self, domainName): 
-        '''
-            Devuelve la contraseña que se ha dado el dominio que se le pasa como argumento.
-        ''' 
-        sql = "SELECT webSockifyPID FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        result = self._executeQuery(sql, True)
-        if (result == None) : 
-            return None
-        return result
     
     
     def getDomainOSImagePath(self, domainName): 
@@ -239,13 +229,13 @@ class VMServerDBConnector(BasicDBConnector):
             return None
         return result
     
-    def registerVMResources(self, domainName, ImageID, vncPort, vncPassword, userId, webSockifyPID, osImagePath, dataImagePath, mac, uuid):
+    def registerVMResources(self, domainName, ImageID, vncPort, vncPassword, userId, osImagePath, dataImagePath, mac, uuid):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
         '''
-        sql = "INSERT INTO ActualVM VALUES('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', '{7}', '{8}', '{9}')" \
-            .format(domainName, ImageID, vncPort, vncPassword[:-1], userId, webSockifyPID,
+        sql = "INSERT INTO ActualVM VALUES('{0}', {1}, {2}, '{3}', {4}, '{5}', '{6}', '{7}', '{8}')" \
+            .format(domainName, ImageID, vncPort, vncPassword[:-1], userId,
                     osImagePath, dataImagePath, mac, uuid);
         self._executeUpdate(sql)        
         return vncPort 

@@ -5,7 +5,7 @@ Lector de la base de datos de estado
 @author: Luis Barrios Hernández
 @version: 4.0
 '''
-from clusterEndpoint.databases.editionState_t import EDITION_STATE_T
+from editionState_t import EDITION_STATE_T
 from ccutils.databases.connector import BasicDBConnector
 
 class MinimalClusterEndpointDBConnector(BasicDBConnector):
@@ -276,4 +276,4 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             d["VariantID"] = row[0]
             d["VariantName"] = row[1]
             retrievedData.append(d)
-        return retrievedData
+        return retrievedData    
