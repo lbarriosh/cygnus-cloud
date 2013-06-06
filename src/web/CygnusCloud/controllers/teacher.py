@@ -23,7 +23,7 @@ def runVM():
     i = 0
     divMaquinas = DIV(_id='maquinas')   
     
-        
+       
     if(form.accepts(request.vars)) and (form.vars.run):
             if(form.vars.selection != ""):
                 #Establecemos la conexión con el servidor 
@@ -160,19 +160,21 @@ def createVanillaVM():
            #Creamos la MV
            if len(form.vars.selection) > 0:
                        """
+                       print form.vars.selection.split('c')[2]
                        commandId = connector.createImage(form.vars.selection.split('c')[2], form.vars.newVMName, form.vars.description)
                        errorInfo = connector.waitForCommandOutput(commandId)
                        if errorInfo != None:
                                response.flash = T(errorInfo['ErrorMessage'])
                        else:
                                 response.flash = "Petición de creación enviada"
-                       """
-                              
+                       
+                       """      
                        errorInfo = connector.createImage(form.vars.selection.split('c')[2], form.vars.newVMName, form.vars.description)  
                        if(len(connector.getCommandOutput(errorInfo))==0):
                            response.flash = "Petición de creación enviada"
                        else:
                            response.flash = connector.getCommandOutput(errorInfo)
+                       
            else:
                    response.flash = "Debe seleccionar una imagen base"
     
@@ -189,6 +191,7 @@ def editVM():
     runningImages = TABLE(_class='data',_name = 'runningImagesSelect')
     runningImages.append(TR(TH('Selección'),TH(T('Nombre'),_class='izquierda'),TH(T('Descripción')),_class='izquierda'))
     editedImages = connector.getEditedImageIDs(auth.user_id)
+    print connector.getPendingNotifications()
     num1= 0
     num2= 0
     for image in editedImages:
@@ -202,10 +205,10 @@ def editVM():
                 TD(DIV(P(imageInfo["ImageDescription"]),_id = "n2" + str(num2)),_class='izquierda')))
             num2= num2 + 1
         else:
-            if imageInfo["State"] == EDITION_STATE_T.CHANGES_NOT_APPLIED:
-                imageId = imageInfo["ImageID"]
-            else:
-                 imageId = image
+            #if imageInfo["State"] == EDITION_STATE_T.CHANGES_NOT_APPLIED:
+            #    imageId = imageInfo["ImageID"]
+            #else:
+            imageId = image
             stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection2',_value = str(imageInfo["State"]) + 'w' + str(imageId),
                 _id="a"+str(num1))),
                 TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),
@@ -243,12 +246,21 @@ def editVM():
     
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.continueEditing:
            #Creamos la MV
+           """
            if len(form1.vars.selection2) > 0:
                        print form1.vars.selection2.split('w')[1]
                        errorInfo = connector.editImage(form1.vars.selection2.split('w')[1])
                        evaluateCommand(connector,errorInfo,"Petición de arranque de máquina en edición enviada")
            else:
                    response.flash = "Debe seleccionar una imagen base"
+          """
+           print form1.vars.selection2.split('w')[1]
+           commandId = connector.editImage(form1.vars.selection2.split('w')[1])
+           errorInfo = connector.waitForCommandOutput(commandId)
+           if errorInfo != None:
+               response.flash = T(errorInfo['ErrorMessage'])
+           else:
+               response.flash = "Petición de creación enviada"          
                    
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.edit:
            #Creamos la MV

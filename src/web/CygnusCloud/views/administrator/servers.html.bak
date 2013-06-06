@@ -56,7 +56,7 @@
 					]);   
 		
         var options = {
-          width: 250, height: 170,
+          width: 250, height: 150,
           redFrom: 85, redTo: 100,
           yellowFrom:70, yellowTo: 85,
           minorTicks: 5
