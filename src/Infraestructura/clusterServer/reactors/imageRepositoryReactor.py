@@ -35,7 +35,8 @@ class ImageRepositoryPacketReactor(object):
             else :
                 # Borrar la imagen de los servidores
                 self.__sendDeleteRequets(data['imageID'], commandID)
-        elif data['packet_type'] == PACKET_T.DELETE_REQUEST_ERROR:            
+        elif data['packet_type'] == PACKET_T.DELETE_REQUEST_ERROR:   
+            commandID = self.__dbConnector.getImageDeletionCommandID(data['imageID'])         
             p = self.__packetHandler.createErrorPacket(CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, data['errorDescription'], commandID)
             self.__networkManager.sendPacket('', self.__listenningPort, p)            
             

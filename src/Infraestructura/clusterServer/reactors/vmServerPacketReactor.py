@@ -28,7 +28,7 @@ class VMServerPacketReactor(object):
             packet: el paquete a procesar
         Devuelve:
             Nada
-        """
+        """        
         data = self.__vmServerPacketHandler.readPacket(packet)
         if (data["packet_type"] == VMSRVR_PACKET_T.SERVER_STATUS) :
             self.__updateVMServerStatus(data)

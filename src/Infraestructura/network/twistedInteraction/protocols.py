@@ -5,12 +5,13 @@ Protocol and protocol factory implementations.
 @version: 5.0
 '''
 
-from twisted.internet.protocol import Protocol, Factory
+from twisted.protocols.basic import LineReceiver
+from twisted.internet.protocol import Factory
 from network.packets.packet import _Packet
 from ccutils.dataStructures.multithreadingDictionary import GenericThreadSafeDictionary
 from time import sleep
 
-class CygnusCloudProtocol(Protocol):
+class CygnusCloudProtocol(LineReceiver):
     """
     Our custom network protocol.
     """
@@ -23,7 +24,7 @@ class CygnusCloudProtocol(Protocol):
         self.__factory = factory
         self.__disconnected = False
     
-    def dataReceived(self, data):
+    def lineReceived(self, data):
         """
         Tells the protocol factory to process the received data.
         Args:
@@ -68,7 +69,7 @@ class CygnusCloudProtocol(Protocol):
             Nothing
         """
         if (not self.__disconnected) :
-            self.transport.write(packet._serialize())
+            self.sendLine(packet._serialize())
         
     def disconnect(self):
         """
