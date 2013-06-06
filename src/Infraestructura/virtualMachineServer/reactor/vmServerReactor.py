@@ -80,11 +80,12 @@ class VMServerReactor(ClusterServerPacketReactor):
         self.__listenningPort = listenningPort
         self.__networkManager = NetworkManager(self.__parser.getConfigurationParameter("certificatePath"))
         self.__networkManager.startNetworkService()
+        self.__useSSL = self.__parser.getConfigurationParameter("useSSL")
         self.__packetManager = VMServerPacketHandler(self.__networkManager)        
-        self.__networkManager.listenIn(self.__listenningPort, ClusterServerCallback(self), self.__parser.getConfigurationParameter("useSSL"))
+        self.__networkManager.listenIn(self.__listenningPort, ClusterServerCallback(self), self.__useSSL)
         self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
                                                        self.__parser.getConfigurationParameter("TransferDirectory"),
-                                                       self.__parser.getConfigurationParameter("FTPTimeout"), self.__dbConnector)
+                                                       self.__parser.getConfigurationParameter("FTPTimeout"), self.__dbConnector, self.__useSSL)
         self.__fileTransferThread.start()
         self.__connectToDatabases("VMServerDB", self.__parser.getConfigurationParameter("databaseUserName"), self.__parser.getConfigurationParameter("databasePassword"))
             

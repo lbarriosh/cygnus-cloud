@@ -22,7 +22,7 @@ class FileTransferThread(BasicThread):
     Clase del hilo de transferencias
     """
     def __init__(self, networkManager, serverListeningPort, packetHandler,
-                 workingDirectory, ftpTimeout, dbConnector, max_cancel_timeout = 60):
+                 workingDirectory, ftpTimeout, dbConnector, useSSL, max_cancel_timeout = 60):
         """
         Inicializa el estado del hilo de transferencias
         Argumentos:
@@ -43,6 +43,7 @@ class FileTransferThread(BasicThread):
         self.__ftpTimeout = ftpTimeout
         self.__dbConnector = dbConnector
         self.__max_cancel_timeout = max_cancel_timeout
+        self.__useSSL = useSSL
         
     def run(self):
         while not self.finish() :
@@ -81,7 +82,7 @@ class FileTransferThread(BasicThread):
                                              sourceFilePath)
             callback.prepareForNewTransfer()
             self.__networkManager.connectTo(data["RepositoryIP"], data["RepositoryPort"], 
-                                            self.__ftpTimeout, callback)
+                                            self.__ftpTimeout, callback, self.__useSSL)
             while not self.__networkManager.isConnectionReady(data["RepositoryIP"], data["RepositoryPort"]) :
                 sleep(0.1)
                 

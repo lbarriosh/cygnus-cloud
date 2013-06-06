@@ -4,9 +4,6 @@ Network manager class definitions.
 @author: Luis Barrios Hernández
 @version: 7.1
 '''
-# Instalar el epollReactor
-from twisted.internet import pollreactor
-pollreactor.install()
 from twisted.internet import reactor
 from ccutils.dataStructures.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
 from ccutils.dataStructures.multithreadingDictionary import GenericThreadSafeDictionary

@@ -26,7 +26,7 @@ class TesterCallback(NetworkCallback):
         if (data['packet_type'] == PACKET_T.ADDED_IMAGE_ID) :
             print("Added image ID: {0}".format(data['addedImageID']))
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_ERROR or data['packet_type'] == PACKET_T.RETR_ERROR) :
-            print("Retrieve error: " + str(data['errorCode']))
+            print("Retrieve error: " + str(data['errorDescription']))
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_RECVD) :
             print("The image repository says: retrieve request received")
         elif (data['packet_type'] == PACKET_T.RETR_START) :
