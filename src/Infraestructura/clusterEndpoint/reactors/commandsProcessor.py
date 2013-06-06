@@ -81,6 +81,7 @@ class CommandsProcessor(object):
                         self.__endpointDBConnector.editImage(serializedCommandID, parsedArgs["ImageID"], parsedArgs["OwnerID"])
                         packet = self.__packetHandler.createImageEditionPacket(PACKET_T.EDIT_IMAGE, parsedArgs["ImageID"], parsedArgs["OwnerID"], serializedCommandID)  
                     elif (commandType == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE):
+                        self.__endpointDBConnector.deleteImage(parsedArgs["ImageID"])
                         packet = self.__packetHandler.createImageDeletionPacket(parsedArgs["ImageID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.AUTO_DEPLOY_IMAGE):
                         if (self.__endpointDBConnector.affectsToNewOrEditedImage(serializedCommandID)) :

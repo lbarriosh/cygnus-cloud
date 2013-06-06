@@ -307,6 +307,14 @@ class EndpointPacketReactor(object):
             p = self.__packetHandler.createErrorPacket(PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :
+            
+            # Borrar la máquina de todos los servidores arrancados que la tengan
+            p = self.__vmServerPacketHandler.createDeleteImagePacket(data["ImageID"], data["CommandID"])
+            
+            for serverID in self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DELETE) :
+                serverData = self.__dbConnector.getVMServerBasicData(serverID)
+                self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
+            
             # Impedimos que se arranquen más copias de la imagen
             self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.DELETE)
             # Borramos la asociación entre una imagen y una familia de imágenes
@@ -316,12 +324,7 @@ class EndpointPacketReactor(object):
             # Borramos la imagen del repositorio
             p = self.__imageRepositoryPacketHandler.createDeleteRequestPacket(data["ImageID"])
             self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p)        
-            # Borrar la máquina de todos los servidores arrancados que la tengan
-            p = self.__vmServerPacketHandler.createDeleteImagePacket(data["ImageID"], data["CommandID"])
             
-            for serverID in self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DELETE) :
-                serverData = self.__dbConnector.getVMServerBasicData(serverID)
-                self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
                
             
     def __createOrEditImage(self, data):                      
