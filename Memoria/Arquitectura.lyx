@@ -501,7 +501,14 @@ que hemos podido considerar.
 \end_layout
 
 \begin_layout Section
-Decisiones de diseño
+Decisiones de diseño 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Decisiones-de-diseño"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -7684,7 +7691,7 @@ bytes
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -7958,7 +7965,7 @@ reference "tab:Etiquetas-de-tipo-paquete"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -9380,7 +9387,7 @@ reference "fig:Principales-clases-pyftpdlib"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -9699,7 +9706,7 @@ CC
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -13877,7 +13884,7 @@ imageRepository.database
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -14119,30 +14126,2279 @@ virtualMachineServer
 \end_layout
 
 \begin_layout Standard
-Este paquete proporciona toda la funcionalidad referente a la gestión de
- las máquinas virtuales.
- Esto es gestión de las máquinas virtuales y datos para conectarse a ellas
- a través de un cliente VNC
-\end_layout
-
-\begin_layout Subsubsection
-La librería 
-\family typewriter
-libvirt
-\end_layout
-
-\begin_layout Standard
-Como ya se ha comentado en la sección 
+Como dijimos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Uso-de-libvirt"
+reference "sec:Decisiones-de-diseño"
 
 \end_inset
 
-, esta librería nos permite definir máquinas mediante un archivo XML, lo
- que nos facilita su modificación, para que con el mismo archivo podamos
- arrancar máquinas con distinta direccion MAC, distinto nombre y distinto
- UUID.
+, los servidores de máquinas virtuales albergan
+\end_layout
+
+\begin_layout Itemize
+las máquinas virtuales que utilizan los usuarios,
+\end_layout
+
+\begin_layout Itemize
+las redes virtuales a través de las cuales las máquinas virtuales se conectan
+ a la red troncal de la UCM, y
+\end_layout
+
+\begin_layout Itemize
+las máquinas virtuales cuya configuración está siendo editada por un profesor
+ o por un administrador.
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos en detalle su diseño.
+\end_layout
+
+\begin_layout Subsubsection
+Redes virtuales
+\end_layout
+
+\begin_layout Paragraph
+Creación de una red virtual en modo NAT
+\end_layout
+
+\begin_layout Standard
+En todos los servidores de máquinas virtuales existe una red virtual configurada
+ en modo NAT.
+ A través de ella, las máquinas virtuales pueden acceder a la red troncal
+ de la UCM.
+\end_layout
+
+\begin_layout Standard
+Para crear las redes virtuales, ejecutamos las órdenes 
+\family typewriter
+virsh net-define
+\family default
+ y 
+\family typewriter
+virsh net-create
+\family default
+ durante el arranque del servidor de máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Standard
+La orden 
+\family typewriter
+virsh net-define
+\family default
+ recibe como argumento la ruta de un fichero 
+\family typewriter
+.xml
+\family default
+ en el que se define la configuración de la red virtual.
+ La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Formato-de-los-ficheros-definición-red"
+
+\end_inset
+
+ muestra el contenido de un fichero de configuración asociado a una red
+ virtual que opera en modo NAT.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "80col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+<network> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<name>default</name>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<bridge name="virbr0" /> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<forward/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<ip address="192.168.122.1" netmask="255.255.255.0">
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<dhcp>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<range start="192.168.122.2" end="192.168.122.254" />
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+</dhcp>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+</ip>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+</network>
+\family default
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Formato-de-los-ficheros-definición-red"
+
+\end_inset
+
+Fichero de definición de una red virtual configurada en modo NAT
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar, para configurar la red virtual basta con
+\end_layout
+
+\begin_layout Itemize
+indicar el nombre de la red virtual.
+\end_layout
+
+\begin_layout Itemize
+indicar el nombre de la interfaz virtual asociada al encaminador predeterminado.
+ En el caso de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Formato-de-los-ficheros-definición-red"
+
+\end_inset
+
+, esta se llamará 
+\family typewriter
+virbr0
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+especificar la dirección IP y la máscara de red del encaminador predeterminado
+ como atributos del elemento 
+\family typewriter
+ip
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+indicar el rango de direcciones que asignará el servidor DHCP.
+ Para ello, se utiliza el elemento 
+\family typewriter
+dhcp
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Cuando se ejecuta la orden 
+\family typewriter
+virsh net-create
+\family default
+, se configuran convenientemente las redirecciones de paquetes en el 
+\emph on
+kernel 
+\emph default
+(a través de la orden 
+\family typewriter
+iptables
+\family default
+) y se lanza el proceso servidor DHCP (
+\family typewriter
+dnsmasq
+\family default
+).
+ A partir de este momento, toda máquina virtual que se conecte a la puerta
+ de enlace podrá acceder a la red virtual y, por tanto, a la red troncal
+ de la UCM.
+\end_layout
+
+\begin_layout Standard
+Finalmente, las redes virtuales se destruyen ejecutando las órdenes 
+\family typewriter
+virsh net-destroy
+\family default
+ y 
+\family typewriter
+virsh net-undefine
+\family default
+.
+ La primera elimina las redirecciones de paquetes y mata el servidor DHCP,
+ y la segunda borra la configuración de la red virtual.
+ 
+\end_layout
+
+\begin_layout Standard
+Nótese que es posible destruir una red virtual manteniendo su configuración.
+ En estos casos, es posible reactivar directamente la red virtual ejecutando
+ la orden 
+\family typewriter
+virsh net-create
+\family default
+.
+\end_layout
+
+\begin_layout Paragraph*
+La clase 
+\family typewriter
+VirtualNetworkManager
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+VirtualNetworkManager
+\family default
+ define e implementa una interfaz que permite manipular redes virtuales
+ a un elevado nivel de abstracción.
+ El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Relaciones-VirtualNetworkManager"
+
+\end_inset
+
+ muestra sus dependencias.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor MVs/Dependencias VirtualNetworkManager.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Relaciones-VirtualNetworkManager"
+
+\end_inset
+
+Relaciones de la clase 
+\family typewriter
+VirtualNetworkManager
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Las clases 
+\family typewriter
+ElementTree
+\family default
+ y 
+\family typewriter
+SubElement
+\family default
+ forman parte de la librería estándar de 
+\emph on
+Python
+\emph default
+, y se utilizan para generar el fichero 
+\family typewriter
+.xml
+\family default
+ con la configuración de la red.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la clase 
+\family typewriter
+ChildProcessManager
+\family default
+ dispone de métodos que permiten ejecutar comandos en 
+\emph on
+foreground
+\emph default
+ y 
+\emph on
+background
+\emph default
+.
+ La clase 
+\family typewriter
+VirtualNetworkManager
+\family default
+ los utiliza para ejecutar los comandos 
+\family typewriter
+virsh net-define
+\family default
+, 
+\family typewriter
+virsh net-create
+\family default
+, 
+\family typewriter
+virsh net-undefine
+\family default
+ y 
+\family typewriter
+virsh net-destroy
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Interacción con 
+\family typewriter
+libvirt
+\family default
+ a bajo nivel
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos cómo se interactúa a bajo nivel con la librería
+ 
+\family typewriter
+libvirt
+\family default
+ para crear y destruir máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Standard
+Para comenzar, explicaremos qué recursos son necesarios para arrancar una
+ máquina virtual.
+ Posteriormente, presentaremos el formato de los ficheros de configuración
+ de máquinas virtuales y, finalmente, mostraremos la forma en que se interactúa
+ con 
+\family typewriter
+libvirt
+\family default
+ desde 
+\emph on
+Python
+\emph default
+.
+\end_layout
+
+\begin_layout Paragraph
+Recursos asignados a una máquina virtual
+\end_layout
+
+\begin_layout Standard
+Toda máquina virtual debe tener asociados, como mínimo, 
+\end_layout
+
+\begin_layout Itemize
+una o más CPUs virtuales, todas pertenecientes a la misma arquitectura,
+\end_layout
+
+\begin_layout Itemize
+una memoria principal, y
+\end_layout
+
+\begin_layout Itemize
+una o más imágenes de disco, en las que se almacenarán el 
+\emph on
+software
+\emph default
+ instalado y los datos de la máquina virtual.
+\end_layout
+
+\begin_layout Standard
+Aunque estos recursos son suficientes para que la máquina virtual arranque,
+ no permiten interactuar con ella, por lo que esta será totalmente inútil.
+ Por tanto, también es necesario 
+\end_layout
+
+\begin_layout Itemize
+utilizar un servidor VNC, que se usará para interactuar con la máquina virtual,
+ o
+\end_layout
+
+\begin_layout Itemize
+utilizar una conexión de red que permita interactuar con la máquina vía
+ SSH (
+\emph on
+Secure Shell
+\emph default
+) o 
+\family typewriter
+telnet
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Puesto que en la mayoría de casos los usuarios utilizarán interfaces gráficas
+ de usuario para interactuar con la máquina virtual, el uso de un servidor
+ VNC es imprescindible.
+ Además, los usuarios también necesitarán acceder a la red troncal de la
+ UCM o a internet para poder extraer datos de la máquina virtual, por lo
+ que es fundamental que esta esté conectada a una red virtual.
+\end_layout
+
+\begin_layout Standard
+Finalmente, la máquina virtual también debe tener asignada una dirección
+ MAC, que usará para enviar y recibir tráfico a través de la red virtual,
+ un nombre (que debe ser único para cada máquina virtual alojada en el mismo
+ servidor) y un UUID (
+\emph on
+Universally Unique Identifier
+\emph default
+), que utilizará 
+\family typewriter
+libvirt
+\family default
+ para identificar la máquina virtual de forma única.
+\end_layout
+
+\begin_layout Paragraph
+Formato de los ficheros de definición
+\end_layout
+
+\begin_layout Standard
+Para crear una máquina virtual a través de 
+\family typewriter
+libvirt
+\family default
+ es necesario reservar previamente todos los recursos de los que hemos hablado
+ en la sección anterior e incluirlos en un fichero de definición.
+ En esta sección, nos centraremos en el formato de estos ficheros.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\family typewriter
+<domain type='kvm'>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<name>Squeeze_AMD64</name>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<uuid>34ed2109-cd6d-6048-d47c-55bea73e39fd</uuid>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<memory>1048576</memory>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<currentMemory>1048576</currentMemory>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<vcpu>1</vcpu> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<os> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<type arch='x86_64' machine='pc-1.0'>hvm</type>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<boot dev='hd'/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+</os>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<features>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<acpi/> <apic/> <pae/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+</features>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<clock offset='utc'/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<on_poweroff>destroy</on_poweroff>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<on_reboot>restart</on_reboot>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<on_crash>restart</on_crash> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<devices>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<emulator>/usr/bin/kvm</emulator> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<disk type='file' device='disk'>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<driver name='qemu' type='qcow2' cache='writeback' io='native'/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<source file='/home/luis/SqueezeAMD64.qcow2'/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<target dev='vda' bus='virtio'/>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+</disk>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<interface type='network'> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<source network='default'/> <mac address='52:54:00:8a:56:41'/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+</interface> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<input type='tablet' bus='usb'/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<input type='mouse' bus='ps2'/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<graphics type='vnc' port='15010' autoport='no' passwd='CCRules!' 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+keymap='es'>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<listen type='address' address='192.168.0.5'/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+</graphics> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<video>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+<model type='cirrus' vram='9216' heads='1'/> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+</video> 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+</devices>
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+</domain> 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Fichero-de-definición-Linux"
+
+\end_inset
+
+Fichero de definición de una máquina 
+\emph on
+Linux
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Fichero-de-definición-Linux"
+
+\end_inset
+
+ muestra el contenido de un fichero de definición válido para máquinas virtuales
+ 
+\emph on
+Linux
+\emph default
+.
+ Las características más relevantes de este fichero son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+el atributo 
+\family typewriter
+type
+\family default
+ del elemento 
+\family typewriter
+domain
+\family default
+ indica la solución de virtualización en la que se utilizará la máquina
+ virtual.
+ En nuestro caso, toma el valor 
+\family typewriter
+kvm
+\family default
+, ya que utilizamos el hipervisor KVM.
+ Es importante notar que las funciones que se pueden especificar en los
+ ficheros de definición varían en función del sistema de virtualización
+ que estemos usando.
+\end_layout
+
+\begin_layout Itemize
+los elementos 
+\family typewriter
+name
+\family default
+, 
+\family typewriter
+uuid
+\family default
+, 
+\family typewriter
+vcpu
+\family default
+ y 
+\family typewriter
+memory
+\family default
+ especifican el nombre, el UUID, el número de CPUs virtuales y el tamaño
+ de la memoria de la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+el elemento 
+\family typewriter
+os
+\family default
+ define, esencialmente, la arquitectura del sistema operativo de la máquina
+ virtual y la secuencia de arranque de la misma.
+ En el caso del fichero de definición anterior, el sistema operativo se
+ corresponderá con la arquitectura 
+\family typewriter
+x86_64
+\family default
+, y la máquina virtual arrancará directamente del primer disco duro.
+\end_layout
+
+\begin_layout Itemize
+el elemento 
+\family typewriter
+features
+\family default
+ permite activar las características ACPI (
+\emph on
+Advanced Configuration and Power Interface
+\emph default
+), APIC (
+\emph on
+Advance Programmable Interrupt Controller
+\emph default
+) y PAE (
+\emph on
+Physical Address Extension
+\emph default
+) de la máquina virtual.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Para lo que nos ocupa, podemos decir que la práctica totalidad de las CPUs
+ x86 y de los sistemas operativos existentes en el mercado soportan estas
+ características, por lo que es mejor dejarlas activadas.
+ En caso de que se detecte alguna incompatibilidad, el sistema operativo
+ de la máquina virtual podrá deshabilitar estas características.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+el elemento 
+\family typewriter
+clock
+\family default
+ permite configurar el desfase del reloj.
+ Puede tomar dos valores: 
+\family typewriter
+localtime
+\family default
+ y 
+\family typewriter
+utc
+\family default
+, que difieren en la forma en que se almacena la hora en la máquina virtual.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Sin entrar en detalles, basta con tener en cuenta que el el elemento clock
+ debe tomar el valor 
+\family typewriter
+localtime
+\family default
+ en sistemas 
+\emph on
+Windows
+\emph default
+, y 
+\family typewriter
+utc
+\family default
+ en sistemas tipo UNIX.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los elementos 
+\family typewriter
+on_poweroff
+\family default
+, 
+\family typewriter
+on_reboot
+\family default
+ y 
+\family typewriter
+on_crash
+\family default
+ determinan cómo actuar cuando la máquina virtual se apaga, se reinicia
+ o falla respectivamente.
+ En el fichero de definición de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Fichero-de-definición-Linux"
+
+\end_inset
+
+, la máquina virtual se destruirá al apagarse, y se reiniciará en el resto
+ de casos.
+\end_layout
+
+\begin_layout Itemize
+el elemento 
+\family typewriter
+devices
+\family default
+ permite definir la configuración del subsistema de entrada/salida de la
+ máquina virtual.
+ Destacan sus elementos
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+emulator
+\family default
+, que especifica el hipervisor a utilizar.
+ En nuestro caso, utilizamos 
+\family typewriter
+kvm
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+disk
+\family default
+, que especifica la configuración de un disco duro.
+ La máquina virtual asociada al fichero de definición de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Fichero-de-definición-Linux"
+
+\end_inset
+
+ tiene un único disco duro, cuyos datos se extraen de una imagen de disco
+ 
+\family typewriter
+qcow2
+\family default
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Para obtener el mejor rendimiento posible, este disco duro se conecta al
+ bus VirtIO que, como sabemos, proporciona un rendimiento muy similar al
+ de un disco duro real.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+network
+\family default
+, que especifica la configuración de una tarjeta de red.
+ La máquina virtual asociada al fichero de definición de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Fichero-de-definición-Linux"
+
+\end_inset
+
+ se conectará a la red virtual 
+\family typewriter
+default
+\family default
+, utilizando para ello la dirección MAC 
+\family typewriter
+52:54:00:8a:56:41
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+input, que especifica un dispositivo de entrada.
+ Habitualmente, los ficheros de definición especifican dos: un ratón PS/2
+ y una tableta gráfica USB que permiten el correcto movimiento del cursor
+ cuando se utiliza el protocolo VNC.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+graphics
+\family default
+, que especifica la configuración del servidor VNC asociado a la máquina
+ virtual.
+ Entre otras cosas, es necesario especificar el puerto (
+\family typewriter
+port
+\family default
+), la contraseña (
+\family typewriter
+passwd
+\family default
+), la distribución del teclado (
+\family typewriter
+keymap
+\family default
+) y la dirección IP (atributo 
+\family typewriter
+address
+\family default
+ del elemento 
+\family typewriter
+listen
+\family default
+) en la que escuchará el servidor VNC.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Finalmente, los ficheros de definición de máquinas virtuales 
+\emph on
+Windows
+\emph default
+ son muy similares.
+ Tan sólo es necesario dar el valor 
+\family typewriter
+localtime
+\family default
+ al elemento 
+\family typewriter
+clock
+\family default
+: el resto de elementos se configuran como ya hemos visto.
+\end_layout
+
+\begin_layout Paragraph
+Interacción con 
+\family typewriter
+libvirt
+\family default
+ desde código 
+\emph on
+Python
+\end_layout
+
+\begin_layout Paragraph
+La clase 
+\family typewriter
+libvirtConnector
 \end_layout
 
 \begin_layout Subsection
