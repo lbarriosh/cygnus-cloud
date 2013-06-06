@@ -1,0 +1,738 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass memoir
+\use_default_options true
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Chapter
+Configuración de una red virtual en modo NAT
+\end_layout
+
+\begin_layout Section
+¿Qué queremos hacer?
+\end_layout
+
+\begin_layout Standard
+Al usar NAT, expondremos al exterior una única dirección IP para el servidor
+ de máquinas virtuales.
+ El tráfico de las distintas máquinas virtuales se redirigirá a puertos
+ asociados a esa IP.
+\end_layout
+
+\begin_layout Standard
+Para configurar NAT, hacen falta tres cosas:
+\end_layout
+
+\begin_layout Itemize
+una puerta de enlace (
+\emph on
+gateway
+\emph default
+), que conectará nuestras máquinas virtuales al exterior.
+\end_layout
+
+\begin_layout Itemize
+una receta de iptables, que determinará cómo redirigir el tráfico destinado
+ a la IP del servidor a las distintas máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+un servidor DHCP, que asignará IPs a las máquinas virtuales y les proporcionará
+ un servidor DNS.
+\end_layout
+
+\begin_layout Standard
+Nosotros lo configuraremos todo en ese orden.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\series default
+\color inherit
+: antes de continuar, deshabilitad network-manager para poder trastear a
+ gusto con la configuración de la red.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Creación del bridge
+\end_layout
+
+\begin_layout Standard
+Para crear y configurar el bridge, utilizaremos el comando 
+\family typewriter
+brctl
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+Creamos el 
+\emph on
+bridge
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+brctl addbr kvmbr0
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Desactivamos STP (
+\emph on
+Spanning Tree Protocol
+\emph default
+, os deberá sonar de Redes).
+ En nuestra red virtual no habrá ciclos, por lo que no debemos preocuparnos
+ por ellos.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+brctl stp kvmbr0 off
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Configuramos el 
+\emph on
+forward delay
+\emph default
+ del bridge a 0 segundos (¿para qué queremos más?).
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+brctl setfd kvmbr0 0
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Una vez creado el bridge, debemos registrarlo como interfaz de red.
+ Arbitrariamente, le asignaremos la dirección IP 
+\family typewriter
+192.168.77.1
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Como podréis suponer, la primera máquina tendrá la IP 
+\family typewriter
+192.168.77.2
+\family default
+, la segunda, 
+\family typewriter
+192.168.77.3
+\family default
+, y así sucesivamente, por lo que la máscara de red debe ser 
+\family typewriter
+255.255.255.0
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+La orden que configura todo esto es 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+ifconfig kvmbr0 192.168.77.1 netmask 255.255.255.0 up
+\end_layout
+
+\begin_layout Standard
+Antes de hacer todo esto, deberíamos comprobar si el 
+\emph on
+bridge
+\emph default
+ existe o no.
+ Esto es bastante sencillo:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+brctl show | grep 
+\begin_inset Quotes eld
+\end_inset
+
+^kvmbr0
+\begin_inset Quotes erd
+\end_inset
+
+ > /dev/null 2> /dev/null
+\end_layout
+
+\begin_layout Standard
+Lo único que nos interesa saber es si esta orden falla o no, no la salida
+ de 
+\family typewriter
+grep
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Section
+Activar el encaminamiento IP
+\end_layout
+
+\begin_layout Standard
+El siguiente paso es activar el encaminamiento (o 
+\emph on
+forwarding
+\emph default
+) IP, desactivado por defecto en todas las distros de escritorio.
+\end_layout
+
+\begin_layout Standard
+El comando a utilizar es 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+echo 1 | dd of=/proc/sys/net/ipv4/ip_forward > /dev/null
+\end_layout
+
+\begin_layout Standard
+De manera predeterminada, este ajuste se pierde tras reiniciar.
+ Si queréis hacerlo permanente, descomentad la línea 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+#net.ipv4.ip_forward=1 
+\end_layout
+
+\begin_layout Standard
+del fichero 
+\family typewriter
+/etc/sysctl.conf
+\family default
+.
+\end_layout
+
+\begin_layout Section
+\noindent
+Configuración de 
+\family typewriter
+iptables
+\end_layout
+
+\begin_layout Standard
+Antes de nada, es altamente recomendable que guardéis vuestra receta actual
+ para evitar problemas.
+ Podéis hacerlo mediante el comando
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+iptables-save > ruta_del_fichero
+\end_layout
+
+\begin_layout Standard
+Para recuperar los ajustes, usad el comando
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+iptables-restore < ruta_del_fichero
+\end_layout
+
+\begin_layout Standard
+Ejecutad estas órdenes
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+De forma predeterminada, 
+\family typewriter
+iptables
+\family default
+ trabaja con la tabla 
+\family typewriter
+filter
+\family default
+.
+ Por eso, el argumento 
+\family typewriter
+-t filter
+\family default
+ se puede omitir.
+\end_layout
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t nat -A POSTROUTING -s 192.168.77.0/255.255.255.0 -j MASQUERADE 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t filter -A INPUT -i kvmbr0 -p tcp -m tcp --dport 67 -j ACCEPT
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t filter -A INPUT -i kvmbr0 -p udp -m udp --dport 67 -j ACCEPT
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t filter -A INPUT -i kvmbr0 -p tcp -m tcp --dport 53 -j ACCEPT
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t filter -A INPUT -i kvmbr0 -p udp -m udp --dport 53 -j ACCEPT
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t filter -A FORWARD -i kvmbr0 -o kvmbr0 -j ACCEPT 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t filter -A FORWARD -s 192.168.77.0/255.255.255.0 -i kvmbr0 -j ACCEPT
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t filter -A FORWARD -d 192.168.77.0/255.255.255.0 -o kvmbr0 -m state
+ --state RELATED,ESTABLISHED -j ACCEPT
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t filter -A FORWARD -o kvmbr0 -j REJECT --reject-with icmp-port-unreac
+hable
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t filter -A FORWARD -i kvmbr0 -j REJECT --reject-with icmp-port-unreac
+hable
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para entender estas líneas, hay que tener en cuenta que:
+\end_layout
+
+\begin_layout Itemize
+En el caso de la tabla nat, 
+\family typewriter
+PREROUTING
+\family default
+ indica que los datagramas entrantes se alterarán, 
+\family typewriter
+POSTROUTING
+\family default
+ indica que los datagramas salientes se alterarán, y 
+\family typewriter
+OUTPUT
+\family default
+ indica que los datagramas que se generan en esta máquina también se alterarán.
+\end_layout
+
+\begin_layout Itemize
+Como podréis suponer, 
+\family typewriter
+ACCEPT
+\family default
+ indica que hay que dejar pasar el datagrama.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MASQUERADE
+\family default
+ es la dirección IP del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+En el caso de la tabla filter, 
+\family typewriter
+INPUT
+\family default
+ hace referencia a paquetes destinados a esta máquina, 
+\family typewriter
+FORWARD
+\family default
+ hace referencia a paquetes que se enrutarán a través de esta máquina y
+ 
+\family typewriter
+OUTPUT
+\family default
+ hace referencia a paquetes generados en esta máquina.
+\end_layout
+
+\begin_layout Itemize
+Las primera línea 
+\family typewriter
+-A INPUT
+\family default
+ tiene este significado
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+si el datagrama va destinado a la interfaz 
+\family typewriter
+kvmbr0
+\family default
+, es decir, a alguna máquina virtual,
+\end_layout
+
+\begin_layout Itemize
+lleva datos del protocolo TCP, y
+\end_layout
+
+\begin_layout Itemize
+está destinado al puerto TCP 67
+\end_layout
+
+\begin_layout Standard
+lo aceptamos.
+ Las otras significan lo mismo que esta.
+\end_layout
+
+\begin_layout Standard
+Los puertos 67 y 53 son los utilizados por los servicios DHCP y DNS.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Como habréis visto, no hemos conectado el 
+\emph on
+bridge
+\emph default
+ a nada.
+ La siguiente línea permite que los datagramas generados por las máquinas
+ virtuales pasen a través del 
+\emph on
+bridge.
+\end_layout
+
+\begin_layout Itemize
+Las siguiente línea redirige los paquetes procedentes de la red (es decir,
+ del exterior) al bridge.
+\end_layout
+
+\begin_layout Itemize
+La siguiente línea redirige los paquetes procedentes del 
+\emph on
+bridge
+\emph default
+ (es decir, generados por las máquinas virtuales) al exterior.
+ 
+\family typewriter
+RELATED
+\family default
+ y 
+\family typewriter
+ESTABLISHED
+\family default
+ hacen referencia al estado de la conexión.
+ Si queréis más detalles, consultad el fichero 
+\family typewriter
+man iptables
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Las dos últimas líneas descartan los datagramas asociados a errores ICMP.
+\end_layout
+
+\begin_layout Standard
+Para comprobar que la configuración es correcta, usad los comandos
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+iptables -t nat -L -n
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+iptables -t filter -L -n
+\end_layout
+
+\begin_layout Section
+Configuración de
+\family typewriter
+ dnsmasq
+\end_layout
+
+\begin_layout Standard
+Para configurar el servidor DNS, ejecutad esta orden: 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "80col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+dnsmasq --strict-order --except-interface=lo --except-interface=eth0 --except-in
+terface=vnet0 --interface=kvmbr0 --listen-address=192.168.77.1 --bind-interfaces
+ --dhcp-range=192.168.77.2,192.168.77.254 --conf-file="" 
+\series bold
+\color red
+--dhcp-leasefile=/home/luis/kvmbr0.leases 
+\series default
+\color inherit
+--dhcp-no-override
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La línea resaltada es la que nos interesa: en ese fichero, figurarán todas
+ las asignaciones de IPs que realiza el servidor DHCP.
+\end_layout
+
+\begin_layout Section
+Redirección del tráfico de un puerto al servidor VNC de una máquina virtual
+\end_layout
+
+\begin_layout Standard
+Por ahora, el servidor VNC lo ponen KVM y Qemu, por lo que reside en el
+ servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Esto significa que, por ahora, no es necesario redirigir el tráfico de un
+ puerto del servidor a una máquina virtual.
+ No obstante, os pongo aquí las dos líneas que lo hacen por si más adelante
+ es necesario hacerlo.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "80col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+iptables -t nat -I PREROUTING -p <tcp|udp> --dport <puerto servidor> -j
+ DNAT --to-destination <IP VM>:<Puerto VM> iptables -A FORWARD -i eth0 -o
+ kvmbr0 -p <tcp|udp> --dport <Puerto VM> -j ACCEPT
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El primer comando nos permite garantizar que no habrá problemas al crear
+ y utilizar conexiones en las máquinas virtuales.
+ El segundo es el que redirige todo el tráfico de cierto puerto del servidor
+ a cierto puerto de la máquina virtual.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_body
+\end_document
