@@ -6341,7 +6341,7 @@ clusterServer
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6564,7 +6564,7 @@ clusterEndpoint
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -9926,16 +9926,26 @@ las imágenes de disco base, que se usan para crear nuevas máquinas virtuales.
 \begin_layout Standard
 En esta sección, mostraremos detalladamente el diseño del repositorio de
  imágenes.
- En primer lugar, mostraremos por qué un servidor FTP no puede utilizarse
+ Para ello, empezaremos discutiendo por qué un servidor FTP no puede utilizarse
  directamente como repositorio de imágenes.
- Posteriormente, mostraremos las funciones que añaden las clases del paquete
+ Acto seguido, mostraremos qué funciones realiza el repositorio de imágenes,
+ para después mostrar en qué nos hemos basado para implementarlas.
+\end_layout
+
+\begin_layout Standard
+Posteriormente, mostraremos las funciones que añaden las clases del paquete
  
 \family typewriter
 imageRepository
 \family default
  al servidor FTP, para continuar mostrando las relaciones entre estas clases
- y las interacciones entre ellas.
- Finalmente, mostraremos los formatos de paquete que emplea el repositorio
+ y las interacciones entre el repositorio de imágenes y una máquina remota.
+ A continuación, mostraremos la organización de los ficheros en el servidor
+ FTP.
+\end_layout
+
+\begin_layout Standard
+Finalmente, mostraremos los formatos de paquete que emplea el repositorio
  de imágenes para interactuar con el exterior y el esquema de su base de
  datos.
 \end_layout
@@ -10410,7 +10420,7 @@ imageRepository
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -10606,7 +10616,7 @@ IR
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -11018,7 +11028,7 @@ reference "fig:Transferencia-imagen-basica"
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -11329,7 +11339,7 @@ reference "fig:Transferencia-imagen"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -11535,7 +11545,7 @@ reference "fig:Liberación-imagen-dico"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -12059,7 +12069,7 @@ reference "fig:Interacciones-asociadas-borrado"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -13672,6 +13682,14 @@ flags
 strings
 \emph default
 .
+\end_layout
+
+\begin_layout Subsubsection
+Distribución de los ficheros
+\end_layout
+
+\begin_layout Standard
+Como hemos visto en las interacciones 
 \end_layout
 
 \begin_layout Subsubsection
