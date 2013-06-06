@@ -82,10 +82,18 @@ Arquitectura del sistema
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
-TODO: meter referencias noVNC, KVM y Twisted
+TODO: 
+\end_layout
+
+\begin_layout Itemize
+meter referencias noVNC, KVM y Twisted
+\end_layout
+
+\begin_layout Itemize
+revisar sección red para incluir protocolo orientado a líneas
 \end_layout
 
 \end_inset
@@ -10778,7 +10786,14 @@ Tras esto, el repositorio de imágenes está totalmente operativo.
 \end_layout
 
 \begin_layout Subsubsection
-Interacciones del repositorio de imágenes
+Interacciones del repositorio de imágenes 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Interacciones-del-repositorio"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10846,7 +10861,7 @@ IR
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -13689,11 +13704,412 @@ Distribución de los ficheros
 \end_layout
 
 \begin_layout Standard
-Como hemos visto en las interacciones 
+Como hemos visto en las interacciones correspondientes de la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Interacciones-del-repositorio"
+
+\end_inset
+
+, cuando una transferencia FTP finaliza se llamará al método 
+\family typewriter
+on_file_sent()
+\family default
+ o al método 
+\family typewriter
+on_file_received()
+\family default
+ del objeto 
+\family typewriter
+FTPServerCallback
+\family default
+.
+ Estos métodos reciben, como único argumento, la ruta del fichero cuya transfere
+ncia acaba de finalizar.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, tras finalizar una transferencia, debemos actualizar
+ el estado de las imágenes de disco correspondientes en la base de datos.
+ Por ello es necesario que, a partir del nombre del fichero comprimido,
+ sea posible obtener el identificador de las imágenes de disco.
+\end_layout
+
+\begin_layout Standard
+Así, los nombres de los ficheros comprimidos no pueden fijarse arbitrariamente,
+ y deben seguir cierto convenio.
+ Por simplicidad, los nombres de todos los ficheros comprimidos que se almacenan
+ en el repositorio de imágenes son de la forma
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+<identificador de las imágenes>.zip
+\end_layout
+
+\begin_layout Standard
+Por ejemplo, el fichero comprimido cuyas imágenes de disco tienen asociado
+ el identificador 
+\family typewriter
+1
+\family default
+ se llamará 
+\family typewriter
+1.zip
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, resulta interesante que, cuando una máquina remota se conecte
+ al servidor FTP, sólo pueda leer o escribir un único fichero comprimido.
+ Por ello, en el directorio raíz del repositorio de imágenes existen múltiples
+ subdirectorios.
+ Cada uno de ellos contiene un único fichero comprimido, y su nombre también
+ se fija a partir del identificador de las imágenes de disco almacenadas
+ en dicho fichero comprimido.
+\end_layout
+
+\begin_layout Standard
+Por ejemplo, la ruta del fichero comprimido 
+\family typewriter
+1.zip
+\family default
+, que contiene las imágenes de disco asociadas al identificador 
+\family typewriter
+1
+\family default
+, será la siguiente:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+<directorio raíz servidor FTP>/1/1.zip
 \end_layout
 
 \begin_layout Subsubsection
 Esquema de la base de datos
+\end_layout
+
+\begin_layout Standard
+La base de datos del repositorio de imágenes contiene una única tabla, 
+\family typewriter
+Image
+\family default
+, cuyas columnas son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Este valor entero es la clave primaria de la tabla, y es el identificador
+ único de las imágenes de disco que hemos mencionado en múltiples ocasiones.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Las imágenes de disco de cada máquina virtual comparten el mismo identificador
+ único, y están almacenadas en el mismo fichero comprimido.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+compressedFilePath
+\family default
+.
+ Se trata de un 
+\emph on
+string
+\emph default
+ de hasta 100 caracteres de longitud, que almacena la ruta absoluta del
+ fichero comprimido correspondiente en el repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageStatus
+\family default
+.
+ Este valor ocupa un 
+\emph on
+byte
+\emph default
+, y codifica los tres posibles estados de las imágenes de disco, que aparecen
+ en el cuadro 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Codificación-del-estado-imagen"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Para evitar errores, en el código fuente no hemos manipulado estos valores
+ directamente, sino a través del tipo enumerado 
+\family typewriter
+IMAGE_STATUS_T
+\family default
+, definido en el paquete 
+\family typewriter
+imageRepository.database
+\family default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Código
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Constante (tipo enumerado)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Descripción
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+NOT_RECEIVED
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "c"
+hor_pos "c"
+has_inner_box 1
+inner_pos "c"
+use_parbox 0
+use_makebox 0
+width "7cm"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+El identificador de las imágenes de disco está reservado, pero no tiene
+ asociado ningún fichero comprimido en el repositorio de imágenes.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+READY
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "c"
+hor_pos "c"
+has_inner_box 1
+inner_pos "c"
+use_parbox 0
+use_makebox 0
+width "7cm"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+El repositorio de imágenes dispone del fichero comprimido.
+ Además, ninguna máquina lo ha descargado en exclusividad.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+EDITION
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "c"
+hor_pos "c"
+has_inner_box 1
+inner_pos "c"
+use_parbox 0
+use_makebox 0
+width "7cm"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+El repositorio de imágenes dispone del fichero comprimido.
+ En este caso, una máquina lo ha descargado en exclusividad.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Codificación-del-estado-imagen"
+
+\end_inset
+
+Codificación del estado de una imagen
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
