@@ -16,7 +16,7 @@ class ClusterEndpointConfigurationFileParser(ConfigurationFileParser):
         ConfigurationFileParser.__init__(self)
         
     def _getExpectedSections(self):
-        return ['Database configuration', 'Network configuration', 'Other settings']
+        return ['Database configuration', 'Network configuration', 'Other settings', 'Cluster server connection data']
     
     def _readConfigurationParameters(self):
         keys = ['mysqlRootsPassword', 'websiteUser', 'websiteUserPassword',
@@ -24,9 +24,11 @@ class ClusterEndpointConfigurationFileParser(ConfigurationFileParser):
         for key in keys:
             self._readString('Database configuration', key)
             
+        self._readBoolean('Network configuration', 'useSSL')
         self._readString('Network configuration', 'certificatePath')
-        self._readString('Network configuration', 'clusterServerIP')
-        self._readInt('Network configuration', 'clusterServerListenningPort')
+        
+        self._readString('Cluster server connection data', 'clusterServerIP')
+        self._readInt('Cluster server connection data', 'clusterServerListenningPort')
         
         keys = ['statusDBUpdateInterval', 'minCommandInterval', 'commandTimeout', 'commandTimeoutCheckInterval']
         for key in keys:

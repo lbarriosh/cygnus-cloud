@@ -17,7 +17,7 @@ class VMServerConfigurationFileParser(ConfigurationFileParser):
         
     def _getExpectedSections(self):
         return ['Database configuration', 'Virtual Network Configuration', 'VNC server configuration', 
-                'FTP Client Configuration', 'Paths']
+                'FTP Client Configuration', 'Network configuration', 'Paths']
     
     def _readConfigurationParameters(self):
         keys = ['mysqlRootsPassword', 'databaseUserName', 'databasePassword']
@@ -30,11 +30,14 @@ class VMServerConfigurationFileParser(ConfigurationFileParser):
             self._readString('Virtual Network Configuration', key)
             
         self._readString('VNC server configuration', 'vncNetworkInterface')
-        self._readInt('VNC server configuration', 'listenningPort')
         self._readString('VNC server configuration', 'passwordLength')
+        
+        self._readBoolean('Network configuration', 'useSSL')
+        self._readString('Network configuration', 'certificatePath')
+        self._readInt('Network configuration', 'listenningPort')
         
         self._readInt('FTP Client Configuration', 'FTPTimeout')
         
-        keys = ['certificatePath', 'configFilePath', 'sourceImagePath', 'executionImagePath', 'websockifyPath', 'TransferDirectory']
+        keys = ['configFilePath', 'sourceImagePath', 'executionImagePath', 'websockifyPath', 'TransferDirectory']
         for key in keys:
             self._readString('Paths', key)

@@ -22,7 +22,8 @@ class ClusterServerConfigurationFileParser(ConfigurationFileParser):
         keys = ['mysqlRootsPassword', 'dbUser', 'dbUserPassword']
         for key in keys:
             self._readString('Database configuration', key)        
-            
+        
+        self._readBoolean('Network configuration', 'useSSL')
         self._readString('Network configuration', 'certificatePath')
         self._readInt('Network configuration', 'listenningPort')
         

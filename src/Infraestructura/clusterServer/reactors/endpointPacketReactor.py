@@ -19,7 +19,7 @@ class EndpointPacketReactor(object):
     
     def __init__(self, dbConnector, networkManager, vmServerPacketHandler, webPacketHandler, imageRepositoryPacketHandler,
                  vmServerCallback, listenningPort, repositoryIP, repositoryPort, loadBalancerSettings, 
-                 averageCompressionRatio):
+                 averageCompressionRatio, useSSL):
         self.__dbConnector = dbConnector
         self.__networkManager = networkManager
         self.__vmServerPacketHandler = vmServerPacketHandler
@@ -34,6 +34,7 @@ class EndpointPacketReactor(object):
         self.__repositoryIP = repositoryIP
         self.__repositoryPort = repositoryPort
         self.__finished = False
+        self.__useSSL = useSSL
     
     def processWebIncomingPacket(self, packet):
         """
@@ -98,7 +99,7 @@ class EndpointPacketReactor(object):
             
             # Establecer la conexión
             self.__networkManager.connectTo(data["VMServerIP"], data["VMServerPort"], 
-                                                20, self.__vmServerCallback, True, True)
+                                                20, self.__vmServerCallback, self.__useSSL, True)            
             while not self.__networkManager.isConnectionReady(data["VMServerIP"], data["VMServerPort"]) :
                 sleep(0.1)
                 
@@ -136,7 +137,7 @@ class EndpointPacketReactor(object):
                 
                     # Establecer la conexión            
                     self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 
-                                                        20, self.__vmServerCallback, True, True)
+                                                        20, self.__vmServerCallback, self.__useSSL, True)
                     while not self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"]) :
                         sleep(0.1)
                         

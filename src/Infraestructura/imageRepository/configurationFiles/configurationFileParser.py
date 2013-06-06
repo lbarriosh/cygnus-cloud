@@ -25,6 +25,7 @@ class ImageRepositoryConfigurationFileParser(ConfigurationFileParser):
             
         self._readString('Network configuration', 'certificatePath')
         self._readInt('Network configuration', 'commandsPort')
+        self._readBoolean('Network configuration', 'useSSL')
         
         keys = ['FTPListenningInterface', 'FTPRootDirectory', 'FTPUserName']
         for key in keys:

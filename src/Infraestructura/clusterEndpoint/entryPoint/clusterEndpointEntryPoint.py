@@ -65,7 +65,7 @@ class ClusterEndpointEntryPoint(object):
                                                                commandsDBName, minCommandInterval) 
         self.__endpointDBConnector = ClusterEndpointDBConnector(endpointUser, endpointUserPassword, endpointDBName)
         
-    def connectToClusterServer(self, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval,
+    def connectToClusterServer(self, useSSL, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval,
                                commandTimeout, commandTimeoutCheckInterval):
         """
         Establece la conexión con el servidor de cluster
@@ -90,7 +90,7 @@ class ClusterEndpointEntryPoint(object):
         packetReactor = ClusterEndpointPacketReactor(self.__codeTranslator, self.__commandsHandler, self.__packetHandler, self.__commandsProcessor,
                                                      self.__endpointDBConnector, self.__commandsDBConnector)
         try :
-            self.__networkManager.connectTo(clusterServerIP, clusterServerListenningPort, 5, packetReactor, True)
+            self.__networkManager.connectTo(clusterServerIP, clusterServerListenningPort, 5, packetReactor, useSSL)
             while (not self.__networkManager.isConnectionReady(clusterServerIP, clusterServerListenningPort)) :
                 sleep(0.1)                   
             self.__updateRequestThread = VMServerMonitoringThread(self.__packetHandler, self.__networkManager, self.__commandsProcessor, 

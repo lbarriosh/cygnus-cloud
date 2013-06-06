@@ -48,7 +48,7 @@ class VMServerReactor(ClusterServerPacketReactor):
         try :
             self.__connectToDatabases("VMServerDB", self.__parser.getConfigurationParameter("databaseUserName"), 
                                       self.__parser.getConfigurationParameter("databasePassword"))
-            self.__startListenning(self.__parser.getConfigurationParameter("vncNetworkInterface"), self.__parser.getConfigurationParameter("listenningPort"))
+            self.__startListenning()
         except Exception as e:
             print e.message
             self.__emergencyStop = True
@@ -66,10 +66,12 @@ class VMServerReactor(ClusterServerPacketReactor):
         """
         self.__dbConnector = VMServerDBConnector(user, password, databaseName)  
             
-    def __startListenning(self, networkInterface, listenningPort):
+    def __startListenning(self):
         """
         Crea la conexión de red por la que se recibirán los comandos del servidor de cluster.
         """    
+        networkInterface = self.__parser.getConfigurationParameter("vncNetworkInterface")
+        listenningPort = self.__parser.getConfigurationParameter("listenningPort")
         try :
             self.__vncServerIP = get_ip_address(networkInterface)
         except Exception :
@@ -79,7 +81,7 @@ class VMServerReactor(ClusterServerPacketReactor):
         self.__networkManager = NetworkManager(self.__parser.getConfigurationParameter("certificatePath"))
         self.__networkManager.startNetworkService()
         self.__packetManager = VMServerPacketHandler(self.__networkManager)        
-        self.__networkManager.listenIn(self.__listenningPort, ClusterServerCallback(self), True)
+        self.__networkManager.listenIn(self.__listenningPort, ClusterServerCallback(self), self.__parser.getConfigurationParameter("useSSL"))
         self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
                                                        self.__parser.getConfigurationParameter("TransferDirectory"),
                                                        self.__parser.getConfigurationParameter("FTPTimeout"), self.__dbConnector)

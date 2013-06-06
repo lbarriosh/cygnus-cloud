@@ -29,7 +29,8 @@ if __name__ == "__main__" :
     imageRepository = ImageRepositoryReactor(parser.getConfigurationParameter('FTPRootDirectory'))
     imageRepository.connectToDatabase("ImageRepositoryDB", parser.getConfigurationParameter("dbUser"), parser.getConfigurationParameter("dbUserPassword"))
     
-    imageRepository.startListenning(parser.getConfigurationParameter("FTPListenningInterface"), parser.getConfigurationParameter("certificatePath"), parser.getConfigurationParameter("commandsPort"), 
+    imageRepository.startListenning(parser.getConfigurationParameter("FTPListenningInterface"), parser.getConfigurationParameter("useSSL"),
+                                    parser.getConfigurationParameter("certificatePath"), parser.getConfigurationParameter("commandsPort"), 
                                     parser.getConfigurationParameter("FTPPort"), parser.getConfigurationParameter('maxConnections'), parser.getConfigurationParameter('maxConnectionsPerIP'),
                                     parser.getConfigurationParameter("uploadBandwidthRatio"), parser.getConfigurationParameter("downloadBandwidthRatio"), parser.getConfigurationParameter("FTPUserName"),
                                     parser.getConfigurationParameter("FTPPasswordLength"))

@@ -220,8 +220,8 @@ class ImageRepositoryPacketHandler(object):
             data['serverDirectory'] = p.readString()
             data['fileName'] = p.readString()
         elif (packet_type == PACKET_T.STATUS_DATA):
+            data["TotalDiskSpace"] = p.readInt()            
             data["FreeDiskSpace"] = p.readInt()
-            data["TotalDiskSpace"] = p.readInt()
         elif (packet_type == PACKET_T.CANCEL_EDITION):
             data["ImageID"] = p.readInt()
         return data 

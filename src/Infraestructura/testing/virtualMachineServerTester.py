@@ -145,7 +145,7 @@ if __name__ == "__main__" :
     port = raw_input("Server port: ")
     try :
         port = int(port)
-        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
+        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), False)
         while not networkManager.isConnectionReady(ip_address, port) :
             sleep(0.1)
         end = False

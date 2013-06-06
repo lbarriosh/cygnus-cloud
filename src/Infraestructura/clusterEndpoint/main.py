@@ -29,7 +29,8 @@ if __name__ == "__main__" :
                                 parser.getConfigurationParameter("websiteUserPassword"),  parser.getConfigurationParameter("endpointUser"), 
                                 parser.getConfigurationParameter("endpointUserPassword"), parser.getConfigurationParameter("minCommandInterval"))
     try :
-        endpoint.connectToClusterServer(parser.getConfigurationParameter("certificatePath"), parser.getConfigurationParameter("clusterServerIP"), 
+        endpoint.connectToClusterServer(parser.getConfigurationParameter('useSSL'),
+                                        parser.getConfigurationParameter("certificatePath"), parser.getConfigurationParameter("clusterServerIP"), 
                                         parser.getConfigurationParameter("clusterServerListenningPort"), parser.getConfigurationParameter("statusDBUpdateInterval"),
                                         parser.getConfigurationParameter("commandTimeout"), parser.getConfigurationParameter("commandTimeoutCheckInterval"))
         endpoint.processCommands()

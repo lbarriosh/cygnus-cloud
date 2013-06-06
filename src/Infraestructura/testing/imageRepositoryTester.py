@@ -11,7 +11,7 @@ from network.exceptions.networkManager import NetworkManagerException
 from imageRepository.packetHandling.packet_t import PACKET_T
 from imageRepository.packetHandling.packetHandler import ImageRepositoryPacketHandler
 from time import sleep
-from network.ftp.ftpClient import FTPClient
+from ftp.ftpClient import FTPClient
 
 user_input = False
 
@@ -147,7 +147,7 @@ if __name__ == "__main__" :
     port = raw_input("Repository commands port: ")
     try :
         port = int(port)
-        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler, ip_address), True)
+        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler, ip_address), False)
         while not networkManager.isConnectionReady(ip_address, port) :
             sleep(0.1)
         end = False

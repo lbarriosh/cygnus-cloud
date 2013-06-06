@@ -51,7 +51,7 @@ class ImageRepositoryReactor(object):
         """
         self.__dbConnector = ImageRepositoryDBConnector(repositoryDBUser, repositoryDBPassword, repositoryDBName)
     
-    def startListenning(self, networkInterface, certificatesDirectory, commandsListenningPort, ftpListenningPort, maxConnections,
+    def startListenning(self, networkInterface, useSSL, certificatesDirectory, commandsListenningPort, ftpListenningPort, maxConnections,
                         maxConnectionsPerIP, uploadBandwidthRatio, downloadBandwidthRatio, ftpUsername, ftpPasswordLength): 
         """
         Arranca el servidor FTP y comienza a atender las peticiones recibidas por la conexión de comandos.
@@ -82,7 +82,7 @@ class ImageRepositoryReactor(object):
                                                        self.__retrieveQueue, self.__storeQueue, self.__workingDirectory)        
             
             self.__networkManager.startNetworkService()
-            self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, True)
+            self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, useSSL)
             
             dataCallback = FTPServerCallback(self.__slotCounter, self.__dbConnector)
             

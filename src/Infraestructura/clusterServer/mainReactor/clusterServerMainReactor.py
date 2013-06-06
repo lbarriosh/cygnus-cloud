@@ -60,7 +60,7 @@ class ClusterServerMainReactor(object):
         self.__dbConnector = ClusterServerDatabaseConnector(dbUser, dbPassword, dbName)
         self.__dbConnector.resetVMServersStatus()
         
-    def startListenning(self, certificatePath, listenningPort, repositoryIP, repositoryPort, vmServerStatusUpdateInterval):
+    def startListenning(self, useSSL, certificatePath, listenningPort, repositoryIP, repositoryPort, vmServerStatusUpdateInterval):
         """
         Hace que el reactor comience a escuchar las peticiones del endpoint.
         Argumentos:
@@ -74,6 +74,7 @@ class ClusterServerMainReactor(object):
         self.__networkManager.startNetworkService()    
         self.__listenningPort = listenningPort
         self.__packetHandler = ClusterServerPacketHandler(self.__networkManager)    
+        self.__useSSL = useSSL
         imageRepositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)
         vmServerPacketHandler = VMServerPacketHandler(self.__networkManager)        
         networkEventsReactor = NetworkEventsReactor(self.__dbConnector, repositoryIP, repositoryPort)
@@ -84,7 +85,7 @@ class ClusterServerMainReactor(object):
                                                                     self.__packetHandler, vmServerPacketHandler, imageRepositoryPacketHandler)
         try :
             imageRepositoryCallback = ImageRepositoryCallback(imageRepositoryPacketReactor, networkEventsReactor)
-            self.__networkManager.connectTo(repositoryIP, repositoryPort, 10, imageRepositoryCallback, True, True)
+            self.__networkManager.connectTo(repositoryIP, repositoryPort, 10, imageRepositoryCallback, self.__useSSL, True)
             self.__dbConnector.addImageRepository(repositoryIP, repositoryPort, SERVER_STATE_T.READY) 
         except Exception as e:
             print "Can't connect to the image repository: " + e.message
@@ -101,9 +102,9 @@ class ClusterServerMainReactor(object):
                                                              imageRepositoryPacketHandler,
                                                              VMServerCallback(vmServerPacketReactor, networkEventsReactor),
                                                              listenningPort, repositoryIP, repositoryPort, self.__loadBalancerSettings,
-                                                             self.__averageCompressionRatio) 
+                                                             self.__averageCompressionRatio, self.__useSSL) 
         clusterEndpointCallback = ClusterEndpointCallback(self.__endpointPacketReactor)
-        self.__networkManager.listenIn(listenningPort, clusterEndpointCallback, True)
+        self.__networkManager.listenIn(listenningPort, clusterEndpointCallback, self.__useSSL)
        
         # Creamos el hilo que envía las actualizaciones de estado
         self.__statusMonitoringThread = ClusterStatusMonitoringThread(vmServerStatusUpdateInterval,

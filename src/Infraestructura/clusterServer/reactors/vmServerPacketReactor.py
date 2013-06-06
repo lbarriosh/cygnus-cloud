@@ -131,7 +131,7 @@ class VMServerPacketReactor(object):
         else :
             packet_type = ENDPOINT_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR
             
-        p = self.__packetHandler.createErrorPacket(packet_type, data["ErrorCode"], data["CommandID"])
+        p = self.__packetHandler.createErrorPacket(packet_type, data["ErrorDescription"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)
         
         # Liberar los recursos asignados a la máquina
