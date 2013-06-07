@@ -21,7 +21,7 @@ class DomainHandler(object):
     """
     
     def __init__(self, dbConnector, vncServerIP, networkManager, packetManager, listenningPort, definitionFileDirectory,
-                 sourceImageDirectory, executionImageDirectory, websockifyPath, vncPasswordLength):
+                 sourceImageDirectory, executionImageDirectory, vncPasswordLength):
         """
         Inicializa el estado del gestor de dominios
         Argumentos:
@@ -33,7 +33,6 @@ class DomainHandler(object):
             definitionFileDirectory: el directorio en el que se encuentran los ficheros de definición de las máquinas
             sourceImageDirectory: el directorio en el que se almacenan las imágenes de disco de las máquinas virtuales
             executionImageDirectory: el directorio en el que se almacenan las imágenes temporales de las máquinas virtuales
-            websockifyPath: la ruta del binario websockify
             vncPasswordLength: la longitud de la contraseña del servidor VNC
         """
         self.__dbConnector = dbConnector        
@@ -45,7 +44,6 @@ class DomainHandler(object):
         self.__definitionFileDirectory = definitionFileDirectory
         self.__sourceImagePath = sourceImageDirectory
         self.__executionImagePath = executionImageDirectory
-        self.__websockifyPath = websockifyPath
         self.__vncPasswordLength = vncPasswordLength
         self.__libvirtConnection = None
         self.__virtualNetworkManager = None
@@ -128,7 +126,6 @@ class DomainHandler(object):
         sourceOSDisk = self.__sourceImagePath + osImagePath                
         
         diskImagesCreated = False
-        websockifyPID = None
         
         try :        
             if(isBootable):                           
@@ -179,18 +176,10 @@ class DomainHandler(object):
             string = xmlFile.generateConfigurationString()        
             # Arranco la máquina        
             self.__libvirtConnection.startDomain(string)
-                
-            # Inicio el demonio websockify
-            # Los puertos impares serán para el socket que proporciona el hipervisor 
-            # y los pares los websockets generados por websockify        
-            websockifyPID = None
-            webSockifyPID = self.__childProcessManager.runCommandInBackground([self.__websockifyPath,
-                                            self.__vncServerIP + ":" + str(newPort + 1),
-                                            self.__vncServerIP + ":" + str(newPort)])
             
             # Todo ha ido bien => registramos los recursos de la máquina como siempre        
         
-            self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, webSockifyPID, newOSDisk,  newDataDisk, newMAC, newUUID)
+            self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, newOSDisk,  newDataDisk, newMAC, newUUID)
             self.__dbConnector.addVMBootCommand(newName, commandID)
        
         except Exception :
@@ -201,8 +190,6 @@ class DomainHandler(object):
             self.__dbConnector.freeMACAndUUID(newUUID, newMAC)
             if (diskImagesCreated) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(newOSDisk), None)
-            if (websockifyPID != None) :
-                ChildProcessManager.runCommandInForeground("kill " + websockifyPID, None)
             p = self.__packetManager.createInternalErrorPacket(commandID)
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             
@@ -279,16 +266,10 @@ class DomainHandler(object):
             Nada
         """
         dataImagePath = self.__dbConnector.getDomainDataImagePath(domainName)
-        osImagePath = self.__dbConnector.getDomainOSImagePath(domainName)   
-        websockify_pid = self.__dbConnector.getWebsockifyDaemonPID(domainName)
+        osImagePath = self.__dbConnector.getDomainOSImagePath(domainName)
         imageID = self.__dbConnector.getDomainImageID(domainName)
         isBootable = self.__dbConnector.getBootableFlag(imageID)        
         commandID = self.__dbConnector.getVMBootCommand(domainName)
-        
-        try :
-            ChildProcessManager.runCommandInForeground("kill -s TERM " + str(websockify_pid))
-        except Exception:
-            pass    
         
         self.__dbConnector.unregisterDomainResources(domainName)     
         
