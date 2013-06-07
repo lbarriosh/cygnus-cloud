@@ -135,6 +135,7 @@ class ConfigurationFileEditor(object):
         
         graphics = devices.find("graphics")
         graphics.set("port", str(self.__vncServerPort))
+        graphics.set("websocket", str(self.__vncServerPort + 1))
         graphics.set("passwd", self.__vncServerPassword)
         listen = graphics.find("listen")
         listen.set("address", self.__vncServerIPAddress)
