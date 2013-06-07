@@ -14486,7 +14486,7 @@ name "fig:Formato-de-los-ficheros-definición-red"
 
 \end_inset
 
-Fichero de definición de una red virtual configurada en modo NAT
+Fichero de configuración de una red virtual operando en modo NAT
 \end_layout
 
 \end_inset
@@ -14534,7 +14534,11 @@ especificar la dirección IP y la máscara de red del encaminador predeterminado
 ip
 \family default
 .
- 
+ Usando notación CIDR, en el fichero anterior se especifica que 
+\family typewriter
+192.168.122.1/24
+\family default
+ será la dirección IP del encaminador predeterminado.
 \end_layout
 
 \begin_layout Itemize
@@ -14804,8 +14808,8 @@ Puesto que en la mayoría de casos los usuarios utilizarán interfaces gráficas
  de usuario para interactuar con la máquina virtual, el uso de un servidor
  VNC es imprescindible.
  Además, los usuarios también necesitarán acceder a la red troncal de la
- UCM o a internet para poder extraer datos de la máquina virtual, por lo
- que es fundamental que esta esté conectada a una red virtual.
+ UCM o a internet para poder introducir o extraer datos de la máquina virtual,
+ por lo que es fundamental que esta esté conectada a una red virtual.
 \end_layout
 
 \begin_layout Standard
@@ -14839,6 +14843,7 @@ libvirt
 
 \begin_layout Standard
 \begin_inset Float figure
+placement h
 wide false
 sideways false
 status collapsed
@@ -16092,8 +16097,8 @@ reference "fig:Fichero-de-definición-Linux"
 
 \end_inset
 
- muestra el contenido de un fichero de definición válido para máquinas virtuales
- 
+ muestra el contenido de un fichero de definición utilizado para crear máquinas
+ virtuales 
 \emph on
 Linux
 \emph default
@@ -16150,14 +16155,20 @@ os
 \family default
  define, esencialmente, la arquitectura del sistema operativo de la máquina
  virtual y la secuencia de arranque de la misma.
- En el caso del fichero de definición anterior, el sistema operativo se
- corresponderá con la arquitectura 
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+En el caso del fichero de definición anterior, el sistema operativo soportará
+ la arquitectura 
 \family typewriter
 x86_64
 \family default
 , y la máquina virtual arrancará directamente del primer disco duro.
 \end_layout
 
+\end_deeper
 \begin_layout Itemize
 el elemento 
 \family typewriter
@@ -16182,10 +16193,14 @@ Physical Address Extension
 \begin_deeper
 \begin_layout Standard
 Para lo que nos ocupa, podemos decir que la práctica totalidad de las CPUs
- x86 y de los sistemas operativos existentes en el mercado soportan estas
- características, por lo que es mejor dejarlas activadas.
+ 
+\family typewriter
+x86
+\family default
+ y de los sistemas operativos existentes en el mercado soportan estas caracterís
+ticas, por lo que es mejor dejarlas activadas.
  En caso de que se detecte alguna incompatibilidad, el sistema operativo
- de la máquina virtual podrá deshabilitar estas características.
+ de la máquina virtual podrá deshabilitarlas.
 \end_layout
 
 \end_deeper
@@ -16209,7 +16224,10 @@ utc
 
 \begin_deeper
 \begin_layout Standard
-Sin entrar en detalles, basta con tener en cuenta que el el elemento clock
+Sin entrar en detalles, basta recordar que el el elemento 
+\family typewriter
+clock
+\family default
  debe tomar el valor 
 \family typewriter
 localtime
@@ -16259,7 +16277,7 @@ devices
 \family default
  permite definir la configuración del subsistema de entrada/salida de la
  máquina virtual.
- Destacan sus elementos
+ Sus principales elementos son los siguientes:
 \end_layout
 
 \begin_deeper
@@ -16268,10 +16286,11 @@ devices
 \family typewriter
 emulator
 \family default
-, que especifica el hipervisor a utilizar.
- En nuestro caso, utilizamos 
+, que especifica la ruta del fichero binario que emulará los dispositivos
+ de entrada/salida de la máquina virtual.
+ El emulador de KVM está ubicado en 
 \family typewriter
-kvm
+/usr/bin/kvm
 \family default
 .
 \end_layout
@@ -16331,7 +16350,11 @@ default
 \end_layout
 
 \begin_layout Itemize
-input, que especifica un dispositivo de entrada.
+
+\family typewriter
+input
+\family default
+, que define un dispositivo de entrada.
  Habitualmente, los ficheros de definición especifican dos: un ratón PS/2
  y una tableta gráfica USB que permiten el correcto movimiento del cursor
  cuando se utiliza el protocolo VNC.
@@ -16367,6 +16390,30 @@ listen
 ) en la que escuchará el servidor VNC.
 \end_layout
 
+\begin_layout Itemize
+
+\family typewriter
+video
+\family default
+, que define la configuración de la tarjeta gráfica de la máquina virtual.
+ En el fichero de configuración de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Fichero-de-definición-Linux"
+
+\end_inset
+
+, se utiliza una tarjeta gráfica 
+\family typewriter
+CLGD 5446
+\family default
+ fabricada por 
+\emph on
+Cirrus Logic Inc.
+\emph default
+, con 9 MB de memoria de vídeo y un único monitor conectado.
+\end_layout
+
 \end_deeper
 \begin_layout Standard
 Finalmente, los ficheros de definición de máquinas virtuales 
@@ -16386,13 +16433,73 @@ clock
 \end_layout
 
 \begin_layout Paragraph
-Interacción con 
+La clase 
+\family typewriter
+LibvirtConnector
+\end_layout
+
+\begin_layout Standard
+Para interactuar con 
 \family typewriter
 libvirt
 \family default
- desde código 
+ desde 
 \emph on
 Python
+\emph default
+, se utilizan dos tipos de llamadas a métodos:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+llamadas síncronas
+\series default
+.
+ En general, estas llamadas se utilizan para realizar consultas relacionadas
+ con las máquinas virtuales activas (como, por ejemplo, para obtener los
+ recursos asociados a cada una de ellas) y para enviar consultas al hipervisor
+ (como, por ejemplo, las que leen el tiempo que cada máquina virtual ha
+ usado la CPU).
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+llamadas asíncronas
+\series default
+.
+ Sus resultados no están disponibles al finalizar la llamada, y se obtienen
+ procesando los eventos asociados.
+ Las llamadas síncronas se utilizan para realizar operaciones con una gran
+ latencia, tales como el arranque y la destrucción de una máquina virtual.
+\end_layout
+
+\begin_layout Standard
+Centrémonos en el proceso de inicialización.
+ Para poder manejar el hipervisor KVM desde código 
+\emph on
+Python
+\emph default
+, es necesario
+\end_layout
+
+\begin_layout Itemize
+establecer la conexión con el hipervisor,
+\end_layout
+
+\begin_layout Itemize
+definir los métodos de tratamiento que procesarán los eventos generados
+ por 
+\family typewriter
+libvirt
+\family default
+, y
+\end_layout
+
+\begin_layout Itemize
+crear un hilo que permitirá a libvirt consultar periódicamente el estado
+ del hipervisor y generará los eventos correspondientes.
 \end_layout
 
 \begin_layout Paragraph
