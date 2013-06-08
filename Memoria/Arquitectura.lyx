@@ -1436,7 +1436,14 @@ o muy similar, mejor documentación y mejor soporte que Xen, optamos por
 \end_layout
 
 \begin_layout Subsection
-Uso del servidor VNC integrado en KVM
+Uso del servidor VNC integrado en KVM 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-del-servidor-VNC-KVM"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1511,7 +1518,14 @@ ente la implementación del sistema, finalmente decidimos utilizarlo.
 \end_layout
 
 \begin_layout Subsection
-Uso del cliente VNC noVNC
+Uso del cliente VNC noVNC 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-del-cliente-web-noVNC"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3176,6 +3190,13 @@ ya creado sin necesidad de descomprimirlo.
 Uso de imágenes 
 \emph on
 copy-on-write
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-de-imágenes-cow"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3305,7 +3326,14 @@ cantidad muy inferior a la del del caso anterior.
 \end_layout
 
 \begin_layout Subsection
-Uso de dos discos duros en cada máquina virtual
+Uso de dos discos duros en cada máquina virtual 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-de-dos-discos-duros"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4795,7 +4823,14 @@ servidores de edición de imágenes
 \end_layout
 
 \begin_layout Subsection
-Cifrado selectivo del tráfico
+Cifrado selectivo del tráfico 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Cifrado-selectivo-del-tráfico"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -9841,6 +9876,13 @@ pyftpdlib
 El cliente FTP de 
 \emph on
 CygnusCloud
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:El-cliente-FTP-cc"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -14207,7 +14249,7 @@ reference "fig:Formato-de-los-ficheros-definición-red"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -14772,17 +14814,26 @@ una memoria principal, y
 \end_layout
 
 \begin_layout Itemize
-una o más imágenes de disco, en las que se almacenarán el 
+dos imágenes de disco, en las que se almacenarán el 
 \emph on
 software
 \emph default
- instalado y los datos de la máquina virtual.
+ instalado y los datos de la máquina virtual respectivamente.
+ En la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-de-dos-discos-duros"
+
+\end_inset
+
+ justificamos por qué es necesario utilizar dos imágenes de disco en lugar
+ de una sola.
 \end_layout
 
 \begin_layout Standard
 Aunque estos recursos son suficientes para que la máquina virtual arranque,
- no permiten interactuar con ella, por lo que esta será totalmente inútil.
- Por tanto, también es necesario 
+ no permiten interactuar con ella.
+ Para que esta interacción sea posible, también es necesario 
 \end_layout
 
 \begin_layout Itemize
@@ -14807,24 +14858,93 @@ telnet
 Puesto que en la mayoría de casos los usuarios utilizarán interfaces gráficas
  de usuario para interactuar con la máquina virtual, el uso de un servidor
  VNC es imprescindible.
- Además, los usuarios también necesitarán acceder a la red troncal de la
+ Todo servidor VNC debe tener asignados los siguientes recursos:
+\end_layout
+
+\begin_layout Itemize
+un puerto, que debe ser único dentro de cada servidor de máquinas virtuales.
+ Este permitirá utilizar la máquina virtual mediante un cliente VNC convencional.
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+websocket
+\emph default
+, que también tiene asociado un puerto único dentro de cada servidor de
+ máquinas virtuales.
+ Los 
+\emph on
+websockets
+\emph default
+ permiten utilizar las máquinas virtuales utilizando el cliente VNC noVNC,
+ del que hablamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-del-cliente-web-noVNC"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+una dirección IP, que coincide con la dirección IP de una de las interfaces
+ de red del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+una contraseña, que impide que los usuarios ajenos a la máquina virtual
+ puedan visualizar su pantalla o utilizarla.
+\end_layout
+
+\begin_layout Standard
+Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Cifrado-selectivo-del-tráfico"
+
+\end_inset
+
+, dado que la red troncal de la UCM es segura, por motivos de eficiencia
+ el tráfico VNC no viajará cifrado.
+ En caso de hacerlo, cada servidor VNC también tendría asociado un certificado
+ SSL.
+\end_layout
+
+\begin_layout Standard
+Además, los usuarios también necesitarán acceder a la red troncal de la
  UCM o a internet para poder introducir o extraer datos de la máquina virtual,
  por lo que es fundamental que esta esté conectada a una red virtual.
 \end_layout
 
 \begin_layout Standard
-Finalmente, la máquina virtual también debe tener asignada una dirección
- MAC, que usará para enviar y recibir tráfico a través de la red virtual,
- un nombre (que debe ser único para cada máquina virtual alojada en el mismo
- servidor) y un UUID (
-\emph on
-Universally Unique Identifier
-\emph default
-), que utilizará 
+Para ello, la máquina virtual debe tener asignada una dirección MAC, que
+ debe ser única dentro de la red virtual y, por ende, dentro del servidor
+ de máquinas virtuales en el que reside.
+\end_layout
+
+\begin_layout Standard
+Finalmente, para que 
 \family typewriter
 libvirt
 \family default
- para identificar la máquina virtual de forma única.
+ pueda identificar correctamente todas las máquinas virtuales, estas deben
+ disponer de
+\end_layout
+
+\begin_layout Itemize
+un nombre, que debe ser único dentro del servidor de máquinas virtuales
+ en el que reside la máquina, y
+\end_layout
+
+\begin_layout Itemize
+un UUID (
+\emph on
+Universally Unique Identifier
+\emph default
+), que debe identificar a la máquina virtual de forma única en toda la infraestr
+uctura.
 \end_layout
 
 \begin_layout Paragraph
@@ -14836,9 +14956,13 @@ Para crear una máquina virtual a través de
 \family typewriter
 libvirt
 \family default
- es necesario reservar previamente todos los recursos de los que hemos hablado
- en la sección anterior e incluirlos en un fichero de definición.
- En esta sección, nos centraremos en el formato de estos ficheros.
+ es necesario reservar previamente todos los recursos que tiene asignados
+ e incluirlos en un fichero 
+\family typewriter
+.xml
+\family default
+, llamado fichero de definición.
+ En esta sección, explicaremos en el formato de estos ficheros.
 \end_layout
 
 \begin_layout Standard
@@ -15748,7 +15872,8 @@ status collapsed
 \begin_inset space ~
 \end_inset
 
-<graphics type='vnc' port='15010' autoport='no' passwd='CCRules!' 
+<graphics type='vnc' port='15010' websocket='15011' autoport='no' passwd='CCRule
+s!' 
 \end_layout
 
 \begin_layout Plain Layout
@@ -16115,18 +16240,24 @@ type
 \family typewriter
 domain
 \family default
- indica la solución de virtualización en la que se utilizará la máquina
- virtual.
- En nuestro caso, toma el valor 
+ indica la solución de virtualización que se utilizará para gestionar la
+ máquina virtual.
+ En nuestro caso toma el valor 
 \family typewriter
 kvm
 \family default
 , ya que utilizamos el hipervisor KVM.
- Es importante notar que las funciones que se pueden especificar en los
- ficheros de definición varían en función del sistema de virtualización
- que estemos usando.
+ 
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+Es importante notar que las funciones que se pueden especificar en los ficheros
+ de definición varían en función del sistema de virtualización que estemos
+ usando.
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 los elementos 
 \family typewriter
@@ -16149,19 +16280,20 @@ memory
 \end_layout
 
 \begin_layout Itemize
-el elemento 
+esencialmente, el elemento 
 \family typewriter
 os
 \family default
- define, esencialmente, la arquitectura del sistema operativo de la máquina
- virtual y la secuencia de arranque de la misma.
+ define la arquitectura del sistema operativo de la máquina virtual y la
+ secuencia de arranque de la misma.
  
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
-En el caso del fichero de definición anterior, el sistema operativo soportará
- la arquitectura 
+En el caso del fichero de definición anterior, el sistema operativo podrá
+ ser cualquier sistema operativo de 32 o 64 bits soportado por la arquitectura
+ 
 \family typewriter
 x86_64
 \family default
@@ -16192,15 +16324,16 @@ Physical Address Extension
 
 \begin_deeper
 \begin_layout Standard
-Para lo que nos ocupa, podemos decir que la práctica totalidad de las CPUs
- 
+Sin entrar demasiado en detalles, podemos decir que la práctica totalidad
+ de las CPUs 
 \family typewriter
 x86
 \family default
- y de los sistemas operativos existentes en el mercado soportan estas caracterís
-ticas, por lo que es mejor dejarlas activadas.
- En caso de que se detecte alguna incompatibilidad, el sistema operativo
- de la máquina virtual podrá deshabilitarlas.
+ con hasta diez años de antigüedad y todos los sistemas operativos existentes
+ en el mercado soportan estas características, por lo que es mejor dejarlas
+ activadas.
+ En caso de que detecte alguna incompatibilidad, el sistema operativo de
+ la máquina virtual podrá deshabilitarlas.
 \end_layout
 
 \end_deeper
@@ -16224,7 +16357,7 @@ utc
 
 \begin_deeper
 \begin_layout Standard
-Sin entrar en detalles, basta recordar que el el elemento 
+Sin entrar en detalles, basta recordar que el elemento 
 \family typewriter
 clock
 \family default
@@ -16390,6 +16523,24 @@ listen
 ) en la que escuchará el servidor VNC.
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+Tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-del-servidor-VNC-KVM"
+
+\end_inset
+
+, estamos utilizando el servidor VNC integrado en KVM.
+ Si utilizásemos otro, el elemento 
+\family typewriter
+graphics
+\family default
+ no sería necesario, por lo que no aparecería en el fichero de definición.
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 
 \family typewriter
@@ -16476,36 +16627,996 @@ llamadas asíncronas
 \end_layout
 
 \begin_layout Standard
-Centrémonos en el proceso de inicialización.
- Para poder manejar el hipervisor KVM desde código 
-\emph on
-Python
-\emph default
-, es necesario
-\end_layout
-
-\begin_layout Itemize
-establecer la conexión con el hipervisor,
-\end_layout
-
-\begin_layout Itemize
-definir los métodos de tratamiento que procesarán los eventos generados
- por 
+Para paralelizar la implementación del servidor de máquinas virtuales es
+ necesario definir una interfaz que permita interactuar con 
 \family typewriter
 libvirt
 \family default
-, y
+ a un elevado nivel de abstracción.
+ La clase 
+\family typewriter
+LibvirtConnector
+\family default
+ define e implementa dicha interfaz.
+ El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Dependencias-libvirtconnector"
+
+\end_inset
+
+ muestra sus relaciones.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor MVs/Dependencias libvirtconnector.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Dependencias-libvirtconnector"
+
+\end_inset
+
+Relaciones de la clase 
+\family typewriter
+LibvirtConnector
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+VirConnection
+\family default
+ forma parte de los 
+\emph on
+bindings 
+\emph default
+de 
+\family typewriter
+libvirt
+\family default
+ escritos en 
+\emph on
+Python
+\emph default
+, y permite establecer la conexión e interactuar con el hipervisor.
+ La conexión al hipervisor se hace con una URI, que en el caso de KVM es
+ 
+\family typewriter
+qemu:///system
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, toda conexión a 
+\family typewriter
+libvirt
+\family default
+ tiene asociado un hilo, que muestreará periódicamente el estado del hipervisor
+ para generar los eventos de arranque, apagado, reinicio,\SpecialChar \ldots{}
+ de las máquinas
+ virtuales.
+ Estos hilos pertenecen a una clase de hilo anónima que, como todas las
+ clases de hilo de 
+\emph on
+Python
+\emph default
+, hereda de 
+\family typewriter
+Thread
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, las clases abstractas 
+\family typewriter
+DomainStartCallback
+\family default
+ y 
+\family typewriter
+DomainStopCallback
+\family default
+ definen la interfaz que se usará para procesar los eventos de arranque
+ y apagado de una máquina virtual.
+ El resto de eventos generados por 
+\family typewriter
+libvirt
+\family default
+ se ignorarán.
+\end_layout
+
+\begin_layout Subsubsection
+La clase 
+\family typewriter
+DomainHandler
+\end_layout
+
+\begin_layout Standard
+Como ya hemos visto, para crear una máquina virtual es necesario
 \end_layout
 
 \begin_layout Itemize
-crear un hilo que permitirá a libvirt consultar periódicamente el estado
- del hipervisor y generará los eventos correspondientes.
+reservar todos los recursos que tiene asignados,
+\end_layout
+
+\begin_layout Itemize
+crear un fichero de definición en el que se aparezcan todos estos recursos,
+ y
+\end_layout
+
+\begin_layout Itemize
+crear la máquina virtual utilizando una llamada a 
+\family typewriter
+libvirt
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, también es necesario procesar los eventos generados por
+ 
+\family typewriter
+libvirt
+\family default
+.
+ Como dijimos en la sección anterior, en el servidor de máquinas virtuales
+ sólo se procesan dos tipos de evento:
+\end_layout
+
+\begin_layout Itemize
+los eventos de arranque de una máquina virtual.
+ Cuando se generan, la máquina virtual acaba de arrancar.
+ Para procesarlos, se envían al propietario de la máquina virtual los datos
+ de conexión al servidor VNC asociado a dicha máquina.
+\end_layout
+
+\begin_layout Itemize
+los eventos de apagado de una máquina virtual.
+ Cuando se generan, la máquina virtual acaba de apagarse.
+ Para procesarlos, es necesario liberar los recursos asociados a la máquina
+ virtual y, adelantando algo de lo que veremos más adelante, transferir
+ las imágenes de disco al repositorio de imágenes en algunos casos.
+\end_layout
+
+\begin_layout Standard
+Para acotar el nivel de complejidad de las clases del subsistema servidor
+ de máquinas virtuales, lo más conveniente es ocultar al exterior 
+\end_layout
+
+\begin_layout Itemize
+los procesos configuración, creación y destrucción de las redes virtuales,
+\end_layout
+
+\begin_layout Itemize
+los procesos de reserva y liberación de recursos, 
+\end_layout
+
+\begin_layout Itemize
+las interacciones con 
+\family typewriter
+libvirt
+\family default
+, y 
+\end_layout
+
+\begin_layout Itemize
+el procesamiento de los eventos generados por 
+\family typewriter
+libvirt
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Para ello, utilizamos la clase 
+\family typewriter
+DomainHandler
+\family default
+.
+ Sus relaciones aparecen en el diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Relaciones-DomainHandler"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor MVs/Relaciones DomainHandler.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Relaciones-DomainHandler"
+
+\end_inset
+
+Relaciones de la clase 
+\family typewriter
+DomainHandler
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En primer lugar, la clase 
+\family typewriter
+DomainHandler
+\family default
+ hereda de las clases 
+\family typewriter
+DomainStartCallback
+\family default
+ y 
+\family typewriter
+DomainStopCallback
+\family default
+, por lo que podrá procesar los eventos de arranque y apagado de una máquina
+ virtual.
+ Asimismo, la clase 
+\family typewriter
+DomainHandler
+\family default
+ utiliza un objeto 
+\family typewriter
+LibvirtConnector
+\family default
+ para realizar las llamadas a 
+\family typewriter
+libvirt
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, en 
+\emph on
+Python
+\emph default
+, no existen interfaces, por lo que estas deben definirse como clases abstractas.
+ Por tanto, para implementar varias interfaces es necesario heredar de varias
+ clases.
+ Así, las dos relaciones de herencia del diagrama deben interpretarse como
+ dos relaciones de realización de interfaz.
+\end_layout
+
+\begin_layout Standard
+Además, como vimos en las secciones 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-de-imágenes-cow"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-del-formato-qcow2"
+
+\end_inset
+
+, cada máquina virtual tiene asociadas dos imágenes 
+\family typewriter
+qcow2
+\family default
+, y una de ellas es del tipo 
+\emph on
+copy-on-write
+\emph default
+.
+ Durante el proceso de arranque de una máquina virtual, es necesario crear
+ la imagen 
+\emph on
+copy-on-write
+\emph default
+ y crear una copia de la imagen restante.
+ Para ello, los objetos 
+\family typewriter
+DomainHandler
+\family default
+ ejecutan los comandos correspondientes utilizando los métodos de la clase
+ 
+\family typewriter
+ChildProcessManager
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los métodos de la clase 
+\family typewriter
+DefinitionFileEditor
+\family default
+ permiten generar los ficheros de definición de las máquinas virtuales a
+ partir de otros que sirven como plantilla.
+ Esto simplifica su implementación.
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+VMServerPacketHandler
+\family default
+ dispone de métodos para leer y crear los diversos tipos de paquete del
+ servidor de máquinas virtuales.
+ Los objetos 
+\family typewriter
+DomainHandler
+\family default
+ los utilizan para generar los paquetes con los datos de conexión a los
+ servidores VNC de las máquinas virtuales, que enviará a los propietarios
+ de las máquinas virtuales mediante un objeto 
+\family typewriter
+NetworkManager
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, los métodos de la clase 
+\family typewriter
+VMServerDBConnector
+\family default
+ manipulan la base de datos del servidor de máquinas virtuales.
+ Los objetos 
+\family typewriter
+DomainHandler
+\family default
+ los utilizan para registrar y liberar los recursos asignados a las distintas
+ máquinas virtuales.
+\end_layout
+
+\begin_layout Subsubsection
+Creación y edición de imágenes de disco
+\end_layout
+
+\begin_layout Standard
+Para crear y editar imágenes de disco, el servidor de máquinas virtuales
+ debe comunicarse con el repositorio de imágenes.
+ Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Almacenamiento-imágenes-zip"
+
+\end_inset
+
+, para ahorrar ancho de banda el servidor de máquinas virtuales y el repositorio
+ de imágenes no intercambian directamente imágenes de disco, sino ficheros
+ 
+\family typewriter
+.zip
+\family default
+ que contienen imágenes de disco.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-del-protocolo-FTP"
+
+\end_inset
+
+, los servidores de máquinas virtuales y el repositorio de imágenes utilizarán
+ el protocolo FTP para intercambiar ficheros comprimidos.
+\end_layout
+
+\begin_layout Standard
+Así pues, para que el servidor de máquinas virtuales pueda comunicarse con
+ el repositorio de imágenes, es necesario que
+\end_layout
+
+\begin_layout Itemize
+pueda generar y descomprimir ficheros .zip,
+\end_layout
+
+\begin_layout Itemize
+pueda transferir, mediante el protocolo FTP, un fichero comprimido al repositori
+o de imágenes, y
+\end_layout
+
+\begin_layout Itemize
+pueda recibir, mediante el protocolo FTP, un fichero comprimido desde el
+ repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+En esta sección presentaremos las clases que intervienen en estos procesos.
+\end_layout
+
+\begin_layout Paragraph
+Colas de transferencias y de compresión
+\end_layout
+
+\begin_layout Standard
+En todas las comunicaciones con el repositorio de imágenes, podemos distinguir
+ dos fases:
+\end_layout
+
+\begin_layout Itemize
+el intercambio, a través del protocolo FTP, de un fichero comprimido con
+ imágenes de disco, y
+\end_layout
+
+\begin_layout Itemize
+la descompresión o la creación de un fichero comprimido con imágenes de
+ disco
+\end_layout
+
+\begin_layout Standard
+Para reducir el tiempo que tardan en realizarse estas transferencias, es
+ posible realizar estas fases en paralelo.
+ Por ello, los servidores de máquinas virtuales utilizan una cola para cada
+ una de estas fases, es decir, una cola de transferencias y una cola de
+ compresión.
+\end_layout
+
+\begin_layout Standard
+Así, la cola de transferencias incluye todas las peticiones de intercambio
+ de ficheros comprimidos con el repositorio de imágenes, y en la cola de
+ compresión se encuentran todas las peticiones de compresión y descompresión
+ de ficheros 
+\family typewriter
+.zip
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, no debemos olvidar que los usuarios pueden dedicar mucho
+ tiempo y esfuerzo a los procesos de creación y edición de imágenes de disco.
+ Por ello, es necesario dotar de una gran robustez a esta parte de los servidore
+s de máquinas virtuales, de modo que sólo se pierdan datos de los usuarios
+ en los casos más extremos.
+\end_layout
+
+\begin_layout Standard
+Para ello, la cola de transferencias y la cola de compresión tienen persistencia
+ en disco, y su contenido se almacena en dos tablas de la base de datos.
+ De esta manera, aunque se produzcan caídas del servidor de máquinas virtuales,
+ las imágenes de disco de los usuarios acabarán transfiriéndose normalmente
+ al repositorio de imágenes.
 \end_layout
 
 \begin_layout Paragraph
 La clase 
 \family typewriter
-libvirtConnector
+FileTransferThread
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+FileTransferThread
+\family default
+ se corresponde con el hilo asociado a la cola de transferencias.
+ Este hilo intercambia paquetes con el repositorio de imágenes y realiza
+ las correspondientes transferencias FTP cuando el repositorio de imágenes
+ se lo indica.
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Relaciones-FileTransferThread"
+
+\end_inset
+
+ muestra las principales relaciones de la clase 
+\family typewriter
+FileTransferThread
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor MVs/Relaciones FileTransferThread.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Relaciones-FileTransferThread"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+FileTransferThread
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para borrar los ficheros 
+\family typewriter
+.zip
+\family default
+ transferidos, la clase 
+\family typewriter
+FileTransferThread
+\family default
+ utiliza los métodos de la clase 
+\family typewriter
+ChildProcessManager
+\family default
+.
+ Asimismo, la clase FileTransferThread utiliza los servicios de las clases
+ 
+\family typewriter
+VMServerPacketHandler
+\family default
+ y 
+\family typewriter
+NetworkManager
+\family default
+ para informar de los errores de conexión al repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los objetos 
+\family typewriter
+FileTransferThread
+\family default
+ interactúan con el repositorio de imágenes a través de un objeto 
+\family typewriter
+FileTransferCallback
+\family default
+.
+ Estos objetos intercambian paquetes con el repositorio de imágenes y realizan
+ las transferencias FTP correspondientes.
+ Para ello, utilizan los servicios de tres objetos: un objeto 
+\family typewriter
+FTPClient
+\family default
+, un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+ y un objeto 
+\family typewriter
+NetworkManager
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Debemos recordar que, como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:El-cliente-FTP-cc"
+
+\end_inset
+
+, que la clase 
+\family typewriter
+FTPClient
+\family default
+ ofrece una interfaz para manipular a un alto nivel de abstracción el cliente
+ FTP incluido en la librería estándar de 
+\emph on
+Python
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, la clase 
+\family typewriter
+FileTransferThread
+\family default
+ hereda de 
+\family typewriter
+NetworkCallback
+\family default
+, ya que procesará los paquetes recibidos a través de la conexión de red
+ con el repositorio de imágenes.
+ 
+\end_layout
+
+\begin_layout Standard
+Finalmente, los elementos de la cola de transferencias se almacenan en una
+ tabla de la base de datos del servidor de máquinas virtuales.
+ Para desencolarlos, los objetos 
+\family typewriter
+FileTransferThread
+\family default
+ utilizan un objeto 
+\family typewriter
+VMServerDBConnector
+\family default
+.
+\end_layout
+
+\begin_layout Paragraph
+La clase 
+\family typewriter
+CompressionThread
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+CompressionThread
+\family default
+ está asociada al hilo que procesa los elementos de la cola de compresión.
+ Para realizar este procesamiento, se distinguen dos casos:
+\end_layout
+
+\begin_layout Itemize
+cuando se descomprime un fichero 
+\family typewriter
+.zip
+\family default
+, las imágenes de disco que contiene se registran en la base de datos y
+ se copian al directorio correspondiente del servidor de máquinas virtuales.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Además, cuando las imágenes se han descargado del repositorio de imágenes
+ para crear o editar una imagen, también se ordena el arranque de una máquina
+ virtual, que las usará como discos duros.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+cuando se genera un fichero 
+\family typewriter
+.zip
+\family default
+, es necesario registrar la petición correspondiente en la cola de transferencia
+s.
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Relaciones-CompressionThread"
+
+\end_inset
+
+ muestra las principales relaciones de la clase 
+\family typewriter
+CompressionThread
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor MVs/Relaciones CompressionThread.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Relaciones-CompressionThread"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+CompressionThread
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para crear y descomprimir ficheros .zip, la clase 
+\family typewriter
+CompressionThread
+\family default
+ utiliza los servicios de la clase 
+\family typewriter
+ZipBasedCompressor
+\family default
+.
+ Esta ejecutará los comandos 
+\family typewriter
+zip
+\family default
+ y 
+\family typewriter
+unzip
+\family default
+ utilizando los métodos de la clase 
+\family typewriter
+ChildProcessManager
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+En la librería estándar de 
+\emph on
+Python
+\emph default
+ existen clases que permiten crear y descomprimir ficheros 
+\family typewriter
+.zip
+\family default
+, pero existe un 
+\emph on
+bug
+\emph default
+ en las mismas que impide crear archivos 
+\family typewriter
+.zip
+\family default
+ mayores de 4 GB.
+ Es importante notar que, cuando se comprimen imágenes de disco, frecuentemente
+ se obtienen ficheros 
+\family typewriter
+.zip
+\family default
+ de más de 4 GB.
+\end_layout
+
+\begin_layout Standard
+Aunque este error ha sido subsanado en las nuevas versiones de las ramas
+ 2.x y 3.x de 
+\emph on
+Python
+\emph default
+, en muchas distribuciones 
+\emph on
+Linux
+\emph default
+ actuales se sigue utilizando la versión antigua.
+ Por ello, de cara a facilitar la instalación de 
+\emph on
+CygnusCloud
+\emph default
+, hemos decidido no utilizar estas clases e invocar directamente a los comandos
+ 
+\family typewriter
+zip
+\family default
+ y 
+\family typewriter
+unzip
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la clase 
+\family typewriter
+CompressionThread
+\family default
+ utiliza los servicios de las clases 
+\family typewriter
+NetworkManager
+\family default
+ y 
+\family typewriter
+VMServerPacketHandler
+\family default
+ para enviar los paquetes de error.
+ Estos se generarán si, por ejemplo, el fichero 
+\family typewriter
+.zip
+\family default
+ descargado del repositorio de imágenes está corrupto.
+\end_layout
+
+\begin_layout Standard
+Como ya hemos dicho, cuando en algunos casos se descomprimen imágenes de
+ disco es necesario arrancar una máquina virtual.
+ Para ello, la clase CompressionThread utilizará los servicios de la clase
+ 
+\family typewriter
+DomainHandler
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, los objetos 
+\family typewriter
+CompressionThread
+\family default
+ utilizarán un objeto 
+\family typewriter
+VMServerDBConnector
+\family default
+ para extraer las peticiones de compresión y descompresión de la cola de
+ compresión (que, al igual que en el caso de la cola de transferencias,
+ se almacenan en una tabla de la base de datos), y también para registrar
+ y borrar las imágenes de disco en la base de datos.
+\end_layout
+
+\begin_layout Subsubsection
+La clase 
+\family typewriter
+VMServerReactor
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+VMServerReactor
+\family default
+ es la clase principal del subsistema servidor de máquinas virtuales.
+ Estos objetos se ocupan de realizar el proceso de inicialización, y también
+ de procesar los paquetes que envía el servidor de 
+\emph on
+cluster
+\emph default
+ al servidor de máquinas virtuales a través de la conexión de control.
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura muestra las principales relaciones de
+ la clase 
+\family typewriter
+VMServerReactor
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Principales relaciones de la clase 
+\family typewriter
+VMServerReactor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -16834,7 +17945,7 @@ reference "fig:Diagrama-de-direcciones_Web"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -16982,7 +18093,7 @@ puede verse el conjunto de secciones asociadas a cada tipo de usuario.
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -17143,7 +18254,7 @@ reference "tab:Tabla-seccion-subseccion"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -17431,7 +18542,7 @@ reference "sub:Estructura-de-direcciones"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -17833,7 +18944,7 @@ reference "fig:Secuencia-de-arranque"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
