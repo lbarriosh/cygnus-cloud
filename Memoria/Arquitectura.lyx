@@ -17872,6 +17872,60 @@ se establece la conexión con la base de datos del servidor de máquinas virtual
 \end_layout
 
 \begin_layout Enumerate
+se crean las direcciones MAC y los UUIDs que usarán las máquinas virtuales
+ activas.
+ Todas las direcciones MAC creadas son de la forma
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+2C:00:00:00:00:M
+\end_layout
+
+\begin_layout Standard
+siendo 
+\family typewriter
+M
+\family default
+ un número entero entre 0 y 255 codificado en hexadecimal.
+ 
+\end_layout
+
+\begin_layout Standard
+Por tanto, todas las direcciones MAC son 
+\emph on
+unicast
+\emph default
+ y de uso local, y el servidor de máquinas virtuales podrá albergar un máximo
+ de 256 máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Standard
+Teniendo en cuenta los recursos que, como mínimo, hay que asociar a un sistema
+ operativo con interfaz gráfica de usuario, resulta difícil alcanzar este
+ límite con el 
+\emph on
+hardware
+\emph default
+ actual.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+se reservan 512 puertos, que utilizarán los servidores VNC de las máquinas
+ virtuales y los 
+\emph on
+websockets
+\emph default
+ que estos tienen asociados.
+\end_layout
+
+\begin_layout Enumerate
 se inicializa el objeto 
 \family typewriter
 NetworkManager
@@ -17907,7 +17961,8 @@ DomainHandler
 \end_layout
 
 \begin_layout Enumerate
-se liberan los recursos asignados a las máquinas virtuales activas.
+se comprueba qué máquinas virtuales activas están registradas en la base
+ de datos, reasignando o liberando recursos como corresponda.
  Para ello, se invoca al método 
 \family typewriter
 doInitialCleanup()
@@ -18001,19 +18056,734 @@ cluster
 \end_layout
 
 \begin_layout Standard
-Para ello, hacen uso de los paquetes de solicitud de estado, que se procesan
- en el servidor de máquinas virtuales tal y como se indica en la figura
- .
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Actualización estado.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Solicitud-estado-servidor-MVs"
+
+\end_inset
+
+Solicitud del estado del servidor de máquinas virtuales
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
+Para ello, hacen uso de los paquetes del tipo 
+\family sans
+Solicitud de Estado
+\family default
+, que se procesan en el servidor de máquinas virtuales tal y como se indica
+ en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Solicitud-estado-servidor-MVs"
 
+\end_inset
+
+.
+ Como puede observarse en dicho diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+el servidor de 
+\emph on
+cluster
+\emph default
+ envía un paquete del tipo 
+\family sans
+Solicitud de Estado
+\family default
+ al servidor de máquinas virtuales.
+ Este no contiene ningún tipo de información adicional.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+NetworkManager
+\family default
+ invoca al método de procesamiento de paquetes del objeto 
+\family typewriter
+VMServerReactor
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+para procesar el paquete, el objeto 
+\family typewriter
+VMServerReactor
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\noindent
+invoca al método 
+\family typewriter
+readPacket()
+\family default
+ del objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+ Este método lee el contenido del paquete.
+ Como los paquetes del tipo 
+\family sans
+Solicitud de Estado
+\family default
+ no transportan información adicional, en este caso no se lee nada.
+\end_layout
+
+\begin_layout Enumerate
+averigua las cantidades de memoria RAM en uso y disponible.
+ Para ello, ejecuta el comando 
+\family typewriter
+free
+\family default
+, haciendo uso de los servicios de la clase 
+\family typewriter
+ChildProcessManager
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+averigua el número de CPUs virtuales en uso consultando los recursos asignados
+ a las máquinas virtuales activas.
+\end_layout
+
+\begin_layout Enumerate
+utiliza la utilidad 
+\family typewriter
+qemu-img info
+\family default
+ para averiguar el espacio en disco requerido por todas las máquinas virtuales
+ activas.
+ Para ello, vuelve a utilizar los servicios de la clase 
+\family typewriter
+ChildProcessManager
+\family default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ construye un paquete con toda la información recopilada, utilizando para
+ ello un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+ Posteriormente lo envía al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+De ahora en adelante, omitiremos las llamadas a los métodos 
+\family typewriter
+readPacket()
+\family default
+ y 
+\family typewriter
+buildPacket()
+\family default
+ del objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+ en todos los diagramas de secuencia del servidor de máquinas virtuales.
+ Estas siempre se realizarán para leer y construir un paquete respectivamente.
+\end_layout
+
+\begin_layout Paragraph
+Creación de una máquina virtual: secuencia básica
+\end_layout
+
+\begin_layout Standard
+Los servidores de máquinas virtuales sólo crean una máquina virtual bajo
+ petición expresa del servidor de 
+\emph on
+cluster
+\emph default
+.
+ Para ello, este utiliza un paquete del tipo 
+\family sans
+Creación de máquina virtual
+\family default
+, que se procesa de acuerdo al diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Creación-MV"
+
+\end_inset
+
+.
+ Por claridad, en dicho diagrama sólo hemos recogido la secuencia básica,
+ en la que no aparecen errores.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, por limitaciones de espacio, hemos eliminado las líneas de vida
+ de las clase 
+\family typewriter
+ChildProcessManager
+\family default
+ y 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Arranque MV sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Creación-MV"
+
+\end_inset
+
+Creación de una máquina virtual: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Creación-MV"
+
+\end_inset
+
+, en el arranque de una máquina virtual se siguen estos pasos:
+\end_layout
+
+\begin_layout Enumerate
+se invoca al método de procesamiento de paquetes del objeto 
+\family typewriter
+VMServerReactor
+\family default
+.
+ Para crear la máquina virtual, este delega en un objeto DomainHandler.
+\end_layout
+
+\begin_layout Enumerate
+el método 
+\family typewriter
+createDomain()
+\family default
+ de la clase 
+\family typewriter
+DomainHandler
+\family default
+,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+lee el contenido del paquete 
+\family sans
+Creación de máquina virtual
+\family default
+ utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+ En él se incluye el identificador de la máquina virtual, el identificador
+ único de la petición y el identificador del usuario que ha enviado la petición.
+\end_layout
+
+\begin_layout Enumerate
+reserva una dirección MAC y un UUID para la máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+reserva dos puertos para la máquina virtual.
+ Uno de ellos se corresponderá con el servidor VNC de la máquina virtual,
+ y el otro con el 
+\emph on
+websocket 
+\emph default
+asociado.
+\end_layout
+
+\begin_layout Enumerate
+genera aleatoriamente una contraseña para el servidor VNC.
+ Para ello, invoca al comando 
+\family typewriter
+openssl
+\family default
+ a través de los servicios de la clase 
+\family typewriter
+ChildProcessManager
+\family default
+.
+ La longitud de la contraseña generada es configurable.
+\end_layout
+
+\begin_layout Enumerate
+genera las rutas donde colocar las imágenes de disco de la máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+crea dichas imágenes, ejecutando los comandos 
+\family typewriter
+qemu-img create
+\family default
+ y 
+\family typewriter
+cp
+\family default
+.
+ Para ello, utiliza los servicios de la clase 
+\family typewriter
+ChildProcessManager
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+genera el fichero de definición de la máquina virtual.
+ Por motivos de eficiencia, su contenido no se escribe a disco, sino que
+ se genera un 
+\emph on
+string
+\emph default
+ con el contenido de dicho fichero.
+\end_layout
+
+\begin_layout Enumerate
+invoca al método de creación de un dominio de la clase 
+\family typewriter
+LibvirtConnector
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+registra en la base de datos del servidor de máquinas virtuales los recursos
+ asignados a la máquina virtual.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+cuando 
+\family typewriter
+libvirt
+\family default
+ genera el evento de arranque de máquina virtual, el objeto 
+\family typewriter
+LibvirtConnector
+\family default
+ invocará al método 
+\family typewriter
+onDomainStart()
+\family default
+ del objeto 
+\family typewriter
+DomainHandler
+\family default
+.
+ En él,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se obtienen el puerto del 
+\emph on
+websocket
+\emph default
+, la contraseña del servidor VNC, el identificador único de la petición
+ y el identificador del usuario que ha enviado la petición de arranque de
+ la máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Datos de conexión de máquina virtual
+\family default
+, utilizando para ello un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+ Este contiene la información que se ha extraído de la base de datos del
+ servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Paragraph
+Creación de una máquina virtual: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+En el proceso de creación de una máquina virtual, pueden producirse múltiples
+ errores: las conexiones con la base de datos o con 
+\family typewriter
+libvirt
+\family default
+ pueden fallar, y también pueden recibirse peticiones incorrectas.
+ Una petición de arranque de máquina virtual será incorrecta cuando
+\end_layout
+
+\begin_layout Itemize
+el servidor de máquinas virtuales no dispone de las imágenes de disco asociadas
+ a la máquina virtual, o cuando
+\end_layout
+
+\begin_layout Itemize
+las imágenes de disco asociadas a la máquina virtual se están editando en
+ el servidor de máquinas virtuales, o cuando
+\end_layout
+
+\begin_layout Itemize
+el servidor de máquinas virtuales no disponga de suficientes CPUs, memoria
+ RAM o espacio libre en disco.
+\end_layout
+
+\begin_layout Standard
+En la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:El-paquete-clusterServer"
+
+\end_inset
+
+ mostraremos que, para ahorrar ancho de banda, el servidor de 
+\emph on
+cluster
+\emph default
+ nunca enviará a los servidores de máquinas virtuales peticiones incorrectas.
+ No obstante, para que la infraestructura pueda tolerar los errores del
+ servidor de 
+\emph on
+cluster
+\emph default
+, estos errores se siguen detectando y tratando en los servidores de máquinas
+ virtuales.
+\end_layout
+
+\begin_layout Standard
+Durante el proceso de creación de una máquina virtual, los errores pueden
+ detectarse
+\end_layout
+
+\begin_layout Itemize
+al consultar la base de datos del servidor de máquinas virtuales para obtener
+ el estado de la imagen.
+ Este es el caso de los dos primeros tipos de peticiones incorrectas que
+ pueden recibirse en el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+al realizar las llamadas a libvirt.
+ Los errores restantes se detectan al realizar estas llamadas.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-MV-estado-incorrecto"
+
+\end_inset
+
+ muestra cómo se procede al detectar un error tras consultar el estado de
+ la imagen en la base de datos del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Arranque MV error 1.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-MV-estado-incorrecto"
+
+\end_inset
+
+Arranque de una máquina virtual: imágenes de disco en estado incorrecto
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar, el paquete del tipo 
+\family sans
+Arranque de máquina virtual
+\family default
+ empieza a procesarse igual que en el arranque normal.
+ En cuanto se detecta el error,
+\end_layout
+
+\begin_layout Enumerate
+se liberan la MAC, el UUID y los puertos que se reservaron,
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Error de arranque de máquina virtual
+\family default
+.
+ Este paquete contiene el identificador único de la petición y un código
+ de descripción del error.
+\end_layout
+
+\begin_layout Enumerate
+se envía el paquete de error al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los errores restantes se procesan tratando excepciones.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-MV-excepción"
+
+\end_inset
+
+ muestra cómo se trata el error de este tipo que requiere más procesamiento:
+ un fallo en la llamada a 
+\family typewriter
+libvirt
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Es importante notar que las direcciones MAC y los UUIDs, los puertos, las
+ imágenes de disco,\SpecialChar \ldots{}
+ no se intentan liberar si no se han asociado a la máquina
+ virtual.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Arranque MV error 2.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-MV-excepción"
+
+\end_inset
+
+Arranque de una máquina virtual: fallo en la llamada a 
+\family typewriter
+libvirt
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-MV-excepción"
+
+\end_inset
+
+, cuando se detecta el error
+\end_layout
+
+\begin_layout Enumerate
+se liberan la MAC, el UUID y los puertos que se reservaron,
+\end_layout
+
+\begin_layout Enumerate
+se borran las imágenes de disco, 
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Error interno
+\family default
+.
+ Este paquete contiene el identificador único de la petición.
+\end_layout
+
+\begin_layout Enumerate
+se envía el paquete de error al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, debemos observar que, en caso de que no se produzcan errores,
+ el registro de los recursos asociados a la máquina virtual se realiza tras
+ realizar la llamada a 
+\family typewriter
+libvirt
+\family default
+.
+ Esto nos permite que, en caso de producirse algún error, no sea necesario
+ borrar de la base de datos el identificador único de la petición, el identifica
+dor del usuario que la envió, las rutas de las imágenes de disco,\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Paragraph
+Apagado de una máquina virtual
 \end_layout
 
 \begin_layout Subsection
 El paquete 
 \family typewriter
-clusterServer
+clusterServer 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:El-paquete-clusterServer"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection

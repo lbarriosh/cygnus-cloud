@@ -66,12 +66,11 @@
 %% Hacer que el símbolo del euro salga bien
 \usepackage{eurosym}
 
-% Modificar los párrafos
+\maxsecnumdepth{paragraph}
 \makeatletter
-\renewcommand\paragraph{%
-   \@startsection{paragraph}{4}{0mm}%
-      {-\baselineskip}%
-      {.5\baselineskip}%
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+      {-3.25ex\@plus -1ex \@minus -.2ex}%
+      {1.5ex \@plus .2ex}%
       {\normalfont\normalsize\bfseries}}
 \makeatother
 
@@ -139,8 +138,8 @@ fixltx2e
 \topmargin 3cm
 \rightmargin 3cm
 \bottommargin 3cm
-\secnumdepth 3
-\tocdepth 3
+\secnumdepth 4
+\tocdepth 4
 \paragraph_separation skip
 \defskip smallskip
 \quotes_language english
