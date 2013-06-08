@@ -9,13 +9,15 @@ from virtualMachineServer.virtualNetwork.virtualNetworkManager import VirtualNet
 from ccutils.processes.childProcessManager import ChildProcessManager
 from virtualMachineServer.libvirtInteraction.libvirtConnector import LibvirtConnector
 from virtualMachineServer.exceptions.vmServerException import VMServerException
-from virtualMachineServer.libvirtInteraction.configurationFileEditor import ConfigurationFileEditor
+from virtualMachineServer.libvirtInteraction.definitionFileEditor import DefinitionFileEditor
 from virtualMachineServer.database.transfer_t import TRANSFER_T
+from virtualMachineServer.libvirtInteraction.domainStartCallback import DomainStartCallback
+from virtualMachineServer.libvirtInteraction.domainStopCallback import DomainStopCallback
 from os import path, listdir
 
 from time import sleep
 
-class DomainHandler(object):
+class DomainHandler(DomainStartCallback, DomainStopCallback):
     """
     Clase del gestor de dominios. Estos objetos interactúan con libvirt para manipular dominios.
     """
@@ -59,7 +61,7 @@ class DomainHandler(object):
         Devuelve:
             Nada
         """
-        self.__libvirtConnection = LibvirtConnector(LibvirtConnector.KVM, self.__onDomainStart, self.__onDomainStop)
+        self.__libvirtConnection = LibvirtConnector(LibvirtConnector.KVM, self, self)
         self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
         self.__virtualNetworkManager.createVirtualNetwork(virtualNetworkName, gatewayIP, 
                                                           netmask, dhcpStartIP, 
@@ -167,7 +169,7 @@ class DomainHandler(object):
                 newOSDisk = path.join(self.__sourceImagePath, osImagePath)            
             
             # Genero el fichero de definición
-            xmlFile = ConfigurationFileEditor(definitionFile)
+            xmlFile = DefinitionFileEditor(definitionFile)
             xmlFile.setDomainIdentifiers(newName, newUUID)
             xmlFile.setImagePaths(newOSDisk, newDataDisk)            
             xmlFile.setVirtualNetworkConfiguration(self.__virtualNetworkName, newMAC)
@@ -182,7 +184,7 @@ class DomainHandler(object):
             self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, newOSDisk,  newDataDisk, newMAC, newUUID)
             self.__dbConnector.addVMBootCommand(newName, commandID)
        
-        except Exception :
+        except Exception:
             # TODO: cancelar la edición en el repositorio
             if (not isBootable) :
                 # Borrar la imagen
@@ -212,7 +214,7 @@ class DomainHandler(object):
         # las bases de datos.
         self.__freeDomainResources(domainName, False)
         
-    def __onDomainStart(self, domain):
+    def onDomainStart(self, domain):
         """
         Método que se ejecuta cuando una máquina virtual arranca.  Se limita a enviar los datos
         de conexión a los usuarios.
@@ -243,7 +245,7 @@ class DomainHandler(object):
         packet = self.__packetManager.createVMConnectionParametersPacket(ip, port + 1, password, commandID)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
-    def __onDomainStop(self, domainInfo):
+    def onDomainStop(self, domainName):
         """
         Método que se ejecuta cuando una máquina virtual se apaga. Se limita a liberar sus recursos.
         Argumentos:
@@ -251,10 +253,10 @@ class DomainHandler(object):
         Devuelve:
             Nada
         """
-        if (self.__dbConnector.getVMBootCommand(domainInfo["name"]) != None) :
+        if (self.__dbConnector.getVMBootCommand(domainName) != None) :
             # Al cargarnos manualmente el dominio, ya hemos liberado sus recursos. En estos
             # casos, no hay que hacer nada.
-            self.__freeDomainResources(domainInfo["name"])
+            self.__freeDomainResources(domainName)
             
     def __freeDomainResources(self, domainName, deleteDiskImages=True):
         """
@@ -318,7 +320,7 @@ class DomainHandler(object):
         Devuelve:
             Un string con la contraseña generada
         """
-        return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(self.__vncPasswordLength), VMServerException)
+        return "123" #ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(self.__vncPasswordLength), VMServerException)
     
     def getLibvirtStatusInfo(self):
         return self.__libvirtConnection.getStatusInfo()

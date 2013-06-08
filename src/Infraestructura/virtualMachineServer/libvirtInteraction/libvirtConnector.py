@@ -106,8 +106,7 @@ class LibvirtConnector(object):
         Devuelve:
             Nada
         """
-        domainInfo = {"name" : domain.name()}
-        self.__shutdownCallback(domainInfo)
+        self.__shutdownCallback.onDomainStop(domain.name())
         pass    
     
     def __onDomainShutDown(self, domain):
@@ -138,7 +137,7 @@ class LibvirtConnector(object):
                       "VNCport" : int(vnc_port),
                       "VNCip" : vnc_server_ip,
                       "VNCpassword" : vnc_password}
-        self.__startCallback(domainInfo)    
+        self.__startCallback.onDomainStart(domainInfo)    
     
     def startDomain(self, definitionFile):
         """

@@ -5,27 +5,24 @@ Created on 14/01/2013
 @author: saguma
 '''
 
-from network.manager.networkManager import NetworkManager
+from network.manager.networkManager import NetworkManager, NetworkCallback
 from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T
 from virtualMachineServer.packetHandling.packetHandler import VMServerPacketHandler
 from virtualMachineServer.database.vmServerDB import VMServerDBConnector
 from virtualMachineServer.database.transfer_t import TRANSFER_T
-from ftp.ftpClient import FTPClient
-from virtualMachineServer.reactor.clusterServerPacketReactor import ClusterServerPacketReactor
 from virtualMachineServer.threads.fileTransferThread import FileTransferThread
 from virtualMachineServer.threads.compressionThread import CompressionThread
 from virtualMachineServer.exceptions.vmServerException import VMServerException
 from virtualMachineServer.libvirtInteraction.domainHandler import DomainHandler
 from ccutils.processes.childProcessManager import ChildProcessManager
 from network.interfaces.ipAddresses import get_ip_address 
-from virtualMachineServer.reactor.clusterServerCallback import ClusterServerCallback
 import os
 import multiprocessing
 import sys
 import re
 from errors.codes import ERROR_DESC_T
 
-class VMServerReactor(ClusterServerPacketReactor):
+class VMServerReactor(NetworkCallback):
     """
     Clase del reactor del servidor de máquinas virtuales
     """
@@ -42,7 +39,6 @@ class VMServerReactor(ClusterServerPacketReactor):
         self.__compressionThread = None
         self.__networkManager = None
         self.__parser = configurationFileParser
-        self.__ftp = FTPClient()        
         self.__domainHandler = None
         self.__domainTimeout = 0
         try :
@@ -81,12 +77,7 @@ class VMServerReactor(ClusterServerPacketReactor):
         self.__networkManager = NetworkManager(self.__parser.getConfigurationParameter("certificatePath"))
         self.__networkManager.startNetworkService()
         self.__useSSL = self.__parser.getConfigurationParameter("useSSL")
-        self.__packetManager = VMServerPacketHandler(self.__networkManager)        
-        self.__networkManager.listenIn(self.__listenningPort, ClusterServerCallback(self), self.__useSSL)
-        self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
-                                                       self.__parser.getConfigurationParameter("TransferDirectory"),
-                                                       self.__parser.getConfigurationParameter("FTPTimeout"), self.__dbConnector, self.__useSSL)
-        self.__fileTransferThread.start()
+        self.__packetManager = VMServerPacketHandler(self.__networkManager)            
         self.__connectToDatabases("VMServerDB", self.__parser.getConfigurationParameter("databaseUserName"), self.__parser.getConfigurationParameter("databasePassword"))
             
         self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
@@ -100,10 +91,15 @@ class VMServerReactor(ClusterServerPacketReactor):
             
         self.__domainHandler.doInitialCleanup()
         self.__deleteTemporaryZipFiles()
+        self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
+                                                       self.__parser.getConfigurationParameter("TransferDirectory"),
+                                                       self.__parser.getConfigurationParameter("FTPTimeout"), self.__dbConnector, self.__useSSL)
         self.__compressionThread = CompressionThread(self.__parser.getConfigurationParameter("TransferDirectory"), self.__parser.getConfigurationParameter("sourceImagePath"),
                                                      self.__parser.getConfigurationParameter("configFilePath"),
                                                      self.__dbConnector, self.__domainHandler, self.__networkManager, self.__listenningPort, self.__packetManager)
+        self.__fileTransferThread.start()
         self.__compressionThread.start()
+        self.__networkManager.listenIn(self.__listenningPort, self, self.__useSSL)
         
     def __deleteTemporaryZipFiles(self):
         transfer_dir_path = self.__parser.getConfigurationParameter("TransferDirectory")
@@ -139,7 +135,7 @@ class VMServerReactor(ClusterServerPacketReactor):
             self.__compressionThread.join()
         sys.exit()              
         
-    def processClusterServerIncomingPackets(self, packet):
+    def processPacket(self, packet):
         """
         Procesa un paquete enviado desde el servidor de cluster.
         Argumentos:

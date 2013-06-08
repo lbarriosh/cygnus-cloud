@@ -16,13 +16,13 @@ except ImportError:
         except ImportError:
             import xml.etree.ElementTree as ET
             
-class ConfigurationFileEditorException(Exception):
+class DefinitionFileEditorException(Exception):
     """
     Clase de excepción utilizada por el editor de ficheros de configuración
     """
     pass
     
-class ConfigurationFileEditor(object):
+class DefinitionFileEditor(object):
     """
     Clase del editor de ficheros de configuración
     """
@@ -101,7 +101,7 @@ class ConfigurationFileEditor(object):
         Devuelve:
             Nada
         Lanza:
-            ConfigurationFileEditorException: se lanza cuando no se han definido
+            DefinitionFileEditorException: se lanza cuando no se han definido
             todos los parámetros de configuración del dominio.
         """
         self.__checkErrors()
@@ -151,14 +151,14 @@ class ConfigurationFileEditor(object):
         Devuelve:
             Nada
         Lanza:
-            ConfigurationFileEditorException: esta excepción se lanza cuando algún parámetro de 
+            DefinitionFileEditorException: esta excepción se lanza cuando algún parámetro de 
             configuración del dominio no ha sido definido.
         """
         if (self.__name == None or self.__uuid == None) :
-            raise ConfigurationFileEditorException("The domain identifiers have not been set")
+            raise DefinitionFileEditorException("The domain identifiers have not been set")
         if (self.__virtualNetworkName == None or self.__macAddress == None) :
-            raise ConfigurationFileEditorException("The network configuration parameters have not been set")
+            raise DefinitionFileEditorException("The network configuration parameters have not been set")
         if (self.__vncServerIPAddress == None or self.__vncServerPassword == None or self.__vncServerPort == None) :
-            raise ConfigurationFileEditorException("The VNC server configuration parameters have not been set")
+            raise DefinitionFileEditorException("The VNC server configuration parameters have not been set")
         if (self.__dataImagePath == None or self.__osImagePath == None) :
-            raise ConfigurationFileEditorException("The data image path has not been set")    
+            raise DefinitionFileEditorException("The data image path has not been set")    
