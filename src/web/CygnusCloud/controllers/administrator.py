@@ -80,10 +80,11 @@ def runVM():
         return dict(form1=form1,form2=form2,num = j)
     elif(request.args(0) == 'edit'):   
         #Creamos el formulario de busqueda
-        form1 = FORM(HR(),H2(T('Buscar una máquina')),DIV( T('Nombre de la máquina: '),BR(),INPUT(_name = 'vmName')),
-            DIV( T('Usuario: '),BR(),INPUT(_name = 'userName')),
-            DIV( T('Asignatura: '),BR(),INPUT(_name = 'subject')),
-            INPUT(_type='submit',_class="button button-blue",_name = 'search',_value=T('Buscar')),HR()) 
+        form1 = FORM(HR(),H2(T('Buscar una máquina'))
+            ,TABLE(TR(TD(DIV( T('Nombre de la máquina: '),BR(),INPUT(_name = 'vmName')),_class='izquierda'),
+            TD(DIV( T('Usuario: '),BR(),INPUT(_name = 'userName')),_class='izquierda'),
+            TD(DIV( T('Asignatura: '),BR(),INPUT(_name = 'subject')),_class='izquierda')),
+            TR(TD(INPUT(_type='submit',_class="button button-blue",_name = 'search',_value=T('Buscar')),_class='izquierda'))),HR()) 
         #Extraemos la lista de MV , si existe.
         vmListAux = request.vars.vmList or []
         if(isinstance(vmListAux,str)):
@@ -117,6 +118,12 @@ def runVM():
                 vmList.append(eval(l)) 
         """
         #Creamos el segundo formulario
+        """
+        infoTable = TABLE(
+                    TR(TD("Asignatura:",_class='izquierda'),TD("",_id='vmSubject',_class='izquierda')),
+                    TR(TD("Grupo",_class='izquierda'),TD("",_id='vmGroup',_class='izquierda')),
+                    TR(TD("Usuario",_class='izquierda'),TD("",_id='vmUser',_class='izquierda')),_class='state_table',_id='infoTable')
+        """
         serversSelector = SELECT(_name = 'vms',_id= 'sId')
         servers = connector.getVMServersData()
         i = 0
@@ -177,7 +184,8 @@ def runVM():
             print listInfo
             #redireccinamos con los resultados
             redirect(URL(c='administrator',f='runVM',args = ['edit'],vars = dict(vmList=solutionList) ))
-        #Devolvemos el formulario             
+        #Devolvemos el formulario 
+        print infoVMList            
         return dict(form1 = form1,form2=form2,form3=form3,num=0)
  
     else:

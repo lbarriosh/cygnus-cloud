@@ -205,11 +205,17 @@ def editVM():
                 TD(DIV(P(imageInfo["ImageDescription"]),_id = "n2" + str(num2)),_class='izquierda')))
             num2= num2 + 1
         else:
-            #if imageInfo["State"] == EDITION_STATE_T.CHANGES_NOT_APPLIED:
+            if imageInfo["State"] == EDITION_STATE_T.CHANGES_NOT_APPLIED:
+                numSubjects = userDB(userDB.VMByGroup.VMId==imageInfo["ImageID"]).count()
+                if numSubjects > 0:
+                    state = imageInfo["State"]
+                else:
+                    state = 8
             #    imageId = imageInfo["ImageID"]
-            #else:
+            else:
+                state = imageInfo["State"]
             imageId = image
-            stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection2',_value = str(imageInfo["State"]) + 'w' + str(imageId),
+            stoppedImages.append(TR(TD(INPUT(_type='radio',_name = 'selection2',_value = str(state) + 'w' + str(imageId),
                 _id="a"+str(num1))),
                 TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),
                 TD(DIV(P(imageInfo["ImageDescription"]),_id = "n1" + str(num1)),_class='izquierda')))
