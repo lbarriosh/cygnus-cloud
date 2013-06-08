@@ -17578,8 +17578,14 @@ cluster
 \end_layout
 
 \begin_layout Standard
-El diagrama de clases de la figura muestra las principales relaciones de
- la clase 
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Relaciones-VMServerReactor"
+
+\end_inset
+
+ muestra las principales relaciones de la clase 
 \family typewriter
 VMServerReactor
 \family default
@@ -17590,9 +17596,17 @@ VMServerReactor
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor MVs/Relaciones VMServerReactor.pdf
+	scale 80
+
+\end_inset
+
 
 \end_layout
 
@@ -17600,6 +17614,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Relaciones-VMServerReactor"
+
+\end_inset
+
 Principales relaciones de la clase 
 \family typewriter
 VMServerReactor
@@ -17619,10 +17639,397 @@ VMServerReactor
 
 \end_layout
 
+\begin_layout Standard
+En primer lugar, la clase 
+\family typewriter
+VMServerReactor
+\family default
+ utiliza los servicios de la clase 
+\family typewriter
+VMServerConfigurationFileParser
+\family default
+ para procesar el contenido del fichero de configuración.
+ Como viene siendo habitual, el 
+\emph on
+parser 
+\emph default
+del fichero de configuración del servidor de máquinas virtuales, 
+\family typewriter
+VMServerConfigurationFileParser
+\family default
+, hereda de la clase abstracta 
+\family typewriter
+ConfigurationFileParser
+\family default
+, el ancestro común de todos los 
+\emph on
+parsers 
+\emph default
+de ficheros de configuración.
+ Como ya hemos visto, esta clase está definida en el paquete 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, al igual que sucede en el caso del repositorio de imágenes,
+ para interactuar desde el exterior con un servidor de máquinas virtuales
+ es necesario enviarle paquetes a través de una conexión de control.
+ A diferencia de lo que ocurría en el repositorio de imágenes, sólo el servidor
+ de 
+\emph on
+cluster 
+\emph default
+se comunicará con el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Como la clase 
+\family typewriter
+VMServerReactor
+\family default
+ hereda de 
+\family typewriter
+NetworkCallback
+\family default
+, en el servidor de máquinas virtuales se utilizará un objeto 
+\family typewriter
+VMServerReactor
+\family default
+ para procesar los paquetes recibidos desde el servidor de 
+\emph on
+cluster
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Para realizar dicho procesamiento, es necesario enviar respuestas al servidor
+ de 
+\emph on
+cluster
+\emph default
+, iniciar transferencias con el repositorio de imágenes y crear o destruir
+ máquinas virtuales.
+ Por ello, la clase 
+\family typewriter
+VMServerReactor
+\family default
+ utiliza los servicios de las clases 
+\family typewriter
+NetworkManager
+\family default
+, 
+\family typewriter
+VMServerPacketHandler
+\family default
+, 
+\family typewriter
+DomainHandler
+\family default
+ y 
+\family typewriter
+VMServerDBConnector
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que la clase 
+\family typewriter
+VMServerReactor
+\family default
+ no iniciará directamente las transferencias con el repositorio de imágenes.
+ Al recibir el paquete correspondiente, encolará una petición en la cola
+ de transferencias.
+ Para procesar dicha petición, intervendrán los objetos 
+\family typewriter
+FileTransferThread
+\family default
+ y 
+\family typewriter
+CompressionThread
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del servidor de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Arranque.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-servidor-mvs"
+
+\end_inset
+
+Arranque del servidor de máquinas virtuales
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En esta sección mostraremos el proceso de arranque del servidor de máquinas
+ virtuales.
+ Para ello, haremos uso del diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-servidor-mvs"
+
+\end_inset
+
+.
+ Como podemos observar en dicho diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se realiza la configuración inicial de la base de datos del servidor de
+ máquinas virtuales si es necesario.
+ Para ello, se crea el esquema de la base de datos y el usuario a utilizar
+ a través de un objeto 
+\family typewriter
+DBConfigurator
+\family default
+.
+ Como ya hemos dicho, la clase 
+\family typewriter
+DBConfigurator
+\family default
+ se define en el paquete 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+se parsea el fichero de configuración.
+ Para ello, se utiliza un objeto 
+\family typewriter
+VMServerConfigurationFileParser
+\family default
+.
+ Por limitaciones de espacio, no hemos incluido su línea de vida en el diagrama
+ de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-servidor-mvs"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+se crea un objeto 
+\family typewriter
+VMServerReactor
+\family default
+ y se inicializa su estado.
+ Como hemos dicho, estos objetos procesarán los paquetes enviados desde
+ el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se establece la conexión con la base de datos del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se inicializa el objeto 
+\family typewriter
+NetworkManager
+\family default
+, que permitirá crear y enviar información a través de la conexión con el
+ servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se inicializa el objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+, que se utilizará para crear y leer los diversos tipos de paquete que utiliza
+ el servidor de 
+\emph on
+cluster
+\emph default
+ para comunicarse con el servidor de máuquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se instancia un objeto 
+\family typewriter
+DomainHandler
+\family default
+.
+ Como sabemos, se utilizará para crear y destruir máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se liberan los recursos asignados a las máquinas virtuales activas.
+ Para ello, se invoca al método 
+\family typewriter
+doInitialCleanup()
+\family default
+ de la clase 
+\family typewriter
+DomainHandler
+\family default
+.
+ Esto permite que, si el demonio del servidor de máquinas virtuales termina
+ de forma abrupta,
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+las máquinas virtuales activas vuelvan a reasociarse al servidor de máquinas
+ virtuales, y que
+\end_layout
+
+\begin_layout Itemize
+los recursos asociados a las máquinas virtuales apagadas se liberen.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+se liberan los ficheros 
+\family typewriter
+.zip
+\family default
+ temporales.
+ Esto hace posible que, si falla el demonio del servidor de máquinas virtuales,
+ se libere el espacio en disco asociado a los ficheros 
+\family typewriter
+.zip
+\family default
+ parcialmente generados.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Adelantando algo de lo que veremos más adelante, estos ficheros volverán
+ a generarse cuando se reanude el procesamiento de los elementos de la cola
+ de compresión.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+se inicializan los hilos de procesamiento asociados a la cola de transferencias
+ y a la cola de compresión.
+\end_layout
+
+\begin_layout Enumerate
+se crea la conexión de control.
+ A partir de este momento, el servidor de máquinas virtuales estará preparado
+ para atender las peticiones del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Interacciones con el servidor de 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos todas las interacciones que pueden tener lugar
+ entre un servidor de máquinas virtuales y el servidor de 
+\emph on
+cluster
+\emph default
+.
+ Por claridad, en todos los casos comenzaremos mostrando el flujo básico,
+ para posteriormente mostrar los flujos alternativos, que se corresponden
+ con el tratamiento de diversos errores.
+\end_layout
+
+\begin_layout Paragraph
+Solicitud de estado
+\end_layout
+
+\begin_layout Standard
+Para poder realizar correctamente el balanceado de carga entre los diversos
+ servidores de máquinas virtuales, los servidores de 
+\emph on
+cluster
+\emph default
+ deben conocer, en tiempo real, el estado de cada servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Para ello, hacen uso de los paquetes de solicitud de estado, que se procesan
+ en el servidor de máquinas virtuales tal y como se indica en la figura
+ .
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
 \begin_layout Subsection
 El paquete 
 \family typewriter
 clusterServer
+\end_layout
+
+\begin_layout Subsection
+El paquete 
+\family typewriter
+clusterEndpoint
+\end_layout
+
+\begin_layout Subsection
+El paquete 
+\family typewriter
+clusterConnector
+\end_layout
+
+\begin_layout Subsection
+Códigos de error generados por la infraestructura
 \end_layout
 
 \begin_layout Subsection
