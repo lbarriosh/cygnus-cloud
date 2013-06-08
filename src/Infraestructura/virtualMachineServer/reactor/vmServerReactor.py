@@ -118,9 +118,7 @@ class VMServerReactor(NetworkCallback):
             Nada
         @attention: Para que no se produzcan cuelgues en la red, este método DEBE llamarse desde el hilo 
         principal.
-        """
-        if (self.__networkManager != None) :
-            self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
+        """                
             
         if (self.__emergencyStop) :            
             self.__domainTimeout = 0
@@ -133,6 +131,9 @@ class VMServerReactor(NetworkCallback):
         if (self.__compressionThread != None) :
             self.__compressionThread.stop()
             self.__compressionThread.join()
+            
+        if (self.__networkManager != None) :
+            self.__networkManager.stopNetworkService() # Dejar de atender peticiones inmediatamente
         sys.exit()              
         
     def processPacket(self, packet):

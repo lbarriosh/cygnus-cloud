@@ -320,7 +320,7 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         Devuelve:
             Un string con la contraseña generada
         """
-        return "123" #ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(self.__vncPasswordLength), VMServerException)
+        return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(self.__vncPasswordLength), VMServerException)
     
     def getLibvirtStatusInfo(self):
         return self.__libvirtConnection.getStatusInfo()
