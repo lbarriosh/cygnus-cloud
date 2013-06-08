@@ -10869,7 +10869,14 @@ reference "sub:Formatos-de-paquete-repositorio"
 \end_layout
 
 \begin_layout Paragraph
-Registro de un identificador de imagen
+Registro de un identificador de imagen 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Registro-identificador-imagen"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -11044,7 +11051,14 @@ unicast
 \end_layout
 
 \begin_layout Paragraph
-Descarga de imágenes de disco
+Descarga de imágenes de disco 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Descarga-de-imágenes"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17854,6 +17868,11 @@ reference "fig:Arranque-servidor-mvs"
 \end_layout
 
 \begin_layout Enumerate
+se crean, si es necesario, los distintos directorios utilizados por el servidor
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
 se crea un objeto 
 \family typewriter
 VMServerReactor
@@ -18059,7 +18078,7 @@ cluster
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -18278,7 +18297,7 @@ VMServerPacketHandler
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -18426,11 +18445,51 @@ string
 \end_layout
 
 \begin_layout Enumerate
+si el servidor de máquinas virtuales está configurado para no utilizar los
+ 
+\emph on
+websockets
+\emph default
+ nativos de QEMU, se arranca el proceso 
+\family typewriter
+websockify
+\family default
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+A diferencia de lo que suele ocurrir habitualmente, en este caso el proceso
+ 
+\family typewriter
+websockify
+\family default
+ se ejecutará en 
+\emph on
+background
+\emph default
+.
+ Para ello, los objetos 
+\family typewriter
+ChildProcessManager
+\family default
+ también son capaces de iniciar y recoger los valores devueltos por los
+ procesos que se ejecutan en 
+\emph on
+background
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
 invoca al método de creación de un dominio de la clase 
 \family typewriter
 LibvirtConnector
 \family default
 .
+ Durante este proceso, se iniciará el servidor VNC asociado a la máquina
+ virtual.
 \end_layout
 
 \begin_layout Enumerate
@@ -18494,6 +18553,48 @@ cluster
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+El hecho de que las direcciones MAC libres se extraigan de la base de datos
+ no es casual.
+ 
+\end_layout
+
+\begin_layout Standard
+Siempre que el servidor DHCP concede una dirección IP a una máquina virtual
+ lo hace durante un tiempo prefijado.
+ 
+\end_layout
+
+\begin_layout Standard
+Cuando se arranca y detiene un gran número de máquinas virtuales en un corto
+ periodo de tiempo, los tiempos de concesión de las direcciones IP no habrán
+ expirado, por lo que corremos el riesgo de el servidor DHCP se quede sin
+ direcciones IP.
+ 
+\end_layout
+
+\begin_layout Standard
+No obstante, como las direcciones IP se asignan a direcciones MAC y estas
+ siempre se extraen de la base de datos, las nuevas máquinas virtuales podrán
+ 
+\begin_inset Quotes eld
+\end_inset
+
+reciclar
+\begin_inset Quotes erd
+\end_inset
+
+ las direcciones IP de las máquinas antiguas, lo que impide que nos quedemos
+ sin direcciones IP.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que, cuando se reciben las peticiones de
+ arranque de máquinas virtuales, la propia cola de paquetes recibidos y
+ aún no procesados actúa como cola de peticiones de arranque de máquinas
+ virtuales.
+\end_layout
+
 \begin_layout Paragraph
 Creación de una máquina virtual: tratamiento de errores
 \end_layout
@@ -18558,7 +18659,11 @@ al consultar la base de datos del servidor de máquinas virtuales para obtener
 \end_layout
 
 \begin_layout Itemize
-al realizar las llamadas a libvirt.
+al realizar las llamadas a 
+\family typewriter
+libvirt
+\family default
+.
  Los errores restantes se detectan al realizar estas llamadas.
 \end_layout
 
@@ -18770,7 +18875,598 @@ dor del usuario que la envió, las rutas de las imágenes de disco,\SpecialChar 
 \end_layout
 
 \begin_layout Paragraph
-Apagado de una máquina virtual
+Apagado de una máquina virtual 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Apagado-MV"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cuando se apaga una máquina virtual, se liberan todos los recursos que esta
+ tiene asociados.
+ Este proceso se muestra en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-MV"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Apagado MV.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-MV"
+
+\end_inset
+
+Apagado de una máquina virtual: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en dicho diagrama, sucede lo siguiente:
+\end_layout
+
+\begin_layout Enumerate
+cuando la máquina virtual se apaga, libvirt genera el evento correspondiente.
+ Para tratarlo, el objeto 
+\family typewriter
+LibvirtConnector
+\family default
+ invoca al método 
+\family typewriter
+onDomainStop()
+\family default
+ de la clase 
+\family typewriter
+DomainHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+DomainHandler
+\family default
+ extrae de la base de datos los recursos asignados a la máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+acto seguido, el objeto 
+\family typewriter
+DomainHandler
+\family default
+ libera dichos recursos.
+ Para ello, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+llama al método 
+\family typewriter
+unregisterVMAllocatedResources()
+\family default
+ del objeto 
+\family typewriter
+VMServerDBConnector
+\family default
+.
+ En esta llamada, se liberan la dirección MAC, el UUID y los puertos asignados
+ al servidor VNC y al 
+\emph on
+websocket
+\emph default
+.
+ Asimismo, también se borra de la base de datos toda la información asociada
+ a la máquina virtual (como el identificador de usuario que la creó, la
+ ruta de las imágenes de disco que utilizaba,\SpecialChar \ldots{}
+)
+\end_layout
+
+\begin_layout Enumerate
+borra las imágenes de disco.
+ Para ello, ejecuta dos veces el comando 
+\family typewriter
+rm
+\family default
+, haciendo uso de los servicios de la clase 
+\family typewriter
+ChildProcessManager
+\family default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+La librería 
+\family typewriter
+libvirt
+\family default
+ se ocupa del apagado del servidor VNC asociado a la máquina virtual, por
+ lo que no debemos preocuparnos por él cuando la máquina se apaga.
+\end_layout
+
+\begin_layout Standard
+Asimismo, cuando el servidor VNC se apaga, el demonio 
+\family typewriter
+websockify
+\family default
+ lo detectará y se también se apagará.
+ Por ello, no es necesario matarlo cuando la máquina virtual se apaga..
+\end_layout
+
+\begin_layout Paragraph
+Arranque de imágenes temporales: descarga
+\end_layout
+
+\begin_layout Standard
+En esta sección y en las siguientes, mostraremos cómo el servidor de máquinas
+ virtuales interactúa con el repositorio de imágenes para arrancar una máquina
+ virtual cuyas imágenes de disco están almacenadas en el repositorio de
+ imágenes.
+ Esta es la primera fase de los procesos de creación y edición de imágenes
+ de disco.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-temporal-fase-1"
+
+\end_inset
+
+Primera fase del arranque de una imagen temporal: descarga del fichero comprimid
+o desde el repositorio de imágenes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para empezar, nos centraremos en el proceso de descarga del fichero comprimido
+ desde el repositorio de imágenes, que se recoge en el diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-1"
+
+\end_inset
+
+.
+ En la interacción que recoge dicho diagrama no se produce ningún error,
+ y se siguen estos pasos:
+\end_layout
+
+\begin_layout Enumerate
+el servidor de 
+\emph on
+cluster
+\emph default
+ envía al servidor de máquinas virtuales un paquete del tipo 
+\family sans
+Editar imagen
+\family default
+.
+ Este contiene, entre otras cosas, 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+la dirección IP y el puerto de la conexión de control del repositorio de
+ imágenes,
+\end_layout
+
+\begin_layout Itemize
+el identificador único del fichero comprimido a descargar,
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+flag
+\emph default
+ que indica si se van a editar las imágenes de disco correspondientes o
+ si se van a utilizar como base para crear nuevas imágenes de disco,
+\end_layout
+
+\begin_layout Itemize
+el identificador único del usuario que ha desencadenado la edición de la
+ imagen, y
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición\SpecialChar \@.
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+al procesar el paquete, el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lo lee utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+ Por claridad, hemos decidido no incluir su línea de vida en el diagrama
+ de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Tras leer el paquete, el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ crea y añade la petición correspondiente a la cola de transferencias.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+cuando le llega el turno, el hilo de transferencias desencolará la petición
+ y
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+construirá el paquete utilizado para enviar la petición inicial al repositorio
+ de imágenes.
+ Estos paquetes se construyen a través de un objeto 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+.
+ Nuevamente, por claridad hemos eliminado la línea de vida del diagrama
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+crea un objeto 
+\family typewriter
+FileTransferCallback
+\family default
+, que interactuará con el repositorio de imágenes, y
+\end_layout
+
+\begin_layout Enumerate
+se conectará al repositorio de imágenes y le enviará el paquete.
+\end_layout
+
+\begin_layout Standard
+El objeto 
+\family typewriter
+FileTransferCallback
+\family default
+ descargará el fichero comprimido desde el repositorio de imágenes tal y
+ como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Descarga-de-imágenes"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, cuando las imágenes de disco que este contiene se utilicen como
+ base para crear una imagen nueva, también se solicitará un identificador
+ al repositorio de imágenes de acuerdo a lo que vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Registro-identificador-imagen"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Por ello, no hemos reproducido estos procesos en el diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-1"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+tras finalizar la transferencia, el fichero comprimido se encontrará en
+ el servidor de máquinas virtuales.
+ Para terminar de procesar la petición de transferencia,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se cerrará la conexión con el repositorio de imágenes, y
+\end_layout
+
+\begin_layout Enumerate
+se construirá y añadirá una petición a la cola de compresión.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Es importante notar que, para no saturar el repositorio de imágenes, las
+ transferencias de ficheros se procesarán de una en una.
+ De esta manera, es posible conectar un número muy elevado de servidores
+ de máquinas virtuales al repositorio de imágenes sin que este llegue a
+ saturarse.
+ Y por la misma razón, los servidores de máquinas virtuales se desconectan
+ del repositorio de imágenes tan pronto como dejan de utilizarlo.
+ 
+\end_layout
+
+\begin_layout Standard
+Finalmente, los servidores de 
+\emph on
+cluster
+\emph default
+ siempre suministran a los servidores de máquinas virtuales los datos de
+ conexión al repositorio de imágenes.
+ Aunque con ello se consume un poco más de ancho de banda, se gana en flexibilid
+ad: permite utilizar varios repositorios de imágenes en el mismo 
+\emph on
+cluster
+\emph default
+ de forma sencilla.
+\end_layout
+
+\begin_layout Paragraph
+Apagado del servidor de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+El servidor de máquinas virtuales se apagará cuando el servidor de 
+\emph on
+cluster
+\emph default
+ le envíe un paquete del tipo 
+\family sans
+Apagado inmediato
+\family default
+ o un paquete del tipo 
+\family sans
+Apagado con espera
+\family default
+.
+ Los primeros no contienen información adicional, y los segundos contienen
+ un intervalo de espera en segundos.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Apagado largo.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-Servidor-MVs"
+
+\end_inset
+
+Apagado del servidor de máquinas virtuales
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-Servidor-MVs"
+
+\end_inset
+
+ muestra cómo se procesa un paquete del tipo 
+\family sans
+Apagado con espera
+\family default
+.
+ Como puede observarse en él, se dan los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+NetworkManager
+\family default
+ llama al método de procesamiento de paquetes del objeto 
+\family typewriter
+VMServerReactor
+\family default
+.
+ En él,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se leerá el contenido del paquete, utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+se esperará a que los usuarios apaguen las máquinas virtuales arrancadas.
+ El tiempo que se esperará se incluye en el paquete.
+ Es importante notar que, durante ese tiempo, el servidor de máquinas virtuales
+ sigue atendiendo peticiones de forma normal.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+cuando ha transcurrido el tiempo de espera, desde el hilo principal se invoca
+ al método 
+\family typewriter
+shutdown()
+\family default
+ del objeto 
+\family typewriter
+VMServerReactor
+\family default
+.
+ Esto es necesario ya que, como hemos mencionado en anteriores ocasiones,
+ los hilos de la red sólo pueden detenerse desde el hilo principal.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Durante la ejecución de ese método,
+\end_layout
+
+\begin_layout Enumerate
+se apagan todas las máquinas virtuales activas.
+ Sus recursos se liberan como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-MV"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+se paran los hilos asociados a la cola de transferencia y a la cola de compresió
+n.
+ Puesto que estas colas tienen persistencia en disco, el procesamiento de
+ sus elementos se reanudará en el siguiente arranque del servidor de máquinas
+ virtuales, por lo que no se perderán datos.
+\end_layout
+
+\begin_layout Enumerate
+se detiene el servicio de red, y finaliza la ejecución del demonio del servidor
+ de máquinas virtuales.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Finalmente, los paquetes del tipo 
+\family sans
+Apagado inmediato
+\family default
+ se procesan de forma muy similar.
+ No obstante, al procesarlos el tiempo de espera será siempre 0, por lo
+ que no se esperará a que las máquinas virtuales arrancadas se apaguen.
 \end_layout
 
 \begin_layout Subsection
