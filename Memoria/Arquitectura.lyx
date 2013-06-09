@@ -19078,12 +19078,435 @@ Finalmente, puesto que las dos imágenes de disco se borran, cuando la máquina
 Solicitud de datos de conexión
 \end_layout
 
-\begin_layout Paragraph
-Identificadores de las máquinas virtuales activas
+\begin_layout Standard
+Los usuarios de las máquinas virtuales pueden cerrar el cliente VNC que
+ utilizan de forma accidental.
+ Para que los usuarios puedan seguir utilizando la máquina virtual en estos
+ casos, es necesario que los servidores de máquinas virtuales suministren
+ al servidor de 
+\emph on
+cluster
+\emph default
+ los datos de conexión del servidor VNC asociado a cada máquina virtual
+ activa.
+\end_layout
+
+\begin_layout Standard
+Para solicitar estos datos, el servidor de 
+\emph on
+cluster
+\emph default
+ envía a los servidores de máquinas virtuales un paquete del tipo 
+\family sans
+Solicitud de datos de conexión
+\family default
+ 
+\family sans
+VNC
+\family default
+.
+ Este paquete no contiene información adicional, y se procesa de acuerdo
+ al diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Envío-datos-conexión"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Envío datos conexión.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Envío-datos-conexión"
+
+\end_inset
+
+Envío de los datos de conexión de los servidores VNC
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar, tras recibir el paquete en el servidor de máquinas
+ virtuales se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee el contenido del paquete utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee de la base de datos del servidor de máquinas virtuales los datos de
+ conexión de los servidores VNC.
+ Para ello, utiliza un objeto 
+\family typewriter
+VMServerDBConnector
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ construye un paquete del tipo 
+\family sans
+Datos de conexión VNC
+\family default
+.
+ Estos paquetes contienen la dirección IP del servidor de máquinas virtuales,
+ así como el puerto del 
+\emph on
+websocket
+\emph default
+ y la contraseña de todos los servidores VNC activos.
+ Nuevamente, para construir el paquete se utiliza un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+finalmente, el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ envía dicho paquete al servidor de 
+\emph on
+cluster.
 \end_layout
 
 \begin_layout Paragraph
-Reinicio de una máquina virtual
+Solicitud de los identificadores únicos de las máquinas virtuales activas
+\end_layout
+
+\begin_layout Standard
+Cada máquina virtual puede identificarse de forma única a partir del identificad
+or de la petición que la creó.
+ De ahora en adelante, también llamaremos a dicho identificador identificador
+ único de la máquina virtual.
+\end_layout
+
+\begin_layout Standard
+Más adelante veremos que, durante el proceso de arranque de un servidor
+ de máquinas virtuales, el demonio del servidor de 
+\emph on
+cluster 
+\emph default
+averiguará los identificadores únicos de todas las máquinas virtuales que
+ este alberga.
+ Para ello, le enviará un paquete del tipo 
+\family sans
+Solicitud de IDs de máquinas virtuales
+\family default
+ de máquinas activas, que se procesa de acuerdo al diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Envío-domainUIDs"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Envío DomainUIDs.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Envío-domainUIDs"
+
+\end_inset
+
+Envío de los identificadores únicos de las máquinas virtuales activas
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, esta interacción es muy similar a
+ la anterior: 
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee el contenido del paquete utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee de la base de datos del servidor de máquinas virtuales los identificadores
+ únicos de las máquinas virtuales.
+ Para ello, utiliza un objeto 
+\family typewriter
+VMServerDBConnector
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ construye un paquete del tipo 
+\family sans
+IDs de máquinas virtuales
+\family default
+.
+ Estos paquetes contienen la dirección IP del servidor de máquinas virtuales
+ y los identificadores únicos de todas las máquinas virtuales activas.
+ Nuevamente, para construir el paquete se utiliza un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+finalmente, el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ envía dicho paquete al servidor de 
+\emph on
+cluster.
+\end_layout
+
+\begin_layout Paragraph
+Reinicio de una máquina virtual 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Reinicio-forzoso-MV"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cuando se produce un cuelgue en una máquina virtual activa, el usuario que
+ la utiliza podrá solicitar un reinicio forzoso de la misma.
+ Esto le permite seguir trabajando con dicha máquina.
+\end_layout
+
+\begin_layout Standard
+Para solicitar el reinicio forzoso de una máquina virtual alojada en el
+ servidor de máquinas virtuales, el servidor de 
+\emph on
+cluster
+\emph default
+ enviará un paquete del tipo 
+\family sans
+Reiniciar máquina virtual
+\family default
+.
+ Este contiene el identificador único de la máquina virtual a reiniciar,
+ y se procesa en el servidor de máquinas virtuales de acuerdo al diagrama
+ de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Reinicio-forzoso-MV"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Reinicio forzoso.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Reinicio-forzoso-MV"
+
+\end_inset
+
+Reinicio forzoso de una máquina virtual activa
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En el diagrama de secuencia, pueden distinguirse los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee el contenido del paquete utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ invoca al método de reinicio forzoso de una máquina virtual del objeto
+ 
+\family sans
+DomainHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family sans
+DomainHandler
+\family default
+ obtiene el nombre único de la máquina virtual, utilizando para ello un
+ objeto 
+\family sans
+VMServerDBConnector
+\family default
+.
+ Como hemos dicho anteriormente, este la identifica de forma única dentro
+ del servidor de máquinas virtuales en el que reside.
+\end_layout
+
+\begin_layout Enumerate
+finalmente, el objeto 
+\family sans
+DomainHandler
+\family default
+ invoca al método de reinicio forzoso de una máquina virtual del objeto
+ 
+\family sans
+LibvirtConnector
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, en caso de que el servidor de máquinas virtuales
+ no aloje la máquina virtual, la petición se ignorará.
+ Esto sólo ocurre en contadas ocasiones, y al no enviar un paquete de error
+ podemos ahorrar ancho de banda.
 \end_layout
 
 \begin_layout Paragraph
@@ -19221,7 +19644,7 @@ se apagan todas las máquinas virtuales activas.
  Sus recursos se liberan como vimos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "par:Apagado-MV"
+reference "par:Apagado-MV-edición"
 
 \end_inset
 
@@ -19744,7 +20167,7 @@ reference "fig:Arranque-temporal-fase-1-error-conexión"
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -19943,7 +20366,14 @@ Como podemos observar, la forma de proceder es idéntica a la del caso anterior.
 \end_layout
 
 \begin_layout Paragraph
-Extracción del fichero comprimido
+Extracción del fichero comprimido 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Extracción-del-fichero-zip"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -20224,8 +20654,12 @@ reference "fig:Arranque-temporal-fase-2-1"
 \end_layout
 
 \begin_layout Enumerate
-se construye un paquete del tipo Error de edición de imagen, que contiene
- el identificador único de la petición y un código de descripción del error.
+se construye un paquete del tipo 
+\family typewriter
+Error de edición de imagen
+\family default
+, que contiene el identificador único de la petición y un código de descripción
+ del error.
 \end_layout
 
 \begin_layout Enumerate
@@ -20406,7 +20840,14 @@ reference "par:Arranque-MV-errores"
 \end_layout
 
 \begin_layout Paragraph
-Apagado de la máquina virtual
+Apagado de la máquina virtual 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Apagado-MV-edición"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -20414,7 +20855,7 @@ El proceso de apagado de una máquina virtual que se utiliza para editar
  imágenes de disco es muy similar al que presentamos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "par:Apagado-MV"
+reference "par:Apagado-MV-edición"
 
 \end_inset
 
@@ -20760,6 +21201,559 @@ Es importante notar que, en este caso, el repositorio de imágenes siempre
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Errores-descarga"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Despliegue de imágenes de disco
+\end_layout
+
+\begin_layout Standard
+El proceso de despliegue de imágenes de disco permite que un servidor de
+ máquinas virtuales sea capaz de albergar una nueva máquina virtual.
+ 
+\end_layout
+
+\begin_layout Standard
+Este proceso siempre comienza con el envío de un paquete del tipo 
+\family sans
+Desplegar imagen
+\family default
+ desde el servidor de 
+\emph on
+cluster
+\emph default
+ a un servidor de máquinas virtuales.
+ Dicho paquete contiene, además del identificador único de la petición,
+ el identificador único del fichero comprimido a descargar desde el repositorio
+ de imágenes.
+\end_layout
+
+\begin_layout Standard
+Durante el despliegue de imágenes de disco, podemos distinguir dos fases:
+ la descarga del fichero comprimido desde el repositorio de imágenes y la
+ descompresión y el procesamiento del contenido de ficho fichero.
+\end_layout
+
+\begin_layout Standard
+La fase de descarga del fichero comprimido es totalmente análoga a la que
+ tiene lugar durante los procesos de creación y edición de imágenes de disco.
+ Puesto que hablamos detalladamente de esta fase en las secciones 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Creación-y-edición-descarga-normal"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-descarga"
+
+\end_inset
+
+, no volveremos a reproducirla aquí.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la fase de descompresión y procesamiento del contenido del
+ fichero comprimido es también muy similar a la que tiene lugar durante
+ los procesos de creación y edición de imágenes de disco.
+ Estudiamos en detalle esta fase en las secciones 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Extracción-del-fichero-zip"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-en-la-extracción-zip"
+
+\end_inset
+
+, y en esta sección mostraremos las modificaciones que hay que realizar
+ en dichas fases.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Descompresión-despliegue"
+
+\end_inset
+
+ muestra cómo se extrae y procesa el contenido del fichero comprimido durante
+ el proceso de despliegue de imágenes de disco.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descompresión despliegue.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Descompresión-despliegue"
+
+\end_inset
+
+Despliegue de imágenes de disco: extracción y procesamiento del contenido
+ del fichero comprimido
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en dicho diagrama, cuando se despliega una imagen
+ de disco no es necesario arrancar ninguna máquina virtual.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, cuando esta fase finaliza se envía un paquete del tipo 
+\family sans
+Imagen desplegada
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+.
+ Dicho paquete contiene el identificador único del fichero 
+\family typewriter
+.zip
+\family default
+ descargado desde el repositorio de imágenes.
+ El resto del proceso es idéntico al que tiene lugar en la creación y edición
+ de imágenes de disco.
+\end_layout
+
+\begin_layout Standard
+Finalmente, si se produce algún error durante esta fase, se procederá como
+ vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-en-la-extracción-zip"
+
+\end_inset
+
+.
+ Por ello, no reproduciremos aquí las interacciones que vimos en dicha sección\SpecialChar \@.
+
+ No obstante, en este caso los paquetes de error serán del tipo 
+\family sans
+Error de despliegue
+\family default
+, y no del tipo 
+\family sans
+Error de edición de imagen
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Borrado de imágenes de disco
+\end_layout
+
+\begin_layout Standard
+El proceso de borrado de imágenes de disco permite que un servidor de máquinas
+ virtuales deje de poder albergar cierta máquina virtual.
+ Este proceso no sólo es útil para los administradores del sistema, sino
+ también para los profesores, ya que les permite borrar una de sus máquinas
+ virtuales de toda la infraestructura.
+\end_layout
+
+\begin_layout Standard
+Como viene siendo habitual, este proceso se inicia cuando el servidor de
+ 
+\emph on
+cluster
+\emph default
+ envía un paquete al servidor de máquinas virtuales, que en este caso es
+ del tipo 
+\family sans
+Borrar imagen
+\family default
+.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Borrado-imagen"
+
+\end_inset
+
+ muestra cómo se procesa este paquete en ausencia de errores.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Borrado imagen sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Borrado-imagen"
+
+\end_inset
+
+Borrado de imágenes de disco: flujo básico
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+tras recibir el paquete, el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee su contenido utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+ Los paquetes del tipo 
+\family sans
+Borrar imagen
+\family default
+ contienen el identificador único asociado a las imágenes de disco a borrar
+ y el identificador único de la petición.
+\end_layout
+
+\begin_layout Enumerate
+se leen de la base de datos las ubicaciones de los ficheros a borrar.
+ Acto seguido, se elimina esta información de la base de datos.
+\end_layout
+
+\begin_layout Enumerate
+se borran los ficheros correspondientes, es decir, los dos ficheros 
+\family typewriter
+.qcow2
+\family default
+ y el fichero de definición de la máquina virtual que los utiliza.
+ Para ello, se utilizan un objeto 
+\family typewriter
+ChildProcessManager
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+, el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ construye un paquete del tipo 
+\family sans
+Imagen borrada
+\family default
+.
+ Este contiene el identificador único de la petición.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en caso de que 
+\end_layout
+
+\begin_layout Itemize
+el servidor de máquinas virtuales no disponga de las imágenes de disco a
+ borrar, o 
+\end_layout
+
+\begin_layout Itemize
+se produzca un error al eliminar los ficheros, o
+\end_layout
+
+\begin_layout Itemize
+se produzca un error al realizar la actualización de la base de datos
+\end_layout
+
+\begin_layout Standard
+se generará un paquete del tipo 
+\family sans
+Error de borrado de imagen
+\family default
+.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Borrado-imagen-error"
+
+\end_inset
+
+ muestra cómo se actúa cuando el borrado de los ficheros falla.
+ Como puede observarse en él, siempre que se produce uno de estos errores,
+ se aborta el proceso de borrado y
+\end_layout
+
+\begin_layout Enumerate
+se construye el paquete del tipo 
+\family sans
+Error de borrado de imagen
+\family default
+, que contiene el identificador único de la petición.
+ Nuevamente, el paquete se construirá utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Borrado imagen error.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Borrado-imagen-error"
+
+\end_inset
+
+Borrado de imágenes de disco: tratamiento de errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Apagado forzoso de una máquina virtual
+\end_layout
+
+\begin_layout Standard
+Como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Reinicio-forzoso-MV"
+
+\end_inset
+
+, los usuarios pueden provocar el reinicio forzoso de las máquinas virtuales
+ cuando estas se cuelgan.
+ Sin embargo, en algunos casos los problemas pueden no resolverse de este
+ modo.
+ Por ello, también es posible realizar el apagado forzoso de una máquina
+ virtual.
+\end_layout
+
+\begin_layout Standard
+Para desencadenarlo, el servidor de 
+\emph on
+cluster
+\emph default
+ enviará un paquete del tipo Destruir dominio al servidor de máquinas virtuales.
+ Este contiene el identificador único de la petición y el identificador
+ único de la máquina virtual a apagar.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-forzoso-normal"
+
+\end_inset
+
+ muestra cómo se fuerza el apagado de una máquina virtual utilizando uno
+ de estos paquetes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Apagado forzoso MV.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-forzoso-normal"
+
+\end_inset
+
+Apagado forzoso de una máquina virtual
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los pasos que se siguen son muy similares a los del reinicio forzoso de
+ una máquina virtual, que estudiamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Reinicio-forzoso-MV"
+
+\end_inset
+
+.
+ En este caso, se llama al método de destrucción de un dominio del objeto
+ 
+\family typewriter
+DomainHandler
+\family default
+, y en este se realiza la llamada de destrucción de apagado de dominio de
+ 
+\family typewriter
+libvirt
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Cuando la máquina virtual se apague, 
+\family typewriter
+libvirt
+\family default
+ generará un evento que procesará el objeto 
+\family typewriter
+DomainHandler
+\family default
+.
+ Si la máquina virtual no se utiliza para editar imágenes de disco, dicho
+ procesamiento se realizará como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-MV-edición"
+
+\end_inset
+
+.
+ En caso contrario, se realizará como indicamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-MV-edición"
 
 \end_inset
 
