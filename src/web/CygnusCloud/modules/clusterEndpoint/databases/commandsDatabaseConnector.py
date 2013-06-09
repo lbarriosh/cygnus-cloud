@@ -148,8 +148,7 @@ class CommandsDatabaseConnector(BasicDBConnector):
         results = self._executeQuery(query, False)
            
         update = "DELETE FROM RunCommandOutput WHERE userID = {0} AND isNotification = 1 AND time <= {1};".format(userID, max_time)
-        self._executeUpdate(update)
-            
+        self._executeUpdate(update)    
         return results
     
     def countPendingNotifications(self, userID):
@@ -160,9 +159,8 @@ class CommandsDatabaseConnector(BasicDBConnector):
         
         query = "SELECT COUNT(*) FROM RunCommandOutput WHERE userID = {0} AND isNotification = 1 AND time <= {1};"\
             .format(userID, max_time)
-        count = self._executeQuery(query, False)
-                       
-        return count[0]  
+        count = self._executeQuery(query, True)             
+        return count
          
     def isRunning(self, commandID):
         """

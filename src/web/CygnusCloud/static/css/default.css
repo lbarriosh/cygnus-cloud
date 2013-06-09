@@ -510,3 +510,12 @@ th.state_table{
 	border-radius:6px;
 	color:white;
 }
+
+div.notificationTag{
+	position:absolute;
+	top:290px;
+	right:140px;
+	border-radius:20px;
+	border: 1.3px solid rgba(65, 141, 236, 1);
+	
+}

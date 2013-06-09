@@ -109,15 +109,15 @@ def showNotifications():
     #Establecemos la conexión con el servidor 
     connector = conectToServer()
     #Creamos la tabla
-    table = TABLE(_class='data', _name='table')
-    table.append(TR(TH('Tipo'),TH('Notificación',_class='izquierda')))
+    table = TABLE(_class='state_table', _name='table')
+    table.append(TR(TH('Tipo',_class='state_table'),TH('Notificación',_class='izquierda state_table')))
     notifications = connector.getPendingNotifications()
     if len(notifications) == 0:
         form = FORM(CENTER(LABEL(T("No hay notificaciones pendientes."))))
     else:
         for note in notifications:
-            table.append(TR(TD(note["outputType"]),TD(note["commandOutput"],_class='izquierda')))
-        form = FORM(CENTER(table))
+            table.append(TR(TD(note[0],_class='state_table'),TD(note[1],_class='izquierda state_table')))
+        form = FORM(table)
     return dict(form=form)
     
     
@@ -161,7 +161,9 @@ def searchVMServerIp(servers, serverName):
 
 def createNotificationAdvise(form,connector):
     notificationNumber= connector.countPendingNotifications()
-    print notificationNumber
-    if notificationNumber > 0 :
-        form.append(DIV(A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='student',f='showNotifications')),
-            _style="background:#1d75fb;position:absolute;top:30%;right:10%;"))
+    if notificationNumber == 1 :
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificación pendiente.",_href=URL(c='student',f='showNotifications'),_style="padding: 8px;"),
+            _class="notificationTag"))
+    elif notificationNumber > 1 :
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='student',f='showNotifications'),_style="padding: 8px;"),
+            _class="notificationTag"))

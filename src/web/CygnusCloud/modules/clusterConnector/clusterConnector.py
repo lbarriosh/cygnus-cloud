@@ -438,12 +438,3 @@ class ClusterConnector(object):
             el número de notificaciones pendientes
         """
         return self.__commandsDBConnector.countPendingNotifications(self.__userID)
-       
-if __name__ == "__main__" :
-    connector = ClusterConnector(1)
-    connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "website_user", "CygnusCloud")
-    connector.bootUpVMServer("Server1")
-    sleep(5)
-    connector.shutDownInfrastructure(True)
-    # sleep(10)
-    # connector.bootUpVM(1)

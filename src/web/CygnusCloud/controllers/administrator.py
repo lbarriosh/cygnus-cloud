@@ -77,6 +77,8 @@ def runVM():
                     vncInfo = connector.waitForCommandOutput(commandId)
                     redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
                     
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form1,connector)         
         return dict(form1=form1,form2=form2,num = j)
     elif(request.args(0) == 'edit'):   
         #Creamos el formulario de busqueda
@@ -232,6 +234,8 @@ def runVM():
                  commandId=onnector.deleteImage(form3.vars.vmInServer.split('-')[1],form3.vars.vmInServer.split('-')[0])
                  evaluateCommand(connector,commandId,"Petición de eliminacion de servidor enviada")
                  
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form1,connector)         
         return dict(form1 = form1,form2=form2,form3=form3,num=0)
              
     else:
@@ -334,7 +338,9 @@ def runVM():
                                     ,VNCServerPassword=str(vmInfo["VNCPassword"]))
                 if vncInfo != None:            
                     redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
-                                    
+  
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form1,connector)                            
         return dict(form1=form1,form2=form2,num=j)         
 @auth.requires_membership('Administrator')
 def servers():
@@ -366,7 +372,8 @@ def servers():
                 except ValueError:
                        response.flash = T('E puerto debe ser un entero.')
             
-        #Devolvemos el formulario             
+        #Devolvemos el formulario 
+        createNotificationAdvise(form,connector)
         return dict(form = form)
     elif(request.args(0) == 'remove_servers'): 
          
@@ -439,7 +446,9 @@ def servers():
             else:
                 sInfo = connector.getVMServersData()[int(infoServer[5])]
                 redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
-                sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"],sInfo["IsVanillaServer"]]) ))  
+                sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"],sInfo["IsVanillaServer"]]) )) 
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form1,connector)        
         return dict(form1= form1)   
     elif(request.args(0) == 'servers_state'):  
         select = SELECT(_name = 'server',_id= 'sId')
@@ -523,7 +532,9 @@ def servers():
             if form1.vars.server:
                 redirect(URL(c='administrator',f='servers',args = ['servers_state']
                          ,vars = dict(serverName=servers[int(form1.vars.server)]["VMServerName"]))) 
-                     
+                         
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form1,connector)              
         return dict(form1 = form1,form2=form2,form3=form3,statePercentages = statePercentages,repoStatePercentage=repoStatePercentage) 
         
     elif(request.args(0) == 'stop_system'):
@@ -537,6 +548,9 @@ def servers():
         btn["_onclick"] = "return confirm('¿Esta seguro que desea detener la infraestructura?');"                                   
         if form.accepts(request.vars,keepvalues=True) and form.vars.stopSystem:
                     connector.shutDownInfrastructure(form.vars.stopVM=="on")
+                    
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form,connector)                    
         return dict(form = form)
 
 
@@ -562,6 +576,9 @@ def users():
                     
             #redireccinamos 
             redirect(URL(c='administrator',f='users',args = ['add'],vars = dict(usersFind=request.vars.usersFind) ))
+            
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form,connector)
         #Devolvemos el formulario             
         return dict(form = form)
         
@@ -599,7 +616,8 @@ def users():
             else:
                 response.flash = T('Esta relación no existe.')
 
-  
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form1,connector)
         #Devolvemos el formulario             
         return dict(form1 = form1,form2 = form2)
         
@@ -627,7 +645,9 @@ def users():
                 #redireccinamos 
                 listUsers.remove(listUsers[int(form2.vars.selection)])
                 redirect(URL(c='administrator',f='users',args = ['remove'],vars = dict(usersFind=listUsers) ))
-        
+                
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form1,connector)
         #Devolvemos los dos formularios
         return dict(form1 = form1,form2 = form2)
 
@@ -661,6 +681,9 @@ def subjects():
                           response.flash = T('Formato de números erroneo')
             #redireccinamos 
             redirect(URL(c='administrator',f='subjects',args = ['add'],vars = dict(usersFind=request.vars.usersFind) ))
+            
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form,connector)            
         #Devolvemos el formulario             
         return dict(form = form)  
          
@@ -695,7 +718,9 @@ def subjects():
                 #redireccinamos 
                 listSubjects.remove(listSubjects[int(form2.vars.selection)])
                 redirect(URL(c='administrator',f='subjects',args = ['remove'],vars = {'subjectsFind':listSubjects} ))
-        
+                
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form1,connector)        
         #Devolvemos los dos formularios
         return dict(form1 = form1,form2 = form2)
     #Página de asociación de asignaturas con máquinas virtuales       
@@ -742,7 +767,8 @@ def subjects():
             else:
                 response.flash = T('Esta relación no existe.')
 
-  
+        #Creamos la etiqueta de notificacion si procede         
+        createNotificationAdvise(form1,connector)
         #Devolvemos el formulario             
         return dict(form1 = form1,form2 = form2)
 
@@ -754,16 +780,16 @@ def showNotifications():
     #Establecemos la conexión con el servidor 
     connector = conectToServer()
     #Creamos la tabla
-    table = TABLE(_class='data', _name='table')
-    table.append(TR(TH('Tipo'),TH('Notificación',_class='izquierda')))
+    table = TABLE(_class='state_table', _name='table')
+    table.append(TR(TH('Tipo',_class='state_table'),TH('Notificación',_class='izquierda state_table')))
     notifications = connector.getPendingNotifications()
     if len(notifications) == 0:
         form = FORM(CENTER(LABEL(T("No hay notificaciones pendientes."))))
     else:
         for note in notifications:
-            table.append(TR(TD(note[0]),TD(note[1],_class='izquierda')))
-        form = FORM(CENTER(table))
-    return dict(form=form)             
+            table.append(TR(TD(note[0],_class='state_table'),TD(note[1],_class='izquierda state_table')))
+        form = FORM(table)
+    return dict(form=form)           
           
     
 def createAdressBar():
@@ -911,3 +937,12 @@ def evaluateCommand(connector,commandId,message):
         response.flash = message
     else:
         response.flash = connector.getCommandOutput(commandId)
+      
+def createNotificationAdvise(form,connector):
+    notificationNumber= connector.countPendingNotifications()
+    if notificationNumber == 1 :
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificación pendiente.",_href=URL(c='administrator',f='showNotifications'),_style="padding: 8px;"),
+            _class="notificationTag"))
+    elif notificationNumber > 1 :
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='administrator',f='showNotifications'),_style="padding: 8px;"),
+            _class="notificationTag"))

@@ -161,7 +161,9 @@ def searchVMServerIp(servers, serverName):
 
 def createNotificationAdvise(form,connector):
     notificationNumber= connector.countPendingNotifications()
-    print notificationNumber
-    if notificationNumber > 0 :
-        form.append(DIV(A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='student',f='showNotifications')),
-            _style="background:#1d75fb;position:absolute;top:20%;right:10%;"))
+    if notificationNumber == 1 :
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificación pendiente.",_href=URL(c='teacher',f='showNotifications'),_style="padding: 8px;"),
+            _class="notificationTag"))
+    elif notificationNumber > 1 :
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='teacher',f='showNotifications'),_style="padding: 8px;"),
+            _class="notificationTag"))

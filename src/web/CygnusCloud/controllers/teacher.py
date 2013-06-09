@@ -9,7 +9,7 @@ from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 def runVM():
     #actualizamos la barra
     createAdressBar()
-   
+    connector = conectToServer()
     #Calculamos las tablas
     j = 0
     [readyTable,j] = createReadyTable(j)
@@ -27,14 +27,15 @@ def runVM():
     if(form.accepts(request.vars)) and (form.vars.run):
             if(form.vars.selection != ""):
                 #Establecemos la conexión con el servidor 
-                connector = conectToServer()
+                
                 #Mandamos la ejecución del cliente noVNC
                 print form.vars.selection
                 commandId = connector.bootUpVM(form.vars.selection)
                 #Esperamos la contestacion
                 vncInfo = connector.waitForCommandOutput(commandId)
                 redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
-                 
+    
+    createNotificationAdvise(form,connector)                          
     return dict(form = form,num = j)
        
 #Método encargado de manejar la página de arranque de máquinas para el usuario
@@ -103,7 +104,7 @@ def runningVM():
             if vncInfo != None:            
                 redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
                 
-
+    createNotificationAdvise(form,connector)
     return dict(form = form,num = j)
 
 @auth.requires_membership('Teacher')       
@@ -179,7 +180,7 @@ def createVanillaVM():
            else:
                    response.flash = "Debe seleccionar una imagen base"
     
-           
+    createNotificationAdvise(form,connector)       
     return dict(form = form,progressBarStyle=progressBarStyle,num = num,num2 = j)
 
 @auth.requires_membership('Teacher')          
@@ -192,7 +193,6 @@ def editVM():
     runningImages = TABLE(_class='data',_name = 'runningImagesSelect')
     runningImages.append(TR(TH('Selección'),TH(T('Nombre'),_class='izquierda'),TH(T('Descripción')),_class='izquierda'))
     editedImages = connector.getEditedImageIDs(auth.user_id)
-    print connector.getPendingNotifications()
     num1= 0
     num2= 0
     for image in editedImages:
@@ -331,6 +331,8 @@ def editVM():
 
            else:
                    response.flash = "Debe seleccionar una imagen base"
+                   
+    createNotificationAdvise(form1,connector) 
     return dict(form1=form1,form2=form2,num1=num1,num2=num2)
     
 @auth.requires_membership('Teacher')    
@@ -414,7 +416,8 @@ def associateSubjects():
 
           response.flash = T('Máquina virtual desvinculada.')
           redirect(URL(c='teacher',f='associateSubjects'))
-        
+  
+    createNotificationAdvise(form1,connector)    
     return dict(form1=form1,form2=form2)
 
 #Método encargado de mostrar las notificaciones pendientes
@@ -425,15 +428,15 @@ def showNotifications():
     #Establecemos la conexión con el servidor 
     connector = conectToServer()
     #Creamos la tabla
-    table = TABLE(_class='data', _name='table')
-    table.append(TR(TH('Tipo'),TH('Notificación',_class='izquierda')))
+    table = TABLE(_class='state_table', _name='table')
+    table.append(TR(TH('Tipo',_class='state_table'),TH('Notificación',_class='izquierda state_table')))
     notifications = connector.getPendingNotifications()
     if len(notifications) == 0:
         form = FORM(CENTER(LABEL(T("No hay notificaciones pendientes."))))
     else:
         for note in notifications:
-            table.append(TR(TD(note["outputType"]),TD(note["commandOutput"],_class='izquierda')))
-        form = FORM(CENTER(table))
+            table.append(TR(TD(note[0],_class='state_table'),TD(note[1],_class='izquierda state_table')))
+        form = FORM(table)
     return dict(form=form)            
          
    
@@ -575,3 +578,12 @@ def searchVMServerIp(servers, serverName):
         if s["VMServerName"] == serverName:
             return s["VMServerIP"]
     return None
+    
+def createNotificationAdvise(form,connector):
+    notificationNumber= connector.countPendingNotifications()
+    if notificationNumber == 1 :
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificacion pendiente.",_href=URL(c='teacher',f='showNotifications'),_style="padding: 8px;"),
+            _class="notificationTag"))
+    elif notificationNumber > 1 :
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='teacher',f='showNotifications'),_style="padding: 8px;"),
+            _class="notificationTag"))
