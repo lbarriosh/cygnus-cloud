@@ -17951,6 +17951,17 @@ websockets
  que estos tienen asociados.
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+Por convención, los puertos pares se asignarán a los servidores VNC, y los
+ puertos impares consecutivos a estos se asignarán a los 
+\emph on
+websockets
+\emph default
+.
+\end_layout
+
+\end_deeper
 \begin_layout Enumerate
 se inicializa el objeto 
 \family typewriter
@@ -18418,13 +18429,17 @@ reserva una dirección MAC y un UUID para la máquina virtual.
 \end_layout
 
 \begin_layout Enumerate
-reserva dos puertos para la máquina virtual.
- Uno de ellos se corresponderá con el servidor VNC de la máquina virtual,
- y el otro con el 
+reserva dos puertos 
 \emph on
-websocket 
+consecutivos
 \emph default
-asociado.
+ para la máquina virtual.
+ Como ya hemos dicho, el puerto par se asignará al servidor VNC de la máquina
+ virtual, y el puerto impar se asignará al
+\emph on
+ websocket
+\emph default
+.
 \end_layout
 
 \begin_layout Enumerate
@@ -23276,6 +23291,430 @@ Error interno
 string
 \emph default
 )
+\end_layout
+
+\begin_layout Subsubsection
+Esquema de la base de datos
+\end_layout
+
+\begin_layout Standard
+La base de datos del servidor de máquinas virtuales contiene las siguientes
+ tablas:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Image
+\family default
+.
+ Esta tabla almacena las rutas relativas de los ficheros de definición y
+ de las distintas imágenes de disco almacenadas en el servidor de máquinas
+ virtuales.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Es el identificador asociado a un par de imágenes de disco, y la clave
+ primaria de esta tabla.
+ Se almacena como un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+osImagePath
+\family default
+, 
+\family typewriter
+dataImagePath
+\family default
+, 
+\family typewriter
+definitionFilePath
+\family default
+: son las rutas relativas de la imagen con el sistema operativo y los programas,
+ la imagen que almacenará los datos temporales y el fichero de paginación
+ y el fichero de definición que se usarán para crear una máquina virtual.
+ Estos valores son cadenas de caracteres de hasta 100 
+\emph on
+bytes
+\emph default
+ de longitud.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+bootable
+\family default
+: se trata de un bit que indica si se está editando el contenido de las
+ imágenes de disco o no.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ActiveVM
+\family default
+.
+ Esta tabla almacena los recursos asociados a las máquinas virtuales activas.
+ Incluye las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+domainName
+\family default
+.
+ Es la clave primaria de la tabla.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud que contiene el nombre de la máquina virtual que, como sabemos,
+ debe ser único dentro del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Como ya hemos visto, este valor entero es el identificador único asociado
+ a las imágenes de disco que usa la máquina virtual.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+VNCPort
+\family default
+.
+ Se trata de un valor entero, que se corresponde con el puerto par reservado
+ para el servidor VNC de la máquina virtual.
+ Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+, el 
+\emph on
+websocket
+\emph default
+ tiene asociado un puerto impar: el puerto consecutivo al del servidor VNC.
+ Por ello, no es necesario almacenar este valor en la base de datos.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+VNCPass
+\family default
+.
+ Se trata de una secuencia de caracteres de 65 
+\emph on
+bytes
+\emph default
+ de longitud, que contiene la contraseña del servidor VNC.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+userID
+\family default
+.
+ Se trata de un valor entero, que se corresponde con el identificador único
+ del usuario que envió la petición de arranque de máquina virtual o de creación
+ o edición de imágenes de disco.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+osImagePath
+\family default
+, 
+\family typewriter
+dataImagePath
+\family default
+.
+ Se trata de dos cadenas de caracteres de 100 
+\emph on
+bytes
+\emph default
+ de longitud, que contienen las rutas absolutas de las dos imágenes de disco
+ que usa la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+websockifyPID
+\family default
+.
+ Se trata de un valor entero, que almacena el PID del proceso 
+\emph on
+websockify
+\emph default
+.
+ Cuando este no se arranca, toma el valor 0.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+macAddress
+\family default
+.
+ Se trata de una cadena de caracteres de 20 
+\emph on
+bytes
+\emph default
+ de longitud, que contiene la dirección MAC de la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+uuid
+\family default
+.
+ Se trata de una cadena de caracteres de 40 
+\emph on
+bytes
+\emph default
+, que contiene el UUID de la máquina virtual.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ActiveDomainUUIDs
+\family default
+.
+ Esta tabla asocia a cada nombre de máquina virtual un identificador único,
+ que identifica a la máquina virtual en toda la infraestructura.
+ Tiene dos columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+domainName
+\family default
+.
+ Es la clave primaria de la tabla.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud que contiene el nombre de la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+commandID
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+, que identifica unívocamente a la petición de arranque, creación o edición
+ de imagen que creó la máquina virtual.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+CompressionQueue
+\family default
+.
+ Esta tabla almacena los elementos de la cola de compresión.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+position
+\family default
+.
+ Se trata de un valor entero, que es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+data
+\family default
+.
+ Almacena cadenas de caracteres de hasta 420 
+\emph on
+bytes
+\emph default
+ de longitud, que contienen las peticiones de la cola de compresión serializadas.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+TransferQueue
+\family default
+.
+ Esta tabla almacena los elementos de la cola de transferencias.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+position
+\family default
+.
+ Se trata de un valor entero, que es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+data
+\family default
+.
+ Almacena cadenas de caracteres de hasta 230 
+\emph on
+bytes
+\emph default
+ de longitud, que contienen las peticiones de la cola de transferencias
+ serializadas.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ConnectionDataDictionary
+\family default
+.
+ Esta tabla almacena los datos de conexión al repositorio de imágenes, y
+ contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+dict_key
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+ de longitud.
+ Almacenará el identificador único de una petición de creación o edición
+ de imágenes de disco.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+value
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 21 
+\emph on
+bytes
+\emph default
+ de longitud que contiene la dirección IP y el puerto del repositorio de
+ imágenes asociado a la petición.
+ Esta información está serializada.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+FreeMACsAndUUIDs
+\family default
+.
+ Esta tabla contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+mac
+\family default
+.
+ Se trata de una cadena de caracteres de 20 
+\emph on
+bytes
+\emph default
+ de longitud, que contiene una dirección MAC.
+ Es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+uuid
+\family default
+.
+ Se trata de una cadena de caracteres de 40 
+\emph on
+bytes
+\emph default
+, que contiene un UUID.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+FreeVNCPorts.
+ Esta tabla contiene una única columna, 
+\family typewriter
+vncPort
+\family default
+.
+ Se trata de un valor entero que se corresponde con un puerto y que, por
+ tanto, puede tomar valores entre 1 y 65535.
+ Asimismo, esta columna es la clave primaria de esta tabla.
+\end_layout
+
+\begin_layout Standard
+Finalmente, las tablas 
+\family typewriter
+FreeMACSAndUUIDs
+\family default
+ y 
+\family typewriter
+FreeVNCPorts 
+\family default
+residen en memoria.
+ El resto de tablas de la base de datos residen en disco.
 \end_layout
 
 \begin_layout Standard
