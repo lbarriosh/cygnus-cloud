@@ -98,7 +98,7 @@ class CompressionThread(BasicThread):
                         shutil.move(path.join(imageDirectory, fileName), definitionFileDirectory)
                         definitionFileFound = True
                     containsDataFile = fileName == "Data.qcow2" or containsDataFile
-                    containsOsFile = fileName == "OS.qcow2" or containsOSFile 
+                    containsOSFile = fileName == "OS.qcow2" or containsOSFile 
                 if(not definitionFileFound):
                     raise Exception("The definition file was not found")
                 if (not containsDataFile) :
@@ -152,15 +152,15 @@ class CompressionThread(BasicThread):
                 
             p = self.__packetHandler.createErrorPacket(packet_type, ERROR_DESC_T.VMSRVR_COMPRESSION_ERROR, data["CommandID"])
             self.__networkManager.sendPacket('', self.__serverListenningPort, p)
-            
-            # Generar una transferencia especial para dejar de editar la imagen
-            transfer = dict()
-            transfer["Transfer_Type"] = TRANSFER_T.CANCEL_EDITION
-            transfer["RepositoryIP"] = data["RepositoryIP"]
-            transfer["RepositoryPort"] = data["RepositoryPort"]
-            transfer["CommandID"] = data["CommandID"]
-            transfer["ImageID"] = data["TargetImageID"]
-            self.__dbConnector.addToTransferQueue(transfer)
+            if (data["Transfer_Type"] != TRANSFER_T.DEPLOY_IMAGE):
+                # Generar una transferencia especial para dejar de editar la imagen
+                transfer = dict()
+                transfer["Transfer_Type"] = TRANSFER_T.CANCEL_EDITION
+                transfer["RepositoryIP"] = data["RepositoryIP"]
+                transfer["RepositoryPort"] = data["RepositoryPort"]
+                transfer["CommandID"] = data["CommandID"]
+                transfer["ImageID"] = data["TargetImageID"]
+                self.__dbConnector.addToTransferQueue(transfer)
             
             # Borrar basura
             if (imageDirectory != None):
