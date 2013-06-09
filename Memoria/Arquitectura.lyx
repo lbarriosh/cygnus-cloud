@@ -19270,6 +19270,14 @@ s con el tratamiento de errores.
 
 \begin_layout Paragraph
 Creación y edición de imágenes de disco: descarga del fichero comprimido
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Creación-y-edición-descarga-normal"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -19306,8 +19314,8 @@ name "fig:Arranque-temporal-fase-1"
 
 \end_inset
 
-Primera fase del arranque de una imagen temporal: descarga del fichero comprimid
-o desde el repositorio de imágenes
+Creación y edición de imágenes de disco: descarga del fichero comprimido
+ desde el repositorio de imágenes
 \end_layout
 
 \end_inset
@@ -19491,7 +19499,12 @@ reference "fig:Arranque-temporal-fase-1"
 
 \end_deeper
 \begin_layout Enumerate
-tras finalizar la transferencia, el fichero comprimido se encontrará en
+tras finalizar la transferencia, se comprueba si se ha producido algún error
+ durante la misma.
+\end_layout
+
+\begin_layout Enumerate
+como no se han producido errores, el fichero comprimido se encontrará en
  el servidor de máquinas virtuales.
  Para terminar de procesar la petición de transferencia,
 \end_layout
@@ -19546,7 +19559,522 @@ el repositorio de imágenes no tiene el fichero comprimido que se pretende
 \end_layout
 
 \begin_layout Itemize
-la transferencia FTP con el repositorio de imágenes falle
+no se puede establecer la comunicación con el repositorio de imágenes, o
+ cuando
+\end_layout
+
+\begin_layout Itemize
+la transferencia FTP con el repositorio de imágenes falla.
+\end_layout
+
+\begin_layout Standard
+Centrémonos en el primer error.
+ Puesto que las transferencias con el repositorio de imágenes no se inician
+ inmediatamente, es posible que ocurra lo siguiente:
+\end_layout
+
+\begin_layout Enumerate
+un profesor decide crear una máquina virtual a partir de las imágenes de
+ disco asociadas al identificador 1.
+\end_layout
+
+\begin_layout Enumerate
+mientras la petición de transferencia está encolada, un administrador borra
+ el fichero comprimido del repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+cuando se va a tratar la petición de transferencia, las imágenes de disco
+ asociadas al identificador 1 han dejado de existir en el repositorio de
+ imágenes.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-1-error-nE"
+
+\end_inset
+
+ muestra cómo se procede en estos casos.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error ne.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-temporal-fase-1-error-nE"
+
+\end_inset
+
+Creación y edición de imágenes de disco: imágenes no registradas en el repositor
+io de imágenes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en dicho diagrama de secuencia, la descarga del fichero
+ comprimido se inicia igual que en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Creación-y-edición-descarga-normal"
+
+\end_inset
+
+.
+ No obstante, al comprobar si se ha producido un error, se detecta que el
+ repositorio de imágenes no dispone de las imágenes de disco solicitadas.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ello, se cierra la conexión con el repositorio, se construye un paquete
+ del tipo 
+\family sans
+Error de edición de imagen
+\family default
+ (usando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+) y se envía dicho paquete de error al servidor de 
+\emph on
+cluster
+\emph default
+.
+ Los paquetes del tipo 
+\family sans
+Error de edición de imagen
+\family default
+ contienen el identificador de la petición y un código de descripción del
+ error.
+\end_layout
+
+\begin_layout Standard
+Asimismo, la petición se elimina de la cola de transferencias y no se inserta
+ en la cola de compresión, por lo que su procesamiento termina.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, cuando se produce un error de este tipo, no se
+ descargan datos del repositorio.
+ Por ello, no es necesario realizar ninguna acción adicional.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-1-error-conexión"
+
+\end_inset
+
+ muestra cómo se tratan los errores de conexión al repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error conexión.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-temporal-fase-1-error-conexión"
+
+\end_inset
+
+Creación y edición de imágenes de disco: error al establecer la conexión
+ con repositorio de imágenes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cuando el establecimiento de la conexión falla, se lanza una excepción.
+ Al procesarla, el hilo de transferencias 
+\end_layout
+
+\begin_layout Enumerate
+actualiza un contador de intentos fallidos,
+\end_layout
+
+\begin_layout Enumerate
+duerme durante 
+\begin_inset Formula $4^{\textrm{intentos fallidos}}$
+\end_inset
+
+ segundos, e
+\end_layout
+
+\begin_layout Enumerate
+reinicia el procesamiento de la transferencia, volviendo a instanciar un
+ objeto 
+\family typewriter
+FileTransferCallback
+\family default
+ y creando nuevamente la conexión con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+cuando el número de intentos de conexión fallidos supera un determinado
+ umbral, que es configurable, se construye el paquete del tipo 
+\family sans
+Error de edición de imagen
+\family default
+, se envía al servidor de 
+\emph on
+cluster
+\emph default
+ y se elimina la petición de la cola de transferencias.
+\end_layout
+
+\begin_layout Standard
+Finalmente, el diagrama de secuencia de las figuras 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-1-error-FTP"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-1-error-FTP-1"
+
+\end_inset
+
+ muestra cómo se procesan los errores en las transferencias FTP.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP parte 1.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-temporal-fase-1-error-FTP"
+
+\end_inset
+
+Creación y edición de imágenes de disco: error al realizar la transferencia
+ FTP (parte 1)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP parte 2.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-temporal-fase-1-error-FTP-1"
+
+\end_inset
+
+Creación y edición de imágenes de disco: error al realizar la transferencia
+ FTP (parte 2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar, la forma de proceder es idéntica a la del caso anterior.
+ Es importante notar que, en ambos, se utiliza el mismo contador de intentos
+ fallidos, por lo que los errores de conexión al repositorio de imágenes
+ y los errores en las transferencias FTP tienen la misma importancia.
+\end_layout
+
+\begin_layout Paragraph
+Creación y edición de imágenes de disco: extracción del fichero comprimido
+\end_layout
+
+\begin_layout Standard
+Una vez se ha descargado el fichero comprimido desde el repositorio de imágenes,
+ es necesario extraer su contenido.
+ Por convenio, el fichero comprimido contiene tres ficheros ubicados en
+ su directorio raíz:
+\end_layout
+
+\begin_layout Itemize
+el fichero 
+\family typewriter
+Definition.xml
+\family default
+ es la plantilla que se usará para generar el fichero de configuración de
+ todas las máquinas virtuales que usen las imágenes de disco correspondientes.
+\end_layout
+
+\begin_layout Itemize
+el fichero 
+\family typewriter
+OS.qcow2
+\family default
+ es la imagen de disco que contiene el sistema operativo y los programas
+ instalados.
+ Durante el proceso de arranque de las máquinas virtuales, se crearán imágenes
+ 
+\emph on
+copy-on-write
+\emph default
+ a partir de este fichero.
+\end_layout
+
+\begin_layout Itemize
+el fichero 
+\family typewriter
+Data.qcow2
+\family default
+ es la imagen de disco que contiene el fichero de paginación y los datos
+ temporales que usan los usuarios.
+ Durante el proceso de arranque de las máquinas virtuales, se creará una
+ copia de este fichero.
+\end_layout
+
+\begin_layout Standard
+Tras finalizar la extracción del fichero comprimido,
+\end_layout
+
+\begin_layout Itemize
+los ficheros 
+\family typewriter
+.qcow2
+\family default
+ se moverán al directorio 
+\family typewriter
+imagenes/<identificador del fichero comprimido>
+\family default
+, y
+\end_layout
+
+\begin_layout Itemize
+el fichero 
+\family typewriter
+.xml
+\family default
+ se moverá al directorio 
+\family typewriter
+configuraciones/<identificador del fichero comprimido>
+\end_layout
+
+\begin_layout Standard
+Los directorios 
+\family typewriter
+imagenes
+\family default
+ y 
+\family typewriter
+configuraciones
+\family default
+ se encuentran en la raíz del directorio de trabajo del servidor de máquinas
+ virtuales.
+\end_layout
+
+\begin_layout Standard
+Finalmente, se creará la máquina virtual que se utilizará para editar las
+ imágenes de disco.
+ Todos estos pasos se reflejan en el diagrama de secuencia de la figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-2"
+
+\end_inset
+
+.
+ Por claridad, supondremos que no se produce ningún error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descompresión sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-temporal-fase-2"
+
+\end_inset
+
+Creación y edición de imágenes de disco: extracción del fichero comprimido
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Es importante notar que
+\end_layout
+
+\begin_layout Itemize
+siempre se modifican los permisos de las imágenes de disco.
+ Así, nos aseguramos de que pueden leerse y escribirse en el servidor de
+ máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+si la imagen ya está dada de alta en la base de datos, se borra.
+ Como veremos más adelante, esto hace posible que el servidor de 
+\emph on
+cluster
+\emph default
+ pueda enviar menos paquetes cuando se modifica el contenido de las imágenes
+ de disco, ahorrando así ancho de banda.
+\end_layout
+
+\begin_layout Paragraph
+Creación y edición de imágenes de disco: errores en la extracción del fichero
+ comprimido
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
