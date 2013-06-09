@@ -12044,6 +12044,13 @@ FTPServerCallback
 
 \begin_layout Paragraph
 Transferencias parciales
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Transferencias-parciales"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -18069,7 +18076,7 @@ Por claridad, en todos los casos comenzaremos mostrando el flujo básico,
 \begin_layout Standard
 Asimismo, en esta sección omitiremos las interacciones que despliegan, crean,
  editan o borran imágenes de disco: consideramos que tienen entidad suficiente
- como para tratarlas en una sección separada.
+ como para tratarlas en secciones separadas.
 \end_layout
 
 \begin_layout Paragraph
@@ -18263,7 +18270,14 @@ VMServerPacketHandler
 \end_layout
 
 \begin_layout Paragraph
-Creación de una máquina virtual: secuencia básica
+Creación de una máquina virtual: secuencia básica 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -18607,7 +18621,14 @@ Finalmente, es importante notar que, cuando se reciben las peticiones de
 \end_layout
 
 \begin_layout Paragraph
-Creación de una máquina virtual: tratamiento de errores
+Creación de una máquina virtual: tratamiento de errores 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Arranque-MV-errores"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -19044,7 +19065,25 @@ Asimismo, cuando el servidor VNC se apaga, el demonio
 websockify
 \family default
  lo detectará y se también se apagará.
- Por ello, no es necesario matarlo cuando la máquina virtual se apaga..
+ Por ello, no es necesario matarlo cuando la máquina virtual se apaga.
+\end_layout
+
+\begin_layout Standard
+Finalmente, puesto que las dos imágenes de disco se borran, cuando la máquina
+ virtual se apaga se destruyen todos los datos que haya escrito en disco
+ durante su ejecución.
+\end_layout
+
+\begin_layout Paragraph
+Solicitud de datos de conexión
+\end_layout
+
+\begin_layout Paragraph
+Identificadores de las máquinas virtuales activas
+\end_layout
+
+\begin_layout Paragraph
+Reinicio de una máquina virtual
 \end_layout
 
 \begin_layout Paragraph
@@ -19214,8 +19253,7 @@ Apagado inmediato
 \end_layout
 
 \begin_layout Subsubsection
-Interacciones relacionadas con la creación, edición, despliegue y borrado
- de imágenes de disco
+Creación y edición de imágenes de disco
 \end_layout
 
 \begin_layout Standard
@@ -19224,13 +19262,8 @@ n con el servidor de
 \emph on
 cluster
 \emph default
- y el repositorio de imágenes durante los procesos de creación, edición,
- despliegue y borrado de imágenes de disco.
-\end_layout
-
-\begin_layout Standard
-En primer lugar, nos centraremos en la creación y edición de imágenes de
- disco.
+ y el repositorio de imágenes durante los procesos de creación y edición
+ de imágenes de disco.
  Para ello, seguiremos el siguiente orden:
 \end_layout
 
@@ -19255,22 +19288,13 @@ subida del fichero comprimido al repositorio de imágenes
 \end_layout
 
 \begin_layout Standard
-Posteriormente, mostraremos las operaciones que tienen lugar durante el
- despliegue de imágenes de disco.
- Esta operación comparte muchas fases con las de creación y edición de imágenes.
- Finalmente, mostraremos qué sucede en el servidor de máquinas virtuales
- durante el borrado de una imagen de disco.
-\end_layout
-
-\begin_layout Standard
 Nuevamente, en todos los casos empezaremos mostrando el flujo básico para
  posteriormente mostrar los distintos flujos alternativos, que están relacionado
 s con el tratamiento de errores.
 \end_layout
 
 \begin_layout Paragraph
-Creación y edición de imágenes de disco: descarga del fichero comprimido
- 
+Descarga del fichero comprimido 
 \begin_inset CommandInset label
 LatexCommand label
 name "par:Creación-y-edición-descarga-normal"
@@ -19531,6 +19555,13 @@ Es importante notar que, para no saturar el repositorio de imágenes, las
 \end_layout
 
 \begin_layout Standard
+Asimismo, puesto que para realizar la descarga se utiliza un identificador
+ de imagen, será posible crear o editar imágenes de disco en varias fases.
+ Para ello, bastará con repetir varias veces el proceso que mostramos en
+ esta sección y en las siguientes.
+\end_layout
+
+\begin_layout Standard
 Finalmente, los servidores de 
 \emph on
 cluster
@@ -19546,7 +19577,14 @@ cluster
 \end_layout
 
 \begin_layout Paragraph
-Creación y edición de imágenes de disco: errores durante la descarga
+Errores durante la descarga del fichero comprimido 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Errores-descarga"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -19706,7 +19744,7 @@ reference "fig:Arranque-temporal-fase-1-error-conexión"
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -19905,7 +19943,7 @@ Como podemos observar, la forma de proceder es idéntica a la del caso anterior.
 \end_layout
 
 \begin_layout Paragraph
-Creación y edición de imágenes de disco: extracción del fichero comprimido
+Extracción del fichero comprimido
 \end_layout
 
 \begin_layout Standard
@@ -20008,7 +20046,7 @@ reference "fig:Arranque-temporal-fase-2"
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -20050,9 +20088,31 @@ Es importante notar que
 \end_layout
 
 \begin_layout Itemize
-siempre se modifican los permisos de las imágenes de disco.
- Así, nos aseguramos de que pueden leerse y escribirse en el servidor de
- máquinas virtuales.
+siempre se comprueba que el fichero comprimido contiene los ficheros 
+\family typewriter
+OS.qcow2
+\family default
+, 
+\family typewriter
+Data.qcow2
+\family default
+ y 
+\family typewriter
+Definition.xml
+\family default
+.
+ En caso de que alguna de las imágenes de disco esté corrupta, el error
+ se detectará al arrancar la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+antes de utilizar las imágenes de disco en el arranque de la máquina virtual,
+ se modifican sus permisos mediante la orden 
+\family typewriter
+chmod
+\family default
+.
+ Así, nos aseguramos de que pueden leerse y escribirse en todos los casos.
 \end_layout
 
 \begin_layout Itemize
@@ -20065,9 +20125,645 @@ cluster
  de disco, ahorrando así ancho de banda.
 \end_layout
 
+\begin_layout Itemize
+la petición se elimina de la cola cuando se ha procesado completamente.
+ Por ello, si el demonio del servidor de máquinas virtuales termina de forma
+ inesperada, el proceso de descompresión podrá reanudarse en su próximo
+ arranque sin que sea necesario realizar nuevamente la transferencia con
+ el repositorio de imágenes.
+ Esto permite ahorrar tiempo y ancho de banda.
+\end_layout
+
 \begin_layout Paragraph
-Creación y edición de imágenes de disco: errores en la extracción del fichero
- comprimido
+Errores en la extracción del fichero comprimido 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Errores-en-la-extracción-zip"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Al extraer el fichero comprimido, pueden detectarse los siguientes errores:
+\end_layout
+
+\begin_layout Itemize
+el fichero comprimido puede estar corrupto.
+ En estos casos, no se puede extraer.
+\end_layout
+
+\begin_layout Itemize
+el contenido del fichero comprimido es incorrecto.
+ En estos casos, falta alguno de los tres ficheros de los que hablamos en
+ la sección anterior, o alguno de ellos contiene datos no válidos.
+\end_layout
+
+\begin_layout Itemize
+falla la llamada de 
+\family typewriter
+libvirt
+\family default
+ que crea la máquina virtual.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descompresión con error.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-temporal-fase-2-1"
+
+\end_inset
+
+Creación y edición de imágenes de disco: fallo durante la extracción del
+ fichero comprimido
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Todos estos errores se tratan de forma idéntica, por lo que nos centraremos
+ en uno cualquiera de ellos: el segundo.
+ Como puede observarse en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-2-1"
+
+\end_inset
+
+, para tratar el error se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo Error de edición de imagen, que contiene
+ el identificador único de la petición y un código de descripción del error.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se crea y encola una transferencia especial.
+ Durante su procesamiento, no se transferirán datos: sólo se interactuará
+ con el repositorio de imágenes de la siguiente manera:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+si se están creando imágenes de disco, se liberará el identificador pedido,
+ y
+\end_layout
+
+\begin_layout Itemize
+si se están editando imágenes de disco, se liberará el fichero comprimido
+ en el repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Ambas interacciones se realizan de acuerdo a lo que dijimos en la sección
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Transferencias-parciales"
+
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+se borran el fichero 
+\family typewriter
+.zip
+\family default
+ y los ficheros extraídos (si existen).
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, cuando falla la llamada a 
+\family typewriter
+libvirt
+\family default
+ que crea la máquina virtual, el objeto 
+\family typewriter
+DomainHandler
+\family default
+ se ocupa de liberar los recursos asociados a la máquina virtual.
+\end_layout
+
+\begin_layout Paragraph
+Arranque de la máquina virtual
+\end_layout
+
+\begin_layout Standard
+Cuando se arranca una máquina virtual que se utilizará para editar imágenes
+ de disco, se realizan prácticamente las mismas acciones que vimos en las
+ secciones 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-MV-errores"
+
+\end_inset
+
+.
+ En esta sección, estudiaremos las modificaciones que hay que realizar en
+ todas las secuencias de arranque de una máquina virtual para poder crear
+ y editar imágenes de disco.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Arranque MV edición.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Creación-MV-Edición"
+
+\end_inset
+
+Creación y edición de imágenes: arranque de la máquina virtual
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Comencemos con la secuencia básica, en la que no se producen errores.
+ Por claridad, hemos reproducido todos sus pasos en el diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Creación-MV-Edición"
+
+\end_inset
+
+.
+ Como podemos observar en dicho diagrama, se reservan los diversos recursos
+ asignados a la máquina virtual antes de realizar la llamada a 
+\family typewriter
+libvirt
+\family default
+.
+ Asimismo, al procesar el evento de arranque de máquina virtual, se envían
+ los datos de conexión al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+La modificación a realizar con respecto al proceso de arranque básico es
+ muy sencilla: no se creará la imagen 
+\emph on
+copy-on-write
+\emph default
+ ni una copia de la imagen que alberga los datos y el fichero de paginación.
+ Así, al apagar la máquina virtual podremos garantizar que los cambios realizado
+s en dichas imágenes se mantendrán.
+\end_layout
+
+\begin_layout Standard
+Finalmente, cuando se produce un error se procede como vimos en la sección
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-MV-errores"
+
+\end_inset
+
+.
+ Por ello, no reproduciremos nuevamente las interacciones que presentamos
+ en dicha sección.
+\end_layout
+
+\begin_layout Paragraph
+Apagado de la máquina virtual
+\end_layout
+
+\begin_layout Standard
+El proceso de apagado de una máquina virtual que se utiliza para editar
+ imágenes de disco es muy similar al que presentamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-MV"
+
+\end_inset
+
+.
+ Nuevamente, en esta sección mostraremos las modificaciones que hay que
+ realizar en él.
+ El proceso de apagado modificado se recoge en el diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-MV-Edición"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Apagado MV edición.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-MV-Edición"
+
+\end_inset
+
+Creación y edición de imágenes: apagado de la máquina virtual
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en dicho diagrama,
+\end_layout
+
+\begin_layout Itemize
+no se borran las imágenes de disco, ya que es necesario añadirlas a un fichero
+ comprimido, y
+\end_layout
+
+\begin_layout Itemize
+se crea y encola una petición de compresión, que contiene todo lo necesario
+ para generar el fichero comprimido y realizar la transferencia con el repositor
+io de imágenes.
+\end_layout
+
+\begin_layout Paragraph
+Creación del fichero comprimido
+\end_layout
+
+\begin_layout Standard
+Como ya hemos visto, cuando se apaga una máquina virtual que se utiliza
+ para crear imágenes de disco, se crea y encola una petición de compresión,
+ que se procesará, en ausencia de errores, como se indica en el diagrama
+ de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Compresión-Edición"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Creación fichero comprimido.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Compresión-Edición"
+
+\end_inset
+
+Creación y edición de imágenes: creación del fichero comprimido
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se utiliza un objeto 
+\family typewriter
+ZipBasedCompressor
+\family default
+ para generar el fichero comprimido.
+\end_layout
+
+\begin_layout Enumerate
+se borran las imágenes de disco 
+\family typewriter
+.qcow2
+\family default
+ y el fichero 
+\family typewriter
+.xml
+\family default
+ de definición de la máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+se construye una petición de transferencia y se añade a la cola de transferencia
+s.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que la petición se elimina de la cola cuando se ha procesado
+ completamente.
+ Por ello, si el demonio del servidor de máquinas virtuales termina de forma
+ inesperada, este proceso podrá reanudarse en su próximo arranque sin que
+ se pierdan datos.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en caso de que el proceso de compresión falle, se procederá
+ exactamente igual que en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-en-la-extracción-zip"
+
+\end_inset
+
+.
+ Por ello, no reproduciremos nuevamente dicho proceso.
+\end_layout
+
+\begin_layout Paragraph
+Subida del fichero comprimido
+\end_layout
+
+\begin_layout Standard
+Tras generar el fichero comprimido, se generará y encolará una petición
+ de transferencia.
+ Siempre que no se produzcan errores, esta petición se procesará de acuerdo
+ al diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Subida-edición"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Subida imagen repositorio.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Subida-edición"
+
+\end_inset
+
+Creación y edición de imágenes: subida del fichero comprimido al repositorio
+ de imágenes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en dicho diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se crea, a través de un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+, el paquete inicial que se enviará al repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+se instancia un objeto 
+\family typewriter
+FileTransferCallback
+\family default
+.
+ Como sabemos, este objeto se encargará de interactuar con el repositorio
+ de imágenes de acuerdo a lo que vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Interacciones-del-repositorio"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+se establece la conexión con el repositorio de imágenes y se le envía el
+ paquete inicial.
+ Para ello, se hace uso de un objeto 
+\family typewriter
+NetworkManager
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+cuando la transferencia se completa, se comprueba si se ha producido algún
+ error.
+ En este caso, no se ha producido ninguno.
+\end_layout
+
+\begin_layout Enumerate
+se borra el fichero 
+\family typewriter
+.zip
+\family default
+ transferido al repositorio de imágenes.
+ Para ello, se utilizan los servicios de la clase 
+\family typewriter
+ChildProcessManager
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+, se construye un paquete del tipo Imagen editada.
+ Este contiene, además del identificador único de la petición, el identificador
+ único del fichero comprimido que se acaba de transferir.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Nuevamente, la petición de transferencia sólo se elimina de la cola tras
+ realizar todas estas acciones.
+ Así, si se interrumpe este proceso, se reanudará en el siguiente arranque
+ del servidor de máquinas virtuales, lo que impide que se pierdan datos.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en caso de que no se pueda establecer la conexión con el repositorio
+ de imágenes, se procederá de acuerdo a lo indicado en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-descarga"
+
+\end_inset
+
+, por lo que no volveremos a reproducir aquí esas interacciones.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, en este caso, el repositorio de imágenes siempre
+ conoce el identificador del fichero comprimido a transferir, por lo que
+ no pueden producirse los errores del primer tipo que estudiamos en la sección
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-descarga"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
