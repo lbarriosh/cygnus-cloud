@@ -86,7 +86,17 @@ def runVM():
             TD(DIV( T('Asignatura: '),BR(),INPUT(_name = 'subject')),_class='izquierda')),
             TR(TD(INPUT(_type='submit',_class="button button-blue",_name = 'search',_value=T('Buscar')),_class='izquierda'))),HR()) 
         #Extraemos la lista de MV , si existe.
-        vmListAux = request.vars.vmList or []
+        vmListAux = request.vars.vmList 
+        if vmListAux == None:
+            vmListAux = []
+            #Mostramos todo
+            listInfo = userDB((userDB.Subjects.code == userDB.ClassGroup.cod) & (userDB.UserGroup.cod == userDB.Subjects.code) & \
+                    (userDB.UserGroup.curseGroup== userDB.ClassGroup.curseGroup) & (userDB.UserGroup.cod == userDB.VMByGroup.cod) & \
+                    (userDB.UserGroup.curseGroup== userDB.VMByGroup.curseGroup) ).select(userDB.VMByGroup.VMId, \
+                    userDB.ClassGroup.cod,userDB.ClassGroup.curseGroup,userDB.Subjects.name,userDB.UserGroup.userId)
+            for l in listInfo :
+                vmListAux.append([l.VMByGroup.VMId,l.Subjects.name,l.ClassGroup.cod,l.ClassGroup.curseGroup,l.UserGroup.userId])
+                    
         if(isinstance(vmListAux,str)):
             vmList = [eval(request.vars.vmList)]
         else:
@@ -105,7 +115,7 @@ def runVM():
         vmSelector = SELECT(_name = 'vms',_id= 'sId') 
         i=0
         for vmName in vmNames:
-            vmSelector.append(OPTION(T(str(vmName["ImageName"])),_value = i ,_selected="selected"))
+            vmSelector.append(OPTION(T(str(vmName["ImageName"])),_value = vmName["ImageID"] ,_selected="selected"))
             i = i + 1 
         """  
         #Creamos el segundo formulario
@@ -118,18 +128,20 @@ def runVM():
                 vmList.append(eval(l)) 
         """
         #Creamos el segundo formulario
+        """
         infoTable = TABLE(
                     TR(TD("Asignatura:",_class='izquierda'),TD("",_id='vmSubject',_class='izquierda')),
                     TR(TD("Grupo",_class='izquierda'),TD("",_id='vmGroup',_class='izquierda')),
                     TR(TD("Usuario",_class='izquierda'),TD("",_id='vmUser',_class='izquierda')),_class='state_table',_id='infoTable')
-        serversSelector = SELECT(_name = 'vms',_id= 'sId')
+        """
+        serversSelector = SELECT(_name = 'servers',_id= 'serversId')
         servers = connector.getVMServersData()
         i = 0
         for s in servers:
-                serversSelector.append(OPTION(T(str(s["VMServerName"])),_value = i ,_selected="selected"))
+                serversSelector.append(OPTION(T(str(s["VMServerName"])),_value = s["VMServerName"] ,_selected="selected"))
                 i = i + 1
                 
-        form2 = FORM(LABEL(H2(T('Resultados'))),vmSelector,infoTable,
+        form2 = FORM(LABEL(H2(T('Resultados'))),vmSelector,
                DIV(INPUT(_type='submit',_class="button button-blue",_name = 'deleteAll',_value=T('Eliminar del sistema'),
                _style="width:170px;")),
                DIV(INPUT(_type='submit',_class="button button-blue",_name = 'deployAll',_value=T('Desplegar automáticamente'),
@@ -137,14 +149,16 @@ def runVM():
                DIV(serversSelector,INPUT(_type='submit',_class="button button-blue",_name = 'deploy',_value=T('Desplegar en el servidor'),
                _style="width:190px;")))
         #Creamos el tercer y último formulario
-        vmServerSelector = SELECT(_name = 'vms',_id= 'sId')
+        vmServerSelector = SELECT(_name = 'vmInServer',_id= 'vmInServerId')
         vmDistribution = connector.getVMDistributionData()
+
         i = 0
         for vmDist in vmDistribution:
+                print vmDist
                 if finalVMList.count(vmDist["ImageID"]) >= 1:
                     vmName =  connector.getBootableImagesData([vmDist["ImageID"]])[0]["ImageName"] 
                     vmServerSelector.append(OPTION(T("Máquina: ") + vmName + T(", Servidor: ") + vmDist["VMServerName"]
-                        ,_value = i ,_selected="selected"))
+                        ,_value = vmName + "-" + vmDist["VMServerName"]  ,_selected="selected"))
                     i = i + 1 
         form3 = FORM(LABEL(H2(T('Eliminar máquina en servidor'))),vmServerSelector,
                DIV(INPUT(_type='submit',_class="button button-blue",_name = 'delete',_value=T('Eliminar del servidor'),
@@ -171,9 +185,12 @@ def runVM():
                 listSubjects = []
                 
                 for l in listInfo :
-                    vmName = connector.getBootableImagesData([l.VMByGroup.VMId])[0]["ImageName"]
-                    if (form1.vars.vmName.lower() in vmName.lower()):                    
-                        listSubjects.append(l)
+                    
+                    vmName = connector.getBootableImagesData([l.VMByGroup.VMId])
+                    if len(vmName) > 0:
+                        vmName = vmName[0]["ImageName"]
+                        if (form1.vars.vmName.lower() in vmName.lower()):                    
+                            listSubjects.append(l)
                 listInfo = listSubjects
             #Creamos la lista final
             solutionList = []
@@ -182,10 +199,41 @@ def runVM():
             print listInfo
             #redireccinamos con los resultados
             redirect(URL(c='administrator',f='runVM',args = ['edit'],vars = dict(vmList=solutionList) ))
-        #Devolvemos el formulario 
-        print infoVMList            
+        if form2.accepts(request.vars,keepvalues=True) and form2.vars.deleteAll:
+                 if form2.vars.vms:
+                     #Borramos la imagen del sistema
+                     commandId = connector.deleteImageFromInfrastructure(form2.vars.vms)
+                     evaluateCommand(connector,commandId,"Petición de eliminación enviada")
+                     
+        if form2.accepts(request.vars,keepvalues=True) and form2.vars.deployAll:
+                 if form2.vars.vms:
+                     #Extraemos las asignaturas asociadas a esta máquina virtual
+                     subjectsNumbers = userDB((userDB.VMByGroup.VMId == form2.vars.vms) & (userDB.VMByGroup.cod == userDB.ClassGroup.cod) \
+                         & (userDB.VMByGroup.curseGroup == userDB.ClassGroup.curseGroup)).select(userDB.ClassGroup.placesNumber)
+                     #Nos quedamos con el mayor
+                     max = 0
+                     for n in subjectsNumbers:
+                         if n.placesNumber > max:
+                             max = n.placesNumber
+                     #Desplegamos la MV automáticamente
+                     commandId = connector.autoDeployImage(form2.vars.vms,max)
+                     evaluateCommand(connector,commandId,"Petición de desplegado automátic enviada") 
+                       
+        if form2.accepts(request.vars,keepvalues=True) and form2.vars.deploy:      
+            #Desplegamos la máquina en un servidor concreto
+            if form2.vars.vms:
+                     print form2.vars.servers
+                     commandId = connector.deployImage(form2.vars.servers,form2.vars.vms)         
+                     evaluateCommand(connector,commandId,"Petición de desplegado en servidor enviada") 
+                     
+        if form3.accepts(request.vars,keepvalues=True) and form3.vars.delete:  
+            #Eliminamos la máquina del servidor seleccionado
+            if form3.vars.vmInServer:
+                 commandId=onnector.deleteImage(form3.vars.vmInServer.split('-')[1],form3.vars.vmInServer.split('-')[0])
+                 evaluateCommand(connector,commandId,"Petición de eliminacion de servidor enviada")
+                 
         return dict(form1 = form1,form2=form2,form3=form3,num=0)
- 
+             
     else:
         #Creamos el formulario de busqueda
         form1 = FORM(HR(),H2(T('Buscar una máquina o usuario')),DIV( T('Nombre de la máquina: '),BR(),INPUT(_name = 'vmName')),
@@ -212,8 +260,10 @@ def runVM():
                     TD(LABEL(vm[1])),
                     TD(LABEL(vm[2])),
                     TD(LABEL(vm[3])),
+                    TD(DIV(INPUT(_type='submit',_name = 'restart',  _value = T('Reiniciar'),_class="button button-blue")
+                        ,_id = 'r' + str(j)),_class='izquierda'),
                     TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue")
-                        ,_id = str(j)),_class='izquierda')))
+                        ,_id = 's' + str(j)),_class='izquierda')))
                 else:
                     table.append(TR(\
                     TD(INPUT(_type='radio',_name = 'selection',_value = vm[4],_id = "c"+str(j))),\
@@ -222,7 +272,7 @@ def runVM():
                     TD(LABEL(vm[2])),
                     TD(LABEL(vm[3])),
                     TD(DIV(INPUT(_type='submit',_name = 'open',  _value = T('Abrir'),_class="button button-blue")
-                        ,_id = str(j)),_class='izquierda')))                    
+                        ,_id = 's' +  str(j)),_class='izquierda')))                    
                 j = j + 1
         #Creamos el segundo formulario
         if(request.args(0) == 'stop'):
@@ -235,7 +285,7 @@ def runVM():
             #Establecemos la conexión con el servidor 
             connector = conectToServer()
             #Extraemos la informacion
-            vmListAux = connector.getActiveVMsData()
+            vmListAux = connector.getActiveVMsData(True,False)
             print vmListAux
             #Inicializamos la lista de asignaturas
             vmList = [] 
@@ -402,7 +452,7 @@ def servers():
             INPUT(_type='submit',_class="button button-blue",_name = 'search' ,_value=T('Mostrar estado'),_style="width:150px;")))
         #Extraemos información de estado
         serverInfo = None
-        if len(servers) > 0 :
+        if servers !=None and len(servers) > 0 :
             
             serverName = request.vars.serverName or servers[0]["VMServerName"]
             serverInfo = connector.getVirtualMachineServerStatus(serverName)
@@ -435,7 +485,7 @@ def servers():
                                     temporarySpacePercentage=0,
                                     CPUsPercentage=0)
                 table = TABLE(_class='state_table', _name='table')
-                table.append(TR(TH(serverName,_class='izquierda state_table'),TH("Usado",_class='state_table'),TH("Total",_class='state_table')))
+                table.append(TR(TH("No Info",_class='izquierda state_table'),TH("Usado",_class='state_table'),TH("Total",_class='state_table')))
                 table.append(TR(TD("Maquinas activas",_class='izquierda state_table'),TD("0",_class='state_table'),TD("",_class='state_table')))
                 table.append(TR(TD("Memoria RAM",_class='izquierda state_table'),TD("0",_class='state_table'),TD("0",_class='state_table')))
                 table.append(TR(TD("Espacio en disco",_class='izquierda state_table'),TD("0",_class='state_table'),TD("0",_class='state_table')))
@@ -590,8 +640,9 @@ def subjects():
         form = FORM(HR(),H2(T('Añadir un nueva asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_style="width:30%;"),_style="position:absolute;left:10%;"),
                 DIV( T('Nombre: '),BR(),INPUT(_name ='name'),_style="position:absolute;left:18%;"),BR(),BR(),BR(),
                 DIV( T('Año: '),BR(),INPUT(_name ='year',_style="width:35%;"),_style="position:absolute;left:10%;"),
-                DIV( T('Curso: '),BR(),INPUT(_name ='curse',_style="width:29%;"),_style="position:absolute;left:20%;"),
-                DIV( T('Grupo: '),BR(),INPUT(_name ='group',_style="width:10%;"),_style="position:absolute;left:28%;"),BR(),BR(),BR(),
+                DIV( T('Grupo: '),BR(),INPUT(_name ='group',_style="width:10%;"),_style="position:absolute;left:28%;"),
+                DIV( T('Número de plazas: '),BR(),INPUT(_name ='placesNumber',_style="width:29%;"),_style="position:absolute;left:18%;")
+                    ,BR(),BR(),BR(),
                 HR(),CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'add' ,_value=T('Añadir'))))                
         
         if form.accepts(request.vars) and form.vars.add:
@@ -604,8 +655,8 @@ def subjects():
                         #Si no existe la asignatura, la creamos
                         if(userDB(userDB.Subjects.code == form.vars.cod).count() == 0):
                             userDB.Subjects.insert(code = int(form.vars.cod),name = form.vars.name)
-                        userDB.ClassGroup.insert(yearGroup = int(form.vars.year),cod = int(form.vars.cod),curse = int(form.vars.curse),\
-                            curseGroup = form.vars.group)
+                        userDB.ClassGroup.insert(yearGroup = int(form.vars.year),cod = int(form.vars.cod),curseGroup = form.vars.group,
+                                placesNumber = int(form.vars.placesNumber))
                 except ValueError:
                           response.flash = T('Formato de números erroneo')
             #redireccinamos 
@@ -694,7 +745,25 @@ def subjects():
   
         #Devolvemos el formulario             
         return dict(form1 = form1,form2 = form2)
-          
+
+#Método encargado de mostrar las notificaciones pendientes
+@auth.requires_membership('Administrator')
+def showNotifications():
+    #actualizamos la barra
+    createAdressBar()
+    #Establecemos la conexión con el servidor 
+    connector = conectToServer()
+    #Creamos la tabla
+    table = TABLE(_class='data', _name='table')
+    table.append(TR(TH('Tipo'),TH('Notificación',_class='izquierda')))
+    notifications = connector.getPendingNotifications()
+    if len(notifications) == 0:
+        form = FORM(CENTER(LABEL(T("No hay notificaciones pendientes."))))
+    else:
+        for note in notifications:
+            table.append(TR(TD(note["outputType"]),TD(note["commandOutput"],_class='izquierda')))
+        form = FORM(CENTER(table))
+    return dict(form=form)             
           
     
 def createAdressBar():
@@ -715,7 +784,8 @@ def createAdressBar():
                         (T('Asociar asignaturas'),False,URL(f = 'users',args = ['associate_subjects']))]],
                     [SPAN(T('Administrar asignaturas'), _class='highlighted'), False, URL(f = 'subjects',args = ['add']),[
                        (T('Añadir'),False,URL(f = 'subjects',args = ['add'])),
-                       (T('Eliminar'),False,URL(f = 'subjects',args = ['remove']))]]]
+                       (T('Eliminar'),False,URL(f = 'subjects',args = ['remove']))]]
+                    ,[T('Notificaciones'),False,URL('showNotifications')]]
                        
 def createUserSearchForm(state):        
     listTypes = []
@@ -747,7 +817,8 @@ def createUserSearchForm(state):
         redirect(URL(c='administrator',f='users',args = [state],vars = dict(usersFind=listUsersAux) ))
      
     return form1
-    
+
+     
 def createSubjectsSearchForm(state):        
 
         
@@ -834,3 +905,9 @@ def searchVMServerIp(servers, serverName):
         if s["VMServerName"] == serverName:
             return s["VMServerIP"]
     return None
+    
+def evaluateCommand(connector,commandId,message):
+    if(len(connector.getCommandOutput(commandId))==0):
+        response.flash = message
+    else:
+        response.flash = connector.getCommandOutput(commandId)

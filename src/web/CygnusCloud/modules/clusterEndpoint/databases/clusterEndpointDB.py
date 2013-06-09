@@ -405,6 +405,10 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         update = "DELETE FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
         self._executeUpdate(update)
         
+    def deleteImage(self, imageID):
+        update = "DELETE FROM Image WHERE imageID = {0}".format(imageID)
+        self._executeUpdate(update)
+        
     def updateEditedImageStatus(self, temporaryID, newStatus, expectedStatus=None):
         if (expectedStatus != None) : 
             query = "SELECT state FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)

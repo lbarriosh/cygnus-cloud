@@ -1317,3 +1317,15 @@ CREATE TABLE pictureByOSId(
     pictureId INT,
     PRIMARY KEY(osId, variantId))  ENGINE=InnoDB CHARACTER SET utf8;
 success!
+timestamp: 2013-06-08T09:48:37.467383
+ALTER TABLE ClassGroup ADD placenumber INT;
+success!
+timestamp: 2013-06-08T09:48:37.933452
+ALTER TABLE ClassGroup DROP COLUMN curse;
+success!
+timestamp: 2013-06-08T09:56:22.871863
+ALTER TABLE ClassGroup ADD placesnumber INT;
+success!
+timestamp: 2013-06-08T09:56:23.199650
+ALTER TABLE ClassGroup DROP COLUMN placenumber;
+success!

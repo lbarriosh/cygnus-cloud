@@ -30,8 +30,8 @@ auth.define_tables(migrate = True)
 userDB.define_table('ClassGroup',
    Field('yearGroup','integer', 'reference auth_user'),
    Field('cod','integer','reference Subjects'),
-   Field('curse','integer'),
    Field('curseGroup', length=1),
+   Field('placesNumber','integer'),
    primarykey=['cod'],migrate= True)
 
 userDB.define_table('UserGroup',

@@ -46,7 +46,7 @@ def runningVM():
     connector = conectToServer()
     
     #Extraemos las máquinas arrancadas por este usuario
-    vmList = connector.getActiveVMsData(True)
+    vmList = connector.getActiveVMsData(False,False)
     
     table = TABLE(_class='data', _name='table')
     table.append(TR(TH('Selección'),TH(T('Máquina virtual'),TH(T('Descripción'),_class='izquierda'))))
@@ -57,12 +57,13 @@ def runningVM():
             #Extramos el nombre de la máquina y su descripcion
             vminfo =  connector.getBootableImagesData([vm['VMID']])
             if(request.args(0) == 'stopVM'):
+                print vm['DomainUID']
                 table.append(TR(\
-                TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
+                TD(INPUT(_type='radio',_name = 'selection',_value = vm['DomainUID'],_id = "c"+str(j))),\
                 TD(LABEL(vminfo[0]["ImageName"])),
                 TD(DIV(P(vminfo[0]["ImageDescription"],_class='izquierda'),_id= 'd' + str(j))),
-                TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = 'o' +  str(j))),
-                ))
+                TD(DIV(INPUT(_type='submit',_name = 'restart',  _value = T('Reiniciar'),_class="button button-blue"),_id = 'r' +  str(j))),
+                TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = 'o' +  str(j)))))
             else:
                 #Extramos el nombre de la máquina y su descripcion
                 table.append(TR(\
@@ -91,7 +92,7 @@ def runningVM():
     else:
         form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table,_target='_blank')
         if(form.accepts(request.vars)) and (form.vars.open):
-            activeVMConectData = connector.getActiveVMsData(True,False)
+            activeVMConectData = connector.getActiveVMsData(False,False)
             for vmInfo in activeVMConectData:
                 if vmInfo["VMID"] == int(form.vars.selection):
                     print activeVMConectData
@@ -105,7 +106,7 @@ def runningVM():
 
     return dict(form = form,num = j)
 
-       
+@auth.requires_membership('Teacher')       
 def createVanillaVM():
     #actualizamos la barra
     createAdressBar()
@@ -181,7 +182,7 @@ def createVanillaVM():
            
     return dict(form = form,progressBarStyle=progressBarStyle,num = num,num2 = j)
 
-          
+@auth.requires_membership('Teacher')          
 def editVM():
     createAdressBar()
     #Creamos la primera tabla
@@ -288,7 +289,9 @@ def editVM():
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.saveChanges:
            #Creamos la MV
            if len(form1.vars.selection2) > 0:
-                       errorInfo = connector.deployEditedImage(form1.vars.selection2.split('w')[1])
+                       
+                      # errorInfo = connector.autoDeployImage(form1.vars.selection2.split('w')[1])
+                       errorInfo = connector.deployNewImage(form1.vars.selection2.split('w')[1],1)
                        evaluateCommand(connector,errorInfo,"Petición de edición enviada")
 
            else:
@@ -330,6 +333,7 @@ def editVM():
                    response.flash = "Debe seleccionar una imagen base"
     return dict(form1=form1,form2=form2,num1=num1,num2=num2)
     
+@auth.requires_membership('Teacher')    
 def associateSubjects():
     createAdressBar()
     #Creamos fromulario para asociar las máquinas en espera
@@ -412,7 +416,25 @@ def associateSubjects():
           redirect(URL(c='teacher',f='associateSubjects'))
         
     return dict(form1=form1,form2=form2)
-            
+
+#Método encargado de mostrar las notificaciones pendientes
+@auth.requires_membership('Teacher')
+def showNotifications():
+    #actualizamos la barra
+    createAdressBar()
+    #Establecemos la conexión con el servidor 
+    connector = conectToServer()
+    #Creamos la tabla
+    table = TABLE(_class='data', _name='table')
+    table.append(TR(TH('Tipo'),TH('Notificación',_class='izquierda')))
+    notifications = connector.getPendingNotifications()
+    if len(notifications) == 0:
+        form = FORM(CENTER(LABEL(T("No hay notificaciones pendientes."))))
+    else:
+        for note in notifications:
+            table.append(TR(TD(note["outputType"]),TD(note["commandOutput"],_class='izquierda')))
+        form = FORM(CENTER(table))
+    return dict(form=form)            
          
    
 def createAdressBar():
@@ -420,8 +442,11 @@ def createAdressBar():
                    [SPAN(T('Máquinas arrancadas'), _class='highlighted'), False,URL(f ='runVM',args = ['run']),[
                         (T('Detener máquina'),False,URL(f = 'runningVM',args = ['stopVM'])),
                         (T('Abrir máquina'),False,URL(f = 'runningVM',args = ['openVM']))]],
-                   [T('Crear nueva máquina'),False,URL('createVanillaVM')],[T('Editar máquina'),False,URL('editVM')]
-                   ,[T('Asociar asignaturas'),False,URL('associateSubjects')]]
+                   [SPAN(T('Crear y Editar'), _class='highlighted'), False,URL(f ='createVanillaVM'),[
+                        (T('Crear nueva máquina'),False,URL(f='createVanillaVM')),
+                        (T('Editar máquina'),False,URL(f='editVM'))]]
+                   ,[T('Asociar asignaturas'),False,URL('associateSubjects')]
+                   ,[T('Notificaciones'),False,URL('showNotifications')]]
     
 def createReadyTable(j):
     connector = conectToServer()
