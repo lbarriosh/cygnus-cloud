@@ -93,7 +93,8 @@ class VMServerReactor(NetworkCallback):
         self.__deleteTemporaryZipFiles()
         self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
                                                        self.__parser.getConfigurationParameter("TransferDirectory"),
-                                                       self.__parser.getConfigurationParameter("FTPTimeout"), self.__dbConnector, self.__useSSL)
+                                                       self.__parser.getConfigurationParameter("FTPTimeout"), 
+                                                       self.__parser.getConfigurationParameter("MaxTransferAttempts"), self.__dbConnector, self.__useSSL)
         self.__compressionThread = CompressionThread(self.__parser.getConfigurationParameter("TransferDirectory"), self.__parser.getConfigurationParameter("sourceImagePath"),
                                                      self.__parser.getConfigurationParameter("configFilePath"),
                                                      self.__dbConnector, self.__domainHandler, self.__networkManager, self.__listenningPort, self.__packetManager)
