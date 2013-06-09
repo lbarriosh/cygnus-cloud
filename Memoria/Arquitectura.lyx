@@ -20116,8 +20116,11 @@ Controladores: Este grupo incluye el conjunto de módulos python que aportan
  CygnusCloud dispone de un módulo para cada uno de los tipos de usuarios
  que pueden acceder a la web (alumnos, administradores y profesores), un
  módulo para las páginas de acceso público, un módulo para la página que
- contiene el cliente VNC y un módulo appAdmin creado automáticamente por
- web2py para la gestión de las bases de datos.
+ contiene el cliente VNC y un módulo 
+\family sans
+appAdmin
+\family default
+ creado automáticamente por web2py para la gestión de las bases de datos.
  Dentro de cada módulo encontramos una función asociada a cada una de las
  secciones que forman la web.
  Hablaremos más en profundidad sobre este tema en la sección 
@@ -20134,27 +20137,22 @@ reference "sub:Secciones-y-subsecciones"
 Modelos: Este grupo incluye dos módulos python encargados de la creación
  de las bases de datos y las características generales de la aplicación.
  Así, el módulo 
-\begin_inset Quotes eld
-\end_inset
-
+\family sans
 db.py
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  crea las tablas de la base de datos encargada de la gestión de la información
  en la web.
  El módulo 
-\begin_inset Quotes eld
-\end_inset
-
+\family sans
 menu.py
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  define las características generales de la aplicación web, tales como su
- logo, su autor, sus tags de busqueda\SpecialChar \ldots{}
- Este par de módulos son creados y
- exigidos por web2py.
+ logo, su autor, sus 
+\shape italic
+tags
+\shape default
+ de búsqueda\SpecialChar \ldots{}
+ Este par de módulos son creados y exigidos por web2py.
 \end_layout
 
 \begin_layout Itemize
@@ -20203,153 +20201,232 @@ entemente.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
 /CygnusCloud/main/login
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Es la página de inicio de sesión donde el usuario introduce su nombre
  y contraseña para iniciar la sesión.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
 /CygnusCloud/main/about
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Es la página en la que se habla acerca de CygnusCloud y su finalidad.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
 /CygnusCloud/student/runVM
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Es la página de arranque de máquinas virtuales para los usuarios.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
-/CygnusCloud/administrator/runVM/run
-\begin_inset Quotes erd
-\end_inset
-
-: Es la página de arranque de máquinas virtuales para los administradores.
+\family typewriter
+/CygnusCloud/student/runningVM/stopVM
+\family default
+ : Página encargada de detener máquinas virtuales en ejecución.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
+/CygnusCloud/student/runningVM/openVM
+\family default
+ : Esta página permite abrir una máquina virtual en ejecución arrancada
+ por el alumnos.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/CygnusCloud/administrator/runVM/run
+\family default
+ : Es la página de arranque de máquinas virtuales para los administradores.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
 /CygnusCloud/administrator/runVM/stop
-\begin_inset Quotes erd
-\end_inset
-
-: Es la página de detención de máquinas virtuales en ejecución para los
+\family default
+ : Es la página de detención de máquinas virtuales en ejecución para los
  administradores.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
+/CygnusCloud/administrator/runVM/open
+\family default
+ : Página que permite abrir una máquina en ejecución.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/CygnusCloud/administrator/runVM/edit
+\family default
+ : Página que permite editar una máquina virtual con respecto a el servidor
+ de máquinas virtuales donde se encuentra desplegada.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
 /CygnusCloud/administrator/servers/add_servers
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Es la página encargada de añadir nuevos servidores y borrar algún servidor
  existente.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
 /CygnusCloud/administrator/servers/remove_servers
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Es la página encargada de eliminar servidores de máquinas virtuales existente
 s.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
+/
+\family typewriter
+CygnusCloud/administrator/servers/servers_state
+\family default
+ : Página que muestra el estado en que se encuentra el repositorio y los
+ servidores de máquinas virtuales activos.
+\end_layout
 
+\begin_layout Itemize
+
+\family typewriter
+/CygnusCloud/administrator/servers/stop_system
+\family default
+ : Es la página que permite detener todos los servidores de la infraestructura.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
 /CygnusCloud/administrator/users/remove
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Esta es la página encargada de eliminar a usuarios previamente creados.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
 /CygnusCloud/administrator/users/add
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Es la página encargada de crear nuevos usuarios con las especificaciones
  determinadas por el administrador.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
 /CygnusCloud/administrator/users/associate_subjects
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Es la página encargada de establecer las relaciones entre un usuario
  previamente creado y un grupo de asignatura.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
 /CygnusCloud/administrator/subjects/add
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Es la página encargada de crear nuevos grupos de asignaturas con la informaci
 ón introducida por el administrador.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
 /CygnusCloud/administrator/subjects/remove
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Es la página encargada de eliminar algún grupo de asignatura existente.
 \end_layout
 
 \begin_layout Itemize
-\begin_inset Quotes eld
-\end_inset
 
+\family typewriter
+/CygnusCloud/administrator/showNotifications
+\family default
+ : Página que muestra las notificaciones pendientes para este administrador.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
 /CygnusCloud/vncClient/VNCPage
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  : Página que contiene el escritorio de trabajo ejecutado por noVNC.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/CygnusCloud/teacher/runVM/run
+\family default
+ : Esta página muestra las máquinas que pueden ser ejecutadas por el profesor
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/CygnusCloud/teacher/runningVM/stopVM
+\family default
+ : Página que permite detener una máquina virtual en ejecución para los
+ profesores.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/CygnusCloud/teacher/runningVM/openVM
+\family default
+ : Es la página de apertura de máquinas en ejecución para los profesores.
+\end_layout
+
+\begin_layout Itemize
+/
+\family typewriter
+CygnusCloud/teacher/createAndEdit/createVanillaVM
+\family default
+ : Esta página permite a un profesor crear una nueva máquina virtual a partir
+ de otra existente.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/CygnusCloud/teacher/createAndEdit/editVM
+\family default
+ : Esta página permite editar máquinas virtuales por parte de un profesor.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/CygnusCloud/teacher/associateSubjects
+\family default
+ : Página que permite asociar una máquina virtual con un determinado grupo
+ de asignatura.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/CygnusCloud/teacher/showNotifications
+\family default
+ : Es la página que muestra las notificaciones pendientes para los profesores.
 \end_layout
 
 \begin_layout Standard
@@ -20419,9 +20496,9 @@ name "sub:Secciones-y-subsecciones"
 
 \begin_layout Standard
 Para poder hacer frente al elevado número de páginas que ofrece CygnusCloud,
- hemos optado por estructurar estas páginas en un sistema de 3 niveles,
- que permite filtrarlas teniendo en cuenta los privilegios de acceso y la
- finalidad de cada página.
+ hemos optado por estructurarlas en un sistema de 3 niveles, que permite
+ filtrarlas teniendo en cuenta los privilegios de acceso y la finalidad
+ de cada página.
  
 \end_layout
 
@@ -20516,7 +20593,7 @@ puede verse el conjunto de secciones asociadas a cada tipo de usuario.
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -20551,6 +20628,8 @@ Secciones
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Main
 \end_layout
 
@@ -20560,7 +20639,13 @@ Main
 \begin_inset Text
 
 \begin_layout Plain Layout
-Login,About
+
+\family sans
+Login
+\family default
+,
+\family sans
+About
 \end_layout
 
 \end_inset
@@ -20571,6 +20656,8 @@ Login,About
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Student
 \end_layout
 
@@ -20580,7 +20667,17 @@ Student
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 RunVM
+\family default
+,
+\family sans
+RunningVM
+\family default
+,
+\family sans
+ShowNotifications
 \end_layout
 
 \end_inset
@@ -20591,6 +20688,8 @@ RunVM
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Teacher
 \end_layout
 
@@ -20601,6 +20700,24 @@ Teacher
 
 \begin_layout Plain Layout
 
+\family sans
+RunVM
+\family default
+,
+\family sans
+RunningVM
+\family default
+,
+\family sans
+CreateAndEdit
+\family default
+,
+\family sans
+AssociateSubjects
+\family default
+,
+\family sans
+ShowNotifications
 \end_layout
 
 \end_inset
@@ -20611,6 +20728,8 @@ Teacher
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Administrator
 \end_layout
 
@@ -20620,7 +20739,25 @@ Administrator
 \begin_inset Text
 
 \begin_layout Plain Layout
-RunVM, Servers, Users, Subjects
+
+\family sans
+RunVM
+\family default
+, 
+\family sans
+Servers
+\family default
+, 
+\family sans
+Users
+\family default
+, 
+\family sans
+Subjects
+\family default
+, 
+\family sans
+ShowNotifications
 \end_layout
 
 \end_inset
@@ -20677,13 +20814,13 @@ reference "tab:Tabla-seccion-subseccion"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="2">
+<lyxtabular version="3" rows="11" columns="2">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
@@ -20712,6 +20849,8 @@ Subsección
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Login
 \end_layout
 
@@ -20721,7 +20860,7 @@ Login
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+-
 \end_layout
 
 \end_inset
@@ -20732,6 +20871,8 @@ Login
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 About
 \end_layout
 
@@ -20741,7 +20882,7 @@ About
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+-
 \end_layout
 
 \end_inset
@@ -20752,6 +20893,8 @@ About
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 RunVM
 \end_layout
 
@@ -20761,7 +20904,21 @@ RunVM
 \begin_inset Text
 
 \begin_layout Plain Layout
-Run, Stop
+
+\family sans
+Run
+\family default
+, 
+\family sans
+Stop
+\family default
+, 
+\family sans
+Open
+\family default
+, 
+\family sans
+Edit
 \end_layout
 
 \end_inset
@@ -20772,6 +20929,108 @@ Run, Stop
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
+RunningVM
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+StopVM
+\family default
+, 
+\family sans
+OpenVM
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+ShowNotifications
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+CreateAndEdit
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+CreateVanillaVM
+\family default
+, 
+\family sans
+EditVM
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+AssociateSubjects
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
 Servers
 \end_layout
 
@@ -20781,7 +21040,23 @@ Servers
 \begin_inset Text
 
 \begin_layout Plain Layout
-Add_servers,Remove_servers
+
+\family sans
+Add_servers
+\family default
+,
+\family sans
+Remove_servers
+\family default
+, 
+\family sans
+Servers_state
+\family default
+, 
+\family sans
+Stop_system
+\family default
+ 
 \end_layout
 
 \end_inset
@@ -20792,6 +21067,8 @@ Add_servers,Remove_servers
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Users
 \end_layout
 
@@ -20801,7 +21078,17 @@ Users
 \begin_inset Text
 
 \begin_layout Plain Layout
-Add,Remove,Associate_subjects
+
+\family sans
+Add
+\family default
+,
+\family sans
+Remove
+\family default
+,
+\family sans
+Associate_subjects
 \end_layout
 
 \end_inset
@@ -20812,6 +21099,8 @@ Add,Remove,Associate_subjects
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Subjects
 \end_layout
 
@@ -20821,7 +21110,13 @@ Subjects
 \begin_inset Text
 
 \begin_layout Plain Layout
-Add, Remove, AddVM
+
+\family sans
+Add
+\family default
+, 
+\family sans
+Remove
 \end_layout
 
 \end_inset
