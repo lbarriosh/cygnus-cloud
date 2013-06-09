@@ -18044,21 +18044,32 @@ cluster
 \end_layout
 
 \begin_layout Subsubsection
-Interacciones con el servidor de 
+Interacciones básicas con el servidor de 
 \emph on
 cluster
 \end_layout
 
 \begin_layout Standard
-En esta sección, mostraremos todas las interacciones que pueden tener lugar
- entre un servidor de máquinas virtuales y el servidor de 
+En esta sección, mostraremos todas las interacciones básicas que pueden
+ tener lugar entre un servidor de máquinas virtuales y el servidor de 
 \emph on
 cluster
 \emph default
 .
- Por claridad, en todos los casos comenzaremos mostrando el flujo básico,
+ 
+\end_layout
+
+\begin_layout Standard
+Por claridad, en todos los casos comenzaremos mostrando el flujo básico,
  para posteriormente mostrar los flujos alternativos, que se corresponden
  con el tratamiento de diversos errores.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, en esta sección omitiremos las interacciones que despliegan, crean,
+ editan o borran imágenes de disco: consideramos que tienen entidad suficiente
+ como para tratarlas en una sección separada.
 \end_layout
 
 \begin_layout Paragraph
@@ -19037,16 +19048,234 @@ websockify
 \end_layout
 
 \begin_layout Paragraph
-Arranque de imágenes temporales: descarga
+Apagado del servidor de máquinas virtuales
 \end_layout
 
 \begin_layout Standard
-En esta sección y en las siguientes, mostraremos cómo el servidor de máquinas
- virtuales interactúa con el repositorio de imágenes para arrancar una máquina
- virtual cuyas imágenes de disco están almacenadas en el repositorio de
- imágenes.
- Esta es la primera fase de los procesos de creación y edición de imágenes
- de disco.
+El servidor de máquinas virtuales se apagará cuando el servidor de 
+\emph on
+cluster
+\emph default
+ le envíe un paquete del tipo 
+\family sans
+Apagado inmediato
+\family default
+ o un paquete del tipo 
+\family sans
+Apagado con espera
+\family default
+.
+ Los primeros no contienen información adicional, y los segundos contienen
+ un intervalo de espera en segundos.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Apagado largo.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-Servidor-MVs"
+
+\end_inset
+
+Apagado del servidor de máquinas virtuales
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-Servidor-MVs"
+
+\end_inset
+
+ muestra cómo se procesa un paquete del tipo 
+\family sans
+Apagado con espera
+\family default
+.
+ Como puede observarse en él, se dan los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+NetworkManager
+\family default
+ llama al método de procesamiento de paquetes del objeto 
+\family typewriter
+VMServerReactor
+\family default
+.
+ En él,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se leerá el contenido del paquete, utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+se esperará a que los usuarios apaguen las máquinas virtuales arrancadas.
+ El tiempo que se esperará se incluye en el paquete.
+ Es importante notar que, durante ese tiempo, el servidor de máquinas virtuales
+ sigue atendiendo peticiones de forma normal.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+cuando ha transcurrido el tiempo de espera, desde el hilo principal se invoca
+ al método 
+\family typewriter
+shutdown()
+\family default
+ del objeto 
+\family typewriter
+VMServerReactor
+\family default
+.
+ Esto es necesario ya que, como hemos mencionado en anteriores ocasiones,
+ los hilos de la red sólo pueden detenerse desde el hilo principal.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Durante la ejecución de ese método,
+\end_layout
+
+\begin_layout Enumerate
+se apagan todas las máquinas virtuales activas.
+ Sus recursos se liberan como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-MV"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+se paran los hilos asociados a la cola de transferencia y a la cola de compresió
+n.
+ Puesto que estas colas tienen persistencia en disco, el procesamiento de
+ sus elementos se reanudará en el siguiente arranque del servidor de máquinas
+ virtuales, por lo que no se perderán datos.
+\end_layout
+
+\begin_layout Enumerate
+se detiene el servicio de red, y finaliza la ejecución del demonio del servidor
+ de máquinas virtuales.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Finalmente, los paquetes del tipo 
+\family sans
+Apagado inmediato
+\family default
+ se procesan de forma muy similar.
+ No obstante, al procesarlos el tiempo de espera será siempre 0, por lo
+ que no se esperará a que las máquinas virtuales arrancadas se apaguen.
+\end_layout
+
+\begin_layout Subsubsection
+Interacciones relacionadas con la creación, edición, despliegue y borrado
+ de imágenes de disco
+\end_layout
+
+\begin_layout Standard
+En esta sección mostraremos cómo los servidores de máquinas virtuales interactúa
+n con el servidor de 
+\emph on
+cluster
+\emph default
+ y el repositorio de imágenes durante los procesos de creación, edición,
+ despliegue y borrado de imágenes de disco.
+\end_layout
+
+\begin_layout Standard
+En primer lugar, nos centraremos en la creación y edición de imágenes de
+ disco.
+ Para ello, seguiremos el siguiente orden:
+\end_layout
+
+\begin_layout Enumerate
+descarga del fichero comprimido desde el repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+descompresión del fichero comprimido
+\end_layout
+
+\begin_layout Enumerate
+arranque y apagado de una máquina virtual temporal.
+\end_layout
+
+\begin_layout Enumerate
+creación de un nuevo fichero comprimido
+\end_layout
+
+\begin_layout Enumerate
+subida del fichero comprimido al repositorio de imágenes
+\end_layout
+
+\begin_layout Standard
+Posteriormente, mostraremos las operaciones que tienen lugar durante el
+ despliegue de imágenes de disco.
+ Esta operación comparte muchas fases con las de creación y edición de imágenes.
+ Finalmente, mostraremos qué sucede en el servidor de máquinas virtuales
+ durante el borrado de una imagen de disco.
+\end_layout
+
+\begin_layout Standard
+Nuevamente, en todos los casos empezaremos mostrando el flujo básico para
+ posteriormente mostrar los distintos flujos alternativos, que están relacionado
+s con el tratamiento de errores.
+\end_layout
+
+\begin_layout Paragraph
+Creación y edición de imágenes de disco: descarga del fichero comprimido
+\end_layout
+
+\begin_layout Standard
+En esta sección y en las siguientes, mostraremos los procesos que tienen
+ lugar en el servidor de máquinas virtuales durante los procesos de creación
+ y edición de imágenes de disco.
 \end_layout
 
 \begin_layout Standard
@@ -19304,169 +19533,20 @@ cluster
 \end_layout
 
 \begin_layout Paragraph
-Apagado del servidor de máquinas virtuales
+Creación y edición de imágenes de disco: errores durante la descarga
 \end_layout
 
 \begin_layout Standard
-El servidor de máquinas virtuales se apagará cuando el servidor de 
-\emph on
-cluster
-\emph default
- le envíe un paquete del tipo 
-\family sans
-Apagado inmediato
-\family default
- o un paquete del tipo 
-\family sans
-Apagado con espera
-\family default
-.
- Los primeros no contienen información adicional, y los segundos contienen
- un intervalo de espera en segundos.
+Durante la descarga del fichero comprimido, se producirán errores cuando
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Apagado largo.pdf
-	scale 80
-
-\end_inset
-
-
+\begin_layout Itemize
+el repositorio de imágenes no tiene el fichero comprimido que se pretende
+ descargar, o cuando
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Apagado-Servidor-MVs"
-
-\end_inset
-
-Apagado del servidor de máquinas virtuales
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Apagado-Servidor-MVs"
-
-\end_inset
-
- muestra cómo se procesa un paquete del tipo 
-\family sans
-Apagado con espera
-\family default
-.
- Como puede observarse en él, se dan los siguientes pasos:
-\end_layout
-
-\begin_layout Enumerate
-el objeto 
-\family typewriter
-NetworkManager
-\family default
- llama al método de procesamiento de paquetes del objeto 
-\family typewriter
-VMServerReactor
-\family default
-.
- En él,
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-se leerá el contenido del paquete, utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
-\end_layout
-
-\begin_layout Enumerate
-se esperará a que los usuarios apaguen las máquinas virtuales arrancadas.
- El tiempo que se esperará se incluye en el paquete.
- Es importante notar que, durante ese tiempo, el servidor de máquinas virtuales
- sigue atendiendo peticiones de forma normal.
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-cuando ha transcurrido el tiempo de espera, desde el hilo principal se invoca
- al método 
-\family typewriter
-shutdown()
-\family default
- del objeto 
-\family typewriter
-VMServerReactor
-\family default
-.
- Esto es necesario ya que, como hemos mencionado en anteriores ocasiones,
- los hilos de la red sólo pueden detenerse desde el hilo principal.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-Durante la ejecución de ese método,
-\end_layout
-
-\begin_layout Enumerate
-se apagan todas las máquinas virtuales activas.
- Sus recursos se liberan como vimos en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "par:Apagado-MV"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Enumerate
-se paran los hilos asociados a la cola de transferencia y a la cola de compresió
-n.
- Puesto que estas colas tienen persistencia en disco, el procesamiento de
- sus elementos se reanudará en el siguiente arranque del servidor de máquinas
- virtuales, por lo que no se perderán datos.
-\end_layout
-
-\begin_layout Enumerate
-se detiene el servicio de red, y finaliza la ejecución del demonio del servidor
- de máquinas virtuales.
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-Finalmente, los paquetes del tipo 
-\family sans
-Apagado inmediato
-\family default
- se procesan de forma muy similar.
- No obstante, al procesarlos el tiempo de espera será siempre 0, por lo
- que no se esperará a que las máquinas virtuales arrancadas se apaguen.
+\begin_layout Itemize
+la transferencia FTP con el repositorio de imágenes falle
 \end_layout
 
 \begin_layout Subsection

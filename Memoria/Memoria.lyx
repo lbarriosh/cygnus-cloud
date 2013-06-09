@@ -13,8 +13,8 @@
 %% modificación puede hacer que TODO deje de compilar.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\getProyecto}{CygnusCloud: provisión de puestos de laboratorio virtuales bajo demanda}
-\newcommand{\getProyectoCorto}{CygnusCloud}
+\newcommand{\getProyecto}{\emph{CygnusCloud}: provisión de puestos de laboratorio virtuales bajo demanda}
+\newcommand{\getProyectoCorto}{\emph{CygnusCloud}}
 
 %% Configurar multirow a mi gusto
 
@@ -73,14 +73,10 @@
       {1.5ex \@plus .2ex}%
       {\normalfont\normalsize\bfseries}}
 \makeatother
-
-\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
 \end_preamble
 \options a4paper
 \use_default_options true
 \begin_modules
-tabs-within-sections
-figs-within-sections
 fixltx2e
 \end_modules
 \maintain_unincluded_children false
