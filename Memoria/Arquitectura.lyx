@@ -13712,8 +13712,8 @@ Solicitud de borrado errónea
 \series default
  
 \family default
-contienen el identificador único del fichero a borrar (un valor entero)
- y un código de descripción del error.
+contienen el identificador único del fichero a borrar y un código de descripción
+ del error.
 \end_layout
 
 \begin_layout Itemize
@@ -13759,7 +13759,7 @@ Finalmente, los
 \emph on
 flags
 \emph default
-, los identificadores de imagen, los puertos y los códigos de error son
+, los identificadores de imágenes, los puertos y los códigos de error son
  valores enteros.
  El resto de datos que transportan los paquetes del repositorio de imaǵenes
  son 
@@ -18239,8 +18239,11 @@ el objeto
 \family typewriter
 VMServerReactor
 \family default
- construye un paquete con toda la información recopilada, utilizando para
- ello un objeto 
+ construye un paquete del tipo 
+\family sans
+Estado del servidor de máquinas virtuales
+\family default
+ con toda la información recopilada, utilizando para ello un objeto 
 \family typewriter
 VMServerPacketHandler
 \family default
@@ -20427,11 +20430,7 @@ los ficheros
 \family typewriter
 .qcow2
 \family default
- se moverán al directorio 
-\family typewriter
-imagenes/<identificador del fichero comprimido>
-\family default
-, y
+ se moverán al un subdirectorio del directorio de ficheros de imagen, y
 \end_layout
 
 \begin_layout Itemize
@@ -20439,22 +20438,12 @@ el fichero
 \family typewriter
 .xml
 \family default
- se moverá al directorio 
-\family typewriter
-configuraciones/<identificador del fichero comprimido>
+ se moverá a un subdirectorio del directorio de ficheros de definición.
 \end_layout
 
 \begin_layout Standard
-Los directorios 
-\family typewriter
-imagenes
-\family default
- y 
-\family typewriter
-configuraciones
-\family default
- se encuentran en la raíz del directorio de trabajo del servidor de máquinas
- virtuales.
+La ubicación de ambos directorios se especifica en el fichero de configuración
+ del demonio del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
@@ -21161,7 +21150,11 @@ utilizando un objeto
 \family typewriter
 VMServerPacketHandler
 \family default
-, se construye un paquete del tipo Imagen editada.
+, se construye un paquete del tipo 
+\family sans
+Imagen editada
+\family default
+.
  Este contiene, además del identificador único de la petición, el identificador
  único del fichero comprimido que se acaba de transferir.
 \end_layout
@@ -21547,7 +21540,7 @@ se produzca un error al realizar la actualización de la base de datos
 \begin_layout Standard
 se generará un paquete del tipo 
 \family sans
-Error de borrado de imagen
+Error de borrado
 \family default
 .
  El diagrama de secuencia de la figura 
@@ -21758,6 +21751,1531 @@ reference "par:Apagado-MV-edición"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Subsubsection
+Directorios del servidor de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+Durante su funcionamiento, el demonio del servidor de máquinas virtuales
+ utiliza cuatro directorios:
+\end_layout
+
+\begin_layout Itemize
+el 
+\series bold
+directorio de ficheros de definición
+\series default
+, en el que se almacenan los ficheros de definición de las máquinas virtuales
+ que puede albergar el servidor de máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Itemize
+el 
+\series bold
+directorio de imágenes de disco
+\series default
+, en el que se almacenarán las imágenes de disco .qcow2 que se usarán para
+ arrancar máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+el 
+\series bold
+directorio de imágenes en uso
+\series default
+, en el que se almacenarán las imágenes 
+\emph on
+copy-on-write
+\emph default
+ y las imágenes de disco que contienen el fichero de paginación y los datos
+ temporales de las máquinas virtuales activas.
+\end_layout
+
+\begin_layout Itemize
+el 
+\series bold
+directorio de transferencias
+\series default
+, en el que se almacenarán y extraerán los ficheros 
+\family typewriter
+.zip
+\family default
+ que se intercambian con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+La ubicación de todos estos directorios se especifica en el fichero de configura
+ción del demonio del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Además, el uso de varios directorios permite realizar optimizaciones que
+ mejoren el rendimiento.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ejemplo, aprovechando que, salvo que se editen imágenes de disco, nunca
+ se escribe en el directorio de imágenes de disco, este puede estar ubicado
+ en una unidad SSD (
+\emph on
+Solid State Drive
+\emph default
+, unidad de estado sólido), mientras que los directorios restantes pueden
+ estar ubicados en un disco duro convencional.
+ Con esta configuración tan sencilla, el rendimiento de las máquinas virtuales
+ aumenta considerablemente.
+\end_layout
+
+\begin_layout Subsubsection
+Formatos de paquete
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Formatos-de-paquete-repositorio-1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos detalladamente las características de los tipos
+ de paquete asociados al subsistema servidor de máquinas virtuales.
+ El cuadro 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Paquetes-repositorio-imágenes-1"
+
+\end_inset
+
+ muestra los códigos, prioridades y las constantes del tipo enumerado 
+\family typewriter
+PACKET_T
+\family default
+ (definido en el paquete 
+\family typewriter
+virtualMachineServer.packetHandling
+\family default
+) asociados a cada clase de paquete.
+ 
+\end_layout
+
+\begin_layout Standard
+Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:La-clase-Packet"
+
+\end_inset
+
+, cuanto menor es la valor numérico de la prioridad de un paquete, más prioritar
+io es.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="23" columns="4">
+<features islongtable="true" longtabularalignment="center">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row endhead="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Tipo de paquete
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Código
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Prioridad
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Constante (tipo enumerado)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Creación MV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+CREATE_DOMAIN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Apagado forzoso MV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DESTROY_DOMAIN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Reinicio forzoso MV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+REBOOT_DOMAIN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Datos de conexión de MV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DOMAIN_CONNECTION_DATA
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Estado del servidor MVs
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+SERVER_STATUS
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Solicitud de estado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+SERVER_STATUS_REQUEST
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Apagado con espera
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+USER_FRIENDLY_SHUTDOWN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Apagado inmediato
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+HALT
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Solicitud de datos de conexión VNC
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+QUERY_ACTIVE_VM_DATA
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Datos de conexión VNC
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+ACTIVE_VM_DATA
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Solicitud IDs MVs
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+11
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+QUERY_ACTIVE_DOMAIN_UIDS
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+IDs de MVs
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+ACTIVE_DOMAIN_UIDS
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Editar imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_EDITION
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Error de edición de imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_EDITION_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Desplegar imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+15
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DEPLOY_IMAGE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Error de despliegue
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+16
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_DEPLOYMENT_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Borrar imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+17
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DELETE_IMAGE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Error de borrado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+18
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_DELETION_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Imagen editada
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+19
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_EDITED
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Imagen desplegada
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+20
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_DEPLOYED
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Imagen borrada
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+21
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_DELETED
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Error interno
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+22
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+INTERNAL_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Paquetes-repositorio-imágenes-1"
+
+\end_inset
+
+Características principales de los paquetes utilizados en el repositorio
+ de imágenes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El contenido de los distintos tipos de paquete es el siguiente:
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Creación de máquina virtual
+\family default
+ 
+\series default
+contienen el identificador único de la petición, el identificador del usuario
+ que la ha realizado y el identificador único asociado a las imágenes de
+ disco de la máquina virtual a arrancar.
+ Los dos últimos son valores enteros, y el restante es un 
+\emph on
+string
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\family sans
+\series bold
+Apagado forzoso de máquina virtual
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Reinicio forzoso de máquina virtual
+\family default
+\series default
+ contienen el identificador único de la máquina virtual a apagar o a reiniciar.
+ Dicho identificador es un 
+\emph on
+string.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Datos de conexión a máquina virtual
+\family default
+\series default
+ contienen el identificador único de la petición, la dirección IP, el puerto
+ y la contraseña del servidor VNC asociado a una máquina virtual.
+ Salvo el puerto, que es un valor entero, el resto de datos del paquete
+ son 
+\emph on
+strings
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Estado del servidor de máquinas virtuales 
+\family default
+\series default
+contienen la dirección IP del servidor de máquinas virtuales (un 
+\emph on
+string
+\emph default
+) y valores enteros que indican el número de máquinas virtuales activas,
+ las cantidades de memoria RAM ocupada y libre y el espacio utilizado y
+ disponible en el directorio de almacenamiento de imágenes y en el directorio
+ de datos temporales.
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\family sans
+\series bold
+Solicitud de estado
+\family default
+\series default
+, 
+\family sans
+\series bold
+Solicitud de identificadores de máquinas virtuales
+\family default
+\series default
+, 
+\family sans
+\series bold
+Solicitud de datos de conexión VNC 
+\family default
+\series default
+y 
+\family sans
+\series bold
+Apagado inmediato
+\family default
+\series default
+ no contienen información adicional.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Apagado con espera 
+\family default
+\series default
+contienen un valor entero que indica el tiempo de espera en segundos.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Datos de conexión VNC 
+\family default
+\series default
+contienen la dirección IP del servidor de máquinas virtuales (un 
+\emph on
+string
+\emph default
+), así como los puertos y las contraseñas de todos los servidores VNC asociados
+ a las máquinas virtuales que alberga el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Identificadores de máquinas virtuales
+\family default
+\series default
+ contienen la dirección IP del servidor de máquinas virtuales y los identificado
+res de todas las máquinas virtuales que alberga, que son 
+\emph on
+strings
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Editar imagen
+\family default
+\series default
+ contienen 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+el identificador único de la petición, que es un 
+\emph on
+string
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+el identificador único del usuario que la ha generado.
+\end_layout
+
+\begin_layout Itemize
+la dirección IP (un 
+\emph on
+string
+\emph default
+) y el puerto (un valor entero) del repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+el identificador único de las imágenes de disco a descargar del repositorio
+ de imágenes (un valor entero).
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+flag
+\emph default
+ (valor entero) que indica si las imágenes de disco que se descargarán del
+ repositorio de imágenes se van a editar o a utilizar como base para crear
+ otras máquinas virtuales.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los paquetes de los tipos 
+\family sans
+\series bold
+Error de edición de imagen
+\family default
+\series default
+, 
+\family sans
+\series bold
+Error de despliegue
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Error de borrado
+\family default
+\series default
+ contienen el identificador único de la petición (un 
+\emph on
+string
+\emph default
+) y el identificador único de las imágenes de disco a las que esta afecta
+ (un valor entero).
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Desplegar imagen
+\family default
+\series default
+ contienen
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+el identificador único de la petición, que es un 
+\emph on
+string
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+la dirección IP (un 
+\emph on
+string
+\emph default
+) y el puerto (un valor entero) del repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+el identificador único de las imágenes de disco a descargar del repositorio
+ de imágenes (un valor entero).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Borrar imagen
+\family default
+\series default
+ contienen el identificador único de la petición (un 
+\emph on
+string
+\emph default
+) y el identificador único de las imágenes de disco a borrar del servidor
+ de máquinas virtuales (un valor entero).
+\end_layout
+
+\begin_layout Itemize
+finalmente,los paquetes de los tipos 
+\family sans
+\series bold
+Imagen editada
+\family default
+\series default
+, 
+\family sans
+\series bold
+Imagen desplegada
+\family default
+\series default
+, 
+\family sans
+\series bold
+Imagen borrada
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Error interno
+\family default
+\series default
+ contienen el identificador único de la petición (un 
+\emph on
+string
+\emph default
+)
 \end_layout
 
 \begin_layout Standard
