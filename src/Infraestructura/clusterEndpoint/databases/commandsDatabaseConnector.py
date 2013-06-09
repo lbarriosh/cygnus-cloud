@@ -156,7 +156,7 @@ class CommandsDatabaseConnector(BasicDBConnector):
         query = "SELECT MAX(time) FROM RunCommandOutput WHERE userID = {0} AND isNotification = 1".format(userID)
         max_time = self._executeQuery(query, True)
         if (max_time == None) :
-            return []
+            return 0
         
         query = "SELECT COUNT(*) FROM RunCommandOutput WHERE userID = {0} AND isNotification = 1 AND time <= {1};"\
             .format(userID, max_time)
