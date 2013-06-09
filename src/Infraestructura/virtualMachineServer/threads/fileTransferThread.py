@@ -105,8 +105,11 @@ class FileTransferThread(BasicThread):
                     timeout = elapsed_time >= self.__max_cancel_timeout
                     
                 if (callback.getErrorDescription() != None or timeout) :
-                    attempts += 1
-                    if (attempts == self.__maxTransferAttempts) :
+                    if callback.getImageNotFound() :
+                        attempts = self.__maxTransferAttempts
+                    else:
+                        attempts += 1
+                    if (attempts == self.__maxTransferAttempts):
                         if (data["Transfer_Type"] != TRANSFER_T.CANCEL_EDITION):                        
                             # Error => informamos al usuario                
                             p = self.__vmServerPacketHandler.createErrorPacket(VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR, 

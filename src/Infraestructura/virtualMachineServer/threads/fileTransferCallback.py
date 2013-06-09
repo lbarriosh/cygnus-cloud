@@ -60,6 +60,10 @@ class FileTransferCallback(NetworkCallback):
         """
         self.__errorDescription = None
         self.__operation_completed = False
+        self.__image_not_found = False
+        
+    def getImageNotFound(self):
+        return self.__image_not_found
     
     def processPacket(self, packet):
         """
@@ -76,6 +80,7 @@ class FileTransferCallback(NetworkCallback):
         elif (data["packet_type"] == IR_PACKET_T.RETR_REQUEST_ERROR or data["packet_type"] == IR_PACKET_T.RETR_ERROR or
               data["packet_type"] == IR_PACKET_T.STOR_REQUEST_ERROR or data["packet_type"] == IR_PACKET_T.STOR_ERROR) :
             self.__errorDescription = data["errorDescription"]
+            self.__image_not_found = True
         elif (data["packet_type"] == IR_PACKET_T.RETR_START) :
             try :
                 ftpClient = FTPClient()

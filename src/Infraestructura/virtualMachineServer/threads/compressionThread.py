@@ -63,7 +63,9 @@ class CompressionThread(BasicThread):
             Nada
         """        
         try :
-            
+            imageDirectory = None
+            definitionFileDirectory = None
+            zipFilePath = None
             if(data["Transfer_Type"] != TRANSFER_T.STORE_IMAGE):                   
                 
                 self.__dbConnector.deleteImage(data["SourceImageID"])
@@ -78,14 +80,16 @@ class CompressionThread(BasicThread):
                     ChildProcessManager.runCommandInForeground("rm -rf " + definitionFileDirectory, Exception)
                 except Exception:
                     pass
-                compressedFilePath = path.join(self.__transferDirectory, str(data["SourceImageID"]) + ".zip")
-                self.__compressor.extractFile(compressedFilePath, imageDirectory)                     
+                zipFilePath = path.join(self.__transferDirectory, str(data["SourceImageID"]) + ".zip")
+                self.__compressor.extractFile(zipFilePath, imageDirectory)                     
                 
                 # Creamos el directorio de definicion en el caso de que no exista
                 if not path.exists(definitionFileDirectory):
                     makedirs(definitionFileDirectory)
             
                 definitionFileFound = False
+                containsDataFile = False
+                containsOSFile = False
                 for fileName in listdir(imageDirectory):
                     ChildProcessManager.runCommandInForegroundAsRoot("chmod 666 " + path.join(imageDirectory, fileName), VMServerException)
                     if fileName.endswith(".xml"):
@@ -93,8 +97,14 @@ class CompressionThread(BasicThread):
                         definitionFile = fileName
                         shutil.move(path.join(imageDirectory, fileName), definitionFileDirectory)
                         definitionFileFound = True
+                    containsDataFile = fileName == "Data.qcow2" or containsDataFile
+                    containsOsFile = fileName == "OS.qcow2" or containsOSFile 
                 if(not definitionFileFound):
                     raise Exception("The definition file was not found")
+                if (not containsDataFile) :
+                    raise Exception("The data disk image was not found")
+                if (not containsOSFile) :
+                    raise Exception("The OS disk image was not found")
     
                 # Registramos la máquina virtual
                 self.__dbConnector.createImage(data["TargetImageID"], path.join(str(data["TargetImageID"]), "OS.qcow2"),
@@ -111,7 +121,7 @@ class CompressionThread(BasicThread):
                     self.__networkManager.sendPacket('', self.__serverListenningPort, p)
                     
                 # Borramos el fichero .zip
-                ChildProcessManager.runCommandInForeground("rm " + compressedFilePath, VMServerException)    
+                ChildProcessManager.runCommandInForeground("rm " + zipFilePath, VMServerException)    
             else:        
                 # Comprimimos los ficheros
                 
@@ -151,3 +161,11 @@ class CompressionThread(BasicThread):
             transfer["CommandID"] = data["CommandID"]
             transfer["ImageID"] = data["TargetImageID"]
             self.__dbConnector.addToTransferQueue(transfer)
+            
+            # Borrar basura
+            if (imageDirectory != None):
+                ChildProcessManager.runCommandInForeground("rm -rf " + imageDirectory, None)
+            if (definitionFileDirectory != None):
+                ChildProcessManager.runCommandInForeground("rm -rf " + definitionFileDirectory, None)
+            if (zipFilePath != None):
+                ChildProcessManager.runCommandInForeground("rm -rf " + zipFilePath)
