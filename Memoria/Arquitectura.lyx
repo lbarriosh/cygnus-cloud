@@ -4941,132 +4941,6 @@ Además web2py ofrece una capa de abstracción de base de datos (DAL por su
 \end_layout
 
 \begin_layout Subsubsection*
-Modelo Vista-Controlador
-\end_layout
-
-\begin_layout Standard
-Web2py fuerza al desarrollador a utilizar unas buenas prácticas de ingeniería
- del software, evitando la repetición de código en la medida de lo posible
- y estandarizando la manera de hacer las cosas.
- 
-\end_layout
-
-\begin_layout Standard
-Por ello, este framework utiliza un modelo Vista-Controlador que incentiva
- al desarrollador a separar la forma de representar los datos (la vista)
- y el flujo de trabajo de la aplicación (el controlador).
- Este modelo ofrece una estructura modular que permite aislar los posibles
- errores en una sección de código concreta y trabajar en paralelo de forma
- independiente, reduciendo así los posibles tiempos de espera en el desarrollo
- de la web.
-\end_layout
-
-\begin_layout Standard
-El flujo de trabajo típico de una petición web2py viene representado en
- el diagrama 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Diagram-web2py"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaSecuenciaWeb2py.png
-	scale 50
-	rotateOrigin center
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Diagram-web2py"
-
-\end_inset
-
-Diagrama de secuencia web2py
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-En el diagrama podemos destacar los siguientes elementos:
-\end_layout
-
-\begin_layout Itemize
-El navegador, a partir del cual el usuario se conectará a la web.
-\end_layout
-
-\begin_layout Itemize
-El servidor, puede ser el servidor incluido en web2py o un servidor de terceros,
- tal como Apache.
-\end_layout
-
-\begin_layout Itemize
-La aplicación principal, encargada de realizar todas las tareas comunes
- tal y como la gestión de cookies, sesiones, transacciones y enrutamiento.
-\end_layout
-
-\begin_layout Itemize
-Los modelos, vistas y controladores que componen la aplicación del desarrollador.
-\end_layout
-
-\begin_layout Itemize
-La Base de datos que se encargará de almacenar la información utilizada
- por la web.
-\end_layout
-
-\begin_layout Standard
-Todas las llamadas se encierran en una transacción.
- Cualquier excepción no contemplada hace que la transacción se cancele.
- 
-\end_layout
-
-\begin_layout Standard
-Con web2py es posible registrar tareas recurrentes para ejecutarse en horas
- específicas y/o después de determinadas acciones.
- También es posible alojar varias aplicaciones en una misma instancia.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Web2PyBook"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection*
 Ventajas
 \end_layout
 
@@ -5139,68 +5013,6 @@ FIN
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsubsection*
-Seguridad
-\end_layout
-
-\begin_layout Standard
-Con respecto a la seguridad, web2py se centra en resolver los 10 principales
- problemas de seguridad definidos por OWASP (Proyecto de Seguridad de Aplicacion
-es Web Abiertas), una comunidad mundial libre enfocada en la mejora de la
- seguridad de aplicaciones de software
-\begin_inset CommandInset citation
-LatexCommand cite
-key "OWASP"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-En términos generales, estos 10 problemas son:
-\end_layout
-
-\begin_layout Itemize
-Cross Site Scripting (XSS)
-\end_layout
-
-\begin_layout Itemize
-inyecciones SQL
-\end_layout
-
-\begin_layout Itemize
-Ejecución de archivos maliciosos
-\end_layout
-
-\begin_layout Itemize
-Referencia directa a objetos
-\end_layout
-
-\begin_layout Itemize
-Cross Site Request Forgery (CSRF)
-\end_layout
-
-\begin_layout Itemize
-Fugas de información y manejo de errores inapropiado
-\end_layout
-
-\begin_layout Itemize
-Administración de sesiones y autentificación rota
-\end_layout
-
-\begin_layout Itemize
-Almacenamiento criptográfico inseguro
-\end_layout
-
-\begin_layout Itemize
-Comunicaciones inseguras
-\end_layout
-
-\begin_layout Itemize
-Restricciones de acceso URL
 \end_layout
 
 \begin_layout Section
@@ -6933,7 +6745,8 @@ Lenguajes : Incluye un conjunto de diccionarios que permiten traducir la
 \begin_layout Itemize
 Archivos estáticos : Este paquete incluye las css , js e imagenes necesarias
  para definir el aspecto de la web.
- También incluye el controlador noVNC.
+ También incluye el controlador noVNC y todos los ficheros html auxiliares
+ que se integran en la web.
 \end_layout
 
 \begin_layout Itemize
@@ -20115,22 +19928,22 @@ webServer
 \begin_layout Standard
 En este paquete se trata todo lo relacionado con la gestión de la web de
  CygnusCloud.
- Así en este paquete se incluyen todos los módulos encargados de gestionar
- las funcionalidades de interacción con los usuarios a través de la web
- y los ficheros html y css necesarios para la implementación de las páginas.
+ Así, en él, se incluyen todos los módulos encargados de gestionar las funcional
+idades de interacción con los usuarios a través de la web y los ficheros
+ html y css necesarios para la implementación de las páginas.
  
 \end_layout
 
 \begin_layout Subsubsection
-Estructura general de la web
+Modelo Vista-Controlador
 \end_layout
 
 \begin_layout Standard
 Para llevar a cabo el desarrollo de la web ha sido necesario la utilización
  de un framework web que nos facilitase algunos aspectos y estructurase
  el sistema de forma correcta.
- Para ello, hemos optado por la utilización de Web2Py cuyas principales
- características y funcionamiento explicamos en la sección 
+ Para ello, hemos optado por la utilización de Web2py cuyas principales
+ características se mencionaron en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Uso-web2py"
@@ -20141,13 +19954,142 @@ reference "sub:Uso-web2py"
 \end_layout
 
 \begin_layout Standard
-Como ya mencionamos en esa sección, web2py estructura las aplicaciones siguiendo
- un modelo vista-controlador.
- Por ello en CygnusCloud ha sido necesario estructurar el código de la web
- en un grupo de control y un grupo de vista.
- A parte de ambos grupos también se han añadido más grupos con ficheros
- estáticos, css, módulos importados y en general todos los ficheros necesarios
- para dar la funcionalidad y el aspecto requeridos en la web.
+Web2py fuerza al desarrollador a utilizar unas buenas prácticas de ingeniería
+ del software, evitando la repetición de código en la medida de lo posible
+ y estandarizando la manera de hacer las cosas.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ello, este 
+\shape italic
+framework
+\shape default
+ utiliza un modelo Vista-Controlador que incentiva al desarrollador a separar
+ la forma de representar los datos (la vista) y el flujo de trabajo de la
+ aplicación (el controlador).
+ Este modelo ofrece una estructura modular que permite aislar los posibles
+ errores en una sección de código concreta y trabajar en paralelo de forma
+ independiente, reduciendo así los posibles tiempos de espera en el desarrollo
+ de la web.
+\end_layout
+
+\begin_layout Standard
+El flujo de trabajo típico de una petición web2py viene representado en
+ el diagrama 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagram-web2py"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/DiagramaSecuenciaWeb2py.png
+	scale 50
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagram-web2py"
+
+\end_inset
+
+Diagrama de secuencia web2py
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En este diagrama podemos destacar los siguientes elementos:
+\end_layout
+
+\begin_layout Itemize
+El navegador, a partir del cual el usuario se conectará a la web.
+\end_layout
+
+\begin_layout Itemize
+El servidor, puede ser el servidor incluido en web2py o un servidor de terceros,
+ tal como Apache.
+\end_layout
+
+\begin_layout Itemize
+La aplicación principal, encargada de realizar todas las tareas comunes
+ tal y como la gestión de 
+\shape italic
+cookies
+\shape default
+, sesiones, transacciones y enrutamiento.
+\end_layout
+
+\begin_layout Itemize
+Los modelos, vistas y controladores que componen la aplicación del desarrollador.
+\end_layout
+
+\begin_layout Itemize
+La base de datos que se encargará de almacenar la información utilizada
+ por la web.
+\end_layout
+
+\begin_layout Standard
+Todas las llamadas se encierran en una transacción.
+ Cualquier excepción no contemplada hace que la transacción se cancele.
+ 
+\end_layout
+
+\begin_layout Standard
+Con web2py es posible registrar tareas recurrentes para ejecutarse en horas
+ específicas y/o después de determinadas acciones.
+ También es posible alojar varias aplicaciones en una misma instancia.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Web2PyBook"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Estructura general de la web
+\end_layout
+
+\begin_layout Standard
+Como Web2py estructura las aplicaciones siguiendo un modelo vista-controlador,
+ en CygnusCloud ha sido necesario estructurar el código de la web en un
+ grupo de control y un grupo de vista.
+ A parte de ambos grupos también se han creado más grupos con ficheros estáticos
+, ficheros css y html, módulos importados y en general todos los ficheros
+ necesarios para dar la funcionalidad y el aspecto requeridos en la web.
 \end_layout
 
 \begin_layout Standard
@@ -20172,7 +20114,7 @@ Vistas: Este grupo incluye todos los ficheros de formato html encargados
 Controladores: Este grupo incluye el conjunto de módulos python que aportan
  todas las funcionalidades que serán gestionadas por la web.
  CygnusCloud dispone de un módulo para cada uno de los tipos de usuarios
- que pueden acceder a la web (alumnos, administradores y estudiantes), un
+ que pueden acceder a la web (alumnos, administradores y profesores), un
  módulo para las páginas de acceso público, un módulo para la página que
  contiene el cliente VNC y un módulo appAdmin creado automáticamente por
  web2py para la gestión de las bases de datos.
@@ -20220,13 +20162,13 @@ Lenguajes: Este grupo incluye los diccionarios de traducción de las páginas
  de la web.
  Estos diccionarios deben ser rellenados por el desarrollador y son usados
  internamente por web2py para traducir todas las palabras de la web que
- aparezcan en los diccionarios.
+ aparezcan en los mismos.
 \end_layout
 
 \begin_layout Itemize
 Archivos estáticos: Este grupo incluye los ficheros css y js encargados
  de definir la apariencia de la web, las imágenes y en general cualquier
- fichero que defina algún componente externo que forma parte de la web.
+ fichero que defina algún componente externo se importará en la web.
 \end_layout
 
 \begin_layout Itemize
@@ -20249,11 +20191,11 @@ name "sub:Estructura-de-direcciones"
 
 \begin_layout Standard
 Con el fin de poder gestionar la web de la forma más modular posible y aprovecha
-ndo el flujo de direcciones usadas por web2py vamos a estructurar los diferentes
- apartados de la web en forma de árbol de direcciones tal que cada uno de
- sus nodos podrá realizar saltos a cualquier otro nodo del árbol según las
- acciones realizadas por los usuarios.
- Así el elemento principal será la aplicación en sí (/CygnusCloud).
+ndo el flujo de direcciones usado por web2py, vamos a estructurar los diferentes
+ apartados de la web en forma de árbol de direcciones, de forma que cada
+ uno de sus nodos pueda realizar saltos a cualquier otro nodo del árbol
+ según las acciones llevadas a cabo por los usuarios.
+ Así, el elemento principal será la aplicación en sí (/CygnusCloud).
  A partir de esta dirección comenzarán a surgir las direcciones asociadas
  a las páginas manteniendo la estructura de secciones y subsecciones correspondi
 entemente.
@@ -20264,7 +20206,7 @@ entemente.
 \begin_inset Quotes eld
 \end_inset
 
-/CygnusCloud/login
+/CygnusCloud/main/login
 \begin_inset Quotes erd
 \end_inset
 
@@ -20276,7 +20218,7 @@ entemente.
 \begin_inset Quotes eld
 \end_inset
 
-/CygnusCloud/about
+/CygnusCloud/main/about
 \begin_inset Quotes erd
 \end_inset
 
@@ -20384,8 +20326,8 @@ s.
 \begin_inset Quotes erd
 \end_inset
 
- : Esta es la página encargada de crear nuevos grupos de asignaturas con
- la información introducida por el administrador.
+ : Es la página encargada de crear nuevos grupos de asignaturas con la informaci
+ón introducida por el administrador.
 \end_layout
 
 \begin_layout Itemize
@@ -20396,7 +20338,7 @@ s.
 \begin_inset Quotes erd
 \end_inset
 
- : Esta es la página encargada de eliminar algún grupo de asignatura existente.
+ : Es la página encargada de eliminar algún grupo de asignatura existente.
 \end_layout
 
 \begin_layout Itemize
@@ -20496,8 +20438,8 @@ Alumnos : En este tipo se incluyen todos los alumnos que cursan alguna de
  las asignaturas registradas en la web.
  Este tipo de usuarios es el más restringido, dándole únicamente acceso
  a la página de arranque de máquinas virtuales , asociadas a las asignaturas
- matriculadas por el alumno, y a la página de visualización de máquinas
- arrancadas.
+ matriculadas por el alumno, y a la página de visualización, detención y
+ apertura de máquinas arrancadas.
 \end_layout
 
 \begin_layout Itemize
@@ -20548,7 +20490,7 @@ Además de estos tipos de usuarios, CygnusCloud también ofrece acceso a ciertas
 \end_layout
 
 \begin_layout Standard
-Como ya hemos dicho, cada uno de estos tipos del primer nivel concretan
+Como ya hemos dicho, cada uno de estos grupos de primer nivel concretan
  el conjunto de páginas al cual se quiere acceder.
  
 \end_layout
@@ -21090,8 +21032,15 @@ Acerca de
 
 \begin_layout Itemize
 barra de direcciones para alumnos.
- Esta barra incluye la página de arranque de máquinas virtuales y está restringi
-da a usuarios de tipo alumno registrados en la web.
+ Esta barra incluye las páginas de arranque, apertura y detención de máquinas
+ virtuales y está restringida a usuarios de tipo alumno registrados en la
+ web.
+\end_layout
+
+\begin_layout Itemize
+barra de direcciones para profesores.
+ Esta barra incluye las páginas de arranque, creación y edición de máquinas
+ virtuales, accesibles por los profesores.
 \end_layout
 
 \begin_layout Itemize
@@ -21112,7 +21061,7 @@ Para llevar a cabo la gestión de usuarios hemos optado por utilizar una
  Esta librería, de nombre Auth, contiene todas las funcionalidades necesarias
  con respecto a la gestión de usuarios.
  Auth contiene funciones para gestionar la creación de usuarios, los inicios
- de sesión y las restricciones de acceso a diferentes páginas.
+ de sesión y las restricciones de acceso a las diferentes páginas.
  Además esta librería ofrece también funciones que devuelven los formularios
  de inicio de sesión y cierre de la misma totalmente implementados para
  ser directamente incorporados en nuestras páginas.
@@ -21154,7 +21103,7 @@ reference "sub:Secciones-y-subsecciones"
  con tantos argumentos como datos de entrada deba recibir esto no sucede
  así.
  Las razones por las cuales el envío y recepción de datos entre páginas
- no se dé de esta forma son básicamente dos:
+ no se da de esta forma son básicamente dos:
 \end_layout
 
 \begin_layout Enumerate
@@ -21171,8 +21120,12 @@ con el
 \family default
 nombre del controlador que la contiene, el nombre de la función de la sección
  correspondiente, los argumentos necesarios y el conjunto de variables.
- Una vez llamada a la función, es Web2py el encargado de llamar a la función
- del controlador que corresponda y pasar los argumentos y variables.
+ Una vez llamado a 
+\family typewriter
+redirect
+\family default
+, es Web2py el encargado de llamar a la función del controlador que corresponda
+ y pasar los argumentos y variables.
 \end_layout
 
 \begin_layout Enumerate
@@ -21222,8 +21175,8 @@ El segundo campo nos permite transferir la información como variables y
  En esta caso el nombre de la variable no formará parte de la dirección
  destino.
  Este campo recibe un diccionario con el nombre que se quiere dar a cada
- una de estas variables y su contenido y será accedido desde la página destino
- por medio de la llamada a 
+ una de estas variables y su contenido.
+ Será accedido desde la página destino por medio de la llamada a 
 \family typewriter
 request.vars.x
 \family default
@@ -21308,10 +21261,9 @@ main/login.html
 
 \begin_layout Itemize
 Una vez el usuario ha introducido su nombre, contraseña y ha pulsado el
- botón arrancar, el controlador envía una consulta a la base de datos para
- comprobar que el usuario existe y que su contraseña es correcta.
- Tras esto se mira el tipo de usuario y redirecciona a la página que sea
- necesaria.
+ botón de inicio de sesión, el controlador envía una consulta a la base
+ de datos para comprobar que el usuario existe y que su contraseña es correcta.
+ Tras esto mira el tipo de usuario y redirecciona a la página que sea necesaria.
  En nuestro caso, al ser un alumno el que inicia la sesión, redirecciona
  a la sección 
 \family typewriter
@@ -21370,7 +21322,7 @@ student/runVM.html
 
 \begin_layout Itemize
 Una vez el usuario ha seleccionado alguna máquina virtual y ha pulsado el
- botón de arrancar, el controlador extrae el identificador de la máquina
+ botón de arrnque, el controlador extrae el identificador de la máquina
  virtual y pide al conector que arranque dicha máquina.
  El conector devuelve los parámetros de conexión, los cuales son enviados
  como variable en la redirección a la página 
@@ -21425,7 +21377,7 @@ reference "fig:Secuencia-de-arranque"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -21462,6 +21414,68 @@ name "fig:Secuencia-de-arranque"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Seguridad
+\end_layout
+
+\begin_layout Standard
+Con respecto a la seguridad, web2py se centra en resolver los 10 principales
+ problemas de seguridad definidos por OWASP (Proyecto de Seguridad de Aplicacion
+es Web Abiertas), una comunidad mundial libre enfocada en la mejora de la
+ seguridad de aplicaciones de software
+\begin_inset CommandInset citation
+LatexCommand cite
+key "OWASP"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+En términos generales, estos 10 problemas son:
+\end_layout
+
+\begin_layout Itemize
+Cross Site Scripting (XSS)
+\end_layout
+
+\begin_layout Itemize
+inyecciones SQL
+\end_layout
+
+\begin_layout Itemize
+Ejecución de archivos maliciosos
+\end_layout
+
+\begin_layout Itemize
+Referencia directa a objetos
+\end_layout
+
+\begin_layout Itemize
+Cross Site Request Forgery (CSRF)
+\end_layout
+
+\begin_layout Itemize
+Fugas de información y manejo de errores inapropiado
+\end_layout
+
+\begin_layout Itemize
+Administración de sesiones y autentificación
+\end_layout
+
+\begin_layout Itemize
+Almacenamiento criptográfico inseguro
+\end_layout
+
+\begin_layout Itemize
+Comunicaciones inseguras
+\end_layout
+
+\begin_layout Itemize
+Restricciones de acceso URL
 \end_layout
 
 \begin_layout Standard
