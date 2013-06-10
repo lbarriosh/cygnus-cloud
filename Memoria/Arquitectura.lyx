@@ -11857,6 +11857,13 @@ FTPServerCallback
 
 \begin_layout Paragraph
 Transferencias parciales
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Transferencias-parciales"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -13518,8 +13525,8 @@ Solicitud de borrado errónea
 \series default
  
 \family default
-contienen el identificador único del fichero a borrar (un valor entero)
- y un código de descripción del error.
+contienen el identificador único del fichero a borrar y un código de descripción
+ del error.
 \end_layout
 
 \begin_layout Itemize
@@ -13565,7 +13572,7 @@ Finalmente, los
 \emph on
 flags
 \emph default
-, los identificadores de imagen, los puertos y los códigos de error son
+, los identificadores de imágenes, los puertos y los códigos de error son
  valores enteros.
  El resto de datos que transportan los paquetes del repositorio de imaǵenes
  son 
@@ -17757,6 +17764,17 @@ websockets
  que estos tienen asociados.
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+Por convención, los puertos pares se asignarán a los servidores VNC, y los
+ puertos impares consecutivos a estos se asignarán a los 
+\emph on
+websockets
+\emph default
+.
+\end_layout
+
+\end_deeper
 \begin_layout Enumerate
 se inicializa el objeto 
 \family typewriter
@@ -17882,7 +17900,7 @@ Por claridad, en todos los casos comenzaremos mostrando el flujo básico,
 \begin_layout Standard
 Asimismo, en esta sección omitiremos las interacciones que despliegan, crean,
  editan o borran imágenes de disco: consideramos que tienen entidad suficiente
- como para tratarlas en una sección separada.
+ como para tratarlas en secciones separadas.
 \end_layout
 
 \begin_layout Paragraph
@@ -18045,8 +18063,11 @@ el objeto
 \family typewriter
 VMServerReactor
 \family default
- construye un paquete con toda la información recopilada, utilizando para
- ello un objeto 
+ construye un paquete del tipo 
+\family sans
+Estado del servidor de máquinas virtuales
+\family default
+ con toda la información recopilada, utilizando para ello un objeto 
 \family typewriter
 VMServerPacketHandler
 \family default
@@ -18076,7 +18097,14 @@ VMServerPacketHandler
 \end_layout
 
 \begin_layout Paragraph
-Creación de una máquina virtual: secuencia básica
+Creación de una máquina virtual: secuencia básica 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -18214,13 +18242,17 @@ reserva una dirección MAC y un UUID para la máquina virtual.
 \end_layout
 
 \begin_layout Enumerate
-reserva dos puertos para la máquina virtual.
- Uno de ellos se corresponderá con el servidor VNC de la máquina virtual,
- y el otro con el 
+reserva dos puertos 
 \emph on
-websocket 
+consecutivos
 \emph default
-asociado.
+ para la máquina virtual.
+ Como ya hemos dicho, el puerto par se asignará al servidor VNC de la máquina
+ virtual, y el puerto impar se asignará al
+\emph on
+ websocket
+\emph default
+.
 \end_layout
 
 \begin_layout Enumerate
@@ -18420,7 +18452,14 @@ Finalmente, es importante notar que, cuando se reciben las peticiones de
 \end_layout
 
 \begin_layout Paragraph
-Creación de una máquina virtual: tratamiento de errores
+Creación de una máquina virtual: tratamiento de errores 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Arranque-MV-errores"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -18857,7 +18896,448 @@ Asimismo, cuando el servidor VNC se apaga, el demonio
 websockify
 \family default
  lo detectará y se también se apagará.
- Por ello, no es necesario matarlo cuando la máquina virtual se apaga..
+ Por ello, no es necesario matarlo cuando la máquina virtual se apaga.
+\end_layout
+
+\begin_layout Standard
+Finalmente, puesto que las dos imágenes de disco se borran, cuando la máquina
+ virtual se apaga se destruyen todos los datos que haya escrito en disco
+ durante su ejecución.
+\end_layout
+
+\begin_layout Paragraph
+Solicitud de datos de conexión
+\end_layout
+
+\begin_layout Standard
+Los usuarios de las máquinas virtuales pueden cerrar el cliente VNC que
+ utilizan de forma accidental.
+ Para que los usuarios puedan seguir utilizando la máquina virtual en estos
+ casos, es necesario que los servidores de máquinas virtuales suministren
+ al servidor de 
+\emph on
+cluster
+\emph default
+ los datos de conexión del servidor VNC asociado a cada máquina virtual
+ activa.
+\end_layout
+
+\begin_layout Standard
+Para solicitar estos datos, el servidor de 
+\emph on
+cluster
+\emph default
+ envía a los servidores de máquinas virtuales un paquete del tipo 
+\family sans
+Solicitud de datos de conexión
+\family default
+ 
+\family sans
+VNC
+\family default
+.
+ Este paquete no contiene información adicional, y se procesa de acuerdo
+ al diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Envío-datos-conexión"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Envío datos conexión.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Envío-datos-conexión"
+
+\end_inset
+
+Envío de los datos de conexión de los servidores VNC
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar, tras recibir el paquete en el servidor de máquinas
+ virtuales se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee el contenido del paquete utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee de la base de datos del servidor de máquinas virtuales los datos de
+ conexión de los servidores VNC.
+ Para ello, utiliza un objeto 
+\family typewriter
+VMServerDBConnector
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ construye un paquete del tipo 
+\family sans
+Datos de conexión VNC
+\family default
+.
+ Estos paquetes contienen la dirección IP del servidor de máquinas virtuales,
+ así como el puerto del 
+\emph on
+websocket
+\emph default
+ y la contraseña de todos los servidores VNC activos.
+ Nuevamente, para construir el paquete se utiliza un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+finalmente, el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ envía dicho paquete al servidor de 
+\emph on
+cluster.
+\end_layout
+
+\begin_layout Paragraph
+Solicitud de los identificadores únicos de las máquinas virtuales activas
+\end_layout
+
+\begin_layout Standard
+Cada máquina virtual puede identificarse de forma única a partir del identificad
+or de la petición que la creó.
+ De ahora en adelante, también llamaremos a dicho identificador identificador
+ único de la máquina virtual.
+\end_layout
+
+\begin_layout Standard
+Más adelante veremos que, durante el proceso de arranque de un servidor
+ de máquinas virtuales, el demonio del servidor de 
+\emph on
+cluster 
+\emph default
+averiguará los identificadores únicos de todas las máquinas virtuales que
+ este alberga.
+ Para ello, le enviará un paquete del tipo 
+\family sans
+Solicitud de IDs de máquinas virtuales
+\family default
+ de máquinas activas, que se procesa de acuerdo al diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Envío-domainUIDs"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Envío DomainUIDs.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Envío-domainUIDs"
+
+\end_inset
+
+Envío de los identificadores únicos de las máquinas virtuales activas
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, esta interacción es muy similar a
+ la anterior: 
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee el contenido del paquete utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee de la base de datos del servidor de máquinas virtuales los identificadores
+ únicos de las máquinas virtuales.
+ Para ello, utiliza un objeto 
+\family typewriter
+VMServerDBConnector
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ construye un paquete del tipo 
+\family sans
+IDs de máquinas virtuales
+\family default
+.
+ Estos paquetes contienen la dirección IP del servidor de máquinas virtuales
+ y los identificadores únicos de todas las máquinas virtuales activas.
+ Nuevamente, para construir el paquete se utiliza un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+finalmente, el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ envía dicho paquete al servidor de 
+\emph on
+cluster.
+\end_layout
+
+\begin_layout Paragraph
+Reinicio de una máquina virtual 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Reinicio-forzoso-MV"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cuando se produce un cuelgue en una máquina virtual activa, el usuario que
+ la utiliza podrá solicitar un reinicio forzoso de la misma.
+ Esto le permite seguir trabajando con dicha máquina.
+\end_layout
+
+\begin_layout Standard
+Para solicitar el reinicio forzoso de una máquina virtual alojada en el
+ servidor de máquinas virtuales, el servidor de 
+\emph on
+cluster
+\emph default
+ enviará un paquete del tipo 
+\family sans
+Reiniciar máquina virtual
+\family default
+.
+ Este contiene el identificador único de la máquina virtual a reiniciar,
+ y se procesa en el servidor de máquinas virtuales de acuerdo al diagrama
+ de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Reinicio-forzoso-MV"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Reinicio forzoso.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Reinicio-forzoso-MV"
+
+\end_inset
+
+Reinicio forzoso de una máquina virtual activa
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En el diagrama de secuencia, pueden distinguirse los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee el contenido del paquete utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ invoca al método de reinicio forzoso de una máquina virtual del objeto
+ 
+\family sans
+DomainHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family sans
+DomainHandler
+\family default
+ obtiene el nombre único de la máquina virtual, utilizando para ello un
+ objeto 
+\family sans
+VMServerDBConnector
+\family default
+.
+ Como hemos dicho anteriormente, este la identifica de forma única dentro
+ del servidor de máquinas virtuales en el que reside.
+\end_layout
+
+\begin_layout Enumerate
+finalmente, el objeto 
+\family sans
+DomainHandler
+\family default
+ invoca al método de reinicio forzoso de una máquina virtual del objeto
+ 
+\family sans
+LibvirtConnector
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, en caso de que el servidor de máquinas virtuales
+ no aloje la máquina virtual, la petición se ignorará.
+ Esto sólo ocurre en contadas ocasiones, y al no enviar un paquete de error
+ podemos ahorrar ancho de banda.
 \end_layout
 
 \begin_layout Paragraph
@@ -18995,7 +19475,7 @@ se apagan todas las máquinas virtuales activas.
  Sus recursos se liberan como vimos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "par:Apagado-MV"
+reference "par:Apagado-MV-edición"
 
 \end_inset
 
@@ -19027,8 +19507,7 @@ Apagado inmediato
 \end_layout
 
 \begin_layout Subsubsection
-Interacciones relacionadas con la creación, edición, despliegue y borrado
- de imágenes de disco
+Creación y edición de imágenes de disco
 \end_layout
 
 \begin_layout Standard
@@ -19037,13 +19516,8 @@ n con el servidor de
 \emph on
 cluster
 \emph default
- y el repositorio de imágenes durante los procesos de creación, edición,
- despliegue y borrado de imágenes de disco.
-\end_layout
-
-\begin_layout Standard
-En primer lugar, nos centraremos en la creación y edición de imágenes de
- disco.
+ y el repositorio de imágenes durante los procesos de creación y edición
+ de imágenes de disco.
  Para ello, seguiremos el siguiente orden:
 \end_layout
 
@@ -19068,22 +19542,13 @@ subida del fichero comprimido al repositorio de imágenes
 \end_layout
 
 \begin_layout Standard
-Posteriormente, mostraremos las operaciones que tienen lugar durante el
- despliegue de imágenes de disco.
- Esta operación comparte muchas fases con las de creación y edición de imágenes.
- Finalmente, mostraremos qué sucede en el servidor de máquinas virtuales
- durante el borrado de una imagen de disco.
-\end_layout
-
-\begin_layout Standard
 Nuevamente, en todos los casos empezaremos mostrando el flujo básico para
  posteriormente mostrar los distintos flujos alternativos, que están relacionado
 s con el tratamiento de errores.
 \end_layout
 
 \begin_layout Paragraph
-Creación y edición de imágenes de disco: descarga del fichero comprimido
- 
+Descarga del fichero comprimido 
 \begin_inset CommandInset label
 LatexCommand label
 name "par:Creación-y-edición-descarga-normal"
@@ -19344,6 +19809,13 @@ Es importante notar que, para no saturar el repositorio de imágenes, las
 \end_layout
 
 \begin_layout Standard
+Asimismo, puesto que para realizar la descarga se utiliza un identificador
+ de imagen, será posible crear o editar imágenes de disco en varias fases.
+ Para ello, bastará con repetir varias veces el proceso que mostramos en
+ esta sección y en las siguientes.
+\end_layout
+
+\begin_layout Standard
 Finalmente, los servidores de 
 \emph on
 cluster
@@ -19359,7 +19831,14 @@ cluster
 \end_layout
 
 \begin_layout Paragraph
-Creación y edición de imágenes de disco: errores durante la descarga
+Errores durante la descarga del fichero comprimido 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Errores-descarga"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -19718,7 +20197,14 @@ Como podemos observar, la forma de proceder es idéntica a la del caso anterior.
 \end_layout
 
 \begin_layout Paragraph
-Creación y edición de imágenes de disco: extracción del fichero comprimido
+Extracción del fichero comprimido 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Extracción-del-fichero-zip"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -19772,11 +20258,7 @@ los ficheros
 \family typewriter
 .qcow2
 \family default
- se moverán al directorio 
-\family typewriter
-imagenes/<identificador del fichero comprimido>
-\family default
-, y
+ se moverán al un subdirectorio del directorio de ficheros de imagen, y
 \end_layout
 
 \begin_layout Itemize
@@ -19784,22 +20266,12 @@ el fichero
 \family typewriter
 .xml
 \family default
- se moverá al directorio 
-\family typewriter
-configuraciones/<identificador del fichero comprimido>
+ se moverá a un subdirectorio del directorio de ficheros de definición.
 \end_layout
 
 \begin_layout Standard
-Los directorios 
-\family typewriter
-imagenes
-\family default
- y 
-\family typewriter
-configuraciones
-\family default
- se encuentran en la raíz del directorio de trabajo del servidor de máquinas
- virtuales.
+La ubicación de ambos directorios se especifica en el fichero de configuración
+ del demonio del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
@@ -19821,7 +20293,7 @@ reference "fig:Arranque-temporal-fase-2"
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -19863,9 +20335,31 @@ Es importante notar que
 \end_layout
 
 \begin_layout Itemize
-siempre se modifican los permisos de las imágenes de disco.
- Así, nos aseguramos de que pueden leerse y escribirse en el servidor de
- máquinas virtuales.
+siempre se comprueba que el fichero comprimido contiene los ficheros 
+\family typewriter
+OS.qcow2
+\family default
+, 
+\family typewriter
+Data.qcow2
+\family default
+ y 
+\family typewriter
+Definition.xml
+\family default
+.
+ En caso de que alguna de las imágenes de disco esté corrupta, el error
+ se detectará al arrancar la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+antes de utilizar las imágenes de disco en el arranque de la máquina virtual,
+ se modifican sus permisos mediante la orden 
+\family typewriter
+chmod
+\family default
+.
+ Así, nos aseguramos de que pueden leerse y escribirse en todos los casos.
 \end_layout
 
 \begin_layout Itemize
@@ -19878,9 +20372,3162 @@ cluster
  de disco, ahorrando así ancho de banda.
 \end_layout
 
+\begin_layout Itemize
+la petición se elimina de la cola cuando se ha procesado completamente.
+ Por ello, si el demonio del servidor de máquinas virtuales termina de forma
+ inesperada, el proceso de descompresión podrá reanudarse en su próximo
+ arranque sin que sea necesario realizar nuevamente la transferencia con
+ el repositorio de imágenes.
+ Esto permite ahorrar tiempo y ancho de banda.
+\end_layout
+
 \begin_layout Paragraph
-Creación y edición de imágenes de disco: errores en la extracción del fichero
- comprimido
+Errores en la extracción del fichero comprimido 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Errores-en-la-extracción-zip"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Al extraer el fichero comprimido, pueden detectarse los siguientes errores:
+\end_layout
+
+\begin_layout Itemize
+el fichero comprimido puede estar corrupto.
+ En estos casos, no se puede extraer.
+\end_layout
+
+\begin_layout Itemize
+el contenido del fichero comprimido es incorrecto.
+ En estos casos, falta alguno de los tres ficheros de los que hablamos en
+ la sección anterior, o alguno de ellos contiene datos no válidos.
+\end_layout
+
+\begin_layout Itemize
+falla la llamada de 
+\family typewriter
+libvirt
+\family default
+ que crea la máquina virtual.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descompresión con error.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-temporal-fase-2-1"
+
+\end_inset
+
+Creación y edición de imágenes de disco: fallo durante la extracción del
+ fichero comprimido
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Todos estos errores se tratan de forma idéntica, por lo que nos centraremos
+ en uno cualquiera de ellos: el segundo.
+ Como puede observarse en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-temporal-fase-2-1"
+
+\end_inset
+
+, para tratar el error se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family typewriter
+Error de edición de imagen
+\family default
+, que contiene el identificador único de la petición y un código de descripción
+ del error.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se crea y encola una transferencia especial.
+ Durante su procesamiento, no se transferirán datos: sólo se interactuará
+ con el repositorio de imágenes de la siguiente manera:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+si se están creando imágenes de disco, se liberará el identificador pedido,
+ y
+\end_layout
+
+\begin_layout Itemize
+si se están editando imágenes de disco, se liberará el fichero comprimido
+ en el repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Ambas interacciones se realizan de acuerdo a lo que dijimos en la sección
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Transferencias-parciales"
+
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+se borran el fichero 
+\family typewriter
+.zip
+\family default
+ y los ficheros extraídos (si existen).
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, cuando falla la llamada a 
+\family typewriter
+libvirt
+\family default
+ que crea la máquina virtual, el objeto 
+\family typewriter
+DomainHandler
+\family default
+ se ocupa de liberar los recursos asociados a la máquina virtual.
+\end_layout
+
+\begin_layout Paragraph
+Arranque de la máquina virtual
+\end_layout
+
+\begin_layout Standard
+Cuando se arranca una máquina virtual que se utilizará para editar imágenes
+ de disco, se realizan prácticamente las mismas acciones que vimos en las
+ secciones 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-MV-errores"
+
+\end_inset
+
+.
+ En esta sección, estudiaremos las modificaciones que hay que realizar en
+ todas las secuencias de arranque de una máquina virtual para poder crear
+ y editar imágenes de disco.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Arranque MV edición.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Creación-MV-Edición"
+
+\end_inset
+
+Creación y edición de imágenes: arranque de la máquina virtual
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Comencemos con la secuencia básica, en la que no se producen errores.
+ Por claridad, hemos reproducido todos sus pasos en el diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Creación-MV-Edición"
+
+\end_inset
+
+.
+ Como podemos observar en dicho diagrama, se reservan los diversos recursos
+ asignados a la máquina virtual antes de realizar la llamada a 
+\family typewriter
+libvirt
+\family default
+.
+ Asimismo, al procesar el evento de arranque de máquina virtual, se envían
+ los datos de conexión al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+La modificación a realizar con respecto al proceso de arranque básico es
+ muy sencilla: no se creará la imagen 
+\emph on
+copy-on-write
+\emph default
+ ni una copia de la imagen que alberga los datos y el fichero de paginación.
+ Así, al apagar la máquina virtual podremos garantizar que los cambios realizado
+s en dichas imágenes se mantendrán.
+\end_layout
+
+\begin_layout Standard
+Finalmente, cuando se produce un error se procede como vimos en la sección
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-MV-errores"
+
+\end_inset
+
+.
+ Por ello, no reproduciremos nuevamente las interacciones que presentamos
+ en dicha sección.
+\end_layout
+
+\begin_layout Paragraph
+Apagado de la máquina virtual 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Apagado-MV-edición"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El proceso de apagado de una máquina virtual que se utiliza para editar
+ imágenes de disco es muy similar al que presentamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-MV-edición"
+
+\end_inset
+
+.
+ Nuevamente, en esta sección mostraremos las modificaciones que hay que
+ realizar en él.
+ El proceso de apagado modificado se recoge en el diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-MV-Edición"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Apagado MV edición.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-MV-Edición"
+
+\end_inset
+
+Creación y edición de imágenes: apagado de la máquina virtual
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en dicho diagrama,
+\end_layout
+
+\begin_layout Itemize
+no se borran las imágenes de disco, ya que es necesario añadirlas a un fichero
+ comprimido, y
+\end_layout
+
+\begin_layout Itemize
+se crea y encola una petición de compresión, que contiene todo lo necesario
+ para generar el fichero comprimido y realizar la transferencia con el repositor
+io de imágenes.
+\end_layout
+
+\begin_layout Paragraph
+Creación del fichero comprimido
+\end_layout
+
+\begin_layout Standard
+Como ya hemos visto, cuando se apaga una máquina virtual que se utiliza
+ para crear imágenes de disco, se crea y encola una petición de compresión,
+ que se procesará, en ausencia de errores, como se indica en el diagrama
+ de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Compresión-Edición"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Creación fichero comprimido.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Compresión-Edición"
+
+\end_inset
+
+Creación y edición de imágenes: creación del fichero comprimido
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se utiliza un objeto 
+\family typewriter
+ZipBasedCompressor
+\family default
+ para generar el fichero comprimido.
+\end_layout
+
+\begin_layout Enumerate
+se borran las imágenes de disco 
+\family typewriter
+.qcow2
+\family default
+ y el fichero 
+\family typewriter
+.xml
+\family default
+ de definición de la máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+se construye una petición de transferencia y se añade a la cola de transferencia
+s.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que la petición se elimina de la cola cuando se ha procesado
+ completamente.
+ Por ello, si el demonio del servidor de máquinas virtuales termina de forma
+ inesperada, este proceso podrá reanudarse en su próximo arranque sin que
+ se pierdan datos.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en caso de que el proceso de compresión falle, se procederá
+ exactamente igual que en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-en-la-extracción-zip"
+
+\end_inset
+
+.
+ Por ello, no reproduciremos nuevamente dicho proceso.
+\end_layout
+
+\begin_layout Paragraph
+Subida del fichero comprimido
+\end_layout
+
+\begin_layout Standard
+Tras generar el fichero comprimido, se generará y encolará una petición
+ de transferencia.
+ Siempre que no se produzcan errores, esta petición se procesará de acuerdo
+ al diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Subida-edición"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Subida imagen repositorio.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Subida-edición"
+
+\end_inset
+
+Creación y edición de imágenes: subida del fichero comprimido al repositorio
+ de imágenes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en dicho diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se crea, a través de un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+, el paquete inicial que se enviará al repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+se instancia un objeto 
+\family typewriter
+FileTransferCallback
+\family default
+.
+ Como sabemos, este objeto se encargará de interactuar con el repositorio
+ de imágenes de acuerdo a lo que vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Interacciones-del-repositorio"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+se establece la conexión con el repositorio de imágenes y se le envía el
+ paquete inicial.
+ Para ello, se hace uso de un objeto 
+\family typewriter
+NetworkManager
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+cuando la transferencia se completa, se comprueba si se ha producido algún
+ error.
+ En este caso, no se ha producido ninguno.
+\end_layout
+
+\begin_layout Enumerate
+se borra el fichero 
+\family typewriter
+.zip
+\family default
+ transferido al repositorio de imágenes.
+ Para ello, se utilizan los servicios de la clase 
+\family typewriter
+ChildProcessManager
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+, se construye un paquete del tipo 
+\family sans
+Imagen editada
+\family default
+.
+ Este contiene, además del identificador único de la petición, el identificador
+ único del fichero comprimido que se acaba de transferir.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Nuevamente, la petición de transferencia sólo se elimina de la cola tras
+ realizar todas estas acciones.
+ Así, si se interrumpe este proceso, se reanudará en el siguiente arranque
+ del servidor de máquinas virtuales, lo que impide que se pierdan datos.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en caso de que no se pueda establecer la conexión con el repositorio
+ de imágenes, se procederá de acuerdo a lo indicado en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-descarga"
+
+\end_inset
+
+, por lo que no volveremos a reproducir aquí esas interacciones.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, en este caso, el repositorio de imágenes siempre
+ conoce el identificador del fichero comprimido a transferir, por lo que
+ no pueden producirse los errores del primer tipo que estudiamos en la sección
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-descarga"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Despliegue de imágenes de disco
+\end_layout
+
+\begin_layout Standard
+El proceso de despliegue de imágenes de disco permite que un servidor de
+ máquinas virtuales sea capaz de albergar una nueva máquina virtual.
+ 
+\end_layout
+
+\begin_layout Standard
+Este proceso siempre comienza con el envío de un paquete del tipo 
+\family sans
+Desplegar imagen
+\family default
+ desde el servidor de 
+\emph on
+cluster
+\emph default
+ a un servidor de máquinas virtuales.
+ Dicho paquete contiene, además del identificador único de la petición,
+ el identificador único del fichero comprimido a descargar desde el repositorio
+ de imágenes.
+\end_layout
+
+\begin_layout Standard
+Durante el despliegue de imágenes de disco, podemos distinguir dos fases:
+ la descarga del fichero comprimido desde el repositorio de imágenes y la
+ descompresión y el procesamiento del contenido de ficho fichero.
+\end_layout
+
+\begin_layout Standard
+La fase de descarga del fichero comprimido es totalmente análoga a la que
+ tiene lugar durante los procesos de creación y edición de imágenes de disco.
+ Puesto que hablamos detalladamente de esta fase en las secciones 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Creación-y-edición-descarga-normal"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-descarga"
+
+\end_inset
+
+, no volveremos a reproducirla aquí.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la fase de descompresión y procesamiento del contenido del
+ fichero comprimido es también muy similar a la que tiene lugar durante
+ los procesos de creación y edición de imágenes de disco.
+ Estudiamos en detalle esta fase en las secciones 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Extracción-del-fichero-zip"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-en-la-extracción-zip"
+
+\end_inset
+
+, y en esta sección mostraremos las modificaciones que hay que realizar
+ en dichas fases.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Descompresión-despliegue"
+
+\end_inset
+
+ muestra cómo se extrae y procesa el contenido del fichero comprimido durante
+ el proceso de despliegue de imágenes de disco.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descompresión despliegue.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Descompresión-despliegue"
+
+\end_inset
+
+Despliegue de imágenes de disco: extracción y procesamiento del contenido
+ del fichero comprimido
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en dicho diagrama, cuando se despliega una imagen
+ de disco no es necesario arrancar ninguna máquina virtual.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, cuando esta fase finaliza se envía un paquete del tipo 
+\family sans
+Imagen desplegada
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+.
+ Dicho paquete contiene el identificador único del fichero 
+\family typewriter
+.zip
+\family default
+ descargado desde el repositorio de imágenes.
+ El resto del proceso es idéntico al que tiene lugar en la creación y edición
+ de imágenes de disco.
+\end_layout
+
+\begin_layout Standard
+Finalmente, si se produce algún error durante esta fase, se procederá como
+ vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Errores-en-la-extracción-zip"
+
+\end_inset
+
+.
+ Por ello, no reproduciremos aquí las interacciones que vimos en dicha sección\SpecialChar \@.
+
+ No obstante, en este caso los paquetes de error serán del tipo 
+\family sans
+Error de despliegue
+\family default
+, y no del tipo 
+\family sans
+Error de edición de imagen
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Borrado de imágenes de disco
+\end_layout
+
+\begin_layout Standard
+El proceso de borrado de imágenes de disco permite que un servidor de máquinas
+ virtuales deje de poder albergar cierta máquina virtual.
+ Este proceso no sólo es útil para los administradores del sistema, sino
+ también para los profesores, ya que les permite borrar una de sus máquinas
+ virtuales de toda la infraestructura.
+\end_layout
+
+\begin_layout Standard
+Como viene siendo habitual, este proceso se inicia cuando el servidor de
+ 
+\emph on
+cluster
+\emph default
+ envía un paquete al servidor de máquinas virtuales, que en este caso es
+ del tipo 
+\family sans
+Borrar imagen
+\family default
+.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Borrado-imagen"
+
+\end_inset
+
+ muestra cómo se procesa este paquete en ausencia de errores.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Borrado imagen sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Borrado-imagen"
+
+\end_inset
+
+Borrado de imágenes de disco: flujo básico
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+tras recibir el paquete, el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ lee su contenido utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+ Los paquetes del tipo 
+\family sans
+Borrar imagen
+\family default
+ contienen el identificador único asociado a las imágenes de disco a borrar
+ y el identificador único de la petición.
+\end_layout
+
+\begin_layout Enumerate
+se leen de la base de datos las ubicaciones de los ficheros a borrar.
+ Acto seguido, se elimina esta información de la base de datos.
+\end_layout
+
+\begin_layout Enumerate
+se borran los ficheros correspondientes, es decir, los dos ficheros 
+\family typewriter
+.qcow2
+\family default
+ y el fichero de definición de la máquina virtual que los utiliza.
+ Para ello, se utilizan un objeto 
+\family typewriter
+ChildProcessManager
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+, el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ construye un paquete del tipo 
+\family sans
+Imagen borrada
+\family default
+.
+ Este contiene el identificador único de la petición.
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerReactor
+\family default
+ envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en caso de que 
+\end_layout
+
+\begin_layout Itemize
+el servidor de máquinas virtuales no disponga de las imágenes de disco a
+ borrar, o 
+\end_layout
+
+\begin_layout Itemize
+se produzca un error al eliminar los ficheros, o
+\end_layout
+
+\begin_layout Itemize
+se produzca un error al realizar la actualización de la base de datos
+\end_layout
+
+\begin_layout Standard
+se generará un paquete del tipo 
+\family sans
+Error de borrado
+\family default
+.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Borrado-imagen-error"
+
+\end_inset
+
+ muestra cómo se actúa cuando el borrado de los ficheros falla.
+ Como puede observarse en él, siempre que se produce uno de estos errores,
+ se aborta el proceso de borrado y
+\end_layout
+
+\begin_layout Enumerate
+se construye el paquete del tipo 
+\family sans
+Error de borrado de imagen
+\family default
+, que contiene el identificador único de la petición.
+ Nuevamente, el paquete se construirá utilizando un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Borrado imagen error.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Borrado-imagen-error"
+
+\end_inset
+
+Borrado de imágenes de disco: tratamiento de errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Apagado forzoso de una máquina virtual
+\end_layout
+
+\begin_layout Standard
+Como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Reinicio-forzoso-MV"
+
+\end_inset
+
+, los usuarios pueden provocar el reinicio forzoso de las máquinas virtuales
+ cuando estas se cuelgan.
+ Sin embargo, en algunos casos los problemas pueden no resolverse de este
+ modo.
+ Por ello, también es posible realizar el apagado forzoso de una máquina
+ virtual.
+\end_layout
+
+\begin_layout Standard
+Para desencadenarlo, el servidor de 
+\emph on
+cluster
+\emph default
+ enviará un paquete del tipo Destruir dominio al servidor de máquinas virtuales.
+ Este contiene el identificador único de la petición y el identificador
+ único de la máquina virtual a apagar.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-forzoso-normal"
+
+\end_inset
+
+ muestra cómo se fuerza el apagado de una máquina virtual utilizando uno
+ de estos paquetes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Apagado forzoso MV.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-forzoso-normal"
+
+\end_inset
+
+Apagado forzoso de una máquina virtual
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los pasos que se siguen son muy similares a los del reinicio forzoso de
+ una máquina virtual, que estudiamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Reinicio-forzoso-MV"
+
+\end_inset
+
+.
+ En este caso, se llama al método de destrucción de un dominio del objeto
+ 
+\family typewriter
+DomainHandler
+\family default
+, y en este se realiza la llamada de destrucción de apagado de dominio de
+ 
+\family typewriter
+libvirt
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Cuando la máquina virtual se apague, 
+\family typewriter
+libvirt
+\family default
+ generará un evento que procesará el objeto 
+\family typewriter
+DomainHandler
+\family default
+.
+ Si la máquina virtual no se utiliza para editar imágenes de disco, dicho
+ procesamiento se realizará como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-MV-edición"
+
+\end_inset
+
+.
+ En caso contrario, se realizará como indicamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-MV-edición"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Directorios del servidor de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+Durante su funcionamiento, el demonio del servidor de máquinas virtuales
+ utiliza cuatro directorios:
+\end_layout
+
+\begin_layout Itemize
+el 
+\series bold
+directorio de ficheros de definición
+\series default
+, en el que se almacenan los ficheros de definición de las máquinas virtuales
+ que puede albergar el servidor de máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Itemize
+el 
+\series bold
+directorio de imágenes de disco
+\series default
+, en el que se almacenarán las imágenes de disco .qcow2 que se usarán para
+ arrancar máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+el 
+\series bold
+directorio de imágenes en uso
+\series default
+, en el que se almacenarán las imágenes 
+\emph on
+copy-on-write
+\emph default
+ y las imágenes de disco que contienen el fichero de paginación y los datos
+ temporales de las máquinas virtuales activas.
+\end_layout
+
+\begin_layout Itemize
+el 
+\series bold
+directorio de transferencias
+\series default
+, en el que se almacenarán y extraerán los ficheros 
+\family typewriter
+.zip
+\family default
+ que se intercambian con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+La ubicación de todos estos directorios se especifica en el fichero de configura
+ción del demonio del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Además, el uso de varios directorios permite realizar optimizaciones que
+ mejoren el rendimiento.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ejemplo, aprovechando que, salvo que se editen imágenes de disco, nunca
+ se escribe en el directorio de imágenes de disco, este puede estar ubicado
+ en una unidad SSD (
+\emph on
+Solid State Drive
+\emph default
+, unidad de estado sólido), mientras que los directorios restantes pueden
+ estar ubicados en un disco duro convencional.
+ Con esta configuración tan sencilla, el rendimiento de las máquinas virtuales
+ aumenta considerablemente.
+\end_layout
+
+\begin_layout Subsubsection
+Formatos de paquete
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Formatos-de-paquete-repositorio-1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos detalladamente las características de los tipos
+ de paquete asociados al subsistema servidor de máquinas virtuales.
+ El cuadro 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Paquetes-repositorio-imágenes-1"
+
+\end_inset
+
+ muestra los códigos, prioridades y las constantes del tipo enumerado 
+\family typewriter
+PACKET_T
+\family default
+ (definido en el paquete 
+\family typewriter
+virtualMachineServer.packetHandling
+\family default
+) asociados a cada clase de paquete.
+ 
+\end_layout
+
+\begin_layout Standard
+Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:La-clase-Packet"
+
+\end_inset
+
+, cuanto menor es la valor numérico de la prioridad de un paquete, más prioritar
+io es.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="23" columns="4">
+<features islongtable="true" longtabularalignment="center">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row endhead="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Tipo de paquete
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Código
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Prioridad
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Constante (tipo enumerado)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Creación MV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+CREATE_DOMAIN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Apagado forzoso MV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DESTROY_DOMAIN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Reinicio forzoso MV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+REBOOT_DOMAIN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Datos de conexión de MV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DOMAIN_CONNECTION_DATA
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Estado del servidor MVs
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+SERVER_STATUS
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Solicitud de estado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+SERVER_STATUS_REQUEST
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Apagado con espera
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+USER_FRIENDLY_SHUTDOWN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Apagado inmediato
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+HALT
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Solicitud de datos de conexión VNC
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+9
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+QUERY_ACTIVE_VM_DATA
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Datos de conexión VNC
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+ACTIVE_VM_DATA
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Solicitud IDs MVs
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+11
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+QUERY_ACTIVE_DOMAIN_UIDS
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+IDs de MVs
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+ACTIVE_DOMAIN_UIDS
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Editar imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+13
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_EDITION
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Error de edición de imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+14
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_EDITION_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Desplegar imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+15
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DEPLOY_IMAGE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Error de despliegue
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+16
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_DEPLOYMENT_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Borrar imagen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+17
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DELETE_IMAGE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Error de borrado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+18
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_DELETION_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Imagen editada
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+19
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_EDITED
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Imagen desplegada
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+20
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_DEPLOYED
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Imagen borrada
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+21
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+IMAGE_DELETED
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Error interno
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+22
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+INTERNAL_ERROR
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Paquetes-repositorio-imágenes-1"
+
+\end_inset
+
+Características principales de los paquetes utilizados en el repositorio
+ de imágenes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El contenido de los distintos tipos de paquete es el siguiente:
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Creación de máquina virtual
+\family default
+ 
+\series default
+contienen el identificador único de la petición, el identificador del usuario
+ que la ha realizado y el identificador único asociado a las imágenes de
+ disco de la máquina virtual a arrancar.
+ Los dos últimos son valores enteros, y el restante es un 
+\emph on
+string
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\family sans
+\series bold
+Apagado forzoso de máquina virtual
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Reinicio forzoso de máquina virtual
+\family default
+\series default
+ contienen el identificador único de la máquina virtual a apagar o a reiniciar.
+ Dicho identificador es un 
+\emph on
+string.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Datos de conexión a máquina virtual
+\family default
+\series default
+ contienen el identificador único de la petición, la dirección IP, el puerto
+ y la contraseña del servidor VNC asociado a una máquina virtual.
+ Salvo el puerto, que es un valor entero, el resto de datos del paquete
+ son 
+\emph on
+strings
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Estado del servidor de máquinas virtuales 
+\family default
+\series default
+contienen la dirección IP del servidor de máquinas virtuales (un 
+\emph on
+string
+\emph default
+) y valores enteros que indican el número de máquinas virtuales activas,
+ las cantidades de memoria RAM ocupada y libre y el espacio utilizado y
+ disponible en el directorio de almacenamiento de imágenes y en el directorio
+ de datos temporales.
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\family sans
+\series bold
+Solicitud de estado
+\family default
+\series default
+, 
+\family sans
+\series bold
+Solicitud de identificadores de máquinas virtuales
+\family default
+\series default
+, 
+\family sans
+\series bold
+Solicitud de datos de conexión VNC 
+\family default
+\series default
+y 
+\family sans
+\series bold
+Apagado inmediato
+\family default
+\series default
+ no contienen información adicional.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Apagado con espera 
+\family default
+\series default
+contienen un valor entero que indica el tiempo de espera en segundos.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Datos de conexión VNC 
+\family default
+\series default
+contienen la dirección IP del servidor de máquinas virtuales (un 
+\emph on
+string
+\emph default
+), así como los puertos y las contraseñas de todos los servidores VNC asociados
+ a las máquinas virtuales que alberga el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Identificadores de máquinas virtuales
+\family default
+\series default
+ contienen la dirección IP del servidor de máquinas virtuales y los identificado
+res de todas las máquinas virtuales que alberga, que son 
+\emph on
+strings
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Editar imagen
+\family default
+\series default
+ contienen 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+el identificador único de la petición, que es un 
+\emph on
+string
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+el identificador único del usuario que la ha generado.
+\end_layout
+
+\begin_layout Itemize
+la dirección IP (un 
+\emph on
+string
+\emph default
+) y el puerto (un valor entero) del repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+el identificador único de las imágenes de disco a descargar del repositorio
+ de imágenes (un valor entero).
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+flag
+\emph default
+ (valor entero) que indica si las imágenes de disco que se descargarán del
+ repositorio de imágenes se van a editar o a utilizar como base para crear
+ otras máquinas virtuales.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los paquetes de los tipos 
+\family sans
+\series bold
+Error de edición de imagen
+\family default
+\series default
+, 
+\family sans
+\series bold
+Error de despliegue
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Error de borrado
+\family default
+\series default
+ contienen el identificador único de la petición (un 
+\emph on
+string
+\emph default
+) y el identificador único de las imágenes de disco a las que esta afecta
+ (un valor entero).
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Desplegar imagen
+\family default
+\series default
+ contienen
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+el identificador único de la petición, que es un 
+\emph on
+string
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+la dirección IP (un 
+\emph on
+string
+\emph default
+) y el puerto (un valor entero) del repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+el identificador único de las imágenes de disco a descargar del repositorio
+ de imágenes (un valor entero).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Borrar imagen
+\family default
+\series default
+ contienen el identificador único de la petición (un 
+\emph on
+string
+\emph default
+) y el identificador único de las imágenes de disco a borrar del servidor
+ de máquinas virtuales (un valor entero).
+\end_layout
+
+\begin_layout Itemize
+finalmente,los paquetes de los tipos 
+\family sans
+\series bold
+Imagen editada
+\family default
+\series default
+, 
+\family sans
+\series bold
+Imagen desplegada
+\family default
+\series default
+, 
+\family sans
+\series bold
+Imagen borrada
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Error interno
+\family default
+\series default
+ contienen el identificador único de la petición (un 
+\emph on
+string
+\emph default
+)
+\end_layout
+
+\begin_layout Subsubsection
+Esquema de la base de datos
+\end_layout
+
+\begin_layout Standard
+La base de datos del servidor de máquinas virtuales contiene las siguientes
+ tablas:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Image
+\family default
+.
+ Esta tabla almacena las rutas relativas de los ficheros de definición y
+ de las distintas imágenes de disco almacenadas en el servidor de máquinas
+ virtuales.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Es el identificador asociado a un par de imágenes de disco, y la clave
+ primaria de esta tabla.
+ Se almacena como un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+osImagePath
+\family default
+, 
+\family typewriter
+dataImagePath
+\family default
+, 
+\family typewriter
+definitionFilePath
+\family default
+: son las rutas relativas de la imagen con el sistema operativo y los programas,
+ la imagen que almacenará los datos temporales y el fichero de paginación
+ y el fichero de definición que se usarán para crear una máquina virtual.
+ Estos valores son cadenas de caracteres de hasta 100 
+\emph on
+bytes
+\emph default
+ de longitud.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+bootable
+\family default
+: se trata de un bit que indica si se está editando el contenido de las
+ imágenes de disco o no.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ActiveVM
+\family default
+.
+ Esta tabla almacena los recursos asociados a las máquinas virtuales activas.
+ Incluye las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+domainName
+\family default
+.
+ Es la clave primaria de la tabla.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud que contiene el nombre de la máquina virtual que, como sabemos,
+ debe ser único dentro del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Como ya hemos visto, este valor entero es el identificador único asociado
+ a las imágenes de disco que usa la máquina virtual.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+VNCPort
+\family default
+.
+ Se trata de un valor entero, que se corresponde con el puerto par reservado
+ para el servidor VNC de la máquina virtual.
+ Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+, el 
+\emph on
+websocket
+\emph default
+ tiene asociado un puerto impar: el puerto consecutivo al del servidor VNC.
+ Por ello, no es necesario almacenar este valor en la base de datos.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+VNCPass
+\family default
+.
+ Se trata de una secuencia de caracteres de 65 
+\emph on
+bytes
+\emph default
+ de longitud, que contiene la contraseña del servidor VNC.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+userID
+\family default
+.
+ Se trata de un valor entero, que se corresponde con el identificador único
+ del usuario que envió la petición de arranque de máquina virtual o de creación
+ o edición de imágenes de disco.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+osImagePath
+\family default
+, 
+\family typewriter
+dataImagePath
+\family default
+.
+ Se trata de dos cadenas de caracteres de 100 
+\emph on
+bytes
+\emph default
+ de longitud, que contienen las rutas absolutas de las dos imágenes de disco
+ que usa la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+websockifyPID
+\family default
+.
+ Se trata de un valor entero, que almacena el PID del proceso 
+\emph on
+websockify
+\emph default
+.
+ Cuando este no se arranca, toma el valor 0.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+macAddress
+\family default
+.
+ Se trata de una cadena de caracteres de 20 
+\emph on
+bytes
+\emph default
+ de longitud, que contiene la dirección MAC de la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+uuid
+\family default
+.
+ Se trata de una cadena de caracteres de 40 
+\emph on
+bytes
+\emph default
+, que contiene el UUID de la máquina virtual.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ActiveDomainUUIDs
+\family default
+.
+ Esta tabla asocia a cada nombre de máquina virtual un identificador único,
+ que identifica a la máquina virtual en toda la infraestructura.
+ Tiene dos columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+domainName
+\family default
+.
+ Es la clave primaria de la tabla.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud que contiene el nombre de la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+commandID
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+, que identifica unívocamente a la petición de arranque, creación o edición
+ de imagen que creó la máquina virtual.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+CompressionQueue
+\family default
+.
+ Esta tabla almacena los elementos de la cola de compresión.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+position
+\family default
+.
+ Se trata de un valor entero, que es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+data
+\family default
+.
+ Almacena cadenas de caracteres de hasta 420 
+\emph on
+bytes
+\emph default
+ de longitud, que contienen las peticiones de la cola de compresión serializadas.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+TransferQueue
+\family default
+.
+ Esta tabla almacena los elementos de la cola de transferencias.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+position
+\family default
+.
+ Se trata de un valor entero, que es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+data
+\family default
+.
+ Almacena cadenas de caracteres de hasta 230 
+\emph on
+bytes
+\emph default
+ de longitud, que contienen las peticiones de la cola de transferencias
+ serializadas.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ConnectionDataDictionary
+\family default
+.
+ Esta tabla almacena los datos de conexión al repositorio de imágenes, y
+ contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+dict_key
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+ de longitud.
+ Almacenará el identificador único de una petición de creación o edición
+ de imágenes de disco.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+value
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 21 
+\emph on
+bytes
+\emph default
+ de longitud que contiene la dirección IP y el puerto del repositorio de
+ imágenes asociado a la petición.
+ Esta información está serializada.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+FreeMACsAndUUIDs
+\family default
+.
+ Esta tabla contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+mac
+\family default
+.
+ Se trata de una cadena de caracteres de 20 
+\emph on
+bytes
+\emph default
+ de longitud, que contiene una dirección MAC.
+ Es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+uuid
+\family default
+.
+ Se trata de una cadena de caracteres de 40 
+\emph on
+bytes
+\emph default
+, que contiene un UUID.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+FreeVNCPorts.
+ Esta tabla contiene una única columna, 
+\family typewriter
+vncPort
+\family default
+.
+ Se trata de un valor entero que se corresponde con un puerto y que, por
+ tanto, puede tomar valores entre 1 y 65535.
+ Asimismo, esta columna es la clave primaria de esta tabla.
+\end_layout
+
+\begin_layout Standard
+Finalmente, las tablas 
+\family typewriter
+FreeMACSAndUUIDs
+\family default
+ y 
+\family typewriter
+FreeVNCPorts 
+\family default
+residen en memoria.
+ El resto de tablas de la base de datos residen en disco.
 \end_layout
 
 \begin_layout Standard
