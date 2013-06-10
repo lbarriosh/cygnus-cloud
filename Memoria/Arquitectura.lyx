@@ -26206,7 +26206,7 @@ el nombre o la IP del servidor de máquinas virtuales ya están en uso, o
 \end_layout
 
 \begin_layout Itemize
-no es posible establecer la conexión con el servidor de cluster.
+no es posible establecer la conexión con el servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
@@ -26676,20 +26676,27 @@ name "par:Apagado-servidor-MVs-errores"
 \end_layout
 
 \begin_layout Standard
-Cuando se apaga un servidor de máquinas virtuales, se producirá un error
- cuando el servidor de máquinas virtuales no está registrado.
- 
+Cuando se apaga un servidor de máquinas virtuales, se producirán errores
+ cuando
+\end_layout
+
+\begin_layout Itemize
+el servidor de máquinas virtuales no está registrado.
+\end_layout
+
+\begin_layout Itemize
+se ha perdido la conexión con el servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-Para procesarlo, se procederá exactamente igual que en la sección 
+Estos errores se procesarán exactamente igual que los de la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Arranque-servidor-MVs-errrores"
 
 \end_inset
 
-, por lo que en esta sección no repetiremos nuevamente el proceso.
+.
  Naturalmente, en este caso no se enviarán al servidor de 
 \emph on
 cluster 
@@ -27385,9 +27392,15 @@ reference "fig:Arranque-MV-secuencia-básica"
 \end_layout
 
 \begin_layout Standard
-Cuando se recibe un paquete con información de estado de una máquina, estos
- recursos preasignados se liberarán con una excepción, que comentaremos
- al presentar los procesos de creación y edición de imágenes.
+Como veremos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Actualización-del-estado-cluster"
+
+\end_inset
+
+, cuando se recibe un paquete con información de estado de una máquina estos
+ recursos preasignados se liberarán.
 \end_layout
 
 \begin_layout Standard
@@ -27416,7 +27429,7 @@ Durante el arranque de una máquina virtual, se producirán errores cuando
 \end_layout
 
 \begin_layout Itemize
-las imágenes de disco correspondientes no existen, o cuando
+las imágenes de disco correspondientes no existen.
 \end_layout
 
 \begin_layout Itemize
@@ -27477,7 +27490,7 @@ Arranque de una máquina virtual: tratamiento de errores
 \end_layout
 
 \begin_layout Standard
-Siempre que se detecta uno de estos errores
+Siempre que se detecta uno de estos errores,
 \end_layout
 
 \begin_layout Enumerate
@@ -28028,7 +28041,8 @@ cluster
 
 \begin_layout Itemize
 liberan los recursos preasignados a las máquinas virtuales que aloja el
- servidor de máquinas virtuales.
+ servidor de máquinas virtuales y los recursos preasignados a las operaciones
+ de despliegue de imágenes que afectan a ese servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
@@ -28191,7 +28205,11 @@ acto seguido, se comprueba si el servidor de máquinas virtuales está arrancado
 \end_layout
 
 \begin_layout Enumerate
-como todo es correcto, se envía un paquete del tipo 
+como todo es correcto, se estima el espacio en dico que se
+\end_layout
+
+\begin_layout Enumerate
+se envía un paquete del tipo 
 \family sans
 Desplegar imagen
 \family default
@@ -28214,16 +28232,17 @@ Imagen desplegada
 \begin_layout Enumerate
 durante el procesamiento de ese paquete, se registra la nueva ubicación
  de las imágenes de disco que se han desplegado.
+ Debemos recordar que los recursos asociados a la operación de despliegue
+ se liberarán 
 \end_layout
 
 \begin_layout Enumerate
 finalmente, se envía un paquete del tipo 
 \family sans
-Imagen desplegada
+Comando ejecutado
 \family default
  al servidor web.
- Este contiene el identificador único de la petición y el identificador
- de las imágenes de disco que se han desplegado.
+ Este contiene el identificador único de la petición.
  
 \end_layout
 
@@ -28246,6 +28265,11 @@ el despliegue de la imagen falla en el servidor de máquinas virtuales.
 \begin_layout Itemize
 el servidor de máquinas virtuales en el que se pretende desplegar la imagen
  no existe o no está arrancado.
+ 
+\end_layout
+
+\begin_layout Itemize
+se ha perdido la conexión con el servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
@@ -28254,6 +28278,11 @@ el servidor de máquinas virtuales escogido no puede albergar la imagen.
 
 \begin_layout Standard
 Con independencia del error que se produzca, siempre se actúa igual: 
+\end_layout
+
+\begin_layout Enumerate
+si es necesario, se liberan los recursos preasignados a la operación de
+ despliegue ,
 \end_layout
 
 \begin_layout Enumerate
@@ -28343,6 +28372,179 @@ Despliegue manual: tratamiento de errores
 
 \begin_layout Paragraph
 Despliegue automático de imágenes de disco: secuencia básica
+\end_layout
+
+\begin_layout Standard
+Esta función resulta muy útil para que, por ejemplo, un profesor pueda crear
+ nuevas máquinas virtuales sin que sea necesaria la intervención de los
+ administradores del sistema.
+ 
+\end_layout
+
+\begin_layout Standard
+El proceso de despliegue automático de una imagen se iniciará siempre que
+ el servidor web envíe un paquete del tipo 
+\family sans
+Despliegue automático
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+.
+ Estos paquetes contienen
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición,
+\end_layout
+
+\begin_layout Itemize
+el identificador único de las imágenes de disco a desplegar, y
+\end_layout
+
+\begin_layout Itemize
+el número de nuevas máquinas virtuales activas o instancias que vayan a
+ utilizar esas imágenes de disco.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Despliegue-automático-simplificado"
+
+\end_inset
+
+ muestra cómo se procesan las peticiones de despliegue automático en el
+ servidor de 
+\emph on
+cluster
+\emph default
+.
+ Por claridad, a la hora de construir ese diagrama, hemos supuesto que
+\end_layout
+
+\begin_layout Itemize
+no se producen errores, y que
+\end_layout
+
+\begin_layout Itemize
+las imágenes de disco sólo se despliegan en un único servidor de máquinas
+ virtuales, que es capaz de albergar el número de instancias solicitado.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Despliegue automático simplificado.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Despliegue-automático-simplificado"
+
+\end_inset
+
+Despliegue automático de una imagen: secuencia simplificada
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Despliegue-automático-simplificado"
+
+\end_inset
+
+, se siguen estos pasos:
+\end_layout
+
+\begin_layout Enumerate
+tras recibir el paquete del tipo 
+\family sans
+Despliegue automático
+\family default
+, se ejecuta el algoritmo de balanceado de carga.
+\end_layout
+
+\begin_layout Enumerate
+acto seguido, se comprueba si los servidores seleccionados pueden albergar
+ el número de instancias solicitado.
+\end_layout
+
+\begin_layout Enumerate
+para cada servidor de máquinas virtuales seleccionado por el algoritmo,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se reservan los recursos requeridos por el proceso de despliegue,
+\end_layout
+
+\begin_layout Enumerate
+se construye y envía un paquete del tipo 
+\family sans
+Desplegar imagen
+\family default
+ a dicho servidor.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+a medida que se reciben los paquetes del tipo 
+\family sans
+Imagen desplegada
+\family default
+, se registran las nuevas ubicaciones de las imágenes de disco en la base
+ de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+cuando se recibe el último paquete del tipo 
+\family sans
+Imagen desplegada
+\family default
+, se construye un paquete del tipo 
+\family sans
+Comando ejecutado
+\family default
+ y se envía al servidor web.
+ 
 \end_layout
 
 \begin_layout Paragraph
