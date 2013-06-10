@@ -17945,7 +17945,7 @@ Arranque del servidor de máquinas virtuales: secuencia básica
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -25524,6 +25524,631 @@ BasicThread
 ccutils
 \family default
 .
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del servidor de 
+\emph on
+cluster
+\emph default
+: secuencia básica
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-del-servidor-cluster-sin-errores"
+
+\end_inset
+
+Arranque del servidor de 
+\emph on
+cluster
+\emph default
+: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos el proceso de arranque del demonio del servidor
+ de 
+\emph on
+cluster
+\emph default
+.
+ Para ello, haremos uso del diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-del-servidor-cluster-sin-errores"
+
+\end_inset
+
+.
+ Por claridad, en dicho diagrama 
+\end_layout
+
+\begin_layout Itemize
+estamos asumiendo que no se produce ningún error,
+\end_layout
+
+\begin_layout Itemize
+hemos omitido la creación de los objetos 
+\family typewriter
+VMServerPacketHandler
+\family default
+, 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+ y 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+, y
+\end_layout
+
+\begin_layout Itemize
+hemos omitido la inicialización de los objetos 
+\family typewriter
+VMServerCallback
+\family default
+, 
+\family typewriter
+ImageRepositoryCallback
+\family default
+ y 
+\family typewriter
+ClusterEndpointCallback
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-del-servidor-cluster-sin-errores"
+
+\end_inset
+
+, en el arranque del demonio del servidor de 
+\emph on
+cluster
+\emph default
+ se distinguen las siguientes fases:
+\end_layout
+
+\begin_layout Enumerate
+se procesa el fichero de configuración del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se configura la base de datos (utilizando un objeto 
+\family typewriter
+DBConfigurator
+\family default
+) y se instancia el objeto 
+\family typewriter
+ClusterServerDBConnector
+\family default
+ que se utilizará para manipularla.
+ 
+\end_layout
+
+\begin_layout Enumerate
+se crea el objeto 
+\family typewriter
+NetworkManager
+\family default
+, que se utilizará para establecer las conexiones con el repositorio de
+ imágenes y los distintos servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se crea todo lo necesario para establecer la conexión con el repositorio
+ de imágenes: un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+, un objeto 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+, un objeto 
+\family typewriter
+NetworkEventsReactor
+\family default
+ y un objeto 
+\family typewriter
+ImageRepositoryCallback
+\family default
+.
+ Acto seguido, se intenta establecer la conexión con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+se crea todo lo necesario para poder establecer conexiones con los servidores
+ de máquinas virtuales: un objeto VMServerPacketHandler, un objeto VMServerPacke
+tReactor y un objeto VMServerCallback.
+\end_layout
+
+\begin_layout Enumerate
+se crea todo lo necesario para poder procesar los paquetes enviados desde
+ el servidor web: un objeto 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+, un objeto 
+\family typewriter
+ClusterServerPacketReactor
+\family default
+ y un objeto 
+\family typewriter
+ClusterServerCallback
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+se crea e inicia el hilo que envía periódicamente los paquetes de actualización
+ de estado a todas las máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se crea la conexión por la que el servidor de 
+\emph on
+cluster
+\emph default
+ atenderá las peticiones del servidor web.
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal inicia la monitorización de los comandos de arranque de
+ máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, a diferencia de lo que ocurre 
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del servidor de 
+\emph on
+cluster
+\emph default
+: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Durante el proceso de arranque del servidor de 
+\emph on
+cluster
+\emph default
+, pueden producirse los siguientes errores:
+\end_layout
+
+\begin_layout Itemize
+no se puede establecer la conexión de red con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+la configuración de la base de datos falla.
+\end_layout
+
+\begin_layout Itemize
+el puerto en el que escucha el demonio del servidor de 
+\emph on
+cluster
+\emph default
+ ya está en uso.
+\end_layout
+
+\begin_layout Standard
+Para tratar todos estos errores, se procede de forma similar: 
+\end_layout
+
+\begin_layout Enumerate
+se cierran ordenadamente las conexiones de red que hayan sido establecidas.
+\end_layout
+
+\begin_layout Enumerate
+se detiene el hilo que envía periódicamente los paquetes de solicitud de
+ estado al resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-del-servidor-cluster-error"
+
+\end_inset
+
+ muestra cómo se procesa el error que más trabajo requiere, que se produce
+ cuando el puerto de escucha del demonio del servidor de 
+\emph on
+cluster
+\emph default
+ ya está en uso.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque con errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-del-servidor-cluster-error"
+
+\end_inset
+
+Arranque del servidor de 
+\emph on
+cluster
+\emph default
+: tratamiento de errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, cuando se detecta un error el hilo
+ principal deja de monitorizar los comandos de arranque de máquinas virtuales.
+ Acto seguido, iniciará la secuencia de apagado y terminará.
+\end_layout
+
+\begin_layout Standard
+Debemos recordar que, para evitar cuelgues, sólo es posible detener el servicio
+ de red desde el hilo principal.
+\end_layout
+
+\begin_layout Subsubsection
+Actualización del estado de las máquinas del 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+Para poder realizar el balanceado de carga adecuadamente y comprobar si
+ el 
+\emph on
+cluster
+\emph default
+ puede atender las peticiones de los usuarios, el servidor de 
+\emph on
+cluster
+\emph default
+ debe recopilar periódicamente el estado del resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Para ello, se utiliza un hilo, que enviará periódicamente los correspondientes
+ paquetes de solicitud de estado al resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+ El envío de estos paquetes y el procesamiento de las respuestas asociadas
+ aparecen en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-del-estado-cluster"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Actualización estado.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Actualización-del-estado-cluster"
+
+\end_inset
+
+Actualización del estado de las máquinas del 
+\emph on
+cluster
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por claridad, en dicho diagrama hemos omitido dos líneas de vida.
+ Al recibir un paquete, el objeto 
+\family typewriter
+NetworkManager
+\family default
+ invoca al método 
+\family typewriter
+processPacket()
+\family default
+ de un objeto 
+\family typewriter
+VMServerCallback
+\family default
+ o de un objeto 
+\family typewriter
+ImageRepositoryCallback
+\family default
+, según la conexión por la que se haya recibido el paquete.
+ 
+\end_layout
+
+\begin_layout Standard
+Son estos objetos los que, a su vez, llaman los métodos de procesamiento
+ de paquetes de los objetos 
+\family typewriter
+VMServerPacketReactor 
+\family default
+y 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+ respectivamente.
+\end_layout
+
+\begin_layout Standard
+En el resto de diagramas de secuencia relacionados con el servidor de 
+\emph on
+cluster
+\emph default
+ también omitiremos estas líneas de vida.
+\end_layout
+
+\begin_layout Standard
+En cualquier caso, como podemos observar en el diagrama de secuencia de
+ la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-del-estado-cluster"
+
+\end_inset
+
+, cuando el hilo termina de enviar los paquetes, dormirá hasta la siguiente
+ actualización del estado de las máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Serán los objetos 
+\family typewriter
+VMServerPacketReactor
+\family default
+ e 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+ los que, al recibir los paquetes de respuesta, actualicen el estado de
+ la máquina correspondiente en la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Gestión de los servidores de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+En esta sección, estudiaremos todas las interacciones que tienen lugar entre
+ el servidor web y el servidor de 
+\emph on
+cluster
+\emph default
+ para 
+\end_layout
+
+\begin_layout Itemize
+realizar las altas y bajas de los servidores de máquinas virtuales del 
+\emph on
+cluster
+\emph default
+, 
+\end_layout
+
+\begin_layout Itemize
+arrancar y apagar los servidores de máquinas virtuales del 
+\emph on
+cluster
+\emph default
+, y
+\end_layout
+
+\begin_layout Itemize
+modificar la configuración básica de los servidores de máquinas virtuales
+ del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Como viene siendo habitual, todas las interacciones entre el servidor web
+ y el servidor de 
+\emph on
+cluster
+\emph default
+ se basan en el intercambio de diversos tipos de paquete entre ambas máquinas.
+\end_layout
+
+\begin_layout Paragraph
+Alta de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\begin_layout Standard
+Para dar de alta un servidor de máquinas virtuales, el servidor web envía
+ un paquete del tipo 
+\family sans
+Registrar servidor de máquinas virtuales
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+.
+ En el servidor de 
+\emph on
+cluster
+\emph default
+, este paquete se procesará de acuerdo al diagrama de secuencia de la figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Alta-servidor-mvs-sin-errores"
+
+\end_inset
+
+.
+ Por claridad, en dicho diagrama estamos asumiendo que no se produce ningún
+ error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Alta-servidor-mvs-sin-errores"
+
+\end_inset
+
+Alta de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
