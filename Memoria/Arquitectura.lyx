@@ -6203,7 +6203,7 @@ clusterServer
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -6715,43 +6715,134 @@ webServer
  se encuentra distribuido en un conjunto de paquetes que hacen referencia
  a los diferentes tipos de elementos necesarios para implementar la funcionalida
 d de la web.
- Estos paquetes son:
+ Estos paquetes, que se muestran en el diagrama de paquetes de la figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagrama-de-paquetes-web"
+
+\end_inset
+
+, son:
 \end_layout
 
 \begin_layout Itemize
-Vistas: Paquetes con el conjunto de vistas que definen la representación
- de las páginas
+
+\family typewriter
+Views
+\family default
+.
+ Paquete con el conjunto de vistas que definen el aspecto y la estructura
+ de las páginas.
 \end_layout
 
 \begin_layout Itemize
-Controladores : Paquete que contiene los módulos python encargados de manejar
- las diferentes funcionalidades de la web.
+
+\family typewriter
+Controllers
+\family default
+.
+ Paquete que contiene los módulos python encargados de manejar las diferentes
+ funcionalidades de la web.
 \end_layout
 
 \begin_layout Itemize
-Modelos : Incluye dos módulos python encargados de definir dos aspectos
- importantes de la web.
- El primer módulo, menu, introduce la información sobre la versión , las
- palabras clave y todos los aspectos generales de la web.
- El segundo, db, se encarga de crear las tablas necesarias que serán utilizadas
+
+\family typewriter
+Models
+\family default
+.
+ Incluye dos módulos python encargados de definir dos aspectos importantes
+ de la web.
+ El primer módulo, 
+\family sans
+menu
+\family default
+, introduce la información sobre la versión , las palabras clave y todos
+ los aspectos generales de la web.
+ El segundo, 
+\family sans
+db
+\family default
+, se encarga de crear las tablas de la base de datos que serán utilizadas
  para almacenar la información manejada por la web.
 \end_layout
 
 \begin_layout Itemize
-Lenguajes : Incluye un conjunto de diccionarios que permiten traducir la
- web a diferentes idiomas.
+
+\family typewriter
+Languages
+\family default
+.
+ Incluye un conjunto de diccionarios que permiten traducir la web a diferentes
+ idiomas.
 \end_layout
 
 \begin_layout Itemize
-Archivos estáticos : Este paquete incluye las css , js e imagenes necesarias
- para definir el aspecto de la web.
+
+\family typewriter
+Static
+\family default
+.
+ Este paquete incluye los ficheros css , js e imágenes necesarias para definir
+ el aspecto de la web.
  También incluye el controlador noVNC y todos los ficheros html auxiliares
  que se integran en la web.
 \end_layout
 
 \begin_layout Itemize
-Módulos : En este paquete se encuentran todos los módulos python secundarios
- que serán utilizados por los controladores.
+
+\family typewriter
+Modules
+\family default
+.
+ En este paquete se encuentran todos los módulos python auxiliares que serán
+ utilizados por los controladores.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de paquetes/Diagrama paquetes Web.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-de-paquetes-web"
+
+\end_inset
+
+Diagrama de paquetes de la web
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -24105,9 +24196,11 @@ reference "fig:Estructura-de-direcciones-administradores"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/DireccionesWebEstudiantes.pdf
 
@@ -24147,9 +24240,11 @@ Estructura de direcciones para los alumnos
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/DireccionesWebProfesores.pdf
 
@@ -24185,9 +24280,11 @@ Estructura de direcciones para los profesores
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/DireccionesWebAdministradores.pdf
 
