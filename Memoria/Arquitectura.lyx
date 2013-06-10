@@ -25142,7 +25142,76 @@ Revisar diferencias
 \end_layout
 
 \begin_layout Subsubsection
+Seguridad
+\end_layout
+
+\begin_layout Standard
+Con respecto a la seguridad, web2py se centra en resolver los 10 principales
+ problemas de seguridad definidos por OWASP (Proyecto de Seguridad de Aplicacion
+es Web Abiertas), una comunidad mundial libre enfocada en la mejora de la
+ seguridad de aplicaciones de software
+\begin_inset CommandInset citation
+LatexCommand cite
+key "OWASP"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+En términos generales, estos 10 problemas son:
+\end_layout
+
+\begin_layout Itemize
+Cross Site Scripting (XSS)
+\end_layout
+
+\begin_layout Itemize
+inyecciones SQL
+\end_layout
+
+\begin_layout Itemize
+Ejecución de archivos maliciosos
+\end_layout
+
+\begin_layout Itemize
+Referencia directa a objetos
+\end_layout
+
+\begin_layout Itemize
+Cross Site Request Forgery (CSRF)
+\end_layout
+
+\begin_layout Itemize
+Fugas de información y manejo de errores inapropiado
+\end_layout
+
+\begin_layout Itemize
+Administración de sesiones y autentificación
+\end_layout
+
+\begin_layout Itemize
+Almacenamiento criptográfico inseguro
+\end_layout
+
+\begin_layout Itemize
+Comunicaciones inseguras
+\end_layout
+
+\begin_layout Itemize
+Restricciones de acceso URL
+\end_layout
+
+\begin_layout Subsubsection
 Flujo de ejecución de arranque de una máquina virtual
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Flujo-de-ejecución-arranque-máquina-web"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -25157,7 +25226,7 @@ Una vez que el alumno haya pulsado el vínculo que le da acceso a la página
  de CygnusCloud:
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Se ejecuta la función 
 \family typewriter
 login
@@ -25175,7 +25244,7 @@ auth
  que se encarga de la gestión de usuarios) y lo devuelve.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Justamente después se ejecuta la vista asociada a esta función (
 \family typewriter
 main/login.html
@@ -25184,7 +25253,7 @@ main/login.html
  aspecto correspondiente y lo coloca en la página.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Una vez el usuario ha introducido su nombre, contraseña y ha pulsado el
  botón de inicio de sesión, el controlador envía una consulta a la base
  de datos para comprobar que el usuario existe y que su contraseña es correcta.
@@ -25205,7 +25274,7 @@ run
 .
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Una vez en la función 
 \family typewriter
 runVM
@@ -25226,7 +25295,7 @@ student
  Cada tabla creada se añade al formulario que es devuelto por la función.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 A continuación se ejecuta la vista 
 \family typewriter
 student/runVM.html
@@ -25240,7 +25309,7 @@ script
  virtuales según se encuentren seleccionadas o no.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Una vez el usuario ha seleccionado alguna máquina virtual y ha pulsado el
  botón de arranque, el controlador extrae el identificador de la máquina
  virtual y pide al conector que arranque dicha máquina.
@@ -25252,7 +25321,7 @@ vncPage
 , la cual es creada en una nueva pestaña.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Llegados al controlador 
 \family typewriter
 vncClient
@@ -25265,7 +25334,7 @@ vncPage
  resultado de la función.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 La vista asociada a este controlador (
 \family typewriter
 vncClient/vncPage.html
@@ -25346,7 +25415,7 @@ A continuación se explicarán cada una de las acciones que deberá realizar
 Una vez que el profesor haya accedido a la web de CygnusCloud:
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Se ejecuta la secuencia de inicio de sesión por parte del controlador 
 \family sans
 Main
@@ -25355,9 +25424,9 @@ Main
  anterior.
 \end_layout
 
-\begin_layout Itemize
-Una vez iniciada la sesión , al ser el usuario del tipo profesor, será redirecci
-onado a la función 
+\begin_layout Enumerate
+Una vez iniciada la sesión , al ser el usuario de tipo profesor, es redirecciona
+do a la función 
 \family sans
 runVM
 \family default
@@ -25368,8 +25437,8 @@ teacher
 .
 \end_layout
 
-\begin_layout Itemize
-El profesor pulsará en la barra de menú sobre la opción 
+\begin_layout Enumerate
+El profesor pulsa en la barra de menú sobre la opción 
 \family typewriter
 crear nueva máquina
 \family default
@@ -25378,18 +25447,22 @@ crear nueva máquina
 crear y editar
 \family default
 .
- En este momento la función se redirecciona a la función 
+ En este momento la función llama al método 
 \family sans
-createAndEdit
+redirect
 \family default
- con el estado 
+ pasando como argumentos 
+\family sans
+createAndEdit, como nombre de la función destino, y
+\family default
+ 
 \family sans
 createVanillaVM
 \family default
- como variable pasada por parámetro.
+, como variable que indica la subsección concreta.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 En la función 
 \family sans
 createAndEdit
@@ -25398,7 +25471,7 @@ createAndEdit
  asociados y se devuelven como resultado de la función.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 El fichero html asociado (
 \family typewriter
 teacher/createVanillaVM.html
@@ -25407,13 +25480,13 @@ teacher/createVanillaVM.html
  en la página.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 En este momento el profesor indica un nombre y una descripción para la máquina
  virtual que quiere crear.
  Después selecciona una de las posibles imágenes base que se le ofrecen
- teniendo en cuenta el consumo de recursos requerido por cada una.
+ teniendo en cuenta el consumo de recursos disponibles en cada una.
  Es posible filtrar las imágenes por el sistema operativa y la variante
- que tienen instalados por defecto.
+ que tienen instalados.
  una vez rellenado todos los campos y seleccionada la imagen base, se pulsa
  sobre 
 \family typewriter
@@ -25422,7 +25495,7 @@ crear máquina virtual
 .
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 En este momento, la función recopila la información introducida por el profesor,
  comprueba que no se haya cometido ningún error y llama a la función 
 \family sans
@@ -25431,7 +25504,7 @@ createImage
  del conector con esta información.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 La función 
 \family sans
 createImage
@@ -25440,7 +25513,7 @@ createImage
  indica a la web que la petición ha sido enviada.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 Si todo sale bien en el proceso de creación, el profesor podrá comenzar
  a editar dicha máquina en la página de edición dentro de la sección 
 \family typewriter
@@ -25450,67 +25523,742 @@ crear y editar
 \end_layout
 
 \begin_layout Subsubsection
-Seguridad
+Flujo de ejecución de edición de una máquina virtual existente
 \end_layout
 
 \begin_layout Standard
-Con respecto a la seguridad, web2py se centra en resolver los 10 principales
- problemas de seguridad definidos por OWASP (Proyecto de Seguridad de Aplicacion
-es Web Abiertas), una comunidad mundial libre enfocada en la mejora de la
- seguridad de aplicaciones de software
-\begin_inset CommandInset citation
-LatexCommand cite
-key "OWASP"
+Además de poder crear nuevas máquinas virtuales y asociarlas a un determinado
+ grupo de asignatura, los profesores también pueden editar las máquinas
+ virtuales que hubieran creado anteriormente.
+ La edición de una máquina virtual existente se centra en dos aspectos principal
+es :
+\end_layout
+
+\begin_layout Itemize
+Edición del nombre y la descripción asociados a la máquina virtual
+\end_layout
+
+\begin_layout Itemize
+Edición de las herramientas y en general todo el sistema instalado en la
+ máquina virtual
+\end_layout
+
+\begin_layout Standard
+El primer aspecto consiste en una simple modificación en la tabla de la
+ base de datos que asocia el identificador único de una máquina virtual
+ con su nombre y descripción.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ello, en este apartado nos centraremos en el segundo punto.
+ El flujo básico necesario para realizar por completo el proceso de edición
+ y desplegado de una máquina virtual se explica a continuación:
+\end_layout
+
+\begin_layout Enumerate
+Se ejecuta la secuencia de inicio de sesión por parte del controlador 
+\family sans
+Main
+\family default
+ de forma similar a como se especifico en los tres primeros puntos del apartado
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Flujo-de-ejecución-arranque-máquina-web"
 
 \end_inset
 
 .
 \end_layout
 
+\begin_layout Enumerate
+Una vez iniciada la sesión, se comprueba que el usuario es de tipo profesor
+ y se salta a la función 
+\family sans
+runVM
+\family default
+ dentro del controlador 
+\family sans
+teacher
+\family default
+, con un valor de variable de estado 
+\family sans
+run
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+El profesor debe pulsar sobre la opción 
+\family typewriter
+editar máquina
+\family default
+ en la barra del menú, dentro de la sección 
+\family typewriter
+crear y editar
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+La función 
+\family sans
+runVM
+\family default
+ llama a la función 
+\family sans
+redirect
+\family default
+ con 
+\family sans
+createAndEdit
+\family default
+ como nombre de la sección destino y 
+\family sans
+editVM
+\family default
+ como valor de subsección.
+\end_layout
+
+\begin_layout Enumerate
+Una vez en la función 
+\family sans
+createAndEdit
+\family default
+, se comprueba la variable de subsección y se realiza una llamada a la función
+ 
+\family sans
+getEditedImageIDs
+\family default
+ del conector, para obtener el identificador de todas las máquinas que se
+ encuentran en edición asociadas a este usuario.
+ Para cada una de las máquinas en edición, se extrae la información correspondie
+nte con el método 
+\family sans
+getImageData
+\family default
+ del conector.
+ Dependiendo del estado de edición en el que se encuentre la máquina se
+ añade su información a una de las posibles tablas.
+\end_layout
+
+\begin_layout Enumerate
+Una vez recopilada y estructurada en tablas toda la información sobre máquinas
+ en edición, la función 
+\family sans
+createAndEdit
+\family default
+ devuelve los formularios.
+ En este momento se llama al fichero html asociado a la edición de máquinas
+ virtuales por parte del profesor (
+\family typewriter
+teacher/createAndEdit.html
+\family default
+).
+ En esta vista, además de aplicar el aspecto deseado y colocar los formularios
+ en la página, se comprueba que opciones de edición serán accesibles para
+ cada una de las máquinas dependiendo del estado de edición en que se encuentre.
+\end_layout
+
+\begin_layout Enumerate
+En este momento el profesor debe seleccionar la máquina que quiere editar,
+ que se encontrará en un estado parado y sin editar, y pulsar sobre el botón
+ 
+\family sans
+editar
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+A continuación, la función 
+\family sans
+createAndEdit
+\family default
+ llama al método 
+\family sans
+editImage
+\family default
+ del conector y devuelve un mensaje de petición de edición en caso de que
+ no se produzca ningún error directo.
+\end_layout
+
+\begin_layout Enumerate
+En caso de producirse algún error durante el proceso de inicio de edición,
+ se envía el mensaje de error al profesor en forma de notificación y termina
+ el flujo de ejecución.
+ Por otro lado, si todo ha salido bien, se cambia el estado de edición de
+ la máquina virtual, pasando a un estado en edición y ejecutado, y se redireccio
+na de nuevo a la función 
+\family sans
+createAndEdit
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+Ahora el profesor debe seleccionar la máquina virtual que quiere editar
+ en la tabla de máquinas en ejecución y pulsar sobre el botón abrir.
+ Una vez pulsado, la función recopila la información de conexión por medio
+ de la llamada a 
+\family sans
+getActiveVMsData
+\family default
+ y crea una nueva pestaña, la cual pasará a la función 
+\family sans
+vncPage
+\family default
+, dentro del controlador 
+\family sans
+vncClient
+\family default
+, el cual ejecuta el cliente noVNC.
+\end_layout
+
+\begin_layout Enumerate
+Una vez que el profesor ha introducido los cambios deseados en el escritorio
+ remoto y ha apagado la máquina, esta pasa a un estado editada y parada
+ y cambia de tabla en la página de edición de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+Si el profesor vuelve a seleccionar esta máquina virtual, ahora se le muestran
+ las opciones de 
+\family typewriter
+seguir editando
+\family default
+ y 
+\family typewriter
+aplicar cambios
+\family default
+.
+ Como el profesor no quiere introducir ningún cambio más, pulsa sobre el
+ botón 
+\family typewriter
+aplicar cambios.
+\end_layout
+
+\begin_layout Enumerate
+En este momento, la función 
+\family sans
+createAndEdit
+\family default
+, comprueba si la máquina ya se encontraba desplegada en el sistema y entonces
+ llama al método 
+\family sans
+desployEditedImage
+\family default
+ del conector.
+ En caso de que la máquina no se encontrase aun desplegada, ya que acaba
+ de ser creada por el profesor y ha pasado directamente a un estado de edición,
+ entonces se llamará a la función 
+\family sans
+deployNewImage
+\family default
+, indicando el número de instancias a crear, el cual depende del número
+ de plazas disponibles en el grupo de asignatura asociada a la máquina en
+ edición.
+\end_layout
+
+\begin_layout Enumerate
+Cuando la máquina se haya desplegado por completo, su estado cambiará a
+ parada y sin editar, y ya podrá ser arrancada por los usuarios asociados.
+\end_layout
+
 \begin_layout Standard
-En términos generales, estos 10 problemas son:
+Como los procesos de subida y bajada de las máquinas virtuales en edición
+ pueden ser bastante largos, existen un conjunto de estados de transición
+ intermedios, durante los cuales los usuarios no dispondrán de ninguna opción
+ de edición para las máquinas virtuales en edición.
+\end_layout
+
+\begin_layout Subsubsection
+Esquema de la base de datos
+\end_layout
+
+\begin_layout Standard
+La base de datos de la web dispone de las siguientes tablas:
 \end_layout
 
 \begin_layout Itemize
-Cross Site Scripting (XSS)
+
+\family typewriter
+auth_user
+\family default
+.
+ Esta tabla contiene información sobre los usuarios registrados en la web.
+ Esta tabla es utilizada por 
+\family sans
+auth 
+\family default
+para gestionar los inicios y cierres de sesión, además de las restricciones
+ de acceso a cada página.
+ Es creada automáticamente por web2py y CygnusCloud solo utiliza alguna
+ de sus columnas :
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+id.
+ 
+\family default
+Identificador único asociado al usuario.
 \end_layout
 
 \begin_layout Itemize
-inyecciones SQL
+
+\family typewriter
+email
+\family default
+.
+ Dirección de correo electrónico con la cual el usuario podrá acceder a
+ la web.
+ Por convenio, la estructura de este campo debe seguir el modelo de direcciones
+ utilizada actualmente por la universidad complutense (
+\family typewriter
+<Nombre de usuario>@ucm.es>
+\family default
+).
+ No pueden existir dos usuarios diferentes con el mismo correo electrónico.
 \end_layout
 
 \begin_layout Itemize
-Ejecución de archivos maliciosos
+
+\family typewriter
+password
+\family default
+.
+ Esta columna almacena la contraseña asociada al usuario.
+ Para evitar vulnerabilidades, este campo se almacena codificado en la bases
+ de datos y solo se descodifica a la hora de realizar las comprobaciones
+ de inicio de sesión.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+auth_group
+\family default
+.
+ Esta tabla contiene los diferentes grupos de usuarios disponibles en CygnusClou
+d.
+ Como ya hemos dicho, CygnusCloud dispone de 3 tipos de usuarios (alumnos,
+ profesores y administradores).
+ Esta tabla es creada automáticamente por web2py.
+ Las columnas que la forman son:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+id
+\family default
+.
+ Identificador único asociado al grupo de usuarios.
 \end_layout
 
 \begin_layout Itemize
-Referencia directa a objetos
+
+\family typewriter
+role
+\family default
+.
+ Nombre del grupo.
 \end_layout
 
 \begin_layout Itemize
-Cross Site Request Forgery (CSRF)
+
+\family typewriter
+description
+\family default
+.
+ Breve descripción del grupo de usuarios.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+auth_membership
+\family default
+.
+ Esta tabla relaciona a cada usuario con el grupo de usuarios al que pertenece.
+ Todos los usuarios deben tener un, y solo un, grupo de usuarios asociados.
+ Al igual que las dos anteriores, esta tabla es creada automáticamente por
+ web2py y contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+id
+\family default
+.
+ Identificador único para la relación concreta.
 \end_layout
 
 \begin_layout Itemize
-Fugas de información y manejo de errores inapropiado
+
+\family typewriter
+user_id
+\family default
+.
+ Identificador del usuario registrado en la web.
 \end_layout
 
 \begin_layout Itemize
-Administración de sesiones y autentificación
+
+\family typewriter
+group_id
+\family default
+.
+ Identificador único del grupo de usuarios al que pertenece el usuario registrad
+o.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+auth_event
+\family default
+.
+ Esta tabla recopila las últimas acciones que se han llevado a cabo por
+ parte de los usuarios y puede utilizarse para monitorizar el uso que está
+ haciendo cada usuario de la web y mantener un 
+\shape italic
+log
+\shape default
+ sobre los últimos movimientos.
+ Al igual que las anteriores, esta tabla es creada automática por web2py
+ y en este caso, será totalmente gestionada por el módulo 
+\family typewriter
+auth
+\family default
+.
+ Las columnas que forman esta tabla son:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+id
+\family default
+.
+ Identificador del evento registrado en la base de datos.
 \end_layout
 
 \begin_layout Itemize
-Almacenamiento criptográfico inseguro
+
+\family typewriter
+time_stamp
+\family default
+.
+ Momento en el cual se llevo a cabo la acción.
 \end_layout
 
 \begin_layout Itemize
-Comunicaciones inseguras
+
+\family typewriter
+client_ip
+\family default
+.
+ dirección ip desde la cual se conecto el cliente.
 \end_layout
 
 \begin_layout Itemize
-Restricciones de acceso URL
+
+\family typewriter
+user_id
+\family default
+.
+ identificador único del usuario que realizó la acción.
 \end_layout
 
+\begin_layout Itemize
+
+\family typewriter
+origin
+\family default
+.
+ módulo que registro el evento.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+description
+\family default
+.
+ Breve descripción sobre la acción registrada.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+classGroup
+\family default
+.
+ Esta tabla representa los diferentes grupos de asignaturas registrados
+ en el sistema.
+ Cada grupo de asignatura depende no solo de la asignatura que se imparte
+ en ese grupo, sino también del año lectivo en el cual se cursó, y del grupo
+ de clase.
+ Se considera que no existen 2 grupos de asignaturas que impartan la misma
+ asignatura en el mismo grupo de clase.
+ Así esta tabla dispone de las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+yearGroup
+\family default
+.
+ Año en el cual se cursó dicho grupo de asignatura.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+cod
+\family default
+.
+ Código asociado a la asignatura que se imparte en este grupo de asignatura.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+curseGroup
+\family default
+.
+ grupo de clase asociado a dicho grupo de asignatura.
+ Por lo general, el grupo de clase viene representado por una letra en minúscula
+ y permite distinguir las diferentes clases que imparten una misma asignatura
+ en un mismo curso lectivo.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+placesNumber
+\family default
+.
+ Indica el número de plazas disponibles en este grupo de asignatura.
+ Esta columna se usa para determinar el número de instancias de una máquina
+ que deben crearse a la hora de desplegarse, con el fin de poder ofrecer
+ a todos los usuarios matriculados en este grupo de asignatura una máquina
+ virtual con la que poder trabajar en paralelo con el resto de sus compañeros.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+userGroup
+\family default
+.
+ Esta tabla relaciona a cada usuario, identificado por su cuenta de correo,
+ con el grupo de asignatura en la que se encuentra matriculado.
+ El grupo de asignatura vendrá determinado por el código de la asignatura
+ y el grupo de clase.
+ Independientemente del tipo de usuario, este se relacionará con los grupos
+ de asignatura en la tabla de forma similar.
+ Las columnas que forman esta tabla son:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+userId
+\family default
+.
+ Identificador del usuario.
+ Viene definido por el correo electrónico asociado al usuario.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+cod
+\family default
+.
+ Código de la asignatura que compone el grupo de asignatura con el cual
+ se relaciona el usuario determinado.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+curseGroup
+\family default
+.
+ Grupo de clase del grupo de asignatura que se relaciona con el usuario.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+subjects
+\family default
+.
+ Identifica las diferentes asignaturas registradas en la web por medio de
+ un grupo de asignatura.
+ Contiene las siguientes columnas.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+code
+\family default
+.
+ Código que representa a la asignatura.
+ Será único para todas las asignaturas registradas.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+name
+\family default
+.
+ Nombre de la asignatura asociada al código indicado.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+VMByGroup
+\family default
+.
+ Esta tabla asocia cada máquina virtual registrada, identificada por su
+ id único, con el grupo de asignatura en la cual se ha registrado la máquina
+ virtual.
+ Un usuario, a excepción de los administradores, solo puede acceder a las
+ máquinas virtuales que se encuentre registradas en uno de los grupos de
+ asignaturas en los cuales se haya matriculado dicho usuario.
+ Las columnas que formas esta tabla son:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+VMId
+\family default
+.
+ identificador único para la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+cod
+\family default
+.
+ Código asociado a la asignatura registrada en un grupo de asignatura concreto.
+\end_layout
+
+\begin_layout Itemize
+curseGroup.
+ Grupo de clase asociado al grupo de asignatura.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+osPicture
+\family default
+.
+ Define el conjunto de imágenes, registradas en la web, que representan
+ cada una de las variantes de sistemas operativos que pueden estar instalados
+ en las máquinas virtuales.
+ Esta tabla contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+osPictureId
+\family default
+.
+ Identificador único que define la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+picturePath
+\family default
+.
+ Ruta donde se encuentra la imagen asociada a una posible variante de algún
+ sistema operativo.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+pictureByOSId
+\family default
+.
+ Esta tabla relaciona un sistema operativo y su variante con la imagen que
+ se le da en la web.
+ Así, esta tabla se encuentra compuesta por las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+osId
+\family default
+.
+ Identificador único del sistema operativo definido.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+variantId
+\family default
+.
+ Identificador único de la variante del sistema operativo definido en 
+\family typewriter
+osId
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pictureId
+\family default
+.
+ identificador único que referencia a la imagen con la que se representa
+ la variante del sistema operativo en la web.
+\end_layout
+
+\end_deeper
 \begin_layout Standard
 \begin_inset Note Note
 status open
