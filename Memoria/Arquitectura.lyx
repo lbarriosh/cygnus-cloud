@@ -82,7 +82,7 @@ Arquitectura del sistema
 
 \begin_layout Standard
 \begin_inset Note Note
-status collapsed
+status open
 
 \begin_layout Plain Layout
 TODO: 
@@ -94,6 +94,12 @@ meter referencias noVNC, KVM y Twisted
 
 \begin_layout Itemize
 revisar sección red para incluir protocolo orientado a líneas
+\end_layout
+
+\begin_layout Itemize
+meter disclaimer diciendo que omitiremos, salvo en la red, los detalles
+ de bajo nivel.
+ Remitir al código fuente.
 \end_layout
 
 \end_inset
@@ -4767,7 +4773,14 @@ reference "sub:Uso-del-formato-qcow2"
 \end_layout
 
 \begin_layout Subsection
-Uso de los servidores de edición de imágenes
+Uso de los servidores de edición de imágenes 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Uso-servidores-vanilla"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -24032,6 +24045,1188 @@ name "sub:El-paquete-clusterServer"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Decisiones-de-diseño"
+
+\end_inset
+
+, las principales funciones de los servidores de 
+\emph on
+cluster
+\emph default
+ son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+realizar el balanceado de carga entre los distintos servidores de máquinas
+ virtuales del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+arrancar, detener, dar de alta y borrar servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+atender todas las peticiones de los usuarios.
+ Para ello, debe 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+comprobar que el 
+\emph on
+cluster 
+\emph default
+es capaz de atenderlas, informando de errores cuando sea preciso.
+\end_layout
+
+\begin_layout Itemize
+detectar los errores que se producen al procesarlas, informando a los usuarios
+ cuando sea preciso.
+\end_layout
+
+\begin_layout Itemize
+recopilar periódicamente el estado del resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+En esta sección, presentaremos en detalle su diseño.
+ 
+\end_layout
+
+\begin_layout Standard
+Por claridad, y salvo indicación en contra, de ahora en adelante utilizaremos
+ el término servidor de 
+\emph on
+cluster
+\emph default
+ para referiremos al demonio del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Balanceado de carga 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Balanceado-de-carga"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El balanceado de carga es una de las funciones más importantes del servidor
+ de 
+\emph on
+cluster
+\emph default
+.
+ Puesto que el rendimiento de la infraestructura se ve muy afectado por
+ el algoritmo de balanceado de carga que se utilice, hemos decidido simplificar,
+ en la medida de lo posible, el cambio del algoritmo de balanceado de carga
+ utilizado.
+ Para ello, hemos definido la interfaz 
+\family typewriter
+LoadBalancer
+\family default
+, común a todos los algoritmos de balanceado de carga.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, hemos implementado un algoritmo de carga parametrizable que garantiza
+ que la carga de trabajo de todos los servidores de máquinas virtuales sea
+ muy similar.
+ La clase 
+\family typewriter
+PenaltyBasedLoadBalancer
+\family default
+ implementa dicho algoritmo.
+\end_layout
+
+\begin_layout Standard
+Por claridad, empezaremos mostrando el algoritmo de balanceado de carga.
+ Acto seguido, mostraremos las principales relaciones de las clases 
+\family typewriter
+LoadBalancer
+\family default
+ y 
+\family typewriter
+PenaltyBasedLoadBalancer
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Descripción del algoritmo 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/Servidor de cluster/Balanceado carga.pdf
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Algoritmo-de-balanceado-carga"
+
+\end_inset
+
+Algoritmo de balanceado de carga basado en penalizaciones
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Algoritmo-de-balanceado-carga"
+
+\end_inset
+
+ muestra una implementación en 
+\emph on
+pseudocódigo
+\emph default
+ del algoritmo de balanceado de carga basado en penalizaciones.
+ 
+\end_layout
+
+\begin_layout Standard
+Como podemos observar, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+en función de la operación a realizar, se obtiene el conjunto de todos los
+ servidores de máquinas virtuales 
+\emph on
+arrancados
+\emph default
+ que, 
+\emph on
+a priori
+\emph default
+, pueden considerarse.
+\end_layout
+
+\begin_layout Enumerate
+se comprueba que el servidor de máquinas virtuales puede utilizarse para
+ realizar la operación.
+ Si no es posible (porque, por ejemplo, no tiene suficiente memoria RAM
+ libre), el servidor de máquinas virtuales se descartará.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Por claridad, hemos omitido en el pseudocódigo los cálculos de las penalizacione
+s por el número de CPUs, la memoria RAM libre, el espacio de almacenamiento
+ y el espacio de almacenamiento temporal.
+ Dichos cálculos se hacen de acuerdo a las siguientes fórmulas:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\textrm{penalización CPUs}=\begin{cases}
+{\displaystyle \frac{\textrm{CPUs}_{i}+\textrm{CPUs}_{v}}{\textrm{CPUs}_{p}}} & \textrm{si modo}\neq\texttt{DESPLEGAR IMAGEN}\\
+{\displaystyle \frac{\textrm{CPUs}_{i}}{\textrm{CPUs}_{p}}} & \textrm{en otro caso}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\textrm{penalización RAM}=\begin{cases}
+{\displaystyle \frac{\textrm{RAM}_{i}+\textrm{RAM}_{u}}{\textrm{RAM}_{t}}} & \textrm{si modo}\neq\texttt{DESPLEGAR IMAGEN}\\
+{\displaystyle \frac{\textrm{RAM}_{i}}{\textrm{RAM}_{t}}} & \textrm{en otro caso}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\textrm{penalización almacenamiento}=\frac{\textrm{OS}_{i}-\textrm{Alm}_{u}}{\textrm{Alm}_{t}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\textrm{penalización almacenamiento temporal}=\frac{\textrm{Datos}_{i}-\textrm{AlmTemporal}_{u}}{\textrm{AlmTemporal}_{t}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+donde 
+\begin_inset Formula $\textrm{CPUs}_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $\textrm{RAM}_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $\textrm{OS}_{i}$
+\end_inset
+
+ y 
+\begin_inset Formula $\textrm{Datos}_{i}$
+\end_inset
+
+ son el número de CPUs, la cantidad de memoria RAM y los tamaños de las
+ imágenes del sistema operativo y datos temporales de la máquina virtual.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, 
+\begin_inset Formula $\textrm{CPUs}_{v}$
+\end_inset
+
+, 
+\begin_inset Formula $\textrm{CPUs}_{p}$
+\end_inset
+
+, 
+\begin_inset Formula $\textrm{RAM}_{u}$
+\end_inset
+
+, 
+\begin_inset Formula $\textrm{RAM}_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $\textrm{Alm}_{u}$
+\end_inset
+
+, 
+\begin_inset Formula $\textrm{Alm}_{t}$
+\end_inset
+
+, 
+\begin_inset Formula $\textrm{AlmTemporal}_{u}$
+\end_inset
+
+ y 
+\begin_inset Formula $\textrm{AlmTemporal}_{i}$
+\end_inset
+
+ son el número de CPUs virtuales y físicas, la cantidad de memoria RAM usada
+ y total, el espacio de almacenamiento usado y total y el espacio de almacenamie
+nto temporal usado y total en el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que el número de CPUs virtuales puede superar el número
+ de CPUs físicas.
+ Esto resulta interesante cuando las máquinas virtuales que se albergarán
+ utilizan muy poco la CPU.
+ Por ejemplo, esto ocurrirá con mucha frecuencia si las máquinas virtuales
+ sólo se utilizan para ejecutar 
+\emph on
+suites
+\emph default
+ ofimáticas.
+\end_layout
+
+\begin_layout Standard
+Esta característica se puede configurar mediante el parámetro 
+\family sans
+exceso cpus
+\family default
+ del algoritmo de balanceado de carga.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+para cada uno de estos servidores, se calcula un factor de penalización.
+ Estos están normalizados entre 0 y 1, y representan la medida en que se
+ penalizará el rendimiento.
+ Cuanto menores sean, menor se penalizará el rendimiento.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Los factores de penalización se calculan de la siguiente manera:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\textrm{fp}= & p_{\textrm{CPUs}}\cdot\textrm{penalización CPUs}+p_{\textrm{RAM}}\cdot\textrm{penalización RAM }+\\
+ & p_{\textrm{Alm}}\cdot\textrm{penalización almacenamiento }+\\
+ & p_{\textrm{AlmTemp}}\cdot\textrm{penalización almacenamiento temporal}
+\end{align*}
+
+\end_inset
+
+siendo 
+\begin_inset Formula $p_{\textrm{CPUs}}$
+\end_inset
+
+, 
+\begin_inset Formula $p_{\textrm{RAM}}$
+\end_inset
+
+, 
+\begin_inset Formula $p_{\textrm{Alm}}$
+\end_inset
+
+ y 
+\begin_inset Formula $p_{\textrm{AlmTemp}}$
+\end_inset
+
+ los restantes parámetros de configuración del algoritmo de balanceado de
+ carga.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+si se va a realizar una operación de despliegue de imagen, se calculará
+ el número de copias de la misma que pueden almacenarse en el servidor de
+ máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+los servidores que pueden utilizarse se ordenan de menor a mayor penalización.
+ 
+\end_layout
+
+\begin_layout Enumerate
+se escoge el servidor o servidores de máquinas virtuales con menor penalización.
+ 
+\end_layout
+
+\begin_layout Standard
+Por tanto, este algoritmo de balanceado de carga intenta garantizar, en
+ la medida de lo posible, que el rendimiento de todos los servidores de
+ máquinas virtuales se degrade en la misma medida.
+\end_layout
+
+\begin_layout Standard
+Finalmente, tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Uso-servidores-vanilla"
+
+\end_inset
+
+, las imágenes de disco sólo pueden crearse y editarse en ciertos servidores
+ de máquinas virtuales reservados para ello.
+ 
+\end_layout
+
+\begin_layout Standard
+En caso de que la carga de trabajo del resto de servidores de máquinas virtuales
+ sea muy elevada, estas máquinas podrán utilizarse para desplegar imágenes
+ de disco y, por tanto, para albergar máquinas virtuales de los usuarios.
+\end_layout
+
+\begin_layout Paragraph
+La clase 
+\family typewriter
+PenaltyBasedLoadBalancer
+\end_layout
+
+\begin_layout Standard
+Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Algoritmo-de-balanceado-carga"
+
+\end_inset
+
+, la clase 
+\family typewriter
+PenaltyBasedLoadBalancer
+\family default
+ implementa el algoritmo de balanceado de carga basado en penalizaciones.
+ El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-PenaltyBasedLoadBalancer"
+
+\end_inset
+
+ contiene sus principales relaciones.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor cluster/Relaciones PenaltyBasedLoadBalancer.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-relaciones-PenaltyBasedLoadBalancer"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+PenaltyBasedLoadBalancer
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, la clase 
+\family typewriter
+PenaltyBasedLoadBalancer
+\family default
+ hereda de la clase abstracta 
+\family typewriter
+LoadBalancer
+\family default
+, que define la interfaz común a todos los algoritmos de balanceado de carga.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, los objetos 
+\family typewriter
+PenaltyBasedLoadBalancer
+\family default
+ utilizan un objeto 
+\family typewriter
+ClusterServerDBConnector 
+\family default
+para obtener los servidores de máquinas virtuales candidatos y el estado
+ de los mismos.
+ Los objetos 
+\family typewriter
+ClusterServerDBConnector
+\family default
+ permiten manipular la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Reactores del servidor de 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+El demonio del servidor de 
+\emph on
+cluster
+\emph default
+ deberá procesar los paquetes enviados por los servidores de máquinas virtuales
+ activos, y también los paquetes enviados por el repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Asimismo, también deberá procesar los eventos de conexión, desconexión y
+ reconexión generados por la red junto con los paquetes enviados por el
+ servidor web.
+ A través de estos últimos, se envían al servidor de 
+\emph on
+cluster
+\emph default
+ las peticiones de los usuarios.
+\end_layout
+
+\begin_layout Standard
+Para aumentar la claridad del código fuente y simplificar la corrección
+ de errores, hemos definido cuatro clases: 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+EndpointPacketReactor
+\family default
+, cuyos métodos procesan los paquetes enviados por el servidor web.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+, cuyos métodos procesan los paquetes enviados por el repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+NetworkEventsReactor
+\family default
+, cuyos métodos procesan los eventos de conexión, desconexión y reconexión
+ generados por la red.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+VMServerPacketReactor
+\family default
+, cuyos métodos procesan los paquetes enviados por los servidores de máquinas
+ virtuales.
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos las principales relaciones de todas estas clases.
+\end_layout
+
+\begin_layout Paragraph
+La clase 
+\family typewriter
+EndpointPacketReactor
+\end_layout
+
+\begin_layout Standard
+Las instancias de la clase 
+\family typewriter
+EndpointPacketReactor
+\family default
+ se utilizan para procesar los paquetes enviados por el servidor web.
+ El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-EndpointPacketReactor"
+
+\end_inset
+
+ muestra las principales relaciones de esta clase.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor cluster/Relaciones EndpointPacketReactor.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-relaciones-EndpointPacketReactor"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+EndpointPacketReactor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, los objetos 
+\family typewriter
+EndpointPacketReactor 
+\family default
+comienzan a procesar los paquetes enviados por el servidor web a través
+ de una instancia de la clase 
+\family typewriter
+ClusterEndpointCallback
+\family default
+, que hereda de la clase 
+\family typewriter
+NetworkCallback
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, los objetos 
+\family typewriter
+EndpointPacketReactor
+\family default
+ utilizan 
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+ para leer y generar los paquetes que intercambian con el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+ para generar los paquetes que envían a los servidores de máquinas virtuales,
+ y
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+ para generar los paquetes que envían a los servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Para enviar esos paquetes, los objetos 
+\family typewriter
+EndpointPacketReactor
+\family default
+ utilizan un objeto 
+\family typewriter
+NetworkManager
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los objetos 
+\family typewriter
+EndpointPacketReactor
+\family default
+ ejecutarán el algoritmo de balanceado de carga cuando sea preciso.
+ Por ello, utilizarán un objeto 
+\family typewriter
+PenaltyBasedLoadBalancer
+\family default
+.
+ Es importante notar que este objeto sólo se manipulará a través de la interfaz
+ definida por la clase 
+\family typewriter
+LoadBalancer
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, los objetos 
+\family typewriter
+EndpointPacketReactor
+\family default
+ utiliza un objeto 
+\family typewriter
+ClusterServerDBConnector
+\family default
+ para manipular la base de datos del servidor de 
+\emph on
+cluster.
+\end_layout
+
+\begin_layout Paragraph
+La clase 
+\family typewriter
+ImageRepositoryPacketReactor
+\end_layout
+
+\begin_layout Standard
+Las instancias de la clase 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+ procesan los paquetes enviados por el repositorio de imágenes.
+ El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-ImageRepositoryPacketReactor"
+
+\end_inset
+
+ muestra las principales relaciones de esta clase.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor cluster/Relaciones ImageRepositoryPacketReactor.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-relaciones-ImageRepositoryPacketReactor"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+ImageRepositoryPacketReactor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En el diagrama se muestra que, para procesar los paquetes procedentes del
+ repositorio de imágenes, se utiliza una instancia de la clase 
+\family typewriter
+ImageRepositoryCallback
+\family default
+, que hereda de la clase 
+\family typewriter
+NetworkCallback
+\family default
+.
+ Esos objetos utilizan una instancia de la clase 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+ para procesar los paquetes recibidos.
+\end_layout
+
+\begin_layout Standard
+Al igual que sucede con los objetos 
+\family typewriter
+EndpointPacketReactor
+\family default
+, los objetos 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+ utilizan
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+ para construir los paquetes que se enviarán al servidor web,
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+ para leer los paquetes que se intercambian con el repositorio de imágenes,
+ 
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+NetworkManager
+\family default
+ para enviar paquetes, y
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+ClusterServerDBConnector
+\family default
+ para manipular la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+A diferencia de lo que ocurre en el caso de la clase 
+\family typewriter
+EndpointPacketReactor
+\family default
+, los objetos 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+ no necesitan comunicarse con un servidor de máquinas virtuales.
+ Por ello, no utilizan un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Paragraph
+La clase 
+\family typewriter
+VMServerPacketReactor
+\end_layout
+
+\begin_layout Standard
+Los objetos 
+\family typewriter
+VMServerPacketReactor
+\family default
+ procesan los paquetes enviados por los servidores de máquinas virtuales.
+ El diagrama de clases de la figura muestra las principales relaciones de
+ la clase 
+\family typewriter
+VMServerPacketReactor
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor cluster/Relaciones VMServerPacketReactor.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-relaciones-VMServerPacketReactor"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+VMServerPacketReactor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de clases, al igual que sucede con
+ los objetos 
+\family typewriter
+EndpointPacketReactor
+\family default
+, los objetos 
+\family typewriter
+VMServerPacketHandler
+\family default
+ utilizan
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+ para generar los paquetes que enviarán al servidor web.
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+ para leer los paquetes que se intercambian con los servidores de máquinas
+ virtuales.
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+NetworkManager
+\family default
+ para enviar paquetes.
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+ClsuterServerDBConnector
+\family default
+ para manipular la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Paragraph
+La clase 
+\family typewriter
+NetworkEventsReactor
+\end_layout
+
+\begin_layout Standard
+Los objetos 
+\family typewriter
+NetworkEventsReactor
+\family default
+ tratan los eventos de conexión, reconexión y desconexión de máquinas generados
+ por la red.
+ El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-NetworkEventsReactor"
+
+\end_inset
+
+ muestra las principales relaciones de la clase 
+\family typewriter
+NetworkEventsReactor
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor cluster/Relaciones NetworkEventsReactor.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-relaciones-NetworkEventsReactor"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+NetworkEventsReactor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-NetworkEventsReactor"
+
+\end_inset
+
+, los objetos 
+\family typewriter
+VMServerCallback
+\family default
+ e 
+\family typewriter
+ImageRepositoryCallback
+\family default
+ utilizan un objeto 
+\family typewriter
+NetworkEventsReactor
+\family default
+ para procesar los eventos asociados a las conexiones de red.
+\end_layout
+
+\begin_layout Standard
+Para procesar esos eventos, los objetos 
+\family typewriter
+NetworkEventsReactor
+\family default
+ se limitan a actualizar el estado de la máquinas correspondiente en la
+ base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+ Para ello, utilizan un objeto 
+\family typewriter
+ClusterServerDBConnector
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+La clase 
+\family typewriter
+ClusterServerMainReactor
 \end_layout
 
 \begin_layout Subsection
