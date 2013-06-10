@@ -25148,12 +25148,16 @@ barra de direcciones para alumnos.
  Esta barra incluye las páginas de arranque, apertura y detención de máquinas
  virtuales y está restringida a usuarios de tipo alumno registrados en la
  web.
+ También incluye la página de visualización de notificaciones pendientes
+ para alumnos.
 \end_layout
 
 \begin_layout Itemize
 barra de direcciones para profesores.
  Esta barra incluye las páginas de arranque, creación y edición de máquinas
  virtuales, accesibles para los profesores.
+ También incluye la página de visualización de notificaciones pendientes
+ para profesores-
 \end_layout
 
 \begin_layout Itemize
@@ -25161,6 +25165,8 @@ barra de direcciones para administradores.
  Esta barra contiene todas las páginas de gestión de máquinas, servidores,
  asignaturas y usuarios, además de la página de arranque de máquinas virtuales.
  Su acceso está restringido a usuarios de tipo administrador.
+ También incluye la página de visualización de notificaciones pendientes
+ para administradores.
 \end_layout
 
 \begin_layout Subsubsection
