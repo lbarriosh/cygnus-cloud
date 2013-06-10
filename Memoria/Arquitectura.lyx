@@ -8691,7 +8691,14 @@ IListenningPort
 \end_layout
 
 \begin_layout Paragraph
-Envío y recepción de datos
+Envío y recepción de datos 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Envío-y-recepción-datos-red"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -27369,10 +27376,319 @@ Arranque de una máquina virtual: secuencia básica
 
 \end_layout
 
+\begin_layout Standard
+Observando el diagrama de secuencia, podemos distinguir los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se lee el contenido del paquete de arranque.
+\end_layout
+
+\begin_layout Enumerate
+se ejecuta el algoritmo de balanceado de carga para averiguar cuál es el
+ servidor de máquinas virtuales que alojará la nueva máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+se reservan los recursos que consumirá la máquina virtual.
+ En la próxima sección, justificaremos detalladamente la necesidad de este
+ paso.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Crear máquina virtual
+\family default
+, y acto seguido se enviará al servidor de máquinas virtuales que ha escogido
+ el algoritmo de balanceado de carga.
+\end_layout
+
+\begin_layout Enumerate
+cuando ese servidor de máquinas virtuales acaba de crear la máquina virtual,
+ envía un paquete del tipo 
+\family sans
+Datos de conexión de MV
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+VMServerPacketReactor
+\family default
+ procesará ese paquete.
+ Durante ese procesamiento, se construirá un paquete del tipo 
+\family sans
+Datos de conexión de MV
+\family default
+ y se enviará al servidor web.
+ Estos paquetes contienen 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+la dirección IP, el puerto y la contraseña del servidor VNC asociado a la
+ nueva máquina virtual, y
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición.
+\end_layout
+
+\end_deeper
+\begin_layout Paragraph
+Arranque de una máquina virtual: ráfagas de peticiones
+\end_layout
+
+\begin_layout Standard
+Para conocer el estado de los servidores de máquinas virtuales y del repositorio
+ de imágenes, el servidor de 
+\emph on
+cluster
+\emph default
+ debe intercambiar paquetes con estas máquinas.
+\end_layout
+
+\begin_layout Standard
+Para ahorrar ancho de banda, las peticiones de estado no pueden estar emitiéndos
+e continuamente.
+ Asimismo, aunque hiciésemos esto, el intercambio de estos paquetes a través
+ de la red y la actualización de la base de datos tienen una latencia que
+ no puede despreciarse.
+\end_layout
+
+\begin_layout Standard
+Supongamos que
+\end_layout
+
+\begin_layout Itemize
+el 
+\emph on
+cluster
+\emph default
+ cuenta con 
+\begin_inset Formula $n$
+\end_inset
+
+ servidores de máquinas virtuales activos, que
+\end_layout
+
+\begin_layout Itemize
+cada servidor de máquinas virtuales puede albergar cuatro máquinas virtuales,
+ que
+\end_layout
+
+\begin_layout Itemize
+el estado de las máquinas virtuales se actualiza una vez cada segundo, y
+ que
+\end_layout
+
+\begin_layout Itemize
+en cierto momento del día 
+\begin_inset Formula $m$
+\end_inset
+
+ alumnos, con 
+\begin_inset Formula $4<m\mbox{\leq}4\cdot n$
+\end_inset
+
+ , solicitan a la vez el arranque de una máquina virtual.
+\end_layout
+
+\begin_layout Standard
+Entre dos actualizaciones consecutivas de la base de datos de estado, el
+ algoritmo de balanceado de carga puede ejecutarse varias veces.
+ Por ello, puede ocurrir que, al atender las peticiones, el algoritmo de
+ balanceado de carga coloque más de cuatro máquinas virtuales en uno o más
+ servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Al procesarse las peticiones, en los servidores de máquinas virtuales se
+ generarán paquetes de error, que el servidor de 
+\emph on
+cluster 
+\emph default
+
+\begin_inset Quotes eld
+\end_inset
+
+redirigirá
+\begin_inset Quotes erd
+\end_inset
+
+ al servidor web.
+ Por tanto, un número arbitrario de peticiones de arranque fallarán, a pesar
+ de que hay suficientes recursos para atenderlas correctamente.
+\end_layout
+
+\begin_layout Standard
+Si bien es cierto que los alumnos pueden volver a emitir las peticiones,
+ 
+\end_layout
+
+\begin_layout Itemize
+se está desperdiciando ancho de banda emitiendo peticiones que, sin duda,
+ fallarán, y
+\end_layout
+
+\begin_layout Itemize
+en los servidores de máquinas virtuales se están desperdiciando recursos,
+ penalizando en algunos casos el rendimiento de las máquinas virtuales activas.
+\end_layout
+
+\begin_layout Standard
+Este problema se agrava cuando se crean o editan imágenes de disco, ya que
+ las transferencias FTP entre los servidores de máquinas virtuales y el
+ repositorio de imágenes consumen mucho más ancho de banda.
+\end_layout
+
+\begin_layout Standard
+Para resolver este problema, tal y como aparece en el diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+, antes de enviar una petición se reservan los recursos que consumirá la
+ petición en el servidor de máquinas virtuales que tiene asignado.
+\end_layout
+
+\begin_layout Standard
+Cuando se recibe un paquete con información de estado de una máquina, estos
+ recursos preasignados se liberarán con una excepción, que comentaremos
+ al presentar los procesos de creación y edición de imágenes.
+\end_layout
+
+\begin_layout Standard
+Así, si se recibe una ráfaga de peticiones como la del ejemplo anterior,
+ el problema no volverá a aparecer: tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Envío-y-recepción-datos-red"
+
+\end_inset
+
+, los paquetes recibidos por las distintas conexiones de red se procesan
+ de uno en uno, por lo que el servidor de 
+\emph on
+cluster
+\emph default
+ procesará las peticiones recibidas de una en una.
+\end_layout
+
+\begin_layout Paragraph
+Arranque de una máquina virtual: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Durante el arranque de una máquina virtual, se producirán errores cuando
+\end_layout
+
+\begin_layout Itemize
+las imágenes de disco correspondientes no existen, o cuando
+\end_layout
+
+\begin_layout Itemize
+no existe un servidor de máquinas virtuales que la pueda albergar.
+\end_layout
+
+\begin_layout Standard
+Ambos errores se detectan tras ejecutar el algoritmo de balanceado de carga,
+ y se procesan como se indica en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-MV-errores"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque MV con errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-MV-errores"
+
+\end_inset
+
+Arranque de una máquina virtual: tratamiento de errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como se muestra en el diagrama, siempre que se detecta uno de estos errores
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Error de arranque de máquina virtual
+\family default
+.
+ Estos contienen el identificador único de la petición y un código de descripció
+n del error.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor web.
+\end_layout
+
+\begin_layout Paragraph
+Apagado forzoso de una máquina virtual
+\end_layout
+
 \begin_layout Subsection
 El paquete 
 \family typewriter
 clusterEndpoint
+\end_layout
+
+\begin_layout Standard
+TODO.
+ control temporal de peticiones.
+ Emitir x por segundo como máximo
+\end_layout
+
+\begin_layout Standard
+TODO.
+ No control de acceso.
+ Se delega en el servidor web para hacer eso.
 \end_layout
 
 \begin_layout Subsection
