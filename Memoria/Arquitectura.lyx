@@ -8937,7 +8937,14 @@ twisted
 \end_layout
 
 \begin_layout Paragraph
-Control de la concurrencia
+Control de la concurrencia 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Control-concurrencia-red"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -17758,7 +17765,7 @@ Arranque del servidor de máquinas virtuales: secuencia básica
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -21972,7 +21979,7 @@ Solid State Drive
 Formatos de paquete
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Formatos-de-paquete-repositorio-1"
+name "sub:Formatos-de-paquete-servidor-MVs"
 
 \end_inset
 
@@ -21985,7 +21992,7 @@ En esta sección, mostraremos detalladamente las características de los tipos
  El cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab:Paquetes-repositorio-imágenes-1"
+reference "tab:Paquetes-servidor-MVs"
 
 \end_inset
 
@@ -22018,7 +22025,7 @@ io es.
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -23101,7 +23108,7 @@ INTERNAL_ERROR
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:Paquetes-repositorio-imágenes-1"
+name "tab:Paquetes-servidor-MVs"
 
 \end_inset
 
@@ -25337,6 +25344,1729 @@ BasicThread
 ccutils
 \family default
 .
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del servidor de 
+\emph on
+cluster
+\emph default
+: secuencia básica
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-del-servidor-cluster-sin-errores"
+
+\end_inset
+
+Arranque del servidor de 
+\emph on
+cluster
+\emph default
+: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos el proceso de arranque del demonio del servidor
+ de 
+\emph on
+cluster
+\emph default
+.
+ Para ello, haremos uso del diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-del-servidor-cluster-sin-errores"
+
+\end_inset
+
+.
+ Por claridad, en dicho diagrama 
+\end_layout
+
+\begin_layout Itemize
+estamos asumiendo que no se produce ningún error,
+\end_layout
+
+\begin_layout Itemize
+hemos omitido la creación de los objetos 
+\family typewriter
+VMServerPacketHandler
+\family default
+, 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+ y 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+, y
+\end_layout
+
+\begin_layout Itemize
+hemos omitido la inicialización de los objetos 
+\family typewriter
+VMServerCallback
+\family default
+, 
+\family typewriter
+ImageRepositoryCallback
+\family default
+ y 
+\family typewriter
+ClusterEndpointCallback
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-del-servidor-cluster-sin-errores"
+
+\end_inset
+
+, en el arranque del demonio del servidor de 
+\emph on
+cluster
+\emph default
+ se distinguen las siguientes fases:
+\end_layout
+
+\begin_layout Enumerate
+se procesa el fichero de configuración del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se configura la base de datos (utilizando un objeto 
+\family typewriter
+DBConfigurator
+\family default
+) y se instancia el objeto 
+\family typewriter
+ClusterServerDBConnector
+\family default
+ que se utilizará para manipularla.
+ 
+\end_layout
+
+\begin_layout Enumerate
+se crea el objeto 
+\family typewriter
+NetworkManager
+\family default
+, que se utilizará para establecer las conexiones con el repositorio de
+ imágenes y los distintos servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se crea todo lo necesario para establecer la conexión con el repositorio
+ de imágenes: un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+, un objeto 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+, un objeto 
+\family typewriter
+NetworkEventsReactor
+\family default
+ y un objeto 
+\family typewriter
+ImageRepositoryCallback
+\family default
+.
+ Acto seguido, se intenta establecer la conexión con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+se crea todo lo necesario para poder establecer conexiones con los servidores
+ de máquinas virtuales: un objeto VMServerPacketHandler, un objeto VMServerPacke
+tReactor y un objeto VMServerCallback.
+\end_layout
+
+\begin_layout Enumerate
+se crea todo lo necesario para poder procesar los paquetes enviados desde
+ el servidor web: un objeto 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+, un objeto 
+\family typewriter
+ClusterServerPacketReactor
+\family default
+ y un objeto 
+\family typewriter
+ClusterServerCallback
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+se crea e inicia el hilo que envía periódicamente los paquetes de actualización
+ de estado a todas las máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se crea la conexión por la que el servidor de 
+\emph on
+cluster
+\emph default
+ atenderá las peticiones del servidor web.
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal inicia la monitorización de los comandos de arranque de
+ máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, a diferencia de lo que ocurre 
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del servidor de 
+\emph on
+cluster
+\emph default
+: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Durante el proceso de arranque del servidor de 
+\emph on
+cluster
+\emph default
+, pueden producirse los siguientes errores:
+\end_layout
+
+\begin_layout Itemize
+no se puede establecer la conexión de red con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+la configuración de la base de datos falla.
+\end_layout
+
+\begin_layout Itemize
+el puerto en el que escucha el demonio del servidor de 
+\emph on
+cluster
+\emph default
+ ya está en uso.
+\end_layout
+
+\begin_layout Standard
+Para tratar todos estos errores, se procede de forma similar: 
+\end_layout
+
+\begin_layout Enumerate
+se cierran ordenadamente las conexiones de red que hayan sido establecidas.
+\end_layout
+
+\begin_layout Enumerate
+se detiene el hilo que envía periódicamente los paquetes de solicitud de
+ estado al resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-del-servidor-cluster-error"
+
+\end_inset
+
+ muestra cómo se procesa el error que más trabajo requiere, que se produce
+ cuando el puerto de escucha del demonio del servidor de 
+\emph on
+cluster
+\emph default
+ ya está en uso.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque con errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-del-servidor-cluster-error"
+
+\end_inset
+
+Arranque del servidor de 
+\emph on
+cluster
+\emph default
+: tratamiento de errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, cuando se detecta un error el hilo
+ principal deja de monitorizar los comandos de arranque de máquinas virtuales.
+ Acto seguido, iniciará la secuencia de apagado y terminará.
+\end_layout
+
+\begin_layout Standard
+Debemos recordar que, para evitar cuelgues, sólo es posible detener el servicio
+ de red desde el hilo principal.
+\end_layout
+
+\begin_layout Subsubsection
+Actualización del estado de las máquinas del 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+Para poder realizar el balanceado de carga adecuadamente y comprobar si
+ el 
+\emph on
+cluster
+\emph default
+ puede atender las peticiones de los usuarios, el servidor de 
+\emph on
+cluster
+\emph default
+ debe recopilar periódicamente el estado del resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Para ello, se utiliza un hilo, que enviará periódicamente los correspondientes
+ paquetes de solicitud de estado al resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+ El envío de estos paquetes y el procesamiento de las respuestas asociadas
+ aparecen en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-del-estado-cluster"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Actualización estado.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Actualización-del-estado-cluster"
+
+\end_inset
+
+Actualización del estado de las máquinas del 
+\emph on
+cluster
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por claridad, en dicho diagrama hemos omitido dos líneas de vida.
+ Al recibir un paquete, el objeto 
+\family typewriter
+NetworkManager
+\family default
+ invoca al método 
+\family typewriter
+processPacket()
+\family default
+ de un objeto 
+\family typewriter
+VMServerCallback
+\family default
+ o de un objeto 
+\family typewriter
+ImageRepositoryCallback
+\family default
+, según la conexión por la que se haya recibido el paquete.
+ 
+\end_layout
+
+\begin_layout Standard
+Son estos objetos los que, a su vez, llaman los métodos de procesamiento
+ de paquetes de los objetos 
+\family typewriter
+VMServerPacketReactor 
+\family default
+y 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+ respectivamente.
+\end_layout
+
+\begin_layout Standard
+En el resto de diagramas de secuencia relacionados con el servidor de 
+\emph on
+cluster
+\emph default
+ también omitiremos estas líneas de vida.
+\end_layout
+
+\begin_layout Standard
+En cualquier caso, como podemos observar en el diagrama de secuencia de
+ la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-del-estado-cluster"
+
+\end_inset
+
+, cuando el hilo termina de enviar los paquetes, dormirá hasta la siguiente
+ actualización del estado de las máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Al recibir los paquetes de respuesta, los objetos 
+\family typewriter
+VMServerPacketReactor
+\family default
+ e 
+\family typewriter
+ImageRepositoryPacketReactor
+\end_layout
+
+\begin_layout Enumerate
+leen el contenido de dichos paquetes, utilizando para ello un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+ o un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+ respectivamente.
+\end_layout
+
+\begin_layout Enumerate
+actualizan el estado de la máquina correspondiente en la base de datos del
+ servidor de 
+\emph on
+cluster
+\emph default
+.
+ Para ello, utilizan un objeto 
+\family typewriter
+ClusterServerDBConnector
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Gestión de los servidores de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+En esta sección, estudiaremos todas las interacciones que tienen lugar entre
+ el servidor web y el servidor de 
+\emph on
+cluster
+\emph default
+ para 
+\end_layout
+
+\begin_layout Itemize
+realizar las altas y bajas de los servidores de máquinas virtuales del 
+\emph on
+cluster
+\emph default
+, 
+\end_layout
+
+\begin_layout Itemize
+arrancar y apagar los servidores de máquinas virtuales del 
+\emph on
+cluster
+\emph default
+, y
+\end_layout
+
+\begin_layout Itemize
+modificar la configuración básica de los servidores de máquinas virtuales
+ del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Como viene siendo habitual, todas las interacciones entre el servidor web
+ y el servidor de 
+\emph on
+cluster
+\emph default
+ se basan en el intercambio de diversos tipos de paquete entre ambas máquinas.
+\end_layout
+
+\begin_layout Paragraph
+Alta de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\begin_layout Standard
+Para dar de alta un servidor de máquinas virtuales, el servidor web envía
+ un paquete del tipo 
+\family sans
+Registrar servidor de máquinas virtuales
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+.
+ Estos paquetes contienen 
+\end_layout
+
+\begin_layout Itemize
+la dirección IP y el puerto de escucha del demonio residente en el servidor
+ de máquinas virtuales que se desea registrar, 
+\end_layout
+
+\begin_layout Itemize
+el nombre que se desea dar al nuevo servidor de máquinas virtuales, 
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+flag
+\emph default
+ que indica si el servidor de máquinas virtuales se usará preferentemente
+ para crear o editar imágenes de disco, y
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición.
+\end_layout
+
+\begin_layout Standard
+En el servidor de 
+\emph on
+cluster
+\emph default
+, este paquete se procesará de acuerdo al diagrama de secuencia de la figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Alta-servidor-mvs-sin-errores"
+
+\end_inset
+
+.
+ Por claridad, en dicho diagrama estamos asumiendo que no se produce ningún
+ error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Alta servidor MVs sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Alta-servidor-mvs-sin-errores"
+
+\end_inset
+
+Alta de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia, en el proceso de registro
+ del servidor de máquinas virtuales se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se comprueba si el nombre y la dirección IP del servidor de máquinas virtuales
+ a registrar ya están en uso.
+ Este paso es necesario porque todo servidor de máquinas virtuales registrado
+ en un mismo servidor de 
+\emph on
+cluster
+\emph default
+ debe tener un nombre y una dirección IP únicos.
+\end_layout
+
+\begin_layout Enumerate
+se establece la conexión con el servidor de máquinas virtuales.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Aunque no se aprecia en el diagrama de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Alta-servidor-mvs-sin-errores"
+
+\end_inset
+
+, al crear las conexiones con los servidores de máquinas virtuales aprovechamos
+ una de las optimizaciones de la red, el control de la concurrencia, de
+ la que hablamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Control-concurrencia-red"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Así, el mismo objeto procesará los paquetes enviados por todos los servidores
+ de máquinas virtuales y, con independencia del número de conexiones que
+ el servidor de 
+\emph on
+cluster
+\emph default
+ mantenga con los servidores de máquinas virtuales, el número de hilos de
+ red permanecerá constante.
+ 
+\end_layout
+
+\begin_layout Standard
+Esto resulta imprescindible para que la escalabilidad del sistema no se
+ vea comprometida, y también explica por qué 
+\end_layout
+
+\begin_layout Itemize
+todos los servidores de máquinas virtuales dados de alta en el servidor
+ de 
+\emph on
+cluster
+\emph default
+ tengan una dirección IP única, y por qué
+\end_layout
+
+\begin_layout Itemize
+algunos paquetes enviados por los servidores de máquinas virtuales contengan
+ la IP del remitente, tal y como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Formatos-de-paquete-servidor-MVs"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Con la última versión del módulo de red esto ha dejado de ser necesario
+ pero, para garantizar la estabilidad de la versión final, hemos decidido
+ seguir utilizándolo.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+cuando se establece la conexión, se registra el servidor de máquinas virtuales
+ en la base de datos del servidor de 
+\emph on
+cluster.
+\end_layout
+
+\begin_layout Enumerate
+finalmente, se envía un paquete del tipo 
+\family sans
+Comando ejecutado
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+.
+ Este contiene el identificador único de la petición.
+\end_layout
+
+\begin_layout Standard
+Una vez hecho esto, puede parecer que ya es posible utilizar el servidor
+ de máquinas virtuales.
+ Pero hemos visto que el algoritmo de balanceado de carga necesita conocer
+ el estado de los servidores de máquinas virtuales para poder utilizarlos.
+ Por ello, el servidor de máquinas virtuales sólo podrá utilizarse tras
+ la próxima actualización del estado del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Así, como puede observarse en la parte inferior del diagrama de secuencia
+ de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Alta-servidor-mvs-sin-errores"
+
+\end_inset
+
+, el proceso de registro del servidor de máquinas virtuales finaliza tras
+ la recepción del paquete con el estado de dicha máquina.
+\end_layout
+
+\begin_layout Paragraph
+Alta de un servidor de máquinas virtuales: tratamiento de errores 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Alta-servidor-errores"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Al dar de alta un servidor de máquinas virtuales, se producirán errores
+ cuando
+\end_layout
+
+\begin_layout Itemize
+el nombre o la IP del servidor de máquinas virtuales ya están en uso, o
+ cuando
+\end_layout
+
+\begin_layout Itemize
+no es posible establecer la conexión con el servidor de cluster.
+\end_layout
+
+\begin_layout Standard
+Ambos errores se procesan de forma idéntica.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Alta-servidor-mvs-errores"
+
+\end_inset
+
+ muestra cómo se procesa el segundo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Alta servidor MVs con errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Alta-servidor-mvs-errores"
+
+\end_inset
+
+Alta de un servidor de máquinas virtuales: tratamiento de errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en él, en cuanto se detecta el error se construye
+ un paquete del tipo 
+\family sans
+Error de registro de servidor de máquinas virtuales
+\family default
+.
+ Estos paquetes contienen el identificador único de la petición y un código
+ de descripción del error.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, 
+\end_layout
+
+\begin_layout Itemize
+debido a que la actualización de la base de datos se hace en último lugar,
+ siempre que se produzcan errores no es necesario borrar nada de la base
+ de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+para evitar la aparición de problemas de coherencia, al dar de alta un servidor
+ de máquinas virtuales se asume que este no contiene ninguna imagen de disco.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Arranque de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\begin_layout Standard
+Para arrancar un servidor de máquinas virtuales ya registrado, el servidor
+ web enviará al servidor de 
+\emph on
+cluster
+\emph default
+ un paquete del tipo 
+\family sans
+Arrancar servidor de máquinas virtuales
+\family default
+.
+ Este paquete contiene 
+\end_layout
+
+\begin_layout Itemize
+el nombre o la dirección IP del servidor de máquinas virtuales a arrancar,
+ y
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición.
+\end_layout
+
+\begin_layout Standard
+Cuando recibe este paquete, el servidor de 
+\emph on
+cluster
+\emph default
+ lo procesará como se indica en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-servidor-MVs"
+
+\end_inset
+
+.
+ Por claridad, en dicho diagrama de secuencia sólo aparece la secuencia
+ básica, en la que no se producen errores.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque servidor MVs sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-servidor-MVs"
+
+\end_inset
+
+Arranque de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como el lector habrá notado ya, los pasos que se dan son muy parecidos a
+ los del proceso de alta de un servidor de máquinas virtuales.
+ No obstante, hay algunas diferencias:
+\end_layout
+
+\begin_layout Itemize
+antes de establecer la conexión con el servidor de máquinas virtuales, los
+ datos de conexión se extraen de la base de datos.
+ Además, puesto que ya están almacenados en ella, los datos de conexión
+ no se insertan en la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+tras establecer la conexión con el servidor de máquinas virtuales, se le
+ envía un paquete del tipo 
+\family sans
+Solicitud de identificadores de máquinas virtuales activas
+\family default
+.
+ Esto hace posible que, tras una caída de un servidor de máquinas virtuales,
+ las máquinas virtuales activas que este alberga vuelvan a registrarse en
+ la infraestructura.
+\end_layout
+
+\begin_layout Paragraph
+Arranque de un servidor de máquinas virtuales: tratamiento de errores 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Arranque-servidor-MVs-errrores"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Durante el arranque de un servidor de máquinas virtuales pueden producirse
+ errores cuando
+\end_layout
+
+\begin_layout Itemize
+el servidor de máquinas virtuales que se pretende arrancar no está registrado,
+ o cuando
+\end_layout
+
+\begin_layout Itemize
+no es posible establecer la conexión con dicho servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Nuevamente, estos errores se procesan casi igual que los errores de registro
+ de un servidor de máquinas virtuales.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-servidor-MVs-errores"
+
+\end_inset
+
+ muestra cómo se procede cuando se intenta arrancar un servidor de máquinas
+ virtuales no registrado.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque servidor MVs error.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-servidor-MVs-errores"
+
+\end_inset
+
+Arranque de un servidor de máquinas virtuales: tratamiento de errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Si comparamos este diagrama con el que vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Alta-servidor-mvs-errores"
+
+\end_inset
+
+, podemos concluir que lo único que cambia es el tipo del paquete de error:
+ en este caso, se envía un paquete del tipo 
+\family sans
+Error en el arranque de servidor de máquinas virtuales
+\family default
+, que contiene, nuevamente, el identificador único de la petición y un código
+ de descripción del error.
+\end_layout
+
+\begin_layout Paragraph
+Apagado de un servidor de máquinas virtuales: secuencia básica 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Apagado-servidor-MVs-sec-básica"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para apagar un servidor de máquinas virtuales, el servidor web enviará al
+ servidor de 
+\emph on
+cluster
+\emph default
+ un paquete del tipo 
+\family sans
+Apagar o dar de baja servidor de máquinas virtuales
+\family default
+.
+ Estos paquetes contienen
+\end_layout
+
+\begin_layout Itemize
+el nombre o la dirección IP del servidor de máquinas virtuales a apagar,
+ 
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+flag
+\emph default
+, que toma el valor 
+\family sans
+False
+\family default
+, y
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición.
+\end_layout
+
+\begin_layout Standard
+Cuando se reciben, el servidor de 
+\emph on
+cluster
+\emph default
+ los procesa de acuerdo al diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-servidor-MVs-sin-errores"
+
+\end_inset
+
+.
+ Por claridad, al crear el diagrama hemos supuesto que no se produce ningún
+ error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Apagado servidor MVs sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-servidor-MVs-sin-errores"
+
+\end_inset
+
+Apagado de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se extraen los datos del servidor de máquinas virtuales de la base de datos
+ del servidor de 
+\emph on
+cluster
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+se actualiza el estado del servidor de máquinas virtuales en la base de
+ datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+ A partir de este momento, el servidor de 
+\emph on
+cluster
+\emph default
+ dejará de contar con él.
+\end_layout
+
+\begin_layout Enumerate
+se construye y envía un paquete del tipo 
+\family sans
+Apagado con espera
+\family default
+ al servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se cierra la conexión con el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Comando ejecutado
+\family default
+ y se envía al servidor web.
+\end_layout
+
+\begin_layout Paragraph
+Apagado de un servidor de máquinas virtuales: tratamiento de errores
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Apagado-servidor-MVs-errores"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cuando se apaga un servidor de máquinas virtuales, se producirá un error
+ cuando el servidor de máquinas virtuales no está registrado.
+ 
+\end_layout
+
+\begin_layout Standard
+Para procesarlo, se procederá exactamente igual que en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-servidor-MVs-errrores"
+
+\end_inset
+
+, por lo que en esta sección no repetiremos nuevamente el proceso.
+ Naturalmente, en este caso no se enviarán al servidor de 
+\emph on
+cluster 
+\emph default
+paquetes del tipo 
+\family sans
+Error en el arranque de servidor de máquinas virtuales
+\family default
+, sino paquetes del tipo 
+\family sans
+Error en el apagado o baja de servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que, si se intenta apagar un servidor de
+ máquinas virtuales que ya está apagado, la petición no tendrá ningún efecto.
+ Para ahorrar ancho de banda, hemos decidido no generar errores en estas
+ situaciones.
+\end_layout
+
+\begin_layout Paragraph
+Baja de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\begin_layout Standard
+El proceso de baja de un servidor de máquinas virtuales es muy similar al
+ proceso de apagado, del que hablamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-servidor-MVs-sec-básica"
+
+\end_inset
+
+.
+ En esta sección, estudiaremos las modificaciones que hay que hacer en él
+ para dar de baja un servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Baja servidor MVs sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Baja-servidor-MVs-sin-errores"
+
+\end_inset
+
+Baja de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Baja-servidor-MVs-sin-errores"
+
+\end_inset
+
+ muestra la variante más larga de este proceso, en la que es necesario apagar
+ el servidor de máquinas virtuales antes de darlo de baja.
+ Cuando este ya esté apagado, no será necesario volver a apagarlo.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, por claridad hemos supuesto que no se produce ningún error durante
+ el procesamiento de la petición.
+\end_layout
+
+\begin_layout Standard
+Si comparamos el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Baja-servidor-MVs-sin-errores"
+
+\end_inset
+
+ con el del proceso de apagado, que aparece en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-servidor-MVs-sin-errores"
+
+\end_inset
+
+, podemos observar que ambos sólo difieren en la actualización de la base
+ de datos del servidor de 
+\emph on
+cluster
+\emph default
+: en este caso, se borra de ella toda la información asociada al servidor
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Por ello, las operaciones de apagado y baja de servidores de máquinas virtuales
+ utilizan el mismo tipo de paquete, 
+\family sans
+Apagar o dar de baja servidor de máquinas virtuales
+\family default
+.
+ No obstante, en este caso el 
+\emph on
+flag
+\emph default
+ toma el valor 
+\family sans
+True
+\family default
+, por lo que este nos permite distinguir entre las operaciones de apagado
+ y baja de servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Paragraph
+Baja de un servidor de máquinas virtuales: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Cuando se da de baja un servidor de máquinas virtuales, sólo se producirán
+ errores cuando el servidor correspondiente no está registrado.
+ 
+\end_layout
+
+\begin_layout Standard
+Para tratar estos errores, se procede exactamente igual que en el apagado
+ de un servidor de máquinas virtuales.
+ Puesto que en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-servidor-MVs-errores"
+
+\end_inset
+
+ vimos este proceso en detalle, no volveremos a reproducirlo.
+\end_layout
+
+\begin_layout Paragraph
+Modificación de la configuración de un servidor de máquinas virtuales: secuencia
+ básica
+\end_layout
+
+\begin_layout Standard
+Para facilitar la administración del sistema, es posible modificar la configurac
+ión básica de un servidor de máquinas virtuales (su nombre, su dirección
+ IP, su puerto y su uso para crear o editar imágenes) sin necesidad de darlo
+ de baja y volverlo a registrar.
+\end_layout
+
+\begin_layout Standard
+Para ello, el servidor web enviará un paquete del tipo 
+\family sans
+Cambiar configuración de servidor
+\family default
+ al servidor de máquinas virtuales.
+ Estos paquetes contienen
+\end_layout
+
+\begin_layout Itemize
+el nuevo nombre del servidor de máquinas virtuales,
+\end_layout
+
+\begin_layout Itemize
+la nueva dirección IP y el nuevo puerto del servidor de máquinas virtuales,
+\end_layout
+
+\begin_layout Itemize
+el nuevo valor del 
+\emph on
+flag 
+\emph default
+que indica si el servidor de máquinas virtuales se reservará para crear
+ o editar imágenes de disco, y
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición.
+\end_layout
+
+\begin_layout Standard
+Cuando se recibe uno de estos paquetes, el servidor de 
+\emph on
+cluster
+\emph default
+ lo procesa de acuerdo al diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Modificación-configuración-servidor"
+
+\end_inset
+
+.
+ Nuevamente, a la hora de elaborar el diagrama hemos supuesto, por claridad,
+ que no se produce ningún error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Cambio configuración servidor MVs.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Modificación-configuración-servidor"
+
+\end_inset
+
+Modificación de la configuración de un servidor de máquinas virtuales: secuencia
+ básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia, tras recibir y leer el
+ contenido del paquete, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se comprueba que el servidor de máquinas virtuales está apagado.
+ Sólo es posible modificar la configuración de los servidores de máquinas
+ virtuales apagados.
+\end_layout
+
+\begin_layout Enumerate
+se comprueba que la nueva configuración del servidor de máquinas virtuales
+ es correcta.
+ Para ello, el nuevo nombre y la nueva dirección IP del servidor de máquinas
+ virtuales no deben estar en uso.
+\end_layout
+
+\begin_layout Enumerate
+se modifica la configuración del servidor de máquinas virtuales en la base
+ de datos del servidor de 
+\emph on
+cluster.
+\end_layout
+
+\begin_layout Enumerate
+se envía al servidor web un paquete del tipo 
+\family sans
+Comando ejecutado
+\family default
+.
+ Con él, se indica el fin del procesamiento de la petición.
+\end_layout
+
+\begin_layout Paragraph
+Modificación de la configuración de un servidor de máquinas virtuales: tratamien
+to de errores
+\end_layout
+
+\begin_layout Standard
+Al modificar la configuración de un servidor de máquinas virtuales, se producirá
+n errores cuando 
+\end_layout
+
+\begin_layout Itemize
+el nuevo nombre o la nueva dirección IP del servidor de máquinas virtuales
+ ya están en uso, o cuando
+\end_layout
+
+\begin_layout Itemize
+el servidor de máquinas virtuales está arrancado, o cuando
+\end_layout
+
+\begin_layout Itemize
+el servidor de máquinas virtuales no está registrado.
+\end_layout
+
+\begin_layout Standard
+Todos estos errores se procesan igual: tan pronto como se detectan, 
+\end_layout
+
+\begin_layout Enumerate
+se genera un paquete del tipo, que contiene el identificador único de la
+ petición y un código de descripción del error.
+\end_layout
+
+\begin_layout Enumerate
+se envía este paquete al servidor web.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Modificación-configuración-servidor-error"
+
+\end_inset
+
+ muestra cómo responde el servidor de 
+\emph on
+cluster
+\emph default
+ cuando el servidor de máquinas virtuales ya está arrancado.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Cambio configuración servidor MVs.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Modificación-configuración-servidor-error"
+
+\end_inset
+
+Modificación de la configuración de un servidor de máquinas virtuales: tratamien
+to de errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Gestión básica de máquinas virtuales
 \end_layout
 
 \begin_layout Subsection
