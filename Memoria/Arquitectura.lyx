@@ -24525,7 +24525,7 @@ reference "fig:Principales-relaciones-PenaltyBasedLoadBalancer"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -24784,8 +24784,16 @@ un objeto
 \family typewriter
 VMServerPacketHandler
 \family default
- para generar los paquetes que envían a los servidores de máquinas virtuales,
- y
+ para generar los paquetes que envían a los servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+VMServerCallback
+\family default
+, que se utilizará durante el establecimiento de la conexión con un servidor
+ de máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
@@ -24868,7 +24876,7 @@ reference "fig:Principales-relaciones-ImageRepositoryPacketReactor"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -24995,6 +25003,15 @@ VMServerPacketHandler
 .
 \end_layout
 
+\begin_layout Standard
+Asimismo, estos objetos no establecen conexiones con un servidor de máquinas
+ virtuales, por lo que no utilizan ningún objeto 
+\family typewriter
+VMServerCallback
+\family default
+.
+\end_layout
+
 \begin_layout Paragraph
 La clase 
 \family typewriter
@@ -25112,6 +25129,20 @@ cluster
 .
 \end_layout
 
+\begin_layout Standard
+Finalmente, como estos objetos nunca envían paquetes al repositorio de imágenes,
+ no necesitan utilizar un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+.
+ Asimismo, tampoco utilizan un objeto 
+\family typewriter
+VMServerCallback
+\family default
+, ya que nunca crean conexiones con los servidores de máquinas virtuales.
+\end_layout
+
 \begin_layout Paragraph
 La clase 
 \family typewriter
@@ -25227,6 +25258,272 @@ ClusterServerDBConnector
 La clase 
 \family typewriter
 ClusterServerMainReactor
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+ClusterServerMainReactor
+\family default
+ es la clase principal del demonio del servidor de 
+\emph on
+cluster
+\emph default
+.
+ Sus principales responsabilidades son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+realizar los procesos de arranque y apagado del servidor de 
+\emph on
+cluster
+\emph default
+, incluyendo la configuración de los reactores de paquetes y el establecimiento
+ de la conexión con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+monitorizar los comandos de arranque de máquinas virtuales, generando errores
+ por 
+\emph on
+time out
+\emph default
+ cuando sea necesario.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor cluster/Relaciones ClusterServerMainReactor.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-relaciones-ClusterServerMainReactor"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+ClusterServerMainReactor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-ClusterServerMainReactor"
+
+\end_inset
+
+ muestra las principales relaciones de la clase 
+\family typewriter
+ClusterServerMainReactor
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Durante el proceso de inicialización, el objeto 
+\family typewriter
+ClusterServerMainReactor
+\family default
+ crea y configura la base de datos.
+ Para ello, utiliza un objeto 
+\family typewriter
+DBConfigurator
+\family default
+.
+ La clase 
+\family typewriter
+DBConfigurator
+\family default
+ se encuentra en el paquete 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, antes de crear cualquier conexión de red es necesario
+\end_layout
+
+\begin_layout Itemize
+instanciar un objeto 
+\family typewriter
+NetworkManager
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+instanciar los objetos que manipularán los paquetes recibidos a través de
+ las distintas conexiones de red.
+ Por ello, el objeto 
+\family typewriter
+ClusterServerMainReactor
+\family default
+ instancia las clases 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+, 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+ y 
+\family typewriter
+VMServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+crear los objetos que procesarán los paquetes recibidos por la misma.
+ Por ello, el objeto 
+\family typewriter
+ClusterServerMainReactor
+\family default
+ instancia las clases 
+\family typewriter
+VMServerPacketReactor
+\family default
+, 
+\family typewriter
+EndpointPacketReactor
+\family default
+, 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+, 
+\family typewriter
+ClusterEndpointCallback
+\family default
+, 
+\family typewriter
+VMServerCallback
+\family default
+ e 
+\family typewriter
+ImageRepositoryCallback
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+crear los objetos que procesarán los eventos de conexión, reconexión y desconexi
+ón generados por la red.
+ Por ello, el objeto 
+\family typewriter
+ClusterServerMainReactor
+\family default
+ instancia un objeto 
+\family typewriter
+NetworkEventsReactor
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Además, también hemos visto que, para procesar los paquetes recibidos y
+ los eventos generados por la red, es necesario manipular la base de datos
+ del servidor de 
+\emph on
+cluster
+\emph default
+.
+ Por ello, los objetos 
+\family typewriter
+ClusterServerMainReactor
+\family default
+ también instancian un objeto 
+\family typewriter
+ClusterServerDBConnector
+\family default
+ durante el proceso de inicialización.
+\end_layout
+
+\begin_layout Standard
+Y al igual que ocurre en el servidor de máquinas virtuales y en el repositorio
+ de imágenes, durante el proceso de inicialización del demonio del servidor
+ de 
+\emph on
+cluster
+\emph default
+ también se procesa el contenido de un fichero de configuración.
+ Para ello, se utiliza la clase 
+\family typewriter
+ClusterServerConfigurationFileParser
+\family default
+, que hereda de la clase 
+\family typewriter
+ConfigurationFileParser
+\family default
+ del paquete 
+\family typewriter
+ccutils
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Finalmente, la clase 
+\family typewriter
+ClusterStatusMonitoringThread
+\family default
+ se corresponde con el hilo que envía periódicamente los paquetes de solicitud
+ de estado a todas las máquinas del 
+\emph on
+cluster
+\emph default
+.
+ Como la gran mayoría de las clases de hilo que utilizamos, la clase 
+\family typewriter
+ClusterStatusMonitoringThread
+\family default
+ hereda de la clase 
+\family typewriter
+BasicThread
+\family default
+, definida también en el paquete 
+\family typewriter
+ccutils
+\family default
+.
 \end_layout
 
 \begin_layout Subsection
