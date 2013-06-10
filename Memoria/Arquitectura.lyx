@@ -3735,7 +3735,14 @@ raw
 \end_layout
 
 \begin_layout Subsection
-Creación de seis familias de máquinas virtuales
+Creación de seis familias de máquinas virtuales 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Creación-familias-mvs"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -19998,6 +20005,13 @@ Apagado inmediato
 
 \begin_layout Subsubsection
 Creación y edición de imágenes de disco
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Creación-y-edición-imágenes-serv-VMs"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -25885,220 +25899,6 @@ Debemos recordar que, para evitar cuelgues, sólo es posible detener el servicio
 \end_layout
 
 \begin_layout Subsubsection
-Actualización del estado de las máquinas del 
-\emph on
-cluster
-\end_layout
-
-\begin_layout Standard
-Para poder realizar el balanceado de carga adecuadamente y comprobar si
- el 
-\emph on
-cluster
-\emph default
- puede atender las peticiones de los usuarios, el servidor de 
-\emph on
-cluster
-\emph default
- debe recopilar periódicamente el estado del resto de máquinas del 
-\emph on
-cluster
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-Para ello, se utiliza un hilo, que enviará periódicamente los correspondientes
- paquetes de solicitud de estado y de solicitud de datos de conexión VNC
- al resto de máquinas del 
-\emph on
-cluster
-\emph default
-.
- El envío de estos paquetes y el procesamiento de las respuestas asociadas
- aparecen en el diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Actualización-del-estado-cluster"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Actualización estado.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Actualización-del-estado-cluster"
-
-\end_inset
-
-Actualización del estado de las máquinas del 
-\emph on
-cluster
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Por limitaciones de espacio, en dicho diagrama hemos omitido cuatro líneas
- de vida: las de los objetos VMServerCallback e ImageRepositoryCallback
- y las de dos actores: un servidor de máquinas virtuales y el repositorio
- de imágenes.
- 
-\end_layout
-
-\begin_layout Standard
-Al recibir un paquete, el objeto 
-\family typewriter
-NetworkManager
-\family default
- invoca al método 
-\family typewriter
-processPacket()
-\family default
- de un objeto 
-\family typewriter
-VMServerCallback
-\family default
- o de un objeto 
-\family typewriter
-ImageRepositoryCallback
-\family default
-, según la conexión por la que se haya recibido el paquete.
- Son estos objetos los que, a su vez, llaman los métodos de procesamiento
- de paquetes de los objetos 
-\family typewriter
-VMServerPacketReactor 
-\family default
-y 
-\family typewriter
-ImageRepositoryPacketReactor
-\family default
- respectivamente.
-\end_layout
-
-\begin_layout Standard
-En el resto de diagramas de secuencia relacionados con el servidor de 
-\emph on
-cluster
-\emph default
-, también omitiremos las líneas de vida de los objetos 
-\family typewriter
-VMServerCallback 
-\family default
-y 
-\family typewriter
-ImageRepositoryCallback
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-En cualquier caso, como podemos observar en el diagrama de secuencia de
- la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Actualización-del-estado-cluster"
-
-\end_inset
-
-, cuando el hilo termina de enviar los paquetes, dormirá hasta la siguiente
- actualización del estado de las máquinas del 
-\emph on
-cluster
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-Al recibir los paquetes de respuesta, los objetos 
-\family typewriter
-VMServerPacketReactor
-\family default
- e 
-\family typewriter
-ImageRepositoryPacketReactor
-\end_layout
-
-\begin_layout Enumerate
-leen el contenido de dichos paquetes, utilizando para ello un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
- o un objeto 
-\family typewriter
-ImageRepositoryPacketHandler
-\family default
- respectivamente.
-\end_layout
-
-\begin_layout Enumerate
-en función del tipo del paquete,
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-actualizan el estado de la máquina correspondiente en la base de datos del
- servidor de 
-\emph on
-cluster
-\emph default
-, o
-\end_layout
-
-\begin_layout Itemize
-registran en la base de datos del servidor de 
-\emph on
-cluster
-\emph default
-, si es necesario, la máquina virtual y los datos de conexión de su servidor
- VNC.
-\end_layout
-
-\begin_layout Standard
-En ambos casos, se utiliza un objeto 
-\family typewriter
-ClusterServerDBConnector
-\family default
-.
-\end_layout
-
-\end_deeper
-\begin_layout Subsubsection
 Gestión de los servidores de máquinas virtuales
 \end_layout
 
@@ -27306,7 +27106,14 @@ cluster
 \end_layout
 
 \begin_layout Paragraph
-Arranque de una máquina virtual: secuencia básica
+Arranque de una máquina virtual: secuencia básica 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Arranque-MV-sec-básica"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -27670,7 +27477,11 @@ Arranque de una máquina virtual: tratamiento de errores
 \end_layout
 
 \begin_layout Standard
-Como se muestra en el diagrama, siempre que se detecta uno de estos errores
+Siempre que se detecta uno de estos errores
+\end_layout
+
+\begin_layout Enumerate
+se liberan los recursos preasignados a la máquina virtual.
 \end_layout
 
 \begin_layout Enumerate
@@ -28004,7 +27815,905 @@ reference "par:Apagado-forzoso-MV-errores"
 \end_layout
 
 \begin_layout Subsubsection
-Creación y edición de imágenes
+Actualización del estado de las máquinas del 
+\emph on
+cluster 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Actualización-del-estado-cluster"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para poder realizar el balanceado de carga adecuadamente y comprobar si
+ el 
+\emph on
+cluster
+\emph default
+ puede atender las peticiones de los usuarios, el servidor de 
+\emph on
+cluster
+\emph default
+ debe recopilar periódicamente el estado del resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Para ello, se utiliza un hilo, que enviará periódicamente los correspondientes
+ paquetes de solicitud de estado y de solicitud de datos de conexión VNC
+ al resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
+ El envío de estos paquetes y el procesamiento de las respuestas asociadas
+ aparecen en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-del-estado-cluster"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Actualización estado.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Actualización-del-estado-cluster"
+
+\end_inset
+
+Actualización del estado de las máquinas del 
+\emph on
+cluster
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por limitaciones de espacio, en dicho diagrama hemos omitido cuatro líneas
+ de vida: las de los objetos VMServerCallback e ImageRepositoryCallback
+ y las de dos actores: un servidor de máquinas virtuales y el repositorio
+ de imágenes.
+ 
+\end_layout
+
+\begin_layout Standard
+Al recibir un paquete, el objeto 
+\family typewriter
+NetworkManager
+\family default
+ invoca al método 
+\family typewriter
+processPacket()
+\family default
+ de un objeto 
+\family typewriter
+VMServerCallback
+\family default
+ o de un objeto 
+\family typewriter
+ImageRepositoryCallback
+\family default
+, según la conexión por la que se haya recibido el paquete.
+ Son estos objetos los que, a su vez, llaman los métodos de procesamiento
+ de paquetes de los objetos 
+\family typewriter
+VMServerPacketReactor 
+\family default
+y 
+\family typewriter
+ImageRepositoryPacketReactor
+\family default
+ respectivamente.
+\end_layout
+
+\begin_layout Standard
+En el resto de diagramas de secuencia relacionados con el servidor de 
+\emph on
+cluster
+\emph default
+, también omitiremos las líneas de vida de los objetos 
+\family typewriter
+VMServerCallback 
+\family default
+y 
+\family typewriter
+ImageRepositoryCallback
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+En cualquier caso, como podemos observar en el diagrama de secuencia de
+ la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-del-estado-cluster"
+
+\end_inset
+
+, cuando el hilo termina de enviar los paquetes, dormirá hasta la siguiente
+ actualización del estado de las máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Al recibir los paquetes de respuesta, los objetos 
+\family typewriter
+VMServerPacketReactor
+\family default
+ e 
+\family typewriter
+ImageRepositoryPacketReactor
+\end_layout
+
+\begin_layout Enumerate
+leen el contenido de dichos paquetes, utilizando para ello un objeto 
+\family typewriter
+VMServerPacketHandler
+\family default
+ o un objeto 
+\family typewriter
+ImageRepositoryPacketHandler
+\family default
+ respectivamente.
+\end_layout
+
+\begin_layout Enumerate
+en función del tipo del paquete,
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+actualizan el estado de la máquina correspondiente en la base de datos del
+ servidor de 
+\emph on
+cluster
+\emph default
+, o
+\end_layout
+
+\begin_layout Itemize
+registran o borran en la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+, si es necesario, el identificador único de la máquina virtual y los datos
+ de conexión de su servidor VNC, o
+\end_layout
+
+\begin_layout Itemize
+liberan los recursos preasignados a las máquinas virtuales que aloja el
+ servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+En ambos casos, se utiliza un objeto 
+\family typewriter
+ClusterServerDBConnector
+\family default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+Despliegue de imágenes de disco
+\end_layout
+
+\begin_layout Subsubsection
+Borrado de imágenes de disco
+\end_layout
+
+\begin_layout Subsubsection
+Creación y edición de imágenes de disco
+\end_layout
+
+\begin_layout Standard
+Desde el punto de vista del servidor de cluster, los procesos de creación
+ y edición de imágenes se dividen en dos fases:
+\end_layout
+
+\begin_layout Itemize
+el arranque de la máquina virtual que se usará para editar las imágenes
+ de disco, y
+\end_layout
+
+\begin_layout Itemize
+la actualización de todas las copias de dichas imágenes de disco para que
+ contengan las modificaciones realizadas.
+\end_layout
+
+\begin_layout Standard
+En primer lugar, nos centraremos en las interacciones que tienen lugar en
+ la primera fase.
+ Posteriormente, explicaremos las interacciones que tienen lugar en la segunda
+ fase.
+\end_layout
+
+\begin_layout Paragraph
+Arranque de la máquina virtual: flujo básico
+\end_layout
+
+\begin_layout Standard
+Puesto que el servidor de 
+\emph on
+cluster 
+\emph default
+no interactúa con el repositorio de imágenes durante los procesos de creación
+ y edición de imágenes de disco, la primera fase de ambos es casi idéntica.
+\end_layout
+
+\begin_layout Standard
+La creación de nuevas imágenes de disco comienza con la recepción de un
+ paquete del tipo 
+\family sans
+Crear Imagen
+\family default
+.
+ Por su parte, la edición de imágenes de disco existentes comienza con la
+ recepción de un paquete del tipo 
+\family sans
+Editar imagen
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Creación-cluster-arranque-no-errores"
+
+\end_inset
+
+ muestra cómo se procesa un paquete del tipo 
+\family sans
+Crear Imagen
+\family default
+.
+ Por su parte, el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Edición-cluster-arranque-no-errores"
+
+\end_inset
+
+ muestra cómo se procesa un paquete del tipo 
+\family sans
+Editar imagen
+\family default
+.
+ En ambos, hemos supuesto que no se produce ningún error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Creación arranque MV sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Creación-cluster-arranque-no-errores"
+
+\end_inset
+
+Creación de imágenes de disco: arranque de la máquina virtual sin errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Edición arranque MV sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Edición-cluster-arranque-no-errores"
+
+\end_inset
+
+Creación de imágenes de disco: arranque de la máquina virtual sin errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ambos procesos son muy similares al proceso de una máquina virtual 
+\begin_inset Quotes eld
+\end_inset
+
+normal
+\begin_inset Quotes erd
+\end_inset
+
+, que describimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+.
+ No obstante, existen las siguientes diferencias:
+\end_layout
+
+\begin_layout Itemize
+en ambos casos, se reserva espacio en disco en el repositorio de imágenes,
+ ya que, una vez creadas o editadas las imágenes de disco, estas se comprimirán
+ y transferirán a dicha máquina.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+En principio, se reserva el espacio en disco máximo que pueden llegar a
+ ocupar las imágenes, aunque es posible reservar menos modificando un parámetro
+ del fichero de configuración del demonio del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+cuando se editan imágenes de disco, estas se bloquean, y sólo se liberarán
+ cuando el proceso de edición finalice.
+ Esto nos permite garantizar que dos usuarios nunca editarán a la vez las
+ mismas imágenes de disco.
+\end_layout
+
+\begin_layout Itemize
+cuando se crean imágenes de disco, se asigna temporalmente una familia de
+ máquinas virtuales a las nuevas imágenes de disco.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Creación-familias-mvs"
+
+\end_inset
+
+, todas las máquinas virtuales que pertenecen a la misma familia tienen
+ asociado el mismo número de CPUs virtuales, la misma cantidad de memoria
+ RAM y discos duros del mismo tamaño.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Finalmente, debemos recordar que no todos los servidores de máquinas virtuales
+ podrán utilizarse para crear o editar imágenes de disco: el servidor de
+ 
+\emph on
+cluster
+\emph default
+ sólo considerará aquellos que tengan el 
+\emph on
+flag
+\emph default
+ de edición activado.
+\end_layout
+
+\begin_layout Paragraph
+Arranque de la máquina virtual: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Al arrancar una máquina virtual que se utiliza para crear o editar imágenes
+ de disco, se producirán errores cuando
+\end_layout
+
+\begin_layout Itemize
+no existe ningún servidor de edición que pueda albergar la máquina.
+\end_layout
+
+\begin_layout Itemize
+no existe suficiente espacio en disco en el repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Asimismo, cuando se editan imágenes de disco también pueden producirse errores
+ cuando otro usuario ya está editando dichas imágenes.
+\end_layout
+
+\begin_layout Standard
+Sea cual sea el error que se produzca, siempre se procede de forma similar:
+ 
+\end_layout
+
+\begin_layout Enumerate
+se aborta el proceso de creación o edición de imágenes de disco.
+\end_layout
+
+\begin_layout Enumerate
+se liberan todos los recursos asignados a la máquina virtual y los bloqueos
+ de imágenes (si los hay).
+\end_layout
+
+\begin_layout Enumerate
+se crea un paquete del tipo 
+\family sans
+Error de creación de imagen
+\family default
+ o del tipo 
+\family sans
+Error de edición de imagen
+\family default
+.
+ Ambos tipos de paquete contienen el identificador único de la petición
+ y un código de descripción del error.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor web.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Edición arranque MV con errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Edición-cluster-arranque-error"
+
+\end_inset
+
+Edición de imágenes de disco: tratamiento de errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Edición-cluster-arranque-error"
+
+\end_inset
+
+ muestra cómo se procesa el segundo tipo de error.
+ En él, se distinguen claramente los pasos anteriores.
+\end_layout
+
+\begin_layout Paragraph
+Recursos preasignados
+\end_layout
+
+\begin_layout Standard
+Al crear o editar imágenes de disco, se reservan, entre otras cosas,
+\end_layout
+
+\begin_layout Itemize
+el espacio en disco que ocupará el fichero comprimido con los nuevos datos
+ en el repositorio de imágenes, y
+\end_layout
+
+\begin_layout Itemize
+el espacio en disco que ocuparán el fichero comprimido y las imágenes de
+ disco que contiene en el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+En la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-del-estado-cluster"
+
+\end_inset
+
+ dijimos que, al recibir un paquete con información de estado procedente
+ de un servidor de máquinas virtuales, se liberan los recursos preasignados
+ a las máquinas virtuales que residen en dicho servidor.
+\end_layout
+
+\begin_layout Standard
+No obstante, en caso de que dichas máquinas virtuales se estén utilizando
+ para crear o editar imágenes de disco, no se liberarán todos los recursos
+ preasignados ya que, tras el arranque de estas máquinas,
+\end_layout
+
+\begin_layout Itemize
+es necesario volver a comprimir las imágenes de disco, lo cual requiere
+ mucho espacio en disco en el servidor de máquinas virtuales, y
+\end_layout
+
+\begin_layout Itemize
+es necesario subir un fichero comprimido al repositorio, cosa que también
+ requiere espacio en disco en el repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Por tanto, durante los procesos de creación y edición de máquinas virtuales,
+ se seguirá reservando el espacio en disco que ocupará el fichero comprimido
+ en el servidor de máquinas virtuales y en el repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que los servidores de máquinas virtuales cuentan con
+ información suficiente para estimar el espacio en disco requerido por la
+ operación de compresión.
+ No obstante, para facilitar la administración de la infraestructura, hemos
+ preferido centralizar esos cálculos en el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, resulta inviable que el repositorio de imágenes reserve espacio
+ en disco en una operación de edición de imágenes de disco, ya que 
+\end_layout
+
+\begin_layout Itemize
+las imágenes de disco se almacenan en un fichero comprimido, y
+\end_layout
+
+\begin_layout Itemize
+para averiguar el tamaño máximo de una imagen de disco es necesario leer
+ su encabezado, cosa que sólo es posible extrayendo el fichero comprimido.
+\end_layout
+
+\begin_layout Paragraph
+Apagado de la máquina virtual
+\end_layout
+
+\begin_layout Standard
+Como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Creación-y-edición-imágenes-serv-VMs"
+
+\end_inset
+
+, cuando se apaga una máquina virtual que se utiliza para crear o editar
+ imágenes de disco, estas se transfieren al repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Acto seguido, el servidor de máquinas virtuales enviará un paquete del tipo
+ 
+\family sans
+Imagen editada
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+.
+ Dicho paquete contiene el identificador único de la petición y el identificador
+ único de la máquina virtual.
+ En esta sección, estudiaremos cómo se procesan estos paquetes.
+ 
+\end_layout
+
+\begin_layout Standard
+En primer lugar, comenzaremos estudiando cómo se procesan cuando se ha terminado
+ de crear dos nuevas imágenes de disco.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Creación-apagado-cluster"
+
+\end_inset
+
+ muestra cómo se actúa en estos casos.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Apagado MV creación.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Creación-apagado-cluster"
+
+\end_inset
+
+Creación de imágenes de disco: apagado de la máquina virtual
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el ese diagrama, al procesar el paquete del tipo
+ 
+\family sans
+Imagen editada
+\family default
+,
+\end_layout
+
+\begin_layout Enumerate
+se liberan todos los recursos que seguían asignados a la máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+se registra el identificador de las nuevas imágenes de disco, así como la
+ familia de máquinas virtuales a la que está asociado.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Imagen creada
+\family default
+.
+ Estos paquetes contienen el identificador único de la petición y el identificad
+or de las nuevas imágenes.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor web.
+\end_layout
+
+\begin_layout Standard
+A partir de este momento, será posible desplegar las nuevas imágenes de
+ disco o enviar una petición de edición para seguir modificando su contenido.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Edición-apagado-cluster"
+
+\end_inset
+
+ muestra cómo se procesa un paquete del tipo 
+\family sans
+Imagen editada
+\family default
+ cuando se han terminado de editar dos imágenes de disco.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Apagado MV edición.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Edición-apagado-cluster"
+
+\end_inset
+
+Edición de imágenes de disco: apagado de la máquina virtual
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En este caso, se procede de la siguiente manera:
+\end_layout
+
+\begin_layout Enumerate
+nuevamente, se liberan todos los recursos que seguían asignados a la máquina
+ virtual.
+\end_layout
+
+\begin_layout Enumerate
+se liberan las imágenes de disco.
+ A partir de este momento, cualquier usuario podrá empezar a editarlas si
+ lo desea.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Imagen editada
+\family default
+.
+ Nuevamente, estos paquetes contienen el identificador único de la petición
+ y el identificador de las nuevas imágenes.
+\end_layout
+
+\begin_layout Enumerate
+finalmente, se envía el paquete del tipo 
+\family sans
+Imagen editada
+\family default
+ al servidor web.
+\end_layout
+
+\begin_layout Standard
+A diferencia de lo que ocurría en el caso anterior, cuando las imágenes
+ de disco terminan de editarse es posible seguir editándolas o sobreescribir
+ todas sus copias.
+ Estudiaremos este proceso en la próxima sección.
+\end_layout
+
+\begin_layout Paragraph
+Despliegue de una imagen editada
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -28014,15 +28723,24 @@ clusterEndpoint
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 TODO.
  control temporal de peticiones.
  Emitir x por segundo como máximo
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 TODO.
  No control de acceso.
  Se delega en el servidor web para hacer eso.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
