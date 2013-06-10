@@ -9089,7 +9089,11 @@ Es importante notar que:
 \begin_layout Itemize
 es el hilo de recepción y no la conexión de red el que indica al cliente
  la recepción de un nuevo paquete.
- Para ello, se sigue utilizando la interfaz que define la clase NetworkCallback.
+ Para ello, se sigue utilizando la interfaz que define la clase 
+\family typewriter
+NetworkCallback
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
@@ -10842,7 +10846,14 @@ Tras esto, el repositorio de imágenes está totalmente operativo.
 \end_layout
 
 \begin_layout Subsubsection
-Arranque del repositorio de imágenes: tratamiento de errores
+Arranque del repositorio de imágenes: tratamiento de errores 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10936,6 +10947,12 @@ Arranque del repositorio de imágenes: tratamiento de errores
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Es importante notar que el servicio de red debe detenerse siempre desde
+ el hilo principal ya que, si se intenta detener desde un hilo de red, se
+ producirá un cuelgue.
 \end_layout
 
 \begin_layout Subsubsection
@@ -18244,21 +18261,22 @@ reference "fig:Errores-Arranque-Servidor-MVs"
 \end_inset
 
  muestra cómo se actúa al detectar que el puerto de escucha ya está en uso.
- En dicho diagrama, hemos omitido todo el proceso de inicialización: es
- idéntico al que vimos en la sección anterior.
+ Este error es el que más procesamiento requiere.
+ Por claridad, en el diagrama hemos omitido la mayoría de fases del proceso
+ de inicialización: estas son idénticas a la de la sección anterior.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Arranque.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Error arranque.pdf
 	scale 80
 
 \end_inset
@@ -18287,6 +18305,36 @@ Arranque del servidor de máquinas virtuales: tratamiento de erores
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, cuando se detecta el error, el hilo
+ principal d
+\end_layout
+
+\begin_layout Enumerate
+destruye todas las máquinas virtuales activas.
+\end_layout
+
+\begin_layout Enumerate
+detiene los hilos asociados a las colas de transferencias y compresión.
+\end_layout
+
+\begin_layout Enumerate
+detiene el servicio de red, por lo que se dejarán de atender las peticiones
+ recibidas.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+, el servicio de red debe detenerse siempre desde el hilo principal ya que,
+ si se intenta detener desde un hilo de red, se producirá un cuelgue.
 \end_layout
 
 \begin_layout Subsubsection
@@ -19781,7 +19829,7 @@ Apagado con espera
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
