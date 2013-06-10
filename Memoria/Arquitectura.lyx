@@ -20205,7 +20205,7 @@ entemente.
 \family typewriter
 /CygnusCloud/main/login
 \family default
- : Es la página de inicio de sesión donde el usuario introduce su nombre
+: Es la página de inicio de sesión donde el usuario introduce su nombre
  y contraseña para iniciar la sesión.
 \end_layout
 
@@ -20214,7 +20214,7 @@ entemente.
 \family typewriter
 /CygnusCloud/main/about
 \family default
- : Es la página en la que se habla acerca de CygnusCloud y su finalidad.
+: Es la página en la que se habla acerca de CygnusCloud y su finalidad.
 \end_layout
 
 \begin_layout Itemize
@@ -20222,7 +20222,7 @@ entemente.
 \family typewriter
 /CygnusCloud/student/runVM
 \family default
- : Es la página de arranque de máquinas virtuales para los usuarios.
+: Es la página de arranque de máquinas virtuales para los usuarios.
 \end_layout
 
 \begin_layout Itemize
@@ -20230,7 +20230,7 @@ entemente.
 \family typewriter
 /CygnusCloud/student/runningVM/stopVM
 \family default
- : Página encargada de detener máquinas virtuales en ejecución.
+: Página encargada de detener máquinas virtuales en ejecución.
 \end_layout
 
 \begin_layout Itemize
@@ -20238,8 +20238,8 @@ entemente.
 \family typewriter
 /CygnusCloud/student/runningVM/openVM
 \family default
- : Esta página permite abrir una máquina virtual en ejecución arrancada
- por el alumnos.
+: Esta página permite abrir una máquina virtual en ejecución arrancada por
+ el alumnos.
 \end_layout
 
 \begin_layout Itemize
@@ -20247,7 +20247,7 @@ entemente.
 \family typewriter
 /CygnusCloud/administrator/runVM/run
 \family default
- : Es la página de arranque de máquinas virtuales para los administradores.
+: Es la página de arranque de máquinas virtuales para los administradores.
 \end_layout
 
 \begin_layout Itemize
@@ -20255,7 +20255,7 @@ entemente.
 \family typewriter
 /CygnusCloud/administrator/runVM/stop
 \family default
- : Es la página de detención de máquinas virtuales en ejecución para los
+: Es la página de detención de máquinas virtuales en ejecución para los
  administradores.
 \end_layout
 
@@ -20264,7 +20264,7 @@ entemente.
 \family typewriter
 /CygnusCloud/administrator/runVM/open
 \family default
- : Página que permite abrir una máquina en ejecución.
+: Página que permite abrir una máquina en ejecución.
 \end_layout
 
 \begin_layout Itemize
@@ -20272,7 +20272,7 @@ entemente.
 \family typewriter
 /CygnusCloud/administrator/runVM/edit
 \family default
- : Página que permite editar una máquina virtual con respecto a el servidor
+: Página que permite editar una máquina virtual con respecto a el servidor
  de máquinas virtuales donde se encuentra desplegada.
 \end_layout
 
@@ -20281,7 +20281,7 @@ entemente.
 \family typewriter
 /CygnusCloud/administrator/servers/add_servers
 \family default
- : Es la página encargada de añadir nuevos servidores y borrar algún servidor
+: Es la página encargada de añadir nuevos servidores y borrar algún servidor
  existente.
 \end_layout
 
@@ -20290,8 +20290,7 @@ entemente.
 \family typewriter
 /CygnusCloud/administrator/servers/remove_servers
 \family default
- : Es la página encargada de eliminar servidores de máquinas virtuales existente
-s.
+: Es la página encargada de eliminar servidores de máquinas virtuales existentes.
 \end_layout
 
 \begin_layout Itemize
@@ -20299,7 +20298,7 @@ s.
 \family typewriter
 CygnusCloud/administrator/servers/servers_state
 \family default
- : Página que muestra el estado en que se encuentra el repositorio y los
+: Página que muestra el estado en que se encuentra el repositorio y los
  servidores de máquinas virtuales activos.
 \end_layout
 
@@ -20308,7 +20307,7 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/administrator/servers/stop_system
 \family default
- : Es la página que permite detener todos los servidores de la infraestructura.
+: Es la página que permite detener todos los servidores de la infraestructura.
 \end_layout
 
 \begin_layout Itemize
@@ -20316,7 +20315,7 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/administrator/users/remove
 \family default
- : Esta es la página encargada de eliminar a usuarios previamente creados.
+: Esta es la página encargada de eliminar a usuarios previamente creados.
 \end_layout
 
 \begin_layout Itemize
@@ -20324,7 +20323,7 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/administrator/users/add
 \family default
- : Es la página encargada de crear nuevos usuarios con las especificaciones
+: Es la página encargada de crear nuevos usuarios con las especificaciones
  determinadas por el administrador.
 \end_layout
 
@@ -20333,8 +20332,8 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/administrator/users/associate_subjects
 \family default
- : Es la página encargada de establecer las relaciones entre un usuario
- previamente creado y un grupo de asignatura.
+: Es la página encargada de establecer las relaciones entre un usuario previamen
+te creado y un grupo de asignatura.
 \end_layout
 
 \begin_layout Itemize
@@ -20342,8 +20341,8 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/administrator/subjects/add
 \family default
- : Es la página encargada de crear nuevos grupos de asignaturas con la informaci
-ón introducida por el administrador.
+: Es la página encargada de crear nuevos grupos de asignaturas con la informació
+n introducida por el administrador.
 \end_layout
 
 \begin_layout Itemize
@@ -20351,7 +20350,7 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/administrator/subjects/remove
 \family default
- : Es la página encargada de eliminar algún grupo de asignatura existente.
+: Es la página encargada de eliminar algún grupo de asignatura existente.
 \end_layout
 
 \begin_layout Itemize
@@ -20359,7 +20358,7 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/administrator/showNotifications
 \family default
- : Página que muestra las notificaciones pendientes para este administrador.
+: Página que muestra las notificaciones pendientes para este administrador.
 \end_layout
 
 \begin_layout Itemize
@@ -20367,7 +20366,7 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/vncClient/VNCPage
 \family default
- : Página que contiene el escritorio de trabajo ejecutado por noVNC.
+: Página que contiene el escritorio de trabajo ejecutado por noVNC.
 \end_layout
 
 \begin_layout Itemize
@@ -20375,7 +20374,7 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/teacher/runVM/run
 \family default
- : Esta página muestra las máquinas que pueden ser ejecutadas por el profesor
+: Esta página muestra las máquinas que pueden ser ejecutadas por el profesor
 \end_layout
 
 \begin_layout Itemize
@@ -20383,8 +20382,8 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/teacher/runningVM/stopVM
 \family default
- : Página que permite detener una máquina virtual en ejecución para los
- profesores.
+: Página que permite detener una máquina virtual en ejecución para los profesore
+s.
 \end_layout
 
 \begin_layout Itemize
@@ -20392,7 +20391,7 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 /CygnusCloud/teacher/runningVM/openVM
 \family default
- : Es la página de apertura de máquinas en ejecución para los profesores.
+: Es la página de apertura de máquinas en ejecución para los profesores.
 \end_layout
 
 \begin_layout Itemize
@@ -20400,7 +20399,7 @@ CygnusCloud/administrator/servers/servers_state
 \family typewriter
 CygnusCloud/teacher/createAndEdit/createVanillaVM
 \family default
- : Esta página permite a un profesor crear una nueva máquina virtual a partir
+: Esta página permite a un profesor crear una nueva máquina virtual a partir
  de otra existente.
 \end_layout
 
@@ -20409,7 +20408,7 @@ CygnusCloud/teacher/createAndEdit/createVanillaVM
 \family typewriter
 /CygnusCloud/teacher/createAndEdit/editVM
 \family default
- : Esta página permite editar máquinas virtuales por parte de un profesor.
+: Esta página permite editar máquinas virtuales por parte de un profesor.
 \end_layout
 
 \begin_layout Itemize
@@ -20417,7 +20416,7 @@ CygnusCloud/teacher/createAndEdit/createVanillaVM
 \family typewriter
 /CygnusCloud/teacher/associateSubjects
 \family default
- : Página que permite asociar una máquina virtual con un determinado grupo
+: Página que permite asociar una máquina virtual con un determinado grupo
  de asignatura.
 \end_layout
 
@@ -20426,7 +20425,7 @@ CygnusCloud/teacher/createAndEdit/createVanillaVM
 \family typewriter
 /CygnusCloud/teacher/showNotifications
 \family default
- : Es la página que muestra las notificaciones pendientes para los profesores.
+: Es la página que muestra las notificaciones pendientes para los profesores.
 \end_layout
 
 \begin_layout Standard
@@ -20540,8 +20539,12 @@ Arranque de todas máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
-Detención de máquinas virtuales arrancadas independientemente del usuarios
- que las arrancó.
+Detención, apertura de máquinas virtuales arrancadas independientemente
+ del usuarios que las arrancó.
+\end_layout
+
+\begin_layout Itemize
+Edición de máquinas virtuales existentes.
 \end_layout
 
 \begin_layout Itemize
@@ -21218,22 +21221,7 @@ Con respecto a las vistas, el diseño de los niveles se simplifica bastante,
 \begin_layout Standard
 \noindent
 \align center
-\begin_inset Quotes eld
-\end_inset
-
-Nombre del controlador
-\begin_inset Quotes erd
-\end_inset
-
-/
-\begin_inset Quotes erd
-\end_inset
-
-nombre de la funcion
-\begin_inset Quotes erd
-\end_inset
-
-.html
+<Nombre del controlador>/<nombre de la función>.html
 \end_layout
 
 \begin_layout Standard
@@ -21259,8 +21247,8 @@ reference "sub:Estructura-de-direcciones"
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways false
-status collapsed
+sideways true
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -21314,13 +21302,9 @@ Con el fin de permitir a los usuarios acceder a las diferentes páginas de
 \begin_layout Itemize
 barra de direcciones para páginas de acceso público.
  En esta barra aparecen las páginas de inicio de sesión y de 
-\begin_inset Quotes eld
-\end_inset
-
+\family typewriter
 Acerca de
-\begin_inset Quotes erd
-\end_inset
-
+\family default
 , a las cuales pueden acceder libremente cualquier usuario que entre en
  la web.
 \end_layout
@@ -21335,14 +21319,13 @@ barra de direcciones para alumnos.
 \begin_layout Itemize
 barra de direcciones para profesores.
  Esta barra incluye las páginas de arranque, creación y edición de máquinas
- virtuales, accesibles por los profesores.
+ virtuales, accesibles para los profesores.
 \end_layout
 
 \begin_layout Itemize
 barra de direcciones para administradores.
- Esta barra contiene todas las páginas de gestión de servidores, asignaturas
- y usuarios.
- Además contiene la página de arranque de máquinas virtuales.
+ Esta barra contiene todas las páginas de gestión de máquinas, servidores,
+ asignaturas y usuarios, además de la página de arranque de máquinas virtuales.
  Su acceso está restringido a usuarios de tipo administrador.
 \end_layout
 
@@ -21353,9 +21336,17 @@ Gestión de usuarios
 \begin_layout Standard
 Para llevar a cabo la gestión de usuarios hemos optado por utilizar una
  de las librerías que Web2py nos ofrece.
- Esta librería, de nombre Auth, contiene todas las funcionalidades necesarias
- con respecto a la gestión de usuarios.
- Auth contiene funciones para gestionar la creación de usuarios, los inicios
+ Esta librería, de nombre 
+\family sans
+Auth
+\family default
+, contiene todas las funcionalidades necesarias con respecto a la gestión
+ de usuarios.
+ 
+\family sans
+Auth
+\family default
+ contiene funciones para gestionar la creación de usuarios, los inicios
  de sesión y las restricciones de acceso a las diferentes páginas.
  Además esta librería ofrece también funciones que devuelven los formularios
  de inicio de sesión y cierre de la misma totalmente implementados para
@@ -21479,7 +21470,7 @@ request.vars.x
 \family typewriter
 x
 \family default
- es el nombre que se le dió a la variable concreta a la que se quiere acceder.
+ es el nombre que se le dio a la variable concreta a la que se quiere acceder.
 \end_layout
 
 \begin_layout Standard
@@ -21508,15 +21499,15 @@ Flujo de ejecución de arranque de una máquina virtual
 \end_layout
 
 \begin_layout Standard
-Con la finalidad de dar una última explicación sobre el funcionamiento interno
- de la web, vamos a ejemplificar de forma detallada cada una de las acciones
- que debe realizar el sistema para atender la petición de arranque de una
- máquina virtual por parte de un alumno que se conecte a nuestra web.
+En este apartado vamos a ejemplificar de forma detallada cada una de las
+ acciones que debe realizar el sistema para atender la petición de arranque
+ de una máquina virtual por parte de un alumno que se conecte a nuestra
+ web.
 \end_layout
 
 \begin_layout Standard
-Una vez el alumno haya pulsado el vinculo que le da acceso a la página de
- CygnusCloud:
+Una vez que el alumno haya pulsado el vínculo que le da acceso a la página
+ de CygnusCloud:
 \end_layout
 
 \begin_layout Itemize
@@ -21539,17 +21530,9 @@ auth
 
 \begin_layout Itemize
 Justamente después se ejecuta la vista asociada a esta función (
-\begin_inset Quotes eld
-\end_inset
-
-
 \family typewriter
 main/login.html
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
 ), la cual recibe el formulario creado por el controlador, le aplica el
  aspecto correspondiente y lo coloca en la página.
 \end_layout
@@ -21599,25 +21582,20 @@ student
 \begin_layout Itemize
 A continuación se ejecuta la vista 
 \family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
 student/runVM.html
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
  la cual recibe el formulario, ajusta su aspecto y lo coloca en la página.
- Además, esta vista, define un script que permite mostrar y ocultar la descripci
-ón de las diferentes máquinas virtuales según se encuentren seleccionadas
- o no.
+ Además, esta vista, define un 
+\shape italic
+script
+\shape default
+ que permite mostrar y ocultar la descripción de las diferentes máquinas
+ virtuales según se encuentren seleccionadas o no.
 \end_layout
 
 \begin_layout Itemize
 Una vez el usuario ha seleccionado alguna máquina virtual y ha pulsado el
- botón de arrnque, el controlador extrae el identificador de la máquina
+ botón de arranque, el controlador extrae el identificador de la máquina
  virtual y pide al conector que arranque dicha máquina.
  El conector devuelve los parámetros de conexión, los cuales son enviados
  como variable en la redirección a la página 
@@ -21642,19 +21620,14 @@ vncPage
 
 \begin_layout Itemize
 La vista asociada a este controlador (
-\begin_inset Quotes eld
-\end_inset
-
-
 \family typewriter
 vncClient/vncPage.html
 \family default
-
-\begin_inset Quotes erd
-\end_inset
-
-) recibe los datos de conexión y ejecuta noVNC, el cual se encarga de mostrar
- el escritorio de trabajo por pantalla.
+) recibe los datos de conexión y ejecuta 
+\family typewriter
+noVNC
+\family default
+, el cual se encarga de mostrar el escritorio de trabajo por pantalla.
 \end_layout
 
 \begin_layout Standard
@@ -21671,8 +21644,8 @@ reference "fig:Secuencia-de-arranque"
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways false
-status open
+sideways true
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -21709,6 +21682,124 @@ name "fig:Secuencia-de-arranque"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Flujo de ejecución de creación de una máquina virtual
+\end_layout
+
+\begin_layout Standard
+A continuación se explicarán cada una de las acciones que deberá realizar
+ la web para poder ejecutar otra de las funcionalidades más importantes
+ del sistema, la creación de máquinas virtuales por parte del profesor a
+ partir de máquinas creadas previamente.
+\end_layout
+
+\begin_layout Standard
+Una vez que el profesor haya accedido a la web de CygnusCloud:
+\end_layout
+
+\begin_layout Itemize
+Se ejecuta la secuencia de inicio de sesión por parte del controlador 
+\family sans
+Main
+\family default
+ de forma similar a como se especifico en los tres primeros puntos del apartado
+ anterior.
+\end_layout
+
+\begin_layout Itemize
+Una vez iniciada la sesión , al ser el usuario del tipo profesor, será redirecci
+onado a la función 
+\family sans
+runVM
+\family default
+ , dentro del controlador 
+\family sans
+teacher
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+El profesor pulsará en la barra de menú sobre la opción 
+\family typewriter
+crear nueva máquina
+\family default
+, dentro de la sección 
+\family typewriter
+crear y editar
+\family default
+.
+ En este momento la función se redirecciona a la función 
+\family sans
+createAndEdit
+\family default
+ con el estado 
+\family sans
+createVanillaVM
+\family default
+ como variable pasada por parámetro.
+\end_layout
+
+\begin_layout Itemize
+En la función 
+\family sans
+createAndEdit
+\family default
+, se comprueba el valor de la variable de estado, se crean los formularios
+ asociados y se devuelven como resultado de la función.
+\end_layout
+
+\begin_layout Itemize
+El fichero html asociado (
+\family typewriter
+teacher/createVanillaVM.html
+\family default
+) recibe ambos formularios, aplica el aspecto correspondiente y los coloca
+ en la página.
+\end_layout
+
+\begin_layout Itemize
+En este momento el profesor indica un nombre y una descripción para la máquina
+ virtual que quiere crear.
+ Después selecciona una de las posibles imágenes base que se le ofrecen
+ teniendo en cuenta el consumo de recursos requerido por cada una.
+ Es posible filtrar las imágenes por el sistema operativa y la variante
+ que tienen instalados por defecto.
+ una vez rellenado todos los campos y seleccionada la imagen base, se pulsa
+ sobre 
+\family typewriter
+crear máquina virtual
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+En este momento, la función recopila la información introducida por el profesor,
+ comprueba que no se haya cometido ningún error y llama a la función 
+\family sans
+createImage
+\family default
+ del conector con esta información.
+\end_layout
+
+\begin_layout Itemize
+La función 
+\family sans
+createImage
+\family default
+ envía la petición al sistema y en caso de no producirse ningún error directo,
+ indica a la web que la petición ha sido enviada.
+\end_layout
+
+\begin_layout Itemize
+Si todo sale bien en el proceso de creación, el profesor podrá comenzar
+ a editar dicha máquina en la página de edición dentro de la sección 
+\family typewriter
+crear y editar
+\family default
+, tal y como se explica en el flujo de ejecución del apartado siguiente.
 \end_layout
 
 \begin_layout Subsubsection
