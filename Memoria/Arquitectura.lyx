@@ -8902,7 +8902,11 @@ Es importante notar que:
 \begin_layout Itemize
 es el hilo de recepción y no la conexión de red el que indica al cliente
  la recepción de un nuevo paquete.
- Para ello, se sigue utilizando la interfaz que define la clase NetworkCallback.
+ Para ello, se sigue utilizando la interfaz que define la clase 
+\family typewriter
+NetworkCallback
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
@@ -10020,9 +10024,14 @@ B
 \begin_layout Standard
 En definitiva, el uso directo de un servidor FTP en el repositorio de imágenes
  presenta serios inconvenientes.
- Por ello, el repositorio de imágenes no sólo utiliza un servidor FTP, y
- añade una capa adicional para resolverlos.
+ Por ello, el demonio del repositorio de imágenes no sólo utiliza un servidor
+ FTP, y añade una capa adicional para resolverlos.
  
+\end_layout
+
+\begin_layout Standard
+Por claridad, de ahora en adelante utilizaremos el término repositorio de
+ imágenes para hacer referencia al demonio del repositorio de imágenes.
 \end_layout
 
 \begin_layout Subsubsection
@@ -10458,7 +10467,7 @@ Más adelante, justificaremos el uso de estas clases, así como la cardinalidad
 \end_layout
 
 \begin_layout Subsubsection
-Arranque del repositorio de imágenes
+Arranque del repositorio de imágenes: secuencia básica
 \end_layout
 
 \begin_layout Standard
@@ -10480,6 +10489,8 @@ ImageRepository
 IR
 \family default
 .
+ Asimismo, estamos suponiendo que no se produce ningún error durante el
+ proceso de arranque
 \end_layout
 
 \begin_layout Standard
@@ -10510,7 +10521,7 @@ name "fig:Arranque-del-repositorio-DS"
 
 \end_inset
 
-Arranque del repositorio de imágenes: diagrama de secuencia
+Arranque del repositorio de imágenes: secuencia básica
 \end_layout
 
 \end_inset
@@ -10612,6 +10623,12 @@ reference "sub:Clases-principales-repositorio"
 \end_layout
 
 \begin_layout Enumerate
+se configura e inicia el servidor FTP.
+ Es importante notar que la contraseña se genera aleatoriamente en cada
+ arranque.
+\end_layout
+
+\begin_layout Enumerate
 se configura y utiliza la conexión de control.
  Para ello, es necesario disponer de un objeto 
 \emph on
@@ -10630,12 +10647,6 @@ CommandsCallback
 \end_layout
 
 \begin_layout Enumerate
-se configura e inicia el servidor FTP.
- Es importante notar que la contraseña se genera aleatoriamente en cada
- arranque.
-\end_layout
-
-\begin_layout Enumerate
 se empieza a asignar 
 \emph on
 slots
@@ -10645,6 +10656,116 @@ slots
 
 \begin_layout Standard
 Tras esto, el repositorio de imágenes está totalmente operativo.
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del repositorio de imágenes: tratamiento de errores 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mientras arranca el demonio del repositorio de imágenes, pueden detectarse
+ los siguientes errores:
+\end_layout
+
+\begin_layout Itemize
+el fichero de configuración del repositorio de imágenes puede ser incorrecto.
+\end_layout
+
+\begin_layout Itemize
+la configuración de la base de datos puede fallar.
+\end_layout
+
+\begin_layout Itemize
+el puerto de la conexión de control puede estar en uso.
+\end_layout
+
+\begin_layout Itemize
+el puerto utilizado por el servidor FTP puede estar en uso.
+\end_layout
+
+\begin_layout Itemize
+la interfaz de red por la que circulará el tráfico FTP puede no estar lista.
+\end_layout
+
+\begin_layout Standard
+Todos estos errores se tratan de la siguiente manera:
+\end_layout
+
+\begin_layout Enumerate
+si está arrancado, se detiene el servidor FTP.
+\end_layout
+
+\begin_layout Enumerate
+si está arrancado, se detiene el servicio de red, por lo que dejan de atenderse
+ las peticiones recibidas por la conexión de control.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-del-repositorio-errores"
+
+\end_inset
+
+ muestra cómo se responde cuando el puerto de la conexión de control está
+ en uso.
+ Puesto que se detecta al final, este es el error que más procesamiento
+ requiere.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Arranque repositorio.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-del-repositorio-errores"
+
+\end_inset
+
+Arranque del repositorio de imágenes: tratamiento de errores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Es importante notar que el servicio de red debe detenerse siempre desde
+ el hilo principal ya que, si se intenta detener desde un hilo de red, se
+ producirá un cuelgue.
 \end_layout
 
 \begin_layout Subsubsection
@@ -10754,7 +10875,7 @@ name "fig:Registro-identificador-imagen"
 
 \end_inset
 
-Registro de un identificador de imagen: diagrama de secuencia
+Registro de un identificador de imagen
 \end_layout
 
 \end_inset
@@ -10925,7 +11046,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Inicio transferencia básico.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Inicio FTP RETR.pdf
 	scale 80
 
 \end_inset
@@ -10943,8 +11064,7 @@ name "fig:Transferencia-imagen-basica"
 
 \end_inset
 
-Inicio de la transferencia de una imagen a una máquina remota: secuencia
- básica
+Inicio de la transferencia de una imagen a una máquina remota
 \end_layout
 
 \end_inset
@@ -11111,7 +11231,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Errores transferencia imagen 1.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Error FTP RETR 1.pdf
 	scale 80
 
 \end_inset
@@ -11156,7 +11276,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Error transferencia 2.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Error FTP RETR 2.pdf
 	scale 80
 
 \end_inset
@@ -11340,7 +11460,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Inicio transferencia FTP RETR exclusiva.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Inicio RETR exclusiva.pdf
 	scale 80
 
 \end_inset
@@ -11534,7 +11654,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Inicio transferencia STOR basico.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Transferencia FTP STOR.pdf
 	scale 80
 
 \end_inset
@@ -14027,7 +14147,34 @@ las máquinas virtuales cuya configuración está siendo editada por un profesor
 \end_layout
 
 \begin_layout Standard
-En esta sección, mostraremos en detalle su diseño.
+En esta sección, presentaremos en detalle su diseño.
+ Para ello, empezaremos mostrando todas las clases que componen el demonio
+ del servidor de máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Standard
+Posteriormente, estudiaremos sus procesos de arranque, las interacciones
+ básicas con el servidor de 
+\emph on
+cluster
+\emph default
+, las interacciones que tienen lugar al crear y editar imágenes de disco
+ y las interacciones que tienen lugar para desplegar y borrar imágenes de
+ disco.
+ Para finalizar, mostraremos los distintos tipos de paquete que permiten
+ al servidor de 
+\emph on
+cluster
+\emph default
+ comunicarse con el demonio del servidor de máquinas virtuales, así como
+ el esquema de la base de datos del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Por claridad, y salvo indicación en contra, de ahora en adelante utilizaremos
+ el término servidor de máquinas virtuales para referiremos al demonio del
+ servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Subsubsection
@@ -17591,7 +17738,7 @@ CompressionThread
 \end_layout
 
 \begin_layout Subsubsection
-Arranque del servidor de máquinas virtuales
+Arranque del servidor de máquinas virtuales: secuencia básica
 \end_layout
 
 \begin_layout Standard
@@ -17622,7 +17769,7 @@ name "fig:Arranque-servidor-mvs"
 
 \end_inset
 
-Arranque del servidor de máquinas virtuales
+Arranque del servidor de máquinas virtuales: secuencia básica
 \end_layout
 
 \end_inset
@@ -17645,7 +17792,7 @@ reference "fig:Arranque-servidor-mvs"
 
 \end_inset
 
-.
+ en el que, por claridad, hemos omitido el tratamiento de los errores.
  Como podemos observar en dicho diagrama, se siguen los siguientes pasos:
 \end_layout
 
@@ -17798,7 +17945,7 @@ VMServerPacketHandler
 \emph on
 cluster
 \emph default
- para comunicarse con el servidor de máuquinas virtuales.
+ para comunicarse con el servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Enumerate
@@ -17872,6 +18019,135 @@ se crea la conexión de control.
 cluster
 \emph default
 .
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del servidor de máquinas virtuales: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Durante el proceso de arranque del demonio del servidor de máquinas virtuales,
+ pueden detectarse los siguientes errores:
+\end_layout
+
+\begin_layout Itemize
+el contenido del fichero de configuración es incorrecto.
+\end_layout
+
+\begin_layout Itemize
+la interfaz de red por la que circulará el tráfico VNC no está lista.
+\end_layout
+
+\begin_layout Itemize
+el puerto de escucha ya está en uso.
+\end_layout
+
+\begin_layout Itemize
+no es posible inicializar la base de datos del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Sea cual sea el error detectado, siempre se procede de la misma manera:
+ 
+\end_layout
+
+\begin_layout Enumerate
+se destruyen todas las máquinas virtuales activas.
+\end_layout
+
+\begin_layout Enumerate
+si están iniciados, se paran los hilos que procesan los elementos de la
+ cola de transferencias y de la cola de compresión.
+\end_layout
+
+\begin_layout Enumerate
+si se ha iniciado, se detiene el servicio de red, por lo que el demonio
+ dejará de escuchar y atender las peticiones recibidas.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Errores-Arranque-Servidor-MVs"
+
+\end_inset
+
+ muestra cómo se actúa al detectar que el puerto de escucha ya está en uso.
+ Este error es el que más procesamiento requiere.
+ Por claridad, en el diagrama hemos omitido la mayoría de fases del proceso
+ de inicialización: estas son idénticas a la de la sección anterior.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Error arranque.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Errores-Arranque-Servidor-MVs"
+
+\end_inset
+
+Arranque del servidor de máquinas virtuales: tratamiento de erores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, cuando se detecta el error, el hilo
+ principal d
+\end_layout
+
+\begin_layout Enumerate
+destruye todas las máquinas virtuales activas.
+\end_layout
+
+\begin_layout Enumerate
+detiene los hilos asociados a las colas de transferencias y compresión.
+\end_layout
+
+\begin_layout Enumerate
+detiene el servicio de red, por lo que se dejarán de atender las peticiones
+ recibidas.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+, el servicio de red debe detenerse siempre desde el hilo principal ya que,
+ si se intenta detener desde un hilo de red, se producirá un cuelgue.
 \end_layout
 
 \begin_layout Subsubsection
@@ -19366,7 +19642,7 @@ Apagado con espera
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -20381,6 +20657,14 @@ la petición se elimina de la cola cuando se ha procesado completamente.
  Esto permite ahorrar tiempo y ancho de banda.
 \end_layout
 
+\begin_layout Itemize
+los datos de conexión al repositorio de imágenes se almacenan en una tabla
+ de la base de datos.
+ Esto nos permite recuperarlos a la hora de subir el fichero comprimido
+ con las nuevas imágenes de disco o con las imágenes de disco modificadas
+ al repositorio de imágenes.
+\end_layout
+
 \begin_layout Paragraph
 Errores en la extracción del fichero comprimido 
 \begin_inset CommandInset label
@@ -20496,12 +20780,17 @@ se crea y encola una transferencia especial.
 \begin_deeper
 \begin_layout Itemize
 si se están creando imágenes de disco, se liberará el identificador pedido,
- y
+ 
 \end_layout
 
 \begin_layout Itemize
 si se están editando imágenes de disco, se liberará el fichero comprimido
- en el repositorio de imágenes.
+ en el repositorio de imágenes, y
+\end_layout
+
+\begin_layout Itemize
+se borrarán los datos de conexión al repositorio de imágenes de la base
+ de datos del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
@@ -21177,6 +21466,14 @@ cluster
 .zip
 \family default
  descargado desde el repositorio de imágenes.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otra parte, en este caso no se almacenan en la base de datos del servidor
+ de máquinas virtuales los datos de conexión al repositorio de imágenes
+ ya que, una vez finalizada la descarga del fichero comprimido, no es necesario
+ volver a interactuar con él para procesar la petición de despliegue.
  El resto del proceso es idéntico al que tiene lugar en la creación y edición
  de imágenes de disco.
 \end_layout
