@@ -26556,6 +26556,13 @@ Solicitud de identificadores de máquinas virtuales activas
 
 \begin_layout Paragraph
 Arranque de un servidor de máquinas virtuales: tratamiento de errores 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Arranque-servidor-MVs-errrores"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -26590,7 +26597,7 @@ reference "fig:Arranque-servidor-MVs-errores"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -26645,11 +26652,353 @@ Error en el arranque de servidor de máquinas virtuales
 \end_layout
 
 \begin_layout Paragraph
-Apagado de un servidor de máquinas virtuales: secuencia básica
+Apagado de un servidor de máquinas virtuales: secuencia básica 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Apagado-servidor-MVs-sec-básica"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
+Para apagar un servidor de máquinas virtuales, el servidor web enviará al
+ servidor de 
+\emph on
+cluster
+\emph default
+ un paquete del tipo 
+\family sans
+Apagar o dar de baja servidor de máquinas virtuales
+\family default
+.
+ Estos paquetes contienen
+\end_layout
 
+\begin_layout Itemize
+el nombre o la dirección IP del servidor de máquinas virtuales a apagar,
+ 
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+flag
+\emph default
+, que toma el valor 
+\family sans
+False
+\family default
+, y
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición.
+\end_layout
+
+\begin_layout Standard
+Cuando se reciben, el servidor de 
+\emph on
+cluster
+\emph default
+ los procesa de acuerdo al diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-servidor-MVs-sin-errores"
+
+\end_inset
+
+.
+ Por claridad, al crear el diagrama hemos supuesto que no se produce ningún
+ error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Apagado servidor MVs sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-servidor-MVs-sin-errores"
+
+\end_inset
+
+Apagado de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se extraen los datos del servidor de máquinas virtuales de la base de datos
+ del servidor de 
+\emph on
+cluster
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+se actualiza el estado del servidor de máquinas virtuales en la base de
+ datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+ A partir de este momento, el servidor de 
+\emph on
+cluster
+\emph default
+ dejará de contar con él.
+\end_layout
+
+\begin_layout Enumerate
+se construye y envía un paquete del tipo 
+\family sans
+Apagado con espera
+\family default
+ al servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se cierra la conexión con el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Comando ejecutado
+\family default
+ y se envía al servidor web.
+\end_layout
+
+\begin_layout Paragraph
+Apagado de un servidor de máquinas virtuales: tratamiento de errores
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Apagado-servidor-MVs-errores"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cuando se apaga un servidor de máquinas virtuales, se producirá un error
+ cuando el servidor de máquinas virtuales no está registrado.
+ 
+\end_layout
+
+\begin_layout Standard
+Para procesarlo, se procederá exactamente igual que en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-servidor-MVs-errrores"
+
+\end_inset
+
+, por lo que en esta sección no repetiremos nuevamente el proceso.
+ Naturalmente, en este caso no se enviarán al servidor de 
+\emph on
+cluster 
+\emph default
+paquetes del tipo 
+\family sans
+Error en el arranque de servidor de máquinas virtuales
+\family default
+, sino paquetes del tipo 
+\family sans
+Error en el apagado o baja de servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que, si se intenta apagar un servidor de
+ máquinas virtuales que ya está apagado, la petición no tendrá ningún efecto.
+ Para ahorrar ancho de banda, hemos decidido no generar errores en estas
+ situaciones.
+\end_layout
+
+\begin_layout Paragraph
+Baja de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\begin_layout Standard
+El proceso de baja de un servidor de máquinas virtuales es muy similar al
+ proceso de apagado, del que hablamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-servidor-MVs-sec-básica"
+
+\end_inset
+
+.
+ En esta sección, estudiaremos las modificaciones que hay que hacer en él
+ para dar de baja un servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Baja servidor MVs sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Baja-servidor-MVs-sin-errores"
+
+\end_inset
+
+Baja de un servidor de máquinas virtuales: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Baja-servidor-MVs-sin-errores"
+
+\end_inset
+
+ muestra la variante más larga de este proceso, en la que es necesario apagar
+ el servidor de máquinas virtuales antes de darlo de baja.
+ Cuando este ya esté apagado, no será necesario volver a apagarlo.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, por claridad hemos supuesto que no se produce ningún error durante
+ el procesamiento de la petición.
+\end_layout
+
+\begin_layout Standard
+Si comparamos el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Baja-servidor-MVs-sin-errores"
+
+\end_inset
+
+ con el del proceso de apagado, que aparece en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-servidor-MVs-sin-errores"
+
+\end_inset
+
+, podemos observar que ambos sólo difieren en la actualización de la base
+ de datos del servidor de 
+\emph on
+cluster
+\emph default
+: en este caso, se borra de ella toda la información asociada al servidor
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Por ello, las operaciones de apagado y baja de servidores de máquinas virtuales
+ utilizan el mismo tipo de paquete, 
+\family sans
+Apagar o dar de baja servidor de máquinas virtuales
+\family default
+.
+ No obstante, en este caso el 
+\emph on
+flag
+\emph default
+ toma el valor 
+\family sans
+True
+\family default
+, por lo que este nos permite distinguir entre las operaciones de apagado
+ y baja de servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Paragraph
+Baja de un servidor de máquinas virtuales: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Cuando se da de baja un servidor de máquinas virtuales, sólo se producirán
+ errores cuando el servidor correspondiente no está registrado.
+ 
+\end_layout
+
+\begin_layout Standard
+Para tratar estos errores, se procede exactamente igual que en el apagado
+ de un servidor de máquinas virtuales.
+ Puesto que en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Apagado-servidor-MVs-errores"
+
+\end_inset
+
+ vimos este proceso en detalle, no volveremos a reproducirlo.
 \end_layout
 
 \begin_layout Subsection
