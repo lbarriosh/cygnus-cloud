@@ -25902,7 +25902,8 @@ cluster
 
 \begin_layout Standard
 Para ello, se utiliza un hilo, que enviará periódicamente los correspondientes
- paquetes de solicitud de estado al resto de máquinas del 
+ paquetes de solicitud de estado y de solicitud de datos de conexión VNC
+ al resto de máquinas del 
 \emph on
 cluster
 \emph default
@@ -25966,8 +25967,15 @@ cluster
 \end_layout
 
 \begin_layout Standard
-Por claridad, en dicho diagrama hemos omitido dos líneas de vida.
- Al recibir un paquete, el objeto 
+Por limitaciones de espacio, en dicho diagrama hemos omitido cuatro líneas
+ de vida: las de los objetos VMServerCallback e ImageRepositoryCallback
+ y las de dos actores: un servidor de máquinas virtuales y el repositorio
+ de imágenes.
+ 
+\end_layout
+
+\begin_layout Standard
+Al recibir un paquete, el objeto 
 \family typewriter
 NetworkManager
 \family default
@@ -25984,11 +25992,7 @@ VMServerCallback
 ImageRepositoryCallback
 \family default
 , según la conexión por la que se haya recibido el paquete.
- 
-\end_layout
-
-\begin_layout Standard
-Son estos objetos los que, a su vez, llaman los métodos de procesamiento
+ Son estos objetos los que, a su vez, llaman los métodos de procesamiento
  de paquetes de los objetos 
 \family typewriter
 VMServerPacketReactor 
@@ -26005,7 +26009,15 @@ En el resto de diagramas de secuencia relacionados con el servidor de
 \emph on
 cluster
 \emph default
- también omitiremos estas líneas de vida.
+, también omitiremos las líneas de vida de los objetos 
+\family typewriter
+VMServerCallback 
+\family default
+y 
+\family typewriter
+ImageRepositoryCallback
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -26169,14 +26181,14 @@ reference "fig:Alta-servidor-mvs-sin-errores"
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways false
+sideways true
 status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Alta servidor MVs sin errores.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Alta servidor MVs.pdf
 	scale 80
 
 \end_inset
@@ -26326,7 +26338,8 @@ Una vez hecho esto, puede parecer que ya es posible utilizar el servidor
  Pero hemos visto que el algoritmo de balanceado de carga necesita conocer
  el estado de los servidores de máquinas virtuales para poder utilizarlos.
  Por ello, el servidor de máquinas virtuales sólo podrá utilizarse tras
- la próxima actualización del estado del 
+ recibir el paquete de estado correspondiente durante la próxima actualización
+ del estado del 
 \emph on
 cluster
 \emph default
@@ -26509,7 +26522,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque servidor MVs sin errores.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque servidor MVs.pdf
 	scale 80
 
 \end_inset
@@ -27254,6 +27267,106 @@ to de errores
 
 \begin_layout Subsubsection
 Gestión básica de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos cómo interactúan el servidor web y el servidor
+ de 
+\emph on
+cluster
+\emph default
+ en los procesos de arranque, apagado forzoso y reinicio forzoso de una
+ máquina virtual.
+ Estas interacciones son las más frecuentes.
+\end_layout
+
+\begin_layout Paragraph
+Arranque de una máquina virtual: secuencia básica
+\end_layout
+
+\begin_layout Standard
+Cuando un usuario solicita la creación de una máquina virtual, el servidor
+ web envía al servidor de 
+\emph on
+cluster
+\emph default
+ un paquete del tipo Arrancar máquina virtual.
+ Este paquete contiene
+\end_layout
+
+\begin_layout Itemize
+el identificador del usuario que ha enviado la petición,
+\end_layout
+
+\begin_layout Itemize
+el identificador de las imágenes de disco que utilizará la máquina virtual
+ a arrancar, y
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+ muestra cómo se procesan estos paquetes en el servidor de 
+\emph on
+cluster
+\emph default
+.
+ Para resaltar los pasos principales, al construir el diagrama hemos supuesto
+ que no se produce ningún error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque MV sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+Arranque de una máquina virtual: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
