@@ -23637,13 +23637,13 @@ reference "fig:Diagram-web2py"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaSecuenciaWeb2py.png
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/DiagramaSecuenciaWeb2py.png
 	scale 50
 	rotateOrigin center
 
@@ -24076,15 +24076,29 @@ CygnusCloud/teacher/createAndEdit/createVanillaVM
 \end_layout
 
 \begin_layout Standard
-La distribución de estas páginas con respecto a su estructura en el flujo
- de direcciones viene representado en el diagrama de la figura 
+La figura 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Diagrama-de-direcciones_Web"
+reference "fig:Estructura-de-direcciones-estudiantes"
 
 \end_inset
 
-.
+ muestra la estructura de direcciones para los alumnos.
+ De igual forma, la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Estructura-de-direcciones-profesores"
+
+\end_inset
+
+ muestra la estructura de direcciones para los profesor y la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Estructura-de-direcciones-administradores"
+
+\end_inset
+
+ para los administradores.
 \end_layout
 
 \begin_layout Standard
@@ -24094,11 +24108,8 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\noindent
-\align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DireccionesWeb.pdf
-	scale 70
+	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/DireccionesWebEstudiantes.pdf
 
 \end_inset
 
@@ -24109,14 +24120,93 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Diagrama de direcciones web2py.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Diagrama-de-direcciones_Web"
+name "fig:Estructura-de-direcciones-estudiantes"
+
+\end_inset
+
+Estructura de direcciones para los alumnos
+\end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/DireccionesWebProfesores.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Estructura-de-direcciones-profesores"
+
+\end_inset
+
+Estructura de direcciones para los profesores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/DireccionesWebAdministradores.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Estructura-de-direcciones-administradores"
+
+\end_inset
+
+Estructura de direcciones para los administradores
 \end_layout
 
 \end_inset
@@ -24901,8 +24991,8 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/NivelesWeb.pdf
-	scale 70
+	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/NivelesWeb.pdf
+	scale 60
 
 \end_inset
 
@@ -25367,7 +25457,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaSecuenciaArranqueMVWeb.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_secuencia_arranque_MV_Web.pdf
 	scale 70
 	rotateOrigin center
 
@@ -25520,6 +25610,60 @@ Si todo sale bien en el proceso de creación, el profesor podrá comenzar
 crear y editar
 \family default
 , tal y como se explica en el flujo de ejecución del apartado siguiente.
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagrama-de-secuencia-creacionMV-web"
+
+\end_inset
+
+ muestra el diagrama de secuencia con el proceso de creación completo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_Secuencia_creacion_MV_profesor.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-de-secuencia-creacionMV-web"
+
+\end_inset
+
+Diagrama de secuencia creación de una máquina virtual por parte del profesor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -25771,6 +25915,61 @@ Como los procesos de subida y bajada de las máquinas virtuales en edición
  pueden ser bastante largos, existen un conjunto de estados de transición
  intermedios, durante los cuales los usuarios no dispondrán de ninguna opción
  de edición para las máquinas virtuales en edición.
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagrama-de-secuencia-edicionMV-web"
+
+\end_inset
+
+ muestra el proceso completo de edición de una máquina virtual siguiendo
+ los pasos enumerados.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_Secuencia_Edicion_MV_Profesor.pdf
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-de-secuencia-edicionMV-web"
+
+\end_inset
+
+Diagrama de secuencia de edición de una máquina virtual por parte del profesor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
