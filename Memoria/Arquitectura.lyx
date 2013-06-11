@@ -5414,132 +5414,6 @@ Además web2py ofrece una capa de abstracción de base de datos (DAL por su
 \end_layout
 
 \begin_layout Subsubsection*
-=======Modelo Vista-Controlador
-\end_layout
-
-\begin_layout Standard
-Web2py fuerza al desarrollador a utilizar unas buenas prácticas de ingeniería
- del software, evitando la repetición de código en la medida de lo posible
- y estandarizando la manera de hacer las cosas.
- 
-\end_layout
-
-\begin_layout Standard
-Por ello, este framework utiliza un modelo Vista-Controlador que incentiva
- al desarrollador a separar la forma de representar los datos (la vista)
- y el flujo de trabajo de la aplicación (el controlador).
- Este modelo ofrece una estructura modular que permite aislar los posibles
- errores en una sección de código concreta y trabajar en paralelo de forma
- independiente, reduciendo así los posibles tiempos de espera en el desarrollo
- de la web.
-\end_layout
-
-\begin_layout Standard
-El flujo de trabajo típico de una petición web2py viene representado en
- el diagrama 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Diagram-web2py"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/DiagramaSecuenciaWeb2py.png
-	scale 50
-	rotateOrigin center
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Diagram-web2py"
-
-\end_inset
-
-Diagrama de secuencia web2py
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-En el diagrama podemos destacar los siguientes elementos:
-\end_layout
-
-\begin_layout Itemize
-El navegador, a partir del cual el usuario se conectará a la web.
-\end_layout
-
-\begin_layout Itemize
-El servidor, puede ser el servidor incluido en web2py o un servidor de terceros,
- tal como Apache.
-\end_layout
-
-\begin_layout Itemize
-La aplicación principal, encargada de realizar todas las tareas comunes
- tal y como la gestión de cookies, sesiones, transacciones y enrutamiento.
-\end_layout
-
-\begin_layout Itemize
-Los modelos, vistas y controladores que componen la aplicación del desarrollador.
-\end_layout
-
-\begin_layout Itemize
-La Base de datos que se encargará de almacenar la información utilizada
- por la web.
-\end_layout
-
-\begin_layout Standard
-Todas las llamadas se encierran en una transacción.
- Cualquier excepción no contemplada hace que la transacción se cancele.
- 
-\end_layout
-
-\begin_layout Standard
-Con web2py es posible registrar tareas recurrentes para ejecutarse en horas
- específicas y/o después de determinadas acciones.
- También es posible alojar varias aplicaciones en una misma instancia.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Web2PyBook"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection*
 Ventajas
 \end_layout
 
@@ -29879,8 +29753,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/DiagramaSecuenciaWeb2py.png
-	scale 50
-	rotateOrigin center
+	scale 70
 
 \end_inset
 
