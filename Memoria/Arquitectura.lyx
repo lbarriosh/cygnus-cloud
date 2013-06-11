@@ -541,6 +541,195 @@ que hemos podido considerar.
 \end_layout
 
 \begin_layout Section
+Terminología básica
+\end_layout
+
+\begin_layout Standard
+En este capítulo, utilizamos frecuentemente los siguientes términos:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+familia de máquinas virtuales
+\series default
+: conjunto de máquinas virtuales que tienen las mismas características y
+ que utilizan la misma familia de sistemas operativos.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Por ejemplo, todas las máquinas virtuales que utilicen el sistema operativo
+ 
+\emph on
+Linux
+\emph default
+, tengan una CPU, 512 
+\emph on
+megabytes
+\emph default
+ de memoria RAM y 10 GB de espacio en disco pertenecerán a la misma familia.
+ Análogamente, todas las máquinas que utilicen el sistema operativo 
+\emph on
+Windows
+\emph default
+, tengan tres CPUs, 3 
+\emph on
+gigabytes
+\emph default
+ de memoria RAM y 30 GB de espacio en disco pertenecerán a otra familia
+ distinta.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+configuración
+\series default
+ o 
+\series bold
+imagen
+\series default
+: contenido de 
+\emph on
+todos
+\emph default
+ los discos duros asociados a una máquina virtual.
+ La imagen de una máquina virtual determinará el operativo que utiliza y
+ la forma en que los usuarios trabajarán con ella.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Por ejemplo, si al crear una máquina virtual le 
+\begin_inset Quotes eld
+\end_inset
+
+conectamos
+\begin_inset Quotes erd
+\end_inset
+
+ un disco duro virtual con el sistema operativo 
+\emph on
+Windows
+\emph default
+ con un entorno de desarrollo integrado instalado, la máquina utilizará
+ dicho sistema operativo, y en ella podrá utilizarse dicho entorno de desarrollo.
+ Si, en cambio, le 
+\begin_inset Quotes eld
+\end_inset
+
+conectamos
+\begin_inset Quotes erd
+\end_inset
+
+ un disco duro virtual con el sistema operativo 
+\emph on
+Linux
+\emph default
+ y una 
+\emph on
+suite
+\emph default
+ ofimática instalada, la máquina utilizará el sistema operativo 
+\emph on
+Linux
+\emph default
+, y en ella podrá utilizarse la 
+\emph on
+suite
+\emph default
+ ofimática.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+configuración base
+\series default
+, 
+\series bold
+configuración 
+\emph on
+vanilla
+\series default
+\emph default
+, 
+\series bold
+imagen base
+\series default
+ o 
+\series bold
+imagen 
+\emph on
+vanilla
+\series default
+\emph default
+: configuración que sólo contiene un sistema operativo y las herramientas
+ más básicas instaladas.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+anfitrión
+\series default
+ o 
+\series bold
+\emph on
+host
+\series default
+\emph default
+: servidor en el que reside cierta máquina virtual.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+despliegue
+\series default
+: proceso durante el cual un servidor pasa a almacenar una configuración
+ o imagen.
+ Cuando finaliza, esa máquina podrá albergar máquinas virtuales que utilicen
+ la imagen que se despliega.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+cluster
+\series default
+\emph default
+: agrupación de servidores que se utilizan y administran de forma conjunta.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+imagen de disco
+\series default
+: fichero almacenado en el disco duro de la máquina anfitrión, en el que
+ se almacenan los datos de un disco duro asociado a cierta máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+disco duro virtual
+\series default
+: unidad de disco duro de una máquina virtual.
+ Sus datos se almacenarán en una imagen de disco.
+\end_layout
+
+\begin_layout Section
 Decisiones de diseño 
 \begin_inset CommandInset label
 LatexCommand label
@@ -752,7 +941,7 @@ del servidor que alojará las máquinas virtuales, el número máximo de máquin
 
 \begin_layout Standard
 Por otra parte, el arranque de máquinas virtuales y la creación o edición
- de imágenes de disco son operaciones que requieren mucha entrada/salida.
+ de imágenes son operaciones que requieren mucha entrada/salida.
  Para garantizar que el tiempo de respuesta del sistema es adecuado, lo
  más conveniente es que los nodos que albergan máquinas virtuales se dediquen
  a ello en exclusiva.
@@ -794,14 +983,10 @@ name "sub:El-repositorio-de-imagenes"
 \end_layout
 
 \begin_layout Standard
-Los usuarios sólo pueden arrancar máquinas virtuales y crear o editar imágenes
- de disco cuando estos ficheros están desplegados en un servidor de máquinas
+Para arrancar máquinas virtuales y crear o editar configuraciones, las imágenes
+ de disco correspondientes deben estar desplegadas en un servidor de máquinas
  virtuales.
- 
-\end_layout
-
-\begin_layout Standard
-No obstante, hay imágenes de disco que no deben estar desplegadas en ningún
+ No obstante, hay imágenes de disco que no deben estar desplegadas en ningún
  servidor de máquinas virtuales.
  Este es el caso de
 \end_layout
@@ -811,8 +996,7 @@ las imágenes base o imágenes
 \emph on
 vanilla
 \emph default
-, que sólo tienen el sistema operativo configurado con los programas más
- básicos instalados, y
+, y
 \end_layout
 
 \begin_layout Itemize
@@ -820,29 +1004,40 @@ las imágenes de disco que no están en uso y no han terminado de modificarse.
 \end_layout
 
 \begin_layout Standard
-En ambos casos, las imágenes no están completamente configuradas, por lo
- que ningún alumno las podrá arrancar.
- Así, su presencia en un servidor de máquinas virtuales supone un desperdicio
- de espacio en disco.
+En ambos casos, el 
+\emph on
+software
+\emph default
+ de la imagen no está completamente configurado, por lo que ningún usuario
+ podrá utilizarlo para trabajar.
+ Así, la presencia de estas configuraciones en un servidor de máquinas virtuales
+ supone un desperdicio de espacio en disco.
 \end_layout
 
 \begin_layout Standard
 Además, para simplificar la administración del sistema no resulta conveniente
  que las imágenes de disco estén diseminadas entre múltiples máquinas.
- Si existe una máquina que almacena una copia de todas las imágenes de disco
- existentes, para modificar todas las copias existentes de una de ellas
- sólo será necesario acudir a esta máquina, modificar el fichero correspondiente
- y volver a desplegarlo para sobreescribir sus copias antiguas.
+ Si una única máquina del 
+\emph on
+cluster
+\emph default
+ almacena todas las imágenes existentes, para realizar modificaciones en
+ cualquiera de ellas bastará con acudir a un único lugar y, posteriormente,
+ actualizar la configuración en el resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
 \end_layout
 
 \begin_layout Standard
-Esta máquina, a la que llamaremos 
+Por tanto esta máquina, a la que llamaremos 
 \series bold
 repositorio de imágenes
 \series default
 , almacenará una copia de todas las imágenes de disco existentes.
- Asimismo, esta máquina será la única que cuente con una copia las imágenes
- 
+ Asimismo, el repositorio de imágenes será la única que cuente con una copia
+ las imágenes 
 \emph on
 vanilla
 \emph default
@@ -927,10 +1122,10 @@ cluster
 
 \begin_layout Standard
 Por ejemplo, si el repositorio de imágenes no tiene suficiente espacio en
- disco para alojar las modificaciones de dos imágenes de disco, no tiene
- sentido transferir estos ficheros a un servidor de máquinas virtuales y
- alojar en él la máquina virtual que se usará para hacer las modificaciones,
- ya que los ficheros modificados no podrán subirse al repositorio de imágenes.
+ disco para alojar las modificaciones de una configuración, no tiene sentido
+ transferir estos ficheros a un servidor de máquinas virtuales y alojar
+ en él la máquina virtual que se usará para hacer las modificaciones, ya
+ que los ficheros correspondientes no podrán subirse al repositorio de imágenes.
 \end_layout
 
 \begin_layout Standard
@@ -961,32 +1156,27 @@ cluster
 \end_layout
 
 \begin_layout Standard
-Para superar esta limitación, podemos crear varias agrupaciones (
+Para superar esta limitación y atender a un número mayor de usuarios, podemos
+ utilizar varios 
 \emph on
-clusters
+clusters,
 \emph default
-) de servidores de máquinas virtuales, cada una de las cuales tendrá asociado
- su propio servidor de 
+ cada uno de los cuales tendrá asociado su propio servidor de 
 \emph on
 cluster
 \emph default
- y su propio repositorio de imágenes.
- De esta manera, para atender a un número mayor de usuarios bastará con
- utilizar más 
-\emph on
-clusters
-\emph default
-.
- 
+, uno o más servidores de máquinas virtuales y su propio repositorio de
+ imágenes.
 \end_layout
 
 \begin_layout Standard
-Finalmente, es importante notar que cada 
+Es importante notar que, ya que cada 
 \emph on
 cluster
 \emph default
- es completamente autónomo, por lo que no tiene por qué compartir imágenes
- de disco con otros 
+ tiene su propio repositorio de imágenes, es completamente autónomo, por
+ lo que no tiene por qué compartir configuraciones ni familias de máquinas
+ virtuales con otros 
 \emph on
 clusters
 \emph default
@@ -2324,8 +2514,8 @@ En
 \emph on
 CygnusCloud
 \emph default
- es necesario transferir imágenes de disco entre el repositorio de imágenes
- y los servidores de máquinas virtuales.
+ es necesario transferir imágenes entre el repositorio de imágenes y los
+ servidores de máquinas virtuales.
  Para hacerlo, lo más adecuado es utilizar uno de los múltiples protocolos
  de transferencia o de compartición de ficheros existentes.
  En su momento, consideramos los siguientes:
@@ -2514,17 +2704,21 @@ name "sub:Uso-del-servidor-pyftpdlib"
 
 \begin_layout Standard
 Puesto que el repositorio de imágenes almacenará una copia de todas las
- imágenes de disco que es posible utilizar en la infraestructura, lo más
- razonable es que esta máquina albergue un servidor FTP.
+ imágenes que es posible utilizar en el 
+\emph on
+cluster
+\emph default
+, lo más razonable es que esta máquina albergue un servidor FTP.
 \end_layout
 
 \begin_layout Standard
-Por tanto, el repositorio de imágenes debe albergar un servidor FTP y, preferent
-emente, uno escrito en 
+Por tanto, el repositorio de imágenes debe albergar un servidor FTP.
+ Además, para que la interacción con el servidor FTP se simplifique, resulta
+ muy conveniente que este esté escrito en 
 \emph on
 Python
 \emph default
-, ya que ello simplifica la interacción con dicho servidor.
+.
  En su momento, consideramos dos: 
 \family typewriter
 pyftpdlib
@@ -3453,8 +3647,8 @@ Para superar estas limitaciones, sólo existen dos alternativas:
 \end_layout
 
 \begin_layout Itemize
-limitar el tamaño máximo de las imágenes, lo que limita también la versatilidad
- de 
+limitar el tamaño máximo de las imágenes de disco, lo que limita también
+ la versatilidad de 
 \emph on
 CygnusCloud
 \emph default
@@ -3464,7 +3658,7 @@ CygnusCloud
 \begin_layout Itemize
 hacer que todas las máquinas virtuales activas del mismo tipo compartan
  la instalación del sistema operativo y de los programas.
- Esto es posible utilizando imágenes 
+ Esto es posible utilizando imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3478,7 +3672,7 @@ s de
 Windows
 \emph default
 , la primera alternativa no nos pareció aceptable.
- Por ello, decidimos utilizar imágenes 
+ Por ello, decidimos utilizar imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3487,7 +3681,7 @@ copy-on-write
 \end_layout
 
 \begin_layout Standard
-Así, si en el ejemplo anterior utilizásemos imágenes 
+Así, si en el ejemplo anterior utilizásemos imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3511,10 +3705,10 @@ cantidad muy inferior a la del del caso anterior.
 \end_layout
 
 \begin_layout Subsection
-Uso de dos discos duros en cada máquina virtual 
+Uso de dos imágenes de disco en cada máquina virtual 
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Uso-de-dos-discos-duros"
+name "sub:Uso-de-dos-imágenes"
 
 \end_inset
 
@@ -3522,26 +3716,33 @@ name "sub:Uso-de-dos-discos-duros"
 \end_layout
 
 \begin_layout Standard
-El uso de imágenes 
+El uso de imágenes de disco 
 \emph on
 copy-on-write
 \emph default
  nos permite ahorrar una gran cantidad de espacio en disco, pero también
  tiene un serio inconveniente: las escrituras a disco son mucho más lentas
- que en el caso de las imágenes normales.
+ que en el caso de las imágenes de disco normales.
  Esta diferencia se debe al propio funcionamiento de las escrituras.
  
 \end_layout
 
 \begin_layout Standard
-Cuando se escribe en una imagen de disco normal, se consulta una cabecera
- y se actualizan los 
+Cuando se escribe en una imagen de disco 
+\begin_inset Quotes eld
+\end_inset
+
+normal
+\begin_inset Quotes erd
+\end_inset
+
+, se consulta una cabecera y se actualizan los 
 \emph on
 bytes
 \emph default
  correspondientes del fichero.
- Así, las escrituras en este tipo de imágenes son prácticamente igual de
- rápidas que las escrituras directas a disco.
+ Así, las escrituras en estos ficheros son casi igual de rápidas que las
+ escrituras directas a disco.
  
 \end_layout
 
@@ -3563,7 +3764,7 @@ los cambios se escriben a disco, pero no en el fichero de imagen original.
 \end_layout
 
 \begin_layout Standard
-Debido a esto, las escrituras en imágenes 
+Debido a esto, las escrituras en imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3574,7 +3775,7 @@ copy-on-write
 \end_layout
 
 \begin_layout Standard
-Por tanto, si nos limitamos a utilizar imágenes 
+Por tanto, si nos limitamos a utilizar imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3643,7 +3844,7 @@ s, y una imagen normal, que almacenará el fichero de paginación y los datos
 \end_layout
 
 \begin_layout Standard
-Para crear las imágenes 
+Para crear las imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3697,7 +3898,7 @@ QEMU
 \end_layout
 
 \begin_layout Itemize
-pueden utilizarse como imágenes 
+pueden utilizarse como imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3715,7 +3916,7 @@ zlib
 \end_layout
 
 \begin_layout Itemize
-las imágenes 
+las imágenes de disco 
 \family typewriter
 qcow
 \family default
@@ -3725,8 +3926,8 @@ qcow2
 \family default
 crecen dinámicamente a medida que se escriben datos en el disco duro de
  la máquina virtual.
- Así, el espacio libre en las imágenes no ocupará espacio en disco en los
- servidores de máquinas virtuales.
+ Así, el espacio libre en los discos duros virtuales no ocupará espacio
+ en disco en los servidores de máquinas virtuales.
  
 \end_layout
 
@@ -3791,7 +3992,7 @@ optamos por utilizar el formato
 \family typewriter
 qcow2
 \family default
- en las imágenes 
+ en las imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3843,11 +4044,11 @@ qcow2
 \emph on
 copy-on-write
 \emph default
-, utilizando las imágenes 
+, utilizando las imágenes de disco 
 \family typewriter
 qcow2
 \family default
- como imágenes normales.
+ como imágenes de disco normales.
  
 \end_layout
 
@@ -3890,13 +4091,13 @@ Y puesto que al utilizar el formato
 \emph on
  
 \emph default
-RAW se está desperdiciando espacio en disco en muchos casos, decidimos utilizar
- el formato 
+RAW se está desperdiciando espacio en disco en muchos casos, también decidimos
+ utilizar el formato 
 \family typewriter
 qcow2 
 \family default
-en las imágenes que almacenan el fichero de paginación y los datos temporales
- del usuario.
+en las imágenes de disco que almacenan el fichero de paginación y los datos
+ temporales del usuario.
  
 \end_layout
 
@@ -4012,8 +4213,15 @@ que consume muchos recursos.
 
 \begin_layout Standard
 Por ello, hemos creado seis familias de máquinas virtuales.
- Tres de ellas están asociadas a los sistemas operativos Windows, y las
- tres restantes están asociadas a los sistemas operativos Linux.
+ Tres de ellas están asociadas a los sistemas operativos 
+\emph on
+Windows
+\emph default
+, y las tres restantes están asociadas a los sistemas operativos 
+\emph on
+Linux
+\emph default
+.
  Sus características se recogen en los cuadros 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4409,10 +4617,8 @@ name "tab:Características-vanilla-win"
 
 \end_inset
 
-Características de las imágenes 
+Familias de máquinas virtuales 
 \emph on
-vanilla 
-\emph default
 Windows
 \end_layout
 
@@ -4430,7 +4636,7 @@ Windows
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -4803,10 +5009,8 @@ name "tab:Características-vanilla-linux"
 
 \end_inset
 
-Características de las imágenes 
+Familias de máquinas virtuales 
 \emph on
-vanilla 
-\emph default
 Linux
 \end_layout
 
@@ -4821,7 +5025,8 @@ Linux
 \end_layout
 
 \begin_layout Standard
-A la hora de fijar las características de las imágenes 
+A la hora de fijar las características de las familias de máquinas virtuales
+ 
 \emph on
 Windows
 \emph default
@@ -4948,7 +5153,8 @@ De todas formas, estas recomendaciones no tienen por qué cumplirse y, en
 
 \end_deeper
 \begin_layout Standard
-Por otra parte, cuando fijamos las características de las imágenes 
+Por otra parte, cuando fijamos las características de las familias de máquinas
+ virtuales 
 \emph on
 Linux
 \emph default
@@ -4998,9 +5204,9 @@ Nuevamente, el rendimiento de la infraestructura no se verá afectado si
 
 \end_deeper
 \begin_layout Standard
-Finalmente, como el lector habrá notado ya, todas las máquinas virtuales
- tienen asignada una generosa cantidad de espacio en disco.
- Con esto, pretendemos incentivar el uso de las máquinas virtuales con menos
+Finalmente, como el lector habrá notado ya, todas las familias de máquinas
+ virtuales tienen asignada una generosa cantidad de espacio en disco.
+ Con esto, pretendemos incentivar el uso de máquinas virtuales con menos
  CPUs y menos memoria RAM, ya que estos recursos son mucho más escasos que
  el espacio en disco.
  
@@ -5016,9 +5222,10 @@ reference "sub:Uso-del-formato-qcow2"
 
 , las imágenes de disco que utilizamos crecen dinámicamente a medida que
  se escribe en el disco duro de la máquina virtual.
- Por ello, el espacio libre en las imágenes no ocupará espacio en disco
- en el servidor ni en el repositorio de imágenes, y la existencia de discos
- duros de gran tamaño infrautilizados no supone un desperdicio de recursos.
+ Por ello, el espacio libre en los discos duros virtuales no ocupará espacio
+ en disco en el servidor ni en el repositorio de imágenes, y la existencia
+ de discos duros virtuales de gran tamaño infrautilizados no supone un desperdic
+io de recursos.
  
 \end_layout
 
@@ -5034,7 +5241,7 @@ name "sub:Uso-servidores-vanilla"
 \end_layout
 
 \begin_layout Standard
-La creación y edición de imágenes de disco requiere, entre otras cosas,
+La creación y edición de imágenes, entre otras cosas,
 \end_layout
 
 \begin_layout Itemize
@@ -5051,8 +5258,8 @@ la compresión y descompresión de ficheros de gran tamaño en el servidor
 
 \begin_layout Standard
 Por tanto, si un servidor de máquinas virtuales que se utiliza para editar
- imágenes de disco alberga otras máquinas virtuales, el rendimiento de estas
- se degradará cuando
+ imágenes alberga otras máquinas virtuales, el rendimiento de estas se degradará
+ cuando
 \end_layout
 
 \begin_layout Itemize
@@ -5069,9 +5276,9 @@ se transfieran ficheros entre el servidor de máquinas virtuales y el repositori
 
 \begin_layout Standard
 Así, si no tomamos medidas, un reducido número de usuarios que pueden crear
- o editar imágenes de disco (los profesores y los administradores) pueden
- perjudicar gravemente a la gran mayoría de usuarios, que se limitan a trabajar
- con las máquinas virtuales ya configuradas.
+ o editar imágenes (los profesores y los administradores) pueden perjudicar
+ gravemente a la gran mayoría de usuarios, que se limitan a trabajar con
+ las máquinas virtuales ya configuradas.
 \end_layout
 
 \begin_layout Standard
@@ -9633,17 +9840,15 @@ pyftpdlib
 Python
 \emph default
 .
- En primer lugar, mostraremos las clases que hemos utilizado para implementar
- nuestro servidor FTP.
- Estas, junto con sus relaciones, aparecen en el diagrama de clases de la
- figura 
+ El diagrama de clases de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Principales-clases-pyftpdlib"
 
 \end_inset
 
-.
+ muestra las clases que hemos utilizado para implementar nuestro servidor
+ FTP y sus principales relaciones.
 \end_layout
 
 \begin_layout Standard
@@ -9700,7 +9905,7 @@ Authorizer
 DummyAuthorizer
 \family default
 , que restringe el acceso al servidor FTP utilizando nombres de usuario
- y sus contraseñas (sin cifrar).
+ y sus contraseñas que se transmiten sin cifrar.
 \end_layout
 
 \begin_layout Standard
@@ -9714,8 +9919,11 @@ Filesystem
 \family typewriter
 UnixFilesystem
 \family default
-, ya que siempre se ejecutará en Linux, que es un sistema operativo tipo
- UNIX.
+, ya que siempre se ejecutará en 
+\emph on
+Linux
+\emph default
+, que es un sistema operativo tipo UNIX.
 \end_layout
 
 \begin_layout Standard
@@ -9815,26 +10023,26 @@ Como ya hemos mencionado, el servidor FTP
 \family typewriter
 pyftpdlib
 \family default
- genera eventos para que el código cliente pueda responder a conexiones
- de clientes, transferencias fallidas,\SpecialChar \ldots{}
- Los eventos FTP que se generan y
- su información asociada son los siguientes:
+ genera eventos para que el código cliente pueda responder adecuadamente
+ cuando falla una transferencia FTP, cuando se conecta un nuevo cliente,
+ etcétera.
+ Los eventos FTP que se generan y su información asociada son los siguientes:
 \end_layout
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 desconexión inesperada de un cliente
-\series default
+\family default
 .
  No tiene asociado ningún tipo de información.
 \end_layout
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 conexión de un cliente
-\series default
+\family default
 .
  Tiene asociado el nombre de usuario que ha empleado el cliente para conectarse
  al servidor.
@@ -9842,9 +10050,9 @@ conexión de un cliente
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 desconexión normal de un cliente
-\series default
+\family default
 .
  Tiene asociado el nombre de usuario que ha empleado el cliente para conectarse
  al servidor.
@@ -9852,36 +10060,36 @@ desconexión normal de un cliente
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 fin de envío de fichero
-\series default
+\family default
 .
  Tiene asociado el nombre del fichero que ha terminado de enviarse.
 \end_layout
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 fin de recepción de fichero
-\series default
+\family default
 .
  Tiene asociado el nombre del fichero que se ha recibido.
 \end_layout
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 error en el envío de un fichero
-\series default
+\family default
 .
  Tiene asociado el nombre del fichero que ha tratado de enviarse.
 \end_layout
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 error en la recepción de un fichero
-\series default
+\family default
 .
  Tiene asociado el nombre del fichero que se ha recibido parcialmente.
 \end_layout
@@ -9907,7 +10115,7 @@ pyftpdlib
 
 \begin_layout Itemize
 permite realizar la gestión de usuarios y contraseñas en tiempo de ejecución.
- Estos datos siempre se transmitirán sin cifrar.
+ Como ya hemos dicho, estos datos siempre se transmitirán sin cifrar.
 \end_layout
 
 \begin_layout Itemize
@@ -10084,22 +10292,6 @@ FTPServerThread
  
 \end_layout
 
-\begin_layout Standard
-El código de la clase 
-\family typewriter
-FTPServerThread
-\family default
- está tomado de las pruebas unitarias de 
-\family typewriter
-pyftpdlib
-\family default
-: por ahora, no se encuentra integrado con el resto de código de 
-\family typewriter
-pyftpdlib
-\family default
-.
-\end_layout
-
 \begin_layout Subsubsection
 El cliente FTP de 
 \emph on
@@ -10118,27 +10310,21 @@ El cliente FTP de
 \emph on
 CygnusCloud
 \emph default
- no es más que un envoltorio del cliente FTP incluido en la librería estándar
- de Python, 
-\family typewriter
-FTP
-\family default
-.
- Esto permite que los clientes FTP puedan intercambiar información con un
- servidor FTP a un mayor nivel de abstracción.
+ proporciona una interfaz que permite utilizar el cliente FTP de la librería
+ estándar de 
+\emph on
+Python
+\emph default
+ a un mayor nivel de abstracción.
 \end_layout
 
 \begin_layout Standard
-La clase asociada al cliente FTP de 
-\emph on
-CygnusCloud
-\emph default
- es 
+Su clase principal es 
 \family typewriter
 FTPClient
 \family default
 .
- Permite, entre otras cosas,
+ A través de la interfaz de esta clase, es posible 
 \end_layout
 
 \begin_layout Itemize
@@ -10154,11 +10340,7 @@ descargar un fichero ubicado en cierto directorio del servidor FTP.
 \end_layout
 
 \begin_layout Standard
-Es importante notar que la clase 
-\family typewriter
-FTP
-\family default
- de la librería estándar de 
+Es importante notar que el cliente FTP de la librería estándar de 
 \emph on
 Python
 \emph default
@@ -15214,7 +15396,7 @@ software
  En la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Uso-de-dos-discos-duros"
+reference "sub:Uso-de-dos-imágenes"
 
 \end_inset
 
