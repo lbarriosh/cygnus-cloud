@@ -3827,7 +3827,11 @@ Instalación y uso del framework web2py
 \end_layout
 
 \begin_layout Standard
-El servidor web se encuentra desarrollado utilizando el framework web2py.
+La web de CygnusCloud se ha desarrollado utilizando el 
+\shape italic
+framework
+\shape default
+ web2py.
  Para poder utilizar este 
 \emph on
 framework
@@ -3869,13 +3873,13 @@ http://www.web2py.com/init/default/download
 
  y descargamos la versión deseada.
  Es posible descargar versiones para Linux, Windows o Mac OS, aunque para
- 
+ poder ejecutar 
 \emph on
 CygnusCloud 
 \emph default
 sólo puede usarse la versión de Linux.
- También es posible elegir tres posibles tipos de descargas de cara a el
- uso de web2py que vayamos a hacer.
+ También es posible elegir entre 3 tipos de descargas de cara a el uso que
+ se quiera hacer de web2py.
  En nuestro caso, usaremos la opción 
 \family sans
 For Normal Users
@@ -3981,7 +3985,7 @@ webServer.sh
 \begin_layout Enumerate
 introducimos la URL 
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -4077,14 +4081,14 @@ que nos permite modificar el fichero de código correspondiente.
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
 	filename graficos/Manual usuario/webServer/Web2pyAdmin1.png
-	scale 50
+	scale 40
 	rotateOrigin center
 
 \end_inset
@@ -4093,6 +4097,8 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Caption
 
 \begin_layout Plain Layout
@@ -4120,7 +4126,7 @@ Uso de la web
 \end_layout
 
 \begin_layout Subsubsection
-Acceso
+Páginas de acceso público
 \end_layout
 
 \begin_layout Standard
@@ -4152,7 +4158,7 @@ http://127.0.0.1:8000/CygnusCloud/main/login
  La figura
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Página-de-inicio-CygnusCloud"
+reference "fig:MU-Pagina_inicio_sesion"
 
 \end_inset
 
@@ -4163,11 +4169,7 @@ reference "fig:Página-de-inicio-CygnusCloud"
 \begin_layout Standard
 En ella, podemos introducir el correo electrónico y la contraseña del usuario
  que va a iniciar sesión.
- También podemos acceder desde el menú superior a la página 
-\family sans
-Acerca de
-\family default
- con información general del proyecto.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -4198,28 +4200,54 @@ Admin1@ucm.es
 .
 \end_layout
 
-\begin_layout Standard
-Independientemente del tipo de usuario que ha iniciado sesión, en la parte
- superior derecha aparece un vínculo 
+\begin_layout Itemize
+un profesor con correo electrónico 
 \family sans
+Teacher01@ucm.es
+\family default
+ y contraseña 
+\family sans
+1234
+\end_layout
+
+\begin_layout Standard
+Además, desde esta página también es posible acceder a diferentes direcciones
+ institucionales tales como el campus virtual o la página web de la 
+\family typewriter
+Universidad Complutense de Madrid
+\family default
+, y visualizar los últimos tweets recibidos en la cuenta de 
+\family typewriter
+twitter
+\family default
+ de 
+\family typewriter
+@CygnusCloud
+\end_layout
+
+\begin_layout Standard
+Una vez iniciada la sesión, independientemente del tipo de usuario que la
+ inicie, en la parte superior derecha de la página aparece el nombre del
+ usuario cuya sesión se ha iniciado y una opción 
+\family typewriter
 Salir
 \family default
- que nos permite cerrar la sesión actual y regresar a la página de inicio
- de sesión.
+ que permite cerrar la sesión actual.
+ Cuando un usuario cierre la sesión, regresará a la página de inicio.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
 	filename graficos/Manual usuario/webServer/PaginaInicioCygnusCloud.png
-	scale 50
+	scale 40
 	rotateOrigin center
 
 \end_inset
@@ -4228,21 +4256,20 @@ status open
 \end_layout
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:MU-Pagina_inicio_sesion"
+
+\end_inset
+
 Página de inicio de 
 \emph on
 CygnusCloud
-\emph default
-
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Página-de-inicio-CygnusCloud"
-
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -4256,92 +4283,18 @@ name "fig:Página-de-inicio-CygnusCloud"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Manual usuario/webServer/ArranqueMaquinasWeb.png
-	scale 50
-	rotateOrigin center
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Página de arranque de máquinas virtuales para estudiantes
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Página-de-arranque-Web"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Manual usuario/webServer/MáquinaArrancada.png
-	scale 50
-	rotateOrigin center
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Página-con-máquina-arrancada"
-
-\end_inset
-
-Visor de escritorio remoto para una máquina virtual arrancada
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Desde la barra de menú de acceso público, también es posible acceder a la
+ página de 
+\family typewriter
+Acerca de, en la cual
+\family default
+ se incluye un breve resumen sobre que es CygnusCloud y para que sirve.
+ También aparece en esta página información de interés sobre el desarrollo
+ de CygnusCloud, tales como entrevistas, notas de prensas o premios recibidos.
 \end_layout
 
 \begin_layout Subsubsection
-Opciones disponibles para los estudiantes
+Páginas accesibles para los estudiantes
 \end_layout
 
 \begin_layout Standard
@@ -4349,37 +4302,212 @@ Tras iniciar sesión como un estudiante, la web nos muestra una página como
  la de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Página-de-arranque-Web"
+reference "fig:MU-Pagina_arranque_alumno"
 
 \end_inset
 
-, en la que aparecen con las asignaturas matriculadas y la lista de máquinas
- virtuales disponibles para cada asignatura.
+, en la cual aparecen todas las asignaturas matriculadas por el alumno.
+ Para cada asignatura, aparecen las máquinas virtuales creadas por el profesor
+ de dicha asignatura.
  
 \end_layout
 
 \begin_layout Standard
-Para cada máquina virtual, se muestra una casilla de selección que nos permite
- ver la descripción de la máquina virtual y habilitar su arranque.
- 
-\end_layout
-
-\begin_layout Standard
-Si se hace clic sobre el botón 
+El estudiante puede seleccionar cualquiera de las máquinas que se le muestran.
+ Una vez seleccionada una determinada máquina, aparece una breve descripción
+ sobre dicha máquina y un botón 
 \family typewriter
 Arrancar
 \family default
- de alguna máquina virtual, se abrirá una nueva pestaña como la que se muestra
- en la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Página-con-máquina-arrancada"
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaArranqueMVAlumno.png
+	scale 40
 
 \end_inset
 
-.
- Esa pestaña permite trabajar con la máquina mediante el protocolo de escritorio
- remoto VNC.
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:MU-Pagina_arranque_alumno"
+
+\end_inset
+
+Página de arranque de máquinas virtuales por un estudiante
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Una vez el estudiante ha seleccionado la máquina que quiere arrancar y ha
+ pulsado sobre el botón 
+\family typewriter
+Arrancar
+\family default
+, se abre una nueva pestaña en la cual comienza a ejecutarse el escritorio
+ de trabajo de la máquina arrancada.
+ La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:MU-Pagina_MV_Arrancada"
+
+\end_inset
+
+ muestra la página con el escritorio de trabajo arrancado.
+ 
+\end_layout
+
+\begin_layout Standard
+En esta página, además del escritorio de trabajo, se incluye un par de botones
+ que permiten enviar una señal de apagado a la máquina y poner el escritorio
+ en pantalla completa.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaNoVNCAlumno.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:MU-Pagina_MV_Arrancada"
+
+\end_inset
+
+Página con máquina virtual arrancada por un estudiante
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Además, el estudiante podrá gestionar sus máquinas arrancadas por medio
+ de las páginas de detención y apertura de máquinas arrancadas (
+\family sans
+Máquinas arrancadas \SpecialChar \menuseparator
+Detener máquina y Máquinas arrancadas \SpecialChar \menuseparator
+Abrir maquina)
+\family default
+ .
+ La forma de proceder en ambas páginas es similar.
+ Una vez haya accedido a alguna de las páginas, se le muestra una lista
+ con todas las máquinas que tiene arrancadas.
+ Al seleccionar cualquiera de ellas aparece la descripción de la máquina
+ y los botones con las acciones que puede realizar sobre dicha máquina.
+ En el caso de la página de detención, se muestra un botón que permite detener
+ la máquina y otro que permite forzar el reiniciado.
+ En el caso de la página de apertura, aparece un único botón que permite
+ abrir una nueva pestaña con el escritorio de alguna de las máquinas en
+ ejecución.
+ La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_detencion_MV_Alumno"
+
+\end_inset
+
+ muestra una captura de la página de detención.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaDetencionMVAlumno.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_detencion_MV_Alumno"
+
+\end_inset
+
+Página de detención de máquinas virtuales para los estudiantes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4436,148 +4564,925 @@ Google Chrome
 \end_layout
 
 \begin_layout Subsubsection
-Opciones disponibles para los administradores
+Páginas accesibles para los profesores
 \end_layout
 
 \begin_layout Standard
-Al acceder como administrador, la web nos muestra una página de arranque
- de máquinas virtuales bastante similar a la anterior pero con un cuadro
- de búsqueda adicional.
- Existen varios cuadros de búsquedas distribuidos a lo largo de las páginas
- del administrador que nos permiten filtrar la información que debe mostrarse
- por pantalla.
- Esto resulta útil ya que el administrador tendrá acceso a absolutamente
- toda la información gestionada por la web.
- 
+Una vez el profesor ha iniciado sesión, la primera página que se le muestra
+ es la página de arranque de máquinas virtuales.
+ El manejo de esta página, al igual que las páginas de detención y apertura
+ de máquinas virtuales (
+\family typewriter
+Máquinas arrancadas \SpecialChar \menuseparator
+Detener máquina y Máquinas arrancadas \SpecialChar \menuseparator
+Abrir maquina
+\family sans
+) 
+\family default
+es similar al explicado en la sección de estudiantes, por lo que no se repetirá
+ en esta sección.
 \end_layout
 
 \begin_layout Standard
-En la parte superior de las páginas del administrador hay una barra de menú
- que nos permite acceder a las diferentes secciones dentro de su alcance.
- Si desplazamos el puntero del ratón por dicha barra surgen los diferentes
- submenús con las páginas disponibles.
- Explicamos brevemente el modo de uso de cada página
-\end_layout
-
-\begin_layout Itemize
-La página 
+La página de creación de máquinas virtuales (
+\family typewriter
+Crear y editar \SpecialChar \menuseparator
+ Crear nueva máquina
 \family sans
-Máquinas virtuales \SpecialChar \menuseparator
-
+) 
 \family default
+permite a los profesores crear nuevas máquinas virtuales sobre las cuales
+ instalará las herramientas necesarias para poder ser utilizadas por los
+ alumnos de una de las asignaturas que imparte.
+ Para llevar a cabo la creación de una máquina virtual, el profesor debe
+ indicar un nombre y una descripción que se les mostrará a los estudiantes.
+ Además, debe seleccionar una imagen base sobre la cual instalará las herramient
+as necesarias.
+ Las imágenes bases se distinguen por el sistema operativo instalado en
+ ellas y los recursos que se le proporcionan a cada una.
+ Es posible filtrar la lista de imágenes bases por su sistema operativo.
+ Una vez rellenados todos los campos, el profesor debe pulsar sobre el botón
  
 \family sans
-Arrancar
+Crear máquina virtual 
 \family default
- permite buscar y arrancar las diferentes máquinas virtuales registradas
- en algún servidor.
- Para ello, podemos introducir el nombre, o parte del mismo, de alguna de
- las asignaturas registradas en el sistema y pulsar el botón 
+para completar la creación
 \family sans
-Buscar
-\family default
 .
- Una vez hecho esto, aparece la lista de máquinas virtuales asociadas a
- dicho criterio de búsqueda.
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_creacion_MV_Profesor"
+
+\end_inset
+
+ muestra un ejemplo de creación de una máquina virtual Windows.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaCreacionMVProfesor.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_creacion_MV_Profesor"
+
+\end_inset
+
+Página de creación de máquinas virtuales para los profesores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La página de edición de máquinas virtuales (
+\family typewriter
+Crear y editar \SpecialChar \menuseparator
+ Editar máquina
+\family sans
+) permite a los profesores editar sus máquinas virtuales ya creadas.
+ 
+\end_layout
+
+\begin_layout Standard
+Esta página se encuentra dividida en dos tablas donde se muestran el conjunto
+ de todas las máquinas asociadas a las asignaturas impartidas por un profesor.
+ La primera tabla contiene el conjunto de máquinas que se encuentran en
+ estado detenido.
+ 
+\end_layout
+
+\begin_layout Standard
+Una máquina en estado detenido puede ser:
 \end_layout
 
 \begin_layout Itemize
-La página 
-\family sans
+Máquina que aun no se ha comenzado a editar
+\end_layout
+
+\begin_layout Itemize
+Máquina que se ha editado, se ha detenido, pero aun no se han aplicado sus
+ cambios.
+\end_layout
+
+\begin_layout Standard
+La segunda tabla muestra el conjunto de máquinas en ejecución.
+ En esta página una máquina en ejecución es:
+\end_layout
+
+\begin_layout Itemize
+Máquina que se ha ejecutado para ser editada
+\end_layout
+
+\begin_layout Standard
+Según el estado en el que se encuentre una máquina, al seleccionarla, se
+ mostrará unos botones u otros.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ejemplo, la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_edicion_MV_Profesor"
+
+\end_inset
+
+ muestra la página de edición de un profesor.
+ En ella podemos observar las dos tablas.
+ En la primera se ha seleccionado una máquina que ya se ha editado anteriormente
+ y ha sido detenida.
+ Las opciones que se le ofrece al profesor en este caso son seguir editando
+ la máquina o aplicar los cambios para hacerlos visibles a los alumnos.
+ En la segunda tabla se ha seleccionado una máquina en edición que aun no
+ se ha detenido.
+ Las dos posibilidades que tiene en este caso el profesor son abrir la máquina
+ en una pestaña nueva o detenerla.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaEdicionMaquinasProfesor.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_edicion_MV_Profesor"
+
+\end_inset
+
+Página de edición de máquinas virtuales para los profesores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por último la página de asociación de asignaturas (
+\family typewriter
+Asociar asignatura
+\family default
+) permite al profesor indicar desde cual de las asignaturas que imparte
+ va a ser accesible la máquina virtual que está editando.
+ Esta página esta formada por dos apartados.
+ En el superior el profesor puede seleccionar una de las máquinas virtuales
+ en edición y asociarle una asignatura pulsando sobre el botón 
+\family typewriter
+Asociar asignatura.
+\end_layout
+
+\begin_layout Standard
+En el inferior el profesor puede buscar las asignaturas ya asociadas a alguna
+ de las máquinas en edición y desvincularla.
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_asociacion_asignaturas_profesor"
+
+\end_inset
+
+ muestra una captura de esta página.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaAsociacionAsignaturasProfesor.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_asociacion_asignaturas_profesor"
+
+\end_inset
+
+Página de asociación de asignaturas a máquinas por el profesor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Páginas accesibles para los administradores
+\end_layout
+
+\begin_layout Standard
+Al iniciar sesión como administrador, la primera página que se muestra es
+ la página de arranque de máquinas virtuales (
+\family typewriter
 Máquinas virtuales \SpecialChar \menuseparator
- Detener
-\family default
- nos permite buscar una máquina virtual de forma similar al caso anterior
- y darla de baja.
-\end_layout
-
-\begin_layout Itemize
-La página 
-\family sans
-Administrar servidores \SpecialChar \menuseparator
-Añadir
-\family default
- nos permite añadir un nuevo servidor de máquinas virtuales al sistema,
- indicando el nombre, la ip y el puerto asociado a dicho servidor.
-\end_layout
-
-\begin_layout Itemize
-La página 
-\family sans
-Administrar servidores \SpecialChar \menuseparator
-Eliminar
-\family default
+ Arrancar).
  
-\family sans
-servidor
 \family default
- nos permite análogamente dar de baja un servidor registrado o arrancarlo.
- Para ello cuenta con un menú desplegable donde se encuentran el nombre
- de todos los servidores registrados hasta el momento.
- Una vez seleccionado el servidor deseado y pulsado el botón Buscar servidor
- aparecerá la información de dicho servidor junto a los botones correspondientes.
+La forma de proceder en esta página, al igual que en la página de detención
+ y apertura de máquinas virtuales en ejecución
+\family typewriter
+ (Máquinas virtuales \SpecialChar \menuseparator
+ Detener y Máquinas virtuales \SpecialChar \menuseparator
+ Abrir) 
+\family default
+resulta similar que en el caso de las páginas de estudiantes con una diferencia,
+ como un administrador puede gestionar cualquier máquina virtual existente
+ en el sistema, independientemente de quien la haya creado, es necesario
+ añadir un cuadro de búsqueda en la parte superior de la página que permita
+ filtrar el número de máquinas que se muestran.
 \end_layout
 
-\begin_layout Itemize
-La página 
-\family sans
-Administrar usuarios \SpecialChar \menuseparator
- Eliminar
-\family default
- permite eliminar un usuario registrado en la web.
- Para ello, existe un cuadro de búsqueda que nos permite indicar parte del
- correo electrónico del usuario/s a buscar, así como el tipo de usuario
- del que se trata.
-\end_layout
-
-\begin_layout Itemize
-La página 
-\family sans
-Administrar usuarios
-\family default
- \SpecialChar \menuseparator
+\begin_layout Standard
+La página de edición de máquinas virtuales (
+\family typewriter
+Máquinas virtuales \SpecialChar \menuseparator
  
-\family sans
-Añadir
 \family default
- permite añadir una nuevo usuario indicando su correo electrónico, su contraseña
- y el tipo de usuario.
+Editar) permite al administrador tomar ciertas decisiones acerca de las
+ máquinas virtuales creadas en el sistema.
+ Así, desde esta página, un administrador podrá:
 \end_layout
 
 \begin_layout Itemize
-La página 
-\family sans
+Eliminar una máquina virtual de toda la infraestructura
+\end_layout
+
+\begin_layout Itemize
+Eliminar una máquina virtual de un determinado servidor de máquinas virtuales
+\end_layout
+
+\begin_layout Itemize
+Desplegar automáticamente un máquina virtual.
+ En esta opción, será el sistema el que decida en que servidores de máquinas
+ virtuales se desplegará la máquina.
+\end_layout
+
+\begin_layout Itemize
+Desplegar una máquina virtual en un determinado servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_edicion_MV_administrador"
+
+\end_inset
+
+ muestra la página de edición de máquinas virtuales.
+ Al igual que en las páginas anteriores, en la parte superior, podemos observar
+ un cuadro de búsqueda que nos permita filtrar el número de máquinas virtuales
+ sobre las que buscar la máquina que va a ser editada.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaEdicionMVAdministrador.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_edicion_MV_administrador"
+
+\end_inset
+
+Página de edición de máquinas virtuales para el administrador
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Con respecto a los servidores, los administradores pueden crear y editar
+ servidores por medio de las páginas correspondientes (
+\family typewriter
+Administrar servidores \SpecialChar \menuseparator
+ Añadir servidor y Administrar servidores \SpecialChar \menuseparator
+ Editar
+ servidor
+\family default
+ respectivamente).
+\end_layout
+
+\begin_layout Standard
+Para crear un nuevo servidor, el administrador deberá indicar el nombre
+ de dicho servidor, único en toda la infraestructura, la dirección ip y
+ el puerto por el cual se conectará el servidor de máquinas virtuales, y
+ si el servidor será capaz de albergar imágenes base o no.
+ Una vez indicado todo esto, la petición de creación del servidor se enviará
+ pulsando sobre el botón 
+\family typewriter
+Añadir servidor.
+\end_layout
+
+\begin_layout Standard
+En cuanto a la edición de servidores, el administrador podrá seleccionar
+ el servidor cuyo contenido quiere modificar.
+ Una vez seleccionado, el administrador debe pulsar sobre el botón 
+\family typewriter
+Buscar servidor 
+\family default
+para que se le muestre la información asociada a dicho servidor.
+ Según el estado en el que se encuentre el servidor seleccionado, el administrad
+or podrá aplicar ciertas operaciones.
+\end_layout
+
+\begin_layout Standard
+En la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_edicion_servidores_Administrador"
+
+\end_inset
+
+ se muestra la página de edición de servidores.
+ En ella, ya se ha buscado la información sobre el servidor con nombre 
+\family typewriter
+Server1
+\family default
+ y se le ha ofrecido al administrador ciertas opciones.
+ en este caso, el administrador podría:
+\end_layout
+
+\begin_layout Itemize
+Cambiar los datos sobre el nombre, puerto, ip e imagen base del servidor.
+\end_layout
+
+\begin_layout Itemize
+Eliminar el servidor de la infraestructura
+\end_layout
+
+\begin_layout Itemize
+Arrancar el servidor
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaEdicionServidoresAdministrador.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_edicion_servidores_Administrador"
+
+\end_inset
+
+Página de edición de servidores para los administradores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los administradores también pueden consultar el estado en el que se encuentra
+ los distintos servidores y el repositorio por medio de la página correspondient
+e (
+\family typewriter
+Administrar servidores \SpecialChar \menuseparator
+ Estado del sistema).
+ 
+\family default
+Entendemos como estado, al consumo de recursos de cada uno de los servidores
+ y del repositorio en un momento dado.
+\end_layout
+
+\begin_layout Standard
+Para consultar el estado de un servidor concreto deberá seleccionarse dicho
+ servidor en la lista y pulsar sobre el botón 
+\family typewriter
+Mostrar estado.
+ 
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_estado_Administrador"
+
+\end_inset
+
+ muestra el estado del servidor Server1 y del repositorio sin ninguna máquina
+ virtual arrancada.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaEstadoServidoresAdministrador.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_estado_Administrador"
+
+\end_inset
+
+Página que muestra el estado del sistema
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La última página de gestión de servidores permite detener por completo la
+ infraestructura, apagando todos los servidores del sistema (
+\family typewriter
+Administrar servidores \SpecialChar \menuseparator
+ Parar infraestructura).
+ 
+\family default
+Esta página esta formada únicamente por una casilla que permite indicar
+ si debe esperarse a que se apaguen todas las máquinas en ejecución para
+ apagar por completo la infraestructura y un botón que permite enviar la
+ petición de apagado.
+\end_layout
+
+\begin_layout Standard
+La figura muestra la página de detención de la infraestructura.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaDetencionInfraestructuraAdministrador.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página de detención de la infraestructura por el administrador
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Valorar si meter la captura de detención de infraestructura según el número
+ de capturas total
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El administrador también puede gestionar los usuarios dados de alta en la
+ web.
+ Así, la web dispone de páginas para la creación y eliminación de usuarios
+ (
+\family typewriter
 Administrar usuarios \SpecialChar \menuseparator
- Asociar asignaturas
-\family default
- , nos permite buscar los usuarios registrados en la web por medio del cuadro
- de búsqueda.
- Una vez realizada la búsqueda, el cuadro para añadir usuarios nos permite
- seleccionar alguno de los usuarios encontrados en la búsqueda y asociarle
- una determinada asignatura registrada en el sistema.
-\end_layout
-
-\begin_layout Itemize
-La página 
-\family sans
-Administrar asignaturas \SpecialChar \menuseparator
  Añadir
 \family default
- nos permite añadir una nueva asignatura indicando su código, su nombre,
- el año en el que se cursa, el curso y el grupo de clase asociado a dicha
- asignatura.
-\end_layout
-
-\begin_layout Itemize
-La página 
-\family sans
-Administrar asignaturas \SpecialChar \menuseparator
+ y 
+\family typewriter
+Administrar usuarios \SpecialChar \menuseparator
  Eliminar
 \family default
- dentro del menú nos permite buscar las asignaturas que cumplan los criterios
- de código, nombre, año o grupo introducidos.
- Una vez mostradas las posibles asignaturas, el sistema nos permite seleccionar
- y eliminar la que deseemos.
+ respectivamente).
+ Para añadir un nuevo usuario, el administrador deberá indicar el correo
+ electrónico con el cual accederá el usuario al sistema, la contraseña asociada
+ y el tipo de usuario (estudiante, profesor o administrador).
+ Opcionalmente, puede adjuntar una fotografía del usuario.
+\end_layout
+
+\begin_layout Standard
+En cuanto a la página de eliminación consta de un cuadro superior de búsqueda
+ que permite filtrar el grupo de usuarios por su nombre o tipo de usuario.
+ Una vez realizada la búsqueda, se mostrará una lista de usuarios resultante.
+ Para eliminar el usuario deseado, simplemente se tendrá que seleccionar
+ dicho usuario en la lista y pulsar sobre el botón 
+\family typewriter
+Eliminar seleccionado
+\family default
+.
+ La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_eliminacion_usuarios_Administrador"
+
+\end_inset
+
+ muestra una captura de la página de eliminación de usuarios.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaEliminacionUsuariosAdministrador.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_eliminacion_usuarios_Administrador"
+
+\end_inset
+
+Página de eliminación de usuarios por parte de un administrador
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Una vez creado un usuario, el administrador puede matricularlo en algún
+ grupo de asignatura por medio de la página de asociación de asignaturas
+ (
+\family typewriter
+Administrar usuario \SpecialChar \menuseparator
+ Asociar asignatura
+\family default
+).
+ Al igual que la mayoría de las páginas del administrador, esta página dispone
+ de un cuadro de búsqueda que permite buscar el usuario que quiere matricularse
+ en un determinado grupo de asignatura.
+ Una vez encontrado el usuario, deberá indicarse el código y el grupo de
+ clase del grupo de asignatura en el cual va a ser matriculado el usuario.
+ Todos los grupos de asignaturas tienen asociados un número de plazas disponible
+s.
+ Antes de asociar un usuario a una determinado grupo, se comprueba que este
+ grupo no se encuentre lleno.
+ 
+\end_layout
+
+\begin_layout Standard
+Por último, el administrador también disponen de una par de páginas para
+ crear y eliminar grupos de asignaturas (
+\family typewriter
+Administrar asignatura \SpecialChar \menuseparator
+ Añadir
+\family default
+ y 
+\family typewriter
+Administrar asignatura \SpecialChar \menuseparator
+ Eliminar
+\family default
+ respectivamente).
+ Para crear un nuevo grupo de asignatura, el administrador deberá indicar
+ el nombre de la asignatura que se impartirá en dicho grupo, el código único
+ asociado a dicha asignatura, el año lectivo en el que va a ser cursado
+ dicho grupo , el número de plazas disponibles y el grupo de clase asociado.
+\end_layout
+
+\begin_layout Standard
+Para eliminar un grupo de asignatura existente se procederá de forma análoga
+ a como se indico en la eliminación de usuarios.
+\end_layout
+
+\begin_layout Subsubsection
+Gestión de notificaciones
+\end_layout
+
+\begin_layout Standard
+Como algunas de las operaciones que ofrece CygnusCloud deben ser gestionadas
+ por medio de peticiones, ya que su realización no es inmediata y no podemos
+ tener al usuario esperando mientras se completa dicha operación, es necesario
+ ofrecer a los usuarios un sistema de notificaciones en el cual puedan consultar
+ los mensajes que le envie el sistema sobre la finalización erroneo o no
+ de las peticiones enviadas.
+ 
+\end_layout
+
+\begin_layout Standard
+Cuando el usuario reciba una notificación, aparecerá un etiqueta en la parte
+ superior derecha de la página similar a la que se muestra en la figura
+ .
+ Esta etiqueta permanecerá mientras el usuario no lea las notificaciones
+ pendientes en la página de notificaciones.
+ 
+\end_layout
+
+\begin_layout Standard
+Para acceder a la página de notificaciones, el usuario podrá pulsar sobre
+ la etiqueta o bien acceder desde la barra de menú (sección 
+\family typewriter
+Notificaciones
+\family default
+).
+ 
+\end_layout
+
+\begin_layout Standard
+Una vez el usuario a consultado sus notificaciones pendientes, estas desaparecer
+án de la página para dejar paso a las nuevas notificaciones que puedan aparecer.
+\end_layout
+
+\begin_layout Standard
+La figura muestra un ejemplo de página con notificaciones.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/EtiquetaNotificaciones.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Etiqueta de notificaciones pendientes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaNotificaciones.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Página de visualización de notificaciones
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
