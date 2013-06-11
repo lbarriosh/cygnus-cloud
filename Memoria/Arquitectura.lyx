@@ -541,6 +541,195 @@ que hemos podido considerar.
 \end_layout
 
 \begin_layout Section
+Terminología básica
+\end_layout
+
+\begin_layout Standard
+En este capítulo, utilizamos frecuentemente los siguientes términos:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+familia de máquinas virtuales
+\series default
+: conjunto de máquinas virtuales que tienen las mismas características y
+ que utilizan la misma familia de sistemas operativos.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Por ejemplo, todas las máquinas virtuales que utilicen el sistema operativo
+ 
+\emph on
+Linux
+\emph default
+, tengan una CPU, 512 
+\emph on
+megabytes
+\emph default
+ de memoria RAM y 10 GB de espacio en disco pertenecerán a la misma familia.
+ Análogamente, todas las máquinas que utilicen el sistema operativo 
+\emph on
+Windows
+\emph default
+, tengan tres CPUs, 3 
+\emph on
+gigabytes
+\emph default
+ de memoria RAM y 30 GB de espacio en disco pertenecerán a otra familia
+ distinta.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+configuración
+\series default
+ o 
+\series bold
+imagen
+\series default
+: contenido de 
+\emph on
+todos
+\emph default
+ los discos duros asociados a una máquina virtual.
+ La imagen de una máquina virtual determinará el operativo que utiliza y
+ la forma en que los usuarios trabajarán con ella.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Por ejemplo, si al crear una máquina virtual le 
+\begin_inset Quotes eld
+\end_inset
+
+conectamos
+\begin_inset Quotes erd
+\end_inset
+
+ un disco duro virtual con el sistema operativo 
+\emph on
+Windows
+\emph default
+ con un entorno de desarrollo integrado instalado, la máquina utilizará
+ dicho sistema operativo, y en ella podrá utilizarse dicho entorno de desarrollo.
+ Si, en cambio, le 
+\begin_inset Quotes eld
+\end_inset
+
+conectamos
+\begin_inset Quotes erd
+\end_inset
+
+ un disco duro virtual con el sistema operativo 
+\emph on
+Linux
+\emph default
+ y una 
+\emph on
+suite
+\emph default
+ ofimática instalada, la máquina utilizará el sistema operativo 
+\emph on
+Linux
+\emph default
+, y en ella podrá utilizarse la 
+\emph on
+suite
+\emph default
+ ofimática.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+configuración base
+\series default
+, 
+\series bold
+configuración 
+\emph on
+vanilla
+\series default
+\emph default
+, 
+\series bold
+imagen base
+\series default
+ o 
+\series bold
+imagen 
+\emph on
+vanilla
+\series default
+\emph default
+: configuración que sólo contiene un sistema operativo y las herramientas
+ más básicas instaladas.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+anfitrión
+\series default
+ o 
+\series bold
+\emph on
+host
+\series default
+\emph default
+: servidor en el que reside cierta máquina virtual.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+despliegue
+\series default
+: proceso durante el cual un servidor pasa a almacenar una configuración
+ o imagen.
+ Cuando finaliza, esa máquina podrá albergar máquinas virtuales que utilicen
+ la imagen que se despliega.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+cluster
+\series default
+\emph default
+: agrupación de servidores que se utilizan y administran de forma conjunta.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+imagen de disco
+\series default
+: fichero almacenado en el disco duro de la máquina anfitrión, en el que
+ se almacenan los datos de un disco duro asociado a cierta máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+disco duro virtual
+\series default
+: unidad de disco duro de una máquina virtual.
+ Sus datos se almacenarán en una imagen de disco.
+\end_layout
+
+\begin_layout Section
 Decisiones de diseño 
 \begin_inset CommandInset label
 LatexCommand label
@@ -752,7 +941,7 @@ del servidor que alojará las máquinas virtuales, el número máximo de máquin
 
 \begin_layout Standard
 Por otra parte, el arranque de máquinas virtuales y la creación o edición
- de imágenes de disco son operaciones que requieren mucha entrada/salida.
+ de imágenes son operaciones que requieren mucha entrada/salida.
  Para garantizar que el tiempo de respuesta del sistema es adecuado, lo
  más conveniente es que los nodos que albergan máquinas virtuales se dediquen
  a ello en exclusiva.
@@ -794,14 +983,10 @@ name "sub:El-repositorio-de-imagenes"
 \end_layout
 
 \begin_layout Standard
-Los usuarios sólo pueden arrancar máquinas virtuales y crear o editar imágenes
- de disco cuando estos ficheros están desplegados en un servidor de máquinas
+Para arrancar máquinas virtuales y crear o editar configuraciones, las imágenes
+ de disco correspondientes deben estar desplegadas en un servidor de máquinas
  virtuales.
- 
-\end_layout
-
-\begin_layout Standard
-No obstante, hay imágenes de disco que no deben estar desplegadas en ningún
+ No obstante, hay imágenes de disco que no deben estar desplegadas en ningún
  servidor de máquinas virtuales.
  Este es el caso de
 \end_layout
@@ -811,8 +996,7 @@ las imágenes base o imágenes
 \emph on
 vanilla
 \emph default
-, que sólo tienen el sistema operativo configurado con los programas más
- básicos instalados, y
+, y
 \end_layout
 
 \begin_layout Itemize
@@ -820,29 +1004,40 @@ las imágenes de disco que no están en uso y no han terminado de modificarse.
 \end_layout
 
 \begin_layout Standard
-En ambos casos, las imágenes no están completamente configuradas, por lo
- que ningún alumno las podrá arrancar.
- Así, su presencia en un servidor de máquinas virtuales supone un desperdicio
- de espacio en disco.
+En ambos casos, el 
+\emph on
+software
+\emph default
+ de la imagen no está completamente configurado, por lo que ningún usuario
+ podrá utilizarlo para trabajar.
+ Así, la presencia de estas configuraciones en un servidor de máquinas virtuales
+ supone un desperdicio de espacio en disco.
 \end_layout
 
 \begin_layout Standard
 Además, para simplificar la administración del sistema no resulta conveniente
  que las imágenes de disco estén diseminadas entre múltiples máquinas.
- Si existe una máquina que almacena una copia de todas las imágenes de disco
- existentes, para modificar todas las copias existentes de una de ellas
- sólo será necesario acudir a esta máquina, modificar el fichero correspondiente
- y volver a desplegarlo para sobreescribir sus copias antiguas.
+ Si una única máquina del 
+\emph on
+cluster
+\emph default
+ almacena todas las imágenes existentes, para realizar modificaciones en
+ cualquiera de ellas bastará con acudir a un único lugar y, posteriormente,
+ actualizar la configuración en el resto de máquinas del 
+\emph on
+cluster
+\emph default
+.
 \end_layout
 
 \begin_layout Standard
-Esta máquina, a la que llamaremos 
+Por tanto esta máquina, a la que llamaremos 
 \series bold
 repositorio de imágenes
 \series default
 , almacenará una copia de todas las imágenes de disco existentes.
- Asimismo, esta máquina será la única que cuente con una copia las imágenes
- 
+ Asimismo, el repositorio de imágenes será la única que cuente con una copia
+ las imágenes 
 \emph on
 vanilla
 \emph default
@@ -927,10 +1122,10 @@ cluster
 
 \begin_layout Standard
 Por ejemplo, si el repositorio de imágenes no tiene suficiente espacio en
- disco para alojar las modificaciones de dos imágenes de disco, no tiene
- sentido transferir estos ficheros a un servidor de máquinas virtuales y
- alojar en él la máquina virtual que se usará para hacer las modificaciones,
- ya que los ficheros modificados no podrán subirse al repositorio de imágenes.
+ disco para alojar las modificaciones de una configuración, no tiene sentido
+ transferir estos ficheros a un servidor de máquinas virtuales y alojar
+ en él la máquina virtual que se usará para hacer las modificaciones, ya
+ que los ficheros correspondientes no podrán subirse al repositorio de imágenes.
 \end_layout
 
 \begin_layout Standard
@@ -961,32 +1156,27 @@ cluster
 \end_layout
 
 \begin_layout Standard
-Para superar esta limitación, podemos crear varias agrupaciones (
+Para superar esta limitación y atender a un número mayor de usuarios, podemos
+ utilizar varios 
 \emph on
-clusters
+clusters,
 \emph default
-) de servidores de máquinas virtuales, cada una de las cuales tendrá asociado
- su propio servidor de 
+ cada uno de los cuales tendrá asociado su propio servidor de 
 \emph on
 cluster
 \emph default
- y su propio repositorio de imágenes.
- De esta manera, para atender a un número mayor de usuarios bastará con
- utilizar más 
-\emph on
-clusters
-\emph default
-.
- 
+, uno o más servidores de máquinas virtuales y su propio repositorio de
+ imágenes.
 \end_layout
 
 \begin_layout Standard
-Finalmente, es importante notar que cada 
+Es importante notar que, ya que cada 
 \emph on
 cluster
 \emph default
- es completamente autónomo, por lo que no tiene por qué compartir imágenes
- de disco con otros 
+ tiene su propio repositorio de imágenes, es completamente autónomo, por
+ lo que no tiene por qué compartir configuraciones ni familias de máquinas
+ virtuales con otros 
 \emph on
 clusters
 \emph default
@@ -2324,8 +2514,8 @@ En
 \emph on
 CygnusCloud
 \emph default
- es necesario transferir imágenes de disco entre el repositorio de imágenes
- y los servidores de máquinas virtuales.
+ es necesario transferir imágenes entre el repositorio de imágenes y los
+ servidores de máquinas virtuales.
  Para hacerlo, lo más adecuado es utilizar uno de los múltiples protocolos
  de transferencia o de compartición de ficheros existentes.
  En su momento, consideramos los siguientes:
@@ -2514,17 +2704,21 @@ name "sub:Uso-del-servidor-pyftpdlib"
 
 \begin_layout Standard
 Puesto que el repositorio de imágenes almacenará una copia de todas las
- imágenes de disco que es posible utilizar en la infraestructura, lo más
- razonable es que esta máquina albergue un servidor FTP.
+ imágenes que es posible utilizar en el 
+\emph on
+cluster
+\emph default
+, lo más razonable es que esta máquina albergue un servidor FTP.
 \end_layout
 
 \begin_layout Standard
-Por tanto, el repositorio de imágenes debe albergar un servidor FTP y, preferent
-emente, uno escrito en 
+Por tanto, el repositorio de imágenes debe albergar un servidor FTP.
+ Además, para que la interacción con el servidor FTP se simplifique, resulta
+ muy conveniente que este esté escrito en 
 \emph on
 Python
 \emph default
-, ya que ello simplifica la interacción con dicho servidor.
+.
  En su momento, consideramos dos: 
 \family typewriter
 pyftpdlib
@@ -3453,8 +3647,8 @@ Para superar estas limitaciones, sólo existen dos alternativas:
 \end_layout
 
 \begin_layout Itemize
-limitar el tamaño máximo de las imágenes, lo que limita también la versatilidad
- de 
+limitar el tamaño máximo de las imágenes de disco, lo que limita también
+ la versatilidad de 
 \emph on
 CygnusCloud
 \emph default
@@ -3464,7 +3658,7 @@ CygnusCloud
 \begin_layout Itemize
 hacer que todas las máquinas virtuales activas del mismo tipo compartan
  la instalación del sistema operativo y de los programas.
- Esto es posible utilizando imágenes 
+ Esto es posible utilizando imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3478,7 +3672,7 @@ s de
 Windows
 \emph default
 , la primera alternativa no nos pareció aceptable.
- Por ello, decidimos utilizar imágenes 
+ Por ello, decidimos utilizar imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3487,7 +3681,7 @@ copy-on-write
 \end_layout
 
 \begin_layout Standard
-Así, si en el ejemplo anterior utilizásemos imágenes 
+Así, si en el ejemplo anterior utilizásemos imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3511,10 +3705,10 @@ cantidad muy inferior a la del del caso anterior.
 \end_layout
 
 \begin_layout Subsection
-Uso de dos discos duros en cada máquina virtual 
+Uso de dos imágenes de disco en cada máquina virtual 
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Uso-de-dos-discos-duros"
+name "sub:Uso-de-dos-imágenes"
 
 \end_inset
 
@@ -3522,26 +3716,33 @@ name "sub:Uso-de-dos-discos-duros"
 \end_layout
 
 \begin_layout Standard
-El uso de imágenes 
+El uso de imágenes de disco 
 \emph on
 copy-on-write
 \emph default
  nos permite ahorrar una gran cantidad de espacio en disco, pero también
  tiene un serio inconveniente: las escrituras a disco son mucho más lentas
- que en el caso de las imágenes normales.
+ que en el caso de las imágenes de disco normales.
  Esta diferencia se debe al propio funcionamiento de las escrituras.
  
 \end_layout
 
 \begin_layout Standard
-Cuando se escribe en una imagen de disco normal, se consulta una cabecera
- y se actualizan los 
+Cuando se escribe en una imagen de disco 
+\begin_inset Quotes eld
+\end_inset
+
+normal
+\begin_inset Quotes erd
+\end_inset
+
+, se consulta una cabecera y se actualizan los 
 \emph on
 bytes
 \emph default
  correspondientes del fichero.
- Así, las escrituras en este tipo de imágenes son prácticamente igual de
- rápidas que las escrituras directas a disco.
+ Así, las escrituras en estos ficheros son casi igual de rápidas que las
+ escrituras directas a disco.
  
 \end_layout
 
@@ -3563,7 +3764,7 @@ los cambios se escriben a disco, pero no en el fichero de imagen original.
 \end_layout
 
 \begin_layout Standard
-Debido a esto, las escrituras en imágenes 
+Debido a esto, las escrituras en imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3574,7 +3775,7 @@ copy-on-write
 \end_layout
 
 \begin_layout Standard
-Por tanto, si nos limitamos a utilizar imágenes 
+Por tanto, si nos limitamos a utilizar imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3643,7 +3844,7 @@ s, y una imagen normal, que almacenará el fichero de paginación y los datos
 \end_layout
 
 \begin_layout Standard
-Para crear las imágenes 
+Para crear las imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3697,7 +3898,7 @@ QEMU
 \end_layout
 
 \begin_layout Itemize
-pueden utilizarse como imágenes 
+pueden utilizarse como imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3715,7 +3916,7 @@ zlib
 \end_layout
 
 \begin_layout Itemize
-las imágenes 
+las imágenes de disco 
 \family typewriter
 qcow
 \family default
@@ -3725,8 +3926,8 @@ qcow2
 \family default
 crecen dinámicamente a medida que se escriben datos en el disco duro de
  la máquina virtual.
- Así, el espacio libre en las imágenes no ocupará espacio en disco en los
- servidores de máquinas virtuales.
+ Así, el espacio libre en los discos duros virtuales no ocupará espacio
+ en disco en los servidores de máquinas virtuales.
  
 \end_layout
 
@@ -3791,7 +3992,7 @@ optamos por utilizar el formato
 \family typewriter
 qcow2
 \family default
- en las imágenes 
+ en las imágenes de disco 
 \emph on
 copy-on-write
 \emph default
@@ -3843,11 +4044,11 @@ qcow2
 \emph on
 copy-on-write
 \emph default
-, utilizando las imágenes 
+, utilizando las imágenes de disco 
 \family typewriter
 qcow2
 \family default
- como imágenes normales.
+ como imágenes de disco normales.
  
 \end_layout
 
@@ -3890,13 +4091,13 @@ Y puesto que al utilizar el formato
 \emph on
  
 \emph default
-RAW se está desperdiciando espacio en disco en muchos casos, decidimos utilizar
- el formato 
+RAW se está desperdiciando espacio en disco en muchos casos, también decidimos
+ utilizar el formato 
 \family typewriter
 qcow2 
 \family default
-en las imágenes que almacenan el fichero de paginación y los datos temporales
- del usuario.
+en las imágenes de disco que almacenan el fichero de paginación y los datos
+ temporales del usuario.
  
 \end_layout
 
@@ -4012,8 +4213,15 @@ que consume muchos recursos.
 
 \begin_layout Standard
 Por ello, hemos creado seis familias de máquinas virtuales.
- Tres de ellas están asociadas a los sistemas operativos Windows, y las
- tres restantes están asociadas a los sistemas operativos Linux.
+ Tres de ellas están asociadas a los sistemas operativos 
+\emph on
+Windows
+\emph default
+, y las tres restantes están asociadas a los sistemas operativos 
+\emph on
+Linux
+\emph default
+.
  Sus características se recogen en los cuadros 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4409,10 +4617,8 @@ name "tab:Características-vanilla-win"
 
 \end_inset
 
-Características de las imágenes 
+Familias de máquinas virtuales 
 \emph on
-vanilla 
-\emph default
 Windows
 \end_layout
 
@@ -4803,10 +5009,8 @@ name "tab:Características-vanilla-linux"
 
 \end_inset
 
-Características de las imágenes 
+Familias de máquinas virtuales 
 \emph on
-vanilla 
-\emph default
 Linux
 \end_layout
 
@@ -4821,7 +5025,8 @@ Linux
 \end_layout
 
 \begin_layout Standard
-A la hora de fijar las características de las imágenes 
+A la hora de fijar las características de las familias de máquinas virtuales
+ 
 \emph on
 Windows
 \emph default
@@ -4897,7 +5102,7 @@ bits
 
 \begin_deeper
 \begin_layout Standard
-Como las familias de imágenes 
+Como las familias de máquinas virtuales 
 \emph on
 Windows small 
 \emph default
@@ -4920,7 +5125,7 @@ bits
 \end_layout
 
 \begin_layout Standard
-Por otra parte, aunque la familia de imágenes 
+Por otra parte, aunque la familia de máquinas virtuales 
 \emph on
 Windows big
 \emph default
@@ -4948,7 +5153,8 @@ De todas formas, estas recomendaciones no tienen por qué cumplirse y, en
 
 \end_deeper
 \begin_layout Standard
-Por otra parte, cuando fijamos las características de las imágenes 
+Por otra parte, cuando fijamos las características de las familias de máquinas
+ virtuales 
 \emph on
 Linux
 \emph default
@@ -4998,9 +5204,9 @@ Nuevamente, el rendimiento de la infraestructura no se verá afectado si
 
 \end_deeper
 \begin_layout Standard
-Finalmente, como el lector habrá notado ya, todas las máquinas virtuales
- tienen asignada una generosa cantidad de espacio en disco.
- Con esto, pretendemos incentivar el uso de las máquinas virtuales con menos
+Finalmente, como el lector habrá notado ya, todas las familias de máquinas
+ virtuales tienen asignada una generosa cantidad de espacio en disco.
+ Con esto, pretendemos incentivar el uso de máquinas virtuales con menos
  CPUs y menos memoria RAM, ya que estos recursos son mucho más escasos que
  el espacio en disco.
  
@@ -5016,9 +5222,10 @@ reference "sub:Uso-del-formato-qcow2"
 
 , las imágenes de disco que utilizamos crecen dinámicamente a medida que
  se escribe en el disco duro de la máquina virtual.
- Por ello, el espacio libre en las imágenes no ocupará espacio en disco
- en el servidor ni en el repositorio de imágenes, y la existencia de discos
- duros de gran tamaño infrautilizados no supone un desperdicio de recursos.
+ Por ello, el espacio libre en los discos duros virtuales no ocupará espacio
+ en disco en el servidor ni en el repositorio de imágenes, y la existencia
+ de discos duros virtuales de gran tamaño infrautilizados no supone un desperdic
+io de recursos.
  
 \end_layout
 
@@ -5034,7 +5241,7 @@ name "sub:Uso-servidores-vanilla"
 \end_layout
 
 \begin_layout Standard
-La creación y edición de imágenes de disco requiere, entre otras cosas,
+La creación y edición de imágenes, entre otras cosas,
 \end_layout
 
 \begin_layout Itemize
@@ -5051,8 +5258,8 @@ la compresión y descompresión de ficheros de gran tamaño en el servidor
 
 \begin_layout Standard
 Por tanto, si un servidor de máquinas virtuales que se utiliza para editar
- imágenes de disco alberga otras máquinas virtuales, el rendimiento de estas
- se degradará cuando
+ imágenes alberga otras máquinas virtuales, el rendimiento de estas se degradará
+ cuando
 \end_layout
 
 \begin_layout Itemize
@@ -5069,9 +5276,9 @@ se transfieran ficheros entre el servidor de máquinas virtuales y el repositori
 
 \begin_layout Standard
 Así, si no tomamos medidas, un reducido número de usuarios que pueden crear
- o editar imágenes de disco (los profesores y los administradores) pueden
- perjudicar gravemente a la gran mayoría de usuarios, que se limitan a trabajar
- con las máquinas virtuales ya configuradas.
+ o editar imágenes (los profesores y los administradores) pueden perjudicar
+ gravemente a la gran mayoría de usuarios, que se limitan a trabajar con
+ las máquinas virtuales ya configuradas.
 \end_layout
 
 \begin_layout Standard
@@ -5207,6 +5414,133 @@ Además web2py ofrece una capa de abstracción de base de datos (DAL por su
 \end_layout
 
 \begin_layout Subsubsection*
+=======
+Modelo Vista-Controlador
+\end_layout
+
+\begin_layout Standard
+Web2py fuerza al desarrollador a utilizar unas buenas prácticas de ingeniería
+ del software, evitando la repetición de código en la medida de lo posible
+ y estandarizando la manera de hacer las cosas.
+ 
+\end_layout
+
+\begin_layout Standard
+Por ello, este framework utiliza un modelo Vista-Controlador que incentiva
+ al desarrollador a separar la forma de representar los datos (la vista)
+ y el flujo de trabajo de la aplicación (el controlador).
+ Este modelo ofrece una estructura modular que permite aislar los posibles
+ errores en una sección de código concreta y trabajar en paralelo de forma
+ independiente, reduciendo así los posibles tiempos de espera en el desarrollo
+ de la web.
+\end_layout
+
+\begin_layout Standard
+El flujo de trabajo típico de una petición web2py viene representado en
+ el diagrama 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagram-web2py"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/DiagramaSecuenciaWeb2py.png
+	scale 50
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagram-web2py"
+
+\end_inset
+
+Diagrama de secuencia web2py
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En el diagrama podemos destacar los siguientes elementos:
+\end_layout
+
+\begin_layout Itemize
+El navegador, a partir del cual el usuario se conectará a la web.
+\end_layout
+
+\begin_layout Itemize
+El servidor, puede ser el servidor incluido en web2py o un servidor de terceros,
+ tal como Apache.
+\end_layout
+
+\begin_layout Itemize
+La aplicación principal, encargada de realizar todas las tareas comunes
+ tal y como la gestión de cookies, sesiones, transacciones y enrutamiento.
+\end_layout
+
+\begin_layout Itemize
+Los modelos, vistas y controladores que componen la aplicación del desarrollador.
+\end_layout
+
+\begin_layout Itemize
+La Base de datos que se encargará de almacenar la información utilizada
+ por la web.
+\end_layout
+
+\begin_layout Standard
+Todas las llamadas se encierran en una transacción.
+ Cualquier excepción no contemplada hace que la transacción se cancele.
+ 
+\end_layout
+
+\begin_layout Standard
+Con web2py es posible registrar tareas recurrentes para ejecutarse en horas
+ específicas y/o después de determinadas acciones.
+ También es posible alojar varias aplicaciones en una misma instancia.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Web2PyBook"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
 Ventajas
 \end_layout
 
@@ -5293,7 +5627,7 @@ Visión general
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -6441,9 +6775,8 @@ CompressionThread
 FileTransferThread
 \family default
 .
- Estas están asociadas a la compresión y descompresión de imágenes de disco
- y al intercambio de imágenes de disco con el repositorio de imágenes respectiva
-mente.
+ Estas están asociadas a la compresión y descompresión de imágenes y al
+ intercambio de imágenes con el repositorio de imágenes respectivamente.
 \end_layout
 
 \begin_layout Itemize
@@ -9537,17 +9870,15 @@ pyftpdlib
 Python
 \emph default
 .
- En primer lugar, mostraremos las clases que hemos utilizado para implementar
- nuestro servidor FTP.
- Estas, junto con sus relaciones, aparecen en el diagrama de clases de la
- figura 
+ El diagrama de clases de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Principales-clases-pyftpdlib"
 
 \end_inset
 
-.
+ muestra las clases que hemos utilizado para implementar nuestro servidor
+ FTP y sus principales relaciones.
 \end_layout
 
 \begin_layout Standard
@@ -9604,7 +9935,7 @@ Authorizer
 DummyAuthorizer
 \family default
 , que restringe el acceso al servidor FTP utilizando nombres de usuario
- y sus contraseñas (sin cifrar).
+ y sus contraseñas que se transmiten sin cifrar.
 \end_layout
 
 \begin_layout Standard
@@ -9618,8 +9949,11 @@ Filesystem
 \family typewriter
 UnixFilesystem
 \family default
-, ya que siempre se ejecutará en Linux, que es un sistema operativo tipo
- UNIX.
+, ya que siempre se ejecutará en 
+\emph on
+Linux
+\emph default
+, que es un sistema operativo tipo UNIX.
 \end_layout
 
 \begin_layout Standard
@@ -9719,26 +10053,26 @@ Como ya hemos mencionado, el servidor FTP
 \family typewriter
 pyftpdlib
 \family default
- genera eventos para que el código cliente pueda responder a conexiones
- de clientes, transferencias fallidas,\SpecialChar \ldots{}
- Los eventos FTP que se generan y
- su información asociada son los siguientes:
+ genera eventos para que el código cliente pueda responder adecuadamente
+ cuando falla una transferencia FTP, cuando se conecta un nuevo cliente,
+ etcétera.
+ Los eventos FTP que se generan y su información asociada son los siguientes:
 \end_layout
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 desconexión inesperada de un cliente
-\series default
+\family default
 .
  No tiene asociado ningún tipo de información.
 \end_layout
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 conexión de un cliente
-\series default
+\family default
 .
  Tiene asociado el nombre de usuario que ha empleado el cliente para conectarse
  al servidor.
@@ -9746,9 +10080,9 @@ conexión de un cliente
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 desconexión normal de un cliente
-\series default
+\family default
 .
  Tiene asociado el nombre de usuario que ha empleado el cliente para conectarse
  al servidor.
@@ -9756,36 +10090,36 @@ desconexión normal de un cliente
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 fin de envío de fichero
-\series default
+\family default
 .
  Tiene asociado el nombre del fichero que ha terminado de enviarse.
 \end_layout
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 fin de recepción de fichero
-\series default
+\family default
 .
  Tiene asociado el nombre del fichero que se ha recibido.
 \end_layout
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 error en el envío de un fichero
-\series default
+\family default
 .
  Tiene asociado el nombre del fichero que ha tratado de enviarse.
 \end_layout
 
 \begin_layout Itemize
 
-\series bold
+\family sans
 error en la recepción de un fichero
-\series default
+\family default
 .
  Tiene asociado el nombre del fichero que se ha recibido parcialmente.
 \end_layout
@@ -9811,7 +10145,7 @@ pyftpdlib
 
 \begin_layout Itemize
 permite realizar la gestión de usuarios y contraseñas en tiempo de ejecución.
- Estos datos siempre se transmitirán sin cifrar.
+ Como ya hemos dicho, estos datos siempre se transmitirán sin cifrar.
 \end_layout
 
 \begin_layout Itemize
@@ -9988,22 +10322,6 @@ FTPServerThread
  
 \end_layout
 
-\begin_layout Standard
-El código de la clase 
-\family typewriter
-FTPServerThread
-\family default
- está tomado de las pruebas unitarias de 
-\family typewriter
-pyftpdlib
-\family default
-: por ahora, no se encuentra integrado con el resto de código de 
-\family typewriter
-pyftpdlib
-\family default
-.
-\end_layout
-
 \begin_layout Subsubsection
 El cliente FTP de 
 \emph on
@@ -10022,27 +10340,21 @@ El cliente FTP de
 \emph on
 CygnusCloud
 \emph default
- no es más que un envoltorio del cliente FTP incluido en la librería estándar
- de Python, 
-\family typewriter
-FTP
-\family default
-.
- Esto permite que los clientes FTP puedan intercambiar información con un
- servidor FTP a un mayor nivel de abstracción.
+ proporciona una interfaz que permite utilizar el cliente FTP de la librería
+ estándar de 
+\emph on
+Python
+\emph default
+ a un mayor nivel de abstracción.
 \end_layout
 
 \begin_layout Standard
-La clase asociada al cliente FTP de 
-\emph on
-CygnusCloud
-\emph default
- es 
+Su clase principal es 
 \family typewriter
 FTPClient
 \family default
 .
- Permite, entre otras cosas,
+ A través de la interfaz de esta clase, es posible 
 \end_layout
 
 \begin_layout Itemize
@@ -10058,11 +10370,7 @@ descargar un fichero ubicado en cierto directorio del servidor FTP.
 \end_layout
 
 \begin_layout Standard
-Es importante notar que la clase 
-\family typewriter
-FTP
-\family default
- de la librería estándar de 
+Es importante notar que el cliente FTP de la librería estándar de 
 \emph on
 Python
 \emph default
@@ -10094,49 +10402,27 @@ reference "sub:El-repositorio-de-imagenes"
 
 \end_inset
 
-, el repositorio de imágenes se ocupa de almacenar todas las imágenes de
- disco asociadas a todas las máquinas virtuales que pueden utilizarse en
- un 
+, el repositorio de imágenes se ocupa de almacenar todas las imágenes que
+ pueden utilizarse en un 
 \emph on
 cluster
 \emph default
-, es decir,
-\end_layout
-
-\begin_layout Itemize
-las imágenes de disco asociadas a las máquinas virtuales que utilizan los
- alumnos, y
-\end_layout
-
-\begin_layout Itemize
-las imágenes de disco base, que se usan para crear nuevas máquinas virtuales.
+, es decir, las imágenes que utilizan los alumnos, las imágenes que se están
+ configurando y las imágenes base.
 \end_layout
 
 \begin_layout Standard
-En esta sección, mostraremos detalladamente el diseño del repositorio de
- imágenes.
- Para ello, empezaremos discutiendo por qué un servidor FTP no puede utilizarse
- directamente como repositorio de imágenes.
- Acto seguido, mostraremos qué funciones realiza el repositorio de imágenes,
- para después mostrar en qué nos hemos basado para implementarlas.
-\end_layout
-
-\begin_layout Standard
-Posteriormente, mostraremos las funciones que añaden las clases del paquete
+En esta sección, mostraremos detalladamente el diseño del demonio del repositori
+o de imágenes, que es el proceso que reside en el servidor que actúa como
+ repositorio de imágenes y que atiende todas las peticiones recibidas por
+ esa máquina.
  
-\family typewriter
-imageRepository
-\family default
- al servidor FTP, para continuar mostrando las relaciones entre estas clases
- y las interacciones entre el repositorio de imágenes y una máquina remota.
- A continuación, mostraremos la organización de los ficheros en el servidor
- FTP.
 \end_layout
 
 \begin_layout Standard
-Finalmente, mostraremos los formatos de paquete que emplea el repositorio
- de imágenes para interactuar con el exterior y el esquema de su base de
- datos.
+Por conveniencia, y salvo que nos refiramos al servidor que actúa como repositor
+io de imágenes, a partir de ahora llamaremos directamente a este proceso
+ repositorio de imágenes.
 \end_layout
 
 \begin_layout Subsubsection
@@ -10151,15 +10437,9 @@ name "sub:Adición-capa-repositorio"
 \end_layout
 
 \begin_layout Standard
-Puesto que el repositorio de imágenes almacena todas las imágenes de disco
- que pueden utilizarse en el 
-\emph on
-cluster
-\emph default
-, lo más razonable es que el repositorio de imágenes se construya sobre
- un servidor FTP, y que todos los servidores de máquinas virtuales se conecten
- a él como clientes FTP.
- 
+El repositorio de imágenes alberga un servidor FTP.
+ Para intercambiar imágenes de disco con esta máquina, los servidores de
+ máquinas virtuales se conectarán como clientes ese servidor FTP.
 \end_layout
 
 \begin_layout Standard
@@ -10186,12 +10466,11 @@ cluster
 \end_layout
 
 \begin_layout Itemize
-un administrador decide desplegar la misma imagen de disco en todos ellos,
- y que
+un administrador decide desplegar la misma imagen en todos ellos, y que
 \end_layout
 
 \begin_layout Itemize
-ningún servidor de máquinas virtuales tiene almacenada esa imagen de disco.
+ningún servidor de máquinas virtuales tiene almacenada esa imagen.
 \end_layout
 
 \begin_layout Standard
@@ -10216,8 +10495,7 @@ timeout
 \end_layout
 
 \begin_layout Standard
-Así, a medida que crece el número de servidores de máquinas virtuales del
- 
+Así, al crecer el número de servidores de máquinas virtuales del 
 \emph on
 cluster
 \emph default
@@ -10236,30 +10514,36 @@ se está desperdiciando cada vez más ancho de banda: el que consumen las
 \end_layout
 
 \begin_layout Standard
-Para que el sistema sea usable, resulta imprescindible limitar el número
- máximo de servidores de máquinas virtuales del 
+Para que sea cómodo utilizar el sistema 
+\emph on
+CygnusCloud
+\emph default
+, si utilizamos directamente un servidor FTP resulta imprescindible limitar
+ el número máximo de servidores de máquinas virtuales del 
 \emph on
 cluster.
  
-\emph default
-Así, el número de servidores de máquinas virtuales del 
+\end_layout
+
+\begin_layout Standard
+Así, el número máximo de servidores de máquinas virtuales del 
 \emph on
 cluster
 \emph default
- pasará a estar limitado por el ancho de banda disponible para el tráfico
- que intercambian estos y el repositorio de imágenes, y no por la capacidad
- del servidor de 
+ pasará a estar limitado por el ancho de banda disponible para intercambiar
+ imágenes con el repositorio de imágenes, y no por la capacidad del servidor
+ de 
 \emph on
 cluster
 \emph default
- para atender a todos ellos.
- Esto compromete la escalabilidad del sistema.
+ para atenderlos a todos.
+ Así, esto compromete la escalabilidad del sistema.
 \end_layout
 
 \begin_layout Standard
 Por otra parte, el uso directo de un servidor FTP en el repositorio de imágenes
  tiene un inconveniente aún mayor: la aparición de conflictos en la edición
- de imágenes de disco existentes.
+ de imágenes.
  Por ejemplo, supongamos que
 \end_layout
 
@@ -10272,19 +10556,19 @@ A
 \family sans
 B
 \family default
- imparten la misma asignatura, que tiene asociada la máquina virtual 
-\begin_inset Formula $\textsf{VM}_{1}$
+ imparten la misma asignatura, que tiene asociada la configuración 
+\begin_inset Formula $C_{1}$
 \end_inset
 
 , que
 \end_layout
 
 \begin_layout Itemize
-tras utilizar la máquina virtual 
-\begin_inset Formula $\textsf{VM}_{1}$
+tras utilizar 
+\begin_inset Formula $C_{1}$
 \end_inset
 
- por separado, 
+ con una máquina virtual, 
 \family sans
 A
 \family default
@@ -10292,7 +10576,8 @@ A
 \family sans
 B
 \family default
- descubren que varias herramientas están mal configuradas, y que
+ descubren por separado que varias herramientas están mal configuradas,
+ y que
 \end_layout
 
 \begin_layout Itemize
@@ -10316,37 +10601,31 @@ A
 \family sans
 B
 \family default
- tendrán que editar las imágenes de disco asociadas a la máquina virtual
- 
-\begin_inset Formula $\textsf{VM}_{1}$
+ tendrán que editar la imagen 
+\begin_inset Formula $C_{1}$
 \end_inset
 
 .
- Pero a la hora de transferirlas de nuevo al repositorio, las modificaciones
- que ha hecho 
+ Pero como no se realiza ningún tipo de control a la hora de transferir
+ los ficheros modificados al repositorio, los cambios que ha hecho 
 \family sans
 A
 \family default
- acabarán sobreescribiéndose con las que ha hecho 
+ acabarán sobreescribiéndose con los que ha hecho 
 \family sans
 B
 \family default
  o viceversa.
- Por tanto, uno de los profesores ha estado perdiendo el tiempo: los cambios
- que ha introducido se perderán.
+ Por tanto, uno de los profesores ha estado perdiendo el tiempo: las correccione
+s que ha introducido se perderán.
 \end_layout
 
 \begin_layout Standard
 En definitiva, el uso directo de un servidor FTP en el repositorio de imágenes
  presenta serios inconvenientes.
- Por ello, el demonio del repositorio de imágenes no sólo utiliza un servidor
- FTP, y añade una capa adicional para resolverlos.
- 
-\end_layout
-
-\begin_layout Standard
-Por claridad, de ahora en adelante utilizaremos el término repositorio de
- imágenes para hacer referencia al demonio del repositorio de imágenes.
+ Para evitarlo, el demonio del repositorio de imágenes no se limita a configurar
+ y a arrancar el servidor FTP, y añade una capa adicional para resolver
+ los dos problemas que acabamos de estudiar.
 \end_layout
 
 \begin_layout Subsubsection
@@ -10361,13 +10640,13 @@ name "sub:Funciones-soportadas-repositorio"
 \end_layout
 
 \begin_layout Standard
-El repositorio de imágenes está construido sobre un servidor FTP, al que
- añade las siguientes funciones:
+El repositorio de imágenes alberga un servidor FTP, al que añade las siguientes
+ funciones:
 \end_layout
 
 \begin_layout Itemize
-gestión de los identificadores de las imágenes de disco.
- Todas las imágenes de disco que pueden utilizarse en el 
+gestión de los identificadores de las imágenes.
+ Todas las imágenes que pueden utilizarse en el 
 \emph on
 cluster
 \emph default
@@ -10376,35 +10655,33 @@ cluster
 \end_layout
 
 \begin_layout Itemize
-borrado de una imagen del servidor que actúa como repositorio de imágenes.
-\end_layout
-
-\begin_layout Itemize
-transferencia de un fichero 
+transferencia de una imagen 
 \emph on
 en exclusividad
 \emph default
  a una máquina remota.
- Tras realizar una de estas transferencias, el fichero no podrá transferirse
- a ninguna otra máquina hasta que el repositorio reciba la copia modificada.
- Esto nos permite evitar la aparición de conflictos como el del último ejemplo
- de la sección anterior.
+ Tras realizar una de estas transferencias, la imagen correspondiente no
+ podrá transferirse a ninguna otra máquina hasta que el repositorio reciba
+ los datos modificados.
+ Esto permite evitar la aparición de conflictos como el que estudiamos en
+ la sección anterior.
 \end_layout
 
 \begin_layout Itemize
-cálculo del espacio en disco total y disponible.
+recopilación del estado del servidor.
 \end_layout
 
 \begin_layout Itemize
-control del número de transferencias simultáneas, tratando con equidad a
- todas las máquinas remotas que deseen intercambiar un fichero con el repositori
-o de imágenes.
+control del número de transferencias simultáneas.
+ El mecanismo utilizado garantiza que todas las peticiones de transferencia
+ recibirán un tratamiento equitativo.
 \end_layout
 
 \begin_layout Standard
-Naturalmente, el repositorio de imágenes también soporta la transferencia
- y la recepción de ficheros.
- Para realizar estas operaciones, delega en el servidor FTP.
+Naturalmente, el repositorio de imágenes también soporta la transferencia,
+ la recepción y el borrado de imágenes.
+ Para realizar parte de las dos primeras operaciones, delega en el servidor
+ FTP.
 \end_layout
 
 \begin_layout Subsubsection
@@ -10434,8 +10711,8 @@ cias de subida y de descarga de ficheros en paralelo.
 
 \begin_layout Standard
 Por otra parte, el ancho de banda del enlace está limitado.
- Si permitimos que los servidores se conecten sin control al servidor FTP,
- podrán generarse errores por 
+ Si permitimos que los servidores de máquinas virtuales se conecten sin
+ control al servidor FTP, podrán generarse errores por 
 \emph on
 timeout
 \emph default
@@ -10454,8 +10731,8 @@ Así pues, debemos restringir el número máximo de transferencias simultáneas
  entre el servidor FTP y las máquinas remotas, y también debemos realizar
  las transferencias de subida y de descarga en paralelo cuando sea posible.
  Para ello, las máquinas remotas no se conectarán directamente al servidor
- FTP, y dialogarán previamente con el repositorio de imágenes a través de
- una conexión de control adicional.
+ FTP, y dialogarán previamente con el demonio del repositorio de imágenes
+ a través de una conexión de control adicional.
 \end_layout
 
 \begin_layout Subsubsection
@@ -10507,7 +10784,8 @@ slots
 \emph on
 slots
 \emph default
- de transferencia se configura durante el arranque del repositorio de imágenes.
+ de transferencia se especifica en el fichero de configuración del demonio
+ del repositorio de imágenes.
  
 \end_layout
 
@@ -10563,7 +10841,7 @@ reference "fig:Principales-clases-repositorio"
 
  muestra las principales clases del repositorio de imágenes y sus relaciones
  con otras clases.
- Por claridad,
+ Por claridad, en el diagrama de clases
 \end_layout
 
 \begin_layout Itemize
@@ -10606,6 +10884,19 @@ no hemos indicado los paquetes a los que pertenecen las clases que no están
  definidas en el paquete 
 \family typewriter
 imageRepository
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+En los sucesivos diagramas UML relacionados con el repositorio de imágenes,
+ seguiremos abreviando 
+\family typewriter
+ImageRepository
+\family default
+ como 
+\family typewriter
+IR
 \family default
 .
 \end_layout
@@ -10804,8 +11095,8 @@ ImageRepository
 IR
 \family default
 .
- Asimismo, estamos suponiendo que no se produce ningún error durante el
- proceso de arranque
+ Por claridad, estamos suponiendo que no se produce ningún error durante
+ el proceso de arranque
 \end_layout
 
 \begin_layout Standard
@@ -10944,7 +11235,7 @@ se configura e inicia el servidor FTP.
 \end_layout
 
 \begin_layout Enumerate
-se configura y utiliza la conexión de control.
+se crea la conexión de control.
  Para ello, es necesario disponer de un objeto 
 \emph on
 callback
@@ -10962,7 +11253,7 @@ CommandsCallback
 \end_layout
 
 \begin_layout Enumerate
-se empieza a asignar 
+el hilo principal empieza a asignar 
 \emph on
 slots
 \emph default
@@ -10985,106 +11276,53 @@ name "sub:Arranque-del-repositorio-error"
 \end_layout
 
 \begin_layout Standard
-Mientras arranca el demonio del repositorio de imágenes, pueden detectarse
- los siguientes errores:
+Mientras arranca el demonio del repositorio de imágenes, se producirán errores
+ cuando
 \end_layout
 
 \begin_layout Itemize
-el fichero de configuración del repositorio de imágenes puede ser incorrecto.
+el fichero de configuración del repositorio de imágenes sea incorrecto.
 \end_layout
 
 \begin_layout Itemize
-la configuración de la base de datos puede fallar.
+la configuración de la base de datos puede falla.
 \end_layout
 
 \begin_layout Itemize
-el puerto de la conexión de control puede estar en uso.
+el puerto de la conexión de control o el puerto utilizado por el servidor
+ FTP ya están en uso.
 \end_layout
 
 \begin_layout Itemize
-el puerto utilizado por el servidor FTP puede estar en uso.
-\end_layout
-
-\begin_layout Itemize
-la interfaz de red por la que circulará el tráfico FTP puede no estar lista.
+la interfaz de red por la que circulará el tráfico FTP no está lista.
 \end_layout
 
 \begin_layout Standard
-Todos estos errores se tratan de la siguiente manera:
+Todos estos errores se tratan de la siguiente manera: 
 \end_layout
 
 \begin_layout Enumerate
-si está arrancado, se detiene el servidor FTP.
+tras detectar el error, se indica al hilo principal que se ha producido
+ un error.
 \end_layout
 
 \begin_layout Enumerate
-si está arrancado, se detiene el servicio de red, por lo que dejan de atenderse
- las peticiones recibidas por la conexión de control.
+el hilo principal termina inmediatamente de iniciar transferencias.
+ 
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal para el servidor FTP y cierra la conexión de control.
 \end_layout
 
 \begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-del-repositorio-errores"
-
-\end_inset
-
- muestra cómo se responde cuando el puerto de la conexión de control está
- en uso.
- Puesto que se detecta al final, este es el error que más procesamiento
- requiere.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Arranque repositorio.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Arranque-del-repositorio-errores"
-
-\end_inset
-
-Arranque del repositorio de imágenes: tratamiento de errores
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Es importante notar que el servicio de red debe detenerse siempre desde
- el hilo principal ya que, si se intenta detener desde un hilo de red, se
- producirá un cuelgue.
+En todos los procesos de apagado, el servicio de red nunca debe detenerse
+ desde un hilo creado por la red: si se intenta hacer esto, el hilo de red
+ esperará hasta su propia terminación y, por tanto, se producirá un cuelgue.
 \end_layout
 
 \begin_layout Subsubsection
-Interacciones del repositorio de imágenes 
+Interacciones con una máquina remota 
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Interacciones-del-repositorio"
@@ -11095,26 +11333,22 @@ name "sub:Interacciones-del-repositorio"
 \end_layout
 
 \begin_layout Standard
-En esta sección, mostraremos cómo interactúa el repositorio de imágenes
- con una máquina remota.
- Todas estas interacciones tienen lugar intercambiando paquetes a través
- de la conexión de control.
- Además, las que requieran la transferencia de un fichero también involucrarán
- al servidor FTP.
+En esta sección, mostraremos todas las posibles interacciones que pueden
+ tener lugar entre el repositorio de imágenes y una máquina remota que,
+ dependiendo del caso, será un servidor de máquinas virtuales o el servidor
+ de 
+\emph on
+cluster
+\emph default
+.
 \end_layout
 
 \begin_layout Standard
-Por claridad, en esta sección hemos preferido centrarnos en la secuencia
- de acciones que se realizan en cada caso, y no en los formatos de los tipos
- de paquete que se utilizan.
- Más adelante, en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Formatos-de-paquete-repositorio"
-
-\end_inset
-
-, los describiremos con todo lujo de detalles.
+Todas estas interacciones se basan en el intercambio de paquetes entre el
+ repositorio de imágenes y la máquina remota a través de la conexión de
+ control.
+ Además, en aquellos casos en los que sea necesaria la transferencia de
+ un fichero, también intervendrá el servidor FTP.
 \end_layout
 
 \begin_layout Paragraph
@@ -11136,37 +11370,33 @@ reference "sub:Funciones-soportadas-repositorio"
 
 \end_inset
 
-, el repositorio se ocupa de la gestión de los identificadores de las imágenes
- de disco de la infraestructura.
- Por ello, cuando se cree una nueva imagen, será necesario solicitar el
- identificador de la misma al repositorio.
+, el repositorio de imágenes se ocupa de la gestión de los identificadores
+ de las imágenes que pueden utilizarse en el 
+\emph on
+cluster
+\emph default
+.
+ 
 \end_layout
 
 \begin_layout Standard
-El diagrama de secuencia de la figura 
+Por ello, cuando en un servidor de máquinas virtuales se cree una nueva
+ imagen, será necesario solicitar el identificador de la misma al repositorio.
+ El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Registro-identificador-imagen"
 
 \end_inset
 
- muestra la interacción que tiene lugar para reservar dicho identificador.
- Nuevamente, hemos abreviado 
-\family typewriter
-ImageRepository
-\family default
- como 
-\family typewriter
-IR
-\family default
-.
+ muestra cómo actúa el repositorio en estos casos.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -11208,99 +11438,54 @@ Registro de un identificador de imagen
 \end_layout
 
 \begin_layout Standard
-Como puede observarse en el diagrama, se siguen los siguientes pasos:
+Como puede observarse en dicho diagrama, se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
-a través de la conexión de control, la máquina remota envía un paquete del
- tipo 
+el servidor de máquinas virtuales envía un paquete del tipo 
 \family sans
 Crear Imagen
 \family default
  al repositorio de imágenes.
+ Estos paquetes no contienen ningún tipo de información adicional.
 \end_layout
 
 \begin_layout Enumerate
-la red invoca al método de procesamiento de paquetes del objeto 
-\family typewriter
-CommandsCallback
-\family default
- del repositorio de imágenes.
+se lee el contenido del paquete recibido.
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-CommandsCallback
-\family default
- lee el contenido del paquete a través de un objeto 
-\family typewriter
-ImageRepositoryPacketHandler
-\family default
-.
- Acto seguido, solicita a un objeto 
-\family typewriter
-ImageRepositoryDBConnector
-\family default
- la generación de un nuevo identificador de imagen.
- 
+a partir del contenido de la base de datos, se genera un nuevo identificador
+ de imagen.
 \end_layout
 
-\begin_deeper
-\begin_layout Standard
-El objeto 
-\family typewriter
-ImageRepositoryDBConnector
-\family default
- generará el identificador único utilizando el contenido de las tablas de
- la base de datos del repositorio de imágenes.
-\end_layout
-
-\end_deeper
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-CommandsCallback
-\family default
- construye el paquete con la respuesta, que es del tipo 
+se construye un paquete con la respuesta, que es del tipo 
 \family sans
 Imagen Creada
 \family default
 .
- Este paquete se crea a través de un objeto 
-\family typewriter
-ImageRepositoryPacketHandler
-\family default
-, y contiene el identificador de imagen que se ha generado.
+ Estos paquetes contienen el identificador de imagen generado.
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-CommandsHandler
-\family default
- envía ese paquete a la máquina remota.
- Para ello, utiliza un objeto 
-\family typewriter
-NetworkManager
-\family default
-.
+se envía el paquete con la respuesta al servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-En todas las interacciones, el repositorio de imágenes utiliza del modo
- de envío 
+Asimismo, en todas las interacciones con un servidor de máquinas virtuales,
+ el repositorio de imágenes utiliza del modo de envío 
 \emph on
 unicast
 \emph default
  de la conexión de control para enviar las respuestas.
- Por ello, sólo el cliente que envió la petición correspondiente (y no todos)
- recibirá la respuesta.
+ Por ello, sólo la máquina que envió la petición (y no todas las máquinas
+ conectadas al repositorio de imágenes) recibirá la respuesta.
  Esto nos permite ahorrar mucho ancho de banda.
 \end_layout
 
 \begin_layout Paragraph
-Descarga de imágenes de disco 
+Descarga de imágenes 
 \begin_inset CommandInset label
 LatexCommand label
 name "par:Descarga-de-imágenes"
@@ -11322,7 +11507,7 @@ reference "sub:Almacenamiento-imágenes-zip"
  de la infraestructura no intercambian directamente ficheros de imagen,
  sino ficheros 
 \family typewriter
-zip
+.zip
 \family default
  que contienen ficheros de imagen.
 \end_layout
@@ -11330,25 +11515,24 @@ zip
 \begin_layout Standard
 Por ello, el repositorio de imágenes sólo intercambia ficheros 
 \family typewriter
-zip
+.zip
 \family default
- con las máquinas remotas.
- En esta sección, mostraremos todas las posibles interacciones que tienen
- lugar cuando una máquina remota intenta descargar uno de estos ficheros
- comprimidos.
+ con los servidores de máquinas virtuales.
+ En esta sección, mostraremos todas las interacciones relacionadas con la
+ descarga de ficheros comprimidos desde el repositorio de imágenes.
 \end_layout
 
 \begin_layout Standard
-El diagrama de secuencia de la figura 
+Para empezar, nos centraremos en la interacción básica de inicio de una
+ descarga, en la que no se producen errores.
+ Esta interacción se recoge en el diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Transferencia-imagen-basica"
 
 \end_inset
 
- muestra la interacción básica de inicio de la transferencia, en la que
- no aparecen errores.
- 
+.
 \end_layout
 
 \begin_layout Standard
@@ -11379,15 +11563,13 @@ name "fig:Transferencia-imagen-basica"
 
 \end_inset
 
-Inicio de la transferencia de una imagen a una máquina remota
+Inicio de la descarga de un fichero 
+\family typewriter
+.zip
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -11401,33 +11583,33 @@ Los pasos que se siguen son los siguientes:
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-CommandsCallback
-\family default
- recibe el paquete del tipo 
+el servidor de máquinas virtuales envía un paquete del tipo 
 \family sans
-Petición 
-\family typewriter
-FTP RETR
+Petición FTP RETR
 \family default
-, y lee su contenido mediante un objeto 
+ al repositorio de imágenes.
+ Este paquete contiene el identificador único de la imagen a descargar,
+ y un 
+\emph on
+flag
+\emph default
+ que, en este caso, toma el valor 
 \family typewriter
-ImageRepositoryPacketHandler
+False
 \family default
 .
- Estos paquetes contienen el identificador único del fichero comprimido.
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-CommandsCallback
-\family default
- comprueba que el fichero existe y que no ha sido concedido en exclusividad
- a otra máquina.
- Como no se producen errores, confirma a la máquina remota la recepción
- de su petición mediante un paquete del tipo 
+tras leer el contenido del paquete, el repositorio de imágenes comprueba
+ que el fichero existe y que no ha sido concedido en exclusividad a otra
+ máquina.
+ 
+\end_layout
+
+\begin_layout Enumerate
+como no se producen errores, confirma a la máquina remota la recepción de
+ su petición mediante un paquete del tipo 
 \family sans
 Petición 
 \family typewriter
@@ -11444,24 +11626,13 @@ cuando un
 slot 
 \emph default
 de transferencia queda libre y la petición llega a la cabecera de la cola,
- desde el método 
-\family typewriter
-initTransfers()
-\family default
  
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
 se comprueba nuevamente que el fichero puede transferirse.
- En la interacción del diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Transferencia-imagen-basica"
-
-\end_inset
-
- no se detecta ningún error.
+ Si se detectase algún error, se abortaría inmediatamente la transferencia.
 \end_layout
 
 \begin_layout Enumerate
@@ -11481,9 +11652,10 @@ Inicio transferencia
 \family typewriter
 FTP RETR
 \family default
- a la máquina remota.
- Este contiene todo la la información que la máquina remota necesita para
- descargar el fichero comprimido.
+ al servidor de máquinas virtuales.
+ El paquete contiene toda la información que esta máquina necesita para
+ conectarse al servidor FTP del repositorio de imágenes y descargar el fichero
+ comprimido.
 \end_layout
 
 \end_deeper
@@ -11532,14 +11704,14 @@ reference "fig:Detección-de-errores-peticion-1"
 
 \end_inset
 
- muestran cómo interactúan el repositorio y la máquina remota al detectar
- estos errores.
+ muestran cómo interactúan el repositorio y el servidor de máquinas virtuales
+ al detectar estos errores.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -11564,7 +11736,11 @@ name "fig:Detección-de-errores-peticion"
 
 \end_inset
 
-Detección de errores al recibir la petición de transferencia
+Inicio de la descarga de un fichero 
+\family typewriter
+.zip
+\family default
+: tratamiento de errores
 \end_layout
 
 \end_inset
@@ -11584,7 +11760,7 @@ Detección de errores al recibir la petición de transferencia
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -11609,7 +11785,9 @@ name "fig:Detección-de-errores-peticion-1"
 
 \end_inset
 
-Detección de errores al habilitar la transferencia
+Detección de errores al habilitar la descarga de un fichero 
+\family typewriter
+.zip
 \end_layout
 
 \end_inset
@@ -11623,25 +11801,25 @@ Detección de errores al habilitar la transferencia
 \end_layout
 
 \begin_layout Standard
-Como puede observarse en los diagramas de secuencia de las figuras 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Detección-de-errores-peticion"
+Siempre que se detecta un error
+\end_layout
 
-\end_inset
-
+\begin_layout Enumerate
+el repositorio de imágenes envía un paquete de error al servidor de máquinas
+ virtuales.
+ Estos paquetes serán de los tipos 
+\family sans
+Solicitud FTP RETR errónea
+\family default
  y 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Detección-de-errores-peticion-1"
+\family sans
+Error en la transferencia FTP RETR
+\family default
+, y contienen un código de descripción del error.
+\end_layout
 
-\end_inset
-
-, al detectar un error el repositorio de imágenes envía un paquete de error
- a la máquina remota, y esta no realiza la transferencia.
- Todos los paquetes de error contienen, además del identificador de las
- imágenes de disco del fichero comprimido, un código que indica la causa
- del error.
+\begin_layout Enumerate
+el servidor de máquinas virtuales aborta la transferencia.
 \end_layout
 
 \begin_layout Standard
@@ -11650,125 +11828,62 @@ Finalmente, cuando no se producen errores se realizará una transferencia
 \family typewriter
 RETR
 \family default
- entre la máquina remota y el servidor FTP.
- El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Transferencia-imagen"
-
-\end_inset
-
- muestra la interacción que tiene lugar en este caso.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Transferencia FTP RETR.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Transferencia-imagen"
-
-\end_inset
-
-Transferencia de una imagen a una máquina remota
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Tras finalizar la transferencia, se invocará al método 
-\family typewriter
-on_file_sent()
-\family default
- del objeto 
-\family typewriter
-FTPServerCallback
-\family default
-, en el que se liberará el 
-\emph on
-slot 
-\emph default
-asignado a la transferencia.
- Cuando se libera el 
+ entre el servidor de máquinas virtuales y el servidor FTP que reside en
+ el repositorio de imágenes.
+ Cuando esta finaliza, se liberará el 
 \emph on
 slot
 \emph default
-, se iniciará la siguiente transferencia encolada (si la hay).
+ que tiene asociado.
 \end_layout
 
 \begin_layout Paragraph
-Uso de imágenes de disco en exclusividad
+Uso de imágenes en exclusividad
 \end_layout
 
 \begin_layout Standard
-Tal y como dijimos en la sección 
+Como dijimos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Funciones-soportadas-repositorio"
 
 \end_inset
 
-, el repositorio de imágenes puede transferir un fichero comprimido a una
- máquina remota en exclusividad.
- Esto significa que, mientras que esa máquina remota no lo libere, bien
- subiendo una versión modificada del fichero o bien pidiendo al repositorio
- que lo libere, ninguna otra máquina remota podrá descargarlo.
+, el repositorio de imágenes puede transferir en exclusividad un fichero
+ comprimido a un servidor de máquinas virtuales.
+ Esto significa que, mientras que ese servidor de máquinas virtuales no
+ lo libere, bien subiendo una versión modificada del mismo o bien pidiendo
+ al repositorio que lo libere, ningún otro servidor de máquinas virtuales
+ podrá descargarlo.
 \end_layout
 
 \begin_layout Standard
-En esta sección, mostraremos cómo una máquina remota descarga un fichero
- en exclusividad, y también cómo lo puede liberar sin volver a subirlo.
- En la siguiente sección, mostraremos cómo puede liberarlo subiendo una
- copia modificada del mismo.
+En esta sección, mostraremos cómo interactúa un servidor de máquinas virtuales
+ para descargar un fichero desde el repositorio de imágenes en exclusividad.
+ También estudiaremos cómo un servidor de máquinas virtuales puede liberar
+ un fichero que ha descargado en exclusividad sin necesidad de transferirlo
+ al repositorio de imágenes.
 \end_layout
 
 \begin_layout Standard
-El diagrama de secuencia de la figura 
+En primer lugar, estudiaremos la secuencia básica, en la que no se producen
+ errores.
+ El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Descarga-fichero-exclusividad"
 
 \end_inset
 
- muestra cómo el repositorio de imágenes recibe una petición de descarga
- en exclusividad.
+ muestra la parte del proceso de descarga que cambia con respecto al caso
+ anterior.
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -11793,7 +11908,11 @@ name "fig:Descarga-fichero-exclusividad"
 
 \end_inset
 
-Descarga de un fichero en exclusividad
+Descarga de un fichero 
+\family typewriter
+.zip
+\family default
+ en exclusividad
 \end_layout
 
 \end_inset
@@ -11811,49 +11930,31 @@ Descarga de un fichero en exclusividad
 \end_layout
 
 \begin_layout Standard
-Como se puede observar en el diagrama de secuencia, la petición se procesa
- casi igual que una petición de descarga 
-\begin_inset Quotes eld
-\end_inset
-
-normal
-\begin_inset Quotes erd
-\end_inset
-
-.
- No obstante, a diferencia del caso anterior,
+Estas peticiones se procesan casi igual que una petición de descarga normal.
+ No obstante, hay diferencias:
 \end_layout
 
 \begin_layout Itemize
-el flag 
+el 
 \emph on
-modify
+flag
 \emph default
-, que forma parte todos los paquetes 
+ que forma parte todos los paquetes 
 \family sans
 Petición 
 \family typewriter
 FTP RETR
 \family default
-, está activado, y
+ toma el valor 
+\family typewriter
+True
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
 al procesar la petición, el repositorio de imágenes registra en la base
  de datos que la imagen se va a descargar en exclusividad.
-\end_layout
-
-\begin_layout Standard
-La descarga de la imagen y el tratamiento de los errores son idénticos a
- los de una transferencia de descarga 
-\begin_inset Quotes eld
-\end_inset
-
-normal
-\begin_inset Quotes erd
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Standard
@@ -11864,7 +11965,8 @@ reference "fig:Liberación-imagen-dico"
 
 \end_inset
 
- muestra cómo una máquina remota libera un fichero que tiene en exclusividad.
+ muestra cómo un servidor de máquinas virtuales libera un fichero que tiene
+ en exclusividad sin necesidad de transferirlo al repositorio.
 \end_layout
 
 \begin_layout Standard
@@ -11895,7 +11997,7 @@ name "fig:Liberación-imagen-dico"
 
 \end_inset
 
-Liberación de una imagen de disco
+Liberación de un fichero descargado en exclusividad: secuencia sin transferencia
 \end_layout
 
 \end_inset
@@ -11949,14 +12051,14 @@ Es importante notar que, cuando se intenta liberar un fichero que no está
 \end_layout
 
 \begin_layout Paragraph
-Subida de imágenes de disco
+Subida de imágenes
 \end_layout
 
 \begin_layout Standard
 Las interacciones que tienen lugar para transferir una imagen de disco desde
- una máquina remota al repositorio de imágenes son prácticamente idénticas
- a las interaccioens de descarga.
- Por ello, en este apartado las comentaremos de forma breve.
+ un servidor de máquinas virtuales al repositorio de imágenes son prácticamente
+ idénticas a las interacciones de descarga.
+ Por ello, en este apartado sólo comentaremos las diferencias.
 \end_layout
 
 \begin_layout Standard
@@ -11969,7 +12071,7 @@ status collapsed
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Transferencia FTP STOR.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Inicio FTP STOR.pdf
 	scale 80
 
 \end_inset
@@ -12011,8 +12113,8 @@ reference "fig:Transferencia-imagen-basica-1"
 
  muestra la interacción básica de inicio de transferencia.
  En ella, no se produce ningún error.
- Como puede observarse en el diagrama, el repositorio de imágenes y la máquina
- remota intercambian los paquetes 
+ Como puede observarse en el diagrama, el repositorio de imágenes y la el
+ servidor de máquinas virtuales intercambian los paquetes
 \end_layout
 
 \begin_layout Itemize
@@ -12022,7 +12124,7 @@ Petición
 \family typewriter
 FTP STOR
 \family default
-, que contiene el identificador único del fichero comprimido a subir,
+, que contiene el identificador único de la imagen a transferir,
 \end_layout
 
 \begin_layout Itemize
@@ -12051,61 +12153,22 @@ FTP STOR
 \end_layout
 
 \begin_layout Standard
-Además, también debemos recordar que, para aprovechar el ancho de banda
- del enlace, las transferencias FTP 
-\family typewriter
-STOR
-\family default
- y FTP 
-\family typewriter
-RETR
-\family default
- no tienen por qué desencolarse en el mismo orden en que se reciben.
- Por claridad, tampoco hemos reflejado esto en el diagrama de secuencia
- de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Transferencia-imagen-basica-1"
-
-\end_inset
-
-.
+Asimismo, si un servidor de máquinas virtuales descargó en exclusividad
+ la imagen que se ha terminado de subir al repositorio de imágenes, esta
+ se liberará.
 \end_layout
 
 \begin_layout Standard
 Por otra parte, en este caso sólo se producirán errores cuando el identificador
- de la imagen a subir no exista.
- Si una máquina tiene el fichero comprimido en exclusividad, sólo ella podrá
- descargarlo y sólo ella podrá subirlo.
- Así, en las transferencias de subida no es necesario detectar si otra máquina
- tiene la imagen en exclusividad o no.
- 
-\end_layout
-
-\begin_layout Standard
-Nuevamente, los errores pueden detectarse tanto al recibir la petición de
- transferencia como al habilitar la subida del fichero.
- Los diagramas de secuencia de las figuras 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Detección-de-errores-peticion-stor"
-
-\end_inset
-
- y 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Detección-de-errores-peticion-stor-1"
-
-\end_inset
-
- contienen las interacciones correspondientes.
+ de la imagen que se pretende subir no existe.
+ Y estos errores pueden detectarse tanto al recibir la petición de transferencia
+ como al habilitar la subida del fichero.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -12146,7 +12209,7 @@ Detección de errores al recibir la petición de transferencia
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -12185,7 +12248,7 @@ Detección de errores al habilitar la transferencia
 \end_layout
 
 \begin_layout Standard
-Como puede observarse en los diagramas de secuencia de las figuras 
+Los diagramas de secuencia de las figuras 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Detección-de-errores-peticion-stor"
@@ -12199,8 +12262,9 @@ reference "fig:Detección-de-errores-peticion-stor-1"
 
 \end_inset
 
-, cuando se suben ficheros al repositorio de imágenes se usan los paquetes
- de error 
+ contienen las interacciones correspondientes.
+ Como puede observarse en ambos, para informar del error se utilizan paquetes
+ de los tipos 
 \family sans
 Petición 
 \family typewriter
@@ -12219,77 +12283,6 @@ FTP STOR
  de disco y un código de descripción del error.
 \end_layout
 
-\begin_layout Standard
-Finalmente, el diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Transferencia-imagen-máquina-remota"
-
-\end_inset
-
- muestra cómo interactúan el repositorio de imágenes durante la subida de
- un fichero con imágenes de disco.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Repositorio/Transferencia FTP STOR.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Transferencia-imagen-máquina-remota"
-
-\end_inset
-
-Transferencia de una imagen desde una máquina remota
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Como se puede observar en este último diagrama, cuando se invoca a la función
- 
-\family typewriter
-on_file_received()
-\family default
- del objeto 
-\family typewriter
-FTPServerCallback
-\family default
-, se invoca a un método del conector de la base de datos, que registra la
- ruta del fichero comprimido y modifica el estado de la imagen.
-\end_layout
-
 \begin_layout Paragraph
 Transferencias parciales
 \begin_inset CommandInset label
@@ -12302,11 +12295,8 @@ name "par:Transferencias-parciales"
 \end_layout
 
 \begin_layout Standard
-En las dos secciones anteriores, hemos mostrado las interacciones que tienen
- lugar cuando una máquina remota intercambia un fichero comprimido con el
- repositorio de imágenes.
- Por claridad, en ambas hemos omitido el tratamiento de un tipo de error
- adicional: las transferencias parciales.
+Por claridad, en las dos secciones anteriores hemos omitido el tratamiento
+ de un tipo de error adicional: los fallos en la transferencia FTP.
 \end_layout
 
 \begin_layout Standard
@@ -12378,24 +12368,33 @@ En ambos casos, se libera el
 slot
 \emph default
  de la transferencia.
- Además, no es necesario informar a la máquina remota, ya que el cliente
- FTP que esta utiliza detectará el error.
+ Además, no es necesario informar del error al servidor de máquinas virtuales,
+ ya que el cliente FTP que este utiliza detectará el error.
 \end_layout
 
 \begin_layout Paragraph
-Borrado de una imagen de disco
+Borrado de una imagen 
 \end_layout
 
 \begin_layout Standard
-El diagrama de secuencia de la figura 
+Para borrar una imagen del repositorio, el servidor de 
+\emph on
+cluster
+\emph default
+ enviará a esta máquina un paquete del tipo 
+\family sans
+Borrar imagen
+\family default
+.
+ El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Interacciones-asociadas-borrado"
 
 \end_inset
 
- muestra las interacciones que tienen lugar al borrar una imagen de disco
- y al detectar un error en el borrado de una imagen de disco.
+ muestra todas las interacciones que pueden tener lugar al procesar estos
+ paquetes.
 \end_layout
 
 \begin_layout Standard
@@ -12426,7 +12425,7 @@ name "fig:Interacciones-asociadas-borrado"
 
 \end_inset
 
-Interacciones asociadas al borrado de una imagen de disco
+Borrado de una imagen del repositorio de imágenes
 \end_layout
 
 \end_inset
@@ -12436,63 +12435,78 @@ Interacciones asociadas al borrado de una imagen de disco
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
 Los paquetes del tipo 
 \family sans
 Solicitud de borrado
 \family default
  contienen el identificador del fichero a borrar.
- Tras leer su contenido, el objeto 
-\family typewriter
-CommandsCallback
+ Tras leer su contenido, 
 \end_layout
 
 \begin_layout Enumerate
-comprueba que la imagen existe y que ninguna máquina lo tiene en exclusividad.
- Si alguna de estas condiciones no se cumple, generará y enviará un paquete
+se comprueba que la imagen existe y que ningún servidor de máquinas virtuales
+ la ha descargado en exclusividad.
+ 
+\end_layout
+
+\begin_layout Enumerate
+si alguna de estas condiciones no se cumple, se generará y enviará un paquete
  del tipo 
 \family sans
 Solicitud de borrado errónea
 \family default
-, que contiene, junto con el identificador del fichero, un código con la
- descripción del error.
+ al servidor de 
+\emph on
+cluster.
+
+\emph default
+ Este contiene el identificador de la imagen y un código de descripción
+ del error.
 \end_layout
 
 \begin_layout Enumerate
-borra el fichero del disco y de la base de datos.
+si no se produce ningún error, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se borra el fichero comprimido del disco
 \end_layout
 
 \begin_layout Enumerate
-envía un paquete del tipo 
+se borran los datos de la imagen de la base de datos, y
+\end_layout
+
+\begin_layout Enumerate
+se crea y envía un paquete del tipo 
 \family sans
 Solicitud de borrado recibida
 \family default
  a la máquina remota.
+ Este contiene el identificador único de la imagen borrada.
 \end_layout
 
+\end_deeper
 \begin_layout Paragraph
 Solicitudes de estado
 \end_layout
 
 \begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Recopilación-del-estado-repositorio"
-
-\end_inset
-
- muestra cómo se procesan los paquetes de solicitud de estado.
- Estos permiten que una máquina remota conozca el espacio en disco total
- y el espacio en disco disponible.
- 
-\end_layout
-
-\begin_layout Standard
-Con esta información podemos garantizar que, siempre que se suba un fichero
- al repositorio de imágenes, habrá suficiente espacio en disco.
- Así, no se desperdiciará el ancho de banda que requieren las transferencias
- de subida que requieren demasiado espacio en disco y que, por tanto, fallarán
- irremediablemente.
+Para comprobar si puede atender las peticiones de creación y edición de
+ imágenes, el servidor de 
+\emph on
+cluster
+\emph default
+ debe averiguar periódicamente el estado del repositorio de imágenes.
+ Para ello, le envía un paquete del tipo 
+\family sans
+Solicitud de estado
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -12531,58 +12545,54 @@ Recopilación del estado del repositorio
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-Como puede observarse en el diagrama de la figura 
+El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Recopilación-del-estado-repositorio"
 
 \end_inset
 
-, para averiguar uso de disco del repositorio,
+ muestra cómo interactúan el servidor de 
+\emph on
+cluster
+\emph default
+ y el repositorio de imágenes en estos casos.
+ Como puede observarse en él, se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
-la máquina remota envía un paquete del tipo 
+el servidor de 
+\emph on
+cluster
+\emph default
+ envía un paquete del tipo 
 \family sans
 Solicitud de estado
 \family default
-.
- 
+ al repositorio de imágenes.
 \end_layout
 
 \begin_layout Enumerate
-para procesarlo, el objeto 
-\family typewriter
-CommandsCallback
-\family default
- averigua el espacio en disco total y el espacio en disco disponible (en
- 
-\emph on
-kilobytes
-\emph default
-), 
+el demonio del repositorio de imágenes averigua el espacio en disco total
+ y el espacio en disco disponible en el repositorio de imágenes.
 \end_layout
 
 \begin_layout Enumerate
-con estos valores, el objeto 
-\family typewriter
-CommandsCallback
-\family default
- construye un paquete del tipo 
+con estos datos, se construye un paquete del tipo 
 \family sans
 Estado del repositorio
 \family default
- y lo envía a la máquina remota.
+ y se envía al servidor de 
+\emph on
+cluster
+\emph default
+.
 \end_layout
 
 \begin_layout Paragraph
@@ -12593,7 +12603,7 @@ Apagado del repositorio de imágenes
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -12639,47 +12649,20 @@ reference "fig:Apagado-del-repositorio-DS"
 \end_inset
 
  muestra el proceso de apagado del demonio del repositorio de imágenes.
- Como puede observarse en el diagrama de secuencia, el apagado del repositorio
- es bastante sencillo:
+ Como puede observarse en dicho diagrama, el apagado del repositorio es
+ bastante sencillo:
 \end_layout
 
 \begin_layout Enumerate
-cuando se recibe el paquete de apagado, el objeto 
-\family typewriter
-CommandsCallback
+cuando el servidor de cluster envía el paquete del tipo 
+\family sans
+Apagado
 \family default
- modifica una variable compartida con el método 
-\family typewriter
-initTransfers()
-\family default
-.
- Como consecuencia de ello, el método 
-\family typewriter
-initTransfers()
-\family default
- termina.
- 
+, el hilo principal deja inmediatamente de iniciar transferencias.
 \end_layout
 
 \begin_layout Enumerate
-el hilo principal invoca al método 
-\family typewriter
-stopListenning()
-\family default
- del reactor del repositorio.
- 
-\end_layout
-
-\begin_layout Enumerate
-el servidor FTP finaliza su ejecución.
-\end_layout
-
-\begin_layout Enumerate
-se cierran todas las conexiones de red.
-\end_layout
-
-\begin_layout Standard
-Tras esto, el demonio del repositorio de imágenes habrá terminado de ejecutarse.
+el hilo principal para el servidor FTP y detiene el servicio de red.
 \end_layout
 
 \begin_layout Subsubsection
@@ -13782,7 +13765,7 @@ Solicitud
 FTP RETR
 \family default
 \series default
- contienen el identificador único del fichero a transferir, y un 
+ contienen el identificador único de la imagen a transferir, y un 
 \emph on
 flag
 \family typewriter
@@ -13803,7 +13786,7 @@ Solicitud
 FTP STOR
 \family default
 \series default
- contienen el identificador único del fichero a transferir.
+ contienen el identificador único de la imagen a transferir.
 \end_layout
 
 \begin_layout Itemize
@@ -13833,7 +13816,7 @@ FTP STOR
 recibida
 \family default
 \series default
- contienen el identificador único del fichero a descargar
+ contienen el identificador único de la imagen a descargar
 \end_layout
 
 \begin_layout Itemize
@@ -13883,8 +13866,7 @@ Error en la transferencia
 FTP STOR
 \family default
 \series default
- contienen el identificador único del fichero a descargar y un código de
- descripción del error.
+ contienen un código de descripción del error.
 \end_layout
 
 \begin_layout Itemize
@@ -13916,7 +13898,7 @@ el nombre de usuario y la contraseña del servidor FTP
 \end_layout
 
 \begin_layout Itemize
-el identificador del fichero a transferir
+el identificador único de la imagen a transferir
 \end_layout
 
 \begin_layout Itemize
@@ -13924,7 +13906,8 @@ el puerto en el que escucha el servidor FTP,
 \end_layout
 
 \begin_layout Itemize
-el directorio del servidor donde se encuentra el fichero a transferir y
+el directorio del repositorio de imágenes donde se encuentra el fichero
+ a transferir y
 \end_layout
 
 \begin_layout Itemize
@@ -13960,8 +13943,8 @@ Solicitud de borrado errónea
 \series default
  
 \family default
-contienen el identificador único del fichero a borrar y un código de descripción
- del error.
+contienen el identificador único de la imagen a borrar y un código de descripció
+n del error.
 \end_layout
 
 \begin_layout Itemize
@@ -13982,7 +13965,11 @@ Estado del repositorio
 \family default
 \series default
  contienen el espacio en disco total y el espacio en disco utilizado en
- el repositorio de imágenes.
+ el repositorio de imágenes (en 
+\emph on
+kilobytes
+\emph default
+).
 \end_layout
 
 \begin_layout Itemize
@@ -14009,7 +13996,7 @@ flags
 \emph default
 , los identificadores de imágenes, los puertos y los códigos de error son
  valores enteros.
- El resto de datos que transportan los paquetes del repositorio de imaǵenes
+ El resto de datos que transportan los paquetes del repositorio de imágenes
  son 
 \emph on
 strings
@@ -14022,14 +14009,7 @@ Distribución de los ficheros
 \end_layout
 
 \begin_layout Standard
-Como hemos visto en las interacciones correspondientes de la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Interacciones-del-repositorio"
-
-\end_inset
-
-, cuando una transferencia FTP finaliza se llamará al método 
+Cuando una transferencia FTP finaliza se llamará al método 
 \family typewriter
 on_file_sent()
 \family default
@@ -14047,15 +14027,15 @@ ncia acaba de finalizar.
 \end_layout
 
 \begin_layout Standard
-Es importante notar que, tras finalizar una transferencia, debemos actualizar
- el estado de las imágenes de disco correspondientes en la base de datos.
- Por ello es necesario que, a partir del nombre del fichero comprimido,
- sea posible obtener el identificador de las imágenes de disco.
+Como al finalizar ciertas transferencias hay que actualizar el estado de
+ la imagen correspondiente en la base de datos del repositorio de imágenes
+ es necesario que, a partir del nombre del fichero comprimido, sea posible
+ obtener el identificador de la imagen.
 \end_layout
 
 \begin_layout Standard
-Así, los nombres de los ficheros comprimidos no pueden fijarse arbitrariamente,
- y deben seguir cierto convenio.
+Por ello, los nombres de los ficheros comprimidos no pueden fijarse arbitrariame
+nte, y deben seguir cierto convenio.
  Por simplicidad, los nombres de todos los ficheros comprimidos que se almacenan
  en el repositorio de imágenes son de la forma
 \end_layout
@@ -14069,8 +14049,7 @@ Así, los nombres de los ficheros comprimidos no pueden fijarse arbitrariamente,
 \end_layout
 
 \begin_layout Standard
-Por ejemplo, el fichero comprimido cuyas imágenes de disco tienen asociado
- el identificador 
+Por ejemplo, el fichero comprimido asociado a la imagen 
 \family typewriter
 1
 \family default
@@ -14082,33 +14061,26 @@ Por ejemplo, el fichero comprimido cuyas imágenes de disco tienen asociado
 \end_layout
 
 \begin_layout Standard
-Por otra parte, resulta interesante que, cuando una máquina remota se conecte
- al servidor FTP, sólo pueda leer o escribir un único fichero comprimido.
- Por ello, en el directorio raíz del repositorio de imágenes existen múltiples
- subdirectorios.
- Cada uno de ellos contiene un único fichero comprimido, y su nombre también
- se fija a partir del identificador de las imágenes de disco almacenadas
- en dicho fichero comprimido.
+Por otra parte podemos aumentar la robustez del repositorio de imágenes
+ si, cuando un servidor de máquinas virtuales se conecta al servidor FTP,
+ sólo puede leer o escribir en un único directorio.
+ 
 \end_layout
 
 \begin_layout Standard
-Por ejemplo, la ruta del fichero comprimido 
+Por ello, en el directorio raíz del repositorio de imágenes existen múltiples
+ subdirectorios.
+ Cada uno de ellos contiene un único fichero comprimido, y sus nombres se
+ fijan en base a las imágenes que contienen.
+ Por ejemplo, la ruta del fichero comprimido 
 \family typewriter
 1.zip
 \family default
-, que contiene las imágenes de disco asociadas al identificador 
-\family typewriter
-1
-\family default
-, será la siguiente:
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-
+ será 
 \family typewriter
 <directorio raíz servidor FTP>/1/1.zip
+\family default
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -14130,16 +14102,9 @@ imageID
 \family default
 .
  Este valor entero es la clave primaria de la tabla, y es el identificador
- único de las imágenes de disco que hemos mencionado en múltiples ocasiones.
+ único de la imagen asociada al fichero comprimido.
 \end_layout
 
-\begin_deeper
-\begin_layout Standard
-Las imágenes de disco de cada máquina virtual comparten el mismo identificador
- único, y están almacenadas en el mismo fichero comprimido.
-\end_layout
-
-\end_deeper
 \begin_layout Itemize
 
 \family typewriter
@@ -14151,7 +14116,7 @@ compressedFilePath
 string
 \emph default
  de hasta 100 caracteres de longitud, que almacena la ruta absoluta del
- fichero comprimido correspondiente en el repositorio de imágenes.
+ fichero comprimido con los datos de la imagen en el repositorio de imágenes.
 \end_layout
 
 \begin_layout Itemize
@@ -15118,7 +15083,7 @@ software
  En la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Uso-de-dos-discos-duros"
+reference "sub:Uso-de-dos-imágenes"
 
 \end_inset
 
