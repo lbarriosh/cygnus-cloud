@@ -5414,8 +5414,7 @@ Además web2py ofrece una capa de abstracción de base de datos (DAL por su
 \end_layout
 
 \begin_layout Subsubsection*
-=======
-Modelo Vista-Controlador
+=======Modelo Vista-Controlador
 \end_layout
 
 \begin_layout Standard
@@ -29862,7 +29861,7 @@ El flujo de trabajo típico de una petición web2py viene representado en
  el diagrama 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Diagram-web2py"
+reference "fig:Diagrama-de-secuencia-web2py"
 
 \end_inset
 
@@ -29894,7 +29893,7 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Diagram-web2py"
+name "fig:Diagrama-de-secuencia-web2py"
 
 \end_inset
 
@@ -31699,7 +31698,7 @@ reference "fig:Secuencia-de-arranque"
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -31875,7 +31874,7 @@ reference "fig:Diagrama-de-secuencia-creacionMV-web"
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
