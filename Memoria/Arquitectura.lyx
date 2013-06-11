@@ -11584,7 +11584,9 @@ Los pasos que se siguen son los siguientes:
 \begin_layout Enumerate
 el servidor de máquinas virtuales envía un paquete del tipo 
 \family sans
-Petición FTP RETR
+Petición 
+\family typewriter
+FTP RETR
 \family default
  al repositorio de imágenes.
  Este paquete contiene el identificador único de la imagen a descargar,
@@ -19436,34 +19438,14 @@ n con el servidor de
 cluster
 \emph default
  y el repositorio de imágenes durante los procesos de creación y edición
- de imágenes de disco.
- Para ello, seguiremos el siguiente orden:
-\end_layout
-
-\begin_layout Enumerate
-descarga del fichero comprimido desde el repositorio de imágenes.
-\end_layout
-
-\begin_layout Enumerate
-descompresión del fichero comprimido
-\end_layout
-
-\begin_layout Enumerate
-arranque y apagado de una máquina virtual temporal.
-\end_layout
-
-\begin_layout Enumerate
-creación de un nuevo fichero comprimido
-\end_layout
-
-\begin_layout Enumerate
-subida del fichero comprimido al repositorio de imágenes
+ de imágenes.
+ 
 \end_layout
 
 \begin_layout Standard
-Nuevamente, en todos los casos empezaremos mostrando el flujo básico para
- posteriormente mostrar los distintos flujos alternativos, que están relacionado
-s con el tratamiento de errores.
+Nuevamente, en todos los casos empezaremos mostrando el flujo básico.
+ Posteriormente, mostraremos los distintos flujos alternativos, que están
+ relacionados con el tratamiento de errores.
 \end_layout
 
 \begin_layout Paragraph
@@ -19475,12 +19457,6 @@ name "par:Creación-y-edición-descarga-normal"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-En esta sección y en las siguientes, mostraremos los procesos que tienen
- lugar en el servidor de máquinas virtuales durante los procesos de creación
- y edición de imágenes de disco.
 \end_layout
 
 \begin_layout Standard
@@ -19550,7 +19526,7 @@ cluster
 Editar imagen
 \family default
 .
- Este contiene, entre otras cosas, 
+ Este contiene
 \end_layout
 
 \begin_deeper
@@ -19560,7 +19536,7 @@ la dirección IP y el puerto de la conexión de control del repositorio de
 \end_layout
 
 \begin_layout Itemize
-el identificador único del fichero comprimido a descargar,
+el identificador único del fichero comprimido a descargar.
 \end_layout
 
 \begin_layout Itemize
@@ -19568,13 +19544,12 @@ un
 \emph on
 flag
 \emph default
- que indica si se van a editar las imágenes de disco correspondientes o
- si se van a utilizar como base para crear nuevas imágenes de disco,
+ que indica si se va a crear una imagen nueva a partir de la imagen descargada
+ o se va a editar la imagen descargada.
 \end_layout
 
 \begin_layout Itemize
-el identificador único del usuario que ha desencadenado la edición de la
- imagen, y
+el identificador único del usuario que ha generado la petición.
 \end_layout
 
 \begin_layout Itemize
@@ -19584,126 +19559,43 @@ el identificador único de la petición\SpecialChar \@.
 
 \end_deeper
 \begin_layout Enumerate
-al procesar el paquete, el objeto 
-\family typewriter
-VMServerReactor
-\family default
- lo lee utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
- Por claridad, hemos decidido no incluir su línea de vida en el diagrama
- de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-temporal-fase-1"
-
-\end_inset
-
-.
+tras leer el paquete, se crea y añade la petición correspondiente a la cola
+ de transferencias.
 \end_layout
 
-\begin_deeper
-\begin_layout Standard
-Tras leer el paquete, el objeto 
-\family typewriter
-VMServerReactor
-\family default
- crea y añade la petición correspondiente a la cola de transferencias.
-\end_layout
-
-\end_deeper
 \begin_layout Enumerate
-cuando le llega el turno, el hilo de transferencias desencolará la petición
- y
+cuando le llega el turno, la petición se procesará en el hilo de transferencias.
+ Para ello,
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
-construirá el paquete utilizado para enviar la petición inicial al repositorio
- de imágenes.
- Estos paquetes se construyen a través de un objeto 
-\family typewriter
-ImageRepositoryPacketReactor
-\family default
-.
- Nuevamente, por claridad hemos eliminado la línea de vida del diagrama
- de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-temporal-fase-1"
-
-\end_inset
-
-.
+se establecerá la conexión con el repositorio
 \end_layout
 
 \begin_layout Enumerate
-crea un objeto 
+se iniciará el diálogo con el repositorio de imágenes para obtener el fichero
+ comprimido.
+ Para ello, se enviará un paquete del tipo 
+\family sans
+Petición 
 \family typewriter
-FileTransferCallback
+FTP RETR
 \family default
-, que interactuará con el repositorio de imágenes, y
+ al repositorio de imágenes.
 \end_layout
 
-\begin_layout Enumerate
-se conectará al repositorio de imágenes y le enviará el paquete.
-\end_layout
-
+\begin_deeper
 \begin_layout Standard
-El objeto 
-\family typewriter
-FileTransferCallback
-\family default
- descargará el fichero comprimido desde el repositorio de imágenes tal y
- como vimos en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "par:Descarga-de-imágenes"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-Además, cuando las imágenes de disco que este contiene se utilicen como
- base para crear una imagen nueva, también se solicitará un identificador
- al repositorio de imágenes de acuerdo a lo que vimos en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "par:Registro-identificador-imagen"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-Por ello, no hemos reproducido estos procesos en el diagrama de secuencia
- de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-temporal-fase-1"
-
-\end_inset
-
-.
- 
+Puesto que el repositorio de imágenes se ocupa de gestionar los identificadores
+ de las imágenes, cuando se crea una imagen nueva deberá solicitarse un
+ nuevo identificador de imagen al repositorio de imágenes.
 \end_layout
 
 \end_deeper
+\end_deeper
 \begin_layout Enumerate
-tras finalizar la transferencia, se comprueba si se ha producido algún error
- durante la misma.
-\end_layout
-
-\begin_layout Enumerate
-como no se han producido errores, el fichero comprimido se encontrará en
- el servidor de máquinas virtuales.
- Para terminar de procesar la petición de transferencia,
+cuando finaliza la transferencia FTP, 
 \end_layout
 
 \begin_deeper
@@ -19717,19 +19609,25 @@ se construirá y añadirá una petición a la cola de compresión.
 
 \end_deeper
 \begin_layout Standard
-Es importante notar que, para no saturar el repositorio de imágenes, las
- transferencias de ficheros se procesarán de una en una.
- De esta manera, es posible conectar un número muy elevado de servidores
- de máquinas virtuales al repositorio de imágenes sin que este llegue a
- saturarse.
- Y por la misma razón, los servidores de máquinas virtuales se desconectan
- del repositorio de imágenes tan pronto como dejan de utilizarlo.
+Por simplicidad, las peticiones de transferencia de ficheros se procesarán
+ de una en una.
  
 \end_layout
 
 \begin_layout Standard
-Asimismo, puesto que para realizar la descarga se utiliza un identificador
- de imagen, será posible crear o editar imágenes de disco en varias fases.
+Asimismo, como el número de servidores de máquinas virtuales del 
+\emph on
+cluster
+\emph default
+ puede ser muy grande, estos se desconectan del repositorio de imágenes
+ tan pronto como finaliza la transferencia para evitar, en la medida de
+ lo posible, que el repositorio de imágenes se sature.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, como para descargar la imagen se utiliza el identificador
+ de cualquier imagen existente, será posible crear o editar imágenes de
+ disco en varias fases.
  Para ello, bastará con repetir varias veces el proceso que mostramos en
  esta sección y en las siguientes.
 \end_layout
@@ -19742,11 +19640,12 @@ cluster
  siempre suministran a los servidores de máquinas virtuales los datos de
  conexión al repositorio de imágenes.
  Aunque con ello se consume un poco más de ancho de banda, se gana en flexibilid
-ad: permite utilizar varios repositorios de imágenes en el mismo 
+ad, ya que es posible utilizar varios repositorios de imágenes en el mismo
+ 
 \emph on
 cluster
 \emph default
- de forma sencilla.
+.
 \end_layout
 
 \begin_layout Paragraph
@@ -19766,7 +19665,7 @@ Durante la descarga del fichero comprimido, se producirán errores cuando
 
 \begin_layout Itemize
 el repositorio de imágenes no tiene el fichero comprimido que se pretende
- descargar, o cuando
+ descargar, cuando
 \end_layout
 
 \begin_layout Itemize
@@ -19801,20 +19700,9 @@ cuando se va a tratar la petición de transferencia, las imágenes de disco
 \end_layout
 
 \begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-temporal-fase-1-error-nE"
-
-\end_inset
-
- muestra cómo se procede en estos casos.
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -19854,52 +19742,47 @@ io de imágenes
 \end_layout
 
 \begin_layout Standard
-Como podemos observar en dicho diagrama de secuencia, la descarga del fichero
- comprimido se inicia igual que en la sección 
+El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "par:Creación-y-edición-descarga-normal"
+reference "fig:Arranque-temporal-fase-1-error-nE"
 
 \end_inset
 
-.
- No obstante, al comprobar si se ha producido un error, se detecta que el
- repositorio de imágenes no dispone de las imágenes de disco solicitadas.
- 
+ muestra cómo se tratan los errores del primer tipo.
+ Por claridad, en él hemos omitido los pasos previos a la detección del
+ error, que son exactamente iguales que en la secuencia básica.
 \end_layout
 
 \begin_layout Standard
-Por ello, se cierra la conexión con el repositorio, se construye un paquete
- del tipo 
+Como podemos observar en dicho diagrama, tras detectar el error
+\end_layout
+
+\begin_layout Enumerate
+se cierra la conexión con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
 \family sans
-Error de edición de imagen
+Error de edición de imagen.
+ 
 \family default
- (usando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-) y se envía dicho paquete de error al servidor de 
+Estos contienen el identificador de la petición y un código de descripción
+ del error.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete de error al servidor de 
 \emph on
 cluster
 \emph default
 .
- Los paquetes del tipo 
-\family sans
-Error de edición de imagen
-\family default
- contienen el identificador de la petición y un código de descripción del
- error.
 \end_layout
 
-\begin_layout Standard
-Asimismo, la petición se elimina de la cola de transferencias y no se inserta
- en la cola de compresión, por lo que su procesamiento termina.
-\end_layout
-
-\begin_layout Standard
-Es importante notar que, cuando se produce un error de este tipo, no se
- descargan datos del repositorio.
- Por ello, no es necesario realizar ninguna acción adicional.
+\begin_layout Enumerate
+la petición no se inserta en la cola de compresión, por lo que su procesamiento
+ termina inmediatamente.
 \end_layout
 
 \begin_layout Standard
@@ -19911,12 +19794,14 @@ reference "fig:Arranque-temporal-fase-1-error-conexión"
 \end_inset
 
  muestra cómo se tratan los errores de conexión al repositorio de imágenes.
+ Nuevamente, en él hemos omitido los pasos previos a la detección del error,
+ que son idénticos a los de la secuencia básica.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -19969,60 +19854,66 @@ duerme durante
 \begin_inset Formula $4^{\textrm{intentos fallidos}}$
 \end_inset
 
- segundos, e
+ segundos, y
 \end_layout
 
 \begin_layout Enumerate
-reinicia el procesamiento de la transferencia, volviendo a instanciar un
- objeto 
-\family typewriter
-FileTransferCallback
-\family default
- y creando nuevamente la conexión con el repositorio de imágenes.
+reinicia el procesamiento de la transferencia
 \end_layout
 
 \begin_layout Enumerate
-cuando el número de intentos de conexión fallidos supera un determinado
- umbral, que es configurable, se construye el paquete del tipo 
+si el número de intentos de conexión fallidos supera un determinado umbral,
+ que puede fijarse en el fichero de configuración del demonio del servidor
+ de máquinas virtuales, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se construye el paquete del tipo 
 \family sans
 Error de edición de imagen
 \family default
-, se envía al servidor de 
+, 
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor de 
 \emph on
 cluster
 \emph default
- y se elimina la petición de la cola de transferencias.
+, y 
 \end_layout
 
+\begin_layout Enumerate
+se elimina la petición de la cola de transferencias.
+\end_layout
+
+\end_deeper
 \begin_layout Standard
-Finalmente, el diagrama de secuencia de las figuras 
+Por otro lado, el diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Arranque-temporal-fase-1-error-FTP"
 
 \end_inset
 
- y 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-temporal-fase-1-error-FTP-1"
-
-\end_inset
-
  muestra cómo se procesan los errores en las transferencias FTP.
+ Nuevamente, los pasos iniciales del procesamiento de la petición siguen
+ siendo iguales que en la secuencia básica, por lo que los hemos omitido.
+ Además, la forma de proceder es idéntica a la del caso anterior.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP parte 1.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP.pdf
 	scale 80
 
 \end_inset
@@ -20041,7 +19932,7 @@ name "fig:Arranque-temporal-fase-1-error-FTP"
 \end_inset
 
 Creación y edición de imágenes de disco: error al realizar la transferencia
- FTP (parte 1)
+ FTP
 \end_layout
 
 \end_inset
@@ -20055,64 +19946,9 @@ Creación y edición de imágenes de disco: error al realizar la transferencia
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP parte 2.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Arranque-temporal-fase-1-error-FTP-1"
-
-\end_inset
-
-Creación y edición de imágenes de disco: error al realizar la transferencia
- FTP (parte 2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Como podemos observar, la forma de proceder es idéntica a la del caso anterior.
- Es importante notar que, en ambos, se utiliza el mismo contador de intentos
- fallidos, por lo que los errores de conexión al repositorio de imágenes
- y los errores en las transferencias FTP tienen la misma importancia.
+Finalmente, siempre que falla el establecimiento de la conexión o una transferen
+cia FTP, se utiliza el mismo contador de intentos fallidos.
+ 
 \end_layout
 
 \begin_layout Paragraph
@@ -20138,8 +19974,8 @@ el fichero
 \family typewriter
 Definition.xml
 \family default
- es la plantilla que se usará para generar el fichero de configuración de
- todas las máquinas virtuales que usen las imágenes de disco correspondientes.
+, que es la plantilla que se usará para generar el fichero de configuración
+ de todas las máquinas virtuales que usen la misma imagen.
 \end_layout
 
 \begin_layout Itemize
@@ -20147,7 +19983,7 @@ el fichero
 \family typewriter
 OS.qcow2
 \family default
- es la imagen de disco que contiene el sistema operativo y los programas
+, que es la imagen de disco que contiene el sistema operativo y los programas
  instalados.
  Durante el proceso de arranque de las máquinas virtuales, se crearán imágenes
  
@@ -20162,8 +19998,8 @@ el fichero
 \family typewriter
 Data.qcow2
 \family default
- es la imagen de disco que contiene el fichero de paginación y los datos
- temporales que usan los usuarios.
+, que es la imagen de disco que contiene el fichero de paginación y los
+ datos temporales que usan los usuarios.
  Durante el proceso de arranque de las máquinas virtuales, se creará una
  copia de este fichero.
 \end_layout
@@ -20177,7 +20013,7 @@ los ficheros
 \family typewriter
 .qcow2
 \family default
- se moverán al un subdirectorio del directorio de ficheros de imagen, y
+ se moverán al directorio de imágenes de disco, y
 \end_layout
 
 \begin_layout Itemize
@@ -20185,17 +20021,17 @@ el fichero
 \family typewriter
 .xml
 \family default
- se moverá a un subdirectorio del directorio de ficheros de definición.
+ se moverá al directorio de ficheros de definición.
 \end_layout
 
 \begin_layout Standard
-La ubicación de ambos directorios se especifica en el fichero de configuración
- del demonio del servidor de máquinas virtuales.
+La ubicación de ambos se especifica en el fichero de configuración del demonio
+ del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-Finalmente, se creará la máquina virtual que se utilizará para editar las
- imágenes de disco.
+Por otra parte, tras mover estos ficheros se creará la máquina virtual que
+ se utilizará para editar las imágenes de disco.
  Todos estos pasos se reflejan en el diagrama de secuencia de la figura
  
 \begin_inset CommandInset ref
@@ -20205,7 +20041,6 @@ reference "fig:Arranque-temporal-fase-2"
 \end_inset
 
 .
- Por claridad, supondremos que no se produce ningún error.
 \end_layout
 
 \begin_layout Standard
@@ -20282,16 +20117,6 @@ chmod
 \end_layout
 
 \begin_layout Itemize
-si la imagen ya está dada de alta en la base de datos, se borra.
- Como veremos más adelante, esto hace posible que el servidor de 
-\emph on
-cluster
-\emph default
- pueda enviar menos paquetes cuando se modifica el contenido de las imágenes
- de disco, ahorrando así ancho de banda.
-\end_layout
-
-\begin_layout Itemize
 la petición se elimina de la cola cuando se ha procesado completamente.
  Por ello, si el demonio del servidor de máquinas virtuales termina de forma
  inesperada, el proceso de descompresión podrá reanudarse en su próximo
@@ -20303,9 +20128,8 @@ la petición se elimina de la cola cuando se ha procesado completamente.
 \begin_layout Itemize
 los datos de conexión al repositorio de imágenes se almacenan en una tabla
  de la base de datos.
- Esto nos permite recuperarlos a la hora de subir el fichero comprimido
- con las nuevas imágenes de disco o con las imágenes de disco modificadas
- al repositorio de imágenes.
+ Esto es necesario para transferir la nueva imagen o la imagen editada al
+ repositorio de imágenes.
 \end_layout
 
 \begin_layout Paragraph
@@ -20324,7 +20148,7 @@ Al extraer el fichero comprimido, pueden detectarse los siguientes errores:
 \end_layout
 
 \begin_layout Itemize
-el fichero comprimido puede estar corrupto.
+el fichero comprimido está corrupto.
  En estos casos, no se puede extraer.
 \end_layout
 
@@ -20345,7 +20169,7 @@ libvirt
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -20387,23 +20211,29 @@ Creación y edición de imágenes de disco: fallo durante la extracción del
 \begin_layout Standard
 Todos estos errores se tratan de forma idéntica, por lo que nos centraremos
  en uno cualquiera de ellos: el segundo.
- Como puede observarse en el diagrama de secuencia de la figura 
+ El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Arranque-temporal-fase-2-1"
 
 \end_inset
 
-, para tratar el error se siguen los siguientes pasos:
+ muestra cómo se realiza su tratamiento.
+ Por claridad, en ese diagrama hemos omitido las fases previas a la detección
+ del error, que son iguales que en la secuencia básica.
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia, para tratar el error
+ se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
 se construye un paquete del tipo 
-\family typewriter
+\family sans
 Error de edición de imagen
 \family default
-, que contiene el identificador único de la petición y un código de descripción
- del error.
+.
 \end_layout
 
 \begin_layout Enumerate
@@ -20422,18 +20252,12 @@ se crea y encola una transferencia especial.
 
 \begin_deeper
 \begin_layout Itemize
-si se están creando imágenes de disco, se liberará el identificador pedido,
- 
+si se está creando una imagen, se liberará el identificador pedido, 
 \end_layout
 
 \begin_layout Itemize
-si se están editando imágenes de disco, se liberará el fichero comprimido
- en el repositorio de imágenes, y
-\end_layout
-
-\begin_layout Itemize
-se borrarán los datos de conexión al repositorio de imágenes de la base
- de datos del servidor de máquinas virtuales.
+si se está editando una imagen, se liberará el fichero comprimido en el
+ repositorio de imágenes, y
 \end_layout
 
 \begin_layout Standard
@@ -20491,91 +20315,20 @@ reference "par:Arranque-MV-errores"
 \end_inset
 
 .
- En esta sección, estudiaremos las modificaciones que hay que realizar en
- todas las secuencias de arranque de una máquina virtual para poder crear
- y editar imágenes de disco.
  
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Arranque MV edición.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Creación-MV-Edición"
-
-\end_inset
-
-Creación y edición de imágenes: arranque de la máquina virtual
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Comencemos con la secuencia básica, en la que no se producen errores.
- Por claridad, hemos reproducido todos sus pasos en el diagrama de secuencia
- de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Creación-MV-Edición"
-
-\end_inset
-
-.
- Como podemos observar en dicho diagrama, se reservan los diversos recursos
- asignados a la máquina virtual antes de realizar la llamada a 
-\family typewriter
-libvirt
-\family default
-.
- Asimismo, al procesar el evento de arranque de máquina virtual, se envían
- los datos de conexión al servidor de 
-\emph on
-cluster
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-La modificación a realizar con respecto al proceso de arranque básico es
- muy sencilla: no se creará la imagen 
+Sólo es necesario introducir una pequeña modificación: no se creará la imagen
+ 
 \emph on
 copy-on-write
 \emph default
  ni una copia de la imagen que alberga los datos y el fichero de paginación.
- Así, al apagar la máquina virtual podremos garantizar que los cambios realizado
-s en dichas imágenes se mantendrán.
 \end_layout
 
 \begin_layout Standard
-Finalmente, cuando se produce un error se procede como vimos en la sección
+Por otra parte, cuando se produce un error se procede como vimos en la sección
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -20600,8 +20353,8 @@ name "par:Apagado-MV-edición"
 \end_layout
 
 \begin_layout Standard
-El proceso de apagado de una máquina virtual que se utiliza para editar
- imágenes de disco es muy similar al que presentamos en la sección 
+El proceso de apagado de una máquina virtual que se utiliza para crear o
+ editar imágenes es muy similar al que presentamos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Apagado-MV-edición"
@@ -20674,8 +20427,7 @@ no se borran las imágenes de disco, ya que es necesario añadirlas a un fichero
 
 \begin_layout Itemize
 se crea y encola una petición de compresión, que contiene todo lo necesario
- para generar el fichero comprimido y realizar la transferencia con el repositor
-io de imágenes.
+ para generar el fichero comprimido.
 \end_layout
 
 \begin_layout Paragraph
@@ -20683,10 +20435,10 @@ Creación del fichero comprimido
 \end_layout
 
 \begin_layout Standard
-Como ya hemos visto, cuando se apaga una máquina virtual que se utiliza
- para crear imágenes de disco, se crea y encola una petición de compresión,
- que se procesará, en ausencia de errores, como se indica en el diagrama
- de secuencia de la figura 
+Una vez apagada la máquina virtual que se utiliza para crear o editar una
+ imagen, se crea y encola una petición de compresión, que se procesará,
+ en ausencia de errores, como se indica en el diagrama de secuencia de la
+ figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Compresión-Edición"
@@ -20766,6 +20518,11 @@ se construye una petición de transferencia y se añade a la cola de transferenc
 s.
 \end_layout
 
+\begin_layout Enumerate
+se borran los datos de conexión del repositorio de imágenes de la base de
+ datos del servidor de máquinas virtuales.
+\end_layout
+
 \begin_layout Standard
 Es importante notar que la petición se elimina de la cola cuando se ha procesado
  completamente.
@@ -20803,13 +20560,14 @@ reference "fig:Subida-edición"
 \end_inset
 
 .
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -20852,38 +20610,18 @@ Como podemos observar en dicho diagrama, se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
-se crea, a través de un objeto 
+se crea un paquete del tipo 
+\family sans
+Petición 
 \family typewriter
-ImageRepositoryPacketHandler
+FTP STOR
 \family default
-, el paquete inicial que se enviará al repositorio de imágenes.
-\end_layout
-
-\begin_layout Enumerate
-se instancia un objeto 
-\family typewriter
-FileTransferCallback
-\family default
-.
- Como sabemos, este objeto se encargará de interactuar con el repositorio
- de imágenes de acuerdo a lo que vimos en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Interacciones-del-repositorio"
-
-\end_inset
-
 .
 \end_layout
 
 \begin_layout Enumerate
-se establece la conexión con el repositorio de imágenes y se le envía el
- paquete inicial.
- Para ello, se hace uso de un objeto 
-\family typewriter
-NetworkManager
-\family default
-.
+se establece la conexión con el repositorio de imágenes y se le envía dicho
+ paquete.
 \end_layout
 
 \begin_layout Enumerate
@@ -20897,26 +20635,17 @@ se borra el fichero
 \family typewriter
 .zip
 \family default
- transferido al repositorio de imágenes.
- Para ello, se utilizan los servicios de la clase 
-\family typewriter
-ChildProcessManager
-\family default
 .
 \end_layout
 
 \begin_layout Enumerate
-utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-, se construye un paquete del tipo 
+se construye un paquete del tipo 
 \family sans
 Imagen editada
 \family default
 .
  Este contiene, además del identificador único de la petición, el identificador
- único del fichero comprimido que se acaba de transferir.
+ único de la imagen que ha terminado de editarse.
 \end_layout
 
 \begin_layout Enumerate
@@ -20935,22 +20664,8 @@ Nuevamente, la petición de transferencia sólo se elimina de la cola tras
 \end_layout
 
 \begin_layout Standard
-Finalmente, en caso de que no se pueda establecer la conexión con el repositorio
- de imágenes, se procederá de acuerdo a lo indicado en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "par:Errores-descarga"
-
-\end_inset
-
-, por lo que no volveremos a reproducir aquí esas interacciones.
-\end_layout
-
-\begin_layout Standard
-Es importante notar que, en este caso, el repositorio de imágenes siempre
- conoce el identificador del fichero comprimido a transferir, por lo que
- no pueden producirse los errores del primer tipo que estudiamos en la sección
- 
+Asimismo, en caso de que se produzca algún error, se procederá de acuerdo
+ a lo indicado en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Errores-descarga"
@@ -20958,6 +20673,7 @@ reference "par:Errores-descarga"
 \end_inset
 
 .
+ Por ello, no volveremos a reproducir aquí esas interacciones.
 \end_layout
 
 \begin_layout Subsubsection
