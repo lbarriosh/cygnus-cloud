@@ -73,6 +73,8 @@
       {1.5ex \@plus .2ex}%
       {\normalfont\normalsize\bfseries}}
 \makeatother
+
+\renewcommand{\thefigure}{\arabic{figure}}
 \end_preamble
 \options a4paper
 \use_default_options true

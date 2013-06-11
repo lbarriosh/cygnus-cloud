@@ -28104,7 +28104,7 @@ Despliegue manual: secuencia básica
 \begin_layout Standard
 Cuando el servidor web envía un paquete del tipo 
 \family sans
-Desplegar imagen
+Desplegar o borrar imagen
 \family default
  al servidor de 
 \emph on
@@ -28119,7 +28119,19 @@ el identificador único de la petición,
 \end_layout
 
 \begin_layout Itemize
-el identificador único de las imágenes de disco a desplegar, y
+el identificador único de las imágenes de disco a desplegar, 
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+flag
+\emph default
+, que toma el valor 
+\family typewriter
+False
+\family default
+, y
 \end_layout
 
 \begin_layout Itemize
@@ -28290,7 +28302,11 @@ el servidor de
 \emph on
 cluster
 \emph default
- genera un paquete del tipo Error de despliegue.
+ genera un paquete del tipo 
+\family sans
+Error de despliegue
+\family default
+.
  Estos paquetes contienen el identificador único de la petición y un código
  de error.
 \end_layout
@@ -28371,7 +28387,14 @@ Despliegue manual: tratamiento de errores
 \end_layout
 
 \begin_layout Paragraph
-Despliegue automático de imágenes de disco: secuencia básica
+Despliegue automático de imágenes de disco: secuencia básica 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Despliegue-automático-imágenes-sin-errores"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -28438,7 +28461,7 @@ las imágenes de disco sólo se despliegan en un único servidor de máquinas
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -28549,6 +28572,251 @@ Comando ejecutado
 
 \begin_layout Paragraph
 Despliegue automático de imágenes de disco: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Durante el proceso de despliegue automático de imágenes de disco, pueden
+ producirse los siguientes errores:
+\end_layout
+
+\begin_layout Itemize
+el número máximo de instancias que es posible obtener es inferior al dado.
+\end_layout
+
+\begin_layout Itemize
+el proceso de despliegue falla en algún servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+El primer error se detectará cuando el algoritmo de balanceado de carga
+ termina de ejecutarse.
+ En estos casos, el servidor de 
+\emph on
+cluster 
+\emph default
+abortará la operación y enviará al servidor web un paquete del tipo 
+\family sans
+Error de despliegue automático
+\family default
+, que contiene el identificador único de la petición y un código de error.
+ Este proceso se refleja en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Despliegue-automático-error-1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Despliegue automático error 1.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Despliegue-automático-error-1"
+
+\end_inset
+
+Despliegue automático de imágenes de disco: tratamiento del primer tipo
+ de error
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el despliegue automático de imágenes de disco también fallará
+ cuando se produzca un error de despliegue en un servidor de máquinas virtuales.
+ Por claridad, mostraremos cómo se actúa en estos casos mediante un ejemplo.
+\end_layout
+
+\begin_layout Standard
+Supongamos que el algoritmo de balanceado de carga escoge los servidores
+ de máquinas virtuales 
+\family sans
+A
+\family default
+, 
+\family sans
+B
+\family default
+ y 
+\family sans
+C
+\family default
+ para realizar la petición de despliegue.
+ Supongamos también que la operación de despliegue falla en los servidores
+ 
+\family sans
+A
+\family default
+ y 
+\family sans
+B
+\family default
+, y que tiene éxito en el servidor 
+\family sans
+C
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+El sistema actuará como se indica en el diagrama de secuencia de la figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Despliegue-automático-error-2"
+
+\end_inset
+
+.
+ En él hemos omitido la fase inicial de la operación de despliegue, que
+ es idéntica a la que presentamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Despliegue-automático-imágenes-sin-errores"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Despliegue automático error 2.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Despliegue-automático-error-2"
+
+\end_inset
+
+Despliegue automático de imágenes de disco: tratamiento del segundo tipo
+ de error
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia, cuando se recibe el primer
+ paquete del tipo 
+\family sans
+Error de despliegue
+\family default
+, 
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Error de despliegue automático
+\family default
+, y se envía al servidor web.
+\end_layout
+
+\begin_layout Enumerate
+cuando se reciban los demás paquetes asociados a la operación, se procederá
+ de la siguiente manera:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+si se recibe un paquete del tipo 
+\family sans
+Error de despliegue
+\family default
+, una operación de despliegue más habrá fallado.
+ En estos casos, se liberarán los recursos preasignados a la operación de
+ despliegue y se ignorará el error.
+\end_layout
+
+\begin_layout Itemize
+si se recibe un paquete del tipo 
+\family sans
+Imagen desplegada
+\family default
+, se registrará la ubicación de la nueva imagen.
+ En la próxima actualización del estado del 
+\emph on
+cluster
+\emph default
+, se liberarán los recursos asignados a la operación.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Es importante notar que los errores del segundo tipo se producen únicamente
+ en circunstancias excepcionales.
+ Además, para subsanarlos resulta imprescindible la intervención de un administr
+ador, ya que en estos casos al menos una de las máquinas del 
+\emph on
+cluster
+\emph default
+ está funcionando incorrectamente.
 \end_layout
 
 \begin_layout Subsubsection
