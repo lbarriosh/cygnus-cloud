@@ -23026,13 +23026,6 @@ residen en memoria.
  El resto de tablas de la base de datos residen en disco.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Newpage clearpage
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 El paquete 
 \family typewriter
