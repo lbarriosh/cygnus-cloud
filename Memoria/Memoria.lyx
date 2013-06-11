@@ -76,7 +76,9 @@
 
 \renewcommand{\thefigure}{\arabic{figure}}
 \usepackage[htt]{hyphenat}
-\usepackage{lmodern}
+\usepackage{charter}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
 \end_preamble
 \options a4paper
 \use_default_options true

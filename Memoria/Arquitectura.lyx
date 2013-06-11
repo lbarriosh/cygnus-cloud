@@ -8432,7 +8432,7 @@ CC
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -8558,7 +8558,11 @@ CygnusCloudProtocol
 Para simplificar la implementación de la red nos interesa que, en los niveles
  de mayor nivel de abstracción, sólo sea necesario realizar la distinción
  entre clientes y servidores a la hora de establecer las conexiones.
- Lo más conveniente es extender la funcionalidad de la clase 
+ 
+\end_layout
+
+\begin_layout Standard
+Así, lo más conveniente es extender la funcionalidad de la clase 
 \family typewriter
 CygnusCloudProtocolFactory
 \family default
@@ -8628,7 +8632,8 @@ CygnusCloudProtocol
 \end_layout
 
 \begin_layout Standard
-La recepción de paquetes es totalmente asíncrona.
+Finalmente, como ya hemos dicho en repetidas ocasiones, la recepción de
+ paquetes es totalmente asíncrona.
  Por motivos de eficiencia y para respetar el tipo y la prioridad de los
  paquetes, los objetos 
 \family typewriter
@@ -9512,10 +9517,23 @@ garantizar que todos los paquetes que envían los usuarios no comprometen
 \end_layout
 
 \begin_layout Itemize
-proporcionar una fachada que permite establecer, utilizar y cerrar conexiones
- nivel a un elevado nivel de abstracción.
+proporcionar una fachada que permite 
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+establecer, utilizar y cerrar conexiones de red, y
+\end_layout
+
+\begin_layout Itemize
+enviar información a través de dichas conexiones
+\end_layout
+
+\begin_layout Standard
+a un elevado nivel de abstracción.
+\end_layout
+
+\end_deeper
 \begin_layout Standard
 Las relaciones más relevantes de la clase 
 \family typewriter
