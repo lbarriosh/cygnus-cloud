@@ -790,16 +790,15 @@ La asignatura de diseño de circuitos requiere un PC con una CPU de gama
 \end_layout
 
 \begin_layout Standard
-Para realizar la comparación, fijaremos un proveedor.
- En nuestro caso, el proveedor será Clevisa Informática, que ha suministrado
- un gran número de equipos a la UCM.
- 
-\end_layout
-
-\begin_layout Standard
-Los precios y características de los equipos requeridos por las tres asignaturas
-, a los que llamaremos equipos 1, 2 y 3, a fecha de 25 de octubre de 2012,
- son los siguientes:
+Para realizar la comparación, hemos escogido un proveedor al azar, al que
+ llamaremos 
+\family sans
+Proovedor A
+\family default
+.
+ A fecha de 25 de octubre de 2012, los precios y características de los
+ equipos requeridos por las tres asignaturas, a los que llamaremos equipos
+ 1, 2 y 3, , son los siguientes:
 \end_layout
 
 \begin_layout Itemize
