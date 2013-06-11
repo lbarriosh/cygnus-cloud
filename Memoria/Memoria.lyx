@@ -75,6 +75,8 @@
 \makeatother
 
 \renewcommand{\thefigure}{\arabic{figure}}
+\usepackage[htt]{hyphenat}
+\usepackage{lmodern}
 \end_preamble
 \options a4paper
 \use_default_options true

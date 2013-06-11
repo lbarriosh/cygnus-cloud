@@ -127,7 +127,11 @@ CygnusCloud
 .
  Para facilitar su comprensión, hemos intentado que la claridad prevalezca
  a la hora de exponer los distintos conceptos y decisiones de diseño.
- Por ello, evitaremos a toda costa realizar descripciones exhaustivas de
+ 
+\end_layout
+
+\begin_layout Standard
+Por ello, evitaremos a toda costa realizar descripciones exhaustivas de
  todas y cada una de las clases y de sus distintos atributos.
  Si el lector desea conocer con total precisión qué atributos y qué métodos
  tiene cada clase, cómo se comporta cierto método o cuál es la finalidad
@@ -191,11 +195,17 @@ Vista lógica
 .
  En esta sección, mostraremos cómo las funciones de cada subsistema se distribuy
 en entre sus distintos módulos con la ayuda de un diagrama de paquetes.
- Además, utilizaremos diagramas de clase y diagramas de secuencia para exponer
- las responsabilidades de cada elemento significativo de la arquitectura
- y sus relaciones con el resto de componentes de la misma.
+ 
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+Además, utilizaremos diagramas de clase y diagramas de secuencia para exponer
+ las responsabilidades de cada elemento significativo de la arquitectura
+ y sus relaciones e interacciones con el resto de componentes de la misma.
+\end_layout
+
+\end_deeper
 \begin_layout Enumerate
 
 \series bold
@@ -255,8 +265,12 @@ IBM Rational Software Architect 7.5
 \emph default
  que los genera usa degradados para mejorar la presentación de los diagramas,
  haciendo que los elementos que aparecen en la parte superior del diagrama
- sean más oscuros que los que aparecen en la parte inferior del mismo.
- En cualquier caso, este efecto 
+ sean más claros que los que aparecen en la parte inferior del mismo.
+ 
+\end_layout
+
+\begin_layout Standard
+En cualquier caso, este efecto 
 \emph on
 no
 \emph default
@@ -346,22 +360,19 @@ el
 software
 \emph default
  debe ejecutarse sobre servidores antiguos.
- Así, resulta imprescindible que el 
-\emph on
-software
-\emph default
- sea tan eficiente como sea posible.
+ Por ello, resulta imprescindible que este sea tan eficiente como sea posible.
  
 \end_layout
 
 \begin_layout Standard
 Asimismo, el sistema sólo podrá utilizarse con garantías cuando detecte
  y trate un número suficiente de errores.
- Por ello, 
+ Por ello, el sistema debe ser
 \emph on
-el sistema debe ser robusto, de forma que pueda detectar y trate el mayor
- número de errores posible
+ robusto
 \emph default
+, de forma que pueda detectar y trate el mayor número de errores posible
+\emph on
 .
 \end_layout
 
@@ -426,7 +437,11 @@ Linux
 \emph default
 , que utilizan distintos sistemas de gestión de paquetes y distintos procedimien
 tos de configuración.
- Para garantizar que 
+ 
+\end_layout
+
+\begin_layout Standard
+Para garantizar que 
 \emph on
 CygnusCloud
 \emph default
@@ -449,8 +464,15 @@ para interactuar con los hipervisores y configurar las redes virtuales,
 \end_layout
 
 \begin_layout Itemize
-el uso de un lenguaje de tipo interpretado, como Java o Python, como principal
- lenguaje de programación.
+el uso de un lenguaje de tipo interpretado, como 
+\emph on
+Java
+\emph default
+ o 
+\emph on
+Python
+\emph default
+, como principal lenguaje de programación.
 \end_layout
 
 \begin_layout Standard
@@ -474,7 +496,11 @@ Internet Protocol
 CygnusCloud
 \emph default
  debe operar en redes IP versión 4.
- No obstante, dado que esta versión del protocolo IP ha quedado totalmente
+ 
+\end_layout
+
+\begin_layout Standard
+No obstante, dado que esta versión del protocolo IP ha quedado totalmente
  obsoleta, hemos decidido facilitar, en la medida de lo posible, la transición
  a la versión 6 del protocolo IP, de forma que sólo sea necesario introducir
  pequeños cambios en el código del módulo de comunicaciones y ajustar las
@@ -491,10 +517,18 @@ CygnusCloud
 todos los subsistemas compartan tanta funcionalidad como sea posible
 \emph default
 .
- De esta manera, todos ellos utilizarán el mismo código para realizar, entre
+ 
+\end_layout
+
+\begin_layout Standard
+De esta manera, todos ellos utilizarán el mismo código para realizar, entre
  otras cosas, operaciones básicas sobre una base de datos y comunicaciones
  a través de una red.
- No obstante, esto sólo es posible si 
+ 
+\end_layout
+
+\begin_layout Standard
+No obstante, esto sólo es posible si 
 \emph on
 todos los subsistemas se implementan utilizando el mismo lenguaje de programació
 n
@@ -577,11 +611,17 @@ CygnusCloud
 \emph default
 , es posible que convivan varias versiones de esta, lo que puede dar lugar
  a conflictos y, sobre todo, a problemas de seguridad.
- Para evitar todos estos problemas, es necesario crear un sistema de actualizaci
-ones periódicas, por lo que el diseño y la implementación de la aplicación
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+La única forma de resolver estos problemas es creando un sistema de actualizacio
+nes periódicas, por lo que el diseño y la implementación de la aplicación
  se complican.
 \end_layout
 
+\end_deeper
 \begin_layout Itemize
 para poder enviar las peticiones al sistema, la aplicación necesita averiguar
  la dirección IP y el puerto de la máquina que las tratará.
@@ -624,7 +664,7 @@ CygnusCloud
 \emph on
 layout
 \emph default
- o la disposición de elementos de la página.
+ o disposición de elementos de la página.
 \end_layout
 
 \begin_layout Itemize
@@ -648,8 +688,11 @@ a, por lo que esta seguirá procesando las peticiones ya recibidas correctamente
 Finalmente, el uso de una aplicación web tiene un serio inconveniente: debido
  a nuestra inexperiencia en este campo, es posible que no detectemos algunas
  alternativas para comprometer la seguridad del sistema.
- De todas formas, podemos considerar que la red troncal de la UCM es segura,
- por lo que este tipo de prácticas no serán muy frecuentes.
+\end_layout
+
+\begin_layout Standard
+De todas formas, podemos considerar que la red troncal de la UCM es segura,
+ por lo que este tipo de prácticas no deberán preocuparnos excesivamente.
 \end_layout
 
 \begin_layout Subsection
@@ -673,7 +716,11 @@ Para atender las peticiones de los usuarios, en la infraestructura de
 CygnusCloud
 \emph default
  colaboran hasta cuatro subsistemas distintos.
- En esta sección, mostraremos, de forma general, las responsabilidades de
+ 
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos, de forma general, las responsabilidades de
  cada uno de ellos.
  Además, también expondremos los motivos que nos llevaron a hacer esta descompos
 ición.
@@ -704,8 +751,8 @@ del servidor que alojará las máquinas virtuales, el número máximo de máquin
 \end_layout
 
 \begin_layout Standard
-Por otra parte, el arranque y la creación o edición de máquinas virtuales
- son operaciones que requieren mucha entrada/salida.
+Por otra parte, el arranque de máquinas virtuales y la creación o edición
+ de imágenes de disco son operaciones que requieren mucha entrada/salida.
  Para garantizar que el tiempo de respuesta del sistema es adecuado, lo
  más conveniente es que los nodos que albergan máquinas virtuales se dediquen
  a ello en exclusiva.
@@ -722,8 +769,12 @@ Es importante notar que, una vez creadas las las máquinas virtuales, el
  en el propio servidor de máquinas virtuales, por lo que el tráfico VNC
  circulará exclusivamente entre los PCs de los usuarios y los servidores
  de máquinas virtuales.
- Además, el tráfico que los usuarios generan para conectarse a internet
- se vuelca directamente a la red, es decir, no atraviesa ninguna otra máquina
+ 
+\end_layout
+
+\begin_layout Standard
+Además, el tráfico que los usuarios generan para conectarse a internet se
+ vuelca directamente a la red, es decir, no atraviesa ninguna otra máquina
  de la infraestructura de 
 \emph on
 CygnusCloud
@@ -743,15 +794,20 @@ name "sub:El-repositorio-de-imagenes"
 \end_layout
 
 \begin_layout Standard
-Los usuarios sólo pueden arrancar, crear y editar máquinas virtuales cuando
- sus imágenes de disco están desplegadas en un servidor de máquinas virtuales.
- No obstante, hay imágenes de disco que no deben estar desplegadas en ningún
+Los usuarios sólo pueden arrancar máquinas virtuales y crear o editar imágenes
+ de disco cuando estos ficheros están desplegados en un servidor de máquinas
+ virtuales.
+ 
+\end_layout
+
+\begin_layout Standard
+No obstante, hay imágenes de disco que no deben estar desplegadas en ningún
  servidor de máquinas virtuales.
  Este es el caso de
 \end_layout
 
 \begin_layout Itemize
-las imágenes 
+las imágenes base o imágenes 
 \emph on
 vanilla
 \emph default
@@ -760,24 +816,23 @@ vanilla
 \end_layout
 
 \begin_layout Itemize
-las imágenes que no han terminado de editarse.
- 
+las imágenes de disco que no están en uso y no han terminado de modificarse.
 \end_layout
 
 \begin_layout Standard
-Estas imágenes no están completamente configuradas, por lo que ningún alumno
- las podrá arrancar.
+En ambos casos, las imágenes no están completamente configuradas, por lo
+ que ningún alumno las podrá arrancar.
  Así, su presencia en un servidor de máquinas virtuales supone un desperdicio
  de espacio en disco.
 \end_layout
 
 \begin_layout Standard
 Además, para simplificar la administración del sistema no resulta conveniente
- que las imágenes de disco se dispersen entre múltiples máquinas.
+ que las imágenes de disco estén diseminadas entre múltiples máquinas.
  Si existe una máquina que almacena una copia de todas las imágenes de disco
  existentes, para modificar todas las copias existentes de una de ellas
- sólo será necesario acudir a esta máquina, modificar los ficheros correspondien
-tes y volver a desplegar la imagen de disco.
+ sólo será necesario acudir a esta máquina, modificar el fichero correspondiente
+ y volver a desplegarlo para sobreescribir sus copias antiguas.
 \end_layout
 
 \begin_layout Standard
@@ -786,12 +841,13 @@ Esta máquina, a la que llamaremos
 repositorio de imágenes
 \series default
 , almacenará una copia de todas las imágenes de disco existentes.
- Es importante notar que la única copia de las imágenes 
+ Asimismo, esta máquina será la única que cuente con una copia las imágenes
+ 
 \emph on
 vanilla
 \emph default
- y de las imágenes de disco que se están editando se encuentra en el repositorio
- de imágenes.
+ y de las imágenes de disco que no están en uso y no han terminado de modificars
+e.
 \end_layout
 
 \begin_layout Subsubsection
@@ -830,12 +886,12 @@ Debian-LSO
 \family sans
 A
 \family default
- alberga más instancias que el servidor 
+ alberga más instancias o máquinas virtuales que el servidor 
 \family sans
 B
 \family default
-, la experiencia del usuario mejorará si alojamos la nueva instancia la
- nueva instancia en el servidor 
+, la experiencia del usuario mejorará si alojamos la nueva instancia en
+ el servidor 
 \family sans
 B
 \family default
@@ -847,35 +903,41 @@ Por tanto, necesitamos utilizar una máquina que
 \end_layout
 
 \begin_layout Itemize
-averigüe periódicamente el estado de todos los servidores de máquinas virtuales
- y del repositorio de imagenes,
+recopile periódicamente el estado de todas las máquinas del 
+\emph on
+cluster
+\emph default
+, y
 \end_layout
 
 \begin_layout Itemize
-al atender las peticiones del usuario, compruebe que estas se pueden satisfacer.
- Esto resulta fundamental para ahorrar ancho de banda.
+utilice esta información para realizar el balanceado de carga entre dichas
+ máquinas.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, para ahorrar ancho de banda resulta fundamental que, al
+ atender una petición, se compruebe si el 
+\emph on
+cluster
+\emph default
+ la puede satisfacer.
  
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
 Por ejemplo, si el repositorio de imágenes no tiene suficiente espacio en
- disco para alojar una nueva máquina virtual, no tiene sentido transferir
- sus imágenes de disco a un servidor de máquinas virtuales y configurar
- en él la máquina virtual, ya que estas no podrán subirse al repositorio
- de imágenes.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-realice el balanceado de carga entre todos los servidores de máquinas virtuales.
+ disco para alojar las modificaciones de dos imágenes de disco, no tiene
+ sentido transferir estos ficheros a un servidor de máquinas virtuales y
+ alojar en él la máquina virtual que se usará para hacer las modificaciones,
+ ya que los ficheros modificados no podrán subirse al repositorio de imágenes.
 \end_layout
 
 \begin_layout Standard
 Además, para facilitar la administración del sistema, esta máquina también
  se ocupará de arrancar, parar, dar de alta y borrar servidores de máquinas
  virtuales.
- De ahora en adelante, llamaremos a esta máquina 
+ De ahora en adelante, la llamaremos 
 \series bold
 servidor de 
 \emph on
@@ -885,13 +947,16 @@ cluster
 \end_layout
 
 \begin_layout Standard
-Como el lector habrá notado ya, este diseño tiene un serio inconveniente:
- el servidor de 
+Como el lector habrá notado ya, el servidor de 
 \emph on
 cluster
 \emph default
  se convierte un cuello de botella que limita el número máximo de servidores
- de máquinas virtuales.
+ de máquinas virtuales del 
+\emph on
+cluster
+\emph default
+ y, por ende, el número máximo de usuarios que es posible atender.
  
 \end_layout
 
@@ -920,8 +985,8 @@ Finalmente, es importante notar que cada
 \emph on
 cluster
 \emph default
- es completamente autónomo, por lo que no tiene por qué compartir máquinas
- virtuales con otros 
+ es completamente autónomo, por lo que no tiene por qué compartir imágenes
+ de disco con otros 
 \emph on
 clusters
 \emph default
@@ -942,7 +1007,11 @@ cluster
 CygnusCloud
 \emph default
  no puede residir en ninguno de ellos.
- Además, por motivos de eficiencia, los servidores de 
+ 
+\end_layout
+
+\begin_layout Standard
+Además, por motivos de eficiencia, los servidores de 
 \emph on
 cluster
 \emph default
@@ -956,28 +1025,27 @@ Así pues, es necesario utilizar una máquina adicional, el
 \series bold
 servidor web
 \series default
-, para alojar la página web de 
+, cuyas principales funciones son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+alojar la aplicación web de 
 \emph on
 CygnusCloud
 \emph default
-.
- A través de ella,
+, que se usará para interactuar con la infraestructura.
 \end_layout
 
 \begin_layout Itemize
-se realizará el control de acceso,
+realizar el control de acceso.
 \end_layout
 
 \begin_layout Itemize
-se enviarán las peticiones de los usuarios a un servidor de 
+redirigir las peticiones de cada usuario al servidor de 
 \emph on
 cluster
 \emph default
-, y
-\end_layout
-
-\begin_layout Itemize
-se administrará el sistema.
+ que debe atenderlas.
 \end_layout
 
 \begin_layout Subsection
@@ -997,15 +1065,22 @@ OpenStack
 OpenNebula
 \emph default
 .
- Estas herramientas permiten gestionar 
+ 
+\end_layout
+
+\begin_layout Standard
+Estas herramientas permiten gestionar 
 \emph on
 clouds
 \emph default
  de gran tamaño, e implementan toda la funcionalidad que necesitamos para
  realizar la gestión de los servidores de la infraestructura y de las máquinas
  virtuales.
- No obstante, hemos preferido diseñar e implementar una infraestructura
  
+\end_layout
+
+\begin_layout Standard
+No obstante, hemos preferido diseñar e implementar una infraestructura 
 \emph on
 ad-hoc
 \emph default
@@ -1062,12 +1137,18 @@ OpenStack
 OpenNebula
 \emph default
 .
- Ahora bien, para fijar dicho subcojunto y familiarizarnos con estas soluciones
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Ahora bien, para fijar dicho subcojunto y familiarizarnos con estas soluciones
  habríamos necesitado, como mínimo, tres meses.
  Esto supone casi la tercera parte del tiempo de desarrollo del proyecto,
  por lo que no es aceptable.
 \end_layout
 
+\end_deeper
 \begin_layout Itemize
 al implantar una infraestructura 
 \emph on
@@ -1077,7 +1158,12 @@ ad-hoc
  un servicio del tipo infraestructura como servicio.
  Así, nos podemos familiarizar con muchas de las tecnologías de virtualización
  existentes en el mercado.
- Además, este conocimiento nos permitirá, en un futuro próximo, comprender
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Además, este conocimiento nos permitirá, en un futuro próximo, comprender
  mejor y más rápidamente el funcionamiento de 
 \emph on
 OpenStack 
@@ -1087,60 +1173,86 @@ y
 OpenNebula.
 \end_layout
 
+\end_deeper
 \begin_layout Subsection
-Configuración de las redes virtuales en modo NAT
+Configuración de las redes virtuales en modo NAT 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Configuración-NAT"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Para que los usuarios de CygnusCloud puedan utilizar las máquinas virtuales
- para trabajar, es imprescindible que estas accedan, a través de la red
- troncal de la Complutense, al Campus Virtual y a Internet.
+Para que los usuarios de 
+\emph on
+CygnusCloud
+\emph default
+ puedan trabajar en las máquinas virtuales, resulta imprescindible que estas
+ accedan, a través de la red troncal de la Complutense, al Campus Virtual
+ y a internet.
  
 \end_layout
 
 \begin_layout Standard
-La forma más sencilla de lograr esto es configurando un bridge para cada
- máquina virtual.
- Así, estas se conectarán a la red troncal de la Complutense como si fuesen
- un equipo físico más.
- 
+La forma más sencilla de lograr esto es configurando un 
+\emph on
+bridge
+\emph default
+ para cada máquina virtual.
+ Sin entrar demasiado en detalles, podemos decir que esta solución permite
+ que las máquinas virtuales se conecten a la red troncal de la Complutense
+ como si fuesen PCs convencionales.
 \end_layout
 
 \begin_layout Standard
-Tal y como dijimos en la sección 
+En la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Restricciones-arquitectura"
 
 \end_inset
 
-, la red troncal de la UCM sigue utilizando la versión 4 del protocolo IP
- (Internet Protocol).
- Con esta primera alternativa, cada máquina virtual debe tener una dirección
+ dijimos que la red troncal de la UCM sigue utilizando la versión 4 del
+ protocolo IP (
+\emph on
+Internet Protocol
+\emph default
+).
+ 
+\end_layout
+
+\begin_layout Standard
+Con esta primera alternativa, cada máquina virtual debe tener una dirección
  IP única.
- Y dada la actual escasez de direcciones IP versión 4, esto limita el número
- de máquinas virtuales que pueden estar activas a la vez: puesto que CygnusCloud
- debe poder implantarse con coste cero, 
+ Como la red troncal de la Complutense es totalmente plana y las direcciones
+ IP versión 4 son muy escasas, el número de máquinas virtuales que pueden
+ estar activas a la vez estará limitado, ya que
 \end_layout
 
 \begin_layout Itemize
-no es posible adquirir nuevos (y costosos) bloques de direcciones IP para
- utilizarlo, y 
+dado que 
+\emph on
+CygnusCloud
+\emph default
+ debe poder implantarse con coste cero, no es posible adquirir nuevos (y
+ costosos) bloques de direcciones IP para utilizarlo.
 \end_layout
 
 \begin_layout Itemize
-para que la red troncal de la UCM funcione con normalidad, CygnusCloud no
- puede monopolizar el uso de las direcciones IP disponibles.
- 
+las máquinas virtuales de 
+\emph on
+CygnusCloud
+\emph default
+ no pueden monopolizar el uso de las direcciones IP disponibles: esto compromete
+ría el normal funcionamiento de la red troncal de la UCM.
 \end_layout
 
 \begin_layout Standard
-Por ello, la solución que acabamos de presentar no es viable.
- 
-\end_layout
-
-\begin_layout Standard
-La alternativa se basa en el uso de NAT (
+Así pues, esta primera alternativa no es viable.
+ Para superar sus limitaciones, hemos decidido utilizar NAT (
 \emph on
 Network Address Translation
 \emph default
@@ -1151,7 +1263,6 @@ Network Address Translation
 \begin_layout Itemize
 sólo los servidores de máquinas virtuales (y no las máquinas virtuales)
  se conectan a la red troncal de la UCM.
- 
 \end_layout
 
 \begin_layout Itemize
@@ -1178,13 +1289,15 @@ cuando el servidor de máquinas virtuales reciba un datagrama IP, reescribirá
 
 \begin_layout Standard
 Como cada servidor de máquinas virtuales puede contener varias máquinas
- virtuales activas a la vez, el ahorro de direcciones IP con esta alternativa
- es considerable.
- Por ello, decidimos utilizarla.
+ virtuales activas a la vez, esta alternativa no tiene los inconvenientes
+ de la anterior.
 \end_layout
 
 \begin_layout Standard
-No obstante, nos hemos asegurado de que resulte sencillo crear un bridge
+No obstante, nos hemos asegurado de que resulte sencillo crear un 
+\emph on
+bridge
+\emph default
  para cada máquina virtual.
  Así, los administradores del sistema podrán utilizar una u otra alternativa
  cuando lo estimen oportuno.
@@ -1221,8 +1334,19 @@ VNC
 Virtual Network Computing
 \emph default
 , computación virtual en red) es un protocolo de escritorio remoto independiente
- de la plataforma y desarrollado por Olivetti, Oracle Corporation y, posteriorme
-nte, por AT&T.
+ de la plataforma y desarrollado por 
+\emph on
+Olivetti
+\emph default
+, 
+\emph on
+Oracle Corporation 
+\emph default
+y, posteriormente, por 
+\emph on
+AT&T
+\emph default
+.
  
 \end_layout
 
@@ -1231,9 +1355,20 @@ Por su parte,
 \series bold
 RDP 
 \series default
-(Remote Desktop Protocol, protocolo de escritorio remoto) es un protocolo
- de escritorio remoto desarrollado por Microsoft, utilizado mayoritariamente
- en sistemas Windows.
+(
+\emph on
+Remote Desktop Protocol
+\emph default
+, protocolo de escritorio remoto) es un protocolo de escritorio remoto desarroll
+ado por 
+\emph on
+Microsoft
+\emph default
+, utilizado mayoritariamente en sistemas 
+\emph on
+Windows
+\emph default
+.
  Existen clientes y servidores RDP para otros sistemas operativos, como
  
 \emph on
@@ -1386,10 +1521,14 @@ han decidido migrar sus bases de datos a MariaDB.
 \end_layout
 
 \begin_layout Standard
-Aunque inicialmente MariaDB estaba basada en la versión 5.5 de MySQL, sus
+Aunque inicialmente MariaDB estaba basado en la versión 5.5 de MySQL, sus
  nuevas versiones incluyen un gran número de mejoras enfocadas, sobre todo,
  a conseguir un rendimiento superior al de MySQL.
- Además, como MariaDB es totalmente compatible a nivel sintáctico y a nivel
+ 
+\end_layout
+
+\begin_layout Standard
+Además, como MariaDB es totalmente compatible a nivel sintáctico y a nivel
  binario la versión 5.5 de MySQL, resulta muy sencillo reemplazar MySQL por
  MariaDB.
  
@@ -1402,7 +1541,7 @@ Sun Microsystems
 \emph default
 por parte de 
 \emph on
-Oracle 
+Oracle Corporation 
 \emph default
 en 2009, nos parece que el desarrollo de MySQL ha sufrido un abandono progresivo
 , de forma que en la actualidad todo parece indicar que, a medio plazo,
@@ -1542,7 +1681,11 @@ reference "sub:Uso-aplicacion-web"
 
 \end_inset
 
-, CygnusCloud se utilizará a través de una aplicación web.
+, 
+\emph on
+CygnusCloud 
+\emph default
+se utilizará a través de una aplicación web.
  
 \end_layout
 
@@ -1580,11 +1723,15 @@ open source
 La principal ventaja de esta alternativa es el rendimiento: dado que estos
  clientes están escritos en C o C++, es posible utilizarlos en equipos poco
  potentes de forma muy satisfactoria.
- No obstante, el hecho de que estos clientes estén escritos en C o C++ supone
- también su mayor inconveniente: es necesario crear una versión distinta
- para cada sistema operativo, algo que no es trivial, y sólo es posible
- utilizarlos en PCs.
  
+\end_layout
+
+\begin_layout Standard
+No obstante, el hecho de que estos clientes estén escritos en C o C++ supone
+ también su mayor inconveniente: es necesario crear una versión distinta
+ para cada sistema operativo, algo que no es trivial y, en principio, no
+ es posible utilizarlos en máquinas pertenecientes a arquitecturas no x86
+ (como ARM, la arquitectura de uso mayoritario en los dispositivos móviles).
 \end_layout
 
 \begin_layout Standard
@@ -1604,18 +1751,24 @@ CygnusCloud
 \end_layout
 
 \begin_layout Standard
-Y puesto que los equipos antiguos que actualmente se utilizan en la UCM
- tienen suficiente ca- pacidad de procesamiento para utilizar un cliente
+Considerando que los equipos antiguos que actualmente se utilizan en la
+ UCM tienen suficiente ca- pacidad de procesamiento para utilizar un cliente
  VNC web, nos decantamos por esta segunda alternativa.
- En su momento, valoramos dos clientes VNC web: el applet Java del proyecto
- TigerVNC y noVNC.
+ En su momento, valoramos dos soluciones: el applet 
+\emph on
+Java 
+\emph default
+del proyecto TigerVNC y noVNC.
  
 \end_layout
 
 \begin_layout Standard
-Aunque en términos generales el rendimiento del applet Java es satisfactorio,
- su desarrollo ha estado detenido desde el año 2007, y en la actualidad
- carece de todo tipo de soporte.
+Aunque en términos generales el rendimiento del applet 
+\emph on
+Java
+\emph default
+ es satisfactorio, su desarrollo ha estado detenido desde el año 2007, y
+ en la actualidad carece de todo tipo de soporte.
  
 \end_layout
 
@@ -1658,14 +1811,23 @@ te reciente.
 \end_layout
 
 \begin_layout Itemize
-se adapta a los tamaños de pantalla de móviles y tabletas, lo que permite
- utilizarlo en PCs y en estos dispositivos, cada vez más extendidos.
+se adapta a los tamaños y orientacines de pantalla de móviles y tabletas,
+ lo que permite utilizarlo en PCs y en estos dispositivos, cada vez más
+ extendidos.
  
 \end_layout
 
 \begin_layout Itemize
-se distribuye bajo licencia LGPL, lo que permite modificarlo cuanto sea
- necesario a la hora de realizar su integración con la web de CygnusCloud.
+se distribuye bajo la licencia
+\emph on
+ Mozilla Public License 
+\emph default
+versión 2, lo que permite modificarlo cuanto sea necesario a la hora de
+ realizar su integración con la web de 
+\emph on
+CygnusCloud
+\emph default
+.
  
 \end_layout
 
@@ -1682,16 +1844,23 @@ ajusta el número de colores y la resolución de la pantalla en función de
 \begin_layout Standard
 Puesto que noVNC tiene características muy interesantes, requiere instalar
  menos software en los PCs en los que trabajan los usuarios y, sobre todo,
- cuenta con un buen soporte, decidimos utilizarlo en CygnusCloud.
+ cuenta con un buen soporte, decidimos utilizarlo en 
+\emph on
+CygnusCloud
+\emph default
+.
  
 \end_layout
 
 \begin_layout Subsection
 Uso de la librería de virtualización 
-\emph on
+\family typewriter
 libvirt
-\emph default
+\emph on
  
+\family default
+\emph default
+
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Uso-de-libvirt"
@@ -1702,7 +1871,7 @@ name "sub:Uso-de-libvirt"
 \end_layout
 
 \begin_layout Standard
-Tal y como mencionamos en la sección
+Como mencionamos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Restricciones-arquitectura"
@@ -1720,27 +1889,19 @@ reference "sub:Restricciones-arquitectura"
 \end_layout
 
 \begin_layout Standard
-Además, interactuar directamente con el hipervisor no es nada conveniente
- ya que, para utilizar otro diferente, será necesario introducir muchas
- modificaciones.
+Además, interactuar directamente con el hipervisor no es nada conveniente:
+ si se decide utilizar otro distinto, será necesario introducir muchas modificac
+iones.
  
 \end_layout
 
 \begin_layout Standard
-Para resolver estos dos problemas, no manipulamos las máquinas y las redes
- virtuales directamente: lo hacemos a través de la librería 
-\emph on
+Para evitar la aparición de estos dos problemas, hemos decidido utilizar
+ la librería de virutalización por excelencia: 
+\family typewriter
 libvirt
-\emph default
+\family default
 .
-\end_layout
-
-\begin_layout Standard
-
-\emph on
-libvirt
-\emph default
- es la librería de virtualización por excelencia.
  Sus principales características son las siguientes:
 \end_layout
 
@@ -1773,11 +1934,11 @@ a través de ella, es posible crear y destruir redes virtuales, y también
 
 \begin_layout Standard
 Tras examinar las características de 
-\emph on
+\family typewriter
 libvirt
-\emph default
+\family default
  y evaluar nuestras necesidades, concluimos que esta librería nos proporcionaba
- todas las funciones que necesitábamos para utilizar máquinas y redes virtuales
+ todas las funciones que necesitábamos para manipular máquinas y redes virtuales
  en 
 \emph on
 CygnusCloud
@@ -1789,14 +1950,14 @@ CygnusCloud
 \begin_layout Standard
 Por otra parte, al inicio del proyecto no encontramos ninguna librería similar,
  por lo que la única alternativa al uso de 
-\emph on
+\family typewriter
 libvirt
-\emph default
+\family default
  era interactuar directamente con el hipervisor.
  Así pues, decidimos utilizar 
-\emph on
+\family typewriter
 libvirt
-\emph default
+\family default
 .
 \end_layout
 
@@ -1822,7 +1983,7 @@ reference "sub:Restricciones-arquitectura"
 Linux
 \emph default
 , es altamente recomendable utilizar lenguajes interpretados para facilitar
- la portabilidad del sistema.
+ la difusión del sistema.
  Los lenguajes de este tipo que consideramos al inicio del proyecto fueron
  esencialmente dos: 
 \emph on
@@ -1887,7 +2048,11 @@ Python
 \emph on
 Python
 \emph default
- que en Java.
+ que en 
+\emph on
+Java
+\emph default
+.
 \end_layout
 
 \begin_layout Itemize
@@ -2001,10 +2166,13 @@ Python
 \emph on
 bindings
 \emph default
- de libvirt y los conectores de MySQL, no han hecho aún la transición a
- la familia 3.0, por lo que no pueden utilizarse con estas versiones.
- Por ello, no hemos tenido más remedio que utilizar la sintaxis de la familia
- 2.7.
+ de 
+\family typewriter
+libvirt
+\family default
+ y los conectores de MySQL, no han sido portadas aún a la familia 3.0, por
+ lo que no pueden utilizarse con estas versiones.
+ Por ello, no hemos tenido más remedio que utilizar la familia 2.7.
 \end_layout
 
 \begin_layout Standard
@@ -2039,7 +2207,7 @@ CygnusCloud
 \emph default
  se compone de sistemas diferentes que residen en máquinas distintas, es
  imprescindible comunicarlos.
- Puesto que las máquinas intercambian entre sí un gran volumen de datos,
+ Asimismo, como las máquinas intercambian entre sí un gran volumen de datos,
  es muy conveniente utilizar un servicio orientado a conexión y fiable:
  TCP.
 \end_layout
@@ -2057,7 +2225,11 @@ socket
 \emph on
 twisted
 \emph default
-, que se basa en eventos y está íntegramente escrita en Python.
+, que se basa en eventos y está íntegramente escrita en 
+\emph on
+Python
+\emph default
+.
  Las razones que nos llevaron a elegirla fueron las siguientes:
 \end_layout
 
@@ -2125,19 +2297,15 @@ n a otras, partes sin apenas documentar\SpecialChar \ldots{}
 \end_layout
 
 \begin_layout Standard
-No obstante, tal y como expusimos en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Restricciones-arquitectura"
-
-\end_inset
-
-, para facilitar la portabilidad entre distribuciones 
+No obstante, para garantizar el correcto funcionamiento de 
 \emph on
-GNU/Linux 
+CygnusCloud
 \emph default
-es imprescindible utilizar mecanismos estandarizados, por lo que nos acabamos
- decantando por utilizar esta librería.
+ en múltiples distribuciones 
+\emph on
+Linux 
+\emph default
+decidimos utilizar esta librería.
 \end_layout
 
 \begin_layout Subsection
@@ -2215,7 +2383,8 @@ File Transfer Protocol
  Es uno de los primeros protocolos de transferencia de ficheros que se diseñaron
 , y por ello también uno de los más inseguros, eficientes y fáciles de utilizar.
  La funcionalidad de FTP es muy básica comparada con la de NFS o Samba:
- sólo permite transferir ficheros entre dos máquinas.
+ sólo permite navegar por el sistema de ficheros y transferir archivos entre
+ dos máquinas.
 \end_layout
 
 \begin_layout Itemize
@@ -2344,8 +2513,18 @@ name "sub:Uso-del-servidor-pyftpdlib"
 \end_layout
 
 \begin_layout Standard
-Para transferir y recibir imágenes de disco en el repositorio de imágenes,
- es necesario que este albergue un servidor FTP.
+Puesto que el repositorio de imágenes almacenará una copia de todas las
+ imágenes de disco que es posible utilizar en la infraestructura, lo más
+ razonable es que esta máquina albergue un servidor FTP.
+\end_layout
+
+\begin_layout Standard
+Por tanto, el repositorio de imágenes debe albergar un servidor FTP y, preferent
+emente, uno escrito en 
+\emph on
+Python
+\emph default
+, ya que ello simplifica la interacción con dicho servidor.
  En su momento, consideramos dos: 
 \family typewriter
 pyftpdlib
@@ -2512,8 +2691,8 @@ pyftpdlib
 \end_layout
 
 \begin_layout Itemize
-ofrece muchas más funciones que la otra alternativa, y algunas, como el
- control del ancho de banda utilizado por el servidor FTP son muy interesantes,
+ofrece muchas más funciones que la otra alternativa y algunas como el control
+ del ancho de banda utilizado por el servidor FTP son muy interesantes,
  y que
 \end_layout
 
@@ -2743,7 +2922,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Tiempos compresión y descompresión.pdf
-	scale 40
+	scale 34
 
 \end_inset
 
@@ -2786,7 +2965,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Tamaño fichero comprimido.pdf
-	scale 60
+	scale 50
 
 \end_inset
 
@@ -2829,7 +3008,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Uso promedio CPU.pdf
-	scale 60
+	scale 50
 
 \end_inset
 
@@ -2872,7 +3051,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Uso promedio RAM.pdf
-	scale 60
+	scale 50
 
 \end_inset
 
@@ -2915,7 +3094,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Tasa lectura disco.pdf
-	scale 60
+	scale 50
 
 \end_inset
 
@@ -2958,7 +3137,7 @@ status collapsed
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Decisiones de diseño/Comparativa compresores/Tasa escritura disco.pdf
-	scale 60
+	scale 50
 
 \end_inset
 
@@ -3180,7 +3359,7 @@ es posible añadir ficheros a un fichero
 \family sans
 zip 
 \family default
-ya creado sin necesidad de descomprimirlo.
+ya creado sin necesidad de descomprimirlo, lo cual aporta una gran flexibilidad.
  En el caso de los formatos 
 \family sans
 .tar.gz
@@ -3478,11 +3657,11 @@ qcow2
 \family default
  (
 \emph on
-Qemu Copy-On-Write 
+QEMU Copy-On-Write 
 \emph default
 y 
 \emph on
-Qemu Copy-On-Write
+QEMU Copy-On-Write
 \emph default
  2).
  Sus principales características son las siguientes: 
@@ -3498,7 +3677,7 @@ reference "sec:KVM"
 
 , el hipervisor KVM utiliza los modelos de dispositivo del emulador 
 \emph on
-Qemu
+QEMU
 \emph default
 .
  Como 
@@ -3511,7 +3690,7 @@ qcow2
 \family default
  son los formatos de imagen nativos de 
 \emph on
-Qemu
+QEMU
 \emph default
 , son también los formatos de imagen nativos de KVM.
  
@@ -3571,7 +3750,7 @@ copy-on-write
 \end_layout
 
 \begin_layout Standard
-Teniendo en cuenta que 
+Como
 \end_layout
 
 \begin_layout Itemize
@@ -3583,11 +3762,11 @@ qcow
 \family typewriter
 qcow2
 \family default
- 
+,
 \end_layout
 
 \begin_layout Itemize
-resulta muy sencillo hacer conversiones entre ambos formatos 
+resulta muy sencillo hacer conversiones entre ambos formatos,
 \end_layout
 
 \begin_layout Itemize
@@ -3597,7 +3776,9 @@ qcow2
 \family default
  es el sucesor natural del formato 
 \family typewriter
-qcow 
+qcow
+\family default
+, y
 \end_layout
 
 \begin_layout Itemize
@@ -3625,16 +3806,13 @@ s formatos:
 \end_layout
 
 \begin_layout Itemize
-
-\series bold
-\emph on
-raw
-\series default
-\emph default
-.
+RAW.
  En realidad, no se trata de un formato de imagen, sino de un fichero que
- contiene directamente los bytes almacenados en el disco duro de la máquina
- virtual.
+ contiene directamente los 
+\emph on
+bytes
+\emph default
+ almacenados en el disco duro de la máquina virtual.
  
 \end_layout
 
@@ -3642,7 +3820,11 @@ raw
 \begin_layout Standard
 Puesto que para acceder a disco basta con leer o escribir directamente en
  este fichero, esta es la alternativa que proporciona mejor rendimiento.
- No obstante, tiene un serio inconveniente: el fichero de la imagen siempre
+ 
+\end_layout
+
+\begin_layout Standard
+No obstante, tiene un serio inconveniente: el fichero de la imagen siempre
  debe tener el mismo tamaño que el disco duro que representa, por lo que
  el espacio libre en ese disco duro ocupa espacio en disco del servidor
  de máquinas virtuales.
@@ -3678,7 +3860,7 @@ vmdk
  Se trata del formato nativo del sistema de virtualización VMWare, también
  soportado por 
 \emph on
-Qemu
+QEMU
 \emph default
  (y, por tanto, por KVM).
  
@@ -3691,9 +3873,9 @@ Nuevamente, resulta muy sencillo realizar conversiones entre estos formatos.
 vmdk
 \family default
 , por lo que, de cara a facilitar un hipotético cambio de hipervisor, resulta
- más conveniente utilizar los formatos 
+ más conveniente utilizar los formatos RAW
 \emph on
-raw 
+ 
 \emph default
 o 
 \family typewriter
@@ -3704,11 +3886,11 @@ qcow2
 \end_layout
 
 \begin_layout Standard
-Y puesto que al utilizar el formato 
+Y puesto que al utilizar el formato
 \emph on
-raw
+ 
 \emph default
- se está desperdiciando espacio en disco en muchos casos, decidimos utilizar
+RAW se está desperdiciando espacio en disco en muchos casos, decidimos utilizar
  el formato 
 \family typewriter
 qcow2 
@@ -3726,12 +3908,7 @@ zlib
 \family default
 .
  De esta manera, el rendimiento de la máquina virtual no se degradará de
- forma apreciable con respecto al uso de imágenes 
-\emph on
-raw
-\emph default
-.
- 
+ forma apreciable con respecto al uso de imágenes RAW.
 \end_layout
 
 \begin_layout Subsection
@@ -3746,10 +3923,17 @@ name "sub:Creación-familias-mvs"
 \end_layout
 
 \begin_layout Standard
-Las máquinas virtuales de CygnusCloud pueden utilizarse con fines muy diversos.
- Por ejemplo, mientras que unas pueden tener instalada una suite ofimática
- y las herramientas básicas para navegar por internet, otras pueden tener
- instalado un entorno de desarrollo de desarrollo integrado.
+Las máquinas virtuales de 
+\emph on
+CygnusCloud
+\emph default
+ pueden utilizarse con fines muy diversos.
+ Por ejemplo, mientras que unas pueden tener instalada una 
+\emph on
+suite
+\emph default
+ ofimática y las herramientas básicas para navegar por internet, otras pueden
+ tener instalado un entorno de desarrollo de desarrollo integrado.
  
 \end_layout
 
@@ -3760,9 +3944,12 @@ En cualquier caso, todos estos usos no explotan igual la potencia del hardware
 \end_layout
 
 \begin_layout Itemize
-en la primera máquina, que tiene instalada la suite ofimática y las herramientas
- básicas para navegar por internet, el uso de CPU y de memoria RAM será
- bastante reducido.
+en la primera máquina, que tiene instalada la 
+\emph on
+suite
+\emph default
+ ofimática y las herramientas básicas para navegar por internet, el uso
+ de CPU y de memoria RAM será bastante reducido.
  Además, se utilizará poco espacio en disco.
  
 \end_layout
@@ -3788,7 +3975,7 @@ Windows
 \emph default
  de última generación requieren un mínimo de 9 GB de espacio en disco, al
  menos 1 GB de memoria RAM y un fichero de paginación que sea, como mínimo,
- 1,5 veces el tamaño de la memoria RAM, y 
+ un 50% mayor que la cantidad de memoria RAM, y 
 \end_layout
 
 \begin_layout Itemize
@@ -4647,8 +4834,15 @@ tras desinstalar los componentes multimedia y las características del sistema
 \emph on
 Windows
 \emph default
- 7 ocupa 9 GB (en el caso de una versión de 32 bits) o 12 GB (en el caso
- de una versión de 64 bits).
+ 7 ocupa 9 GB (en el caso de una versión de 32 
+\emph on
+bits
+\emph default
+) o 12 GB (en el caso de una versión de 64 
+\emph on
+bits
+\emph default
+).
  
 \end_layout
 
@@ -4659,9 +4853,12 @@ Windows
 \emph default
 , se recomienda que el tamaño del fichero de paginación sea 1,5 veces el
  tamaño de la memoria RAM.
- De acuerdo a nuestra experiencia, en Windows se utiliza este fichero de
- forma intensiva, por lo que hemos decidido que su tamaño sea 2 veces el
- tamaño de la memoria RAM.
+ De acuerdo a nuestra experiencia, en 
+\emph on
+Windows 
+\emph default
+se utiliza este fichero de forma intensiva, por lo que hemos decidido que
+ su tamaño sea 2 veces el tamaño de la memoria RAM.
  
 \end_layout
 
@@ -4675,11 +4872,26 @@ Microsoft Office
 \end_layout
 
 \begin_layout Itemize
-las versiones de Windows de 64 bits utilizan, aproximadamente, el doble
- de memoria RAM que las de 32 bits.
- Siempre que no se utilicen las instrucciones de 64 bits de la CPU, cosa
- que en la actualidad ocurre con muy poca frecuencia, el rendimiento de
- todas las aplicaciones en ambas versiones es prácticamente el mismo.
+las versiones de 
+\emph on
+Windows
+\emph default
+ de 64 
+\emph on
+bits 
+\emph default
+utilizan, aproximadamente, el doble de memoria RAM que las de 32 
+\emph on
+bits
+\emph default
+.
+ Siempre que no se utilicen las instrucciones de 64 
+\emph on
+bits
+\emph default
+ de la CPU, cosa que en la actualidad ocurre con muy poca frecuencia, el
+ rendimiento de todas las aplicaciones en ambas versiones es prácticamente
+ el mismo.
  
 \end_layout
 
@@ -4694,8 +4906,16 @@ y
 medium 
 \emph default
 no cuentan con 4 GB de RAM, en principio no sacarán partido a un sistema
- operativo de 64 bits, por lo que en estos casos recomendamos el uso de
- sistemas operativos de 32 bits.
+ operativo de 64 
+\emph on
+bits
+\emph default
+, por lo que en estos casos recomendamos el uso de sistemas operativos de
+ 32 
+\emph on
+bits
+\emph default
+.
  
 \end_layout
 
@@ -4704,10 +4924,18 @@ Por otra parte, aunque la familia de imágenes
 \emph on
 Windows big
 \emph default
- tampoco cuenta con 4 GB de memoria RAM, sí es posible que, por su complejidad,
- el software instalado en estas máquinas saque partido a las instrucciones
- de 64 bits de la CPU, por lo que en este caso recomendamos el uso de un
- sistema operativo de 64 bits.
+ tampoco cuenta con 4 GB de memoria RAM, sí es posible que, por los recursos
+ que requiere, el software instalado en estas máquinas saque partido a las
+ instrucciones de 64 
+\emph on
+bits
+\emph default
+ de la CPU del servidor de máquinas virtuales, por lo que en este caso recomenda
+mos el uso de un sistema operativo de 64 
+\emph on
+bits
+\emph default
+.
  
 \end_layout
 
@@ -4735,15 +4963,30 @@ en la mayoría de distribuciones Linux, cuando hay mucho software instalado
 \end_layout
 
 \begin_layout Itemize
-las versiones de 64 bits de Linux usan la misma cantidad de RAM y espacio
- en disco que las de 32 bits.
- Además, permiten utilizar las instrucciones de 64 bits de los procesadores
- del servidor.
+las versiones de 64 
+\emph on
+bits
+\emph default
+ de Linux usan la misma cantidad de RAM y espacio en disco que las de 32
+ 
+\emph on
+bits
+\emph default
+.
+ Además, permiten utilizar las instrucciones de 64 
+\emph on
+bits
+\emph default
+ de la CPU del servidor de máquinas virtuales.
  Por ello, recomendamos el uso de versiones de 
 \emph on
 Linux
 \emph default
- de 64 bits.
+ de 64 
+\emph on
+bits
+\emph default
+.
  
 \end_layout
 
@@ -4764,7 +5007,7 @@ Finalmente, como el lector habrá notado ya, todas las máquinas virtuales
 \end_layout
 
 \begin_layout Standard
-Además, tal y como contamos en la sección 
+Además, como dijimos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Uso-del-formato-qcow2"
@@ -4808,8 +5051,8 @@ la compresión y descompresión de ficheros de gran tamaño en el servidor
 
 \begin_layout Standard
 Por tanto, si un servidor de máquinas virtuales que se utiliza para editar
- imágenes alberga otras máquinas virtuales, el rendimiento de estas se degradará
- cuando
+ imágenes de disco alberga otras máquinas virtuales, el rendimiento de estas
+ se degradará cuando
 \end_layout
 
 \begin_layout Itemize
@@ -4869,14 +5112,14 @@ ados.
 \end_layout
 
 \begin_layout Itemize
-tráfico generado por los protocolos de 
+tráfico generado por los distintos módulos de 
 \emph on
 CygnusCloud
 \emph default
 .
- Este tráfico es minoritario, y se genera al procesar peticiones como la
- instanciación y destrucción de máquinas virtuales, la recopilación de estadísti
-cas dentro de los distintos 
+ Este tráfico es el minoritario, y se genera al procesar peticiones como
+ la instanciación y destrucción de máquinas virtuales, la recopilación de
+ estadísticas dentro de los distintos 
 \emph on
 clusters
 \emph default
@@ -4887,20 +5130,23 @@ clusters
 \begin_layout Standard
 Considerando que la red de la UCM es ya de por sí segura, no sería necesario
  cifrar el tráfico.
- No obstante, para garantizar el correcto funcionamiento del sistema 
+ No obstante, para aumentar la robustez del sistema 
 \emph on
 CygnusCloud
 \emph default
-, todas las comunicaciones salvo las conexiones a escritorio remoto están
- protegidas mediante cifrado SSL.
+, todo el tráfico generado por los módulos de 
+\emph on
+CygnusCloud
+\emph default
+ se protegerá mediante cifrado SSL.
  Esto nos permite:
 \end_layout
 
 \begin_layout Itemize
 ahorrar ancho de banda.
  Como el tráfico mayoritario está sin cifrar, es posible utilizar el ancho
- de banda para soportar más conexiones a escritorio remoto (y, por tanto,
- dar servicio a un mayor número de usuarios).
+ de banda para soportar más conexiones a escritorio remoto y, por tanto,
+ dar servicio a un mayor número de usuarios.
 \end_layout
 
 \begin_layout Itemize
@@ -4911,13 +5157,6 @@ monitorizar fácilmente las actividades que realizan los usuarios en sus
 \begin_layout Itemize
 aumentar la robustez del sistema frente a ataques desde la propia red de
  la UCM.
- Gracias al cifrado de los datos generados por los protocolos, lo único
- que un atacante puede controlar con facilidad es una única máquina virtual,
- pero no la infraestructura de 
-\emph on
-CygnusCloud
-\emph default
-.
 \end_layout
 
 \begin_layout Subsection
@@ -4926,8 +5165,11 @@ Uso del
 framework
 \emph default
  
-\emph on
+\family typewriter
 web2py
+\family default
+\emph on
+
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Uso-web2py"
@@ -4938,9 +5180,13 @@ name "sub:Uso-web2py"
 \end_layout
 
 \begin_layout Standard
-Web2py es una plataforma web de código abierto (licencia GPL versión 2)
- que permite un ágil desarrollo de aplicaciones web seguras, gestionadas
- por medio de bases de datos.
+
+\family typewriter
+web2py
+\family default
+ es una plataforma web de código abierto (licencia GPL versión 2) que permite
+ un ágil desarrollo de aplicaciones web seguras, gestionadas por medio de
+ bases de datos.
  Esta escrito y es programable en python y contiene todos los componentes
  necesarios para construir aplicaciones completamente funcionales.
 \end_layout
@@ -5306,8 +5552,8 @@ el paquete
 \family typewriter
 network
 \family default
- contiene las clases que permiten comunicar un conjunto de máquinas distintas
- a través de una red.
+ contiene las clases que permiten comunicar un conjunto de máquinas conectadas
+ a la misma red.
  Dichas comunicaciones se realizan utilizando el protocolo TCP a través
  de la librería de red 
 \emph on
@@ -7032,6 +7278,46 @@ key "TwistedBook"
 \end_layout
 
 \begin_layout Subsubsection
+Versión del protocolo IP utilizada
+\end_layout
+
+\begin_layout Standard
+Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Configuración-NAT"
+
+\end_inset
+
+, la red troncal de la Complutense sigue utilizando el protocolo IP versión
+ 4.
+ 
+\end_layout
+
+\begin_layout Standard
+Así, para realizar una prueba piloto o implantar 
+\emph on
+CygnusCloud
+\emph default
+, será necesario que todas las máquinas de la infraestructura utilizen la
+ versión 4 de dicho protocolo en todas sus comunicaciones.
+\end_layout
+
+\begin_layout Standard
+De ahora en adelante, siempre que hablemos de direcciones IP o de datagramas
+ IP nos estaremos refiriendo a direcciones IP versión 4 y a datagramas IP
+ versión 4.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, también asumiremos que todos los protocolos de la capa de transporte
+ (como TCP y UDP) y todos los protocolos de la capa de aplicación que los
+ utilizan se apoyan en el protocolo IP versión 4 para transferir y recibir
+ datos por la red.
+\end_layout
+
+\begin_layout Subsubsection
 La librería de red 
 \family typewriter
 twisted
@@ -7060,10 +7346,9 @@ reference "sub:Uso-de-twisted"
 \family typewriter
 twisted
 \family default
- es una librería de red totalmente basada en eventos.
- Así, todas las tareas que realiza (como la recepción de datos, el establecimien
-to de conexiones, la detección de desconexiones, \SpecialChar \ldots{}
-) son totalmente asíncronas.
+ es una librería de red basada en eventos.
+ Así, muchas funciones que realiza, como la recepción de datos y el establecimie
+nto de conexiones son totalmente asíncronas.
 \end_layout
 
 \begin_layout Standard
@@ -7112,7 +7397,13 @@ cuando termina, el código del cliente devuelve el control al código de la
 \end_layout
 
 \begin_layout Standard
-El muestreo de los 
+Por otra parte, el envío de información a través de la red es, como cabría
+ esperar, síncrono.
+ 
+\end_layout
+
+\begin_layout Standard
+Finalmente, el muestreo de los 
 \emph on
 sockets
 \emph default
@@ -7122,58 +7413,6 @@ sockets
 bucle reactor
 \emph default
 .
- La figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:El-bucle-reactor"
-
-\end_inset
-
- resume de forma gráfica las ideas que acabamos de exponer.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/Bucle reactor.pdf
-	scale 70
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:El-bucle-reactor"
-
-\end_inset
-
-Representación gráfica del funcionamiento de la librería 
-\emph on
-twisted
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Paragraph
@@ -7183,13 +7422,21 @@ Protocolos y factorías de protocolos
 \begin_layout Standard
 La forma en que se procesan los datos recibidos a través de la red varía
  de unas aplicaciones a otras, e incluso puede variar en una misma aplicación.
- Por ejemplo, en 
+ 
+\end_layout
+
+\begin_layout Standard
+Por ejemplo, en 
 \emph on
 CygnusCloud
 \emph default
  algunos datos recibidos se escriben en una base de datos, otros se reenvían
  y otros se le muestran directamente al usuario.
- Por ello, es necesario que el proceso de generación y tratamiento del evento
+ 
+\end_layout
+
+\begin_layout Standard
+Por ello, es necesario que el proceso de generación y tratamiento del evento
  no dependa de los datos concretos que manipula cada aplicación.
  Para hacer esto posible, 
 \emph on
@@ -7211,15 +7458,19 @@ Un
 \emph on
 protocolo
 \emph default
- es una clase cuyos métodos tratan y generan eventos de red, tales como
- la recepción de un segmento TCP, el envío de un segmento TCP y la detección
- de desconexión.
+ es un objeto que trata eventos de red (como la recepción de un segmento
+ TCP) y que puede enviar datos al otro extremo de la conexión.
  Por su parte, las 
 \emph on
 factorías de protocolos
 \emph default
- son objetos capaces de instanciar y configurar protocolos.
- Los protocolos y las factorías de protocolos se manipulan siempre a través
+ son, como su nombre indica, objetos capaces de instanciar y configurar
+ protocolos.
+ 
+\end_layout
+
+\begin_layout Standard
+Los protocolos y las factorías de protocolos se manipulan siempre a través
  de dos interfaces, que se definen en las clases abstractas 
 \family typewriter
 Protocol
@@ -7243,8 +7494,8 @@ sockets
 \emph default
  abiertos e invocar a las rutinas de tratamiento adecuados cuando se produzca
  un evento.
- Como ya hemos dicho, las rutinas de tratamiento se definen en instancias
- de subclases concretas de 
+ Como ya hemos dicho, las rutinas de tratamiento se definen en subclases
+ concretas de 
 \family typewriter
 Protocol
 \family default
@@ -7256,13 +7507,13 @@ En la librería
 \emph on
 twisted
 \emph default
- se definen varios bucles reactor, que se diferencian fundamentalmente por
- la forma de realizar el muestreo periódico.
+ se definen varias variantes del bucle reactor, que se diferencian fundamentalme
+nte por la forma de realizar el muestreo periódico.
  Nosotros utilizamos el que está definido en la clase 
 \family typewriter
 PollReactor
 \family default
-, que se limita a leer periódicamente todos los 
+, que se limita a muestrear periódicamente todos los 
 \emph on
 sockets
 \emph default
@@ -7271,8 +7522,8 @@ sockets
 \end_layout
 
 \begin_layout Standard
-Para que el funcionamiento de la librería sea el correcto, deben cumplirse
- dos restricciones:
+Por otra parte, para que el funcionamiento de la librería sea el correcto,
+ deben cumplirse dos restricciones:
 \end_layout
 
 \begin_layout Itemize
@@ -7296,89 +7547,10 @@ no
 \end_layout
 
 \begin_layout Standard
-Por otra parte, los eventos de red se tratan en el propio bucle del reactor.
+Finalmente, los eventos de red se tratan en el propio bucle del reactor.
  Para garantizar un tiempo de respuesta adecuado, es imprescindible que
- los métodos de tratamiento sean tan rápidos como sea posible.
- 
-\end_layout
-
-\begin_layout Paragraph
-Procesamiento de datos entrantes
-\end_layout
-
-\begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Procesamiento-de-datos-entrantes-twisted"
-
-\end_inset
-
- muestra cómo se procesan los eventos asociados a dos conexiones, cuyos
- protocolos son instancias de las subclases de 
-\family typewriter
-Protocol Protocol1
-\family default
- y 
-\family typewriter
-Protocol2
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Red/Procesamiento de datos entrantes (DS).pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Procesamiento-de-datos-entrantes-twisted"
-
-\end_inset
-
-Procesamiento de datos entrantes en 
-\emph on
-twisted
-\emph default
-: diagrama de secuencia
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-En ambos casos, se muestrea el 
-\emph on
-socket
-\emph default
-, para posteriormente invocar al método correspondiente del protocolo: el
- método de procesamiento de los datos entrantes en el primer caso, y el
- método de procesamiento de una desconexión en el segundo.
+ los métodos de tratamiento sean tan rápidos como sea posible y que, en
+ la medida de lo posible, no produzcan bloqueos.
 \end_layout
 
 \begin_layout Paragraph
@@ -7386,13 +7558,11 @@ Establecimiento de conexiones
 \end_layout
 
 \begin_layout Standard
-Para establecer una conexión, es necesario tener en cuenta
+Para establecer una conexión, es necesario determinar
 \end_layout
 
 \begin_layout Itemize
-el protocolo de transporte que hay que utilizar (TCP versión 4, TCP versión
- 4 sobre SSL,\SpecialChar \ldots{}
-), y
+el protocolo de transporte que esta empleará (como TCP o UDP), y
 \end_layout
 
 \begin_layout Itemize
@@ -7418,13 +7588,17 @@ Un
 \emph on
 endpoint
 \emph default
- sirve para configurar uno de los extremos de la conexión.
+ es un objeto que sirve para configurar uno de los extremos de la conexión.
  Todos los protocolos de transporte implementados en 
 \emph on
 twisted 
 \emph default
-definen dos: uno para la máquina servidor y otro para las máquinas cliente.
- En el proceso de conexión, el 
+definen clases de 
+\emph on
+endpoints
+\emph default
+: una para la máquina servidor y otra para las máquinas cliente.
+ En el proceso de conexión el objeto 
 \emph on
 endpoint
 \emph default
@@ -7435,13 +7609,14 @@ Endpoint
 , 
 \end_layout
 
-\begin_layout Itemize
-interactúa con el reactor para establecer la conexión.
+\begin_layout Enumerate
+registra una solicitud de conexión en el bucle reactor.
 \end_layout
 
-\begin_layout Itemize
-suministra al reactor la factoría de protocolos.
- Este la utilizará para instanciar protocolos cuando sea necesario.
+\begin_layout Enumerate
+registra la factoría de protocolos en el bucle reactor.
+ Cuando la conexión se cree, este objeto se utilizará para crear el protocolo
+ asociado a la misma.
 \end_layout
 
 \begin_layout Standard
@@ -7461,6 +7636,15 @@ reference "fig:Relaciones-protocolos-endpoints-factorías"
 \end_inset
 
 .
+ Por claridad, en el diagrama sólo aparecen las subclases de 
+\emph on
+endpoint
+\emph default
+ que utilizamos en el paquete 
+\family typewriter
+network
+\family default
+, correspondientes a los protocolos TCP y TCP sobre SSL.
  
 \end_layout
 
@@ -7508,31 +7692,16 @@ endpoints
 \end_layout
 
 \begin_layout Standard
-Todos los 
+Por otra parte, los 
 \emph on
 endpoints
 \emph default
- son instancias de alguna subclase concreta la clase 
+ no manipulan directamente un objeto 
 \family typewriter
-Endpoint
+PollReactor
 \family default
-.
- En el diagrama sólo aparecen las subclases de 
-\emph on
-endpoint
-\emph default
- que utilizamos en el paquete 
-\family typewriter
-network
-\family default
-, correspondientes a los protocolos TCP versión 4 y TCP versión 4 sobre
- SSL.
- Por otra parte, los 
-\emph on
-endpoints
-\emph default
- no manipulan directamente un PollReactor: para ello, utilizan las interfaces
- que esta clase implementa.
+ durante el proceso de creación de la conexión: para ello, utilizan las
+ interfaces que esta clase implementa.
  Nos hemos tomado esta licencia para simplificar la explicación.
 \end_layout
 
@@ -7543,74 +7712,17 @@ Como ya hemos visto, los protocolos se crean al establecerse la conexión.
 \end_layout
 
 \begin_layout Standard
-Por otra parte, el diagrama de secuencia de la figura muestra la interacción
- que tiene lugar al establecer dos conexiones TCP, una de tipo servidor
- y otra de tipo cliente.
- En ambos casos, los 
-\emph on
-endpoints
-\emph default
- se limitan, en esencia, a solicitar al reactor al establecimiento de la
- conexión y a suministrarle la factoría de protocolos que debe utilizar.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Red/Procesamiento de datos entrantes (DS).pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Establecimiento-conexión-twisted"
-
-\end_inset
-
-Establecimiento de una conexión en 
-\emph on
-twisted
-\emph default
-: diagrama de secuencia
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Finalmente, los protocolos se usan de forma distinta en función del tipo
  de conexión:
 \end_layout
 
 \begin_layout Itemize
-en el caso de una conexión de tipo cliente, existirá un único protocolo,
+en el caso de una conexión de tipo cliente existirá un único protocolo,
  que permitirá la comunicación bidireccional con el servidor.
 \end_layout
 
 \begin_layout Itemize
-en el caso de una conexión de tipo servidor, existirán tantos protocolos
+en el caso de una conexión de tipo servidor existirán tantos protocolos
  como clientes.
  Cada uno de ellos permitirá la comunicación bidireccional entre el servidor
  y un único cliente.
@@ -7621,13 +7733,14 @@ Envío de datos
 \end_layout
 
 \begin_layout Standard
-Tal y como hemos mencionado, para enviar datos a través de la red se utilizan
- instancias de subclases concretas de 
+Para enviar datos a través de una conexión se utilizan instancias de subclases
+ concretas de 
 \family typewriter
 Protocol
 \family default
 .
- El reactor nunca interviene a la hora de enviar datos: los 
+ El reactor nunca interviene a la hora de enviar datos: a través del protocolo,
+ los 
 \emph on
 bytes
 \emph default
@@ -7635,24 +7748,25 @@ bytes
 \emph on
 socket
 \emph default
- correspondiente.
+ asociado a la conexión.
 \end_layout
 
 \begin_layout Standard
-En principio, la única restricción que impone librería 
+En principio, la librería 
 \emph on
 twisted
 \emph default
- es el tipo de los datos a enviar: sólo es posible enviar 
+ sólo impone una limitación: sólo es posible enviar 
 \emph on
 strings
 \emph default
- (es decir, secuencias de 
+, es decir, secuencias de 
 \emph on
 bytes
 \emph default
-), lo que hace necesario serializar toda la información antes de enviarla
- y deserializarla al recibirla.
+.
+ Por ello, hay que serializar toda la información antes de enviarla y deserializ
+arla al recibirla.
  
 \end_layout
 
@@ -7662,7 +7776,8 @@ Es importante notar que el número de
 bytes
 \emph default
  a enviar no está limitado.
- Por tanto, los segmentos se fragmentarán cuando sea preciso.
+ Por tanto, los datos se fragmentarán en varios segmentos TCP cuando sea
+ preciso.
 \end_layout
 
 \begin_layout Subsubsection
@@ -7686,7 +7801,7 @@ network
 \family default
  es proporcionar una forma de utilizar la librería de red twisted a un elevado
  nivel de abstracción.
- Para ello, es necesario, como mínimo,
+ Para ello es necesario, como mínimo,
 \end_layout
 
 \begin_layout Itemize
@@ -7711,7 +7826,11 @@ Packet
 \end_layout
 
 \begin_layout Itemize
-un tipo.
+un 
+\series bold
+tipo
+\series default
+.
  Existen dos: uno para transportar datos de gestión de la red y otro para
  transportar datos del cliente.
  Los paquetes de gestión de la red son siempre más prioritarios que los
@@ -7719,7 +7838,11 @@ un tipo.
 \end_layout
 
 \begin_layout Itemize
-una prioridad.
+una 
+\series bold
+prioridad
+\series default
+.
  Se trata de un valor entero, positivo en el caso de los paquetes que contienen
  datos de los usuarios y negativo en el caso de los paquetes de gestión
  de la red.
@@ -7739,7 +7862,11 @@ una secuencia de
 \emph on
 bytes
 \emph default
- con los datos del paquete.
+ con los 
+\series bold
+datos
+\series default
+ del paquete.
 \end_layout
 
 \begin_layout Standard
@@ -7988,7 +8115,11 @@ string
 \emph default
 .
  Para leer y escribir en ella se usan los métodos de extracción de subcadenas
- y concatenación definidos en la librería estándar de Python.
+ y concatenación definidos en la librería estándar de 
+\emph on
+Python
+\emph default
+.
  El formato de los datos serializados viene dado por la siguiente expresión
  regular:
 \end_layout
@@ -8003,7 +8134,11 @@ string
 
 \begin_layout Standard
 Los valores se serializan y deserializan con los métodos definidos en la
- librería estándar de Python.
+ librería estándar de 
+\emph on
+Python
+\emph default
+.
  El cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -8181,7 +8316,11 @@ tipo,prioridad
 
 \begin_layout Standard
 Nuevamente, tanto el tipo como la prioridad del paquete se serializan y
- deserializan utilizando métodos de la librería estándar de Python.
+ deserializan utilizando métodos de la librería estándar de 
+\emph on
+Python
+\emph default
+.
  El paquete serializado se obtiene concatenando la cabecera y los datos
  serializados, y su formato viene descrito por esta expresión regular:
 \end_layout
@@ -8195,8 +8334,12 @@ tipo,prioridad(etiqueta de tipo$valor$)*
 \end_layout
 
 \begin_layout Standard
-Finalmente, los métodos de la clase Packet también garantizan que los paquetes
- siempre están bien formados, es decir, que
+Finalmente, los métodos de la clase 
+\family typewriter
+Packet
+\family default
+ también garantizan que los paquetes siempre están bien formados, es decir,
+ que
 \end_layout
 
 \begin_layout Itemize
@@ -8289,7 +8432,7 @@ CC
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -8331,14 +8474,44 @@ twisted
 \end_layout
 
 \begin_layout Standard
-Lo primero que llama la atención en el diagrama de clases de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Interacción-con-twisted-nivel-inferior"
+En primer lugar, la clase 
+\family typewriter
+CygnusCloudProtocol
+\family default
+ no hereda directamente de la clase 
+\family typewriter
+Protocol
+\family default
+, sino que lo hace a través de la clase 
+\family typewriter
+LineProtocol
+\family default
+.
+ Esto se debe a que los datos de los paquetes pueden distribuirse en segmentos
+ TCP de cualquier forma, por lo que, si utilizamos directamente un objeto
+ 
+\family typewriter
+Protocol
+\family default
+, podrán producirse errores al deserializar los paquetes en el destino.
+ 
+\end_layout
 
-\end_inset
+\begin_layout Standard
+En cambio, la clase 
+\family typewriter
+LineProtocol
+\family default
+, que hereda de 
+\family typewriter
+Protocol
+\family default
+, está preparada para enviar líneas de texto a través de la conexión, caracterís
+tica que hemos aprovechado para extraer los paquetes de los datos recibidos.
+\end_layout
 
- es la dependencia cíclica existente entre las clases 
+\begin_layout Standard
+Por otra parte, existe una dependencia cíclica entre las clases 
 \family typewriter
 CygnusCloudProtocol
 \family default
@@ -8346,7 +8519,7 @@ CygnusCloudProtocol
 \family typewriter
 CygnusCloudProtocolFactory
 \family default
- .
+.
  Dicha dependencia está provocada por el funcionamiento de la librería 
 \family typewriter
 twisted
@@ -8502,8 +8675,7 @@ CygnusCloudProtocolFactory
 \end_layout
 
 \begin_layout Itemize
-una dirección IP, un puerto y el protocolo a utilizar (TCP versión 4 o TCP
- versión 4 sobre SSL).
+una dirección IP, un puerto y el protocolo a utilizar (TCP o TCP sobre SSL).
  Esta información sólo se utiliza para establecerla.
 \end_layout
 
@@ -8624,8 +8796,8 @@ Para establecer una conexión de tipo cliente, basta con escoger un protocolo
 endpoint
 \emph default
  de tipo cliente que tiene asociado.
- Como nosotros sólo utilizamos los protocolos TCP versión 4 y TCP versión
- 4 sobre SSL, estos 
+ Como nosotros sólo utilizamos los protocolos TCP y TCP sobre SSL, estos
+ 
 \emph on
 endpoints
 \emph default
@@ -28580,6 +28752,10 @@ Durante el proceso de despliegue automático de imágenes de disco, pueden
 \end_layout
 
 \begin_layout Itemize
+las imágenes de disco de la petición no existen.
+\end_layout
+
+\begin_layout Itemize
 el número máximo de instancias que es posible obtener es inferior al dado.
 \end_layout
 
@@ -28588,8 +28764,8 @@ el proceso de despliegue falla en algún servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-El primer error se detectará cuando el algoritmo de balanceado de carga
- termina de ejecutarse.
+Los dos primeros errores se detectarán cuando el algoritmo de balanceado
+ de carga termina de ejecutarse.
  En estos casos, el servidor de 
 \emph on
 cluster 
@@ -28613,7 +28789,7 @@ reference "fig:Despliegue-automático-error-1"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -28719,7 +28895,7 @@ reference "par:Despliegue-automático-imágenes-sin-errores"
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -28809,7 +28985,7 @@ cluster
 
 \end_deeper
 \begin_layout Standard
-Es importante notar que los errores del segundo tipo se producen únicamente
+Es importante notar que los errores del tercer tipo se producen únicamente
  en circunstancias excepcionales.
  Además, para subsanarlos resulta imprescindible la intervención de un administr
 ador, ya que en estos casos al menos una de las máquinas del 
@@ -28821,6 +28997,216 @@ cluster
 
 \begin_layout Subsubsection
 Borrado de imágenes de disco
+\end_layout
+
+\begin_layout Standard
+Los servidores de 
+\emph on
+cluster
+\emph default
+ también soportan dos operaciones de borrado de imágenes de disco:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+borrado manual
+\series default
+.
+ Esta operación permite borrar dos imágenes de disco almacenadas en cierto
+ servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+borrado total
+\series default
+.
+ En este caso se borrarán dos imágenes de disco de todos los servidores
+ de máquinas virtuales que las contienen, con independencia de que estén
+ apagados o arrancados.
+ Asimismo, también se borrará un fichero comprimido del repositorio de imágenes:
+ el que contiene las imágenes de disco a borrar.
+\end_layout
+
+\begin_layout Standard
+En esta sección, estudiaremos estas dos operaciones en detalle.
+ Para empezar, nos centraremos en las operaciones de borrado manual, que
+ son la base de las operaciones de borrado total.
+\end_layout
+
+\begin_layout Paragraph
+Borrado manual de imágenes de disco: secuencia básica
+\end_layout
+
+\begin_layout Standard
+El servidor de 
+\emph on
+cluster
+\emph default
+ realizará una operación de borrado manual tras recibir un paquete del tipo
+ 
+\family sans
+Desplegar o borrar imagen
+\family default
+.
+ Este paquete contiene
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición,
+\end_layout
+
+\begin_layout Itemize
+el identificador único de las imágenes de disco a desplegar, 
+\end_layout
+
+\begin_layout Itemize
+un 
+\emph on
+flag
+\emph default
+, que toma el valor 
+\family typewriter
+False
+\family default
+,
+\end_layout
+
+\begin_layout Itemize
+el nombre o la dirección IP del servidor de máquinas virtuales en el que
+ se ubicarán las imágenes de disco.
+\end_layout
+
+\begin_layout Standard
+El 
+\emph on
+flag
+\emph default
+ nos permite distinguir las operaciones de despliegue y borrado manual de
+ imágenes, ya que ambas utilizan el mismo tipo de paquete.
+\end_layout
+
+\begin_layout Standard
+Tras recibir uno de estos paquetes, y siempre que no se produzcan errores,
+ el servidor de 
+\emph on
+cluster
+\emph default
+ actuará como se indica en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Borrado-manual-sin-errores"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Borrado manual sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Borrado-manual-sin-errores"
+
+\end_inset
+
+Borrado manual de una imagen: secuencia básica
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los pasos que se siguen son muy similares a los de un despliegue manual,
+ por lo que nos limitaremos a comentar las diferencias:
+\end_layout
+
+\begin_layout Itemize
+en lugar de comprobar si el servidor de máquinas virtuales puede albergar
+ las imágenes de disco, se comprueba si este las contiene.
+\end_layout
+
+\begin_layout Itemize
+para borrar las imágenes de disco del servidor de máquinas virtuales, se
+ le envía un paquete del tipo 
+\family sans
+Borrar imagen
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+cuando las imágenes de disco se han borrado del servidor de máquinas virtuales,
+ este envía un paquete del tipo 
+\family sans
+Imagen borrada
+\family default
+.
+ Sólo en este momento se borrará la ubicación correspondiente de las imágenes
+ de disco.
+\end_layout
+
+\begin_layout Paragraph
+Borrado manual de imágenes de disco: secuencia básica
+\end_layout
+
+\begin_layout Standard
+Durante el borrado manual de imágenes de disco, se producirán errores cuando
+\end_layout
+
+\begin_layout Itemize
+el servidor de máquinas virtuales afectado por la petición está apagado,
+ o cuando
+\end_layout
+
+\begin_layout Itemize
+el servidor de máquinas virtuales no contiene las imágenes de disco.
+\end_layout
+
+\begin_layout Standard
+En ambos casos, se procede de la misma manera: se aborta la petición y se
+ envía un paquete del tipo 
+\family sans
+Error al borrar imagen al servidor web
+\family default
+.
+\end_layout
+
+\begin_layout Paragraph
+Borrado total de una imagen: secuencia básica
 \end_layout
 
 \begin_layout Subsubsection
@@ -29527,10 +29913,6 @@ TODO.
 El paquete 
 \family typewriter
 clusterConnector
-\end_layout
-
-\begin_layout Subsection
-Códigos de error generados por la infraestructura
 \end_layout
 
 \begin_layout Subsection
