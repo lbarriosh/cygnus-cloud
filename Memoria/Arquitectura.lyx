@@ -20681,35 +20681,29 @@ Despliegue de imágenes de disco
 \end_layout
 
 \begin_layout Standard
-El proceso de despliegue de imágenes de disco permite que un servidor de
- máquinas virtuales sea capaz de albergar una nueva máquina virtual.
- 
-\end_layout
-
-\begin_layout Standard
-Este proceso siempre comienza con el envío de un paquete del tipo 
-\family sans
-Desplegar imagen
-\family default
- desde el servidor de 
+El proceso de despliegue dei mágenes de disco comienza cuando el servidor
+ de 
 \emph on
 cluster
 \emph default
- a un servidor de máquinas virtuales.
+ envía al servidor de máquinas virtuales un paquete del tipo 
+\family sans
+Desplegar imagen
+\family default
+.
  Dicho paquete contiene, además del identificador único de la petición,
- el identificador único del fichero comprimido a descargar desde el repositorio
- de imágenes.
+ el identificador único de la imagen a desplegar.
 \end_layout
 
 \begin_layout Standard
-Durante el despliegue de imágenes de disco, podemos distinguir dos fases:
- la descarga del fichero comprimido desde el repositorio de imágenes y la
- descompresión y el procesamiento del contenido de ficho fichero.
+Durante la ejecución de este proceso, podemos distinguir dos fases: la descarga
+ del fichero comprimido desde el repositorio de imágenes y la descompresión
+ y el procesamiento del contenido de ficho fichero.
 \end_layout
 
 \begin_layout Standard
-La fase de descarga del fichero comprimido es totalmente análoga a la que
- tiene lugar durante los procesos de creación y edición de imágenes de disco.
+La fase de descarga del fichero comprimido es idéntica a la que tiene lugar
+ durante los procesos de creación y edición de imágenes de disco.
  Puesto que hablamos detalladamente de esta fase en las secciones 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -20730,8 +20724,8 @@ reference "par:Errores-descarga"
 \begin_layout Standard
 Por otra parte, la fase de descompresión y procesamiento del contenido del
  fichero comprimido es también muy similar a la que tiene lugar durante
- los procesos de creación y edición de imágenes de disco.
- Estudiamos en detalle esta fase en las secciones 
+ los procesos de creación y edición de imágenes de disco, que ya estudiamos
+ en las secciones 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Extracción-del-fichero-zip"
@@ -20745,73 +20739,25 @@ reference "par:Errores-en-la-extracción-zip"
 
 \end_inset
 
-, y en esta sección mostraremos las modificaciones que hay que realizar
- en dichas fases.
+.
+ Por ello, nos limitaremos a mostrar las diferencias, que son las siguientes:
 \end_layout
 
-\begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Descompresión-despliegue"
-
-\end_inset
-
- muestra cómo se extrae y procesa el contenido del fichero comprimido durante
- el proceso de despliegue de imágenes de disco.
- 
+\begin_layout Itemize
+tras colocar las imágenes de disco en la ubicación correcta, no se arranca
+ ninguna máquina virtual.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descompresión despliegue.pdf
-	scale 80
-
-\end_inset
-
-
+\begin_layout Itemize
+no es necesario almacenar los datos de conexión al repositorio de imágenes
+ en la base de datos del servidor de máquinas virtuales.
+ Esto se debe a que, una vez finalizada la descarga del fichero comprimido,
+ para atender la petición de despliegue no es necesario volver a interactuar
+ con el repositorio de imágenes.
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Descompresión-despliegue"
-
-\end_inset
-
-Despliegue de imágenes de disco: extracción y procesamiento del contenido
- del fichero comprimido
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Como podemos observar en dicho diagrama, cuando se despliega una imagen
- de disco no es necesario arrancar ninguna máquina virtual.
- 
-\end_layout
-
-\begin_layout Standard
-Asimismo, cuando esta fase finaliza se envía un paquete del tipo 
+\begin_layout Itemize
+tras finalizar la descompresión, se crea y envía un paquete del tipo 
 \family sans
 Imagen desplegada
 \family default
@@ -20820,21 +20766,8 @@ Imagen desplegada
 cluster
 \emph default
 .
- Dicho paquete contiene el identificador único del fichero 
-\family typewriter
-.zip
-\family default
- descargado desde el repositorio de imágenes.
- 
-\end_layout
-
-\begin_layout Standard
-Por otra parte, en este caso no se almacenan en la base de datos del servidor
- de máquinas virtuales los datos de conexión al repositorio de imágenes
- ya que, una vez finalizada la descarga del fichero comprimido, no es necesario
- volver a interactuar con él para procesar la petición de despliegue.
- El resto del proceso es idéntico al que tiene lugar en la creación y edición
- de imágenes de disco.
+ Dicho paquete contiene el identificador único de la petición y el identificador
+ de la imagen desplegada.
 \end_layout
 
 \begin_layout Standard
@@ -20847,8 +20780,6 @@ reference "par:Errores-en-la-extracción-zip"
 \end_inset
 
 .
- Por ello, no reproduciremos aquí las interacciones que vimos en dicha sección\SpecialChar \@.
-
  No obstante, en este caso los paquetes de error serán del tipo 
 \family sans
 Error de despliegue
@@ -20858,6 +20789,7 @@ Error de despliegue
 Error de edición de imagen
 \family default
 .
+ Ambos tipos de paquete tienen el mismo contenido.
 \end_layout
 
 \begin_layout Subsubsection
@@ -20865,33 +20797,32 @@ Borrado de imágenes de disco
 \end_layout
 
 \begin_layout Standard
-El proceso de borrado de imágenes de disco permite que un servidor de máquinas
- virtuales deje de poder albergar cierta máquina virtual.
- Este proceso no sólo es útil para los administradores del sistema, sino
- también para los profesores, ya que les permite borrar una de sus máquinas
- virtuales de toda la infraestructura.
+Este proceso hace que un servidor de máquinas virtuales deje de albergar
+ una imagen.
+ 
 \end_layout
 
 \begin_layout Standard
-Como viene siendo habitual, este proceso se inicia cuando el servidor de
- 
+Como viene siendo habitual, el proceso de borrado de una imagen se inicia
+ cuando el servidor de 
 \emph on
 cluster
 \emph default
- envía un paquete al servidor de máquinas virtuales, que en este caso es
- del tipo 
+ envía un paquete del tipo 
 \family sans
 Borrar imagen
 \family default
-.
- El diagrama de secuencia de la figura 
+ al servidor de máquinas virtuales.
+ Estos paquetes contienen el identificador único de la petición y el identificad
+or único de la imagen a borrar, y se procesan de acuerdo al diagrama de
+ secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Borrado-imagen"
 
 \end_inset
 
- muestra cómo se procesa este paquete en ausencia de errores.
+.
 \end_layout
 
 \begin_layout Standard
@@ -20940,64 +20871,31 @@ Como podemos observar en el diagrama, se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
-tras recibir el paquete, el objeto 
-\family typewriter
-VMServerReactor
-\family default
- lee su contenido utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
- Los paquetes del tipo 
-\family sans
-Borrar imagen
-\family default
- contienen el identificador único asociado a las imágenes de disco a borrar
- y el identificador único de la petición.
+tras leer el paquete, se extraen de la base de datos las rutas de los ficheros
+ a borrar.
 \end_layout
 
 \begin_layout Enumerate
-se leen de la base de datos las ubicaciones de los ficheros a borrar.
- Acto seguido, se elimina esta información de la base de datos.
+acto seguido, se borra toda la información asociada a la imagen de la base
+ de datos del servidor.
 \end_layout
 
 \begin_layout Enumerate
-se borran los ficheros correspondientes, es decir, los dos ficheros 
-\family typewriter
-.qcow2
-\family default
- y el fichero de definición de la máquina virtual que los utiliza.
- Para ello, se utilizan un objeto 
-\family typewriter
-ChildProcessManager
-\family default
-.
+se borran las imágenes de disco y el fichero de definición.
 \end_layout
 
 \begin_layout Enumerate
-utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-, el objeto 
-\family typewriter
-VMServerReactor
-\family default
- construye un paquete del tipo 
+se construye un paquete del tipo 
 \family sans
 Imagen borrada
 \family default
 .
- Este contiene el identificador único de la petición.
+ Este contiene el identificador único de la petición y el identificador
+ único de la imagen que se ha borrado del servidor.
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerReactor
-\family default
- envía dicho paquete al servidor de 
+se envía dicho paquete al servidor de 
 \emph on
 cluster
 \emph default
@@ -21010,11 +20908,11 @@ Finalmente, en caso de que
 
 \begin_layout Itemize
 el servidor de máquinas virtuales no disponga de las imágenes de disco a
- borrar, o 
+ borrar, que
 \end_layout
 
 \begin_layout Itemize
-se produzca un error al eliminar los ficheros, o
+se produzca un error al eliminar los ficheros, o que
 \end_layout
 
 \begin_layout Itemize
@@ -21027,27 +20925,21 @@ se generará un paquete del tipo
 Error de borrado
 \family default
 .
- El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Borrado-imagen-error"
+ Estos paquetes tienen la misma información que los paquetes del tipo 
+\family sans
+Imagen borrada
+\family default
+.
+\end_layout
 
-\end_inset
-
- muestra cómo se actúa cuando el borrado de los ficheros falla.
- Como puede observarse en él, siempre que se produce uno de estos errores,
- se aborta el proceso de borrado y
+\begin_layout Standard
+Siempre que se produce un error, se aborta el proceso de borrado, y
 \end_layout
 
 \begin_layout Enumerate
 se construye el paquete del tipo 
 \family sans
 Error de borrado de imagen
-\family default
-, que contiene el identificador único de la petición.
- Nuevamente, el paquete se construirá utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
 \family default
 .
 \end_layout
@@ -21058,47 +20950,6 @@ se envía dicho paquete al servidor de
 cluster
 \emph default
 .
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Borrado imagen error.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Borrado-imagen-error"
-
-\end_inset
-
-Borrado de imágenes de disco: tratamiento de errores
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsubsection
@@ -21113,8 +20964,7 @@ reference "par:Reinicio-forzoso-MV"
 
 \end_inset
 
-, los usuarios pueden provocar el reinicio forzoso de las máquinas virtuales
- cuando estas se cuelgan.
+, los usuarios pueden provocar el reinicio forzoso de las máquinas virtuales.
  Sin embargo, en algunos casos los problemas pueden no resolverse de este
  modo.
  Por ello, también es posible realizar el apagado forzoso de una máquina
@@ -21126,9 +20976,12 @@ Para desencadenarlo, el servidor de
 \emph on
 cluster
 \emph default
- enviará un paquete del tipo Destruir dominio al servidor de máquinas virtuales.
- Este contiene el identificador único de la petición y el identificador
- único de la máquina virtual a apagar.
+ enviará un paquete del tipo 
+\family sans
+Destruir dominio
+\family default
+ al servidor de máquinas virtuales.
+ Este contiene el identificador único de la máquina virtual a apagar.
 \end_layout
 
 \begin_layout Standard
@@ -21139,8 +20992,7 @@ reference "fig:Apagado-forzoso-normal"
 
 \end_inset
 
- muestra cómo se fuerza el apagado de una máquina virtual utilizando uno
- de estos paquetes.
+ muestra cómo se procesa una de estas peticiones
 \end_layout
 
 \begin_layout Standard
@@ -21194,17 +21046,11 @@ reference "par:Reinicio-forzoso-MV"
 \end_inset
 
 .
- En este caso, se llama al método de destrucción de un dominio del objeto
- 
-\family typewriter
-DomainHandler
-\family default
-, y en este se realiza la llamada de destrucción de apagado de dominio de
- 
+ No obstante, en este caso se hace una llamada a 
 \family typewriter
 libvirt
 \family default
-.
+ para destruir el dominio.
  
 \end_layout
 
@@ -21213,21 +21059,15 @@ Cuando la máquina virtual se apague,
 \family typewriter
 libvirt
 \family default
- generará un evento que procesará el objeto 
-\family typewriter
-DomainHandler
-\family default
-.
- Si la máquina virtual no se utiliza para editar imágenes de disco, dicho
- procesamiento se realizará como dijimos en la sección 
+ generará un evento de apagado que que procesará como hemos visto en las
+ secciones 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Apagado-MV-edición"
 
 \end_inset
 
-.
- En caso contrario, se realizará como indicamos en la sección 
+ y 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Apagado-MV-edición"
@@ -21242,8 +21082,7 @@ Directorios del servidor de máquinas virtuales
 \end_layout
 
 \begin_layout Standard
-Durante su funcionamiento, el demonio del servidor de máquinas virtuales
- utiliza cuatro directorios:
+El demonio del servidor de máquinas virtuales utiliza cuatro directorios:
 \end_layout
 
 \begin_layout Itemize
@@ -21251,9 +21090,8 @@ el
 \series bold
 directorio de ficheros de definición
 \series default
-, en el que se almacenan los ficheros de definición de las máquinas virtuales
- que puede albergar el servidor de máquinas virtuales.
- 
+, en el que se almacenan los ficheros de definición asociados a las imágenes
+ que amacena el servidor.
 \end_layout
 
 \begin_layout Itemize
@@ -21270,12 +21108,12 @@ el
 \series bold
 directorio de imágenes en uso
 \series default
-, en el que se almacenarán las imágenes 
+, en el que se almacenarán las imágenes de disco utilizadas por las máquinas
+ virtuales activas, es decir, las imágenes 
 \emph on
 copy-on-write
 \emph default
- y las imágenes de disco que contienen el fichero de paginación y los datos
- temporales de las máquinas virtuales activas.
+ y las imágenes de disco con los ficheros de paginación y los datos temporales.
 \end_layout
 
 \begin_layout Itemize
@@ -21296,22 +21134,24 @@ ción del demonio del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-Además, el uso de varios directorios permite realizar optimizaciones que
- mejoren el rendimiento.
- 
+El uso de varios directorios permite realizar optimizaciones que mejoran
+ el rendimiento de las máquinas virtuales.
+ Por ejemplo, si aprovechamos el hecho de que, salvo al desplegar, crear
+ o editar imágenes, nunca se escribe en el directorio de imágenes de disco,
+ podemos mejorar notablemente el rendimiento de las máquinas virtuales si
 \end_layout
 
-\begin_layout Standard
-Por ejemplo, aprovechando que, salvo que se editen imágenes de disco, nunca
- se escribe en el directorio de imágenes de disco, este puede estar ubicado
- en una unidad SSD (
+\begin_layout Itemize
+el directorio de imágenes de disco está ubicado en una unidad SSD (
 \emph on
 Solid State Drive
 \emph default
-, unidad de estado sólido), mientras que los directorios restantes pueden
- estar ubicados en un disco duro convencional.
- Con esta configuración tan sencilla, el rendimiento de las máquinas virtuales
- aumenta considerablemente.
+, unidad de estado sólido), y
+\end_layout
+
+\begin_layout Itemize
+los directorios restantes están ubicados en un disco duro convencional.
+ 
 \end_layout
 
 \begin_layout Subsubsection
