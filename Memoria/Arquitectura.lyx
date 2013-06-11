@@ -11508,7 +11508,7 @@ reference "fig:Transferencia-imagen-basica"
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -11807,7 +11807,7 @@ slot
 \end_layout
 
 \begin_layout Paragraph
-Uso de imágenes de disco en exclusividad
+Uso de imágenes en exclusividad
 \end_layout
 
 \begin_layout Standard
@@ -12020,7 +12020,7 @@ Es importante notar que, cuando se intenta liberar un fichero que no está
 \end_layout
 
 \begin_layout Paragraph
-Subida de imágenes de disco
+Subida de imágenes
 \end_layout
 
 \begin_layout Standard
@@ -12342,19 +12342,28 @@ slot
 \end_layout
 
 \begin_layout Paragraph
-Borrado de una imagen de disco
+Borrado de una imagen 
 \end_layout
 
 \begin_layout Standard
-El diagrama de secuencia de la figura 
+Para borrar una imagen del repositorio, el servidor de 
+\emph on
+cluster
+\emph default
+ enviará a esta máquina un paquete del tipo 
+\family sans
+Borrar imagen
+\family default
+.
+ El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Interacciones-asociadas-borrado"
 
 \end_inset
 
- muestra las interacciones que tienen lugar al borrar una imagen de disco
- y al detectar un error en el borrado de una imagen de disco.
+ muestra todas las interacciones que pueden tener lugar al procesar estos
+ paquetes.
 \end_layout
 
 \begin_layout Standard
@@ -12385,7 +12394,7 @@ name "fig:Interacciones-asociadas-borrado"
 
 \end_inset
 
-Interacciones asociadas al borrado de una imagen de disco
+Borrado de una imagen del repositorio de imágenes
 \end_layout
 
 \end_inset
@@ -12395,63 +12404,78 @@ Interacciones asociadas al borrado de una imagen de disco
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
 Los paquetes del tipo 
 \family sans
 Solicitud de borrado
 \family default
  contienen el identificador del fichero a borrar.
- Tras leer su contenido, el objeto 
-\family typewriter
-CommandsCallback
+ Tras leer su contenido, 
 \end_layout
 
 \begin_layout Enumerate
-comprueba que la imagen existe y que ninguna máquina lo tiene en exclusividad.
- Si alguna de estas condiciones no se cumple, generará y enviará un paquete
+se comprueba que la imagen existe y que ningún servidor de máquinas virtuales
+ la ha descargado en exclusividad.
+ 
+\end_layout
+
+\begin_layout Enumerate
+si alguna de estas condiciones no se cumple, se generará y enviará un paquete
  del tipo 
 \family sans
 Solicitud de borrado errónea
 \family default
-, que contiene, junto con el identificador del fichero, un código con la
- descripción del error.
+ al servidor de 
+\emph on
+cluster.
+
+\emph default
+ Este contiene el identificador de la imagen y un código de descripción
+ del error.
 \end_layout
 
 \begin_layout Enumerate
-borra el fichero del disco y de la base de datos.
+si no se produce ningún error, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se borra el fichero comprimido del disco
 \end_layout
 
 \begin_layout Enumerate
-envía un paquete del tipo 
+se borran los datos de la imagen de la base de datos, y
+\end_layout
+
+\begin_layout Enumerate
+se crea y envía un paquete del tipo 
 \family sans
 Solicitud de borrado recibida
 \family default
  a la máquina remota.
+ Este contiene el identificador único de la imagen borrada.
 \end_layout
 
+\end_deeper
 \begin_layout Paragraph
 Solicitudes de estado
 \end_layout
 
 \begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Recopilación-del-estado-repositorio"
-
-\end_inset
-
- muestra cómo se procesan los paquetes de solicitud de estado.
- Estos permiten que una máquina remota conozca el espacio en disco total
- y el espacio en disco disponible.
- 
-\end_layout
-
-\begin_layout Standard
-Con esta información podemos garantizar que, siempre que se suba un fichero
- al repositorio de imágenes, habrá suficiente espacio en disco.
- Así, no se desperdiciará el ancho de banda que requieren las transferencias
- de subida que requieren demasiado espacio en disco y que, por tanto, fallarán
- irremediablemente.
+Para comprobar si puede atender las peticiones de creación y edición de
+ imágenes, el servidor de 
+\emph on
+cluster
+\emph default
+ debe averiguar periódicamente el estado del repositorio de imágenes.
+ Para ello, le envía un paquete del tipo 
+\family sans
+Solicitud de estado
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -12490,58 +12514,54 @@ Recopilación del estado del repositorio
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-Como puede observarse en el diagrama de la figura 
+El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Recopilación-del-estado-repositorio"
 
 \end_inset
 
-, para averiguar uso de disco del repositorio,
+ muestra cómo interactúan el servidor de 
+\emph on
+cluster
+\emph default
+ y el repositorio de imágenes en estos casos.
+ Como puede observarse en él, se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
-la máquina remota envía un paquete del tipo 
+el servidor de 
+\emph on
+cluster
+\emph default
+ envía un paquete del tipo 
 \family sans
 Solicitud de estado
 \family default
-.
- 
+ al repositorio de imágenes.
 \end_layout
 
 \begin_layout Enumerate
-para procesarlo, el objeto 
-\family typewriter
-CommandsCallback
-\family default
- averigua el espacio en disco total y el espacio en disco disponible (en
- 
-\emph on
-kilobytes
-\emph default
-), 
+el demonio del repositorio de imágenes averigua el espacio en disco total
+ y el espacio en disco disponible en el repositorio de imágenes.
 \end_layout
 
 \begin_layout Enumerate
-con estos valores, el objeto 
-\family typewriter
-CommandsCallback
-\family default
- construye un paquete del tipo 
+con estos datos, se construye un paquete del tipo 
 \family sans
 Estado del repositorio
 \family default
- y lo envía a la máquina remota.
+ y se envía al servidor de 
+\emph on
+cluster
+\emph default
+.
 \end_layout
 
 \begin_layout Paragraph
@@ -12552,7 +12572,7 @@ Apagado del repositorio de imágenes
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -12598,47 +12618,20 @@ reference "fig:Apagado-del-repositorio-DS"
 \end_inset
 
  muestra el proceso de apagado del demonio del repositorio de imágenes.
- Como puede observarse en el diagrama de secuencia, el apagado del repositorio
- es bastante sencillo:
+ Como puede observarse en dicho diagrama, el apagado del repositorio es
+ bastante sencillo:
 \end_layout
 
 \begin_layout Enumerate
-cuando se recibe el paquete de apagado, el objeto 
-\family typewriter
-CommandsCallback
+cuando el servidor de cluster envía el paquete del tipo 
+\family sans
+Apagado
 \family default
- modifica una variable compartida con el método 
-\family typewriter
-initTransfers()
-\family default
-.
- Como consecuencia de ello, el método 
-\family typewriter
-initTransfers()
-\family default
- termina.
- 
+, el hilo principal deja inmediatamente de iniciar transferencias.
 \end_layout
 
 \begin_layout Enumerate
-el hilo principal invoca al método 
-\family typewriter
-stopListenning()
-\family default
- del reactor del repositorio.
- 
-\end_layout
-
-\begin_layout Enumerate
-el servidor FTP finaliza su ejecución.
-\end_layout
-
-\begin_layout Enumerate
-se cierran todas las conexiones de red.
-\end_layout
-
-\begin_layout Standard
-Tras esto, el demonio del repositorio de imágenes habrá terminado de ejecutarse.
+el hilo principal para el servidor FTP y detiene el servicio de red.
 \end_layout
 
 \begin_layout Subsubsection
@@ -13741,7 +13734,7 @@ Solicitud
 FTP RETR
 \family default
 \series default
- contienen el identificador único del fichero a transferir, y un 
+ contienen el identificador único de la imagen a transferir, y un 
 \emph on
 flag
 \family typewriter
@@ -13762,7 +13755,7 @@ Solicitud
 FTP STOR
 \family default
 \series default
- contienen el identificador único del fichero a transferir.
+ contienen el identificador único de la imagen a transferir.
 \end_layout
 
 \begin_layout Itemize
@@ -13792,7 +13785,7 @@ FTP STOR
 recibida
 \family default
 \series default
- contienen el identificador único del fichero a descargar
+ contienen el identificador único de la imagen a descargar
 \end_layout
 
 \begin_layout Itemize
@@ -13874,7 +13867,7 @@ el nombre de usuario y la contraseña del servidor FTP
 \end_layout
 
 \begin_layout Itemize
-el identificador del fichero a transferir
+el identificador único de la imagen a transferir
 \end_layout
 
 \begin_layout Itemize
@@ -13882,7 +13875,8 @@ el puerto en el que escucha el servidor FTP,
 \end_layout
 
 \begin_layout Itemize
-el directorio del servidor donde se encuentra el fichero a transferir y
+el directorio del repositorio de imágenes donde se encuentra el fichero
+ a transferir y
 \end_layout
 
 \begin_layout Itemize
@@ -13918,8 +13912,8 @@ Solicitud de borrado errónea
 \series default
  
 \family default
-contienen el identificador único del fichero a borrar y un código de descripción
- del error.
+contienen el identificador único de la imagen a borrar y un código de descripció
+n del error.
 \end_layout
 
 \begin_layout Itemize
@@ -13940,7 +13934,11 @@ Estado del repositorio
 \family default
 \series default
  contienen el espacio en disco total y el espacio en disco utilizado en
- el repositorio de imágenes.
+ el repositorio de imágenes (en 
+\emph on
+kilobytes
+\emph default
+).
 \end_layout
 
 \begin_layout Itemize
@@ -13967,7 +13965,7 @@ flags
 \emph default
 , los identificadores de imágenes, los puertos y los códigos de error son
  valores enteros.
- El resto de datos que transportan los paquetes del repositorio de imaǵenes
+ El resto de datos que transportan los paquetes del repositorio de imágenes
  son 
 \emph on
 strings
@@ -13980,14 +13978,7 @@ Distribución de los ficheros
 \end_layout
 
 \begin_layout Standard
-Como hemos visto en las interacciones correspondientes de la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Interacciones-del-repositorio"
-
-\end_inset
-
-, cuando una transferencia FTP finaliza se llamará al método 
+Cuando una transferencia FTP finaliza se llamará al método 
 \family typewriter
 on_file_sent()
 \family default
@@ -14005,15 +13996,15 @@ ncia acaba de finalizar.
 \end_layout
 
 \begin_layout Standard
-Es importante notar que, tras finalizar una transferencia, debemos actualizar
- el estado de las imágenes de disco correspondientes en la base de datos.
- Por ello es necesario que, a partir del nombre del fichero comprimido,
- sea posible obtener el identificador de las imágenes de disco.
+Como al finalizar ciertas transferencias hay que actualizar el estado de
+ la imagen correspondiente en la base de datos del repositorio de imágenes
+ es necesario que, a partir del nombre del fichero comprimido, sea posible
+ obtener el identificador de la imagen.
 \end_layout
 
 \begin_layout Standard
-Así, los nombres de los ficheros comprimidos no pueden fijarse arbitrariamente,
- y deben seguir cierto convenio.
+Por ello, los nombres de los ficheros comprimidos no pueden fijarse arbitrariame
+nte, y deben seguir cierto convenio.
  Por simplicidad, los nombres de todos los ficheros comprimidos que se almacenan
  en el repositorio de imágenes son de la forma
 \end_layout
@@ -14027,8 +14018,7 @@ Así, los nombres de los ficheros comprimidos no pueden fijarse arbitrariamente,
 \end_layout
 
 \begin_layout Standard
-Por ejemplo, el fichero comprimido cuyas imágenes de disco tienen asociado
- el identificador 
+Por ejemplo, el fichero comprimido asociado a la imagen 
 \family typewriter
 1
 \family default
@@ -14040,33 +14030,26 @@ Por ejemplo, el fichero comprimido cuyas imágenes de disco tienen asociado
 \end_layout
 
 \begin_layout Standard
-Por otra parte, resulta interesante que, cuando una máquina remota se conecte
- al servidor FTP, sólo pueda leer o escribir un único fichero comprimido.
- Por ello, en el directorio raíz del repositorio de imágenes existen múltiples
- subdirectorios.
- Cada uno de ellos contiene un único fichero comprimido, y su nombre también
- se fija a partir del identificador de las imágenes de disco almacenadas
- en dicho fichero comprimido.
+Por otra parte podemos aumentar la robustez del repositorio de imágenes
+ si, cuando un servidor de máquinas virtuales se conecta al servidor FTP,
+ sólo puede leer o escribir en un único directorio.
+ 
 \end_layout
 
 \begin_layout Standard
-Por ejemplo, la ruta del fichero comprimido 
+Por ello, en el directorio raíz del repositorio de imágenes existen múltiples
+ subdirectorios.
+ Cada uno de ellos contiene un único fichero comprimido, y sus nombres se
+ fijan en base a las imágenes que contienen.
+ Por ejemplo, la ruta del fichero comprimido 
 \family typewriter
 1.zip
 \family default
-, que contiene las imágenes de disco asociadas al identificador 
-\family typewriter
-1
-\family default
-, será la siguiente:
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-
+ será 
 \family typewriter
 <directorio raíz servidor FTP>/1/1.zip
+\family default
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -14088,16 +14071,9 @@ imageID
 \family default
 .
  Este valor entero es la clave primaria de la tabla, y es el identificador
- único de las imágenes de disco que hemos mencionado en múltiples ocasiones.
+ único de la imagen asociada al fichero comprimido.
 \end_layout
 
-\begin_deeper
-\begin_layout Standard
-Las imágenes de disco de cada máquina virtual comparten el mismo identificador
- único, y están almacenadas en el mismo fichero comprimido.
-\end_layout
-
-\end_deeper
 \begin_layout Itemize
 
 \family typewriter
@@ -14109,7 +14085,7 @@ compressedFilePath
 string
 \emph default
  de hasta 100 caracteres de longitud, que almacena la ruta absoluta del
- fichero comprimido correspondiente en el repositorio de imágenes.
+ fichero comprimido con los datos de la imagen en el repositorio de imágenes.
 \end_layout
 
 \begin_layout Itemize
