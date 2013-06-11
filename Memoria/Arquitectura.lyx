@@ -11458,7 +11458,9 @@ Los pasos que se siguen son los siguientes:
 \begin_layout Enumerate
 el servidor de máquinas virtuales envía un paquete del tipo 
 \family sans
-Petición FTP RETR
+Petición 
+\family typewriter
+FTP RETR
 \family default
  al repositorio de imágenes.
  Este paquete contiene el identificador único de la imagen a descargar,
@@ -14300,34 +14302,16 @@ las máquinas virtuales cuya configuración está siendo editada por un profesor
 \end_layout
 
 \begin_layout Standard
-En esta sección, presentaremos en detalle su diseño.
- Para ello, empezaremos mostrando todas las clases que componen el demonio
- del servidor de máquinas virtuales.
- 
+En esta sección, presentaremos en detalle el diseño del demonio del servidor
+ de máquinas virtuales.
+ Este proceso, que residen en los servidores de máquinas virtuales, procesan
+ todas las peticiones recibidas por estas máquinas.
 \end_layout
 
 \begin_layout Standard
-Posteriormente, estudiaremos sus procesos de arranque, las interacciones
- básicas con el servidor de 
-\emph on
-cluster
-\emph default
-, las interacciones que tienen lugar al crear y editar imágenes de disco
- y las interacciones que tienen lugar para desplegar y borrar imágenes de
- disco.
- Para finalizar, mostraremos los distintos tipos de paquete que permiten
- al servidor de 
-\emph on
-cluster
-\emph default
- comunicarse con el demonio del servidor de máquinas virtuales, así como
- el esquema de la base de datos del servidor de máquinas virtuales.
-\end_layout
-
-\begin_layout Standard
-Por claridad, y salvo indicación en contra, de ahora en adelante utilizaremos
- el término servidor de máquinas virtuales para referiremos al demonio del
- servidor de máquinas virtuales.
+Por conveniencia, y salvo que nos refiramos al servidor que actúa como servidor
+ de máquinas virtuales, de ahora en adelante llamaremos a este proceso servidor
+ de máquinas virtuales.
 \end_layout
 
 \begin_layout Subsubsection
@@ -14346,7 +14330,8 @@ En todos los servidores de máquinas virtuales existe una red virtual configurad
 \end_layout
 
 \begin_layout Standard
-Para crear las redes virtuales, ejecutamos las órdenes 
+Para crear las redes virtuales, el demonio del servidor de máquinas virtuales
+ ejecuta durante su proceso de arranque las órdenes 
 \family typewriter
 virsh net-define
 \family default
@@ -14354,7 +14339,7 @@ virsh net-define
 \family typewriter
 virsh net-create
 \family default
- durante el arranque del servidor de máquinas virtuales.
+.
  
 \end_layout
 
@@ -14731,7 +14716,7 @@ Cuando se ejecuta la orden
 \family typewriter
 virsh net-create
 \family default
-, se configuran convenientemente las redirecciones de paquetes en el 
+, se configuran convenientemente las redirecciones de datagramas en el 
 \emph on
 kernel 
 \emph default
@@ -14744,9 +14729,16 @@ iptables
 dnsmasq
 \family default
 ).
- A partir de este momento, toda máquina virtual que se conecte a la puerta
- de enlace podrá acceder a la red virtual y, por tanto, a la red troncal
- de la UCM.
+ 
+\end_layout
+
+\begin_layout Standard
+Tras la ejecución de la orden 
+\family typewriter
+virsh net-create
+\family default
+, toda máquina virtual que se conecte a la puerta de enlace podrá acceder
+ a la red virtual y, por tanto, a la red troncal de la UCM.
 \end_layout
 
 \begin_layout Standard
@@ -16638,6 +16630,28 @@ graphics
 \family typewriter
 port
 \family default
+), el puerto del 
+\emph on
+websocket
+\emph default
+ nativo
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Si no utilizamos los 
+\emph on
+websockets
+\emph default
+ nativos de QEMU, no es necesario incluir este atributo
+\end_layout
+
+\end_inset
+
+ (
+\family typewriter
+websocket
+\family default
 ), la contraseña (
 \family typewriter
 passwd
@@ -16701,7 +16715,7 @@ Cirrus Logic Inc.
 
 \end_deeper
 \begin_layout Standard
-Finalmente, los ficheros de definición de máquinas virtuales 
+Por otra parte, los ficheros de definición de máquinas virtuales 
 \emph on
 Windows
 \emph default
@@ -16715,6 +16729,21 @@ localtime
 clock
 \family default
 : el resto de elementos se configuran como ya hemos visto.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que el número de CPUs, el tamaño de la memoria
+ RAM y el tamaño de las imágenes de disco vienen fijados por la familia
+ de máquinas virtuales a la que pertenece la máquina virtual que se va a
+ arrancar.
+ 
+\end_layout
+
+\begin_layout Standard
+Estos datos se leerán de otro fichero de definición, que se usará como plantilla
+ para crear todas las máquinas virtuales de la misma familia y que también
+ se encuentra almacenado en el servidor de máquinas virtuales.
+ 
 \end_layout
 
 \begin_layout Paragraph
@@ -16958,7 +16987,8 @@ los procesos configuración, creación y destrucción de las redes virtuales,
 \end_layout
 
 \begin_layout Itemize
-los procesos de reserva y liberación de recursos, 
+los procesos de reserva y liberación de los recursos asignados a las máquinas
+ virtuales, 
 \end_layout
 
 \begin_layout Itemize
@@ -17098,7 +17128,7 @@ reference "sub:Uso-del-formato-qcow2"
 
 \end_inset
 
-, cada máquina virtual tiene asociadas dos imágenes 
+, cada máquina virtual tiene asociadas dos imágenes de disco 
 \family typewriter
 qcow2
 \family default
@@ -17108,11 +17138,11 @@ copy-on-write
 \emph default
 .
  Durante el proceso de arranque de una máquina virtual, es necesario crear
- la imagen 
+ la imagen de disco 
 \emph on
 copy-on-write
 \emph default
- y crear una copia de la imagen restante.
+ y crear una copia de la imagen de disco restante.
  Para ello, los objetos 
 \family typewriter
 DomainHandler
@@ -17136,7 +17166,7 @@ DefinitionFileEditor
 \end_layout
 
 \begin_layout Standard
-La clase 
+Asimismo, la clase 
 \family typewriter
 VMServerPacketHandler
 \family default
@@ -17174,8 +17204,8 @@ Creación y edición de imágenes de disco
 \end_layout
 
 \begin_layout Standard
-Para crear y editar imágenes de disco, el servidor de máquinas virtuales
- debe comunicarse con el repositorio de imágenes.
+Para crear y editar imágenes, el servidor de máquinas virtuales debe comunicarse
+ con el repositorio de imágenes.
  Como dijimos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -17211,7 +17241,11 @@ Así pues, para que el servidor de máquinas virtuales pueda comunicarse con
 \end_layout
 
 \begin_layout Itemize
-pueda generar y descomprimir ficheros .zip,
+pueda generar y descomprimir ficheros 
+\family typewriter
+.zip
+\family default
+,
 \end_layout
 
 \begin_layout Itemize
@@ -17248,15 +17282,14 @@ la descompresión o la creación de un fichero comprimido con imágenes de
 \end_layout
 
 \begin_layout Standard
-Para reducir el tiempo que tardan en realizarse estas transferencias, es
+Para reducir el tiempo que tardan en realizarse estas comunicaciones es
  posible realizar estas fases en paralelo.
  Por ello, los servidores de máquinas virtuales utilizan una cola para cada
- una de estas fases, es decir, una cola de transferencias y una cola de
- compresión.
+ una de ellas, es decir, una cola de transferencias y una cola de compresión.
 \end_layout
 
 \begin_layout Standard
-Así, la cola de transferencias incluye todas las peticiones de intercambio
+Así, la cola de transferencias contiene todas las peticiones de intercambio
  de ficheros comprimidos con el repositorio de imágenes, y en la cola de
  compresión se encuentran todas las peticiones de compresión y descompresión
  de ficheros 
@@ -17270,16 +17303,16 @@ Así, la cola de transferencias incluye todas las peticiones de intercambio
 Por otra parte, no debemos olvidar que los usuarios pueden dedicar mucho
  tiempo y esfuerzo a los procesos de creación y edición de imágenes de disco.
  Por ello, es necesario dotar de una gran robustez a esta parte de los servidore
-s de máquinas virtuales, de modo que sólo se pierdan datos de los usuarios
- en los casos más extremos.
+s de máquinas virtuales, de modo que sólo se pierdan datos en los casos
+ más extremos.
 \end_layout
 
 \begin_layout Standard
 Para ello, la cola de transferencias y la cola de compresión tienen persistencia
  en disco, y su contenido se almacena en dos tablas de la base de datos.
- De esta manera, aunque se produzcan caídas del servidor de máquinas virtuales,
- las imágenes de disco de los usuarios acabarán transfiriéndose normalmente
- al repositorio de imágenes.
+ De esta manera, aunque el demonio del servidor de máquinas virtuales se
+ cuelgue, las imágenes modificadas por los usuarios acabarán transfiriéndose
+ normalmente al repositorio de imágenes.
 \end_layout
 
 \begin_layout Paragraph
@@ -17375,8 +17408,11 @@ FileTransferThread
 ChildProcessManager
 \family default
 .
- Asimismo, la clase FileTransferThread utiliza los servicios de las clases
- 
+ Asimismo, la clase 
+\family typewriter
+FileTransferThread
+\family default
+ utiliza los servicios de las clases 
 \family typewriter
 VMServerPacketHandler
 \family default
@@ -17422,7 +17458,7 @@ reference "sub:El-cliente-FTP-cc"
 
 \end_inset
 
-, que la clase 
+, la clase 
 \family typewriter
 FTPClient
 \family default
@@ -17436,9 +17472,9 @@ Python
 \end_layout
 
 \begin_layout Standard
-Además, la clase 
+Por otro lado, la clase 
 \family typewriter
-FileTransferThread
+FileTransferCallback
 \family default
  hereda de 
 \family typewriter
@@ -17475,37 +17511,7 @@ La clase
 CompressionThread
 \family default
  está asociada al hilo que procesa los elementos de la cola de compresión.
- Para realizar este procesamiento, se distinguen dos casos:
-\end_layout
-
-\begin_layout Itemize
-cuando se descomprime un fichero 
-\family typewriter
-.zip
-\family default
-, las imágenes de disco que contiene se registran en la base de datos y
- se copian al directorio correspondiente del servidor de máquinas virtuales.
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-Además, cuando las imágenes se han descargado del repositorio de imágenes
- para crear o editar una imagen, también se ordena el arranque de una máquina
- virtual, que las usará como discos duros.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-cuando se genera un fichero 
-\family typewriter
-.zip
-\family default
-, es necesario registrar la petición correspondiente en la cola de transferencia
-s.
-\end_layout
-
-\begin_layout Standard
-El diagrama de clases de la figura 
+ El diagrama de clases de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Relaciones-CompressionThread"
@@ -17523,7 +17529,7 @@ CompressionThread
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -17567,7 +17573,11 @@ CompressionThread
 \end_layout
 
 \begin_layout Standard
-Para crear y descomprimir ficheros .zip, la clase 
+Para crear y descomprimir ficheros 
+\family typewriter
+.zip
+\family default
+, la clase 
 \family typewriter
 CompressionThread
 \family default
@@ -17592,7 +17602,7 @@ ChildProcessManager
 \end_layout
 
 \begin_layout Standard
-En la librería estándar de 
+Aunque en la librería estándar de 
 \emph on
 Python
 \emph default
@@ -17600,7 +17610,7 @@ Python
 \family typewriter
 .zip
 \family default
-, pero existe un 
+, existe un 
 \emph on
 bug
 \emph default
@@ -17618,12 +17628,12 @@ bug
 \end_layout
 
 \begin_layout Standard
-Aunque este error ha sido subsanado en las nuevas versiones de las ramas
- 2.x y 3.x de 
+Este error ha sido subsanado en las nuevas versiones de las ramas 2.x y 3.x
+ de 
 \emph on
 Python
 \emph default
-, en muchas distribuciones 
+, pero en muchas distribuciones 
 \emph on
 Linux
 \emph default
@@ -17666,10 +17676,17 @@ VMServerPacketHandler
 \end_layout
 
 \begin_layout Standard
-Como ya hemos dicho, cuando en algunos casos se descomprimen imágenes de
- disco es necesario arrancar una máquina virtual.
- Para ello, la clase CompressionThread utilizará los servicios de la clase
- 
+Asimismo, en algunos casos es necesario arrancar una máquina virtual tras
+ extraer el contenido de un fichero 
+\family typewriter
+.zip
+\family default
+.
+ Para ello, la clase 
+\family typewriter
+CompressionThread
+\family default
+ utilizará los servicios de la clase 
 \family typewriter
 DomainHandler
 \family default
@@ -17688,7 +17705,8 @@ VMServerDBConnector
  para extraer las peticiones de compresión y descompresión de la cola de
  compresión (que, al igual que en el caso de la cola de transferencias,
  se almacenan en una tabla de la base de datos), y también para registrar
- y borrar las imágenes de disco en la base de datos.
+ y borrar las imágenes de disco en la base de datos del servidor de máquinas
+ virtuales.
 \end_layout
 
 \begin_layout Subsubsection
@@ -17702,7 +17720,7 @@ La clase
 \family typewriter
 VMServerReactor
 \family default
- es la clase principal del subsistema servidor de máquinas virtuales.
+ es la clase principal del demonio del servidor de máquinas virtuales.
  Estos objetos se ocupan de realizar el proceso de inicialización, y también
  de procesar los paquetes que envía el servidor de 
 \emph on
@@ -17811,8 +17829,8 @@ ccutils
 Por otra parte, al igual que sucede en el caso del repositorio de imágenes,
  para interactuar desde el exterior con un servidor de máquinas virtuales
  es necesario enviarle paquetes a través de una conexión de control.
- A diferencia de lo que ocurría en el repositorio de imágenes, sólo el servidor
- de 
+ A diferencia de lo que ocurría en el caso del repositorio de imágenes,
+ sólo el servidor de 
 \emph on
 cluster 
 \emph default
@@ -17945,65 +17963,29 @@ reference "fig:Arranque-servidor-mvs"
 
 \end_inset
 
- en el que, por claridad, hemos omitido el tratamiento de los errores.
- Como podemos observar en dicho diagrama, se siguen los siguientes pasos:
+.
+ Por claridad, hemos supuesto que, durante el proceso de arranque, no se
+ produce ningún error.
+ 
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en dicho diagrama, se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
-se realiza la configuración inicial de la base de datos del servidor de
- máquinas virtuales si es necesario.
- Para ello, se crea el esquema de la base de datos y el usuario a utilizar
- a través de un objeto 
-\family typewriter
-DBConfigurator
-\family default
-.
- Como ya hemos dicho, la clase 
-\family typewriter
-DBConfigurator
-\family default
- se define en el paquete 
-\family typewriter
-ccutils
-\family default
-.
+se realiza, si es necesario, la configuración inicial de la base de datos
+ del servidor de máquinas virtuales.
+ 
 \end_layout
 
 \begin_layout Enumerate
 se parsea el fichero de configuración.
- Para ello, se utiliza un objeto 
-\family typewriter
-VMServerConfigurationFileParser
-\family default
-.
- Por limitaciones de espacio, no hemos incluido su línea de vida en el diagrama
- de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-servidor-mvs"
-
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Enumerate
 se crean, si es necesario, los distintos directorios utilizados por el servidor
  de máquinas virtuales.
-\end_layout
-
-\begin_layout Enumerate
-se crea un objeto 
-\family typewriter
-VMServerReactor
-\family default
- y se inicializa su estado.
- Como hemos dicho, estos objetos procesarán los paquetes enviados desde
- el servidor de 
-\emph on
-cluster
-\emph default
-.
 \end_layout
 
 \begin_layout Enumerate
@@ -18039,8 +18021,9 @@ Por tanto, todas las direcciones MAC son
 \emph on
 unicast
 \emph default
- y de uso local, y el servidor de máquinas virtuales podrá albergar un máximo
- de 256 máquinas virtuales.
+ y de uso local.
+ Asimismo, el servidor de máquinas virtuales podrá albergar un máximo de
+ 256 máquinas virtuales.
  
 \end_layout
 
@@ -18076,54 +18059,14 @@ websockets
 
 \end_deeper
 \begin_layout Enumerate
-se inicializa el objeto 
-\family typewriter
-NetworkManager
-\family default
-, que permitirá crear y enviar información a través de la conexión con el
- servidor de 
-\emph on
-cluster
-\emph default
-.
-\end_layout
-
-\begin_layout Enumerate
-se inicializa el objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-, que se utilizará para crear y leer los diversos tipos de paquete que utiliza
- el servidor de 
-\emph on
-cluster
-\emph default
- para comunicarse con el servidor de máquinas virtuales.
-\end_layout
-
-\begin_layout Enumerate
-se instancia un objeto 
-\family typewriter
-DomainHandler
-\family default
-.
- Como sabemos, se utilizará para crear y destruir máquinas virtuales.
+se prepara todo lo necesario para atender las peticiones de los usuarios.
 \end_layout
 
 \begin_layout Enumerate
 se comprueba qué máquinas virtuales activas están registradas en la base
  de datos, reasignando o liberando recursos como corresponda.
- Para ello, se invoca al método 
-\family typewriter
-doInitialCleanup()
-\family default
- de la clase 
-\family typewriter
-DomainHandler
-\family default
-.
- Esto permite que, si el demonio del servidor de máquinas virtuales termina
- de forma abrupta,
+ Este paso permite que, si el demonio del servidor de máquinas virtuales
+ termina de forma abrupta,
 \end_layout
 
 \begin_deeper
@@ -18138,27 +18081,13 @@ los recursos asociados a las máquinas virtuales apagadas se liberen.
 
 \end_deeper
 \begin_layout Enumerate
-se liberan los ficheros 
+se borran los ficheros 
 \family typewriter
 .zip
 \family default
- temporales.
- Esto hace posible que, si falla el demonio del servidor de máquinas virtuales,
- se libere el espacio en disco asociado a los ficheros 
-\family typewriter
-.zip
-\family default
- parcialmente generados.
+ parcialmente generados (si los hay).
 \end_layout
 
-\begin_deeper
-\begin_layout Standard
-Adelantando algo de lo que veremos más adelante, estos ficheros volverán
- a generarse cuando se reanude el procesamiento de los elementos de la cola
- de compresión.
-\end_layout
-
-\end_deeper
 \begin_layout Enumerate
 se inicializan los hilos de procesamiento asociados a la cola de transferencias
  y a la cola de compresión.
@@ -18180,7 +18109,7 @@ Arranque del servidor de máquinas virtuales: tratamiento de errores
 
 \begin_layout Standard
 Durante el proceso de arranque del demonio del servidor de máquinas virtuales,
- pueden detectarse los siguientes errores:
+ se producirán errores cuando
 \end_layout
 
 \begin_layout Itemize
@@ -18200,8 +18129,7 @@ no es posible inicializar la base de datos del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-Sea cual sea el error detectado, siempre se procede de la misma manera:
- 
+Sea cual sea el error detectado, desde el hilo principal
 \end_layout
 
 \begin_layout Enumerate
@@ -18214,93 +18142,9 @@ si están iniciados, se paran los hilos que procesan los elementos de la
 \end_layout
 
 \begin_layout Enumerate
-si se ha iniciado, se detiene el servicio de red, por lo que el demonio
- dejará de escuchar y atender las peticiones recibidas.
-\end_layout
-
-\begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Errores-Arranque-Servidor-MVs"
-
-\end_inset
-
- muestra cómo se actúa al detectar que el puerto de escucha ya está en uso.
- Este error es el que más procesamiento requiere.
- Por claridad, en el diagrama hemos omitido la mayoría de fases del proceso
- de inicialización: estas son idénticas a la de la sección anterior.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Error arranque.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Errores-Arranque-Servidor-MVs"
-
-\end_inset
-
-Arranque del servidor de máquinas virtuales: tratamiento de erores
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Como podemos observar en el diagrama, cuando se detecta el error, el hilo
- principal d
-\end_layout
-
-\begin_layout Enumerate
-destruye todas las máquinas virtuales activas.
-\end_layout
-
-\begin_layout Enumerate
-detiene los hilos asociados a las colas de transferencias y compresión.
-\end_layout
-
-\begin_layout Enumerate
-detiene el servicio de red, por lo que se dejarán de atender las peticiones
- recibidas.
-\end_layout
-
-\begin_layout Standard
-Es importante notar que, como dijimos en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Arranque-del-repositorio-error"
-
-\end_inset
-
-, el servicio de red debe detenerse siempre desde el hilo principal ya que,
- si se intenta detener desde un hilo de red, se producirá un cuelgue.
+se cierra la conexión de control y se detiene el servicio de red.
+ A partir de este momento, el servidor de máquinas virtuales dejará de atender
+ peticiones.
 \end_layout
 
 \begin_layout Subsubsection
@@ -18328,8 +18172,8 @@ Por claridad, en todos los casos comenzaremos mostrando el flujo básico,
 
 \begin_layout Standard
 Asimismo, en esta sección omitiremos las interacciones que despliegan, crean,
- editan o borran imágenes de disco: consideramos que tienen entidad suficiente
- como para tratarlas en secciones separadas.
+ editan o borran imágenes de disco: debido a su enorme entidad, preferimos
+ tratarlas en secciones separadas.
 \end_layout
 
 \begin_layout Paragraph
@@ -18349,7 +18193,7 @@ cluster
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -18387,12 +18231,18 @@ Solicitud del estado del servidor de máquinas virtuales
 \end_layout
 
 \begin_layout Standard
-Para ello, hacen uso de los paquetes del tipo 
+Para averiguar el estado de un servidor de máquinas virtuales, el servidor
+ de 
+\emph on
+cluster
+\emph default
+ le enviará un paquete del tipo 
 \family sans
 Solicitud de Estado
 \family default
-, que se procesan en el servidor de máquinas virtuales tal y como se indica
- en la figura 
+.
+ Estos paquetes se procesan en el servidor de máquinas virtuales como se
+ indica en la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Solicitud-estado-servidor-MVs"
@@ -18400,7 +18250,11 @@ reference "fig:Solicitud-estado-servidor-MVs"
 \end_inset
 
 .
- Como puede observarse en dicho diagrama, se siguen los siguientes pasos:
+ 
+\end_layout
+
+\begin_layout Standard
+Como puede observarse en el diagrama, se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
@@ -18417,52 +18271,16 @@ Solicitud de Estado
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-NetworkManager
-\family default
- invoca al método de procesamiento de paquetes del objeto 
-\family typewriter
-VMServerReactor
-\family default
-.
-\end_layout
-
-\begin_layout Enumerate
-para procesar el paquete, el objeto 
-\family typewriter
-VMServerReactor
+el demonio del servidor de máquinas virtuales lee el contenido del paquete.
+ Acto seguido,
 \end_layout
 
 \begin_deeper
-\begin_layout Enumerate
-\noindent
-invoca al método 
-\family typewriter
-readPacket()
-\family default
- del objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
- Este método lee el contenido del paquete.
- Como los paquetes del tipo 
-\family sans
-Solicitud de Estado
-\family default
- no transportan información adicional, en este caso no se lee nada.
-\end_layout
-
 \begin_layout Enumerate
 averigua las cantidades de memoria RAM en uso y disponible.
  Para ello, ejecuta el comando 
 \family typewriter
 free
-\family default
-, haciendo uso de los servicios de la clase 
-\family typewriter
-ChildProcessManager
 \family default
 .
 \end_layout
@@ -18473,56 +18291,50 @@ averigua el número de CPUs virtuales en uso consultando los recursos asignados
 \end_layout
 
 \begin_layout Enumerate
+utiliza los métodos del módulo 
+\family typewriter
+os
+\family default
+ de la librería estándar de 
+\emph on
+Python 
+\emph default
+para averiguar el espacio en disco utilizado y el espacio en disco disponible.
+\end_layout
+
+\begin_layout Enumerate
 utiliza la utilidad 
 \family typewriter
 qemu-img info
 \family default
- para averiguar el espacio en disco requerido por todas las máquinas virtuales
- activas.
- Para ello, vuelve a utilizar los servicios de la clase 
+ para averiguar el espacio en disco adicional que, como máximo, pueden requerir
+ todas las máquinas virtuales activas.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Este paso es fundamental: como las imágenes de disco 
 \family typewriter
-ChildProcessManager
+qcow2
 \family default
-.
+ soportan compresión, se pueden expandir a medida que los usuarios trabajan
+ con las máquinas virtuales y, por tanto, ocupar más espacio en disco.
 \end_layout
 
 \end_deeper
+\end_deeper
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerReactor
-\family default
- construye un paquete del tipo 
+se construye un paquete del tipo 
 \family sans
 Estado del servidor de máquinas virtuales
 \family default
- con toda la información recopilada, utilizando para ello un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
- Posteriormente lo envía al servidor de 
+ con toda la información recopilada.
+ Acto seguido, el servidor de máquinas virtuales envía dicho paquete al
+ servidor de 
 \emph on
 cluster
 \emph default
 .
-\end_layout
-
-\begin_layout Standard
-De ahora en adelante, omitiremos las llamadas a los métodos 
-\family typewriter
-readPacket()
-\family default
- y 
-\family typewriter
-buildPacket()
-\family default
- del objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
- en todos los diagramas de secuencia del servidor de máquinas virtuales.
- Estas siempre se realizarán para leer y construir un paquete respectivamente.
 \end_layout
 
 \begin_layout Paragraph
@@ -18543,7 +18355,15 @@ Los servidores de máquinas virtuales sólo crean una máquina virtual bajo
 cluster
 \emph default
 .
- Para ello, este utiliza un paquete del tipo 
+ 
+\end_layout
+
+\begin_layout Standard
+Para enviar esas peticiones, el servidor de 
+\emph on
+cluster
+\emph default
+ utiliza un paquete del tipo 
 \family sans
 Creación de máquina virtual
 \family default
@@ -18561,24 +18381,10 @@ reference "fig:Creación-MV"
 \end_layout
 
 \begin_layout Standard
-Asimismo, por limitaciones de espacio, hemos eliminado las líneas de vida
- de las clase 
-\family typewriter
-ChildProcessManager
-\family default
- y 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -18631,47 +18437,28 @@ reference "fig:Creación-MV"
 \end_layout
 
 \begin_layout Enumerate
-se invoca al método de procesamiento de paquetes del objeto 
-\family typewriter
-VMServerReactor
+se lee el paquete del tipo 
+\family sans
+Creación de máquina virtual
 \family default
 .
- Para crear la máquina virtual, este delega en un objeto DomainHandler.
+ Estos paquetes contienen el identificador único de la petición, el identificado
+r del usuario que la ha enviado y el identificador de la imagen que utilizará
+ la nueva máquina virtual que se creará.
 \end_layout
 
 \begin_layout Enumerate
-el método 
-\family typewriter
-createDomain()
-\family default
- de la clase 
-\family typewriter
-DomainHandler
-\family default
-,
+se reservan los recursos asignados a la máquina virtual.
+ Para ello,
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
-lee el contenido del paquete 
-\family sans
-Creación de máquina virtual
-\family default
- utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
- En él se incluye el identificador de la máquina virtual, el identificador
- único de la petición y el identificador del usuario que ha enviado la petición.
+se reservan una dirección MAC y un UUID para la máquina virtual.
 \end_layout
 
 \begin_layout Enumerate
-reserva una dirección MAC y un UUID para la máquina virtual.
-\end_layout
-
-\begin_layout Enumerate
-reserva dos puertos 
+se reservan dos puertos 
 \emph on
 consecutivos
 \emph default
@@ -18685,25 +18472,24 @@ consecutivos
 \end_layout
 
 \begin_layout Enumerate
-genera aleatoriamente una contraseña para el servidor VNC.
- Para ello, invoca al comando 
+se genera aleatoriamente una contraseña para el servidor VNC.
+ Para ello, se ejecuta el comando 
 \family typewriter
 openssl
 \family default
- a través de los servicios de la clase 
-\family typewriter
-ChildProcessManager
-\family default
 .
- La longitud de la contraseña generada es configurable.
+ La longitud de la contraseña generada se fija en el fichero de configuración
+ del demonio del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Enumerate
-genera las rutas donde colocar las imágenes de disco de la máquina virtual.
-\end_layout
-
-\begin_layout Enumerate
-crea dichas imágenes, ejecutando los comandos 
+se crea la imagen de disco 
+\emph on
+copy-on-write
+\emph default
+ y la imagen de disco que almacenará los datos temporales y el fichero de
+ paginación.
+ Para ello, se ejecutarán las órdenes 
 \family typewriter
 qemu-img create
 \family default
@@ -18712,13 +18498,16 @@ qemu-img create
 cp
 \family default
 .
- Para ello, utiliza los servicios de la clase 
-\family typewriter
-ChildProcessManager
-\family default
-.
+ 
 \end_layout
 
+\end_deeper
+\begin_layout Enumerate
+se arranca la máquina virtual.
+ Para ello,
+\end_layout
+
+\begin_deeper
 \begin_layout Enumerate
 genera el fichero de definición de la máquina virtual.
  Por motivos de eficiencia, su contenido no se escribe a disco, sino que
@@ -18739,74 +18528,39 @@ websockets
 \family typewriter
 websockify
 \family default
-.
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-A diferencia de lo que suele ocurrir habitualmente, en este caso el proceso
- 
-\family typewriter
-websockify
-\family default
- se ejecutará en 
-\emph on
-background
-\emph default
-.
- Para ello, los objetos 
-\family typewriter
-ChildProcessManager
-\family default
- también son capaces de iniciar y recoger los valores devueltos por los
- procesos que se ejecutan en 
+, que se ejecutará en 
 \emph on
 background
 \emph default
 .
 \end_layout
 
-\end_deeper
 \begin_layout Enumerate
-invoca al método de creación de un dominio de la clase 
-\family typewriter
-LibvirtConnector
-\family default
-.
- Durante este proceso, se iniciará el servidor VNC asociado a la máquina
- virtual.
-\end_layout
-
-\begin_layout Enumerate
-registra en la base de datos del servidor de máquinas virtuales los recursos
- asignados a la máquina virtual.
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-cuando 
+se solicita a 
 \family typewriter
 libvirt
 \family default
- genera el evento de arranque de máquina virtual, el objeto 
+ la creación de una nueva máquina virtual.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+se registran los recursos asignados a la máquina virtual en la base de datos
+ del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+cuando se trata el evento de arranque de máquina virtual generado por 
 \family typewriter
-LibvirtConnector
+libvirt
 \family default
- invocará al método 
-\family typewriter
-onDomainStart()
-\family default
- del objeto 
-\family typewriter
-DomainHandler
-\family default
-.
- En él,
+, 
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
-se obtienen el puerto del 
+se leen de la base de datos del servidor de máquinas virtuales el puerto
+ del 
 \emph on
 websocket
 \emph default
@@ -18820,13 +18574,9 @@ se construye un paquete del tipo
 \family sans
 Datos de conexión de máquina virtual
 \family default
-, utilizando para ello un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
 .
- Este contiene la información que se ha extraído de la base de datos del
- servidor de máquinas virtuales.
+ Este contiene la información que se ha extraído de la base de datos en
+ el paso anterior.
 \end_layout
 
 \begin_layout Enumerate
@@ -18841,43 +18591,26 @@ cluster
 \begin_layout Standard
 El hecho de que las direcciones MAC libres se extraigan de la base de datos
  no es casual.
- 
-\end_layout
-
-\begin_layout Standard
-Siempre que el servidor DHCP concede una dirección IP a una máquina virtual
+ Siempre que el servidor DHCP concede una dirección IP a una máquina virtual
  lo hace durante un tiempo prefijado.
  
 \end_layout
 
 \begin_layout Standard
-Cuando se arranca y detiene un gran número de máquinas virtuales en un corto
- periodo de tiempo, los tiempos de concesión de las direcciones IP no habrán
- expirado, por lo que corremos el riesgo de el servidor DHCP se quede sin
- direcciones IP.
+Así, cuando se arranca y detiene un gran número de máquinas virtuales en
+ un corto periodo de tiempo, los tiempos de concesión de las direcciones
+ IP no habrán expirado, por lo que corremos el riesgo de el servidor DHCP
+ se quede sin direcciones IP para asignar.
  
 \end_layout
 
 \begin_layout Standard
-No obstante, como las direcciones IP se asignan a direcciones MAC y estas
- siempre se extraen de la base de datos, las nuevas máquinas virtuales podrán
- 
-\begin_inset Quotes eld
-\end_inset
-
-reciclar
-\begin_inset Quotes erd
-\end_inset
-
- las direcciones IP de las máquinas antiguas, lo que impide que nos quedemos
- sin direcciones IP.
-\end_layout
-
-\begin_layout Standard
-Finalmente, es importante notar que, cuando se reciben las peticiones de
- arranque de máquinas virtuales, la propia cola de paquetes recibidos y
- aún no procesados actúa como cola de peticiones de arranque de máquinas
- virtuales.
+Para evitar la aparición de este problema, podemos aprovechar el hecho de
+ que el protocolo DHCP asigna direcciones IP a direcciones MAC: puesto que
+ estas siempre se extraen de la base de datos, las nuevas máquinas virtuales
+ podrán reutilizar las direcciones IP de las máquinas antiguas y, mientras
+ el servidor de máquinas virtuales no aloje el número máximo de máquinas
+ virtuales, no habrá problemas.
 \end_layout
 
 \begin_layout Paragraph
@@ -18892,18 +18625,31 @@ name "par:Arranque-MV-errores"
 \end_layout
 
 \begin_layout Standard
-En el proceso de creación de una máquina virtual, pueden producirse múltiples
- errores: las conexiones con la base de datos o con 
-\family typewriter
-libvirt
-\family default
- pueden fallar, y también pueden recibirse peticiones incorrectas.
- Una petición de arranque de máquina virtual será incorrecta cuando
+En el proceso de arranque de una máquina virtual, se producirán errores
+ cuando
 \end_layout
 
 \begin_layout Itemize
-el servidor de máquinas virtuales no dispone de las imágenes de disco asociadas
- a la máquina virtual, o cuando
+la conexión con la base de datos falla, cuando
+\end_layout
+
+\begin_layout Itemize
+falla la llamada a 
+\family typewriter
+libvirt
+\family default
+, o cuando
+\end_layout
+
+\begin_layout Itemize
+la petición de arranque es incorrecta.
+ Esto sucederá si
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+el servidor de máquinas virtuales no dispone de la imagen que es necesario
+ utilizar.
 \end_layout
 
 \begin_layout Itemize
@@ -18916,47 +18662,44 @@ el servidor de máquinas virtuales no disponga de suficientes CPUs, memoria
  RAM o espacio libre en disco.
 \end_layout
 
+\end_deeper
 \begin_layout Standard
-En la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:El-paquete-clusterServer"
-
-\end_inset
-
- mostraremos que, para ahorrar ancho de banda, el servidor de 
-\emph on
-cluster
-\emph default
- nunca enviará a los servidores de máquinas virtuales peticiones incorrectas.
- No obstante, para que la infraestructura pueda tolerar los errores del
- servidor de 
-\emph on
-cluster
-\emph default
-, estos errores se siguen detectando y tratando en los servidores de máquinas
- virtuales.
-\end_layout
-
-\begin_layout Standard
-Durante el proceso de creación de una máquina virtual, los errores pueden
- detectarse
+Estos errores pueden detectarse en dos puntos de la secuencia:
 \end_layout
 
 \begin_layout Itemize
 al consultar la base de datos del servidor de máquinas virtuales para obtener
  el estado de la imagen.
- Este es el caso de los dos primeros tipos de peticiones incorrectas que
- pueden recibirse en el servidor de máquinas virtuales.
+ 
 \end_layout
 
 \begin_layout Itemize
-al realizar las llamadas a 
+al realizar la llamada a 
 \family typewriter
 libvirt
 \family default
 .
- Los errores restantes se detectan al realizar estas llamadas.
+ 
+\end_layout
+
+\begin_layout Standard
+Todos ellos, salvo los errores en las llamadas a 
+\family typewriter
+libvirt
+\family default
+, se detectan en el primer punto de la secuencia.
+ No obstante, con independencia del punto en el que se detecten, todos se
+ tratan de la misma manera.
+\end_layout
+
+\begin_layout Enumerate
+se liberan todos los recursos que hayan sido asignados a la máquina virtual.
+ Por ejemplo, si las imágenes de disco no se han creado cuando se produce
+ el error, no se intentarán liberar.
+\end_layout
+
+\begin_layout Enumerate
+se aborta el proceso de arranque de forma inmediata.
 \end_layout
 
 \begin_layout Standard
@@ -18967,8 +18710,8 @@ reference "fig:Arranque-MV-estado-incorrecto"
 
 \end_inset
 
- muestra cómo se procede al detectar un error tras consultar el estado de
- la imagen en la base de datos del servidor de máquinas virtuales.
+ muestra cómo se procede cuando se intenta utilizar una imagen que no existe
+ en el servidor de máquinas virtuales para crear una máquina virtual.
 \end_layout
 
 \begin_layout Standard
@@ -18999,15 +18742,11 @@ name "fig:Arranque-MV-estado-incorrecto"
 
 \end_inset
 
-Arranque de una máquina virtual: imágenes de disco en estado incorrecto
+Arranque de una máquina virtual: tratamiento de errores
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -19017,153 +18756,26 @@ Arranque de una máquina virtual: imágenes de disco en estado incorrecto
 \end_layout
 
 \begin_layout Standard
-Como podemos observar, el paquete del tipo 
-\family sans
-Arranque de máquina virtual
-\family default
- empieza a procesarse igual que en el arranque normal.
- En cuanto se detecta el error,
+Como el lector habrá observado ya, si falla una petición de arranque de
+ máquina virtual no se generará ningún paquete de error.
+ Esto nos permite ahorrar ancho de banda, ya que 
 \end_layout
 
-\begin_layout Enumerate
-se liberan la MAC, el UUID y los puertos que se reservaron,
-\end_layout
-
-\begin_layout Enumerate
-se construye un paquete del tipo 
-\family sans
-Error de arranque de máquina virtual
-\family default
-.
- Este paquete contiene el identificador único de la petición y un código
- de descripción del error.
-\end_layout
-
-\begin_layout Enumerate
-se envía el paquete de error al servidor de 
+\begin_layout Itemize
+el servidor de 
 \emph on
-cluster
+cluster 
 \emph default
-.
+nunca enviará peticiones que pueden fallar a los servidores de máquinas
+ virtuales, y
 \end_layout
 
-\begin_layout Standard
-Por otra parte, los errores restantes se procesan tratando excepciones.
- El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-MV-excepción"
-
-\end_inset
-
- muestra cómo se trata el error de este tipo que requiere más procesamiento:
- un fallo en la llamada a 
+\begin_layout Itemize
+las llamadas a 
 \family typewriter
 libvirt
 \family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-Es importante notar que las direcciones MAC y los UUIDs, los puertos, las
- imágenes de disco,\SpecialChar \ldots{}
- no se intentan liberar si no se han asociado a la máquina
- virtual.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Arranque MV error 2.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Arranque-MV-excepción"
-
-\end_inset
-
-Arranque de una máquina virtual: fallo en la llamada a 
-\family typewriter
-libvirt
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Como podemos observar en el diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-MV-excepción"
-
-\end_inset
-
-, cuando se detecta el error
-\end_layout
-
-\begin_layout Enumerate
-se liberan la MAC, el UUID y los puertos que se reservaron,
-\end_layout
-
-\begin_layout Enumerate
-se borran las imágenes de disco, 
-\end_layout
-
-\begin_layout Enumerate
-se construye un paquete del tipo 
-\family sans
-Error interno
-\family default
-.
- Este paquete contiene el identificador único de la petición.
-\end_layout
-
-\begin_layout Enumerate
-se envía el paquete de error al servidor de 
-\emph on
-cluster
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-Finalmente, debemos observar que, en caso de que no se produzcan errores,
- el registro de los recursos asociados a la máquina virtual se realiza tras
- realizar la llamada a 
-\family typewriter
-libvirt
-\family default
-.
- Esto nos permite que, en caso de producirse algún error, no sea necesario
- borrar de la base de datos el identificador único de la petición, el identifica
-dor del usuario que la envió, las rutas de las imágenes de disco,\SpecialChar \ldots{}
-
+ sólo fallan en casos realmente excepcionales.
 \end_layout
 
 \begin_layout Paragraph
@@ -19240,98 +18852,80 @@ Como podemos observar en dicho diagrama, sucede lo siguiente:
 \end_layout
 
 \begin_layout Enumerate
-cuando la máquina virtual se apaga, libvirt genera el evento correspondiente.
- Para tratarlo, el objeto 
+cuando la máquina virtual se apaga, 
 \family typewriter
-LibvirtConnector
+libvirt
 \family default
- invoca al método 
-\family typewriter
-onDomainStop()
-\family default
- de la clase 
-\family typewriter
-DomainHandler
-\family default
-.
+ genera el evento correspondiente.
+ 
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-DomainHandler
-\family default
- extrae de la base de datos los recursos asignados a la máquina virtual.
-\end_layout
-
-\begin_layout Enumerate
-acto seguido, el objeto 
-\family typewriter
-DomainHandler
-\family default
- libera dichos recursos.
- Para ello, 
+para procesar ese evento,
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
-llama al método 
-\family typewriter
-unregisterVMAllocatedResources()
-\family default
- del objeto 
-\family typewriter
-VMServerDBConnector
-\family default
-.
- En esta llamada, se liberan la dirección MAC, el UUID y los puertos asignados
- al servidor VNC y al 
+se averigua cuáles son los recursos asignados a la máquina virtual que se
+ ha apagado.
+ Para ello, se realiza una consulta en la base de datos.
+\end_layout
+
+\begin_layout Enumerate
+se liberan la dirección MAC, el UUID y los puertos asignados al servidor
+ VNC y al 
 \emph on
 websocket
 \emph default
 .
- Asimismo, también se borra de la base de datos toda la información asociada
- a la máquina virtual (como el identificador de usuario que la creó, la
- ruta de las imágenes de disco que utilizaba,\SpecialChar \ldots{}
-)
-\end_layout
-
-\begin_layout Enumerate
-borra las imágenes de disco.
- Para ello, ejecuta dos veces el comando 
+ También se borran las imágenes de disco ejecutando el comando 
 \family typewriter
 rm
-\family default
-, haciendo uso de los servicios de la clase 
-\family typewriter
-ChildProcessManager
 \family default
 .
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-La librería 
+Cuando la máquina virtual se apaga, 
 \family typewriter
 libvirt
 \family default
- se ocupa del apagado del servidor VNC asociado a la máquina virtual, por
- lo que no debemos preocuparnos por él cuando la máquina se apaga.
+ se ocupará de destruir el servidor VNC que tiene asociado, por lo que no
+ debemos preocuparnos por él.
+ 
 \end_layout
 
 \begin_layout Standard
-Asimismo, cuando el servidor VNC se apaga, el demonio 
+Por otra parte,
+\end_layout
+
+\begin_layout Itemize
+si utilizamos los 
+\emph on
+websockets
+\emph default
+ nativos de QEMU, libvirt también se ocupará de destruirlos tras apagar
+ el servidor VNC.
+\end_layout
+
+\begin_layout Itemize
+si no utilizamos los 
+\emph on
+websockets
+\emph default
+ nativos de QEMU, el proceso 
 \family typewriter
 websockify
 \family default
- lo detectará y se también se apagará.
- Por ello, no es necesario matarlo cuando la máquina virtual se apaga.
+ detectará el apagado del servidor VNC, y responderá a este apagándose.
+ Por ello, no es necesario matarlo.
 \end_layout
 
 \begin_layout Standard
-Finalmente, puesto que las dos imágenes de disco se borran, cuando la máquina
- virtual se apaga se destruyen todos los datos que haya escrito en disco
- durante su ejecución.
+Finalmente, como que las dos imágenes de disco que utilizaba la máquina
+ virtual se borran, cuando esta se apaga se destruyen todos los datos que
+ se hayan escrito en disco durante su ejecución.
 \end_layout
 
 \begin_layout Paragraph
@@ -19380,7 +18974,7 @@ reference "fig:Envío-datos-conexión"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -19427,62 +19021,35 @@ Como podemos observar, tras recibir el paquete en el servidor de máquinas
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerReactor
-\family default
- lee el contenido del paquete utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
+se lee el contenido de ese paquete
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerReactor
-\family default
- lee de la base de datos del servidor de máquinas virtuales los datos de
- conexión de los servidores VNC.
- Para ello, utiliza un objeto 
-\family typewriter
-VMServerDBConnector
-\family default
-.
+se extraen de la base de datos los datos de conexión de los servidores VNC
+ asociados a las máquinas virtuales activas.
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerReactor
-\family default
- construye un paquete del tipo 
+se construye un paquete del tipo 
 \family sans
 Datos de conexión VNC
 \family default
 .
  Estos paquetes contienen la dirección IP del servidor de máquinas virtuales,
- así como el puerto del 
+ los puertos de los 
 \emph on
-websocket
+websockets
 \emph default
- y la contraseña de todos los servidores VNC activos.
- Nuevamente, para construir el paquete se utiliza un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
+ y las contraseñas de todos los servidores VNC activos.
+ 
 \end_layout
 
 \begin_layout Enumerate
-finalmente, el objeto 
-\family typewriter
-VMServerReactor
-\family default
- envía dicho paquete al servidor de 
+se envía dicho paquete al servidor de 
 \emph on
-cluster.
+cluster
+\emph default
+.
 \end_layout
 
 \begin_layout Paragraph
@@ -19490,138 +19057,56 @@ Solicitud de los identificadores únicos de las máquinas virtuales activas
 \end_layout
 
 \begin_layout Standard
-Cada máquina virtual puede identificarse de forma única a partir del identificad
-or de la petición que la creó.
+Cada máquina virtual puede identificarse de forma única utilizando el identifica
+dor de la petición que la creó.
  De ahora en adelante, también llamaremos a dicho identificador identificador
  único de la máquina virtual.
 \end_layout
 
 \begin_layout Standard
-Más adelante veremos que, durante el proceso de arranque de un servidor
- de máquinas virtuales, el demonio del servidor de 
+Para conocer la distribución de las máquinas virtuales activas, el servidor
+ de 
 \emph on
-cluster 
+cluster
 \emph default
-averiguará los identificadores únicos de todas las máquinas virtuales que
- este alberga.
- Para ello, le enviará un paquete del tipo 
+ envía a cada servidor de máquinas virtuales un paquete del tipo 
 \family sans
 Solicitud de IDs de máquinas virtuales
 \family default
- de máquinas activas, que se procesa de acuerdo al diagrama de secuencia
- de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Envío-domainUIDs"
-
-\end_inset
-
-.
+ de máquinas activas.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Envío DomainUIDs.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Envío-domainUIDs"
-
-\end_inset
-
-Envío de los identificadores únicos de las máquinas virtuales activas
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Como esta interacción es muy similar a la anterior, no volveremos a reproducirla
+ en esta sección.
+ 
 \end_layout
 
 \begin_layout Standard
-Como podemos observar en el diagrama, esta interacción es muy similar a
- la anterior: 
-\end_layout
-
-\begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerReactor
-\family default
- lee el contenido del paquete utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
-\end_layout
-
-\begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerReactor
-\family default
- lee de la base de datos del servidor de máquinas virtuales los identificadores
- únicos de las máquinas virtuales.
- Para ello, utiliza un objeto 
-\family typewriter
-VMServerDBConnector
-\family default
-.
-\end_layout
-
-\begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerReactor
-\family default
- construye un paquete del tipo 
+No obstante, debemos notar que, tras enviar la consulta a la base de datos,
+ el servidor de máquinas virtuales creará y enviará un paquete del tipo
+ 
 \family sans
 IDs de máquinas virtuales
 \family default
-.
- Estos paquetes contienen la dirección IP del servidor de máquinas virtuales
- y los identificadores únicos de todas las máquinas virtuales activas.
- Nuevamente, para construir el paquete se utiliza un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
 .
 \end_layout
 
-\begin_layout Enumerate
-finalmente, el objeto 
-\family typewriter
-VMServerReactor
-\family default
- envía dicho paquete al servidor de 
+\begin_layout Standard
+Estos paquetes contienen, como su nombre indica, los identificadores de
+ todas las máquinas virtuales activas que alberga el servidor de 
 \emph on
-cluster.
+cluster
+\emph default
+.
 \end_layout
 
 \begin_layout Paragraph
-Reinicio de una máquina virtual 
+Reinicio forzoso de una máquina virtual 
 \begin_inset CommandInset label
 LatexCommand label
 name "par:Reinicio-forzoso-MV"
@@ -19632,132 +19117,36 @@ name "par:Reinicio-forzoso-MV"
 \end_layout
 
 \begin_layout Standard
-Cuando se produce un cuelgue en una máquina virtual activa, el usuario que
- la utiliza podrá solicitar un reinicio forzoso de la misma.
- Esto le permite seguir trabajando con dicha máquina.
+Cuando una máquina virtual se cuelga, el usuario que la utiliza podrá solicitar
+ el reinicio forzoso de la misma.
 \end_layout
 
 \begin_layout Standard
-Para solicitar el reinicio forzoso de una máquina virtual alojada en el
- servidor de máquinas virtuales, el servidor de 
+Para ello, el servidor de 
 \emph on
 cluster
 \emph default
- enviará un paquete del tipo 
+ enviará al servidor de máquinas virtuales un paquete del tipo 
 \family sans
 Reiniciar máquina virtual
 \family default
-.
- Este contiene el identificador único de la máquina virtual a reiniciar,
- y se procesa en el servidor de máquinas virtuales de acuerdo al diagrama
- de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Reinicio-forzoso-MV"
-
-\end_inset
-
-.
+, que contiene el identificador único de la máquina virtual a reiniciar.
+ 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Reinicio forzoso.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Reinicio-forzoso-MV"
-
-\end_inset
-
-Reinicio forzoso de una máquina virtual activa
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-En el diagrama de secuencia, pueden distinguirse los siguientes pasos:
+Para procesarlo, en el servidor de máquinas virtuales se seguirán los siguientes
+ pasos:
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
+se lee el contenido del paquete.
+\end_layout
+
+\begin_layout Enumerate
+se reinicia la máquina virtual mediante una llamada a 
 \family typewriter
-VMServerReactor
-\family default
- lee el contenido del paquete utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
-\end_layout
-
-\begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerReactor
-\family default
- invoca al método de reinicio forzoso de una máquina virtual del objeto
- 
-\family sans
-DomainHandler
-\family default
-.
-\end_layout
-
-\begin_layout Enumerate
-el objeto 
-\family sans
-DomainHandler
-\family default
- obtiene el nombre único de la máquina virtual, utilizando para ello un
- objeto 
-\family sans
-VMServerDBConnector
-\family default
-.
- Como hemos dicho anteriormente, este la identifica de forma única dentro
- del servidor de máquinas virtuales en el que reside.
-\end_layout
-
-\begin_layout Enumerate
-finalmente, el objeto 
-\family sans
-DomainHandler
-\family default
- invoca al método de reinicio forzoso de una máquina virtual del objeto
- 
-\family sans
-LibvirtConnector
+libvirt
 \family default
 .
 \end_layout
@@ -19774,11 +19163,11 @@ Apagado del servidor de máquinas virtuales
 \end_layout
 
 \begin_layout Standard
-El servidor de máquinas virtuales se apagará cuando el servidor de 
+Para apagar un servidor de máquinas virtuales, el servidor de 
 \emph on
 cluster
 \emph default
- le envíe un paquete del tipo 
+ le enviará un paquete del tipo 
 \family sans
 Apagado inmediato
 \family default
@@ -19795,7 +19184,7 @@ Apagado con espera
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -19840,68 +19229,38 @@ reference "fig:Apagado-Servidor-MVs"
 
 \end_inset
 
- muestra cómo se procesa un paquete del tipo 
+ muestra el procesamiento de un paquete del tipo 
 \family sans
 Apagado con espera
 \family default
-.
- Como puede observarse en él, se dan los siguientes pasos:
+, que consta de los siguientes pasos: 
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-NetworkManager
-\family default
- llama al método de procesamiento de paquetes del objeto 
-\family typewriter
-VMServerReactor
-\family default
-.
- En él,
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-se leerá el contenido del paquete, utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
-\end_layout
-
-\begin_layout Enumerate
-se esperará a que los usuarios apaguen las máquinas virtuales arrancadas.
- El tiempo que se esperará se incluye en el paquete.
- Es importante notar que, durante ese tiempo, el servidor de máquinas virtuales
- sigue atendiendo peticiones de forma normal.
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-cuando ha transcurrido el tiempo de espera, desde el hilo principal se invoca
- al método 
-\family typewriter
-shutdown()
-\family default
- del objeto 
-\family typewriter
-VMServerReactor
-\family default
-.
- Esto es necesario ya que, como hemos mencionado en anteriores ocasiones,
- los hilos de la red sólo pueden detenerse desde el hilo principal.
- 
+tras leer le contenido del paquete, se esperará durante el tiempo que se
+ indica en el paquete.
+ Es importante notar que, durante el tiempo de espera, el servidor de máquinas
+ virtuales dejará de atender nuevas peticiones.
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
-Durante la ejecución de ese método,
+Con esta espera, se pretende dar tiempo a los usuarios para que apaguen
+ sus máquinas virtuales.
+ Por ello, tan pronto como no haya ninguna máquina virtual activa esta espera
+ finalizará.
 \end_layout
 
+\end_deeper
+\begin_layout Enumerate
+tras finalizar la espera, el hilo principal invoca a la rutina de apagado.
+ Durante la ejecución de ese método,
+\end_layout
+
+\begin_deeper
 \begin_layout Enumerate
 se apagan todas las máquinas virtuales activas.
- Sus recursos se liberan como vimos en la sección 
+ Sus recursos se liberarán como vimos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Apagado-MV-edición"
@@ -19916,23 +19275,23 @@ se paran los hilos asociados a la cola de transferencia y a la cola de compresi�
 n.
  Puesto que estas colas tienen persistencia en disco, el procesamiento de
  sus elementos se reanudará en el siguiente arranque del servidor de máquinas
- virtuales, por lo que no se perderán datos.
+ virtuales, y no se perderán datos.
 \end_layout
 
 \begin_layout Enumerate
-se detiene el servicio de red, y finaliza la ejecución del demonio del servidor
- de máquinas virtuales.
+se cierra la conexión de control y se detiene el servicio de red
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-Finalmente, los paquetes del tipo 
+Por otra parte, los paquetes del tipo 
 \family sans
 Apagado inmediato
 \family default
  se procesan de forma muy similar.
  No obstante, al procesarlos el tiempo de espera será siempre 0, por lo
- que no se esperará a que las máquinas virtuales arrancadas se apaguen.
+ que nunca se esperará a que los usuarios apaguen las máquinas virtuales
+ activas.
 \end_layout
 
 \begin_layout Subsubsection
@@ -19953,34 +19312,14 @@ n con el servidor de
 cluster
 \emph default
  y el repositorio de imágenes durante los procesos de creación y edición
- de imágenes de disco.
- Para ello, seguiremos el siguiente orden:
-\end_layout
-
-\begin_layout Enumerate
-descarga del fichero comprimido desde el repositorio de imágenes.
-\end_layout
-
-\begin_layout Enumerate
-descompresión del fichero comprimido
-\end_layout
-
-\begin_layout Enumerate
-arranque y apagado de una máquina virtual temporal.
-\end_layout
-
-\begin_layout Enumerate
-creación de un nuevo fichero comprimido
-\end_layout
-
-\begin_layout Enumerate
-subida del fichero comprimido al repositorio de imágenes
+ de imágenes.
+ 
 \end_layout
 
 \begin_layout Standard
-Nuevamente, en todos los casos empezaremos mostrando el flujo básico para
- posteriormente mostrar los distintos flujos alternativos, que están relacionado
-s con el tratamiento de errores.
+Nuevamente, en todos los casos empezaremos mostrando el flujo básico.
+ Posteriormente, mostraremos los distintos flujos alternativos, que están
+ relacionados con el tratamiento de errores.
 \end_layout
 
 \begin_layout Paragraph
@@ -19992,12 +19331,6 @@ name "par:Creación-y-edición-descarga-normal"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-En esta sección y en las siguientes, mostraremos los procesos que tienen
- lugar en el servidor de máquinas virtuales durante los procesos de creación
- y edición de imágenes de disco.
 \end_layout
 
 \begin_layout Standard
@@ -20067,7 +19400,7 @@ cluster
 Editar imagen
 \family default
 .
- Este contiene, entre otras cosas, 
+ Este contiene
 \end_layout
 
 \begin_deeper
@@ -20077,7 +19410,7 @@ la dirección IP y el puerto de la conexión de control del repositorio de
 \end_layout
 
 \begin_layout Itemize
-el identificador único del fichero comprimido a descargar,
+el identificador único del fichero comprimido a descargar.
 \end_layout
 
 \begin_layout Itemize
@@ -20085,13 +19418,12 @@ un
 \emph on
 flag
 \emph default
- que indica si se van a editar las imágenes de disco correspondientes o
- si se van a utilizar como base para crear nuevas imágenes de disco,
+ que indica si se va a crear una imagen nueva a partir de la imagen descargada
+ o se va a editar la imagen descargada.
 \end_layout
 
 \begin_layout Itemize
-el identificador único del usuario que ha desencadenado la edición de la
- imagen, y
+el identificador único del usuario que ha generado la petición.
 \end_layout
 
 \begin_layout Itemize
@@ -20101,126 +19433,43 @@ el identificador único de la petición\SpecialChar \@.
 
 \end_deeper
 \begin_layout Enumerate
-al procesar el paquete, el objeto 
-\family typewriter
-VMServerReactor
-\family default
- lo lee utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
- Por claridad, hemos decidido no incluir su línea de vida en el diagrama
- de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-temporal-fase-1"
-
-\end_inset
-
-.
+tras leer el paquete, se crea y añade la petición correspondiente a la cola
+ de transferencias.
 \end_layout
 
-\begin_deeper
-\begin_layout Standard
-Tras leer el paquete, el objeto 
-\family typewriter
-VMServerReactor
-\family default
- crea y añade la petición correspondiente a la cola de transferencias.
-\end_layout
-
-\end_deeper
 \begin_layout Enumerate
-cuando le llega el turno, el hilo de transferencias desencolará la petición
- y
+cuando le llega el turno, la petición se procesará en el hilo de transferencias.
+ Para ello,
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
-construirá el paquete utilizado para enviar la petición inicial al repositorio
- de imágenes.
- Estos paquetes se construyen a través de un objeto 
-\family typewriter
-ImageRepositoryPacketReactor
-\family default
-.
- Nuevamente, por claridad hemos eliminado la línea de vida del diagrama
- de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-temporal-fase-1"
-
-\end_inset
-
-.
+se establecerá la conexión con el repositorio
 \end_layout
 
 \begin_layout Enumerate
-crea un objeto 
+se iniciará el diálogo con el repositorio de imágenes para obtener el fichero
+ comprimido.
+ Para ello, se enviará un paquete del tipo 
+\family sans
+Petición 
 \family typewriter
-FileTransferCallback
+FTP RETR
 \family default
-, que interactuará con el repositorio de imágenes, y
+ al repositorio de imágenes.
 \end_layout
 
-\begin_layout Enumerate
-se conectará al repositorio de imágenes y le enviará el paquete.
-\end_layout
-
+\begin_deeper
 \begin_layout Standard
-El objeto 
-\family typewriter
-FileTransferCallback
-\family default
- descargará el fichero comprimido desde el repositorio de imágenes tal y
- como vimos en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "par:Descarga-de-imágenes"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-Además, cuando las imágenes de disco que este contiene se utilicen como
- base para crear una imagen nueva, también se solicitará un identificador
- al repositorio de imágenes de acuerdo a lo que vimos en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "par:Registro-identificador-imagen"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-Por ello, no hemos reproducido estos procesos en el diagrama de secuencia
- de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-temporal-fase-1"
-
-\end_inset
-
-.
- 
+Puesto que el repositorio de imágenes se ocupa de gestionar los identificadores
+ de las imágenes, cuando se crea una imagen nueva deberá solicitarse un
+ nuevo identificador de imagen al repositorio de imágenes.
 \end_layout
 
 \end_deeper
+\end_deeper
 \begin_layout Enumerate
-tras finalizar la transferencia, se comprueba si se ha producido algún error
- durante la misma.
-\end_layout
-
-\begin_layout Enumerate
-como no se han producido errores, el fichero comprimido se encontrará en
- el servidor de máquinas virtuales.
- Para terminar de procesar la petición de transferencia,
+cuando finaliza la transferencia FTP, 
 \end_layout
 
 \begin_deeper
@@ -20234,19 +19483,25 @@ se construirá y añadirá una petición a la cola de compresión.
 
 \end_deeper
 \begin_layout Standard
-Es importante notar que, para no saturar el repositorio de imágenes, las
- transferencias de ficheros se procesarán de una en una.
- De esta manera, es posible conectar un número muy elevado de servidores
- de máquinas virtuales al repositorio de imágenes sin que este llegue a
- saturarse.
- Y por la misma razón, los servidores de máquinas virtuales se desconectan
- del repositorio de imágenes tan pronto como dejan de utilizarlo.
+Por simplicidad, las peticiones de transferencia de ficheros se procesarán
+ de una en una.
  
 \end_layout
 
 \begin_layout Standard
-Asimismo, puesto que para realizar la descarga se utiliza un identificador
- de imagen, será posible crear o editar imágenes de disco en varias fases.
+Asimismo, como el número de servidores de máquinas virtuales del 
+\emph on
+cluster
+\emph default
+ puede ser muy grande, estos se desconectan del repositorio de imágenes
+ tan pronto como finaliza la transferencia para evitar, en la medida de
+ lo posible, que el repositorio de imágenes se sature.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, como para descargar la imagen se utiliza el identificador
+ de cualquier imagen existente, será posible crear o editar imágenes de
+ disco en varias fases.
  Para ello, bastará con repetir varias veces el proceso que mostramos en
  esta sección y en las siguientes.
 \end_layout
@@ -20259,11 +19514,12 @@ cluster
  siempre suministran a los servidores de máquinas virtuales los datos de
  conexión al repositorio de imágenes.
  Aunque con ello se consume un poco más de ancho de banda, se gana en flexibilid
-ad: permite utilizar varios repositorios de imágenes en el mismo 
+ad, ya que es posible utilizar varios repositorios de imágenes en el mismo
+ 
 \emph on
 cluster
 \emph default
- de forma sencilla.
+.
 \end_layout
 
 \begin_layout Paragraph
@@ -20283,7 +19539,7 @@ Durante la descarga del fichero comprimido, se producirán errores cuando
 
 \begin_layout Itemize
 el repositorio de imágenes no tiene el fichero comprimido que se pretende
- descargar, o cuando
+ descargar, cuando
 \end_layout
 
 \begin_layout Itemize
@@ -20318,20 +19574,9 @@ cuando se va a tratar la petición de transferencia, las imágenes de disco
 \end_layout
 
 \begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-temporal-fase-1-error-nE"
-
-\end_inset
-
- muestra cómo se procede en estos casos.
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -20371,52 +19616,47 @@ io de imágenes
 \end_layout
 
 \begin_layout Standard
-Como podemos observar en dicho diagrama de secuencia, la descarga del fichero
- comprimido se inicia igual que en la sección 
+El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "par:Creación-y-edición-descarga-normal"
+reference "fig:Arranque-temporal-fase-1-error-nE"
 
 \end_inset
 
-.
- No obstante, al comprobar si se ha producido un error, se detecta que el
- repositorio de imágenes no dispone de las imágenes de disco solicitadas.
- 
+ muestra cómo se tratan los errores del primer tipo.
+ Por claridad, en él hemos omitido los pasos previos a la detección del
+ error, que son exactamente iguales que en la secuencia básica.
 \end_layout
 
 \begin_layout Standard
-Por ello, se cierra la conexión con el repositorio, se construye un paquete
- del tipo 
+Como podemos observar en dicho diagrama, tras detectar el error
+\end_layout
+
+\begin_layout Enumerate
+se cierra la conexión con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
 \family sans
-Error de edición de imagen
+Error de edición de imagen.
+ 
 \family default
- (usando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-) y se envía dicho paquete de error al servidor de 
+Estos contienen el identificador de la petición y un código de descripción
+ del error.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete de error al servidor de 
 \emph on
 cluster
 \emph default
 .
- Los paquetes del tipo 
-\family sans
-Error de edición de imagen
-\family default
- contienen el identificador de la petición y un código de descripción del
- error.
 \end_layout
 
-\begin_layout Standard
-Asimismo, la petición se elimina de la cola de transferencias y no se inserta
- en la cola de compresión, por lo que su procesamiento termina.
-\end_layout
-
-\begin_layout Standard
-Es importante notar que, cuando se produce un error de este tipo, no se
- descargan datos del repositorio.
- Por ello, no es necesario realizar ninguna acción adicional.
+\begin_layout Enumerate
+la petición no se inserta en la cola de compresión, por lo que su procesamiento
+ termina inmediatamente.
 \end_layout
 
 \begin_layout Standard
@@ -20428,12 +19668,14 @@ reference "fig:Arranque-temporal-fase-1-error-conexión"
 \end_inset
 
  muestra cómo se tratan los errores de conexión al repositorio de imágenes.
+ Nuevamente, en él hemos omitido los pasos previos a la detección del error,
+ que son idénticos a los de la secuencia básica.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -20486,60 +19728,66 @@ duerme durante
 \begin_inset Formula $4^{\textrm{intentos fallidos}}$
 \end_inset
 
- segundos, e
+ segundos, y
 \end_layout
 
 \begin_layout Enumerate
-reinicia el procesamiento de la transferencia, volviendo a instanciar un
- objeto 
-\family typewriter
-FileTransferCallback
-\family default
- y creando nuevamente la conexión con el repositorio de imágenes.
+reinicia el procesamiento de la transferencia
 \end_layout
 
 \begin_layout Enumerate
-cuando el número de intentos de conexión fallidos supera un determinado
- umbral, que es configurable, se construye el paquete del tipo 
+si el número de intentos de conexión fallidos supera un determinado umbral,
+ que puede fijarse en el fichero de configuración del demonio del servidor
+ de máquinas virtuales, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se construye el paquete del tipo 
 \family sans
 Error de edición de imagen
 \family default
-, se envía al servidor de 
+, 
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor de 
 \emph on
 cluster
 \emph default
- y se elimina la petición de la cola de transferencias.
+, y 
 \end_layout
 
+\begin_layout Enumerate
+se elimina la petición de la cola de transferencias.
+\end_layout
+
+\end_deeper
 \begin_layout Standard
-Finalmente, el diagrama de secuencia de las figuras 
+Por otro lado, el diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Arranque-temporal-fase-1-error-FTP"
 
 \end_inset
 
- y 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-temporal-fase-1-error-FTP-1"
-
-\end_inset
-
  muestra cómo se procesan los errores en las transferencias FTP.
+ Nuevamente, los pasos iniciales del procesamiento de la petición siguen
+ siendo iguales que en la secuencia básica, por lo que los hemos omitido.
+ Además, la forma de proceder es idéntica a la del caso anterior.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP parte 1.pdf
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP.pdf
 	scale 80
 
 \end_inset
@@ -20558,7 +19806,7 @@ name "fig:Arranque-temporal-fase-1-error-FTP"
 \end_inset
 
 Creación y edición de imágenes de disco: error al realizar la transferencia
- FTP (parte 1)
+ FTP
 \end_layout
 
 \end_inset
@@ -20572,64 +19820,9 @@ Creación y edición de imágenes de disco: error al realizar la transferencia
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descarga repositorio error FTP parte 2.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Arranque-temporal-fase-1-error-FTP-1"
-
-\end_inset
-
-Creación y edición de imágenes de disco: error al realizar la transferencia
- FTP (parte 2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Como podemos observar, la forma de proceder es idéntica a la del caso anterior.
- Es importante notar que, en ambos, se utiliza el mismo contador de intentos
- fallidos, por lo que los errores de conexión al repositorio de imágenes
- y los errores en las transferencias FTP tienen la misma importancia.
+Finalmente, siempre que falla el establecimiento de la conexión o una transferen
+cia FTP, se utiliza el mismo contador de intentos fallidos.
+ 
 \end_layout
 
 \begin_layout Paragraph
@@ -20655,8 +19848,8 @@ el fichero
 \family typewriter
 Definition.xml
 \family default
- es la plantilla que se usará para generar el fichero de configuración de
- todas las máquinas virtuales que usen las imágenes de disco correspondientes.
+, que es la plantilla que se usará para generar el fichero de configuración
+ de todas las máquinas virtuales que usen la misma imagen.
 \end_layout
 
 \begin_layout Itemize
@@ -20664,7 +19857,7 @@ el fichero
 \family typewriter
 OS.qcow2
 \family default
- es la imagen de disco que contiene el sistema operativo y los programas
+, que es la imagen de disco que contiene el sistema operativo y los programas
  instalados.
  Durante el proceso de arranque de las máquinas virtuales, se crearán imágenes
  
@@ -20679,8 +19872,8 @@ el fichero
 \family typewriter
 Data.qcow2
 \family default
- es la imagen de disco que contiene el fichero de paginación y los datos
- temporales que usan los usuarios.
+, que es la imagen de disco que contiene el fichero de paginación y los
+ datos temporales que usan los usuarios.
  Durante el proceso de arranque de las máquinas virtuales, se creará una
  copia de este fichero.
 \end_layout
@@ -20694,7 +19887,7 @@ los ficheros
 \family typewriter
 .qcow2
 \family default
- se moverán al un subdirectorio del directorio de ficheros de imagen, y
+ se moverán al directorio de imágenes de disco, y
 \end_layout
 
 \begin_layout Itemize
@@ -20702,17 +19895,17 @@ el fichero
 \family typewriter
 .xml
 \family default
- se moverá a un subdirectorio del directorio de ficheros de definición.
+ se moverá al directorio de ficheros de definición.
 \end_layout
 
 \begin_layout Standard
-La ubicación de ambos directorios se especifica en el fichero de configuración
- del demonio del servidor de máquinas virtuales.
+La ubicación de ambos se especifica en el fichero de configuración del demonio
+ del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-Finalmente, se creará la máquina virtual que se utilizará para editar las
- imágenes de disco.
+Por otra parte, tras mover estos ficheros se creará la máquina virtual que
+ se utilizará para editar las imágenes de disco.
  Todos estos pasos se reflejan en el diagrama de secuencia de la figura
  
 \begin_inset CommandInset ref
@@ -20722,7 +19915,6 @@ reference "fig:Arranque-temporal-fase-2"
 \end_inset
 
 .
- Por claridad, supondremos que no se produce ningún error.
 \end_layout
 
 \begin_layout Standard
@@ -20799,16 +19991,6 @@ chmod
 \end_layout
 
 \begin_layout Itemize
-si la imagen ya está dada de alta en la base de datos, se borra.
- Como veremos más adelante, esto hace posible que el servidor de 
-\emph on
-cluster
-\emph default
- pueda enviar menos paquetes cuando se modifica el contenido de las imágenes
- de disco, ahorrando así ancho de banda.
-\end_layout
-
-\begin_layout Itemize
 la petición se elimina de la cola cuando se ha procesado completamente.
  Por ello, si el demonio del servidor de máquinas virtuales termina de forma
  inesperada, el proceso de descompresión podrá reanudarse en su próximo
@@ -20820,9 +20002,8 @@ la petición se elimina de la cola cuando se ha procesado completamente.
 \begin_layout Itemize
 los datos de conexión al repositorio de imágenes se almacenan en una tabla
  de la base de datos.
- Esto nos permite recuperarlos a la hora de subir el fichero comprimido
- con las nuevas imágenes de disco o con las imágenes de disco modificadas
- al repositorio de imágenes.
+ Esto es necesario para transferir la nueva imagen o la imagen editada al
+ repositorio de imágenes.
 \end_layout
 
 \begin_layout Paragraph
@@ -20841,7 +20022,7 @@ Al extraer el fichero comprimido, pueden detectarse los siguientes errores:
 \end_layout
 
 \begin_layout Itemize
-el fichero comprimido puede estar corrupto.
+el fichero comprimido está corrupto.
  En estos casos, no se puede extraer.
 \end_layout
 
@@ -20862,7 +20043,7 @@ libvirt
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
@@ -20904,23 +20085,29 @@ Creación y edición de imágenes de disco: fallo durante la extracción del
 \begin_layout Standard
 Todos estos errores se tratan de forma idéntica, por lo que nos centraremos
  en uno cualquiera de ellos: el segundo.
- Como puede observarse en el diagrama de secuencia de la figura 
+ El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Arranque-temporal-fase-2-1"
 
 \end_inset
 
-, para tratar el error se siguen los siguientes pasos:
+ muestra cómo se realiza su tratamiento.
+ Por claridad, en ese diagrama hemos omitido las fases previas a la detección
+ del error, que son iguales que en la secuencia básica.
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia, para tratar el error
+ se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
 se construye un paquete del tipo 
-\family typewriter
+\family sans
 Error de edición de imagen
 \family default
-, que contiene el identificador único de la petición y un código de descripción
- del error.
+.
 \end_layout
 
 \begin_layout Enumerate
@@ -20939,18 +20126,12 @@ se crea y encola una transferencia especial.
 
 \begin_deeper
 \begin_layout Itemize
-si se están creando imágenes de disco, se liberará el identificador pedido,
- 
+si se está creando una imagen, se liberará el identificador pedido, 
 \end_layout
 
 \begin_layout Itemize
-si se están editando imágenes de disco, se liberará el fichero comprimido
- en el repositorio de imágenes, y
-\end_layout
-
-\begin_layout Itemize
-se borrarán los datos de conexión al repositorio de imágenes de la base
- de datos del servidor de máquinas virtuales.
+si se está editando una imagen, se liberará el fichero comprimido en el
+ repositorio de imágenes, y
 \end_layout
 
 \begin_layout Standard
@@ -21008,91 +20189,20 @@ reference "par:Arranque-MV-errores"
 \end_inset
 
 .
- En esta sección, estudiaremos las modificaciones que hay que realizar en
- todas las secuencias de arranque de una máquina virtual para poder crear
- y editar imágenes de disco.
  
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Arranque MV edición.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Creación-MV-Edición"
-
-\end_inset
-
-Creación y edición de imágenes: arranque de la máquina virtual
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Comencemos con la secuencia básica, en la que no se producen errores.
- Por claridad, hemos reproducido todos sus pasos en el diagrama de secuencia
- de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Creación-MV-Edición"
-
-\end_inset
-
-.
- Como podemos observar en dicho diagrama, se reservan los diversos recursos
- asignados a la máquina virtual antes de realizar la llamada a 
-\family typewriter
-libvirt
-\family default
-.
- Asimismo, al procesar el evento de arranque de máquina virtual, se envían
- los datos de conexión al servidor de 
-\emph on
-cluster
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-La modificación a realizar con respecto al proceso de arranque básico es
- muy sencilla: no se creará la imagen 
+Sólo es necesario introducir una pequeña modificación: no se creará la imagen
+ 
 \emph on
 copy-on-write
 \emph default
  ni una copia de la imagen que alberga los datos y el fichero de paginación.
- Así, al apagar la máquina virtual podremos garantizar que los cambios realizado
-s en dichas imágenes se mantendrán.
 \end_layout
 
 \begin_layout Standard
-Finalmente, cuando se produce un error se procede como vimos en la sección
+Por otra parte, cuando se produce un error se procede como vimos en la sección
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -21117,8 +20227,8 @@ name "par:Apagado-MV-edición"
 \end_layout
 
 \begin_layout Standard
-El proceso de apagado de una máquina virtual que se utiliza para editar
- imágenes de disco es muy similar al que presentamos en la sección 
+El proceso de apagado de una máquina virtual que se utiliza para crear o
+ editar imágenes es muy similar al que presentamos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Apagado-MV-edición"
@@ -21191,8 +20301,7 @@ no se borran las imágenes de disco, ya que es necesario añadirlas a un fichero
 
 \begin_layout Itemize
 se crea y encola una petición de compresión, que contiene todo lo necesario
- para generar el fichero comprimido y realizar la transferencia con el repositor
-io de imágenes.
+ para generar el fichero comprimido.
 \end_layout
 
 \begin_layout Paragraph
@@ -21200,10 +20309,10 @@ Creación del fichero comprimido
 \end_layout
 
 \begin_layout Standard
-Como ya hemos visto, cuando se apaga una máquina virtual que se utiliza
- para crear imágenes de disco, se crea y encola una petición de compresión,
- que se procesará, en ausencia de errores, como se indica en el diagrama
- de secuencia de la figura 
+Una vez apagada la máquina virtual que se utiliza para crear o editar una
+ imagen, se crea y encola una petición de compresión, que se procesará,
+ en ausencia de errores, como se indica en el diagrama de secuencia de la
+ figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Compresión-Edición"
@@ -21283,6 +20392,11 @@ se construye una petición de transferencia y se añade a la cola de transferenc
 s.
 \end_layout
 
+\begin_layout Enumerate
+se borran los datos de conexión del repositorio de imágenes de la base de
+ datos del servidor de máquinas virtuales.
+\end_layout
+
 \begin_layout Standard
 Es importante notar que la petición se elimina de la cola cuando se ha procesado
  completamente.
@@ -21320,13 +20434,14 @@ reference "fig:Subida-edición"
 \end_inset
 
 .
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -21369,38 +20484,18 @@ Como podemos observar en dicho diagrama, se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
-se crea, a través de un objeto 
+se crea un paquete del tipo 
+\family sans
+Petición 
 \family typewriter
-ImageRepositoryPacketHandler
+FTP STOR
 \family default
-, el paquete inicial que se enviará al repositorio de imágenes.
-\end_layout
-
-\begin_layout Enumerate
-se instancia un objeto 
-\family typewriter
-FileTransferCallback
-\family default
-.
- Como sabemos, este objeto se encargará de interactuar con el repositorio
- de imágenes de acuerdo a lo que vimos en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Interacciones-del-repositorio"
-
-\end_inset
-
 .
 \end_layout
 
 \begin_layout Enumerate
-se establece la conexión con el repositorio de imágenes y se le envía el
- paquete inicial.
- Para ello, se hace uso de un objeto 
-\family typewriter
-NetworkManager
-\family default
-.
+se establece la conexión con el repositorio de imágenes y se le envía dicho
+ paquete.
 \end_layout
 
 \begin_layout Enumerate
@@ -21414,26 +20509,17 @@ se borra el fichero
 \family typewriter
 .zip
 \family default
- transferido al repositorio de imágenes.
- Para ello, se utilizan los servicios de la clase 
-\family typewriter
-ChildProcessManager
-\family default
 .
 \end_layout
 
 \begin_layout Enumerate
-utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-, se construye un paquete del tipo 
+se construye un paquete del tipo 
 \family sans
 Imagen editada
 \family default
 .
  Este contiene, además del identificador único de la petición, el identificador
- único del fichero comprimido que se acaba de transferir.
+ único de la imagen que ha terminado de editarse.
 \end_layout
 
 \begin_layout Enumerate
@@ -21452,22 +20538,8 @@ Nuevamente, la petición de transferencia sólo se elimina de la cola tras
 \end_layout
 
 \begin_layout Standard
-Finalmente, en caso de que no se pueda establecer la conexión con el repositorio
- de imágenes, se procederá de acuerdo a lo indicado en la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "par:Errores-descarga"
-
-\end_inset
-
-, por lo que no volveremos a reproducir aquí esas interacciones.
-\end_layout
-
-\begin_layout Standard
-Es importante notar que, en este caso, el repositorio de imágenes siempre
- conoce el identificador del fichero comprimido a transferir, por lo que
- no pueden producirse los errores del primer tipo que estudiamos en la sección
- 
+Asimismo, en caso de que se produzca algún error, se procederá de acuerdo
+ a lo indicado en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Errores-descarga"
@@ -21475,6 +20547,7 @@ reference "par:Errores-descarga"
 \end_inset
 
 .
+ Por ello, no volveremos a reproducir aquí esas interacciones.
 \end_layout
 
 \begin_layout Subsubsection
@@ -21482,35 +20555,29 @@ Despliegue de imágenes de disco
 \end_layout
 
 \begin_layout Standard
-El proceso de despliegue de imágenes de disco permite que un servidor de
- máquinas virtuales sea capaz de albergar una nueva máquina virtual.
- 
-\end_layout
-
-\begin_layout Standard
-Este proceso siempre comienza con el envío de un paquete del tipo 
-\family sans
-Desplegar imagen
-\family default
- desde el servidor de 
+El proceso de despliegue dei mágenes de disco comienza cuando el servidor
+ de 
 \emph on
 cluster
 \emph default
- a un servidor de máquinas virtuales.
+ envía al servidor de máquinas virtuales un paquete del tipo 
+\family sans
+Desplegar imagen
+\family default
+.
  Dicho paquete contiene, además del identificador único de la petición,
- el identificador único del fichero comprimido a descargar desde el repositorio
- de imágenes.
+ el identificador único de la imagen a desplegar.
 \end_layout
 
 \begin_layout Standard
-Durante el despliegue de imágenes de disco, podemos distinguir dos fases:
- la descarga del fichero comprimido desde el repositorio de imágenes y la
- descompresión y el procesamiento del contenido de ficho fichero.
+Durante la ejecución de este proceso, podemos distinguir dos fases: la descarga
+ del fichero comprimido desde el repositorio de imágenes y la descompresión
+ y el procesamiento del contenido de ficho fichero.
 \end_layout
 
 \begin_layout Standard
-La fase de descarga del fichero comprimido es totalmente análoga a la que
- tiene lugar durante los procesos de creación y edición de imágenes de disco.
+La fase de descarga del fichero comprimido es idéntica a la que tiene lugar
+ durante los procesos de creación y edición de imágenes de disco.
  Puesto que hablamos detalladamente de esta fase en las secciones 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -21531,8 +20598,8 @@ reference "par:Errores-descarga"
 \begin_layout Standard
 Por otra parte, la fase de descompresión y procesamiento del contenido del
  fichero comprimido es también muy similar a la que tiene lugar durante
- los procesos de creación y edición de imágenes de disco.
- Estudiamos en detalle esta fase en las secciones 
+ los procesos de creación y edición de imágenes de disco, que ya estudiamos
+ en las secciones 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Extracción-del-fichero-zip"
@@ -21546,73 +20613,25 @@ reference "par:Errores-en-la-extracción-zip"
 
 \end_inset
 
-, y en esta sección mostraremos las modificaciones que hay que realizar
- en dichas fases.
+.
+ Por ello, nos limitaremos a mostrar las diferencias, que son las siguientes:
 \end_layout
 
-\begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Descompresión-despliegue"
-
-\end_inset
-
- muestra cómo se extrae y procesa el contenido del fichero comprimido durante
- el proceso de despliegue de imágenes de disco.
- 
+\begin_layout Itemize
+tras colocar las imágenes de disco en la ubicación correcta, no se arranca
+ ninguna máquina virtual.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways true
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descompresión despliegue.pdf
-	scale 80
-
-\end_inset
-
-
+\begin_layout Itemize
+no es necesario almacenar los datos de conexión al repositorio de imágenes
+ en la base de datos del servidor de máquinas virtuales.
+ Esto se debe a que, una vez finalizada la descarga del fichero comprimido,
+ para atender la petición de despliegue no es necesario volver a interactuar
+ con el repositorio de imágenes.
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Descompresión-despliegue"
-
-\end_inset
-
-Despliegue de imágenes de disco: extracción y procesamiento del contenido
- del fichero comprimido
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Como podemos observar en dicho diagrama, cuando se despliega una imagen
- de disco no es necesario arrancar ninguna máquina virtual.
- 
-\end_layout
-
-\begin_layout Standard
-Asimismo, cuando esta fase finaliza se envía un paquete del tipo 
+\begin_layout Itemize
+tras finalizar la descompresión, se crea y envía un paquete del tipo 
 \family sans
 Imagen desplegada
 \family default
@@ -21621,21 +20640,8 @@ Imagen desplegada
 cluster
 \emph default
 .
- Dicho paquete contiene el identificador único del fichero 
-\family typewriter
-.zip
-\family default
- descargado desde el repositorio de imágenes.
- 
-\end_layout
-
-\begin_layout Standard
-Por otra parte, en este caso no se almacenan en la base de datos del servidor
- de máquinas virtuales los datos de conexión al repositorio de imágenes
- ya que, una vez finalizada la descarga del fichero comprimido, no es necesario
- volver a interactuar con él para procesar la petición de despliegue.
- El resto del proceso es idéntico al que tiene lugar en la creación y edición
- de imágenes de disco.
+ Dicho paquete contiene el identificador único de la petición y el identificador
+ de la imagen desplegada.
 \end_layout
 
 \begin_layout Standard
@@ -21648,8 +20654,6 @@ reference "par:Errores-en-la-extracción-zip"
 \end_inset
 
 .
- Por ello, no reproduciremos aquí las interacciones que vimos en dicha sección\SpecialChar \@.
-
  No obstante, en este caso los paquetes de error serán del tipo 
 \family sans
 Error de despliegue
@@ -21659,6 +20663,7 @@ Error de despliegue
 Error de edición de imagen
 \family default
 .
+ Ambos tipos de paquete tienen el mismo contenido.
 \end_layout
 
 \begin_layout Subsubsection
@@ -21666,33 +20671,32 @@ Borrado de imágenes de disco
 \end_layout
 
 \begin_layout Standard
-El proceso de borrado de imágenes de disco permite que un servidor de máquinas
- virtuales deje de poder albergar cierta máquina virtual.
- Este proceso no sólo es útil para los administradores del sistema, sino
- también para los profesores, ya que les permite borrar una de sus máquinas
- virtuales de toda la infraestructura.
+Este proceso hace que un servidor de máquinas virtuales deje de albergar
+ una imagen.
+ 
 \end_layout
 
 \begin_layout Standard
-Como viene siendo habitual, este proceso se inicia cuando el servidor de
- 
+Como viene siendo habitual, el proceso de borrado de una imagen se inicia
+ cuando el servidor de 
 \emph on
 cluster
 \emph default
- envía un paquete al servidor de máquinas virtuales, que en este caso es
- del tipo 
+ envía un paquete del tipo 
 \family sans
 Borrar imagen
 \family default
-.
- El diagrama de secuencia de la figura 
+ al servidor de máquinas virtuales.
+ Estos paquetes contienen el identificador único de la petición y el identificad
+or único de la imagen a borrar, y se procesan de acuerdo al diagrama de
+ secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Borrado-imagen"
 
 \end_inset
 
- muestra cómo se procesa este paquete en ausencia de errores.
+.
 \end_layout
 
 \begin_layout Standard
@@ -21741,64 +20745,31 @@ Como podemos observar en el diagrama, se siguen los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
-tras recibir el paquete, el objeto 
-\family typewriter
-VMServerReactor
-\family default
- lee su contenido utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-.
- Los paquetes del tipo 
-\family sans
-Borrar imagen
-\family default
- contienen el identificador único asociado a las imágenes de disco a borrar
- y el identificador único de la petición.
+tras leer el paquete, se extraen de la base de datos las rutas de los ficheros
+ a borrar.
 \end_layout
 
 \begin_layout Enumerate
-se leen de la base de datos las ubicaciones de los ficheros a borrar.
- Acto seguido, se elimina esta información de la base de datos.
+acto seguido, se borra toda la información asociada a la imagen de la base
+ de datos del servidor.
 \end_layout
 
 \begin_layout Enumerate
-se borran los ficheros correspondientes, es decir, los dos ficheros 
-\family typewriter
-.qcow2
-\family default
- y el fichero de definición de la máquina virtual que los utiliza.
- Para ello, se utilizan un objeto 
-\family typewriter
-ChildProcessManager
-\family default
-.
+se borran las imágenes de disco y el fichero de definición.
 \end_layout
 
 \begin_layout Enumerate
-utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
-, el objeto 
-\family typewriter
-VMServerReactor
-\family default
- construye un paquete del tipo 
+se construye un paquete del tipo 
 \family sans
 Imagen borrada
 \family default
 .
- Este contiene el identificador único de la petición.
+ Este contiene el identificador único de la petición y el identificador
+ único de la imagen que se ha borrado del servidor.
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerReactor
-\family default
- envía dicho paquete al servidor de 
+se envía dicho paquete al servidor de 
 \emph on
 cluster
 \emph default
@@ -21811,11 +20782,11 @@ Finalmente, en caso de que
 
 \begin_layout Itemize
 el servidor de máquinas virtuales no disponga de las imágenes de disco a
- borrar, o 
+ borrar, que
 \end_layout
 
 \begin_layout Itemize
-se produzca un error al eliminar los ficheros, o
+se produzca un error al eliminar los ficheros, o que
 \end_layout
 
 \begin_layout Itemize
@@ -21828,27 +20799,21 @@ se generará un paquete del tipo
 Error de borrado
 \family default
 .
- El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Borrado-imagen-error"
+ Estos paquetes tienen la misma información que los paquetes del tipo 
+\family sans
+Imagen borrada
+\family default
+.
+\end_layout
 
-\end_inset
-
- muestra cómo se actúa cuando el borrado de los ficheros falla.
- Como puede observarse en él, siempre que se produce uno de estos errores,
- se aborta el proceso de borrado y
+\begin_layout Standard
+Siempre que se produce un error, se aborta el proceso de borrado, y
 \end_layout
 
 \begin_layout Enumerate
 se construye el paquete del tipo 
 \family sans
 Error de borrado de imagen
-\family default
-, que contiene el identificador único de la petición.
- Nuevamente, el paquete se construirá utilizando un objeto 
-\family typewriter
-VMServerPacketHandler
 \family default
 .
 \end_layout
@@ -21859,47 +20824,6 @@ se envía dicho paquete al servidor de
 cluster
 \emph default
 .
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Borrado imagen error.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Borrado-imagen-error"
-
-\end_inset
-
-Borrado de imágenes de disco: tratamiento de errores
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsubsection
@@ -21914,8 +20838,7 @@ reference "par:Reinicio-forzoso-MV"
 
 \end_inset
 
-, los usuarios pueden provocar el reinicio forzoso de las máquinas virtuales
- cuando estas se cuelgan.
+, los usuarios pueden provocar el reinicio forzoso de las máquinas virtuales.
  Sin embargo, en algunos casos los problemas pueden no resolverse de este
  modo.
  Por ello, también es posible realizar el apagado forzoso de una máquina
@@ -21927,9 +20850,12 @@ Para desencadenarlo, el servidor de
 \emph on
 cluster
 \emph default
- enviará un paquete del tipo Destruir dominio al servidor de máquinas virtuales.
- Este contiene el identificador único de la petición y el identificador
- único de la máquina virtual a apagar.
+ enviará un paquete del tipo 
+\family sans
+Destruir dominio
+\family default
+ al servidor de máquinas virtuales.
+ Este contiene el identificador único de la máquina virtual a apagar.
 \end_layout
 
 \begin_layout Standard
@@ -21940,8 +20866,7 @@ reference "fig:Apagado-forzoso-normal"
 
 \end_inset
 
- muestra cómo se fuerza el apagado de una máquina virtual utilizando uno
- de estos paquetes.
+ muestra cómo se procesa una de estas peticiones
 \end_layout
 
 \begin_layout Standard
@@ -21995,17 +20920,11 @@ reference "par:Reinicio-forzoso-MV"
 \end_inset
 
 .
- En este caso, se llama al método de destrucción de un dominio del objeto
- 
-\family typewriter
-DomainHandler
-\family default
-, y en este se realiza la llamada de destrucción de apagado de dominio de
- 
+ No obstante, en este caso se hace una llamada a 
 \family typewriter
 libvirt
 \family default
-.
+ para destruir el dominio.
  
 \end_layout
 
@@ -22014,21 +20933,15 @@ Cuando la máquina virtual se apague,
 \family typewriter
 libvirt
 \family default
- generará un evento que procesará el objeto 
-\family typewriter
-DomainHandler
-\family default
-.
- Si la máquina virtual no se utiliza para editar imágenes de disco, dicho
- procesamiento se realizará como dijimos en la sección 
+ generará un evento de apagado que que procesará como hemos visto en las
+ secciones 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Apagado-MV-edición"
 
 \end_inset
 
-.
- En caso contrario, se realizará como indicamos en la sección 
+ y 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Apagado-MV-edición"
@@ -22043,8 +20956,7 @@ Directorios del servidor de máquinas virtuales
 \end_layout
 
 \begin_layout Standard
-Durante su funcionamiento, el demonio del servidor de máquinas virtuales
- utiliza cuatro directorios:
+El demonio del servidor de máquinas virtuales utiliza cuatro directorios:
 \end_layout
 
 \begin_layout Itemize
@@ -22052,9 +20964,8 @@ el
 \series bold
 directorio de ficheros de definición
 \series default
-, en el que se almacenan los ficheros de definición de las máquinas virtuales
- que puede albergar el servidor de máquinas virtuales.
- 
+, en el que se almacenan los ficheros de definición asociados a las imágenes
+ que amacena el servidor.
 \end_layout
 
 \begin_layout Itemize
@@ -22071,12 +20982,12 @@ el
 \series bold
 directorio de imágenes en uso
 \series default
-, en el que se almacenarán las imágenes 
+, en el que se almacenarán las imágenes de disco utilizadas por las máquinas
+ virtuales activas, es decir, las imágenes 
 \emph on
 copy-on-write
 \emph default
- y las imágenes de disco que contienen el fichero de paginación y los datos
- temporales de las máquinas virtuales activas.
+ y las imágenes de disco con los ficheros de paginación y los datos temporales.
 \end_layout
 
 \begin_layout Itemize
@@ -22097,22 +21008,24 @@ ción del demonio del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-Además, el uso de varios directorios permite realizar optimizaciones que
- mejoren el rendimiento.
- 
+El uso de varios directorios permite realizar optimizaciones que mejoran
+ el rendimiento de las máquinas virtuales.
+ Por ejemplo, si aprovechamos el hecho de que, salvo al desplegar, crear
+ o editar imágenes, nunca se escribe en el directorio de imágenes de disco,
+ podemos mejorar notablemente el rendimiento de las máquinas virtuales si
 \end_layout
 
-\begin_layout Standard
-Por ejemplo, aprovechando que, salvo que se editen imágenes de disco, nunca
- se escribe en el directorio de imágenes de disco, este puede estar ubicado
- en una unidad SSD (
+\begin_layout Itemize
+el directorio de imágenes de disco está ubicado en una unidad SSD (
 \emph on
 Solid State Drive
 \emph default
-, unidad de estado sólido), mientras que los directorios restantes pueden
- estar ubicados en un disco duro convencional.
- Con esta configuración tan sencilla, el rendimiento de las máquinas virtuales
- aumenta considerablemente.
+, unidad de estado sólido), y
+\end_layout
+
+\begin_layout Itemize
+los directorios restantes están ubicados en un disco duro convencional.
+ 
 \end_layout
 
 \begin_layout Subsubsection
@@ -23985,13 +22898,6 @@ FreeVNCPorts
 \family default
 residen en memoria.
  El resto de tablas de la base de datos residen en disco.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Newpage clearpage
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
