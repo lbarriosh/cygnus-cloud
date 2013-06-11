@@ -73,6 +73,12 @@
       {1.5ex \@plus .2ex}%
       {\normalfont\normalsize\bfseries}}
 \makeatother
+
+\renewcommand{\thefigure}{\arabic{figure}}
+\usepackage[htt]{hyphenat}
+\usepackage{charter}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
 \end_preamble
 \options a4paper
 \use_default_options true
@@ -465,7 +471,7 @@ status open
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 addcontentsline{toc}{part}{Apéndices}
 \end_layout
