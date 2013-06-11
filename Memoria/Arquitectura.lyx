@@ -5414,8 +5414,7 @@ Además web2py ofrece una capa de abstracción de base de datos (DAL por su
 \end_layout
 
 \begin_layout Subsubsection*
-=======
-Modelo Vista-Controlador
+=======Modelo Vista-Controlador
 \end_layout
 
 \begin_layout Standard
@@ -14427,34 +14426,16 @@ las máquinas virtuales cuya configuración está siendo editada por un profesor
 \end_layout
 
 \begin_layout Standard
-En esta sección, presentaremos en detalle su diseño.
- Para ello, empezaremos mostrando todas las clases que componen el demonio
- del servidor de máquinas virtuales.
- 
+En esta sección, presentaremos en detalle el diseño del demonio del servidor
+ de máquinas virtuales.
+ Este proceso, que residen en los servidores de máquinas virtuales, procesan
+ todas las peticiones recibidas por estas máquinas.
 \end_layout
 
 \begin_layout Standard
-Posteriormente, estudiaremos sus procesos de arranque, las interacciones
- básicas con el servidor de 
-\emph on
-cluster
-\emph default
-, las interacciones que tienen lugar al crear y editar imágenes de disco
- y las interacciones que tienen lugar para desplegar y borrar imágenes de
- disco.
- Para finalizar, mostraremos los distintos tipos de paquete que permiten
- al servidor de 
-\emph on
-cluster
-\emph default
- comunicarse con el demonio del servidor de máquinas virtuales, así como
- el esquema de la base de datos del servidor de máquinas virtuales.
-\end_layout
-
-\begin_layout Standard
-Por claridad, y salvo indicación en contra, de ahora en adelante utilizaremos
- el término servidor de máquinas virtuales para referiremos al demonio del
- servidor de máquinas virtuales.
+Por conveniencia, y salvo que nos refiramos al servidor que actúa como servidor
+ de máquinas virtuales, de ahora en adelante llamaremos a este proceso servidor
+ de máquinas virtuales.
 \end_layout
 
 \begin_layout Subsubsection
@@ -14473,7 +14454,8 @@ En todos los servidores de máquinas virtuales existe una red virtual configurad
 \end_layout
 
 \begin_layout Standard
-Para crear las redes virtuales, ejecutamos las órdenes 
+Para crear las redes virtuales, el demonio del servidor de máquinas virtuales
+ ejecuta durante su proceso de arranque las órdenes 
 \family typewriter
 virsh net-define
 \family default
@@ -14481,7 +14463,7 @@ virsh net-define
 \family typewriter
 virsh net-create
 \family default
- durante el arranque del servidor de máquinas virtuales.
+.
  
 \end_layout
 
@@ -14858,7 +14840,7 @@ Cuando se ejecuta la orden
 \family typewriter
 virsh net-create
 \family default
-, se configuran convenientemente las redirecciones de paquetes en el 
+, se configuran convenientemente las redirecciones de datagramas en el 
 \emph on
 kernel 
 \emph default
@@ -14871,9 +14853,16 @@ iptables
 dnsmasq
 \family default
 ).
- A partir de este momento, toda máquina virtual que se conecte a la puerta
- de enlace podrá acceder a la red virtual y, por tanto, a la red troncal
- de la UCM.
+ 
+\end_layout
+
+\begin_layout Standard
+Tras la ejecución de la orden 
+\family typewriter
+virsh net-create
+\family default
+, toda máquina virtual que se conecte a la puerta de enlace podrá acceder
+ a la red virtual y, por tanto, a la red troncal de la UCM.
 \end_layout
 
 \begin_layout Standard
@@ -16765,6 +16754,28 @@ graphics
 \family typewriter
 port
 \family default
+), el puerto del 
+\emph on
+websocket
+\emph default
+ nativo
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Si no utilizamos los 
+\emph on
+websockets
+\emph default
+ nativos de QEMU, no es necesario incluir este atributo
+\end_layout
+
+\end_inset
+
+ (
+\family typewriter
+websocket
+\family default
 ), la contraseña (
 \family typewriter
 passwd
@@ -17085,7 +17096,8 @@ los procesos configuración, creación y destrucción de las redes virtuales,
 \end_layout
 
 \begin_layout Itemize
-los procesos de reserva y liberación de recursos, 
+los procesos de reserva y liberación de los recursos asignados a las máquinas
+ virtuales, 
 \end_layout
 
 \begin_layout Itemize
@@ -17225,7 +17237,7 @@ reference "sub:Uso-del-formato-qcow2"
 
 \end_inset
 
-, cada máquina virtual tiene asociadas dos imágenes 
+, cada máquina virtual tiene asociadas dos imágenes de disco 
 \family typewriter
 qcow2
 \family default
@@ -17235,11 +17247,11 @@ copy-on-write
 \emph default
 .
  Durante el proceso de arranque de una máquina virtual, es necesario crear
- la imagen 
+ la imagen de disco 
 \emph on
 copy-on-write
 \emph default
- y crear una copia de la imagen restante.
+ y crear una copia de la imagen de disco restante.
  Para ello, los objetos 
 \family typewriter
 DomainHandler
@@ -17263,7 +17275,7 @@ DefinitionFileEditor
 \end_layout
 
 \begin_layout Standard
-La clase 
+Asimismo, la clase 
 \family typewriter
 VMServerPacketHandler
 \family default
@@ -17301,8 +17313,8 @@ Creación y edición de imágenes de disco
 \end_layout
 
 \begin_layout Standard
-Para crear y editar imágenes de disco, el servidor de máquinas virtuales
- debe comunicarse con el repositorio de imágenes.
+Para crear y editar imágenes, el servidor de máquinas virtuales debe comunicarse
+ con el repositorio de imágenes.
  Como dijimos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -17338,7 +17350,11 @@ Así pues, para que el servidor de máquinas virtuales pueda comunicarse con
 \end_layout
 
 \begin_layout Itemize
-pueda generar y descomprimir ficheros .zip,
+pueda generar y descomprimir ficheros 
+\family typewriter
+.zip
+\family default
+,
 \end_layout
 
 \begin_layout Itemize
@@ -17375,15 +17391,14 @@ la descompresión o la creación de un fichero comprimido con imágenes de
 \end_layout
 
 \begin_layout Standard
-Para reducir el tiempo que tardan en realizarse estas transferencias, es
+Para reducir el tiempo que tardan en realizarse estas comunicaciones es
  posible realizar estas fases en paralelo.
  Por ello, los servidores de máquinas virtuales utilizan una cola para cada
- una de estas fases, es decir, una cola de transferencias y una cola de
- compresión.
+ una de ellas, es decir, una cola de transferencias y una cola de compresión.
 \end_layout
 
 \begin_layout Standard
-Así, la cola de transferencias incluye todas las peticiones de intercambio
+Así, la cola de transferencias contiene todas las peticiones de intercambio
  de ficheros comprimidos con el repositorio de imágenes, y en la cola de
  compresión se encuentran todas las peticiones de compresión y descompresión
  de ficheros 
@@ -17397,16 +17412,16 @@ Así, la cola de transferencias incluye todas las peticiones de intercambio
 Por otra parte, no debemos olvidar que los usuarios pueden dedicar mucho
  tiempo y esfuerzo a los procesos de creación y edición de imágenes de disco.
  Por ello, es necesario dotar de una gran robustez a esta parte de los servidore
-s de máquinas virtuales, de modo que sólo se pierdan datos de los usuarios
- en los casos más extremos.
+s de máquinas virtuales, de modo que sólo se pierdan datos en los casos
+ más extremos.
 \end_layout
 
 \begin_layout Standard
 Para ello, la cola de transferencias y la cola de compresión tienen persistencia
  en disco, y su contenido se almacena en dos tablas de la base de datos.
- De esta manera, aunque se produzcan caídas del servidor de máquinas virtuales,
- las imágenes de disco de los usuarios acabarán transfiriéndose normalmente
- al repositorio de imágenes.
+ De esta manera, aunque el demonio del servidor de máquinas virtuales se
+ cuelgue, las imágenes modificadas por los usuarios acabarán transfiriéndose
+ normalmente al repositorio de imágenes.
 \end_layout
 
 \begin_layout Paragraph
@@ -17502,8 +17517,11 @@ FileTransferThread
 ChildProcessManager
 \family default
 .
- Asimismo, la clase FileTransferThread utiliza los servicios de las clases
- 
+ Asimismo, la clase 
+\family typewriter
+FileTransferThread
+\family default
+ utiliza los servicios de las clases 
 \family typewriter
 VMServerPacketHandler
 \family default
@@ -17549,7 +17567,7 @@ reference "sub:El-cliente-FTP-cc"
 
 \end_inset
 
-, que la clase 
+, la clase 
 \family typewriter
 FTPClient
 \family default
@@ -17563,9 +17581,9 @@ Python
 \end_layout
 
 \begin_layout Standard
-Además, la clase 
+Por otro lado, la clase 
 \family typewriter
-FileTransferThread
+FileTransferCallback
 \family default
  hereda de 
 \family typewriter
@@ -17602,37 +17620,7 @@ La clase
 CompressionThread
 \family default
  está asociada al hilo que procesa los elementos de la cola de compresión.
- Para realizar este procesamiento, se distinguen dos casos:
-\end_layout
-
-\begin_layout Itemize
-cuando se descomprime un fichero 
-\family typewriter
-.zip
-\family default
-, las imágenes de disco que contiene se registran en la base de datos y
- se copian al directorio correspondiente del servidor de máquinas virtuales.
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-Además, cuando las imágenes se han descargado del repositorio de imágenes
- para crear o editar una imagen, también se ordena el arranque de una máquina
- virtual, que las usará como discos duros.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-cuando se genera un fichero 
-\family typewriter
-.zip
-\family default
-, es necesario registrar la petición correspondiente en la cola de transferencia
-s.
-\end_layout
-
-\begin_layout Standard
-El diagrama de clases de la figura 
+ El diagrama de clases de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Relaciones-CompressionThread"
@@ -17694,7 +17682,11 @@ CompressionThread
 \end_layout
 
 \begin_layout Standard
-Para crear y descomprimir ficheros .zip, la clase 
+Para crear y descomprimir ficheros 
+\family typewriter
+.zip
+\family default
+, la clase 
 \family typewriter
 CompressionThread
 \family default
@@ -17719,7 +17711,7 @@ ChildProcessManager
 \end_layout
 
 \begin_layout Standard
-En la librería estándar de 
+Aunque en la librería estándar de 
 \emph on
 Python
 \emph default
@@ -17727,7 +17719,7 @@ Python
 \family typewriter
 .zip
 \family default
-, pero existe un 
+, existe un 
 \emph on
 bug
 \emph default
@@ -17745,12 +17737,12 @@ bug
 \end_layout
 
 \begin_layout Standard
-Aunque este error ha sido subsanado en las nuevas versiones de las ramas
- 2.x y 3.x de 
+Este error ha sido subsanado en las nuevas versiones de las ramas 2.x y 3.x
+ de 
 \emph on
 Python
 \emph default
-, en muchas distribuciones 
+, pero en muchas distribuciones 
 \emph on
 Linux
 \emph default
@@ -17793,10 +17785,17 @@ VMServerPacketHandler
 \end_layout
 
 \begin_layout Standard
-Como ya hemos dicho, cuando en algunos casos se descomprimen imágenes de
- disco es necesario arrancar una máquina virtual.
- Para ello, la clase CompressionThread utilizará los servicios de la clase
- 
+Asimismo, en algunos casos es necesario arrancar una máquina virtual tras
+ extraer el contenido de un fichero 
+\family typewriter
+.zip
+\family default
+.
+ Para ello, la clase 
+\family typewriter
+CompressionThread
+\family default
+ utilizará los servicios de la clase 
 \family typewriter
 DomainHandler
 \family default
@@ -17815,7 +17814,8 @@ VMServerDBConnector
  para extraer las peticiones de compresión y descompresión de la cola de
  compresión (que, al igual que en el caso de la cola de transferencias,
  se almacenan en una tabla de la base de datos), y también para registrar
- y borrar las imágenes de disco en la base de datos.
+ y borrar las imágenes de disco en la base de datos del servidor de máquinas
+ virtuales.
 \end_layout
 
 \begin_layout Subsubsection
@@ -17829,7 +17829,7 @@ La clase
 \family typewriter
 VMServerReactor
 \family default
- es la clase principal del subsistema servidor de máquinas virtuales.
+ es la clase principal del demonio del servidor de máquinas virtuales.
  Estos objetos se ocupan de realizar el proceso de inicialización, y también
  de procesar los paquetes que envía el servidor de 
 \emph on
@@ -17938,8 +17938,8 @@ ccutils
 Por otra parte, al igual que sucede en el caso del repositorio de imágenes,
  para interactuar desde el exterior con un servidor de máquinas virtuales
  es necesario enviarle paquetes a través de una conexión de control.
- A diferencia de lo que ocurría en el repositorio de imágenes, sólo el servidor
- de 
+ A diferencia de lo que ocurría en el caso del repositorio de imágenes,
+ sólo el servidor de 
 \emph on
 cluster 
 \emph default
