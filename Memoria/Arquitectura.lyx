@@ -598,7 +598,7 @@ todos
 \emph default
  los discos duros asociados a una máquina virtual.
  La imagen de una máquina virtual determinará el operativo que utiliza y
- la forma en que los usuarios trabajarán con ella.
+ la forma en que los usuarios podrán trabajarán con ella.
  
 \end_layout
 
@@ -646,6 +646,18 @@ suite
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+
+\series bold
+instancia
+\series default
+ 
+\series bold
+de una imagen
+\series default
+: máquina virtual que utiliza una imagen.
+\end_layout
+
 \begin_layout Itemize
 
 \series bold
@@ -12734,6 +12746,7 @@ status collapsed
 
 \begin_layout Plain Layout
 
+\family sans
 \series bold
 Tipo de paquete
 \end_layout
@@ -12779,6 +12792,8 @@ Constante (tipo enumerado)
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Apagado
 \end_layout
 
@@ -12823,6 +12838,8 @@ HALT
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Crear imagen
 \end_layout
 
@@ -12867,6 +12884,8 @@ ADD_IMAGE
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Imagen creada
 \end_layout
 
@@ -12911,7 +12930,11 @@ ADDED_IMAGE_ID
 \begin_inset Text
 
 \begin_layout Plain Layout
-Solicitud 
+
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP RETR
 \end_layout
@@ -12957,11 +12980,17 @@ RETR_REQUEST
 \begin_inset Text
 
 \begin_layout Plain Layout
-Solicitud 
+
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP RETR
 \family default
- recibida
+ 
+\family sans
+recibida
 \end_layout
 
 \end_inset
@@ -13005,11 +13034,15 @@ RETR_REQUEST_RECVD
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Solicitud 
 \family typewriter
 FTP RETR
 \family default
- errónea
+ 
+\family sans
+errónea
 \end_layout
 
 \end_inset
@@ -13053,6 +13086,8 @@ RETR_REQUEST_ERROR
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Inicio de transferencia 
 \family typewriter
 FTP RETR
@@ -13099,6 +13134,8 @@ RETR_START
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Error en la transferencia 
 \family typewriter
 FTP RETR
@@ -13145,7 +13182,11 @@ RETR_ERROR
 \begin_inset Text
 
 \begin_layout Plain Layout
-Solicitud 
+
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP STOR
 \end_layout
@@ -13191,11 +13232,17 @@ STOR_REQUEST
 \begin_inset Text
 
 \begin_layout Plain Layout
-Solicitud 
+
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP STOR
 \family default
- recibida
+ 
+\family sans
+recibida
 \end_layout
 
 \end_inset
@@ -13239,11 +13286,17 @@ STOR_REQUEST_RECVD
 \begin_inset Text
 
 \begin_layout Plain Layout
-Solicitud 
+
+\family sans
+Solicitud
+\family default
+ 
 \family typewriter
 FTP STOR
 \family default
- errónea
+ 
+\family sans
+errónea
 \end_layout
 
 \end_inset
@@ -13287,7 +13340,11 @@ STOR_REQUEST_ERROR
 \begin_inset Text
 
 \begin_layout Plain Layout
-Inicio de transferencia 
+
+\family sans
+Inicio de transferencia
+\family default
+ 
 \family typewriter
 FTP STOR
 \end_layout
@@ -13333,7 +13390,11 @@ STOR_START
 \begin_inset Text
 
 \begin_layout Plain Layout
-Error en la transferencia 
+
+\family sans
+Error en la transferencia
+\family default
+ 
 \family typewriter
 FTP STOR
 \end_layout
@@ -13379,6 +13440,8 @@ STOR_ERROR
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Solicitud de borrado
 \end_layout
 
@@ -13423,6 +13486,8 @@ DELETE_REQUEST
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Solicitud de borrado recibida
 \end_layout
 
@@ -13467,6 +13532,8 @@ DELETE_REQUEST_RECVD
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Solicitud de borrado errónea
 \end_layout
 
@@ -13511,6 +13578,8 @@ DELETE_REQUEST_ERROR
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Solicitud de estado
 \end_layout
 
@@ -13555,6 +13624,8 @@ STATUS_REQUEST
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Estado del repositorio
 \end_layout
 
@@ -13599,6 +13670,8 @@ STATUS_DATA
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Liberar imagen
 \end_layout
 
@@ -13643,6 +13716,8 @@ CANCEL_EDITION
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family sans
 Imagen liberada
 \end_layout
 
@@ -26503,29 +26578,59 @@ cluster
 \end_layout
 
 \begin_layout Standard
-Para ello, se utiliza un hilo, que enviará periódicamente los correspondientes
- paquetes de solicitud de estado y de solicitud de datos de conexión VNC
- al resto de máquinas del 
+Para ello, se utiliza un hilo que, periódicamente, 
+\end_layout
+
+\begin_layout Itemize
+enviará dos paquetes, de los tipos 
+\family sans
+Solicitud de estado
+\family default
+ y 
+\family sans
+Solicitud de datos de conexión VNC
+\family default
+, a todos los servidores de máquinas virtuales del 
 \emph on
 cluster
 \emph default
 .
- El envío de estos paquetes y el procesamiento de las respuestas asociadas
- aparecen en el diagrama de secuencia de la figura 
+ 
+\end_layout
+
+\begin_layout Itemize
+envía un paquete del tipo 
+\family sans
+Solicitud de estado 
+\family default
+al repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+El intervalo de tiempo que separa los envíos de estos paquetes es configurable,
+ y se fija en el fichero de configuración del demonio del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Actualización-del-estado-cluster"
 
 \end_inset
 
-.
+ muestra estos envíos de paquetes y el procesamiento de las respuestas asociadas.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -26569,136 +26674,87 @@ cluster
 \end_layout
 
 \begin_layout Standard
-Por limitaciones de espacio, en dicho diagrama hemos omitido cuatro líneas
- de vida: las de los objetos VMServerCallback e ImageRepositoryCallback
- y las de dos actores: un servidor de máquinas virtuales y el repositorio
- de imágenes.
- 
+A la hora de procesar las respuestas,
 \end_layout
 
-\begin_layout Standard
-Al recibir un paquete, el objeto 
-\family typewriter
-NetworkManager
-\family default
- invoca al método 
-\family typewriter
-processPacket()
-\family default
- de un objeto 
-\family typewriter
-VMServerCallback
-\family default
- o de un objeto 
-\family typewriter
-ImageRepositoryCallback
-\family default
-, según la conexión por la que se haya recibido el paquete.
- Son estos objetos los que, a su vez, llaman los métodos de procesamiento
- de paquetes de los objetos 
-\family typewriter
-VMServerPacketReactor 
-\family default
-y 
-\family typewriter
-ImageRepositoryPacketReactor
-\family default
- respectivamente.
-\end_layout
-
-\begin_layout Standard
-En el resto de diagramas de secuencia relacionados con el servidor de 
+\begin_layout Itemize
+cuando el servidor de 
 \emph on
 cluster
 \emph default
-, también omitiremos las líneas de vida de los objetos 
-\family typewriter
-VMServerCallback 
+ recibe un paquete del tipo 
+\family sans
+Estado del servidor de máquinas virtuales
 \family default
-y 
-\family typewriter
-ImageRepositoryCallback
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-En cualquier caso, como podemos observar en el diagrama de secuencia de
- la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Actualización-del-estado-cluster"
-
-\end_inset
-
-, cuando el hilo termina de enviar los paquetes, dormirá hasta la siguiente
- actualización del estado de las máquinas del 
-\emph on
-cluster
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-Al recibir los paquetes de respuesta, los objetos 
-\family typewriter
-VMServerPacketReactor
-\family default
- e 
-\family typewriter
-ImageRepositoryPacketReactor
-\end_layout
-
-\begin_layout Enumerate
-leen el contenido de dichos paquetes, utilizando para ello un objeto 
-\family typewriter
-VMServerPacketHandler
-\family default
- o un objeto 
-\family typewriter
-ImageRepositoryPacketHandler
-\family default
- respectivamente.
-\end_layout
-
-\begin_layout Enumerate
-en función del tipo del paquete,
+, 
 \end_layout
 
 \begin_deeper
+\begin_layout Enumerate
+actualiza el estado del servidor de máquinas virtuales correspondiente en
+ la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+libera los recursos preasignados a todas las operaciones finalizadas que
+ afectan a ese servidor de máquinas virtuales.
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
-actualizan el estado de la máquina correspondiente en la base de datos del
+cuando el servidor de 
+\emph on
+cluster
+\emph default
+ recibe un paquete del tipo 
+\family sans
+Estado del repositorio
+\family default
+, actualiza el estado del reopsitorio de imágenes en la base de datos del
  servidor de 
 \emph on
 cluster
 \emph default
-, o
-\end_layout
-
-\begin_layout Itemize
-registran o borran en la base de datos del servidor de 
-\emph on
-cluster
-\emph default
-, si es necesario, el identificador único de la máquina virtual y los datos
- de conexión de su servidor VNC, o
-\end_layout
-
-\begin_layout Itemize
-liberan los recursos preasignados a las máquinas virtuales que aloja el
- servidor de máquinas virtuales y los recursos preasignados a las operaciones
- de despliegue de imágenes que afectan a ese servidor de máquinas virtuales.
-\end_layout
-
-\begin_layout Standard
-En ambos casos, se utiliza un objeto 
-\family typewriter
-ClusterServerDBConnector
-\family default
 .
 \end_layout
 
+\begin_layout Itemize
+cuando el servidor de 
+\emph on
+cluster
+\emph default
+ recibe un paquete del tipo Datos de conexión VNC, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+registra los datos de conexión de los servidores VNC asociados las nuevas
+ máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+borra los datos de conexión de los servidores VNC de las máquinas virtuales
+ que han dejado de existir.
+\end_layout
+
+\begin_layout Enumerate
+borra las ubicaciones de las máquinas virtuales que han dejado de existir.
+\end_layout
+
 \end_deeper
+\begin_layout Standard
+Finalmente, tras enviar los paquetes, el hilo dormirá hasta que deba realizarse
+ la siguiente actualización del estado de las máquinas del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
 \begin_layout Subsubsection
 Despliegue de imágenes de disco
 \end_layout
@@ -26708,7 +26764,7 @@ Los servidores de
 \emph on
 cluster
 \emph default
- soportan dos operaciones de despliegue de imágenes de disco:
+ soportan dos operaciones de despliegue de imágenes:
 \end_layout
 
 \begin_layout Itemize
@@ -26718,7 +26774,7 @@ despliegue manual
 \series default
 .
  En este caso, se indica cuál es el servidor de máquinas virtuales que alojará
- las imaǵenes de disco correspondientes.
+ la imagen correspondiente.
 \end_layout
 
 \begin_layout Itemize
@@ -26732,14 +26788,16 @@ despliegue automático
 \emph on
 cluster
 \emph default
-, y este se ocupará de ubicar las imágenes de disco en tantos servidores
- de máquinas virtuales como sea necesario.
+, y este se ocupará de ubicar la imagen en tantos servidores de máquinas
+ virtuales como sea necesario.
 \end_layout
 
 \begin_layout Standard
-En esta sección, estudiaremos las dos operaciones de despliegue de imágenes.
- Para ello, comenzaremos mostrando el funcionamiento del despliegue manual,
- que se toma como base para realizar el despliegue automático.
+En esta sección, estudiaremos en detalle el funcionamiento de estas dos
+ operaciones.
+ Nuevamente, comenzaremos estudiando las secuencias básicas, en las que
+ no se producen errores.
+ Posteriormente, mostraremos cómo se detectan y tratan dichos errores.
 \end_layout
 
 \begin_layout Paragraph
@@ -26862,7 +26920,8 @@ acto seguido, se comprueba si el servidor de máquinas virtuales está arrancado
 \end_layout
 
 \begin_layout Enumerate
-como todo es correcto, se estima el espacio en dico que se
+como todo es correcto, se reserva el espacio en disco que ocupará la imagen
+ en el servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Enumerate
@@ -26888,9 +26947,9 @@ Imagen desplegada
 
 \begin_layout Enumerate
 durante el procesamiento de ese paquete, se registra la nueva ubicación
- de las imágenes de disco que se han desplegado.
- Debemos recordar que los recursos asociados a la operación de despliegue
- se liberarán 
+ de la imagen que se acaba de desplegar.
+ Los recursos preasignados a la operación de despliegue se liberarán durante
+ la próxima actualización del estado del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Enumerate
@@ -26939,7 +26998,7 @@ Con independencia del error que se produzca, siempre se actúa igual:
 
 \begin_layout Enumerate
 si es necesario, se liberan los recursos preasignados a la operación de
- despliegue ,
+ despliegue.
 \end_layout
 
 \begin_layout Enumerate
@@ -26964,75 +27023,8 @@ cluster
  envía ese paquete al servidor web.
 \end_layout
 
-\begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Despliegue-manual:-error"
-
-\end_inset
-
- muestra cómo se procesa un error del primer tipo.
- Estos errores se detectan cuando el servidor de máquinas virtuales envía
- un paquete del tipo 
-\family sans
-Error de despliegue 
-\family default
-al servidor de 
-\emph on
-cluster
-\emph default
-.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Despliegue manual con error.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Despliegue-manual:-error"
-
-\end_inset
-
-Despliegue manual: tratamiento de errores
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Paragraph
-Despliegue automático de imágenes de disco: secuencia básica 
+Despliegue automático: secuencia básica 
 \begin_inset CommandInset label
 LatexCommand label
 name "par:Despliegue-automático-imágenes-sin-errores"
@@ -27040,13 +27032,6 @@ name "par:Despliegue-automático-imágenes-sin-errores"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Esta función resulta muy útil para que, por ejemplo, un profesor pueda crear
- nuevas máquinas virtuales sin que sea necesaria la intervención de los
- administradores del sistema.
- 
 \end_layout
 
 \begin_layout Standard
@@ -27068,12 +27053,11 @@ el identificador único de la petición,
 \end_layout
 
 \begin_layout Itemize
-el identificador único de las imágenes de disco a desplegar, y
+el identificador único de la imagen a desplegar, y
 \end_layout
 
 \begin_layout Itemize
-el número de nuevas máquinas virtuales activas o instancias que vayan a
- utilizar esas imágenes de disco.
+el número de nuevas instancias que van a utilizar dicha imagen.
 \end_layout
 
 \begin_layout Standard
@@ -27090,23 +27074,16 @@ reference "fig:Despliegue-automático-simplificado"
 cluster
 \emph default
 .
- Por claridad, a la hora de construir ese diagrama, hemos supuesto que
-\end_layout
-
-\begin_layout Itemize
-no se producen errores, y que
-\end_layout
-
-\begin_layout Itemize
-las imágenes de disco sólo se despliegan en un único servidor de máquinas
- virtuales, que es capaz de albergar el número de instancias solicitado.
+ Por claridad, a la hora de construir ese diagrama, hemos supuesto que la
+ imagen sólo se despliega en un único servidor de máquinas virtuales, que
+ es capaz de albergar el número de instancias solicitado.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -27148,14 +27125,7 @@ Despliegue automático de una imagen: secuencia simplificada
 \end_layout
 
 \begin_layout Standard
-Como podemos observar en el diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Despliegue-automático-simplificado"
-
-\end_inset
-
-, se siguen estos pasos:
+Como podemos observar en dicho diagrama, se siguen estos pasos:
 \end_layout
 
 \begin_layout Enumerate
@@ -27220,8 +27190,8 @@ Despliegue automático de imágenes de disco: tratamiento de errores
 \end_layout
 
 \begin_layout Standard
-Durante el proceso de despliegue automático de imágenes de disco, pueden
- producirse los siguientes errores:
+Durante el proceso de despliegue automático de imágenes de disco, se producirán
+ errores si
 \end_layout
 
 \begin_layout Itemize
@@ -27505,8 +27475,9 @@ borrado total
 
 \begin_layout Standard
 En esta sección, estudiaremos estas dos operaciones en detalle.
- Para empezar, nos centraremos en las operaciones de borrado manual, que
- son la base de las operaciones de borrado total.
+ Nuevamente, comenzaremos estudiando las secuencias básicas, en las que
+ no se producen errores.
+ Posteriormente, mostraremos cómo se detectan y tratan dichos errores.
 \end_layout
 
 \begin_layout Paragraph
