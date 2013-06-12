@@ -28874,7 +28874,7 @@ Solicitud de estado de servidores de máquinas virtuales
 \family default
 , 
 \family sans
-Solicitud de estadísticas servidores de máquinas virtuales
+Solicitud de estadísticas servidores de máquinas virtuales,
 \family default
  
 \family sans
@@ -34566,7 +34566,7 @@ endpoint
 \end_layout
 
 \begin_layout Standard
-Como podemos observar el diagrama de secuencia, se siguen los siguientes
+Como podemos observar en el diagrama de secuencia, se siguen los siguientes
  pasos:
 \end_layout
 
@@ -34600,7 +34600,7 @@ se inicializan los hilos de actualización de la base de datos del
 \emph on
 endpoint
 \emph default
- y de monitorización de comandos.
+ y de monitorización de peticiones.
 \end_layout
 
 \begin_layout Enumerate
@@ -34655,7 +34655,7 @@ cluster
 
 \begin_layout Enumerate
 si es necesario, se detiene el hilo de actualización de la base de datos
- y el hilo de monitorización de comandos.
+ y el hilo de monitorización de peticiones.
 \end_layout
 
 \begin_layout Subsubsection
@@ -34683,7 +34683,7 @@ Solicitud de estado de servidores de máquinas virtuales
 \family default
 , 
 \family sans
-Solicitud de estadísticas servidores de máquinas virtuales
+Solicitud de estadísticas servidores de máquinas virtuales,
 \family default
  
 \family sans
@@ -34710,15 +34710,60 @@ reference "fig:Actualización-BD-endpoint"
 \end_inset
 
  muestra cómo se procesan estos paquetes.
+ Por claridad, en él
+\end_layout
+
+\begin_layout Itemize
+hemos abreviado la fase creación y de envío de los paquetes 
+\family sans
+Solicitud de estado de servidores de máquinas virtuales
+\family default
+, 
+\family sans
+Solicitud de estadísticas servidores de máquinas virtuales,
+\family default
+ 
+\family sans
+Solicitud de estado del repositorio
+\family default
+, 
+\family sans
+Solicitud de distribución de imágenes
+\family default
+ y 
+\family sans
+Solicitud de datos de conexión VNC
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+sólo mostramos el procesamiento de dos respuestas: un paquete del tipo 
+\family sans
+Estadísticas servidores de máquinas virtuales
+\family default
+ y un paquete del tipo 
+\family sans
+Distribución de imágenes
+\family default
+.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Endpoint/Actualización estado.pdf
+	scale 80
+
+\end_inset
+
 
 \end_layout
 
@@ -34742,6 +34787,135 @@ endpoint
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-BD-endpoint"
+
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Enumerate
+tras crear y enviar los cinco paquetes, el hilo de actualización de la base
+ de datos del 
+\emph on
+endpoint
+\emph default
+ dormirá hasta la siguiente actualización programada.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+El intervalo de actualización de la base de datos del 
+\emph on
+endpoint
+\emph default
+ se define en su fichero de configuración.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+cuando se reciben los datos procedentes del servidor de 
+\emph on
+cluster
+\emph default
+, estos se utilizan para actualizar la base de datos del 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Procesamiento de una petición: secuencia básica
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Procesamiento-petición"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para procesar las peticiones de los usuarios, 
+\end_layout
+
+\begin_layout Enumerate
+el proceso 
+\emph on
+endpoint
+\emph default
+ las extrae de la base de datos de comandos y las deserializa.
+\end_layout
+
+\begin_layout Enumerate
+acto seguido, inicia la interacción correspondiente con el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+cuando recibe el paquete de respuesta procedente del servidor de 
+\emph on
+cluster
+\emph default
+, el proceso 
+\emph on
+endpoint
+\emph default
+ la serializa y la almacena en la base de datos de comandos.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura muestra cómo se procesa una petición
+ de arranque de una máquina virtual.
+ Por claridad, a la hora de construir el diagrama hemos asumido que no se
+ produce ningún error al procesar dicha petición.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Endpoint/Arranque MV.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Arranque de una máquina virtual desde el 
+\emph on
+endpoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Plain Layout
 
 \end_layout
@@ -34749,6 +34923,356 @@ endpoint
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia, se siguen los siguientes
+ pasos:
+\end_layout
+
+\begin_layout Enumerate
+se extrae la petición de la base de datos de comandos.
+ Todas las peticiones se encuentran almacenadas en una cola, y se atenderán
+ por estricto orden de recepción.
+\end_layout
+
+\begin_layout Enumerate
+se deserializa la petición para obtener sus datos.
+\end_layout
+
+\begin_layout Enumerate
+se crea un paquete del tipo 
+\family sans
+Arranque de máquina virtual
+\family default
+.
+ Acto seguido, se envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+el servidor de 
+\emph on
+cluster
+\emph default
+ responde a la petición enviando al 
+\emph on
+endpoint
+\emph default
+ un paquete del tipo 
+\family sans
+Datos de conexión a máquina virtual
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+utilizando la información contenida en ese paquete, se genera la salida
+ de la petición.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Es importante notar que todas las peticiones que envía un usuario tienen
+ asociado un identificador único.
+ Esto permite
+\end_layout
+
+\begin_layout Itemize
+identificar las peticiones que han sido atendidas por la infraestructura,
+ y
+\end_layout
+
+\begin_layout Itemize
+extraer los argumentos de la petición original de la base de comandos durante
+ la generación de la salida.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+finalmente, la salida de la petición se serializa y se añade a la base de
+ datos de comandos.
+ A partir de este momento, la aplicación 
+\emph on
+web
+\emph default
+ podrá leerla y utilizarla.
+\end_layout
+
+\begin_layout Subsubsection
+Procesamiento de una petición: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Cuando el procesamiento de la petición falla en el servidor de 
+\emph on
+cluster
+\emph default
+, el 
+\emph on
+endpoint
+\emph default
+ recibirá un paquete de error.
+ 
+\end_layout
+
+\begin_layout Standard
+En estos casos, la salida de la petición se genera de forma muy similar.
+ No obstante, si el paquete recibido contiene un código de error, este se
+ traducirá a 
+\emph on
+string
+\emph default
+ durante el proceso de generación de la salida.
+\end_layout
+
+\begin_layout Subsubsection
+Procesamiento de una petición: peticiones de alta latencia
+\end_layout
+
+\begin_layout Standard
+Las peticiones de creación, edición, despliegue y borrado son peticiones
+ de muy alta latencia: desde que se envían a la infraestructura hasta que
+ terminan de ejecutarse pueden transcurrir horas.
+\end_layout
+
+\begin_layout Standard
+Para facilitar la implementación de la aplicación web, las salidas de estas
+ peticiones se almacenan de forma diferenciada en la base de datos de comandos.
+ Así, de ahora en adelante, llamaremos 
+\series bold
+notificación
+\series default
+ a la salida de una petición de alta latencia.
+\end_layout
+
+\begin_layout Standard
+La salida de las peticiones de alta latencia se registra casi igual que
+ en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Procesamiento-petición"
+
+\end_inset
+
+.
+ No obstante, a la hora de realizar la actualización de la base de datos
+ de comandos, las salidas de estas peticiones se marcarán para distinguirlas
+ del resto.
+\end_layout
+
+\begin_layout Subsubsection
+Apagado de toda la infraestructura
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Endpoint/Apagado.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-endpoint"
+
+\end_inset
+
+Apagado del proceso 
+\emph on
+endpoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cuando desde la aplicación web se emite una petición de apagado de la infraestru
+ctura, se inicia el proceso de apagado de la infraestructura y del proceso
+ 
+\emph on
+endpoint
+\emph default
+.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-endpoint"
+
+\end_inset
+
+ muestra cómo se actúa en estos casos:
+\end_layout
+
+\begin_layout Enumerate
+se crea un paquete del tipo Apagar infraestructura.
+ Acto seguido, se envía ese paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal termina inmediatamente de procesar las peticiones de los
+ usuarios.
+ 
+\end_layout
+
+\begin_layout Enumerate
+acto seguido, el hilo principal
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+detiene los hilos de actualización de la base de datos y de monitorización
+ de peticiones, y
+\end_layout
+
+\begin_layout Enumerate
+cierra la conexión con el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+el proceso 
+\emph on
+endpoint
+\emph default
+ termina.
+ A medida que el servidor de 
+\emph on
+cluster
+\emph default
+ vaya enviando los paquetes correspondientes, las máquinas de la infraestructura
+ también irán apagándose.
+\end_layout
+
+\begin_layout Subsubsection
+Desconexión abrupta del servidor de 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+El proceso 
+\emph on
+endpoint
+\emph default
+ es capaz de tratar una desconexión abrupta del servidor de 
+\emph on
+cluster
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Para ello, la base de datos de comandos almacena el instante de tiempo en
+ el que se inició el procesamiento de todas las peticiones generadas por
+ los usuarios.
+\end_layout
+
+\begin_layout Standard
+Como ya hemos mencionado, existe un hilo de monitorización de peticiones.
+ Periódicamente, este hilo generará salidas de error para todas las peticiones
+ que verifiquen
+\begin_inset Formula 
+\[
+\textrm{instante actual}-\textrm{instante entrada}\geq\textrm{tiempo máximo}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+donde el tiempo máximo se lee del fichero de configuración del proceso 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Naturalmente, cuando la salida de una petición se registra en la base de
+ datos de comandos, el hilo de monitorización dejará de considerar dicha
+ petición.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, tras detectar la desconexión del servidor de 
+\emph on
+cluster
+\emph default
+, el 
+\emph on
+endpoint
+\emph default
+ iniciará el proceso de reconexión, utilizando para ello la funcionalidad
+ de las clases del paquete 
+\family typewriter
+network
+\family default
+.
+ Como dijimos en su momento, durante el proceso de reconexión se utilizará
+ el algoritmo de retroceso exponencial binario truncado, con un máximo de
+ 15 intentos.
+ En la práctica, se intentará reestablecer la conexión durante 15 minutos
+ aproximadamente.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en caso de que no se pueda reestablecer la conexión con el servidor
+ de 
+\emph on
+cluster
+\emph default
+, el proceso 
+\emph on
+endpoint
+\emph default
+ terminará.
+\end_layout
+
+\begin_layout Subsubsection
+Esquemas de la base de datos de comandos
+\end_layout
+
+\begin_layout Subsubsection
+Esquema de la base de datos del 
+\emph on
+endpoint
 \end_layout
 
 \begin_layout Subsection
