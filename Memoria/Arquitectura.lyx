@@ -30320,7 +30320,7 @@ Restricciones de acceso URL
 \end_layout
 
 \begin_layout Subsubsection
-Flujo de ejecución de arranque de una máquina virtual
+Arranque de una máquina virtual por un alumno: secuencia básica
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Flujo-de-ejecución-arranque-máquina-web"
@@ -30476,7 +30476,7 @@ reference "fig:Secuencia-de-arranque"
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status open
 
 \begin_layout Plain Layout
@@ -30484,7 +30484,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_secuencia_arranque_MV_Web.pdf
-	scale 70
+	scale 50
 	rotateOrigin center
 
 \end_inset
@@ -30517,7 +30517,7 @@ name "fig:Secuencia-de-arranque"
 \end_layout
 
 \begin_layout Subsubsection
-Flujo de ejecución de creación de una máquina virtual
+Creación de una máquina virtual por un profesor: secuencia básica
 \end_layout
 
 \begin_layout Standard
@@ -30536,7 +30536,7 @@ Se ejecuta la secuencia de inicio de sesión por parte del controlador
 \family sans
 Main
 \family default
- de forma similar a como se especifico en los tres primeros puntos del apartado
+ de forma similar a como se especificó en los tres primeros puntos del apartado
  anterior.
 \end_layout
 
@@ -30652,13 +30652,15 @@ reference "fig:Diagrama-de-secuencia-creacionMV-web"
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_Secuencia_creacion_MV_profesor.pdf
-	scale 70
+	scale 50
 
 \end_inset
 
@@ -30693,7 +30695,7 @@ Diagrama de secuencia creación de una máquina virtual por parte del profesor
 \end_layout
 
 \begin_layout Subsubsection
-Flujo de ejecución de edición de una máquina virtual existente
+Edición de una máquina virtual: secuencia básica
 \end_layout
 
 \begin_layout Standard
@@ -30731,7 +30733,7 @@ Se ejecuta la secuencia de inicio de sesión por parte del controlador
 \family sans
 Main
 \family default
- de forma similar a como se especifico en los tres primeros puntos del apartado
+ de forma similar a como se especificó en los tres primeros puntos del apartado
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -30959,7 +30961,7 @@ reference "fig:Diagrama-de-secuencia-edicionMV-web"
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -30982,6 +30984,231 @@ name "fig:Diagrama-de-secuencia-edicionMV-web"
 \end_inset
 
 Diagrama de secuencia de edición de una máquina virtual por parte del profesor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Arranque de un servidor de máquinas virtuales por un administrador: secuencia
+ básica
+\end_layout
+
+\begin_layout Standard
+Antes de ejecutar una máquina virtual es necesario que al menos uno de los
+ servidores de máquinas virtuales capaz de mantenerla se encuentre arrancado.
+ Los administradores pueden arrancar cualquier servidor de máquinas virtuales
+ que se encuentre registrado en el sistema por medio de la página de edición
+ de servidores.
+\end_layout
+
+\begin_layout Standard
+El flujo básico de arranque de un servidor de máquinas virtuales por parte
+ de un administrador es el siguiente:
+\end_layout
+
+\begin_layout Enumerate
+Se ejecuta la secuencia de inicio de sesión por parte del controlador 
+\family sans
+Main
+\family default
+ de forma similar a como se especificó en los tres primeros puntos del apartado
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Flujo-de-ejecución-arranque-máquina-web"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Una vez iniciada la sesión, se comprueba que el usuario es de tipo administrador
+ y se redirige a la función 
+\family typewriter
+runVM
+\family default
+ dentro del controlado 
+\family typewriter
+administrator
+\family default
+.
+ Esta función crea los formularios de arranque de máquinas virtuales y los
+ devuelve.
+\end_layout
+
+\begin_layout Enumerate
+la vista asociada (
+\family typewriter
+administrator/runVM.htm
+\family default
+l) recibe los formularios, aplica el aspecto y los coloca en la página.
+\end_layout
+
+\begin_layout Enumerate
+En este momento el administrador pulsa sobre la opción 
+\family typewriter
+Editar servidor
+\family default
+, dentro de la sección 
+\family typewriter
+Administrar servidores
+\family default
+, en la barra de menú.
+ La función 
+\family typewriter
+runVM
+\family default
+ aplica la redirección por medio de 
+\family typewriter
+redirect
+\family default
+, pasando como nombre de función la sección destino (
+\family typewriter
+servers
+\family default
+) y con una variable de estado con valor 
+\family typewriter
+remove_servers
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+Una vez en la función 
+\family typewriter
+servers
+\family default
+ del controlador 
+\family typewriter
+administrator
+\family default
+, se evalúa el valor de la variable de estado, se pregunta al conector por
+ los servidores actualmente activos y se crea un par de formularios que
+ se devuelven en un diccionario.
+\end_layout
+
+\begin_layout Enumerate
+El fichero html asociado a esta sección (
+\family typewriter
+administrator/servers.html
+\family default
+) recibe el diccionario, extrae los formularios, aplica el aspecto deseado
+ y los coloca en la página.
+\end_layout
+
+\begin_layout Enumerate
+A continuación, el administrador selecciona el servidor que quiere arrancar
+ y pulsa sobre el botón 
+\family typewriter
+Buscar servidor
+\family default
+.
+ La función 
+\family typewriter
+servers
+\family default
+, consulta al conector el estado del servidor y su información de conexión
+ y llama a la función 
+\family typewriter
+redirect
+\family default
+ con el mismo valor de función y de variable de estado anterior pero con
+ una lista adicional con la información encontrada.
+\end_layout
+
+\begin_layout Enumerate
+Al volver a ejecutar la función 
+\family typewriter
+servers
+\family default
+, se rellena los formularios con la información de conexión obtenida y se
+ muestran los botones que corresponden al estado del servidor.
+ Como el servidor se encuentra detenido, habrá un botón que permita arrancarlo.
+\end_layout
+
+\begin_layout Enumerate
+Se ejecuta de nuevo la vista 
+\family typewriter
+administrator/server.html
+\family default
+ con los formularios rellenos, se aplica el aspecto deseado y se coloca
+ en la página.
+\end_layout
+
+\begin_layout Enumerate
+Por último, el administrador pulsa sobre el botón 
+\family typewriter
+Arrancar servidor
+\family default
+.
+ La función 
+\family typewriter
+servers
+\family default
+ envía la petición al conector por medio de la llamada al método 
+\family typewriter
+bootUpVMServer
+\family default
+ con el nombre del servidor seleccionado y se queda esperando a la respuesta
+ del conector.
+ En caso de que todo haya ido bien, el conector no enviará ningún mensaje
+ de error y el servidor se habrá arrancado.
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagrama-de-secuencia-arranque-servidor-Administrador"
+
+\end_inset
+
+ muestra el diagrama de secuencia que representa el arranque de un servidor
+ de máquinas virtuales desde la web.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_Secuencia_arranque_Servidor_MV.pdf
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-de-secuencia-arranque-servidor-Administrador"
+
+\end_inset
+
+Diagrama de secuencia de arranque de un servidor de máquinas virtuales 
 \end_layout
 
 \end_inset
@@ -31484,19 +31711,6 @@ pictureId
 \end_layout
 
 \end_deeper
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Sección sobre el conector
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Vista de procesos
 \end_layout
