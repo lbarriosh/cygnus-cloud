@@ -28965,7 +28965,7 @@ io es.
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -29039,6 +29039,8 @@ Registro de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 1
 \end_layout
 
@@ -29048,6 +29050,8 @@ Registro de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -29121,6 +29125,8 @@ Error en el registro de servidor de
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 2
 \end_layout
 
@@ -29130,6 +29136,8 @@ Error en el registro de servidor de
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -29203,6 +29211,8 @@ Solicitud de estado de servidores
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -29212,6 +29222,8 @@ Solicitud de estado de servidores
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -29285,6 +29297,8 @@ Estado de servidores de
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -29294,6 +29308,8 @@ Estado de servidores de
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -29367,6 +29383,8 @@ Solicitud de distribución
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 5
 \end_layout
 
@@ -29376,6 +29394,8 @@ Solicitud de distribución
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -29449,6 +29469,8 @@ Distribución de imágenes
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 6
 \end_layout
 
@@ -29458,6 +29480,8 @@ Distribución de imágenes
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -29491,6 +29515,8 @@ Borrar o dar de baja
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 7
 \end_layout
 
@@ -29500,6 +29526,8 @@ Borrar o dar de baja
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -29575,6 +29603,8 @@ Arranque de servidor de
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 8
 \end_layout
 
@@ -29584,6 +29614,8 @@ Arranque de servidor de
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -29657,6 +29689,8 @@ Error de arranque de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 9
 \end_layout
 
@@ -29666,6 +29700,8 @@ Error de arranque de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -29739,6 +29775,8 @@ Arranque de máquina virtual
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -29748,6 +29786,8 @@ Arranque de máquina virtual
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 5
 \end_layout
 
@@ -29781,6 +29821,8 @@ Datos de conexión a máquina
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 11
 \end_layout
 
@@ -29790,6 +29832,8 @@ Datos de conexión a máquina
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 5
 \end_layout
 
@@ -29863,6 +29907,8 @@ Error de arranque de máquina
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 12
 \end_layout
 
@@ -29872,6 +29918,8 @@ Error de arranque de máquina
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -29945,6 +29993,8 @@ Apagar infraestructura
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 13
 \end_layout
 
@@ -29954,6 +30004,8 @@ Apagar infraestructura
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 1
 \end_layout
 
@@ -29987,6 +30039,8 @@ Solicitud datos de conexión VNC
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 14
 \end_layout
 
@@ -29996,6 +30050,8 @@ Solicitud datos de conexión VNC
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -30029,6 +30085,8 @@ Datos de conexión VNC
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 15
 \end_layout
 
@@ -30038,6 +30096,8 @@ Datos de conexión VNC
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -30071,6 +30131,8 @@ Comando ejecutado
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 16
 \end_layout
 
@@ -30080,6 +30142,8 @@ Comando ejecutado
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 5
 \end_layout
 
@@ -30113,6 +30177,8 @@ Error de apagado de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 17
 \end_layout
 
@@ -30122,6 +30188,8 @@ Error de apagado de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -30195,6 +30263,8 @@ Error de baja de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 18
 \end_layout
 
@@ -30204,6 +30274,8 @@ Error de baja de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -30279,6 +30351,8 @@ Apagado forzoso de virtual
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 19
 \end_layout
 
@@ -30288,6 +30362,8 @@ Apagado forzoso de virtual
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 5
 \end_layout
 
@@ -30321,6 +30397,8 @@ Error en apagado forzoso
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 20
 \end_layout
 
@@ -30330,6 +30408,8 @@ Error en apagado forzoso
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -30403,6 +30483,8 @@ Cambiar configuración de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 21
 \end_layout
 
@@ -30412,6 +30494,8 @@ Cambiar configuración de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -30487,6 +30571,8 @@ Error en cambio de configuración
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 22
 \end_layout
 
@@ -30496,6 +30582,8 @@ Error en cambio de configuración
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -30571,6 +30659,8 @@ Solicitud estado del repositorio
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 23
 \end_layout
 
@@ -30580,6 +30670,8 @@ Solicitud estado del repositorio
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -30613,6 +30705,8 @@ Estado del repositorio
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 24
 \end_layout
 
@@ -30622,6 +30716,8 @@ Estado del repositorio
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -30655,6 +30751,8 @@ Desplegar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 25
 \end_layout
 
@@ -30664,6 +30762,8 @@ Desplegar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 5
 \end_layout
 
@@ -30697,6 +30797,8 @@ Error al desplegar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 26
 \end_layout
 
@@ -30706,6 +30808,8 @@ Error al desplegar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -30739,6 +30843,8 @@ Imagen desplegada
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 27
 \end_layout
 
@@ -30748,6 +30854,8 @@ Imagen desplegada
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 5
 \end_layout
 
@@ -30781,6 +30889,8 @@ Borrar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 28
 \end_layout
 
@@ -30790,6 +30900,8 @@ Borrar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -30823,6 +30935,8 @@ Error al borrar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 29
 \end_layout
 
@@ -30832,6 +30946,8 @@ Error al borrar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -30928,7 +31044,7 @@ cluster
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -31002,6 +31118,8 @@ Crear imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 30
 \end_layout
 
@@ -31011,6 +31129,8 @@ Crear imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -31044,6 +31164,8 @@ Error al crear imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 31
 \end_layout
 
@@ -31053,6 +31175,8 @@ Error al crear imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -31086,6 +31210,8 @@ Imagen creada
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 32
 \end_layout
 
@@ -31095,6 +31221,8 @@ Imagen creada
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -31128,6 +31256,8 @@ Editar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 33
 \end_layout
 
@@ -31137,6 +31267,8 @@ Editar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -31170,6 +31302,8 @@ Imagen editada
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 34
 \end_layout
 
@@ -31179,6 +31313,8 @@ Imagen editada
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -31212,6 +31348,8 @@ Error al editar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 35
 \end_layout
 
@@ -31221,6 +31359,8 @@ Error al editar imagen
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -31254,6 +31394,8 @@ Borrar imagen de infraestructura
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 36
 \end_layout
 
@@ -31263,6 +31405,8 @@ Borrar imagen de infraestructura
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -31336,6 +31480,8 @@ Error al borrar imagen de
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 37
 \end_layout
 
@@ -31345,6 +31491,8 @@ Error al borrar imagen de
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -31420,6 +31568,8 @@ Despliegue automático
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 38
 \end_layout
 
@@ -31429,6 +31579,8 @@ Despliegue automático
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -31462,6 +31614,8 @@ Error de despliegue automático
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 39
 \end_layout
 
@@ -31471,6 +31625,8 @@ Error de despliegue automático
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 3
 \end_layout
 
@@ -31504,6 +31660,8 @@ Solicitud de estadísticas de servidores
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 40
 \end_layout
 
@@ -31513,6 +31671,8 @@ Solicitud de estadísticas de servidores
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -31588,6 +31748,8 @@ Estadísticas de servidores de
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 41
 \end_layout
 
@@ -31597,6 +31759,8 @@ Estadísticas de servidores de
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 10
 \end_layout
 
@@ -31670,6 +31834,8 @@ Reinicio forzoso de máquina virtual
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 42
 \end_layout
 
@@ -31679,6 +31845,8 @@ Reinicio forzoso de máquina virtual
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 5
 \end_layout
 
@@ -31712,6 +31880,8 @@ Error en reinicio forzoso
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 43
 \end_layout
 
@@ -31721,6 +31891,8 @@ Error en reinicio forzoso
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 4
 \end_layout
 
@@ -31847,10 +32019,10 @@ Estado de servidores de máquinas virtuales
 \family default
 \series default
  contienen las direcciones IP, el número de CPUs físicas, el número de CPUs
- virtuales, la memoria RAM utilizada, la memoria RAM libre, el espacio de
- almacenamiento utilizado, el espacio de almacenamiento libre, el espacio
+ virtuales, la memoria RAM utilizada, la memoria RAM instalada, el espacio
+ de almacenamiento utilizado, el espacio de almacenamiento total, el espacio
  de almacenamiento temporal utilizado y el espacio de almacenamiento temporal
- libre de los servidores de máquinas virtuales arrancados.
+ total de los servidores de máquinas virtuales arrancados.
 \end_layout
 
 \begin_layout Itemize
@@ -32013,6 +32185,1424 @@ strings
 
 \begin_layout Itemize
 el resto de datos de los paquetes son valores enteros.
+\end_layout
+
+\begin_layout Subsubsection
+Esquema de la base de datos
+\end_layout
+
+\begin_layout Standard
+La base de datos del servidor de 
+\emph on
+cluster 
+\emph default
+contiene las siguientes tablas:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+VMServer
+\family default
+.
+ Esta tabla almacena los datos básicos de todos los servidores de máquinas
+ virtuales registrados.
+ Incluye las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverId
+\family default
+: identificador único del servidor de máquinas virtuales.
+ Se trata de un valor entero, y es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+serverName
+\family default
+: nombre del servidor de máquinas virtuales.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+serverStatus
+\family default
+: estado del servidor de máquinas virtuales.
+ Ocupa un 
+\emph on
+byte
+\emph default
+, y se codifica de acuerdo al cuadro 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Estado-servidor"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Para evitar errores, en el código fuente no manipulamos directamente estos
+ valores: lo hacemos a través del tipo enumerado 
+\family typewriter
+SERVER_STATE_T
+\family default
+, definido en el paquete 
+\family typewriter
+clusterServer.database
+\family default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverIP
+\family default
+: dirección IP del servidor de máquinas virtuales.
+ Se trata de una cadena de caracteres de 15 
+\emph on
+bytes
+\emph default
+ de longitud.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+serverPort
+\family default
+: puerto en el que escucha el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isEditionServer
+\family default
+: ocupa un 
+\emph on
+bit
+\emph default
+, e indica si el servidor de máquinas virtuales es un servidor de edición
+ o no.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Código
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Descripción
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Constante tipo enumeado
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+(
+\family typewriter
+SERVER_STATE_T
+\family default
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Arranque iniciado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+BOOTING
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Listo para atender peticiones
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+READY
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Apagado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+SHUT_DOWN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Reestableciendo conexión
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+RECONNECTING
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+\emph on
+Timeout
+\emph default
+ al reestablecer conexión
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+CONNECTION_TIMED_OUT
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Estado-servidor"
+
+\end_inset
+
+Codificación del estado de un servidor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ImageOnServer
+\family default
+.
+ Esta tabla almacena la distribución de las imágenes.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverId
+\family default
+: identificador único de un servidor de máquinas virtuales.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+: identificador único de una imagen de disco.
+ Se trata de un valor entero que, junto con el identificador del servidor
+ de máquinas virtuales, es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+status
+\family default
+: estado de la copia de la imagen.
+ Ocupa un 
+\emph on
+byte
+\emph default
+, y su valor se codifica de acuerdo al cuadro 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Estado-imagen"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Para evitar errores, en el código fuente no manipulamos directamente estos
+ valores: lo hacemos a través del tipo enumerado 
+\family typewriter
+IMAGE_STATE_T
+\family default
+, definido en el paquete 
+\family typewriter
+clusterServer.database
+\family default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Código
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Descripción
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Constante tipo enumeado
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+(
+\family typewriter
+SERVER_STATE_T
+\family default
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Copia lista para ser utilizada
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+READY
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Copia con datos antiguos
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+EDITED
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Copia en proceso de despliegue
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DEPLOY
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family sans
+Copia pendiente de borrado
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+DELETE
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Estado-imagen"
+
+\end_inset
+
+Codificación del estado de una imagen
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+VMServerStatus
+\family default
+.
+ Esta tabla almacena el estado de todos los servidores de máquinas virtuales.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverId
+\family default
+: identificador único de un servidor de máquinas virtuales.
+ Se trata de un valor entero, y es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+guests
+\family default
+: número de máquinas virtuales activas alojadas en el servidor.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ramInUse
+\family default
+: memoria RAM utilizada (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ramSize
+\family default
+: tamaño de la memoria RAM instalada (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+freeStorageSpace
+\family default
+: espacio de almacenamiento libre (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+availableStorageSpace
+\family default
+: espacio de almacenamiento total (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+freeTemporarySpace
+\family default
+: espacio de uso temporal libre (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+availableTemporarySpace
+\family default
+: espacio de uso temporal total (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+activeVCPUs
+\family default
+: número de CPUs virtuales en uso.
+ Ocupa un 
+\emph on
+byte
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+physicalCPUs
+\family default
+: número de CPUs físicas del servidor de máquinas virtuales.
+ Ocupa un 
+\emph on
+byte
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+AllocatedVMServerResources
+\family default
+.
+ Esta tabla almacena los recursos reservados en los servidores de máquinas
+ virtuales.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverId
+\family default
+: identificador único de un servidor de máquinas virtuales.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+commandID
+\family default
+: identificador único de la petición.
+ Se trata de una cadena de caracteres de 70 
+\emph on
+bytes
+\emph default
+ de longitud que es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ramInUse
+\family default
+: memoria RAM reservada (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero, y es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+freeStorageSpace
+\family default
+: espacio de almacenamiento reservado (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+freeTemporarySpace
+\family default
+: espacio de uso temporal reservado (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+activeVCPUs
+\family default
+: número de CPUs virtuales reservadas.
+ Ocupa un 
+\emph on
+byte
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+physicalCPUs
+\family default
+: número de CPUs físicas.
+ Ocupa un 
+\emph on
+byte
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+activeHosts
+\family default
+: número de máquinas virtuales.
+ Ocupa un 
+\emph on
+byte
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+remove
+\family default
+: este 
+\emph on
+bit
+\emph default
+ indica si la entrada puede eliminarse en la próxima actualización del estado.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+VMFamily
+\family default
+.
+ Esta tabla almacena las características de las familias de máquinas virtuales.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+familyId
+\family default
+: identificador único de la familia.
+ Se trata de un valor entero, y es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+familyName
+\family default
+: se trata de una cadena de caracteres de hasta 20 
+\emph on
+bytes
+\emph default
+ de longitud.
+ Esta columna contiene el nombre de la familia de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ramSize
+\family default
+: tamaño de la memoria RAM (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+osDiskSize
+\family default
+: tamaño de la imagen de disco del sistema operativo (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+dataDiskSize
+\family default
+: tamaño de la imagen de disco que almacenará los datos temporales y el
+ fichero de paginación (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+vCPUs
+\family default
+: número de CPUs virtuales.Ocupa un 
+\emph on
+byte
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+VanillaImageFamilyOf
+\family default
+.
+ Esta tabla asocia a cada imagen una familia de máquinas virtuales.
+ Contiene dos columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+familyId
+\family default
+: identificador único de la familia de máquinas virtuales.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+: identificador único de la imagen de disco.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Standard
+Las dos columnas de la tabla forman la clave primaria.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+VanillaImageFamilyOfNewVM
+\family default
+.
+ Esta tabla asocia a cada imagen de nueva creación una familia de máquinas
+ virtuales.
+ Contiene dos columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+familyId
+\family default
+: identificador único de la familia de máquinas virtuales.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+temporaryID
+\family default
+: se trata de una cadena de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+ de longitud.
+ Esta columna almacenará el identificador temporal de la nueva imagen, y
+ será la clave primaria de la tabla.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ImageRepositoryStatus
+\family default
+.
+ Esta tabla almacena el estado del repositorio de imágenes.
+ Incluye las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+repositoryIP
+\family default
+: dirección IP del repositorio de imágenes.
+ Se trata de una cadena de caracteres de 15 
+\emph on
+bytes
+\emph default
+ de longitud.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+repositoryPort
+\family default
+: puerto de la conexión de control del repositorio de imágenes.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+freeDiskSpace
+\family default
+: espacio de almacenamiento libre (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+availableDiskSpace
+\family default
+: espacio de almacenamiento total (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+status
+\family default
+: estado del repositorio de imágenes.
+ Ocupa un 
+\emph on
+byte
+\emph default
+, y puede tomar cualquiera de los valores del cuadro 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Estado-servidor"
+
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+AllocatedImageRepositoryResources
+\family default
+.
+ Esta tabla almacena los recursos reservados en el repositorio de imágenes.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+commandID
+\family default
+: identificador único de la petición.
+ Se trata de una cadena de caracteres de 70 
+\emph on
+bytes
+\emph default
+ de longitud que es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+allocatedDiskSpace
+\family default
+: espacio de almacenamiento reservado (en 
+\emph on
+kilobytes
+\emph default
+).
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+remove
+\family default
+: este 
+\emph on
+bit
+\emph default
+ indica si la entrada puede eliminarse en la próxima actualización del estado.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+VMBootCommand
+\family default
+.
+ Esta tabla almacena el instante de tiempo en el se enviaron los distintos
+ comandos de arranque de máquinas virtuales.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+commandID
+\family default
+: identificador único de la petición.
+ Se trata de una cadena de caracteres de 70 
+\emph on
+bytes
+\emph default
+ de longitud que es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+dispatchTime
+\family default
+: instante de tiempo en el que se envió el comando.
+ Se trata de un valor en punto flotante.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+: identificador de la imagen que utiliza la máquina virtual a arrancar.
+ Se trata de un valor entero.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ActiveVMDistribution
+\family default
+.
+ Esta tabla almacena la distribución de todas las máquinas virtuales activas.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+vmID
+\family default
+: identificador único de la máquina virtual.
+ Se trata de una cadena de caracteres de 70 
+\emph on
+bytes
+\emph default
+ de longitud que es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+serverID
+\family default
+: identificador único del anfitrión de la máquina virtual.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ImageEditionCommand
+\family default
+, 
+\family typewriter
+ImageDeletionCommand
+\family default
+, 
+\family typewriter
+AutoDeploymentCommand
+\family default
+.
+ Estas tablas se utilizan para procesar los comandos de edición, borrado
+ total y despliegue automático de imágenes, y contienen las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+commandID
+\family default
+: identificador único de la petición de edición, borrado o despliegue automático.
+ Se trata de una cadena de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+ de longitud, y es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+: identificador único de la imagen afectada por dicha petición.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Finalmente, las tablas 
+\family typewriter
+VMServer
+\family default
+, 
+\family typewriter
+ImageOnServer
+\family default
+, 
+\family typewriter
+VanillaImageFamily
+\family default
+, 
+\family typewriter
+VanillaImageFamilyOf
+\family default
+ y 
+\family typewriter
+VanillaImageFamilyOfNewVM
+\family default
+ residen en disco.
+ El resto de tablas de la base de datos residen en memoria.
 \end_layout
 
 \begin_layout Standard
