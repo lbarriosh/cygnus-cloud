@@ -697,8 +697,27 @@ anfitrión
 host
 \series default
 \emph default
+ 
+\series bold
+de una máquina virtual
+\series default
 : servidor en el que reside cierta máquina virtual.
  
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+anfitrión
+\series default
+ o 
+\series bold
+\emph on
+host 
+\emph default
+de una imagen
+\series default
+: servidor que puede albergar instancias de una imagen.
 \end_layout
 
 \begin_layout Itemize
@@ -20978,7 +20997,14 @@ cluster
 \end_layout
 
 \begin_layout Standard
-Finalmente, en caso de que 
+Es importante notar que, si alguna máquina virtual está utilizando las imágenes
+ de disco a borrar, el sistema de ficheros del servidor de máquinas virtuales
+ nos garantizará que no se producirán errores: las imágenes de disco sólo
+ se borrarán cuando ninguna máquina virtual los utilice.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, en caso de que 
 \end_layout
 
 \begin_layout Itemize
@@ -20995,20 +21021,7 @@ se produzca un error al realizar la actualización de la base de datos
 \end_layout
 
 \begin_layout Standard
-se generará un paquete del tipo 
-\family sans
-Error de borrado
-\family default
-.
- Estos paquetes tienen la misma información que los paquetes del tipo 
-\family sans
-Imagen borrada
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-Siempre que se produce un error, se aborta el proceso de borrado, y
+se abortará el proceso de borrado y se procederá de la siguiente manera:
 \end_layout
 
 \begin_layout Enumerate
@@ -21017,6 +21030,12 @@ se construye el paquete del tipo
 Error de borrado de imagen
 \family default
 .
+ Estos paquetes tienen la misma información que los paquetes del tipo 
+\family sans
+Imagen borrada
+\family default
+.
+ 
 \end_layout
 
 \begin_layout Enumerate
@@ -25268,8 +25287,12 @@ cluster
 \end_layout
 
 \begin_layout Itemize
-tras establecer la conexión con el servidor de máquinas virtuales, se le
- envía un paquete del tipo 
+tras establecer la conexión con el servidor de máquinas virtuales, 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+se le envía un paquete del tipo 
 \family sans
 Solicitud de identificadores de máquinas virtuales activas
 \family default
@@ -25279,6 +25302,22 @@ Solicitud de identificadores de máquinas virtuales activas
  la infraestructura.
 \end_layout
 
+\begin_layout Itemize
+se actualizan las imágenes de disco almacenadas en el servidor de máquinas
+ virtuales.
+ Para ello, se le envían los paquetes de los tipos 
+\family sans
+Borrar imagen
+\family default
+ y 
+\family sans
+Desplegar imagen
+\family default
+ que sean necesarios.
+ Justificaremos la necesidad de este paso en las secciones y .
+\end_layout
+
+\end_deeper
 \begin_layout Paragraph
 Arranque de un servidor de máquinas virtuales: tratamiento de errores 
 \begin_inset CommandInset label
@@ -26916,7 +26955,7 @@ se obtienen los datos de la imagen y el estado del servidor de máquinas
 \begin_layout Enumerate
 acto seguido, se comprueba si el servidor de máquinas virtuales está arrancado.
  También se comprueba si el servidor de máquinas virtuales puede albergar
- la imagen.
+ las instancias que utilizarán la imagen.
 \end_layout
 
 \begin_layout Enumerate
@@ -27447,7 +27486,7 @@ Los servidores de
 \emph on
 cluster
 \emph default
- también soportan dos operaciones de borrado de imágenes de disco:
+ también soportan dos operaciones de borrado de imágenes:
 \end_layout
 
 \begin_layout Itemize
@@ -27456,8 +27495,8 @@ cluster
 borrado manual
 \series default
 .
- Esta operación permite borrar dos imágenes de disco almacenadas en cierto
- servidor de máquinas virtuales.
+ Esta operación borra la copia de una imagen almacenada en cierto servidor
+ de máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
@@ -27466,11 +27505,9 @@ borrado manual
 borrado total
 \series default
 .
- En este caso se borrarán dos imágenes de disco de todos los servidores
- de máquinas virtuales que las contienen, con independencia de que estén
- apagados o arrancados.
- Asimismo, también se borrará un fichero comprimido del repositorio de imágenes:
- el que contiene las imágenes de disco a borrar.
+ Esta operación borra todas las copias de una imagen almacenadas en todos
+ los servidores de máquinas virtuales, y también el fichero comprimido asociado
+ a la misma, que se almacena en el repositorio de imágenes.
 \end_layout
 
 \begin_layout Standard
@@ -27524,21 +27561,42 @@ el nombre o la dirección IP del servidor de máquinas virtuales en el que
 \end_layout
 
 \begin_layout Standard
-El 
-\emph on
-flag
-\emph default
- nos permite distinguir las operaciones de despliegue y borrado manual de
- imágenes, ya que ambas utilizan el mismo tipo de paquete.
+Durante el procesamiento de estos paquetes, se siguen, esencialmente, los
+ mismos pasos que en el despliegue manual de una imagen.
+ No obstante, existen tres diferencias:
 \end_layout
 
-\begin_layout Standard
-Tras recibir uno de estos paquetes, y siempre que no se produzcan errores,
- el servidor de 
+\begin_layout Itemize
+en lugar de comprobar si el servidor de máquinas virtuales puede albergar
+ las instancias de la imagen imagen, se comprueba si este contiene la imagen.
+\end_layout
+
+\begin_layout Itemize
+para borrar la imagen del servidor de máquinas virtuales, se le envía un
+ paquete del tipo 
+\family sans
+Borrar imagen
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+cuando el servidor de máquinas virtuales borra la imagen, este envía un
+ paquete del tipo 
+\family sans
+Imagen borrada
+\family default
+ al servidor de 
 \emph on
 cluster
 \emph default
- actuará como se indica en el diagrama de secuencia de la figura 
+.
+ Sólo en este momento se borrará la ubicación correspondiente de las imágenes
+ de disco.
+\end_layout
+
+\begin_layout Standard
+Estos pasos aparecen en el diagrama de secuencia de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Borrado-manual-sin-errores"
@@ -27584,43 +27642,22 @@ Borrado manual de una imagen: secuencia básica
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-Los pasos que se siguen son muy similares a los de un despliegue manual,
- por lo que nos limitaremos a comentar las diferencias:
-\end_layout
-
-\begin_layout Itemize
-en lugar de comprobar si el servidor de máquinas virtuales puede albergar
- las imágenes de disco, se comprueba si este las contiene.
-\end_layout
-
-\begin_layout Itemize
-para borrar las imágenes de disco del servidor de máquinas virtuales, se
- le envía un paquete del tipo 
+Es importante notar que el 
+\emph on
+flag
+\emph default
+ de los paquetes del tipo 
 \family sans
-Borrar imagen
+Desplegar o borrar imagen
 \family default
-.
-\end_layout
-
-\begin_layout Itemize
-cuando las imágenes de disco se han borrado del servidor de máquinas virtuales,
- este envía un paquete del tipo 
-\family sans
-Imagen borrada
-\family default
-.
- Sólo en este momento se borrará la ubicación correspondiente de las imágenes
- de disco.
+ nos permite distinguir las operaciones de despliegue de las operaciones
+ de borrado manual de imágenes, ya que ambas utilizan el mismo tipo de paquete.
 \end_layout
 
 \begin_layout Paragraph
@@ -27641,16 +27678,429 @@ el servidor de máquinas virtuales no contiene las imágenes de disco.
 \end_layout
 
 \begin_layout Standard
-En ambos casos, se procede de la misma manera: se aborta la petición y se
- envía un paquete del tipo 
+En ambos casos, se procede de la misma manera: 
+\end_layout
+
+\begin_layout Enumerate
+se aborta el proceso de borrado.
+\end_layout
+
+\begin_layout Enumerate
+se envía un paquete del tipo 
 \family sans
-Error al borrar imagen al servidor web
+Error al borrar imagen
 \family default
-.
+ al servidor web.
 \end_layout
 
 \begin_layout Paragraph
-Borrado total de una imagen: secuencia básica
+Borrado total de una imagen: secuencia básica 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Borrado-total-sec-básica"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cuando el servidor de 
+\emph on
+cluster 
+\emph default
+recibe un paquete del tipo 
+\family sans
+Borrar imagen de infraestructura
+\family default
+, se inicia el proceso de borrado total de la imagen.
+ Como ya hemos dicho, en este caso 
+\end_layout
+
+\begin_layout Itemize
+se borrarán todas las copias de la imagen existentes en todos los servidores
+ de máquinas virtuales, con independencia de su estado, y
+\end_layout
+
+\begin_layout Itemize
+se borrará el fichero comprimido del repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Por claridad, mostraremos el funcionamiento de esta operación utilizando
+ un ejemplo.
+ Supongamos que
+\end_layout
+
+\begin_layout Itemize
+se desea borrar la imagen con identificador 1.
+\end_layout
+
+\begin_layout Itemize
+esa imagen se encuentra desplegada en los servidores de máquinas virtuales
+ 
+\family sans
+A
+\family default
+ y 
+\family sans
+B
+\family default
+.
+ El servidor 
+\family sans
+A
+\family default
+ está arrancado, pero el servidor 
+\family sans
+B
+\family default
+, no.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Inicio borrado total.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Borrado-total-imagen-inicio"
+
+\end_inset
+
+Borrado total de una imagen: fase inicial
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Borrado-total-imagen-inicio"
+
+\end_inset
+
+ muestra la primera fase de la operación de borrado total.
+ En ella, se siguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se solicita el borrado de la imagen al repositorio de imágenes.
+\end_layout
+
+\begin_layout Enumerate
+se borra la asociación entre la imagen y una familia de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+se modifica el estado de todas las copias existentes de la imagen.
+ A partir de este momento, ninguna de ellas podrá utilizarse para crear
+ una nueva máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+se envía un paquete del tipo 
+\family sans
+Borrar imagen
+\family default
+ a todos los servidores de máquinas virtuales arrancados que tienen una
+ copia de la imagen.
+\end_layout
+
+\begin_layout Standard
+En la segunda fase de la operación, se procesan las respuestas del repositorio
+ de imágenes y del servidor de máquinas virtuales.
+ Dicho procesamiento se recoge en el diagrama de secuencia de la figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Borrado-total-imagen-fase-2"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Borrado total fase 2.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Borrado-total-imagen-fase-2"
+
+\end_inset
+
+Borrado total de una imagen: procesamiento de los paquetes de confirmación
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia,
+\end_layout
+
+\begin_layout Itemize
+el paquete del tipo 
+\family sans
+Solicitud de borrado recibida
+\family default
+ enviado por el repositorio de imágenes se descarta.
+\end_layout
+
+\begin_layout Itemize
+cuando el servidor de máquinas virtuales 
+\family sans
+A
+\family default
+ envía el paquete 
+\family sans
+Imagen borrada
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+, este
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+borra la ubicación de la copia de la imagen.
+\end_layout
+
+\begin_layout Itemize
+comprueba si la imagen está ubicada en algún servidor de máquinas virtuales
+ más.
+ Como el servidor 
+\family sans
+B
+\family default
+ está apagado, su copia no se ha borrado.
+ Por ello, la operación de borrado total aún no ha finalizado.
+\end_layout
+
+\begin_layout Standard
+Debemos recordar que los paquetes del tipo 
+\family sans
+Imagen borrada
+\family default
+ contienen el identificador único de la petición y el identificador único
+ de la imagen a borrar.
+ Esto permite al servidor de 
+\emph on
+cluster 
+\emph default
+identificar la petición de borrado.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Por otra parte, como dijimos al presentar el proceso de arranque de un servidor
+ de máquinas virtuales, cuando se arranque el servidor de máquinas virtuales
+ B se le enviará un paquete del tipo 
+\family sans
+Borrar imagen
+\family default
+ para borrar en él la imagen 1.
+\end_layout
+
+\begin_layout Standard
+La respuesta del servidor de máquinas virtuales se procesará casi igual
+ que en el diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Borrado-total-imagen-fase-2"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+No obstante, tras procesar el paquete del tipo 
+\family sans
+Imagen borrada
+\family default
+ no habrá ninguna otra copia de la imagen 1, por lo que construirá un paquete
+ del tipo 
+\family sans
+Comando ejecutado
+\family default
+ y se enviará al servidor web.
+\end_layout
+
+\begin_layout Subsubsection
+Borrado total de una imagen: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Mientras se procesa una petición de borrado total, se producirán errores
+ cuando
+\end_layout
+
+\begin_layout Itemize
+la imagen a borrar no existe.
+\end_layout
+
+\begin_layout Itemize
+el borrado de la imagen falla en algún servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Los errores del primer tipo se detectan tan pronto como empieza a procesarse
+ la petición.
+ En estos casos,
+\end_layout
+
+\begin_layout Enumerate
+se aborta el procesamiento de la petición.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Error al borrar imagen de infraestructura
+\family default
+.
+ Estos paquetes contienen el identificador único de la imagen a borrar y
+ un código de descripción del error.
+\end_layout
+
+\begin_layout Enumerate
+se envía dicho paquete al servidor web.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los errores del segundo tipo se tratan igual que los errores
+ de despliegue automático:
+\end_layout
+
+\begin_layout Enumerate
+cuando se recibe el primer paquete del tipo 
+\family sans
+Error al borrar imagen
+\family default
+ procedente de un servidor de máquinas virtuales, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+no se borra la ubicación de la imagen de la base de datos.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Error al borrar imagen de infraestructura
+\family default
+ y se envía al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Debemos recordar que los paquetes del tipo 
+\family sans
+Error al borrar imagen
+\family default
+ contienen el identificador de la petición y el identificador de la imagen
+ a borrar.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+si más servidores de máquinas virtuales envían un paquete del tipo Error
+ al borrar imagen al servidor de 
+\emph on
+cluster
+\emph default
+, estos se ignorarán.
+\end_layout
+
+\begin_layout Enumerate
+si un servidor de máquinas virtuales envía un paquete del tipo 
+\family sans
+Imagen borrada
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+, se borrará la ubicación de la imagen correspondiente.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia que muestra estas interacciones es prácticamente
+ idéntico al de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Despliegue-automático-error-2"
+
+\end_inset
+
+.
+ Por ello, hemos decidido no incluirlo.
 \end_layout
 
 \begin_layout Subsubsection
