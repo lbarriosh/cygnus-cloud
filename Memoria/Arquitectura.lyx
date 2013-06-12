@@ -32649,7 +32649,7 @@ serverId
 \family typewriter
 imageID
 \family default
-: identificador único de una imagen de disco.
+: identificador único de una imagen.
  Se trata de un valor entero que, junto con el identificador del servidor
  de máquinas virtuales, es la clave primaria de la tabla.
 \end_layout
@@ -35266,7 +35266,183 @@ endpoint
 \end_layout
 
 \begin_layout Subsubsection
-Esquemas de la base de datos de comandos
+Esquema de la base de datos de comandos
+\end_layout
+
+\begin_layout Standard
+La base de datos de comandos contiene las siguientes tablas:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+QueuedCommand
+\family default
+.
+ En ella, se almacenan los identificadores de las peticiones que aún no
+ se han atendido.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+userID
+\family default
+: es el identificador único del usuario que ha creado la petición.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+timestamp
+\family default
+.
+ este valor de punto flotante contiene el instante de entrada de la petición
+ representado como el número de milisegundos transcurridos desde el 1 de
+ enero de 1970.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+PendingCommand
+\family default
+.
+ Esta tabla contiene los datos de todas las peticiones que se están ejecutando
+ o que están a la espera de ser ejecutadas.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+userID
+\family default
+, 
+\family typewriter
+timestamp
+\family default
+.
+ Son idénticas a las de la tabla 
+\family typewriter
+QueuedCommand
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+commandType
+\family default
+.
+ Se trata de un 
+\emph on
+byte
+\emph default
+, que codifica el tipo de la petición.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+commandArgs
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 100 
+\emph on
+bytes
+\emph default
+ de longitud que contiene los argumentos de la petición serializados.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+RunCommandOutput
+\family default
+.
+ Esta tabla contiene las salidas asociadas a todas las peticiones que han
+ terminado de ejecutarse.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+userID
+\family default
+, 
+\family typewriter
+timestamp
+\family default
+.
+ Son idénticas a las de la tabla 
+\family typewriter
+QueuedCommand
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+outputType
+\family default
+.
+ Se trata de un 
+\emph on
+byte
+\emph default
+, que codifica el tipo de la salida.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+commandOutput
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 200 
+\emph on
+bytes
+\emph default
+ de longitud que contiene la salida de la petición serializada.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isNotification
+\family default
+.
+ Se trata de un 
+\emph on
+bit
+\emph default
+ que indica si una fila de la tabla es la salida de un comando de alta latencia
+ o no.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Todas estas tablas utilizan la clave primaria (
+\family typewriter
+userID
+\family default
+, 
+\family typewriter
+timestamp
+\family default
+).
+ Asimismo, por motivos de eficiencia, todas ellas residen en memoria.
 \end_layout
 
 \begin_layout Subsubsection
@@ -35275,6 +35451,507 @@ Esquema de la base de datos del
 endpoint
 \end_layout
 
+\begin_layout Standard
+Las principales tablas de la base de datos del 
+\emph on
+endpoint
+\emph default
+ son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+VirtualMachineServer
+\family default
+.
+ Esta tabla almacena los datos básicos de los servidores de máquinas virtuales
+ pertenecientes al 
+\emph on
+cluster
+\emph default
+.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverName
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el nombre del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+serverStatus
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará la representación textual del estado del servidor
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+serverIP
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 15 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará la dirección IP del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+serverPort
+\family default
+.
+ Este valor entero almacenará el puerto de la conexión de control del servidor
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isEditionServer
+\family default
+.
+ Se trata de un 
+\emph on
+bit
+\emph default
+, que indica si el servidor de máquinas virtuales es un servidor de edición
+ o no.
+\end_layout
+
+\begin_layout Standard
+La columna 
+\family typewriter
+serverName
+\family default
+ es la clave primaria de esta tabla.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+VirtualMachineServerStatus
+\family default
+.
+ Esta tabla almacena el estado de todos los servidores de máquinas virtuales
+ del 
+\emph on
+cluster
+\emph default
+, y es idéntica a la tabla 
+\family typewriter
+VMServerStatus
+\family default
+ de la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ImageRepositoryStatus
+\family default
+.
+ Esta tabla almacena el estado del repositorio de imágenes del 
+\emph on
+cluster
+\emph default
+, y es idéntica a su tabla homónima de la base de datos del servidor de
+ 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ImageDistribution
+\family default
+.
+ Esta tabla almacena la distribución de las imágenes.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverName
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el nombre del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+: identificador único de una imagen.
+ Se trata de un valor entero que, junto con la columna 
+\family typewriter
+serverName
+\family default
+, es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageStatus
+\family default
+: Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud que almacenará la representación textual del estado de la copia
+ de la imagen.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ActiveVirtualMachine
+\family default
+.
+ Esta tabla contiene los datos asociados a todas las máquinas virtuales
+ activas.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverName
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el nombre del anfitrión de la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+domainUID
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el identificador único de la máquina virtual.
+ Esta columna es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ownerID
+\family default
+.
+ Se trata de un valor entero que almacena el identificador del propietario
+ de la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Es el identificador único de la imagen utilizada por la máquina virtual.
+ Se trata de un valor entero.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+port
+\family default
+.
+ Es el puerto del 
+\emph on
+websocket
+\emph default
+ asociado al servidor VNC de la máquina virtual.
+ Se trata de un valor entero.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+password
+\family default
+.
+ Se trata de una cadena de caracteres de 65 
+\emph on
+bytes
+\emph default
+ de longitud que almacenará la contraseña del servidor VNC asociado a la
+ máquina virtual.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+VMFamily
+\family default
+.
+ Esta tabla es idéntica a su tabla homónima de la base de datos del servidor
+ de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Image
+\family default
+.
+ Esta tabla almacena los datos básicos de una imagen de disco que no se
+ está creando o editando.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Es el identificador único de la imagen.
+ Se trata de un valor entero, que es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+vmFamilyID
+\family default
+.
+ Es el identificador único de la familia de máquinas virtuales asociada
+ a la imagen.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+name
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 20 
+\emph on
+bytes
+\emph default
+ de longitud que almacenará el nombre de la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+description
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 200 
+\emph on
+bytes
+\emph default
+ de longitud que almacenará la descripción de la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+osFamily
+\family default
+, 
+\family typewriter
+osVariant
+\family default
+.
+ Estos valores ocupan un 
+\emph on
+byte
+\emph default
+, y asignan una familia de sistemas operativos y un sistema operativo concreto
+ a la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isBaseImage
+\family default
+.
+ Indica si la imagen es una imagen base o no.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isBootable
+\family default
+.
+ Indica si la imagen se puede utilizar para arrancar máquinas virtuales
+ convencionales o no.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+EditedImage
+\family default
+.
+ Esta tabla almacena los datos básicos de una imagen de disco que se está
+ creando o editando.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+temporaryID
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el identificador único de la petición de creación
+ o edición de imagen.
+ Esta columna es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Es el identificador único asignado a la imagen.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+vmFamilyID
+\family default
+.
+ Es el identificador único de la familia de máquinas virtuales asociada
+ a la imagen.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+name
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 20 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el nombre de la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+description
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 200 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará la descripción de la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+osFamily
+\family default
+, 
+\family typewriter
+osVariant
+\family default
+.
+ Estos valores ocupan un 
+\emph on
+byte
+\emph default
+, y asignan una familia de sistemas operativos y un sistema operativo concreto
+ a la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isBaseImage
+\family default
+.
+ Indica si la imagen es una imagen base o no.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isBootable
+\family default
+.
+ Indica si la imagen se puede utilizar para arrancar máquinas virtuales
+ convencionales o no.
+\end_layout
+
+\end_deeper
 \begin_layout Subsection
 El paquete 
 \family typewriter
