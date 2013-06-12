@@ -125,7 +125,7 @@ hardware
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -182,7 +182,7 @@ Definición
 
 \begin_layout Standard
 Según indica el Instituto Nacional de Estándares y Tecnologías de Estados
- Unidos (NIST) en 
+ Unidos (NIST) en el documento 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "NIST2011"
@@ -191,7 +191,9 @@ key "NIST2011"
 
 , el 
 \emph on
-Cloud Computing es
+Cloud Computing 
+\emph default
+es
 \end_layout
 
 \begin_layout Quotation
@@ -304,7 +306,7 @@ s del siglo XIX.
 \begin_layout Standard
 Hoy en día, todos nosotros disponemos de agua potable purificada abriendo
  cualquier grifo de nuestra casa.
- Así, cada vez que abrimos un grifo, estamos obviando
+ Cada vez que abrimos un grifo, estamos obviando
 \end_layout
 
 \begin_layout Itemize
@@ -329,9 +331,9 @@ la planta donde se depurarán las aguas residuales que generamos en nuestro
 \end_layout
 
 \begin_layout Standard
-Aunque el sistema de distribución de agua puede llegar a ser muy complejo,
- para disponer de agua potable sólo debemos preocuparnos por pagar las factuas
- de la compañía suministradora.
+De esta manera, aunque el sistema de distribución de agua puede llegar a
+ ser muy complejo, para disponer de agua potable sólo debemos preocuparnos
+ por pagar las factuas de la compañía suministradora.
  
 \end_layout
 
@@ -627,18 +629,11 @@ Cloud Computing
 Agilidad
 \series default
 .
- El usuario puede gestionar de manera sencillas que aplicaciones necesita
- en su entorno de desarrollo.
- De esta forma el usuario puede adquirir o borrar sus aplicaciones según
- las requiera o no en cada momento de manera fácil y rápida.
- Para explicar mejor este aspecto introduciremos un ejemplo.
- Imaginemos una determinada empresa que usa una determinada aplicación durante
- un mes .
- Una vez finalizado el mes , la empresa decide centrarse en otro aspecto
- del desarrollo que no requieren de la aplicación y por lo tanto no quieren
- pagar por ella durante este mes así que decide eliminarla .
- Si al tercer mes la empresa requiere de nuevo la aplicación puede volver
- a adquirirla de manera rápida y sencilla.
+ El usuario puede gestionar de manera sencilla las aplicaciones que necesita
+ en su entorno de trabajo.
+ Así, el usuario puede adquirir o dejar de utilizar sus aplicaciones según
+ sus necesidades y de manera fácil y rápida.
+ 
 \end_layout
 
 \begin_layout Itemize
@@ -647,34 +642,45 @@ Agilidad
 Reducción de costes
 \series default
 .
- Gracias a las empresas encargadas en alquilar su 
+ Dado que existen empresas dedicadas a alquilar 
 \shape italic
 hardware
 \shape default
  a los usuarios interesados en ejecutar sus aplicaciones en la nube, estos
  no necesitarán hacer frente a los gastos iniciales de compra de recursos
- así como a los gastos de mantenimiento.
- Esto reduce el coste de desarrollo ya que aunque bien es cierto que es
- necesario pagar un alquiler por los servidores sobre los que se ejecuta
- el entorno de la empresa, este es menor a los posibles gastos a corto y
- largo plazo a los que habría que hacer frente.
+ ni a los gastos de mantenimiento.
  
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+Si bien es cierto que es necesario pagar un alquiler por los servidores
+ utilizados, este es menor a los posibles gastos a corto y largo plazo a
+ los que habría que hacer frente.
+ 
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 
 \series bold
 Accesibilidad
 \series default
 .
- La independencia entre la entorno de trabajo y la localización del servidor
- que ejecuta el servicio permite al usuario acceder a sus herramientas de
- trabajo desde cualquier dispositivo con acceso a la web.
- De esta forma los cliente pueden trabajar desde su sobremesa, su portátil
- o incluso desde su dispositivo móvil.
+ La independencia entre el entorno de trabajo y la localización del servidor
+ donde se ejecuta el servicio permite al usuario acceder a sus herramientas
+ de trabajo desde cualquier dispositivo con acceso a la web.
  
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+De esta forma, los clientes pueden trabajar desde sus equipos de sobremesa,
+ sus portátiles o incluso desde sus dispositivos móviles.
+ 
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 
 \series bold
@@ -687,9 +693,9 @@ escalabilidad
 .
  Las aplicaciones en la nube son totalmente elásticas en cuanto a su sencillez
  de implementación y adaptabilidad.
- Además, son totalmente escalables, es decir, una empresa puede estar utilizando
- un día solo un 10 % del total de sus recursos y al siguiente poder acceder
- al 80 % de los mismos con total normalidad y rapidez.
+ Además, son totalmente escalables.
+ Por ejemplo, el sistema de una empresa puede modificarse para a atender
+ al triple de usuarios con total normalidad y rapidez.
  
 \end_layout
 
@@ -700,8 +706,9 @@ Recuperación
 \series default
 .
  Los proveedores de servicios en la nube proporcionan a los usuarios sistemas
- de almacenamiento secundario en servidores de forma que en caso de perdida
- de información se pueda recuperar de manera inmediata .
+ de almacenamiento secundario en servidores.
+ Así, si se producen pérdidas de información estas pueden resolverse de
+ manera inmediata.
  
 \end_layout
 
@@ -730,118 +737,113 @@ Cloud Computing
 \shape default
 .
  Los clientes de estos servicios pueden tener la sensación de que al almacenar
- su información en un lugar externo a su propio dispositivo ,esto facilite
- que terceras personas puedan acceder a la misma.
-\begin_inset CommandInset citation
-LatexCommand cite
-key "CRY2010,EM2009"
+ su información en un lugar externo a su propio dispositivo, resulta más
+ sencillo que terceras personas puedan acceder a la misma.
+\end_layout
 
-\end_inset
-
- Sin embargo, esto no es así en realidad.
+\begin_deeper
+\begin_layout Standard
+Sin embargo, esto no es así en realidad.
  Las empresas encargadas de ofertar servicios en la nube mantienen estrictos
  controles de seguridad para evitar que la información de sus clientes pueda
  ser filtrada al exterior.
- 
-\begin_inset Newline newline
-\end_inset
-
-Para almacenar esta información suelen utilizar centros de datos secundarios
- especializados en la protección y vigilancia de datos.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "NIST2011"
-
-\end_inset
-
-
 \end_layout
 
+\begin_layout Standard
+Además, para almacenar esta información suelen utilizar centros de datos
+ secundarios especializados en la protección y vigilancia de datos.
+ 
+\end_layout
+
+\end_deeper
 \begin_layout Section
 Modelos de servicio 
 \end_layout
 
 \begin_layout Standard
-el 
+El 
 \shape italic
 Cloud Computing
 \shape default
- ofrece sus servicios de acuerdo a tres modelos fundamentales, que se refieren
- a la forma en que las diferentes empresas clientes gestionan sus servicios
- contratados en la nube.
+ ofrece tres modelos de servicio fundamentales, que distinguen por la forma
+ en que los clientes utilizan sus servicios contratados en la nube.
 \end_layout
 
 \begin_layout Standard
-Estos modelos no son siempre excluyentes entre sí : existen empresas que
- mezclan los modelos fundamentales.
- Por ejemplo, Google App Engine permite al cliente ejecutar aplicaciones
- web en la infraestructura de Google , convirtiéndose de esta forma en una
- plataforma como servicio .
- Además estas aplicaciones web pueden ser utilizadas por otros usuarios
- prestando se esta forma además un modelo de software como servicio.
- En la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Modelos-de-servicios"
-
-\end_inset
-
- podemos ver más ejemplos de empresas que combinan varios de los modelos
- de servicio.
+Estos modelos no son siempre excluyentes entre sí, y existen proveedores
+ que mezclan algunos de ellos.
+ Por ejemplo, el servicio 
+\emph on
+Google App Engine
+\emph default
+ permite que los clientes ejecuten aplicaciones web sobre la infraestructura
+ de 
+\emph on
+Google
+\emph default
+.
+ Así, se están combinando el modelo de plataforma como servicio de la infraestru
+ctura web de 
+\emph on
+Google
+\emph default
+ y un modelo de 
+\emph on
+software 
+\emph default
+como servicio
+\emph on
+.
 \end_layout
 
 \begin_layout Subsection
-Infraestructura como servicio 
+Infraestructura como servicio (IaaS)
 \end_layout
 
 \begin_layout Standard
-Del termino inglés 
+Su nombre procede del termino inglés 
 \shape italic
-infraestructura as a service
+Infrastructure as a Service
 \shape default
- (IaaS), es el modelo más básico.
- En este modelo el proveedor oferta al usuario un conjunto de maquinas virtuales
+ (IaaS).
+ Este es el modelo más básico.
+ En él, el proveedor oferta al usuario un conjunto de maquinas virtuales
  sobre las que trabajar.
- Por su parte , el cliente estará contratando únicamente la infraestructura
- tecnológica.
- Esta dispone de cierta capacidad de procesamiento, de almacenamiento y
- de comunicación.
+ Así, el cliente estará contratando únicamente la infraestructura tecnológica,
+ que dispone de cierta capacidad de procesamiento, de almacenamiento y de
+ comunicación.
  
 \end_layout
 
 \begin_layout Standard
-Una vez que el cliente la ha contratado y el servidor la ha configurado,
- el cliente la utilizará para alojar sus aplicaciones.
- Estas maquinas virtuales pueden ser manejadas por hiper-visores, tales
- como Xen o KVN, o bien por sistemas como VirtualBox o VMWare.
+Cuando el cliente contrata la infraestructura y el proveedor acaba de configurar
+la, el cliente la utilizará para alojar sus aplicaciones, que se ejecutarán
+ en máquinas virtuales.
+ Estas maquinas virtuales pueden gestionarse a través de hipervisores (como
+ Xen o KVM) o a través de otros sistemas de virtualización como VirtualBox
+ o VMWare.
  
 \end_layout
 
 \begin_layout Standard
-Gracias a la habilidad de gestión de las maquinas virtuales por parte de
- los proveedores el cliente puede contratar tantas maquinas virtuales como
- necesite.
+Puesto que el proveedor del servicio se ocupará de la gestión de las máquinas
+ virtuales, el cliente puede contratar tantas maquinas virtuales como necesite.
  
 \end_layout
 
 \begin_layout Standard
-En cualquier caso una vez obtenidas las maquinas virtuales el cliente instalará
- el sistema operativo que más le interese y las aplicaciones.
+En cualquier caso, una vez obtenidas las maquinas virtuales el cliente instalará
+ en ellas el sistema operativo que más le interese y las aplicaciones que
+ vaya a utilizar.
  Por ello, en este modelo el cliente es el responsable del mantenimiento
  y configuración del entorno.
 \end_layout
 
 \begin_layout Standard
-Puesto que los proveedores no deben preocuparse por otros aspectos como
- la seguridad o el pago de licencias, únicamente cobran por la cantidad
+Además, puesto que los proveedores no deben preocuparse por otros aspectos
+ como la seguridad o el pago de licencias, únicamente cobran por la cantidad
  de recursos asignados y consumidos.
  
-\end_layout
-
-\begin_layout Standard
-Así, el modelo de infraestructura como servicio se limitan a aportar maquinas
- virtuales que los clientes utilizarán cuando las necesiten.
 \end_layout
 
 \begin_layout Standard
@@ -876,55 +878,67 @@ key "PMC2008"
 \end_layout
 
 \begin_layout Subsection
-Plataforma como servicio
+Plataforma como servicio (PaaS)
 \end_layout
 
 \begin_layout Standard
-Del termino inglés 
+Su nombre procede del termino inglés 
 \shape italic
-Platform as a service
+Platform as a Service
 \shape default
- (PaaS), los proveedores de este tipo de servicios ofrecen a sus clientes
- una plataforma completa, la cual incluye tanto el sistema operativo como
- el conjunto de todas las aplicaciones,la gestión de las bases de datos
- y el conjunto de servicios 
+ (PaaS).
+ Los proveedores de este tipo de servicios ofrecen a sus clientes una plataforma
+ completa, la cual incluye el sistema operativo, el conjunto de todas las
+ aplicaciones instaladas, la gestión de las bases de datos y el conjunto
+ de servicios 
 \shape italic
 web
 \shape default
- que este necesite.Esta plataforma se instala sobre una infraestructura también
- proporcionada por el proveedor.
+ que el cliente necesite.
+ Esta plataforma se instalará sobre una infraestructura, también proporcionada
+ por el proveedor.
  
 \end_layout
 
 \begin_layout Standard
-De esta forma, el cliente despliega las aplicaciones que necesite (desarrollos
- propios o licencias adquiridas) sin preocuparse por los costes de compra
- y de mantenimiento del 
+De esta forma, en este caso el cliente despliega las aplicaciones que necesite
+ (que pueden estar desarrolladas por él mismo o por terceros) sin preocuparse
+ por los costes de compra y de mantenimiento del 
 \shape italic
-hardware y del software
+hardware 
+\emph on
+y del 
+\emph default
+software
 \shape default
 .
  
 \end_layout
 
 \begin_layout Standard
-La plataforma como servicio ofrece el equipo base y escala los recursos
- automáticamente para que el cliente no tenga que asignar dichos recursos
- manualmente.
+Este modelo resulta ventajoso tanto para el cliente como para el proveedor,
+ ya que
+\end_layout
+
+\begin_layout Itemize
+el primero no necesita costear el precio completo de las licencias de todas
+ las herramientas que utiliza.
+ Esto resulta especialmente interesante en el caso de 
+\emph on
+software
+\emph default
+ muy caro y muy poco utilizado por el cliente: en estos casos, la adquisición
+ de una licencia completa es un despilfarro.
  
 \end_layout
 
-\begin_layout Standard
-Este modelo resulta ventajoso tanto para el cliente como para el proveedor,
- ya que el primero no necesita costear el precio completo de las licencias
- de todas las herramientas de desarrollo(algunas de las cuales serán usadas
- tan poco que costear una licencia completa por ella resultaría un despilfarro)
- y el segundo puede ofrecer un mismo entorno a un gran número de clientes
- con necesidades similares.
+\begin_layout Itemize
+el segundo puede ofrecer un mismo entorno a un gran número de clientes con
+ necesidades similares.
 \end_layout
 
 \begin_layout Standard
-Algunos ejemplos de plataforma como servicio son 
+Algunos servicios de este tipo son 
 \shape italic
 Amazon Elastic Beanstalk, Cloud Foundry, Heroku, Force.com, EngineYard, Mendix,
  Google App Engine, Windows Azure Compute y OrangeScape
