@@ -85,7 +85,7 @@ Configuración de una red virtual en modo NAT
 Al usar NAT, expondremos al exterior una única dirección IP para el servidor
  de máquinas virtuales.
  El tráfico de las distintas máquinas virtuales se redirigirá a puertos
- asociados a esa IP.
+ asociados a esta IP.
 \end_layout
 
 \begin_layout Standard
@@ -115,33 +115,8 @@ Nosotros lo configuraremos todo en ese orden.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Box Boxed
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-
-\series bold
-\color red
-Importante
-\series default
-\color inherit
-: antes de continuar, deshabilitad network-manager para poder trastear a
- gusto con la configuración de la red.
-\end_layout
-
-\end_inset
-
-
+Antes de continuar, debemos deshabilitar network-manager para poder modificar
+ con total libertad la configuración de la red.
 \end_layout
 
 \begin_layout Section
@@ -177,7 +152,7 @@ Desactivamos STP (
 \emph on
 Spanning Tree Protocol
 \emph default
-, os deberá sonar de Redes).
+).
  En nuestra red virtual no habrá ciclos, por lo que no debemos preocuparnos
  por ellos.
 \end_layout
@@ -197,7 +172,7 @@ Configuramos el
 \emph on
 forward delay
 \emph default
- del bridge a 0 segundos (¿para qué queremos más?).
+ del bridge a 0 segundos.
 \end_layout
 
 \begin_deeper
@@ -221,7 +196,7 @@ Una vez creado el bridge, debemos registrarlo como interfaz de red.
 \end_layout
 
 \begin_layout Standard
-Como podréis suponer, la primera máquina tendrá la IP 
+La primera máquina tendrá la IP 
 \family typewriter
 192.168.77.2
 \family default
@@ -237,7 +212,7 @@ Como podréis suponer, la primera máquina tendrá la IP
 \end_layout
 
 \begin_layout Standard
-La orden que configura todo esto es 
+La orden que nos permite configurar todo esto es
 \end_layout
 
 \begin_layout Standard
@@ -249,12 +224,12 @@ ifconfig kvmbr0 192.168.77.1 netmask 255.255.255.0 up
 \end_layout
 
 \begin_layout Standard
-Antes de hacer todo esto, deberíamos comprobar si el 
+Antes de hacer esto, debemos comprobar si el 
 \emph on
 bridge
 \emph default
  existe o no.
- Esto es bastante sencillo:
+ Para ello usamos:
 \end_layout
 
 \begin_layout Standard
@@ -274,12 +249,8 @@ brctl show | grep
 \end_layout
 
 \begin_layout Standard
-Lo único que nos interesa saber es si esta orden falla o no, no la salida
- de 
-\family typewriter
-grep
-\family default
-.
+Con saber si esta orden falla o no, será suficiente.
+ La salida del grep no nos interesa.
  
 \end_layout
 
@@ -292,11 +263,11 @@ El siguiente paso es activar el encaminamiento (o
 \emph on
 forwarding
 \emph default
-) IP, desactivado por defecto en todas las distros de escritorio.
+) IP, desactivado por defecto en todas las distribuciones de escritorio.
 \end_layout
 
 \begin_layout Standard
-El comando a utilizar es 
+El comando que debemos utilizar es 
 \end_layout
 
 \begin_layout Standard
@@ -309,7 +280,8 @@ echo 1 | dd of=/proc/sys/net/ipv4/ip_forward > /dev/null
 
 \begin_layout Standard
 De manera predeterminada, este ajuste se pierde tras reiniciar.
- Si queréis hacerlo permanente, descomentad la línea 
+ Si queremos hacerlo permanente, debemos descomentar la siguiente línea
+ 
 \end_layout
 
 \begin_layout Standard
@@ -336,9 +308,9 @@ iptables
 \end_layout
 
 \begin_layout Standard
-Antes de nada, es altamente recomendable que guardéis vuestra receta actual
- para evitar problemas.
- Podéis hacerlo mediante el comando
+Antes de nada, resulta muy recomendable guardar nuestra receta actual para
+ evitar problemas.
+ Podemos hacerlo mediante el comando
 \end_layout
 
 \begin_layout Standard
@@ -350,7 +322,7 @@ iptables-save > ruta_del_fichero
 \end_layout
 
 \begin_layout Standard
-Para recuperar los ajustes, usad el comando
+Para recuperar los ajustes, usamos el comando
 \end_layout
 
 \begin_layout Standard
@@ -362,7 +334,7 @@ iptables-restore < ruta_del_fichero
 \end_layout
 
 \begin_layout Standard
-Ejecutad estas órdenes
+Ejecutamos estas órdenes
 \begin_inset Foot
 status collapsed
 
@@ -478,7 +450,7 @@ hable
 \end_layout
 
 \begin_layout Standard
-Para entender estas líneas, hay que tener en cuenta que:
+Para poder entender estas líneas, debemos tener en cuenta que:
 \end_layout
 
 \begin_layout Itemize
@@ -498,7 +470,7 @@ OUTPUT
 \end_layout
 
 \begin_layout Itemize
-Como podréis suponer, 
+
 \family typewriter
 ACCEPT
 \family default
@@ -535,7 +507,7 @@ Las primera línea
 \family typewriter
 -A INPUT
 \family default
- tiene este significado
+ tiene el siguiente significado
 \end_layout
 
 \begin_deeper
@@ -557,7 +529,7 @@ está destinado al puerto TCP 67
 
 \begin_layout Standard
 lo aceptamos.
- Las otras significan lo mismo que esta.
+ El resto tiene un significado similar.
 \end_layout
 
 \begin_layout Standard
@@ -566,15 +538,15 @@ Los puertos 67 y 53 son los utilizados por los servicios DHCP y DNS.
 
 \end_deeper
 \begin_layout Itemize
-Como habréis visto, no hemos conectado el 
+Como podemos ver, no hemos conectado aun el 
 \emph on
 bridge
 \emph default
  a nada.
- La siguiente línea permite que los datagramas generados por las máquinas
- virtuales pasen a través del 
+ Para permitir a los datagramas generados por las máquinas virtuales pasar
+ a través del bridge, debemos utilizar la siguiente instrucción
 \emph on
-bridge.
+ que se indica en la siguiente linea.
 \end_layout
 
 \begin_layout Itemize
@@ -597,7 +569,7 @@ RELATED
 ESTABLISHED
 \family default
  hacen referencia al estado de la conexión.
- Si queréis más detalles, consultad el fichero 
+ Si queremos obtener más detalles, tendremos que consultar el fichero 
 \family typewriter
 man iptables
 \family default
@@ -609,7 +581,7 @@ Las dos últimas líneas descartan los datagramas asociados a errores ICMP.
 \end_layout
 
 \begin_layout Standard
-Para comprobar que la configuración es correcta, usad los comandos
+Para comprobar que la configuración es correcta, usamos los comandos
 \end_layout
 
 \begin_layout Standard
@@ -635,7 +607,7 @@ Configuración de
 \end_layout
 
 \begin_layout Standard
-Para configurar el servidor DNS, ejecutad esta orden: 
+Para configurar el servidor DNS, esjecutamos esta orden: 
 \end_layout
 
 \begin_layout Standard
@@ -660,9 +632,13 @@ status open
 dnsmasq --strict-order --except-interface=lo --except-interface=eth0 --except-in
 terface=vnet0 --interface=kvmbr0 --listen-address=192.168.77.1 --bind-interfaces
  --dhcp-range=192.168.77.2,192.168.77.254 --conf-file="" 
+\family default
 \series bold
+\color black
+--dhcp-leasefile=/home/luis/kvmbr0.leases
+\family typewriter
 \color red
---dhcp-leasefile=/home/luis/kvmbr0.leases 
+ 
 \series default
 \color inherit
 --dhcp-no-override
@@ -683,15 +659,15 @@ Redirección del tráfico de un puerto al servidor VNC de una máquina virtual
 \end_layout
 
 \begin_layout Standard
-Por ahora, el servidor VNC lo ponen KVM y Qemu, por lo que reside en el
- servidor de máquinas virtuales.
+Por ahora, el servidor VNC corre a cargo de KVM y Qemu, por lo que reside
+ en el servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
 Esto significa que, por ahora, no es necesario redirigir el tráfico de un
  puerto del servidor a una máquina virtual.
- No obstante, os pongo aquí las dos líneas que lo hacen por si más adelante
- es necesario hacerlo.
+ No obstante, podemos forzar la redirección explícitamente utilizando las
+ siguientes lineas.
 \end_layout
 
 \begin_layout Standard
