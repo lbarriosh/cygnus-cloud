@@ -27989,7 +27989,14 @@ Comando ejecutado
 \end_layout
 
 \begin_layout Subsubsection
-Borrado total de una imagen: tratamiento de errores
+Borrado total de una imagen: tratamiento de errores 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Borrado-total-imagen-errores"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -28377,7 +28384,14 @@ flag
 \end_layout
 
 \begin_layout Paragraph
-Arranque de la máquina virtual: tratamiento de errores
+Arranque de la máquina virtual: tratamiento de errores 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Arranque-MV-edición-errores"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -28677,7 +28691,29 @@ reference "par:Actualización-de-copias"
 \end_layout
 
 \begin_layout Paragraph
-errores
+Apagado de la máquina virtual: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Cuando la máquina virtual se apaga, pueden producirse errores al subir el
+ fichero comprimido al repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+En estos casos, el servidor de máquinas virtuales enviará un paquete del
+ tipo Error de edición de imagen al servidor de 
+\emph on
+cluster
+\emph default
+.
+ Estos paquetes se procesan como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-MV-edición-errores"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Paragraph
@@ -28689,6 +28725,94 @@ name "par:Actualización-de-copias"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Para actualizar todas las copias de una imagen que ha terminado de editarse,
+ el servidor web enviará al servidor de 
+\emph on
+cluster
+\emph default
+ un paquete del tipo 
+\family sans
+Despliegue automático
+\family default
+.
+ Estos paquetes contienen
+\end_layout
+
+\begin_layout Itemize
+el identificador de la imagen a desplegar, 
+\end_layout
+
+\begin_layout Itemize
+un número de instancias, que en este caso es negativo, y
+\end_layout
+
+\begin_layout Itemize
+el identificador único de la petición.
+\end_layout
+
+\begin_layout Standard
+Estos paquetes se procesan de forma muy parecida a los paquetes del tipo
+ 
+\family sans
+Borrar imagen de infraestructura
+\family default
+.
+ No obstante, existen tres diferencias:
+\end_layout
+
+\begin_layout Itemize
+la imagen no se borra del repositorio.
+\end_layout
+
+\begin_layout Itemize
+los paquetes que se envían a los servidores de máquinas virtuales son del
+ tipo 
+\family sans
+Desplegar imagen
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+cuando se produce un error, se envía un paquete del tipo 
+\family sans
+Error de despliegue automático
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+El lector podrá encontrar la explicación del procesamiento de los paquetes
+ del tipo 
+\family sans
+Borrar imagen de infraestructura
+\family default
+ en las secciones 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Borrado-total-sec-básica"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Borrado-total-imagen-errores"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Formatos de paquete
 \end_layout
 
 \begin_layout Standard
