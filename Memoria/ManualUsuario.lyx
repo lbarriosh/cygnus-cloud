@@ -3823,7 +3823,11 @@ Uso de la página web
 \end_layout
 
 \begin_layout Subsection
-Instalación y uso del framework web2py
+Instalación y uso del 
+\shape italic
+framework
+\shape default
+ web2py
 \end_layout
 
 \begin_layout Standard
@@ -3944,7 +3948,7 @@ width "100col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -4001,8 +4005,10 @@ http://127.0.0.1:8000/
 \begin_layout Enumerate
 Se cargará una página con el título 
 \family sans
+\shape italic
 Welcome
 \family default
+\shape default
 .
  Hacemos clic sobre el botón 
 \family sans
@@ -4081,13 +4087,13 @@ que nos permite modificar el fichero de código correspondiente.
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Manual usuario/webServer/Web2pyAdmin1.png
+	filename graficos/Manual usuario/webServer/PaginaAdministracionWeb2py.png
 	scale 40
 	rotateOrigin center
 
@@ -4173,7 +4179,7 @@ En ella, podemos introducir el correo electrónico y la contraseña del usuario
 \end_layout
 
 \begin_layout Standard
-Por defecto, existen dos usuarios de prueba registrados en el sistema:
+Por defecto, existen tres usuarios de prueba registrados en el sistema:
 \end_layout
 
 \begin_layout Itemize
@@ -4185,7 +4191,17 @@ Student1@ucm.es
 \family typewriter
 1234
 \family default
-, y
+, 
+\end_layout
+
+\begin_layout Itemize
+un profesor con correo electrónico 
+\family sans
+Teacher01@ucm.es
+\family default
+ y contraseña 
+\family sans
+1234, y
 \end_layout
 
 \begin_layout Itemize
@@ -4200,23 +4216,17 @@ Admin1@ucm.es
 .
 \end_layout
 
-\begin_layout Itemize
-un profesor con correo electrónico 
-\family sans
-Teacher01@ucm.es
-\family default
- y contraseña 
-\family sans
-1234
-\end_layout
-
 \begin_layout Standard
 Además, desde esta página también es posible acceder a diferentes direcciones
  institucionales tales como el campus virtual o la página web de la 
 \family typewriter
 Universidad Complutense de Madrid
 \family default
-, y visualizar los últimos tweets recibidos en la cuenta de 
+, y visualizar los últimos 
+\shape italic
+tweets
+\shape default
+ recibidos en la cuenta de 
 \family typewriter
 twitter
 \family default
@@ -4286,9 +4296,10 @@ CygnusCloud
 Desde la barra de menú de acceso público, también es posible acceder a la
  página de 
 \family typewriter
-Acerca de, en la cual
+Acerca de, 
 \family default
- se incluye un breve resumen sobre que es CygnusCloud y para que sirve.
+en la cual se incluye un breve resumen sobre que es CygnusCloud y para que
+ sirve.
  También aparece en esta página información de interés sobre el desarrollo
  de CygnusCloud, tales como entrevistas, notas de prensas o premios recibidos.
 \end_layout
@@ -4307,15 +4318,15 @@ reference "fig:MU-Pagina_arranque_alumno"
 \end_inset
 
 , en la cual aparecen todas las asignaturas matriculadas por el alumno.
- Para cada asignatura, aparecen las máquinas virtuales creadas por el profesor
+ Para cada asignatura, se indica las máquinas virtuales creadas por el profesor
  de dicha asignatura.
  
 \end_layout
 
 \begin_layout Standard
 El estudiante puede seleccionar cualquiera de las máquinas que se le muestran.
- Una vez seleccionada una determinada máquina, aparece una breve descripción
- sobre dicha máquina y un botón 
+ Cuando se selecciona, aparece una breve descripción sobre dicha máquina
+ y un botón 
 \family typewriter
 Arrancar
 \family default
@@ -4568,10 +4579,10 @@ Páginas accesibles para los profesores
 \end_layout
 
 \begin_layout Standard
-Una vez el profesor ha iniciado sesión, la primera página que se le muestra
- es la página de arranque de máquinas virtuales.
+Una vez que el profesor ha iniciado sesión, la primera página que se le
+ muestra es la página de arranque de máquinas virtuales.
  El manejo de esta página, al igual que las páginas de detención y apertura
- de máquinas virtuales (
+ de máquinas virtuales arrancadas (
 \family typewriter
 Máquinas arrancadas \SpecialChar \menuseparator
 Detener máquina y Máquinas arrancadas \SpecialChar \menuseparator
@@ -4593,7 +4604,7 @@ Crear y editar \SpecialChar \menuseparator
 \family default
 permite a los profesores crear nuevas máquinas virtuales sobre las cuales
  instalará las herramientas necesarias para poder ser utilizadas por los
- alumnos de una de las asignaturas que imparte.
+ estudiantes matriculados en una de las asignaturas que imparte.
  Para llevar a cabo la creación de una máquina virtual, el profesor debe
  indicar un nombre y una descripción que se les mostrará a los estudiantes.
  Además, debe seleccionar una imagen base sobre la cual instalará las herramient
@@ -4606,7 +4617,7 @@ as necesarias.
 \family sans
 Crear máquina virtual 
 \family default
-para completar la creación
+para enviar la petición de creación
 \family sans
 .
 \end_layout
@@ -4680,15 +4691,14 @@ Crear y editar \SpecialChar \menuseparator
 \end_layout
 
 \begin_layout Standard
-Esta página se encuentra dividida en dos tablas donde se muestran el conjunto
- de todas las máquinas asociadas a las asignaturas impartidas por un profesor.
- La primera tabla contiene el conjunto de máquinas que se encuentran en
- estado detenido.
+En esta página aparecen dos tablas donde se muestran el conjunto de todas
+ las máquinas asociadas a las asignaturas impartidas por el profesor.
+ La primera tabla contiene el conjunto de máquinas detenidas.
  
 \end_layout
 
 \begin_layout Standard
-Una máquina en estado detenido puede ser:
+Una máquina detenida puede ser:
 \end_layout
 
 \begin_layout Itemize
@@ -4728,7 +4738,7 @@ reference "MU-Pagina_edicion_MV_Profesor"
  En la primera se ha seleccionado una máquina que ya se ha editado anteriormente
  y ha sido detenida.
  Las opciones que se le ofrece al profesor en este caso son seguir editando
- la máquina o aplicar los cambios para hacerlos visibles a los alumnos.
+ la máquina o aplicar los cambios para hacerlos visibles a los estudiantes.
  En la segunda tabla se ha seleccionado una máquina en edición que aun no
  se ha detenido.
  Las dos posibilidades que tiene en este caso el profesor son abrir la máquina
@@ -4893,7 +4903,7 @@ Máquinas virtuales \SpecialChar \menuseparator
 \family default
 Editar) permite al administrador tomar ciertas decisiones acerca de las
  máquinas virtuales creadas en el sistema.
- Así, desde esta página, un administrador podrá:
+ Así, desde esta página, un administrador puede:
 \end_layout
 
 \begin_layout Itemize
@@ -4906,7 +4916,7 @@ Eliminar una máquina virtual de un determinado servidor de máquinas virtuales
 
 \begin_layout Itemize
 Desplegar automáticamente un máquina virtual.
- En esta opción, será el sistema el que decida en que servidores de máquinas
+ Con esta opción, será el sistema el que decida en que servidores de máquinas
  virtuales se desplegará la máquina.
 \end_layout
 
@@ -4988,8 +4998,9 @@ Administrar servidores \SpecialChar \menuseparator
 \begin_layout Standard
 Para crear un nuevo servidor, el administrador deberá indicar el nombre
  de dicho servidor, único en toda la infraestructura, la dirección ip y
- el puerto por el cual se conectará el servidor de máquinas virtuales, y
- si el servidor será capaz de albergar imágenes base o no.
+ el puerto por el cual se conectará el servidor de máquinas virtuales.
+ También, debe indicar, si el servidor será capaz de albergar imágenes base
+ o no.
  Una vez indicado todo esto, la petición de creación del servidor se enviará
  pulsando sobre el botón 
 \family typewriter
@@ -4997,15 +5008,15 @@ Añadir servidor.
 \end_layout
 
 \begin_layout Standard
-En cuanto a la edición de servidores, el administrador podrá seleccionar
- el servidor cuyo contenido quiere modificar.
- Una vez seleccionado, el administrador debe pulsar sobre el botón 
+En cuanto a la página de edición de servidores, el administrador puede seleccion
+ar el servidor cuyo contenido quiere modificar.
+ Una vez seleccionado, debe pulsar sobre el botón 
 \family typewriter
 Buscar servidor 
 \family default
 para que se le muestre la información asociada a dicho servidor.
  Según el estado en el que se encuentre el servidor seleccionado, el administrad
-or podrá aplicar ciertas operaciones.
+or podrá aplicar unas operaciones u otras.
 \end_layout
 
 \begin_layout Standard
@@ -5022,7 +5033,7 @@ reference "MU-Pagina_edicion_servidores_Administrador"
 Server1
 \family default
  y se le ha ofrecido al administrador ciertas opciones.
- en este caso, el administrador podría:
+ En este caso, el administrador podría:
 \end_layout
 
 \begin_layout Itemize
@@ -5179,7 +5190,14 @@ Esta página esta formada únicamente por una casilla que permite indicar
 \end_layout
 
 \begin_layout Standard
-La figura muestra la página de detención de la infraestructura.
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_detencion_sistema_Administrador"
+
+\end_inset
+
+ muestra la página de detención de la infraestructura.
 \end_layout
 
 \begin_layout Standard
@@ -5204,6 +5222,12 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_detencion_sistema_Administrador"
+
+\end_inset
+
 Página de detención de la infraestructura por el administrador
 \end_layout
 
@@ -5260,8 +5284,8 @@ Administrar usuarios \SpecialChar \menuseparator
 En cuanto a la página de eliminación consta de un cuadro superior de búsqueda
  que permite filtrar el grupo de usuarios por su nombre o tipo de usuario.
  Una vez realizada la búsqueda, se mostrará una lista de usuarios resultante.
- Para eliminar el usuario deseado, simplemente se tendrá que seleccionar
- dicho usuario en la lista y pulsar sobre el botón 
+ Para eliminar el usuario deseado, simplemente se debe seleccionar dicho
+ usuario en la lista y pulsar sobre el botón 
 \family typewriter
 Eliminar seleccionado
 \family default
@@ -5372,7 +5396,7 @@ Como algunas de las operaciones que ofrece CygnusCloud deben ser gestionadas
  por medio de peticiones, ya que su realización no es inmediata y no podemos
  tener al usuario esperando mientras se completa dicha operación, es necesario
  ofrecer a los usuarios un sistema de notificaciones en el cual puedan consultar
- los mensajes que le envie el sistema sobre la finalización erroneo o no
+ los mensajes que le envíe el sistema sobre la finalización errónea o no
  de las peticiones enviadas.
  
 \end_layout
@@ -5380,14 +5404,21 @@ Como algunas de las operaciones que ofrece CygnusCloud deben ser gestionadas
 \begin_layout Standard
 Cuando el usuario reciba una notificación, aparecerá un etiqueta en la parte
  superior derecha de la página similar a la que se muestra en la figura
- .
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Etiqueta_Notificaciones"
+
+\end_inset
+
+.
  Esta etiqueta permanecerá mientras el usuario no lea las notificaciones
  pendientes en la página de notificaciones.
  
 \end_layout
 
 \begin_layout Standard
-Para acceder a la página de notificaciones, el usuario podrá pulsar sobre
+Para acceder a la página de notificaciones, el usuario puede pulsar sobre
  la etiqueta o bien acceder desde la barra de menú (sección 
 \family typewriter
 Notificaciones
@@ -5398,11 +5429,18 @@ Notificaciones
 
 \begin_layout Standard
 Una vez el usuario a consultado sus notificaciones pendientes, estas desaparecer
-án de la página para dejar paso a las nuevas notificaciones que puedan aparecer.
+án de la página para dejar paso a las nuevas notificaciones que puedan recibirse.
 \end_layout
 
 \begin_layout Standard
-La figura muestra un ejemplo de página con notificaciones.
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_Notificaciones"
+
+\end_inset
+
+ muestra un ejemplo de página con notificaciones.
 \end_layout
 
 \begin_layout Standard
@@ -5427,6 +5465,12 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Etiqueta_Notificaciones"
+
+\end_inset
+
 Etiqueta de notificaciones pendientes
 \end_layout
 
@@ -5445,6 +5489,7 @@ Etiqueta de notificaciones pendientes
 \end_layout
 
 \begin_layout Standard
+o
 \begin_inset Float figure
 wide false
 sideways false
@@ -5468,6 +5513,12 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_Notificaciones"
+
+\end_inset
+
 Página de visualización de notificaciones
 \end_layout
 
