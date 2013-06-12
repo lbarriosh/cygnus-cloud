@@ -33579,7 +33579,11 @@ Para que esto sea posible, el servidor web albergará un demonio, al que
 \emph on
 endpoint
 \emph default
- de la aplicación web o, abreviadamente, 
+ de la aplicación web o, abreviadamente, proceso 
+\emph on
+endoint
+\emph default
+ o 
 \emph on
 endpoint
 \emph default
@@ -34403,7 +34407,7 @@ reference "fig:Arranque-endpoint"
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -34819,6 +34823,15 @@ se extrae la petición de la base de datos de comandos.
 
 \begin_layout Enumerate
 se deserializa la petición para obtener sus datos.
+\end_layout
+
+\begin_layout Enumerate
+se actualiza, si es necesario, la base de datos del 
+\emph on
+endpoint
+\emph default
+.
+ Para ello, se usan los datos asociados a la petición.
 \end_layout
 
 \begin_layout Enumerate
@@ -35833,10 +35846,380 @@ isBootable
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+Finalmente, sólo las tablas 
+\family typewriter
+Image
+\family default
+, 
+\family typewriter
+EditedImage
+\family default
+, 
+\family typewriter
+VMFamily
+\family default
+, 
+\family typewriter
+OSFamily
+\family default
+ y 
+\family typewriter
+OSVariant
+\family default
+ residen en disco.
+ Todas las demás residen en memoria, y se rellenarán en cada arranque del
+ proceso del 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
 \begin_layout Subsection
 El paquete 
 \family typewriter
 clusterConnector
+\end_layout
+
+\begin_layout Standard
+Al atender las peticiones de los usuarios, la aplicación web
+\end_layout
+
+\begin_layout Itemize
+realiza consultas sobre la base de datos del 
+\emph on
+endpoint
+\emph default
+, y
+\end_layout
+
+\begin_layout Itemize
+inserta peticiones y extrae sus resultados en la base de datos de comandos.
+\end_layout
+
+\begin_layout Standard
+Para ello, la aplicación web utiliza la clase 
+\family typewriter
+ClusterConnector
+\family default
+.
+ Esta clase es lo último que hace falta para que la aplicación web pueda
+ comunicarse con la infraestructura a través del 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+De ahora en adelante, llamaremos 
+\series bold
+conector
+\series default
+ al objeto 
+\family typewriter
+ClusterConnector
+\family default
+ que utiliza la aplicación web.
+\end_layout
+
+\begin_layout Subsubsection
+Relaciones de la clase 
+\family typewriter
+ClusterConnector
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura muestra las relaciones de la clase 
+\family typewriter
+ClusterConnector
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Conector/Relaciones.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Relaciones de la clase 
+\family typewriter
+ClusterConnector
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en él, los objetos 
+\family typewriter
+ClusterConnector
+\family default
+ utilizan
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+CommandsDBConnector
+\family default
+ para insertar peticiones y extraer los resultados de las mismas de la base
+ de datos de comandos, y
+\end_layout
+
+\begin_layout Itemize
+un objeto 
+\family typewriter
+MinimalClusterEndpointDBConnector
+\family default
+ para realizar consultas sobre la base de datos del 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Envío de una petición a la infraestructura
+\end_layout
+
+\begin_layout Standard
+En esta sección mostraremos cómo se insertan peticiones en la base de datos
+ de comandos.
+ Para ello, utilizaremos un ejemplo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Conector/Creación comando.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Envío-petición-arranque"
+
+\end_inset
+
+Envío de una petición a la infraestructura
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Envío-petición-arranque"
+
+\end_inset
+
+ muestra el proceso de registro de una petición de arranque de una máquina
+ virtual.
+ En dicho diagrama, podemos distinguir los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+la aplicación web realiza, a través del objeto 
+\family typewriter
+ClusterConnector
+\family default
+, las consultas necesarias para obtener la información que debe incluirse
+ en la petición.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Estas consultas se ejecutan sobre la base de datos del 
+\emph on
+endpoint
+\emph default
+.
+ En el caso del ejemplo, se consultan los datos de las imágenes para mostrársela
+s al usuario.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+cuando el usuario escoge una imagen y decide arrancarla, la aplicación web
+ solicita, a través del objeto 
+\family typewriter
+ClusterConnector
+\family default
+, la creación de una petición de arranque de una máquina virtual.
+ 
+\end_layout
+
+\begin_layout Enumerate
+el objeto 
+\family typewriter
+ClusterConnector
+\family default
+,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+genera el identificador único de la nueva petición.
+ Para ello, la aplicación web también le suministra el identificador del
+ usuario que ha enviado la petición.
+\end_layout
+
+\begin_layout Enumerate
+serializa la petición de arranque de la máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+la inserta en la cola de peticiones, que forma parte de la base de datos
+ de comandos.
+\end_layout
+
+\begin_layout Enumerate
+devuelve el identificador único de la petición a la aplicación web.
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+Obtención del resultado de la petición
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Obtención-del-resultado-petición"
+
+\end_inset
+
+ muestra cómo se extraen los resultados de dos peticiones de la base de
+ datos de comandos.
+ La primera es la salida de una petición normal, y la segunda es una notificació
+n.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Conector/Salida comando.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Obtención-del-resultado-petición"
+
+\end_inset
+
+Obtención del resultado de la petición
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En el primer caso, la aplicación web utiliza el identificador único que
+ obtuvo al enviar la petición a la infraestructura.
+ Para obtener la salida de la misma,
+\end_layout
+
+\begin_layout Enumerate
+se extrae y elimina la salida serializada de la base de datos.
+\end_layout
+
+\begin_layout Enumerate
+se deserializa la salida de la petición.
+\end_layout
+
+\begin_layout Enumerate
+se devuelve un diccionario con el contenido de la misma.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la extracción de las notificaciones de la base de datos
+ de comandos es bastante parecida.
+ No obstante, de cara a facilitar la implementación de la aplicación web,
+ las notificaciones no se extraen una a una: para obtenerlas, se utiliza
+ un identificador de usuario.
 \end_layout
 
 \begin_layout Subsection
