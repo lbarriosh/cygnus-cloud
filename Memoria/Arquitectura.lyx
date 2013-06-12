@@ -20310,7 +20310,7 @@ reference "par:Arranque-MV-secuencia-básica"
  y 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "par:Arranque-MV-errores"
+reference "par:Arranque-MV-cluster-errores"
 
 \end_inset
 
@@ -20332,7 +20332,7 @@ Por otra parte, cuando se produce un error se procede como vimos en la sección
  
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "par:Arranque-MV-errores"
+reference "par:Arranque-MV-cluster-errores"
 
 \end_inset
 
@@ -25728,6 +25728,12 @@ cluster
  Estas interacciones son las más frecuentes.
 \end_layout
 
+\begin_layout Standard
+Por claridad, en todos los casos empezaremos mostrando la secuencia básica.
+ Posteriormente, mostraremos las secuencias alternativas, que se corresponden
+ con el tratamiento de errores.
+\end_layout
+
 \begin_layout Paragraph
 Arranque de una máquina virtual: secuencia básica 
 \begin_inset CommandInset label
@@ -25745,7 +25751,11 @@ Cuando un usuario solicita la creación de una máquina virtual, el servidor
 \emph on
 cluster
 \emph default
- un paquete del tipo Arrancar máquina virtual.
+ un paquete del tipo 
+\family sans
+Arrancar máquina virtual
+\family default
+.
  Este paquete contiene
 \end_layout
 
@@ -25754,29 +25764,12 @@ el identificador del usuario que ha enviado la petición,
 \end_layout
 
 \begin_layout Itemize
-el identificador de las imágenes de disco que utilizará la máquina virtual
- a arrancar, y
+el identificador de la imagen que utilizará la máquina virtual para arrancar,
+ y
 \end_layout
 
 \begin_layout Itemize
 el identificador único de la petición.
-\end_layout
-
-\begin_layout Standard
-El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-MV-secuencia-básica"
-
-\end_inset
-
- muestra cómo se procesan estos paquetes en el servidor de 
-\emph on
-cluster
-\emph default
-.
- Para resaltar los pasos principales, al construir el diagrama hemos supuesto
- que no se produce ningún error.
 \end_layout
 
 \begin_layout Standard
@@ -25815,17 +25808,25 @@ Arranque de una máquina virtual: secuencia básica
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-Observando el diagrama de secuencia, podemos distinguir los siguientes pasos:
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-MV-secuencia-básica"
+
+\end_inset
+
+ muestra cómo se procesan estos paquetes en el servidor de 
+\emph on
+cluster
+\emph default
+.
+ En él, podemos distinguir estos pasos:
 \end_layout
 
 \begin_layout Enumerate
@@ -25853,6 +25854,29 @@ Crear máquina virtual
 \end_layout
 
 \begin_layout Enumerate
+se registra la petición de arranque en la base de datos del servidor de
+ 
+\emph on
+cluster
+\emph default
+.
+ En la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "par:Arranque-MV-cluster-errores"
+
+\end_inset
+
+ justificaremos este paso.
+\end_layout
+
+\begin_layout Enumerate
+se registra la ubicación de la nueva máquina virtual.
+ Esta información permitirá ahorrar mucho ancho de banda en los procesos
+ de arranque y apagado forzoso de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
 cuando ese servidor de máquinas virtuales acaba de crear la máquina virtual,
  envía un paquete del tipo 
 \family sans
@@ -25863,12 +25887,20 @@ Datos de conexión de MV
 \end_layout
 
 \begin_layout Enumerate
-el objeto 
-\family typewriter
-VMServerPacketReactor
-\family default
- procesará ese paquete.
- Durante ese procesamiento, se construirá un paquete del tipo 
+durante el procesamiento de ese paquete, 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+se borrará la petición de arranque de la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se construirá un paquete del tipo 
 \family sans
 Datos de conexión de MV
 \family default
@@ -25887,8 +25919,9 @@ el identificador único de la petición.
 \end_layout
 
 \end_deeper
+\end_deeper
 \begin_layout Paragraph
-Arranque de una máquina virtual: ráfagas de peticiones
+Tratamiento de las ráfagas de peticiones
 \end_layout
 
 \begin_layout Standard
@@ -25897,19 +25930,26 @@ Para conocer el estado de los servidores de máquinas virtuales y del repositori
 \emph on
 cluster
 \emph default
- debe intercambiar paquetes con estas máquinas.
+ debe enviar paquetes del tipo 
+\family sans
+Solicitud de estado
+\family default
+ a los servidores de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-Para ahorrar ancho de banda, las peticiones de estado no pueden estar emitiéndos
-e continuamente.
- Asimismo, aunque hiciésemos esto, el intercambio de estos paquetes a través
- de la red y la actualización de la base de datos tienen una latencia que
- no puede despreciarse.
+Ahora bien, para no desperdiciar el ancho de banda de la red, no es posible
+ enviar continuamente estos paquetes.
+ Y aunque lo hiciésemos, las respuestas de los servidores de máquinas virtuales
+ tardan cierto tiempo en recibirse y en procesarse.
+ Ese tiempo no es despreciable.
 \end_layout
 
 \begin_layout Standard
-Supongamos que
+Por tanto, si no introducimos cambios, no será posible conocer en tiempo
+ real el estado de los servidores de máquinas virtuales y el estado del
+ repositorio de imágenes.
+ Por ejemplo, supongamos que
 \end_layout
 
 \begin_layout Itemize
@@ -25940,7 +25980,7 @@ en cierto momento del día
 \end_inset
 
  alumnos, con 
-\begin_inset Formula $4<m\mbox{\leq}4\cdot n$
+\begin_inset Formula $4<m\leq4\cdot n$
 \end_inset
 
  , solicitan a la vez el arranque de una máquina virtual.
@@ -25948,29 +25988,22 @@ en cierto momento del día
 
 \begin_layout Standard
 Entre dos actualizaciones consecutivas de la base de datos de estado, el
- algoritmo de balanceado de carga puede ejecutarse varias veces.
- Por ello, puede ocurrir que, al atender las peticiones, el algoritmo de
- balanceado de carga coloque más de cuatro máquinas virtuales en uno o más
- servidores de máquinas virtuales.
+ algoritmo de balanceado de carga puede ejecutarse varias veces, ya que
+ esas actualizaciones no son inmediatas.
+ Por ello puede ocurrir que, al atender las peticiones de la ráfaga, el
+ algoritmo de balanceado de carga coloque más de cuatro máquinas virtuales
+ en uno o más servidores de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-Al procesarse las peticiones, en los servidores de máquinas virtuales se
- generarán paquetes de error, que el servidor de 
+Cuando estos servidores procesan las peticiones que les ha enviado el servidor
+ de 
 \emph on
-cluster 
+cluster
 \emph default
-
-\begin_inset Quotes eld
-\end_inset
-
-redirigirá
-\begin_inset Quotes erd
-\end_inset
-
- al servidor web.
- Por tanto, un número arbitrario de peticiones de arranque fallarán, a pesar
- de que hay suficientes recursos para atenderlas correctamente.
+, detectarán un error.
+ Por tanto, a pesar de que hay suficientes recursos, un número arbitrario
+ de peticiones de arranque fallarán.
 \end_layout
 
 \begin_layout Standard
@@ -25985,13 +26018,13 @@ se está desperdiciando ancho de banda emitiendo peticiones que, sin duda,
 
 \begin_layout Itemize
 en los servidores de máquinas virtuales se están desperdiciando recursos,
- penalizando en algunos casos el rendimiento de las máquinas virtuales activas.
+ penalizándose el rendimiento de las máquinas virtuales activas que albergan.
 \end_layout
 
 \begin_layout Standard
-Este problema se agrava cuando se crean o editan imágenes de disco, ya que
- las transferencias FTP entre los servidores de máquinas virtuales y el
- repositorio de imágenes consumen mucho más ancho de banda.
+Este problema se agrava cuando se crean o editan imágenes, ya que las transferen
+cias FTP entre los servidores de máquinas virtuales y el repositorio de
+ imágenes consumen mucho más ancho de banda.
 \end_layout
 
 \begin_layout Standard
@@ -26003,8 +26036,9 @@ reference "fig:Arranque-MV-secuencia-básica"
 
 \end_inset
 
-, antes de enviar una petición se reservan los recursos que consumirá la
- petición en el servidor de máquinas virtuales que tiene asignado.
+, antes de enviar una petición se reservan los recursos que esta consumirá
+ en el servidor de máquinas virtuales que tiene asignado y en el repositorio
+ de imágenes.
 \end_layout
 
 \begin_layout Standard
@@ -26015,33 +26049,42 @@ reference "sub:Actualización-del-estado-cluster"
 
 \end_inset
 
-, cuando se recibe un paquete con información de estado de una máquina estos
- recursos preasignados se liberarán.
+, cuando se reciba el paquete con el estado de ese servidor, los preasignados
+ se liberarán.
 \end_layout
 
 \begin_layout Standard
-Así, si se recibe una ráfaga de peticiones como la del ejemplo anterior,
- el problema no volverá a aparecer: tal y como dijimos en la sección 
+Es importante notar que, tal y como dijimos en la la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "par:Envío-y-recepción-datos-red"
 
 \end_inset
 
-, los paquetes recibidos por las distintas conexiones de red se procesan
- de uno en uno, por lo que el servidor de 
+, los paquetes recibidos por una misma conexión de red se procesan de uno
+ en uno.
+ Esto, junto con el mecanismo que acabamos de explicar, nos permite garantizar
+ que no se producirán problemas al recibir ráfagas de peticiones en el servidor
+ de 
 \emph on
 cluster
 \emph default
- procesará las peticiones recibidas de una en una.
+.
 \end_layout
 
 \begin_layout Paragraph
-Arranque de una máquina virtual: tratamiento de errores
+Arranque de una máquina virtual: tratamiento de errores 
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Arranque-MV-cluster-errores"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Durante el arranque de una máquina virtual, se producirán errores cuando
+Durante el arranque de una máquina virtual, se producirán errores si
 \end_layout
 
 \begin_layout Itemize
@@ -26052,65 +26095,19 @@ las imágenes de disco correspondientes no existen.
 no existe un servidor de máquinas virtuales que la pueda albergar.
 \end_layout
 
-\begin_layout Standard
-Ambos errores se detectan tras ejecutar el algoritmo de balanceado de carga,
- y se procesan como se indica en el diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Arranque-MV-errores"
+\begin_layout Itemize
+no es posible establecer la conexión con el servidor de máquinas virtuales.
+\end_layout
 
-\end_inset
-
-.
+\begin_layout Itemize
+el proceso de arranque de la máquina virtual falla en el servidor de máquinas
+ virtuales.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Arranque MV con errores.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Arranque-MV-errores"
-
-\end_inset
-
-Arranque de una máquina virtual: tratamiento de errores
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Siempre que se detecta uno de estos errores,
-\end_layout
-
-\begin_layout Enumerate
-se liberan los recursos preasignados a la máquina virtual.
+Los dos primeros errores se detectan examinando la salida del algoritmo
+ de balanceado de carga.
+ Para procesarlos, se procede de la misma manera:
 \end_layout
 
 \begin_layout Enumerate
@@ -26127,24 +26124,144 @@ n del error.
 se envía dicho paquete al servidor web.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Timeout arranque MV.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Monitorización-arranque"
+
+\end_inset
+
+Monitorización de los comandos de arranque de máquinas virtuales
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por otra parte, el servidor de 
+\emph on
+cluster
+\emph default
+ detectará los dos últimos errores utilizando 
+\emph on
+timeouts
+\emph default
+.
+ Para ello, el hilo principal monitorizará todos los comandos de arranque.
+ Dicha monitorización se realiza de acuerdo al diagrama de secuencia de
+ la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Monitorización-arranque"
+
+\end_inset
+
+, en el que se distinguen los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal extrae de la base de datos el identificador de la petición
+ de arranque de máquina virtual más antigua que cumple
+\begin_inset Formula 
+\[
+\textrm{tiempo espera }\geq\textrm{tiempo máximo}
+\]
+
+\end_inset
+
+El tiempo máximo se lee del fichero de configuración del demonio del servidor
+ de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se elimina la ubicación de la máquina virtual correspondiente.
+\end_layout
+
+\begin_layout Enumerate
+acto seguido, se construye un paquete del tipo 
+\family sans
+Error de arranque de máquina virtual
+\family default
+ y se envía al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que
+\end_layout
+
+\begin_layout Itemize
+cuando se detecta un error al examinar la salida del algoritmo de balanceado
+ de carga, no se añade el identificador de la petición a la base de datos.
+\end_layout
+
+\begin_layout Itemize
+cuando se reciben los datos de conexión al servidor VNC de la máquina virtual,
+ se borrará el identificador de la petición de arranque de la base de datos.
+ 
+\end_layout
+
+\begin_layout Standard
+Así, no se generarán errores por 
+\emph on
+timeout
+\emph default
+ cuando se detectan los dos primeros tipos de error o cuando el arranque
+ de la máquina virtual se realiza con normalidad.
+\end_layout
+
 \begin_layout Paragraph
 Apagado forzoso de una máquina virtual: secuencia básica
 \end_layout
 
 \begin_layout Standard
-Como dijimos en la sección , los usuarios pueden forzar el apagado de una
- máquina virtual cuando esta se cuelga.
- 
-\end_layout
-
-\begin_layout Standard
-Cuando se solicita el apagado forzoso de una máquina virtual, el servidor
- web envía un paquete del tipo 
+Los usuarios pueden forzar el apagado de una máquina virtual cuando esta
+ se cuelga.
+ En estos casos, el servidor web envía un paquete del tipo 
 \family sans
 Destrucción de máquina virtual
 \family default
- al servidor de cluster.
- Este contiene
+ al servidor de 
+\emph on
+cluster
+\emph default
+.
+ Estos paquetes contienen
 \end_layout
 
 \begin_layout Itemize
@@ -26204,27 +26321,42 @@ reference "fig:Apagado-forzoso-MV-secuencia-básica"
 
 \end_inset
 
- muestra el procesamiento de estos paquetes en el servidor de 
+ muestra cómo se procesan estos paquetes en el servidor de 
 \emph on
 cluster
 \emph default
 .
- Como viene siendo habitual, al construir el diagrama hemos supuesto que
- no se produce ningún error.
  Los pasos que se siguen son los siguientes:
 \end_layout
 
 \begin_layout Enumerate
 se averigua qué servidor de máquinas virtuales alberga la máquina virtual.
+ 
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+Como en la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+ está almacenada la ubicación de cada máquina virtual, la petición de apagado
+ forzoso se enviará únicamente a ese servidor de máquinas virtuales.
+ Esto nos permite ahorrar ancho de banda.
+\end_layout
+
+\end_deeper
 \begin_layout Enumerate
 se construye un paquete del tipo 
 \family sans
 Apagado Forzoso MV
 \family default
 .
- Acto seguido, se envía ese paquete al servidor de máquinas virtuales.
+ Acto seguido, se envía ese paquete al anfitrión de la máquina virtual.
+\end_layout
+
+\begin_layout Enumerate
+se elimina la ubicación de la máquina virtual.
 \end_layout
 
 \begin_layout Enumerate
@@ -26254,58 +26386,12 @@ Al procesar una petición de apagado forzoso de una máquina virtual, se produci
 cluster
 \emph default
 .
+ 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Apagado forzoso MV sin errores.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Apagado-forzoso-MV-error"
-
-\end_inset
-
-Apagado forzoso de una máquina virtual: tratamiento de errores
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Tal y como se muestra en el diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Apagado-forzoso-MV-error"
-
-\end_inset
-
-, tras detectar el error 
+Tras consultar la ubicación de la máquina virtual en la base de datos, se
+ detectará el error y
 \end_layout
 
 \begin_layout Enumerate
@@ -26330,7 +26416,7 @@ Reinicio forzoso de una máquina virtual: secuencia básica
 \begin_layout Standard
 Cuando una máquina virtual se cuelga, los usuarios también podrán forzar
  su reinicio.
- Para ello, el servidor web enviará un paquete del tipo 
+ En este caso, el servidor web enviará un paquete del tipo 
 \family sans
 Reiniciar máquina virtual
 \family default
@@ -26339,61 +26425,16 @@ Reiniciar máquina virtual
 cluster
 \emph default
 .
- El diagrama de secuencia de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Reinicio-forzoso-MV-sin-errores"
-
-\end_inset
-
- muestra cómo se procesan estos paquetes en ausencia de errores.
+ 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Reinicio forzoso MV sin errores.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Reinicio-forzoso-MV-sin-errores"
-
-\end_inset
-
-Reinicio forzoso de una máquina virtual: secuencia básica
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Como el lector habrá notado ya, este proceso es muy similar al proceso de
- apagado forzoso de una máquina virtual.
- No obstante, en este caso
+Estos paquetes se procesan casi igual que los paquetes del tipo 
+\family sans
+Destrucción de máquina virtual
+\family default
+.
+ No obstante, existen dos diferencias:
 \end_layout
 
 \begin_layout Itemize
@@ -26401,7 +26442,7 @@ se envía un paquete del tipo
 \family sans
 Reinicio forzoso de máquina virtual 
 \family default
-al servidor de máquinas virtuales que alberga la máquina.
+al anfitrión de la máquina virtual.
 \end_layout
 
 \begin_layout Itemize
@@ -26428,18 +26469,6 @@ Error en destrucción de máquina virtual
 \family sans
 Error en reinicio de máquina virtual
 \family default
-.
-\end_layout
-
-\begin_layout Standard
-Si el lector desea averiguar cómo se tratan estos errores, le remitimos
- a la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "par:Apagado-forzoso-MV-errores"
-
-\end_inset
-
 .
 \end_layout
 
