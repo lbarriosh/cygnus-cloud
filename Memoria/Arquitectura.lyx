@@ -209,20 +209,6 @@ Además, utilizaremos diagramas de clase y diagramas de secuencia para exponer
 \begin_layout Enumerate
 
 \series bold
-Vista de procesos
-\series default
-.
- En ella mostraremos el funcionamiento de cada subsistema desde el punto
- de vista de los procesos ligeros o 
-\emph on
-threads
-\emph default
-, y también discutiremos el cometido de los mismos.
-\end_layout
-
-\begin_layout Enumerate
-
-\series bold
 Vista de despliegue
 \series default
 .
@@ -9412,6 +9398,13 @@ nte), se asumirá que la conexión está cerrada.
 
 \begin_layout Subsubsection
 Hilos de red 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Hilos-de-red"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -36061,7 +36054,7 @@ ClusterConnector
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -36274,7 +36267,7 @@ n.
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -39259,11 +39252,281 @@ Sección sobre el conector
 \end_layout
 
 \begin_layout Section
-Vista de procesos
+Vista de despliegue
 \end_layout
 
-\begin_layout Section
-Vista de despliegue
+\begin_layout Standard
+Tal y como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Descomposición-del-sistema"
+
+\end_inset
+
+, en 
+\emph on
+CygnusCloud
+\emph default
+ existen cuatro tipos de servidores:
+\end_layout
+
+\begin_layout Itemize
+los 
+\series bold
+servidores de máquinas virtuales
+\series default
+.
+ Estos equipos albergarán las máquinas virtuales con las que trabajan los
+ usuarios.
+ Asimismo, también se utilizarán para crear o editar las imágenes o configuracio
+nes que utilizan las máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+los 
+\series bold
+repositorios de imágenes
+\series default
+.
+ Cada uno de estos equipos almacena todas las imágenes o configuraciones
+ que es posible utilizar en cierto 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los 
+\series bold
+servidores de 
+\emph on
+cluster
+\series default
+\emph default
+.
+ Estos equipos se utilizan para
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+comprobar si un 
+\emph on
+cluster
+\emph default
+ puede atender las peticiones que le llegan,
+\end_layout
+
+\begin_layout Itemize
+realizar el balanceado de carga entre los distintos servidores de máquinas
+ virtuales de cierto 
+\emph on
+cluster
+\emph default
+, y para
+\end_layout
+
+\begin_layout Itemize
+procesar las altas, bajas, arranques y apagados de esos servidores de forma
+ centralizada.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los 
+\series bold
+servidores web
+\series default
+.
+ Estos equipos albergan una aplicación web, que permitirá a los usuarios
+ interactuar con cierto 
+\emph on
+cluster
+\emph default
+ de forma sencilla.
+\end_layout
+
+\begin_layout Standard
+De acuerdo a lo que hemos estudiado en la vista lógica, en un momento dado
+ cierto 
+\emph on
+cluster
+\emph default
+ contiene
+\end_layout
+
+\begin_layout Itemize
+0 o más servidores de máquinas virtuales.
+ Estos interactúan con el servidor de 
+\emph on
+cluster
+\emph default
+ y con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+un repositorio de imágenes.
+ Estas máquinas interactúan con los servidores de máquinas virtuales y con
+ el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+un servidor de 
+\emph on
+cluster
+\emph default
+.
+ Esta máquina interactuará con el resto de máquinas del 
+\emph on
+cluster 
+\emph default
+y con el servidor web.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, para atender las peticiones de los usuarios, el servidor
+ web se comunicará con el servidor del 
+\emph on
+cluster
+\emph default
+.
+ Todo esto se refleja en el diagrama de despliegue de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagrama-de-despliegue-CC"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de despliegue/Diagrama despliegue CC.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-de-despliegue-CC"
+
+\end_inset
+
+Diagrama de despliegue de 
+\emph on
+CygnusCloud
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de despliegue de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagrama-de-despliegue-CC"
+
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Itemize
+todas las máquinas de la infraestructura albergan una base de datos y un
+ demonio, que procesará las peticiones recibidas a través de una conexión
+ de control.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+La base de datos permitirá que el demonio pueda atender todas esas peticiones
+ de forma adecuada.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+el servidor web alberga tres bases de datos, una aplicación web y un demonio.
+ Como ya sabemos, 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+la aplicación web se comunicará con el demonio utilizando la base de datos
+ de comandos y la base de datos del 
+\emph on
+endoint
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+la aplicación web utilizará la base de datos restante para, entre otras
+ cosas, realizar el control de acceso.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+el repositorio de imágenes almacena ficheros 
+\family typewriter
+.zip
+\family default
+ con los datos de las distintas configuraciones.
+ Además, también alberga un servidor FTP, que le permitirá intercambiar
+ ficheros 
+\family typewriter
+.zip
+\family default
+ con los servidores de máquinas virtuales del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los servidores de máquinas virtuales albergan un cliente FTP para intercambiar
+ ficheros comprimidos con el repositorio de imágenes.
+ 
+\end_layout
+
+\begin_layout Itemize
+los servidores de máquinas virtuales almacenan las imágenes de disco 
+\family typewriter
+qcow2
+\family default
+ y los ficheros de definición que se usarán para crear máquinas virtuales.
 \end_layout
 
 \begin_layout Section
