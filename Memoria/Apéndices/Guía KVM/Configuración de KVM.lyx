@@ -78,13 +78,13 @@ Configuración de KVM
 \end_layout
 
 \begin_layout Standard
-Los pasos a seguir son estos:
+Los pasos a seguir para configurar de forma correcta KVM son los siguientes:
 \end_layout
 
 \begin_layout Enumerate
 Nos aseguraremos de que tenemos una CPU con extensiones de virtualización.
  Si no es el caso, KVM no funcionará.
- Para ello, usad la orden 
+ Para ello, usamos la orden 
 \end_layout
 
 \begin_deeper
@@ -97,7 +97,7 @@ egrep '(vmx|svm)' --color=always /proc/cpuinfo flags
 \end_layout
 
 \begin_layout Standard
-En mi máquina, la salida es esta:
+Un posible ejemplo de salida para esta orden sería la siguiente:
 \end_layout
 
 \begin_layout Standard
@@ -114,7 +114,7 @@ width "80col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -168,11 +168,11 @@ vmx
 \end_layout
 
 \begin_layout Standard
-Saldrán tantos bloques como 
+En ella aparecerán tantos bloques como 
 \emph on
 cores 
 \emph default
-tenga integrados vuestra CPU.
+tenga integrados nuestra CPU.
  En el caso de CPUs Intel, el flag es 
 \family typewriter
 vmx
@@ -187,7 +187,7 @@ svm
 
 \end_deeper
 \begin_layout Enumerate
-Instalamos los paquetes básicos
+Instalamos los paquetes básicos con la orden
 \end_layout
 
 \begin_deeper
@@ -205,8 +205,7 @@ Añadimos a
 \emph on
 root
 \emph default
- (y para no estar usando sudo todo el rato, también a nuestro usuario) a
- los grupos 
+ a los grupos 
 \family typewriter
 libvirt
 \family default
@@ -215,11 +214,13 @@ libvirt
 kvm
 \family default
 .
- Para ello, utilizaremos el comando
+ También añadimos a root nuestro propio usuario, para no tener que estar
+ usando el comando sudo todo el rato.
+ Para ello, utilizamos el comando
 \family typewriter
  adduser
 \family default
-, que tiene esta sintaxis básica:
+ de la siguiente forma:
 \end_layout
 
 \begin_deeper
@@ -232,7 +233,7 @@ adduser <nombre de usuario> <grupo>
 \end_layout
 
 \begin_layout Standard
-En mi caso, tendría que ejecutar estas órdenes:
+Un posible ejemplo sobre esto sería el siguiente:
 \end_layout
 
 \begin_layout Standard
@@ -281,7 +282,7 @@ sudo adduser luis kvm
 \end_layout
 
 \begin_layout Standard
-Reiniciad sesión para que los cambios tengan efecto.
+Reiniciamos sesión para que los cambios tengan efecto.
 \end_layout
 
 \end_deeper
@@ -503,7 +504,7 @@ sudo ifconfig
 \end_deeper
 \begin_layout Enumerate
 Reiniciamos.
- Esto nes necesario para evitar errores de permisos en 
+ Esto es necesario para evitar errores de permisos en 
 \family typewriter
 /dev/kvm
 \family default
@@ -511,17 +512,17 @@ Reiniciamos.
 \end_layout
 
 \begin_layout Enumerate
-Modificad los ficheros 
+Modificamos los ficheros 
 \family typewriter
 .xml
 \family default
- del repositorio según el tipo de dominio que vayáis a crear (Windows o
+ del repositorio según el tipo de dominio que vayamos a crear (Windows o
  GNU/Linux).
  
 \end_layout
 
 \begin_layout Enumerate
-Arrancad la máquina virtual
+Arrancamos la máquina virtual
 \end_layout
 
 \begin_deeper
@@ -560,7 +561,7 @@ virsh start <nombre de la VM>
 
 \end_deeper
 \begin_layout Enumerate
-Iniciad un cliente de escritorio remoto, conectándoos a 
+Iniciamos un cliente de escritorio remoto, conectándonos a 
 \family typewriter
 localhost
 \family default

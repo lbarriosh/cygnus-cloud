@@ -81,15 +81,15 @@ Introducción
 \begin_layout Standard
 Los sockets son un concepto abstracto con el que se designa al punto final
  de una conexión.
- os programas utilizan sockets para comunicarse con otros programas, que
+ Los programas utilizan sockets para comunicarse con otros programas, que
  pueden estar situados en computadoras distintas.
 \end_layout
 
 \begin_layout Standard
 Un socket queda definido por la dirección IP de la máquina, el puerto en
- el que escucha, y el protocolo que utiliza.Los tipos y funciones necesarios
- para trabajar con sockets se encuentran en Python en el módulo socket,
- como no podría ser de otra forma.
+ el que escucha, y el protocolo que utiliza.
+ Los tipos y funciones necesarios para trabajar con sockets se encuentran
+ en Python en el módulo socket.
 \end_layout
 
 \begin_layout Section
@@ -120,7 +120,7 @@ Dependiendo del sistema y las opciones de construcción, existen varias familias
 \end_layout
 
 \begin_layout Standard
-Las direcciones de sockets puden representarse como siguen :
+Las direcciones de sockets pueden representarse como siguen :
 \end_layout
 
 \begin_layout Itemize
@@ -128,7 +128,7 @@ Las cadenas de String simples son utilizadas para familias del tipo AF_UNIX
 \end_layout
 
 \begin_layout Itemize
-Una par de la forma (host,port).
+Un par de la forma (host,port).
  Se utilizan para las familias de tipo AF_INET donde 
 \begin_inset Quotes eld
 \end_inset
@@ -164,12 +164,12 @@ Los sockets de la familia AF_NETLINK se representan como pares (pid, grupos).
 \end_layout
 
 \begin_layout Itemize
-El soporte de TIPC en linux solo está disponible bajo al familia AF_TIPC.
+El soporte de TIPC en linux solo está disponible bajo la familia AF_TIPC.
  TIPC es un protocolo abierto, sin IP y basado en red, diseñado para ser
  usado en ambientes con computación en cluster.
  Las direcciones son representadas por una tupla, y sus campos dependen
  del tipo de dirección.
- Generalmente suele tener el siguiente aspecto (addr_type, v1, v2, v3 [,
+ Generalmente suele tener el siguiente aspecto: (addr_type, v1, v2, v3 ,[
  scope]) donde
 \end_layout
 
@@ -252,7 +252,7 @@ end{verbatim}
 \end_layout
 
 \begin_layout Standard
-Tenemos ahora que indicar en qué puerto se va a mantener a la escucha nuestro
+Ahora tenemos que indicar en qué puerto se va a mantener a la escucha nuestro
  servidor utilizando el método bind.
  Para sockets IP, como es nuestro caso, el argumento de bind es una tupla
  que contiene el host y el puerto.
@@ -289,18 +289,19 @@ end{verbatim}
 \end_layout
 
 \begin_layout Standard
-Por último utilizamos listen para hacer que el socket acepte conexiones
+Por último, utilizamos listen para hacer que el socket acepte conexiones
  y accept para comenzar a escuchar.
- listen requiere de un parámetro que indica el número de conexiones máximas
- que queremos aceptar; evidentemente, este valor debe ser al menos 1.
+ listen requiere de un parámetro que indique el número de conexiones máximas
+ que queremos aceptar.
+ Evidentemente, este valor debe ser al menos 1.
  accept se mantiene a la espera de conexiones entrantes, bloqueando la ejecución
- hasta que llega un mensaje.
+ hasta que llegue un mensaje.
 \end_layout
 
 \begin_layout Standard
 Cuando llega un mensaje, accept desbloquea la ejecución, devolviendo un
  objeto socket que representa la conexión del cliente y una tupla que contiene
- el host y puerto de dicha conexión.
+ el host y el puerto de dicha conexión.
 \end_layout
 
 \begin_layout Standard
@@ -394,10 +395,10 @@ Socket en el cliente
 \begin_layout Standard
 Crear un cliente es aún más sencillo.
  Solo tenemos que crear el objeto socket, utilizar el método connect para
- conectarnos al servidor y utilizar los métodos send y recv que vimos anteriorme
-nte.
- El argumento de connect es una tupla con host y puerto, exactamente igual
- que bind.
+ conectarnos al servidor y los métodos send y recv que vimos anteriormente
+ para enviar y recibir mensajes.
+ El argumento de connect es una tupla con el host y el puerto, exactamente
+ igual que bind.
 \end_layout
 
 \begin_layout Standard
@@ -550,7 +551,7 @@ end{verbatim}
 \end_layout
 
 \begin_layout Standard
-Y a continuación tenemos el del script cliente:
+Y este el del script cliente:
 \end_layout
 
 \begin_layout Standard
