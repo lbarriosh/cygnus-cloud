@@ -120,83 +120,37 @@ bridge
 \end_layout
 
 \begin_layout Standard
-\begin_inset Box Boxed
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-
-\series bold
-\color red
-Importante
-\series default
-\color inherit
-: os recomiendo que hagáis una copia de seguridad de todos los ficheros
- que modifiquéis (o que os apuntéis cómo revertir los cambios) para no cargaros
- vuestra instalación.
- 
-\end_layout
-
-\begin_layout Plain Layout
-Lo mejor es que os creéis una imagen de disco de la instalación base para
- que así 
-\family typewriter
-podáis
-\family default
- recuperaros de desastres en menos de 5 minutos.
- Crear una imagen con 
-\emph on
-Clonezilla Live
-\emph default
- es algo trivial, y a la larga compensa muchísimo.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Bueno, ha llegado el momento de ponernos manos a la obra:
+A continuación enumeraremos, paso por paso, todo lo necesario para llevar
+ a cabo la creación de imagenes windows en Xen:
 \end_layout
 
 \begin_layout Enumerate
-Elegid la interfaz de red a la que queréis redirigir el tráfico de los adaptador
-es de red virtuales.
- Si sólo tenéis una, os podéis saltar este paso, pero si tenéis dos (por
+Elegimos la interfaz de red a la que queremos redirigir el tráfico de los
+ adaptadores de red virtuales.
+ Si sólo tenemos una, podemos saltar este paso, pero si tenemos dos (por
  ejemplo, 
 \emph on
 ethernet
 \emph default
- y WiFi) tenéis que elegir 
+ y WiFi) tendremos que elegir 
 \emph on
 una
 \emph default
  de ellas.
- Yo os recomiendo utilizar la interfaz 
+ Resulta recomendable utilizar la interfaz 
 \emph on
 ethernet
 \emph default
- y desactivar la inalámbrica de la forma habitual (es decir, usando el botón;
- podéis usar comandos a pelo si queréis).
+ y desactivar la inalámbrica de la forma habitual.
 \end_layout
 
 \begin_layout Enumerate
-Desactivad 
+Desactivamos 
 \family typewriter
 network-manager
 \family default
- (si no lo habéis hecho ya) para que podamos configurar la red a placer.
- Para desactivarlo, escribid en un terminal
+ (si no se ha hecho ya) para que podamos configurar la red sin problemas.
+ Para desactivarlo, escribimos en un terminal
 \end_layout
 
 \begin_deeper
@@ -209,14 +163,14 @@ sudo service network-manager stop
 \end_layout
 
 \begin_layout Standard
-Tras hacer esto, la dirección IP y el servidor DNS habrán volado, y no tendréis
- acceso a internet.
- Tranquilos, es normal.
+Tras hacer esto, la dirección IP y el servidor DNS habrán desaparecido y
+ no tendremos acceso a internet.
+ 
 \end_layout
 
 \end_deeper
 \begin_layout Enumerate
-Modificad el fichero 
+Modificamos el fichero 
 \family typewriter
 /etc/network/interfaces
 \family default
@@ -306,7 +260,8 @@ bridge_ports eth0
 \end_layout
 
 \begin_layout Standard
-Si tenéis dudas sobre el formato de este fichero, usad las órdenes 
+Paraa consultar más información sobre el formato de este fichero, podemos
+ usar las órdenes 
 \family typewriter
 man 5 interfaces
 \family default
@@ -314,12 +269,12 @@ man 5 interfaces
 \family typewriter
 man 5 brige-utils-interfaces
 \family default
- para obtener más información.
+.
 \end_layout
 
 \end_deeper
 \begin_layout Enumerate
-Levantad el 
+Levantamos el 
 \emph on
 bridge
 \emph default
@@ -349,12 +304,12 @@ sudo ifup xenbr0
 
 \end_deeper
 \begin_layout Enumerate
-Permitid que todo tipo de tráfico pase a través del 
+Permitimos que todo tipo de tráfico pase a través del 
 \emph on
 bridge
 \emph default
 .
- Para ello, usad el comando
+ Para ello, usamos el comando
 \end_layout
 
 \begin_deeper
@@ -368,11 +323,11 @@ sudo iptables -I FORWARD -m physdev --physdev-is-bridged -j ACCEPT
 
 \end_deeper
 \begin_layout Enumerate
-Parchear la instalación chapucera de 
+Parcheamos la instalación de 
 \family typewriter
 qemu
 \family default
- que trae Ubuntu: 
+ que trae Ubuntu por defecto: 
 \family typewriter
 qemu
 \family default
@@ -385,7 +340,7 @@ qemu
 /usr/share/qemu-linaro
 \family default
 .
- Lo arreglamos creando un vulgar enlace simbólico:
+ Lo arreglamos creando un enlace simbólico:
 \end_layout
 
 \begin_deeper
@@ -399,20 +354,20 @@ sudo ln -s /usr/share/qemu-linaro /usr/share/qemu
 
 \end_deeper
 \begin_layout Enumerate
-Cread el fichero de configuración de domU que vamos a crear.
- Aunque recomiendan colocarlo en 
+Creamos el fichero de configuración de domU que vamos a crear.
+ Aunque suele recomendarse colocarlo en 
 \family typewriter
 /etc/xen
 \family default
-, yo siempre almaceno las imágenes de disco y los ficheros de configuración
- en el mismo directorio (y lejos de 
+, resulta preferible almacenar las imágenes de disco y los ficheros de configura
+ción en el mismo directorio (y lejos de 
 \family typewriter
 /etc/xen
 \family default
 ).
- Así, es extremadamente sencillo transferir máquinas virtuales ya configuradas
- entre distintas máquinas.
- En mi caso, se llamará 
+ Esto facilita de manera considerable transferir máquinas virtuales ya configura
+das entre distintas máquinas.
+ En nuestro caso lo llamaremos 
 \family typewriter
 Windows.cfg
 \family default
@@ -420,7 +375,7 @@ Windows.cfg
 \end_layout
 
 \begin_layout Enumerate
-Cread la imagen de disco.
+Creamos la imagen de disco.
  Para empezar, la crearemos como un fichero 
 \family typewriter
 .img
@@ -444,12 +399,12 @@ dd if=/dev/zero of=Windows.img bs=1 count=1 seek=30G
 
 \end_deeper
 \begin_layout Enumerate
-Fijad el contenido del fichero 
+Fijamos el contenido del fichero 
 \family typewriter
 Windows.cfg
 \family default
 .
- En mi caso, es el siguiente:
+ Nosotros usaremos el siguiente:
 \end_layout
 
 \begin_deeper
@@ -678,12 +633,12 @@ on_crash = 'restart'
 
 \end_deeper
 \begin_layout Enumerate
-Instalar un cliente de escritorio remoto.
- El que más me gusta es KRDC, aunque vale cualquiera.
+Instalamos un cliente de escritorio remoto.
+ Nosotros utilizaremos KRDC, aunque vale cualquiera.
 \end_layout
 
 \begin_layout Enumerate
-Terminar la instalación de 
+Terminamos la instalación de 
 \family typewriter
 blktap-kms
 \family default
@@ -693,13 +648,13 @@ blktap-kms
 
 \begin_deeper
 \begin_layout Enumerate
-Configurad DKMS.
- Así, cada vez que actualicéis el kernel, el módulo 
+Configuramos DKMS.
+ Así, cada vez que actualicemos el kernel, el módulo 
 \family typewriter
 blktap 
 \family default
 no se dejará de cargar.
- Para ello, utilizad el comando
+ Para ello, utilizamos el comando
 \end_layout
 
 \begin_deeper
@@ -713,18 +668,12 @@ sudo dkms autoinstall -k $(uname -r)
 
 \end_deeper
 \begin_layout Enumerate
-Cargad el módulo 
+Cargamos el módulo 
 \family typewriter
 blktap.
 
 \family default
- Tendréis que hacer esto 
-\uuline on
-\color red
-en cada arranque
-\uuline default
-\color inherit
-.
+ Deberá hacerse esto en cada arranque.
 \end_layout
 
 \begin_deeper
@@ -739,14 +688,14 @@ modprobe blktap
 \end_deeper
 \end_deeper
 \begin_layout Enumerate
-Arrancar la máquina virtual de la forma habitual, y arrancar el cliente
+Arrancamos la máquina virtual de la forma habitual, y arrancamos el cliente
  de escritorio remoto.
- Conectaos a 
+ Nos conectamos a 
 \family typewriter
 localhost
 \family default
- (no hace falta meter contraseña).
- Si lo habéis hecho todo bien, veréis cómo aparece el BIOS emulado y, después,
+ (no es necesario introducir ninguna contraseña).
+ Si lo hemos hecho todo bien, veremos cómo aparece el BIOS emulado y, después,
  el instalador de Windows 7.
 \end_layout
 
@@ -770,7 +719,7 @@ Xen-Win[XP|Vista|7][Pro|Ent]-[x86_32|x86_64]
 
 \end_deeper
 \begin_layout Itemize
-cread el usuario 
+creamos el usuario 
 \family typewriter
 VM-Admin
 \family default
@@ -782,7 +731,7 @@ CygnusCloud
 \end_layout
 
 \begin_layout Itemize
-habilitad las actualizaciones automáticas.
+habilitamos las actualizaciones automáticas.
 \end_layout
 
 \begin_layout Standard
@@ -802,17 +751,16 @@ status open
 \begin_layout Plain Layout
 
 \series bold
-\color blue
+\color black
 Observación
 \series default
 \color inherit
-: en cada reinicio, el domU se destruirá, y tendréis que volver a crearlo
- (si no recuerdo mal, esto pasa dos veces).
+: en cada reinicio, el domU se destruirá, y tendremos que volver a crearlo.
  Este comportamiento es 
 \emph on
 normal
 \emph default
-, y persistirá hasta que instaléis los drivers de paravirtualización.
+, y persistirá hasta que instalemos los drivers de paravirtualización.
 \end_layout
 
 \end_inset
@@ -822,8 +770,8 @@ normal
 
 \end_deeper
 \begin_layout Enumerate
-Instalad los drivers GPL para habilitar la paravirtualización.
- Los instaladores son estos:
+Instalamos los drivers GPL para habilitar la paravirtualización.
+ Los instaladores que necesitamos son:
 \end_layout
 
 \begin_deeper
@@ -1184,13 +1132,13 @@ Windows 8
 
 \begin_layout Standard
 Hay varias alternativas para pasar el instalador a la máquina virtual.
- Yo os recomiendo la más simple: copiadlos en un pendrive y enchufadlo al
- domU añadiendo lo que corresponda a la línea 
+ Resulta recomendable copiarlos en algún dispositivo extraible y enchufarlo
+ al domU añadiendo lo que corresponda a la línea 
 \family typewriter
 disk=
 \family default
  del fichero de configuración.
- En mi caso, lo que hay que añadir es
+ En nuestro caso, lo que demos añadir es:
 \end_layout
 
 \begin_layout Standard
@@ -1206,7 +1154,8 @@ disk=
 \end_layout
 
 \begin_layout Standard
-Para saber qué dispositivo es el pendrive, podéis montarlo con el 
+Para saber qué dispositivo es el dispositivo extraible utilizado, podemos
+ montarlo con el 
 \emph on
 shell
 \emph default
@@ -1215,7 +1164,7 @@ shell
 mount
 \family default
 .
- En mi caso, la salida es
+ En nuestro caso la salida debe ser algo como esto
 \end_layout
 
 \begin_layout Standard
@@ -1388,25 +1337,18 @@ xenfs on /proc/xen type xenfs (rw)
 \end_layout
 
 \begin_layout Standard
-El 1 que aparece es el número de partición: el pendrive sólo tiene una,
- por lo que es la primera.
+El 1 que aparece es el número de partición: el dispositivo extraible sólo
+ tiene una, por lo que es la primera.
 \end_layout
 
 \begin_layout Standard
-En el siguiente reinicio, notaréis que vuestra máquina virtual es 
-\begin_inset Quotes eld
-\end_inset
-
-ligeramente
-\begin_inset Quotes erd
-\end_inset
-
+En el siguiente reinicio, notaremos que nuestra máquina virtual es algo
  más rápida.
 \end_layout
 
 \end_deeper
 \begin_layout Enumerate
-Configurad RDP.
+Configuramos RDP.
  Este protocolo de escritorio remoto es el que mejor funciona con máquinas
  
 \emph on
@@ -1418,7 +1360,7 @@ Windows
 
 \begin_deeper
 \begin_layout Enumerate
-Haced clic derecho sobre 
+Hacemos clic derecho sobre 
 \family sans
 Equipo \SpecialChar \menuseparator
  Propiedades
@@ -1427,7 +1369,7 @@ Equipo \SpecialChar \menuseparator
 \end_layout
 
 \begin_layout Enumerate
-Haced clic sobre 
+Hacemos clic sobre 
 \family sans
 Configuración Avanzada del Sistema
 \family default
@@ -1436,7 +1378,7 @@ Configuración Avanzada del Sistema
 Acceso remoto
 \family default
 .
- Dejad las cosas tal y como están en la figura 
+ Dejamos las cosas como aparece en la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Configuración-de-RDP-1"
@@ -1490,69 +1432,20 @@ Configuración de RDP en Windows 7 y Vista
 
 \end_deeper
 \begin_layout Enumerate
-Cerrad sesión e intentad conectaros al domU usando RDP.
- Como nombre de host, usad el que habéis especificado en la instalación
- (en mi caso, 
+Cerramos sesión e intentamos conectarnos al domU usando RDP.
+ Como nombre de host, usamos el que hemos especificado en la instalación
+ (
 \family typewriter
 Xen-Win7Pro-x64
 \family default
-) y\SpecialChar \ldots{}
- 
+ en nuestro caso)
 \emph on
-voilà.
-\end_layout
-
-\begin_layout Enumerate
-Os recomiendo que uséis el tema 
-\family sans
-Windows 7 Basic
-\family default
-: la apariencia de los otros es bastante horrible.
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset Box Boxed
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-
-\series bold
-\color red
-Importante
-\series default
-\color inherit
-: vamos a aprovechar estas imágenes como imágenes 
-\emph on
-vanilla
-\emph default
 .
- Por eso, 
-\emph on
-no
-\emph default
- cambiéis nada más.
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\end_deeper
 \begin_layout Enumerate
-Desactivad VNC.
- Para ello, cambiad la línea 
+Desactivamos VNC.
+ Para ello, cambiamos la línea 
 \family typewriter
 vnc=1
 \family default
@@ -1580,7 +1473,7 @@ status open
 \begin_layout Plain Layout
 
 \series bold
-\color blue
+\color black
 Nota
 \series default
 \color inherit
@@ -1598,8 +1491,8 @@ shutdown /n
 
 \end_deeper
 \begin_layout Enumerate
-Quitad todos los dispositivos de almacenamiento salvo el disco duro.
- Para ello, modificad la línea 
+Quitamos todos los dispositivos de almacenamiento salvo el disco duro.
+ Para ello, modificamos la línea 
 \family typewriter
 disk=
 \family default
@@ -1607,8 +1500,8 @@ disk=
 \end_layout
 
 \begin_layout Enumerate
-Configurad el arranque para que sólo se utilice el disco duro.
- Para ello, modificad la línea 
+Configuramos el arranque para que sólo se utilice el disco duro.
+ Para ello, modificamos la línea 
 \family typewriter
 boot='dc'
 \family default
@@ -1620,12 +1513,12 @@ boot='c'
 \end_layout
 
 \begin_layout Enumerate
-Comprimid la imagen de disco y borrar la antigua (el fichero 
+Comprimimos la imagen de disco y borramos la antigua (el fichero 
 \family typewriter
 .img
 \family default
 ).
- Para ello, utilizad la orden
+ Para ello, utilizamos la orden
 \end_layout
 
 \begin_deeper
@@ -1639,8 +1532,8 @@ qemu-img convert Windows.img -O qcow2 Windows.qcow2
 
 \end_deeper
 \begin_layout Enumerate
-Modificad el fichero de configuración para que utilice la nueva imagen.
- Para ello, sustituid 
+Modificamos el fichero de configuración para que utilice la nueva imagen.
+ Para ello, sustituimos 
 \end_layout
 
 \begin_deeper
@@ -1666,7 +1559,8 @@ por
 
 \end_deeper
 \begin_layout Standard
-Con esto, hemos terminado.
+Una vez hecho esto, ya estaría todo listo para utilizar nuestra imagen windows
+ en Xen.
 \end_layout
 
 \end_body
