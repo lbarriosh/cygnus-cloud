@@ -10001,6 +10001,13 @@ error en la recepción de un fichero
 El servidor FTP de 
 \emph on
 CygnusCloud
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:El-servidor-FTP"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

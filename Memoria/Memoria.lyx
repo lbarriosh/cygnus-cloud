@@ -435,6 +435,16 @@ filename "Arquitectura.lyx"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
+filename "Costes.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
 preview true
 filename "Resultados.lyx"
 
