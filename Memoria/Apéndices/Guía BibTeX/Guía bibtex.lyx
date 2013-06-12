@@ -145,7 +145,7 @@ Campos
 Registros
 \series default
 .
- Un registro es un conjunto de campos que describe una referencia bibliográfica.
+ Es un conjunto de campos que describe una referencia bibliográfica.
 \end_layout
 
 \begin_layout Standard
@@ -170,7 +170,7 @@ width "40col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -290,12 +290,12 @@ TipoRegistro
 
 \begin_layout Itemize
 La clave identifica al registro, y es siempre su primer elemento.
- Como podréis suponer, en la misma base de datos 
+ En la misma base de datos 
 \emph on
 no
 \emph default
  podrá haber dos registros con la misma clave, y tampoco deberían usarse
- bases de datos que comparten claves en el mismo documento.
+ bases de datos que compartan claves en el mismo documento.
  Por convenio, las claves serán de la forma
 \end_layout
 
@@ -351,7 +351,7 @@ width "40col%"
 special "none"
 height "1in"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -447,7 +447,7 @@ reference "tab:Tipos-de-registros-bib"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
