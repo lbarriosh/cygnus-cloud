@@ -33695,7 +33695,7 @@ endpoint
 endpoint
 \emph default
 .
- Este proceso se conectará a todos los servidores de 
+ Este proceso se conectará a un servidor de 
 \emph on
 cluster
 \emph default
@@ -33711,9 +33711,9 @@ endpoint
 
 \begin_layout Standard
 Para que los alumnos y los profesores puedan utilizar máquinas virtuales
- y modificar las imágenes disponibles en cada 
+ y modificar las imágenes disponibles en el
 \emph on
-cluster
+ cluster
 \emph default
 , la aplicación web necesita conocer, entre otras cosas,
 \end_layout
@@ -33723,7 +33723,7 @@ las características de todas las familias de máquinas virtuales,
 \end_layout
 
 \begin_layout Itemize
-las características de todas las imágenes existentes en cada 
+las características de todas las imágenes existentes en el 
 \emph on
 cluster
 \emph default
@@ -33732,7 +33732,7 @@ cluster
 \end_layout
 
 \begin_layout Itemize
-la distribución de las imágenes de disco de cada 
+la distribución de las imágenes de disco en el 
 \emph on
 cluster
 \emph default
@@ -33742,7 +33742,7 @@ cluster
 \begin_layout Standard
 Por otra parte, para que los administradores puedan hacer su trabajo, la
  aplicación web también necesita tener acceso a la configuración básica
- y al estado de todas las máquinas de cada 
+ y al estado de todas las máquinas que forman parte del 
 \emph on
 cluster
 \emph default
@@ -33812,7 +33812,8 @@ A través de ella, la aplicación web podrá enviar peticiones a la infraestruct
 \end_layout
 
 \begin_layout Standard
-Puesto que la aplicación web no se conecta directamente al servidor de 
+Por otra parte, dado que la aplicación web no se conecta directamente al
+ servidor de 
 \emph on
 cluster
 \emph default
@@ -33838,16 +33839,15 @@ Control de acceso
 \end_layout
 
 \begin_layout Standard
-Para acotar su complejidad, a la hora de enviar las peticiones a los servidores
- de 
+Para acotar la complejidad del proceso 
+\emph on
+endoint
+\emph default
+, a la hora de enviar las peticiones al servidor de 
 \emph on
 cluster
 \emph default
- el proceso 
-\emph on
-endpoint
-\emph default
- no realiza ningún tipo de control de acceso.
+ este no realiza ningún tipo de control de acceso.
  Por tanto,
 \end_layout
 
@@ -33864,11 +33864,11 @@ no distingue asignaturas, grupos de clase,\SpecialChar \ldots{}
 \begin_layout Itemize
 no limita el tipo de las operaciones que pueden enviar los usuarios a la
  infraestructura.
- Por ejemplo, en principio el 
+ Por ejemplo, el 
 \emph on
 endpoint
 \emph default
- permitiría a un alumno apagar todos los servidores de la infraestructura.
+ permite a un alumno apagar todos los servidores de la infraestructura.
 \end_layout
 
 \begin_layout Standard
@@ -33896,8 +33896,588 @@ endpoint
  que cada usuario puede enviar a la infraestructura.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsubsection
+Identificación de las peticiones
+\end_layout
 
+\begin_layout Standard
+Al exponer el diseño del servidor de máquinas virtuales y del servidor de
+ 
+\emph on
+cluster
+\emph default
+, hemos mencionado en múltiples ocasiones el uso del identificador único
+ de la petición.
+\end_layout
+
+\begin_layout Standard
+Todas las peticiones que el 
+\emph on
+endpoint
+\emph default
+ envía a la infraestructura tienen asociado un identificador único, que
+ se generará durante la creación de las mismas.
+\end_layout
+
+\begin_layout Standard
+Estos identificadores son cadenas de caracteres de la forma
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+UserID|Timestamp
+\end_layout
+
+\begin_layout Standard
+\noindent
+donde 
+\family typewriter
+UserID
+\family default
+ es el identificador del usuario que ha generado la petición, y 
+\family typewriter
+Timestamp
+\family default
+ es el número de milisegundos transcurridos desde el 1 de enero de 1970
+ con una precisión de dos dígitos decimales.
+\end_layout
+
+\begin_layout Standard
+Puesto que los servidores de máquinas virtuales y los servidores de 
+\emph on
+cluster
+\emph default
+ nunca descomponen ni modifican los identificadores únicos de las peticiones
+ que reciben.
+ Así, resulta muy sencillo modificar la forma en que se generan estos identifica
+dores.
+\end_layout
+
+\begin_layout Subsubsection
+Envío de peticiones
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Clases-envío-peticiones"
+
+\end_inset
+
+ muestra las clases que intervienen en el envío de peticiones y sus relaciones.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Endoint/Procesamiento comandos.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Clases-envío-peticiones"
+
+\end_inset
+
+Clases que intervienen en el envío de peticiones a la infraestructura
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En primer lugar, la clase 
+\family typewriter
+CommandsProcessor
+\family default
+ dispone de métodos que extraen peticiones de la base de datos de comandos.
+ Para ello, se utilizan los servicios de un objeto 
+\family typewriter
+CommandsDBConnector
+\family default
+.
+ Como todas las clases que manipulan una base de datos, la clase 
+\family typewriter
+CommandsDBConnector
+\family default
+ hereda de la clase 
+\family typewriter
+BasicDBConnector
+\family default
+, definida en el paquete 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, para enviar las peticiones a la infraestructura los objetos
+ 
+\family typewriter
+CommandsProcessor
+\family default
+ utilizan un objeto 
+\family typewriter
+NetworkManager
+\family default
+ y un objeto 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+.
+ Como sabemos, la clase 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+ se define en el paquete 
+\family typewriter
+clusterServer.packetHandling
+\family default
+, y dispone de métodos para leer y crear los distintos tipos de paquete
+ utilizados por los servidores de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, para simplificar la implementación del 
+\emph on
+endpoint
+\emph default
+, todas las peticiones que se almacenan en la base de datos de comandos
+ están serializadas.
+ Para deserializarlas, la clase 
+\family typewriter
+CommandsProcessor
+\family default
+ utiliza los métodos de la clase 
+\family typewriter
+CommandsHandler
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Procesamiento de las respuestas de la infraestructura
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Clases-procesamiento-respuestas"
+
+\end_inset
+
+ muestra las principales clases que intervienen en el procesamiento de las
+ respuestas de la infraestructura.
+ Por claridad, de ahora en adelante abreviaremos 
+\family typewriter
+ClusterEndpoint
+\family default
+ como 
+\family typewriter
+CE
+\family default
+ en todos los diagramas UML.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Endoint/Procesamiento respuestas.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Clases-procesamiento-respuestas"
+
+\end_inset
+
+Clases que intervienen en el procesamiento de las respuestas de la infraestructu
+ra
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, la clase 
+\family typewriter
+ClusterEndpointPacketReactor
+\family default
+ hereda de 
+\family typewriter
+NetworkCallback
+\family default
+, por lo que procesará los paquetes enviados por el servidor de 
+\emph on
+cluster
+\emph default
+.
+ Para leerlos, utilizará un objeto 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los códigos de error generados por la infraestructura no
+ se muestran directamente a los usuarios: previamente, se convierten a 
+\emph on
+strings
+\emph default
+.
+ Para ello, el objeto 
+\family typewriter
+ClusterEndointPacketReactor
+\family default
+ utiliza un objeto 
+\family typewriter
+SpanishCodesTranslator
+\family default
+ a través de la interfaz definida por la clase abstracta 
+\family typewriter
+CodesTranslator
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Asimismo, cuando el servidor de 
+\emph on
+cluster 
+\emph default
+envía al servidor web un paquete con el resultado de una petición, estos
+ datos deben almacenarse en la base de datos de comandos.
+ Para ello, los objetos 
+\family typewriter
+ClusterEndpointPacketReactor
+\family default
+ utilizan un objeto 
+\family typewriter
+CommandsDBConnector
+\family default
+ y los métodos de serialización de resultados de la clase 
+\family typewriter
+CommandsHandler
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los objetos 
+\family typewriter
+ClusterEndpointPacketReactor
+\family default
+ utilizarán un objeto 
+\family typewriter
+ClusterEndpointDBConnector
+\family default
+ para actualizar la base de datos del 
+\emph on
+endpoint
+\emph default
+ tras recibir los paquetes correspondientes enviados por el servidor de
+ 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, la clase 
+\family typewriter
+ClusterEndpointDBConnector
+\family default
+ no hereda directamente de la clase 
+\family typewriter
+BasicDBConnector
+\family default
+, sino que lo hace a través de la calse 
+\family typewriter
+MinCEDBConnector
+\family default
+.
+ Como veremos más adelante, la aplicación web utilizará los servicios de
+ la clase 
+\family typewriter
+MinCEDBConnector
+\family default
+ para hacer consultas sobre la base de datos del 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+La clase 
+\family typewriter
+ClusterEndpointEntryPoint
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+ClusterEndpointEntryPoint
+\family default
+ es la clase principal del proceso 
+\emph on
+endpoint
+\emph default
+ del servidor web.
+ Su principal responsabilidad es realizar los procesos de arranque y apagado
+ del proceso 
+\emph on
+endpoint
+\emph default
+.
+ El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-entrypoint"
+
+\end_inset
+
+ muestra sus relaciones más importantes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Endoint/Relaciones entry point.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-relaciones-entrypoint"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+ClusterEndpointEntryPoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para establecer la conexión con el servidor de 
+\emph on
+cluster
+\emph default
+, los objetos 
+\family typewriter
+ClusterEndpointEntryPoint
+\family default
+ utilizan un objeto 
+\family typewriter
+NetworkManger
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, para atender las peticiones de los usuarios y actualizar periódicament
+e la base de datos del 
+\emph on
+enpdoint
+\emph default
+, utilizan un objeto 
+\family typewriter
+ClusterEndpointPacketReactor
+\family default
+ y un objeto 
+\family typewriter
+CommandsProcessor
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los objetos 
+\family typewriter
+ClusterEndpointEntryPoint
+\family default
+ utilizan dos hilos de las clases 
+\family typewriter
+DBUpdateThread
+\family default
+ y 
+\family typewriter
+CommandsMonitoringThread
+\family default
+.
+ Los primeros permiten iniciar la actualización periódica de la base de
+ datos del 
+\emph on
+endpoint
+\emph default
+, y los segundos permiten generar errores por 
+\emph on
+timeout
+\emph default
+ durante el procesamiento de las peticiones.
+ 
+\end_layout
+
+\begin_layout Standard
+Como la gran mayoría de las clases de hilo de la infraestructura, la clase
+ 
+\family typewriter
+DBUpdateThread
+\family default
+ y la clase 
+\family typewriter
+CommandsMonitoringThread
+\family default
+ heredan de la clase 
+\family typewriter
+BasicThread
+\family default
+, definida en el paquete 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Asimismo, los objetos 
+\family typewriter
+ClusterServerEndpoint
+\family default
+ utilizan un objeto 
+\family typewriter
+ClusterEndpointConfigurationFileParser
+\family default
+ para procesar el fichero de configuración del proceso 
+\emph on
+endpoint
+\emph default
+.
+ Como sucedía con el resto de 
+\emph on
+parsers
+\emph default
+ de ficheros de configuración, la clase 
+\family typewriter
+ClusterEndpointConfigurationFileParser
+\family default
+ hereda de la clase abstracta 
+\family typewriter
+ConfigurationFileParser
+\family default
+, definida en el paquete 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, el resto de dependencias del diagrama de clases de la figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-entrypoint"
+
+\end_inset
+
+ se deben al proceso de instanciación.
 \end_layout
 
 \begin_layout Subsection
