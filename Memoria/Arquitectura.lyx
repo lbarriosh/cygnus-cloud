@@ -33520,11 +33520,23 @@ webServer
 \end_layout
 
 \begin_layout Standard
-En este paquete se trata todo lo relacionado con la gestión de la web de
- CygnusCloud.
+En este paquete se trata todo lo relacionado con la gestión de la aplicación
+ web de 
+\shape italic
+CygnusCloud
+\shape default
+.
  Así, en él, se incluyen todos los módulos encargados de gestionar las funcional
 idades de interacción con los usuarios a través de la web y los ficheros
- html y css necesarios para la implementación de las páginas.
+ .
+\family typewriter
+html
+\family default
+ y .
+\family typewriter
+css
+\family default
+ necesarios para la implementación de las páginas.
  
 \end_layout
 
@@ -33534,8 +33546,12 @@ Modelo Vista-Controlador
 
 \begin_layout Standard
 Para llevar a cabo el desarrollo de la web ha sido necesario la utilización
- de un framework web que nos facilitase algunos aspectos y estructurase
- el sistema de forma correcta.
+ de un 
+\shape italic
+framework
+\shape default
+ web que nos facilitase algunos aspectos y estructurase el sistema de forma
+ correcta.
  Para ello, hemos optado por la utilización de Web2py cuyas principales
  características se mencionaron en la sección 
 \begin_inset CommandInset ref
@@ -33559,9 +33575,12 @@ Por ello, este
 \shape italic
 framework
 \shape default
- utiliza un modelo Vista-Controlador que incentiva al desarrollador a separar
- la forma de representar los datos (la vista) y el flujo de trabajo de la
- aplicación (el controlador).
+ utiliza un modelo 
+\shape italic
+vista-controlador
+\shape default
+ que incentiva al desarrollador a separar la forma de representar los datos(
+ la vista) y el flujo de trabajo de la aplicación( el controlador).
  Este modelo ofrece una estructura modular que permite aislar los posibles
  errores en una sección de código concreta y trabajar en paralelo de forma
  independiente, reduciendo así los posibles tiempos de espera en el desarrollo
@@ -33677,45 +33696,78 @@ Estructura general de la web
 \end_layout
 
 \begin_layout Standard
-Como Web2py estructura las aplicaciones siguiendo un modelo vista-controlador,
- en CygnusCloud ha sido necesario estructurar el código de la web en un
- grupo de control y un grupo de vista.
+Como web2py estructura las aplicaciones siguiendo un modelo 
+\shape italic
+vista-controlador
+\shape default
+, en 
+\shape italic
+CygnusCloud
+\shape default
+ ha sido necesario estructurar el código de la aplicación web en un grupo
+ de control y un grupo de vista.
  A parte de ambos grupos también se han creado más grupos con ficheros estáticos
-, ficheros css y html, módulos importados y en general todos los ficheros
- necesarios para dar la funcionalidad y el aspecto requeridos en la web.
+, ficheros 
+\family sans
+.
+\family typewriter
+css
+\family default
+ y
+\family typewriter
+ .html
+\family default
+, módulos importados y en general todos los ficheros necesarios para dar
+ la funcionalidad y el aspecto requeridos en la web.
 \end_layout
 
 \begin_layout Standard
-Con todo esto, la web de CygnusCloud puede subdividirse en los siguientes
- grupos según su finalidad y tipo:
+Con todo esto, la web de 
+\shape italic
+CygnusCloud
+\shape default
+ puede subdividirse en los siguientes grupos según su finalidad y tipo:
 \end_layout
 
 \begin_layout Itemize
-Vistas: Este grupo incluye todos los ficheros de formato html encargados
- de establecer el aspecto de los componentes, su posicionamiento en las
- páginas y su comportamiento.
+Vistas: Este grupo incluye todos los ficheros en formato 
+\family sans
+.
+\family typewriter
+html
+\family default
+ encargados de establecer el aspecto de los componentes, su posicionamiento
+ en las páginas y su comportamiento.
  Entendemos por comportamiento de un componente, su capacidad para realizar
  ciertas acciones que mejoren la interacción con los usuarios.
  Según las restricciones de web2py será necesario disponer de un fichero
  de vista por cada sección disponible en la web.
  Cada uno de estos ficheros de vista reciben los componentes creados en
- el controlador asociado, ajustan su aspecto al que se mostrará en la web,
+ el controlador asociado, ajustan su aspecto al que se mostrará en la página,
  y los posicionan en el lugar deseado.
 \end_layout
 
 \begin_layout Itemize
 Controladores: Este grupo incluye el conjunto de módulos python que aportan
  todas las funcionalidades que serán gestionadas por la web.
- CygnusCloud dispone de un módulo para cada uno de los tipos de usuarios
- que pueden acceder a la web (alumnos, administradores y profesores), un
- módulo para las páginas de acceso público, un módulo para la página que
- contiene el cliente VNC y un módulo 
+ 
+\shape italic
+CygnusCloud
+\shape default
+ dispone de un módulo para cada uno de los tipos de usuarios que pueden
+ acceder a la web (alumnos, administradores y profesores), un módulo para
+ las páginas de acceso público, un módulo para la página que contiene el
+ cliente 
+\family sans
+VNC
+\family default
+ y un módulo 
 \family sans
 appAdmin
 \family default
  creado automáticamente por web2py para la gestión de las bases de datos.
  Dentro de cada módulo encontramos una función asociada a cada una de las
- secciones que forman la web.
+ secciones que forman la aplicación web.
  Hablaremos más en profundidad sobre este tema en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -33752,21 +33804,33 @@ tags
 Lenguajes: Este grupo incluye los diccionarios de traducción de las páginas
  de la web.
  Estos diccionarios deben ser rellenados por el desarrollador y son usados
- internamente por web2py para traducir todas las palabras de la web que
- aparezcan en los mismos.
+ internamente por web2py para traducir todas las palabras que aparezcan
+ en los mismos.
 \end_layout
 
 \begin_layout Itemize
-Archivos estáticos: Este grupo incluye los ficheros css y js encargados
- de definir la apariencia de la web, las imágenes y en general cualquier
- fichero que defina algún componente externo se importará en la web.
+Archivos estáticos: Este grupo incluye los ficheros 
+\family sans
+.
+\family typewriter
+css
+\family default
+ y 
+\family sans
+.
+\family typewriter
+js
+\family default
+ encargados de definir la apariencia de la web, las imágenes y en general
+ cualquier fichero que defina algún componente externo que se importará
+ en la web.
 \end_layout
 
 \begin_layout Itemize
 Módulos: En este apartado se incluyen todos los módulos python secundarios
  utilizados por los controladores.
  Así, en este grupo se encuentra el conector que permite la interacción
- entre el servidor web y el servidor de cluster.
+ entre el servidor web y el resto de la infraestructura.
 \end_layout
 
 \begin_layout Subsubsection
@@ -33786,11 +33850,19 @@ ndo el flujo de direcciones usado por web2py, vamos a estructurar los diferentes
  apartados de la web en forma de árbol de direcciones, de forma que cada
  uno de sus nodos pueda realizar saltos a cualquier otro nodo del árbol
  según las acciones llevadas a cabo por los usuarios.
- Así, el elemento principal será la aplicación en sí (/CygnusCloud).
+ Así, el elemento principal será la aplicación en sí (
+\family typewriter
+/CygnusCloud
+\family default
+).
  A partir de esta dirección comenzarán a surgir las direcciones asociadas
  a las páginas manteniendo la estructura de secciones y subsecciones correspondi
 entemente.
- De esta forma, las diferentes URLs sobre las que trabajará la web son:
+ De esta forma, las diferentes 
+\shape italic
+URLs
+\shape default
+ sobre las que trabajará la aplicación web son:
 \end_layout
 
 \begin_layout Itemize
@@ -33807,7 +33879,11 @@ entemente.
 \family typewriter
 /CygnusCloud/main/about
 \family default
-: Es la página en la que se habla acerca de CygnusCloud y su finalidad.
+: Es la página en la que se habla acerca de 
+\shape italic
+CygnusCloud
+\shape default
+ y su finalidad.
 \end_layout
 
 \begin_layout Itemize
@@ -33815,7 +33891,7 @@ entemente.
 \family typewriter
 /CygnusCloud/student/runVM
 \family default
-: Es la página de arranque de máquinas virtuales para los usuarios.
+: Es la página de arranque de máquinas virtuales para los estudiantes.
 \end_layout
 
 \begin_layout Itemize
@@ -33832,7 +33908,15 @@ entemente.
 /CygnusCloud/student/runningVM/openVM
 \family default
 : Esta página permite abrir una máquina virtual en ejecución arrancada por
- el alumnos.
+ el estudiante.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/CygnusCloud/student/showNotifications
+\family default
+: Página que muestra las notificaciones pendientes para los estudiantes.
 \end_layout
 
 \begin_layout Itemize
@@ -33857,7 +33941,7 @@ entemente.
 \family typewriter
 /CygnusCloud/administrator/runVM/open
 \family default
-: Página que permite abrir una máquina en ejecución.
+: Página que permite a un administrador abrir una máquina en ejecución.
 \end_layout
 
 \begin_layout Itemize
@@ -33865,8 +33949,8 @@ entemente.
 \family typewriter
 /CygnusCloud/administrator/runVM/edit
 \family default
-: Página que permite editar una máquina virtual con respecto a el servidor
- de máquinas virtuales donde se encuentra desplegada.
+: Página que permite editar una imagen con respecto al servidor de máquinas
+ virtuales donde se encuentra desplegada.
 \end_layout
 
 \begin_layout Itemize
@@ -33874,8 +33958,7 @@ entemente.
 \family typewriter
 /CygnusCloud/administrator/servers/add_servers
 \family default
-: Es la página encargada de añadir nuevos servidores y borrar algún servidor
- existente.
+: Es la página encargada de añadir nuevos servidores.
 \end_layout
 
 \begin_layout Itemize
@@ -33934,8 +34017,8 @@ te creado y un grupo de asignatura.
 \family typewriter
 /CygnusCloud/administrator/subjects/add
 \family default
-: Es la página encargada de crear nuevos grupos de asignaturas con la informació
-n introducida por el administrador.
+: Es la página encargada de crear nuevos grupos de asignatura con la información
+ introducida por el administrador.
 \end_layout
 
 \begin_layout Itemize
@@ -33967,7 +34050,7 @@ n introducida por el administrador.
 \family typewriter
 /CygnusCloud/teacher/runVM/run
 \family default
-: Esta página muestra las máquinas que pueden ser ejecutadas por el profesor
+: Esta página muestra las máquinas que pueden ser arrancadas por el profesor.
 \end_layout
 
 \begin_layout Itemize
@@ -33992,8 +34075,8 @@ s.
 \family typewriter
 CygnusCloud/teacher/createAndEdit/createVanillaVM
 \family default
-: Esta página permite a un profesor crear una nueva máquina virtual a partir
- de otra existente.
+: Esta página permite a un profesor crear una nueva imagen a partir de otra
+ existente.
 \end_layout
 
 \begin_layout Itemize
@@ -34001,7 +34084,7 @@ CygnusCloud/teacher/createAndEdit/createVanillaVM
 \family typewriter
 /CygnusCloud/teacher/createAndEdit/editVM
 \family default
-: Esta página permite editar máquinas virtuales por parte de un profesor.
+: Esta página permite editar imágenes por parte de un profesor.
 \end_layout
 
 \begin_layout Itemize
@@ -34183,8 +34266,11 @@ name "sub:Secciones-y-subsecciones"
 \end_layout
 
 \begin_layout Standard
-Para poder hacer frente al elevado número de páginas que ofrece CygnusCloud,
- hemos optado por estructurarlas en un sistema de 3 niveles, que permite
+Para poder hacer frente al elevado número de páginas que ofrece 
+\shape italic
+CygnusCloud
+\shape default
+, hemos optado por estructurarlas en un sistema de tres niveles, que permite
  filtrarlas teniendo en cuenta los privilegios de acceso y la finalidad
  de cada página.
  
@@ -34192,48 +34278,51 @@ Para poder hacer frente al elevado número de páginas que ofrece CygnusCloud,
 
 \begin_layout Standard
 El primer nivel se centra en los privilegios de acceso.
- CygnusCloud agrupa a los usuarios registrados en 3 tipos según los privilegios
- de los que dispongan.
+ 
+\shape italic
+CygnusCloud
+\shape default
+ agrupa a los usuarios registrados en tres tipos según los privilegios de
+ los que dispongan.
  Estos privilegios dan acceso a unas u otras páginas.
  Podemos encontrar los siguientes tipos de usuarios:
 \end_layout
 
 \begin_layout Itemize
-Alumnos : En este tipo se incluyen todos los alumnos que cursan alguna de
+Alumnos: En este tipo se incluyen todos los alumnos que cursan alguna de
  las asignaturas registradas en la web.
  Este tipo de usuarios es el más restringido, dándole únicamente acceso
  a la página de arranque de máquinas virtuales , asociadas a las asignaturas
  matriculadas por el alumno, y a la página de visualización, detención y
- apertura de máquinas arrancadas.
+ apertura de sus máquinas arrancadas.
 \end_layout
 
 \begin_layout Itemize
-Profesores : Este tipo incluye a todos los profesores que imparten alguna
+Profesores: Este tipo incluye a todos los profesores que imparten alguna
  de las asignaturas registradas en la web.
  Dispone de unos privilegios de acceso mayores que el caso del alumno, pudiendo
  acceder, además de las páginas de arranque de máquinas virtuales y gestión
- de máquinas arrancadas, a páginas de creación, edición y borrado de máquinas
- virtuales.
+ de máquinas arrancadas, a páginas de creación, edición y borrado de imágenes.
 \end_layout
 
 \begin_layout Itemize
 Administradores: Este tipo incluye a todos los técnicos y administradores
- encargados de la gestión total de la página.
+ encargados de la gestión total de la aplicación web.
  Es el tipo más privilegiado, teniendo acceso a las páginas de :
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-Arranque de todas máquinas virtuales.
+Arranque de todas las máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
-Detención, apertura de máquinas virtuales arrancadas independientemente
- del usuarios que las arrancó.
+Detención y apertura de máquinas virtuales arrancadas independientemente
+ del usuario que las arrancó.
 \end_layout
 
 \begin_layout Itemize
-Edición de máquinas virtuales existentes.
+Edición de imágenes existentes.
 \end_layout
 
 \begin_layout Itemize
@@ -34245,22 +34334,29 @@ Gestión de servidores de máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
-Gestión de grupos de asignaturas, así como de las máquinas virtuales asociadas
+Gestión de grupos de asignatura, así como de las máquinas virtuales asociadas
  a cada grupo.
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-Además de estos tipos de usuarios, CygnusCloud también ofrece acceso a ciertas
- páginas públicas.
+Además de estos tipos de usuarios, 
+\shape italic
+CygnusCloud
+\shape default
+ también ofrece acceso público a ciertas páginas.
  Estas páginas podrán ser vistas por cualquier usuarios que se conecte a
- la web de CygnusCloud, aunque no se encuentre registrado.
+ la web de 
+\shape italic
+CygnusCloud
+\shape default
+, aunque no se encuentre registrado.
  
 \end_layout
 
 \begin_layout Standard
-Como ya hemos dicho, cada uno de estos grupos de primer nivel concretan
- el conjunto de páginas al cual se quiere acceder.
+Como ya hemos dicho, cada uno de estos grupos de primer nivel filtran el
+ conjunto de páginas al cual se quiere acceder.
  
 \end_layout
 
@@ -34269,8 +34365,8 @@ En el segundo nivel las páginas se encuentran agrupadas por secciones.
  Entendemos como una sección, el conjunto de páginas que abordan un aspecto
  común para un tipo de usuario concreto.
  Cada tipo de usuario tendrá acceso a unas secciones u otras.
- Algunos ejemplos de secciones son la gestión de usuarios, el arranque de
- máquinas virtuales o el inicio de sesión.
+ Algunos ejemplos de secciones son la gestión de usuarios, la interacción
+ con las máquinas virtuales o el inicio de sesión.
  En la tabla 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -34337,7 +34433,7 @@ Login
 \family default
 ,
 \family sans
-About
+ About
 \end_layout
 
 \end_inset
@@ -34365,11 +34461,11 @@ RunVM
 \family default
 ,
 \family sans
-RunningVM
+ RunningVM
 \family default
 ,
 \family sans
-ShowNotifications
+ ShowNotifications
 \end_layout
 
 \end_inset
@@ -34397,19 +34493,19 @@ RunVM
 \family default
 ,
 \family sans
-RunningVM
+ RunningVM
 \family default
 ,
 \family sans
-CreateAndEdit
+ CreateAndEdit
 \family default
 ,
 \family sans
-AssociateSubjects
+ AssociateSubjects
 \family default
 ,
 \family sans
-ShowNotifications
+ ShowNotifications
 \end_layout
 
 \end_inset
@@ -34487,8 +34583,8 @@ name "tab:Tabla-rtipos-secciones"
 \end_layout
 
 \begin_layout Standard
-Por último, en el tercer nivel, las páginas se encuentran definidas en subseccio
-nes.
+Por último, en el tercer nivel, las páginas se encuentran organizadas en
+ subsecciones.
  Cada subsección es una página que contiene las funcionalidades relacionadas
  con un aspecto concreto y más limitado que el de la sección que la incluye.
  Existirán por tanto, tantas subsecciones como páginas creadas en la web.
@@ -34738,7 +34834,7 @@ Add_servers
 \family default
 ,
 \family sans
-Remove_servers
+ Remove_servers
 \family default
 , 
 \family sans
@@ -34776,11 +34872,11 @@ Add
 \family default
 ,
 \family sans
-Remove
+ Remove
 \family default
 ,
 \family sans
-Associate_subjects
+ Associate_subjects
 \end_layout
 
 \end_inset
@@ -34847,7 +34943,8 @@ name "tab:Tabla-seccion-subseccion"
 
 \begin_layout Standard
 La barra de secciones permanente en la web muestra la distribución de las
- páginas en secciones y subsecciones.
+ páginas en secciones y subsecciones para el tipo de usuario cuya sesión
+ se encuentra abierta.
 \end_layout
 
 \begin_layout Standard
@@ -34855,8 +34952,8 @@ De cara a la implementación, es necesario ajustar esta estructura para que
  siga el modelo definido por web2py.
  Web2py gestiona sus direcciones con respecto a la estructura de los módulos
  python que actúan como controladores.
- El conjunto de controladores presentes en la web coincide con los tipos
- de usuarios definidos en el primer nivel.
+ El conjunto de controladores presentes en la aplicación web coincide con
+ los tipos de usuarios definidos en el primer nivel.
  Así disponemos de 5 controladores:
 \end_layout
 
@@ -34877,7 +34974,11 @@ Uno para las páginas de los administradores.
 \end_layout
 
 \begin_layout Itemize
-Uno para la página que mantendrá el cliente VNC.
+Uno para la página que mantendrá el cliente 
+\family typewriter
+VNC
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -34902,14 +35003,25 @@ Por último cada una de las funciones python contendrán un variable que les
 
 \begin_layout Standard
 Con respecto a las vistas, el diseño de los niveles se simplifica bastante,
- siendo necesario tener un fichero html para cada una de las secciones del
- segundo nivel.
- El nombre de estos ficheros html deben seguir la siguiente estructura:
+ siendo necesario tener un fichero
+\family typewriter
+ .html
+\family default
+ para cada una de las secciones del segundo nivel.
+ El nombre de estos ficheros 
+\family sans
+.
+\family typewriter
+html
+\family default
+ deben seguir la siguiente estructura:
 \end_layout
 
 \begin_layout Standard
 \noindent
 \align center
+
+\family typewriter
 <Nombre del controlador>/<nombre de la función>.html
 \end_layout
 
@@ -34921,7 +35033,11 @@ reference "fig:Diagrama-de-niveles-web"
 
 \end_inset
 
- muestra como CygnusCloud estructura sus páginas en estos 3 niveles.
+ muestra como 
+\shape italic
+CygnusCloud
+\shape default
+ estructura sus páginas en estos 3 niveles.
  Como podemos observar, las rutas de direcciones de las que hablamos en
  la sección 
 \begin_inset CommandInset ref
@@ -34984,7 +35100,7 @@ Con el fin de permitir a los usuarios acceder a las diferentes páginas de
  forma directa sin necesidad de utilizar redirecciones a páginas intermedias,
  la web dispone de una barra de direcciones permanente que permite al usuario
  redirigirse a cualquier página dentro de su rango de acción.
- De esta forma dependiendo del tipo de usuarios dispondremos de las siguientes
+ De esta forma dependiendo del tipo de usuario dispondremos de las siguientes
  barras:
 \end_layout
 
@@ -35009,10 +35125,10 @@ barra de direcciones para alumnos.
 
 \begin_layout Itemize
 barra de direcciones para profesores.
- Esta barra incluye las páginas de arranque, creación y edición de máquinas
- virtuales, accesibles para los profesores.
+ Esta barra incluye las páginas de arranque de máquinas virtuales y creación
+ y edición de imagenes, accesibles para los profesores.
  También incluye la página de visualización de notificaciones pendientes
- para profesores-
+ para profesores.
 \end_layout
 
 \begin_layout Itemize
@@ -35030,10 +35146,10 @@ Gestión de usuarios
 
 \begin_layout Standard
 Para llevar a cabo la gestión de usuarios hemos optado por utilizar una
- de las librerías que Web2py nos ofrece.
+ de las librerías que web2py nos ofrece.
  Esta librería, de nombre 
 \family sans
-Auth
+auth
 \family default
 , contiene todas las funcionalidades necesarias con respecto a la gestión
  de usuarios.
@@ -35068,8 +35184,8 @@ Aunque bien es cierto que cada página debe ser controlada y representada
 \end_layout
 
 \begin_layout Standard
-Por esta razón, nuestra web debe ser capaz de trasmitir argumentos entre
- las diferentes páginas.
+Por esta razón, nuestra aplicación web debe ser capaz de trasmitir argumentos
+ entre las diferentes páginas.
  Como ya mencionamos en el apartado 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -35105,8 +35221,8 @@ nombre del controlador que la contiene, el nombre de la función de la sección
 \family typewriter
 redirect
 \family default
-, es Web2py el encargado de llamar a la función del controlador que corresponda
- y pasar los argumentos y variables.
+, es web2py el encargado de llamar a la función del controlador que corresponda
+ y pasarle los argumentos y variables.
 \end_layout
 
 \begin_layout Enumerate
@@ -35169,9 +35285,12 @@ x
 \end_layout
 
 \begin_layout Standard
-En el caso de CygnusCloud, el campo de argumentos se utiliza para retrasmitir
- el nombre de la subsección que debe ejecutarse dentro de la sección correspondi
-ente.
+En el caso de 
+\shape italic
+CygnusCloud
+\shape default
+, el campo de argumentos se utiliza para trasmitir el nombre de la subsección
+ que debe ejecutarse dentro de la sección correspondiente.
  El campo de variables se utiliza para trasmitir el resto de información
  útil como por ejemplo los resultados de las búsquedas.
 \end_layout
@@ -35194,10 +35313,14 @@ Seguridad
 \end_layout
 
 \begin_layout Standard
-Con respecto a la seguridad, web2py se centra en resolver los 10 principales
- problemas de seguridad definidos por OWASP (Proyecto de Seguridad de Aplicacion
-es Web Abiertas), una comunidad mundial libre enfocada en la mejora de la
- seguridad de aplicaciones de software
+Con respecto a la seguridad, web2py, y por extensión 
+\shape italic
+CygnusCloud
+\shape default
+, se centra en resolver los 10 principales problemas de seguridad definidos
+ por OWASP (Proyecto de Seguridad de Aplicaciones Web Abiertas), una comunidad
+ mundial libre enfocada en la mejora de la seguridad de aplicaciones de
+ software
 \begin_inset CommandInset citation
 LatexCommand cite
 key "OWASP"
@@ -35212,11 +35335,16 @@ En términos generales, estos 10 problemas son:
 \end_layout
 
 \begin_layout Itemize
+
+\shape italic
 Cross Site Scripting (XSS)
 \end_layout
 
 \begin_layout Itemize
-inyecciones SQL
+inyecciones 
+\family sans
+\shape italic
+SQL
 \end_layout
 
 \begin_layout Itemize
@@ -35228,6 +35356,8 @@ Referencia directa a objetos
 \end_layout
 
 \begin_layout Itemize
+
+\shape italic
 Cross Site Request Forgery (CSRF)
 \end_layout
 
@@ -35248,11 +35378,13 @@ Comunicaciones inseguras
 \end_layout
 
 \begin_layout Itemize
-Restricciones de acceso URL
+Restricciones de acceso 
+\family sans
+URL
 \end_layout
 
 \begin_layout Subsubsection
-Flujo de ejecución de arranque de una máquina virtual
+Arranque de una máquina virtual desde la web por un alumno: secuencia básica
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Flujo-de-ejecución-arranque-máquina-web"
@@ -35264,14 +35396,18 @@ name "sub:Flujo-de-ejecución-arranque-máquina-web"
 
 \begin_layout Standard
 En este apartado vamos a ejemplificar de forma detallada cada una de las
- acciones que debe realizar el sistema para atender la petición de arranque
- de una máquina virtual por parte de un alumno que se conecte a nuestra
- web.
+ acciones que debe realizar la aplicación web para atender la petición de
+ arranque de una máquina virtual por parte de un alumno que se conecte a
+ nuestra web.
 \end_layout
 
 \begin_layout Standard
 Una vez que el alumno haya pulsado el vínculo que le da acceso a la página
- de CygnusCloud:
+ de 
+\shape italic
+CygnusCloud
+\shape default
+:
 \end_layout
 
 \begin_layout Enumerate
@@ -35304,9 +35440,10 @@ main/login.html
 \begin_layout Enumerate
 Una vez el usuario ha introducido su nombre, contraseña y ha pulsado el
  botón de inicio de sesión, el controlador envía una consulta a la base
- de datos para comprobar que el usuario existe y que su contraseña es correcta.
+ de datos de la web para comprobar que el usuario existe y que su contraseña
+ es correcta.
  Tras esto mira el tipo de usuario y redirecciona a la página que sea necesaria.
- En nuestro caso, al ser un alumno el que inicia la sesión, redirecciona
+ En nuestro caso, al ser un alumno el que inicia la sesión, es redireccionado
  a la sección 
 \family typewriter
 runVM
@@ -35334,12 +35471,13 @@ student
 , la cual solo es accesible para alumnos registrados, se evalúa el argumento
  de entrada para comprobar que subsección debe ejecutarse.
  Tras esto, se extrae la lista de asignaturas asociadas a este alumno concreto.
- Para ello, se envía una petición a la base de datos preguntando por estos
- valores.
+ Para ello, se envía una petición a la base de datos de la web preguntando
+ por estos valores.
  Para cada una de las asignaturas encontradas se crea una tabla, cuyas filas
  corresponden a las máquinas virtuales que pueden arrancarse en esta asignatura.
  La información de las máquinas virtuales asociadas a cada asignaturas se
- extrae también a partir de consultas a la base de datos.
+ extrae también a partir de consultas a la base de datos, pero en este caso
+ a la del conector.
  Cada tabla creada se añade al formulario que es devuelto por la función.
 \end_layout
 
@@ -35378,8 +35516,8 @@ vncClient
 \family typewriter
 vncPage
 \family default
-, se extrae la variable con la información de conexión y se devuelve como
- resultado de la función.
+, se extrae las variables con la información de conexión y se devuelven
+ como resultado de la función.
 \end_layout
 
 \begin_layout Enumerate
@@ -35408,7 +35546,7 @@ reference "fig:Secuencia-de-arranque"
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status open
 
 \begin_layout Plain Layout
@@ -35416,7 +35554,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_secuencia_arranque_MV_Web.pdf
-	scale 70
+	scale 50
 	rotateOrigin center
 
 \end_inset
@@ -35449,18 +35587,22 @@ name "fig:Secuencia-de-arranque"
 \end_layout
 
 \begin_layout Subsubsection
-Flujo de ejecución de creación de una máquina virtual
+Creación de una imagen desde la web por un profesor: secuencia básica
 \end_layout
 
 \begin_layout Standard
 A continuación se explicarán cada una de las acciones que deberá realizar
- la web para poder ejecutar otra de las funcionalidades más importantes
- del sistema, la creación de máquinas virtuales por parte del profesor a
- partir de máquinas creadas previamente.
+ la aplicación web para poder ejecutar una de las funcionalidades más importante
+s del sistema, la creación de imagen por parte del profesor a partir de
+ imagenes creadas previamente.
 \end_layout
 
 \begin_layout Standard
-Una vez que el profesor haya accedido a la web de CygnusCloud:
+Una vez que el profesor haya accedido a la web de 
+\shape italic
+CygnusCloud
+\shape default
+:
 \end_layout
 
 \begin_layout Enumerate
@@ -35468,7 +35610,7 @@ Se ejecuta la secuencia de inicio de sesión por parte del controlador
 \family sans
 Main
 \family default
- de forma similar a como se especifico en los tres primeros puntos del apartado
+ de forma similar a como se especificó en los tres primeros puntos del apartado
  anterior.
 \end_layout
 
@@ -35520,22 +35662,28 @@ createAndEdit
 \end_layout
 
 \begin_layout Enumerate
-El fichero html asociado (
+El fichero 
+\family sans
+.
+\family typewriter
+html
+\family default
+ asociado (
 \family typewriter
 teacher/createVanillaVM.html
 \family default
-) recibe ambos formularios, aplica el aspecto correspondiente y los coloca
+) recibe los formularios, aplica el aspecto correspondiente y los coloca
  en la página.
 \end_layout
 
 \begin_layout Enumerate
-En este momento el profesor indica un nombre y una descripción para la máquina
- virtual que quiere crear.
- Después selecciona una de las posibles imágenes base que se le ofrecen
+En este momento el profesor indica un nombre y una descripción para la imagen
+ que quiere crear.
+ Después selecciona una de las posibles imágenes base que se le ofrecen,
  teniendo en cuenta el consumo de recursos disponibles en cada una.
  Es posible filtrar las imágenes por el sistema operativa y la variante
  que tienen instalados.
- una vez rellenado todos los campos y seleccionada la imagen base, se pulsa
+ Una vez rellenado todos los campos y seleccionada la imagen base, se pulsa
  sobre 
 \family typewriter
 crear máquina virtual
@@ -35558,12 +35706,12 @@ La función
 createImage
 \family default
  envía la petición al sistema y en caso de no producirse ningún error directo,
- indica a la web que la petición ha sido enviada.
+ indica a la aplicación web que la petición ha sido enviada.
 \end_layout
 
 \begin_layout Enumerate
 Si todo sale bien en el proceso de creación, el profesor podrá comenzar
- a editar dicha máquina en la página de edición dentro de la sección 
+ a editar dicha imagen en la página de edición dentro de la sección 
 \family typewriter
 crear y editar
 \family default
@@ -35584,13 +35732,15 @@ reference "fig:Diagrama-de-secuencia-creacionMV-web"
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways true
+sideways false
 status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_Secuencia_creacion_MV_profesor.pdf
-	scale 70
+	scale 50
 
 \end_inset
 
@@ -35625,29 +35775,29 @@ Diagrama de secuencia creación de una máquina virtual por parte del profesor
 \end_layout
 
 \begin_layout Subsubsection
-Flujo de ejecución de edición de una máquina virtual existente
+Edición de una imagen en la web: secuencia básica
 \end_layout
 
 \begin_layout Standard
-Además de poder crear nuevas máquinas virtuales y asociarlas a un determinado
- grupo de asignatura, los profesores también pueden editar las máquinas
- virtuales que hubieran creado anteriormente.
- La edición de una máquina virtual existente se centra en dos aspectos principal
-es :
+Además de poder crear nuevas imágenes y asociarlas a un determinado grupo
+ de asignatura, los profesores también pueden editar las imágenes que hubieran
+ creado anteriormente.
+ La edición de una imagen existente se centra en dos aspectos principales
+ :
 \end_layout
 
 \begin_layout Itemize
-Edición del nombre y la descripción asociados a la máquina virtual
+Edición del nombre y la descripción asociados a la imagen
 \end_layout
 
 \begin_layout Itemize
 Edición de las herramientas y en general todo el sistema instalado en la
- máquina virtual
+ imagen
 \end_layout
 
 \begin_layout Standard
 El primer aspecto consiste en una simple modificación en la tabla de la
- base de datos que asocia el identificador único de una máquina virtual
+ base de datos de la web que asocia el identificador único de una imagen
  con su nombre y descripción.
  
 \end_layout
@@ -35655,7 +35805,7 @@ El primer aspecto consiste en una simple modificación en la tabla de la
 \begin_layout Standard
 Por ello, en este apartado nos centraremos en el segundo punto.
  El flujo básico necesario para realizar por completo el proceso de edición
- y desplegado de una máquina virtual se explica a continuación:
+ y desplegado de una imagen se explica a continuación:
 \end_layout
 
 \begin_layout Enumerate
@@ -35663,7 +35813,7 @@ Se ejecuta la secuencia de inicio de sesión por parte del controlador
 \family sans
 Main
 \family default
- de forma similar a como se especifico en los tres primeros puntos del apartado
+ de forma similar a como se especificó en los tres primeros puntos del apartado
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -35733,38 +35883,43 @@ createAndEdit
 \family sans
 getEditedImageIDs
 \family default
- del conector, para obtener el identificador de todas las máquinas que se
+ del conector, para obtener el identificador de todas las imagenes que se
  encuentran en edición asociadas a este usuario.
- Para cada una de las máquinas en edición, se extrae la información correspondie
+ Para cada una de las imagenes en edición, se extrae la información correspondie
 nte con el método 
 \family sans
 getImageData
 \family default
  del conector.
- Dependiendo del estado de edición en el que se encuentre la máquina se
- añade su información a una de las posibles tablas.
+ Dependiendo del estado de edición en el que se encuentre la imagen se añade
+ su información a una de las posibles tablas.
 \end_layout
 
 \begin_layout Enumerate
-Una vez recopilada y estructurada en tablas toda la información sobre máquinas
+Una vez recopilada y estructurada en tablas toda la información sobre imagenes
  en edición, la función 
 \family sans
 createAndEdit
 \family default
  devuelve los formularios.
- En este momento se llama al fichero html asociado a la edición de máquinas
- virtuales por parte del profesor (
+ En este momento se llama al fichero 
+\family sans
+.
+\family typewriter
+html
+\family default
+ asociado a la edición de imagenes por parte del profesor (
 \family typewriter
 teacher/createAndEdit.html
 \family default
 ).
  En esta vista, además de aplicar el aspecto deseado y colocar los formularios
  en la página, se comprueba que opciones de edición serán accesibles para
- cada una de las máquinas dependiendo del estado de edición en que se encuentre.
+ cada una de las imagenes dependiendo del estado de edición en que se encuentre.
 \end_layout
 
 \begin_layout Enumerate
-En este momento el profesor debe seleccionar la máquina que quiere editar,
+En este momento el profesor debe seleccionar la imagen que quiere editar,
  que se encontrará en un estado parado y sin editar, y pulsar sobre el botón
  
 \family sans
@@ -35791,8 +35946,8 @@ En caso de producirse algún error durante el proceso de inicio de edición,
  se envía el mensaje de error al profesor en forma de notificación y termina
  el flujo de ejecución.
  Por otro lado, si todo ha salido bien, se cambia el estado de edición de
- la máquina virtual, pasando a un estado en edición y ejecutado, y se redireccio
-na de nuevo a la función 
+ la imagen, pasando a un estado en edición y ejecutado, y se redirecciona
+ de nuevo a la función 
 \family sans
 createAndEdit
 \family default
@@ -35800,8 +35955,8 @@ createAndEdit
 \end_layout
 
 \begin_layout Enumerate
-Ahora el profesor debe seleccionar la máquina virtual que quiere editar
- en la tabla de máquinas en ejecución y pulsar sobre el botón abrir.
+Ahora el profesor debe seleccionar la imagen que quiere editar en la tabla
+ de máquinas en ejecución y pulsar sobre el botón abrir.
  Una vez pulsado, la función recopila la información de conexión por medio
  de la llamada a 
 \family sans
@@ -35815,18 +35970,22 @@ vncPage
 \family sans
 vncClient
 \family default
-, el cual ejecuta el cliente noVNC.
+, el cual ejecuta el cliente 
+\family typewriter
+noVNC
+\family default
+.
 \end_layout
 
 \begin_layout Enumerate
 Una vez que el profesor ha introducido los cambios deseados en el escritorio
  remoto y ha apagado la máquina, esta pasa a un estado editada y parada
- y cambia de tabla en la página de edición de máquinas virtuales.
+ y cambia de tabla en la página de edición de imagenes.
 \end_layout
 
 \begin_layout Enumerate
-Si el profesor vuelve a seleccionar esta máquina virtual, ahora se le muestran
- las opciones de 
+Si el profesor vuelve a seleccionar esta imagen, ahora se le muestran las
+ opciones de 
 \family typewriter
 seguir editando
 \family default
@@ -35846,33 +36005,33 @@ En este momento, la función
 \family sans
 createAndEdit
 \family default
-, comprueba si la máquina ya se encontraba desplegada en el sistema y entonces
+, comprueba si la imagen ya se encontraba desplegada en el sistema y entonces
  llama al método 
 \family sans
 desployEditedImage
 \family default
  del conector.
- En caso de que la máquina no se encontrase aun desplegada, ya que acaba
+ En caso de que la imagen no se encontrase aun desplegada, ya que acaba
  de ser creada por el profesor y ha pasado directamente a un estado de edición,
  entonces se llamará a la función 
 \family sans
 deployNewImage
 \family default
 , indicando el número de instancias a crear, el cual depende del número
- de plazas disponibles en el grupo de asignatura asociada a la máquina en
+ de plazas disponibles en el grupo de asignatura asociada a la imagen en
  edición.
 \end_layout
 
 \begin_layout Enumerate
-Cuando la máquina se haya desplegado por completo, su estado cambiará a
- parada y sin editar, y ya podrá ser arrancada por los usuarios asociados.
+Cuando la imagen se haya desplegado por completo, su estado cambiará a parada
+ y sin editar, y ya podrá ser arrancada por los usuarios asociados.
 \end_layout
 
 \begin_layout Standard
-Como los procesos de subida y bajada de las máquinas virtuales en edición
- pueden ser bastante largos, existen un conjunto de estados de transición
- intermedios, durante los cuales los usuarios no dispondrán de ninguna opción
- de edición para las máquinas virtuales en edición.
+Como los procesos de subida y bajada de las imagenes en edición pueden ser
+ bastante largos, existen un conjunto de estados de transición intermedios,
+ durante los cuales los usuarios no dispondrán de ninguna opción de edición
+ para las imagenes en edición.
 \end_layout
 
 \begin_layout Standard
@@ -35883,15 +36042,15 @@ reference "fig:Diagrama-de-secuencia-edicionMV-web"
 
 \end_inset
 
- muestra el proceso completo de edición de una máquina virtual siguiendo
- los pasos enumerados.
+ muestra el proceso completo de edición de una imagen siguiendo los pasos
+ enumerados.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -35931,6 +36090,237 @@ Diagrama de secuencia de edición de una máquina virtual por parte del profesor
 \end_layout
 
 \begin_layout Subsubsection
+Arranque de un servidor de máquinas virtuales desde la web ipor un administrador
+: secuencia básica
+\end_layout
+
+\begin_layout Standard
+Antes de ejecutar una máquina virtual es necesario que al menos uno de los
+ servidores de máquinas virtuales capaz de mantenerla se encuentre arrancado.
+ Los administradores pueden arrancar cualquier servidor de máquinas virtuales
+ que se encuentre registrado en el sistema por medio de la página de edición
+ de servidores.
+\end_layout
+
+\begin_layout Standard
+El flujo básico de arranque de un servidor de máquinas virtuales por parte
+ de un administrador es el siguiente:
+\end_layout
+
+\begin_layout Enumerate
+Se ejecuta la secuencia de inicio de sesión por parte del controlador 
+\family sans
+Main
+\family default
+ de forma similar a como se especificó en los tres primeros puntos del apartado
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Flujo-de-ejecución-arranque-máquina-web"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Una vez iniciada la sesión, se comprueba que el usuario es de tipo administrador
+ y se redirige a la función 
+\family typewriter
+runVM
+\family default
+ dentro del controlado 
+\family typewriter
+administrator
+\family default
+.
+ Esta función crea los formularios de arranque de máquinas virtuales y los
+ devuelve.
+\end_layout
+
+\begin_layout Enumerate
+la vista asociada (
+\family typewriter
+administrator/runVM.htm
+\family default
+l) recibe los formularios, aplica el aspecto y los coloca en la página.
+\end_layout
+
+\begin_layout Enumerate
+En este momento el administrador pulsa sobre la opción 
+\family typewriter
+Editar servidor
+\family default
+, dentro de la sección 
+\family typewriter
+Administrar servidores
+\family default
+, en la barra de menú.
+ La función 
+\family typewriter
+runVM
+\family default
+ aplica la redirección por medio de 
+\family typewriter
+redirect
+\family default
+, pasando como nombre de función la sección destino (
+\family typewriter
+servers
+\family default
+) y con una variable de subsección con valor 
+\family typewriter
+remove_servers
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+Una vez en la función 
+\family typewriter
+servers
+\family default
+ del controlador 
+\family typewriter
+administrator
+\family default
+, se evalúa el valor de la variable de subsección, se pregunta al conector
+ por los servidores actualmente activos y se crea un par de formularios
+ que se devuelven en un diccionario.
+\end_layout
+
+\begin_layout Enumerate
+El fichero 
+\family sans
+.
+\family typewriter
+html
+\family default
+ asociado a esta sección (
+\family typewriter
+administrator/servers.html
+\family default
+) recibe el diccionario, extrae los formularios, aplica el aspecto deseado
+ y los coloca en la página.
+\end_layout
+
+\begin_layout Enumerate
+A continuación, el administrador selecciona el servidor que quiere arrancar
+ y pulsa sobre el botón 
+\family typewriter
+Buscar servidor
+\family default
+.
+ La función 
+\family typewriter
+servers
+\family default
+, consulta al conector el estado del servidor y su información de conexión
+ y llama a la función 
+\family typewriter
+redirect
+\family default
+ con el mismo valor de función y de variable de subsección anterior pero
+ con una lista adicional con la información encontrada.
+\end_layout
+
+\begin_layout Enumerate
+Al volver a ejecutar la función 
+\family typewriter
+servers
+\family default
+, se rellena los formularios con la información de conexión obtenida y se
+ muestran los botones que corresponden al estado del servidor.
+ Como el servidor se encuentra detenido, habrá un botón que permita arrancarlo.
+\end_layout
+
+\begin_layout Enumerate
+Se ejecuta de nuevo la vista 
+\family typewriter
+administrator/server.html
+\family default
+ con los formularios rellenos, se aplica el aspecto deseado y se coloca
+ en la página.
+\end_layout
+
+\begin_layout Enumerate
+Por último, el administrador pulsa sobre el botón 
+\family typewriter
+Arrancar servidor
+\family default
+.
+ La función 
+\family typewriter
+servers
+\family default
+ envía la petición al conector por medio de la llamada al método 
+\family typewriter
+bootUpVMServer
+\family default
+ con el nombre del servidor seleccionado y se queda esperando a la respuesta
+ del conector.
+ En caso de que todo haya ido bien, el conector no enviará ningún mensaje
+ de error y el servidor se habrá arrancado.
+\end_layout
+
+\begin_layout Standard
+La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Diagrama-de-secuencia-arranque-servidor-Administrador"
+
+\end_inset
+
+ muestra el diagrama de secuencia que representa el arranque de un servidor
+ de máquinas virtuales desde la web.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_Secuencia_arranque_Servidor_MV.pdf
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-de-secuencia-arranque-servidor-Administrador"
+
+\end_inset
+
+Diagrama de secuencia de arranque de un servidor de máquinas virtuales 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
 Esquema de la base de datos
 \end_layout
 
@@ -35945,14 +36335,17 @@ auth_user
 \family default
 .
  Esta tabla contiene información sobre los usuarios registrados en la web.
- Esta tabla es utilizada por 
+ Es utilizada por 
 \family sans
 auth 
 \family default
 para gestionar los inicios y cierres de sesión, además de las restricciones
  de acceso a cada página.
- Es creada automáticamente por web2py y CygnusCloud solo utiliza alguna
- de sus columnas :
+ Es creada automáticamente por web2py y 
+\shape italic
+CygnusCloud
+\shape default
+ solo utiliza alguna de sus columnas :
 \end_layout
 
 \begin_deeper
@@ -35989,7 +36382,7 @@ password
 \family default
 .
  Esta columna almacena la contraseña asociada al usuario.
- Para evitar vulnerabilidades, este campo se almacena codificado en la bases
+ Para evitar vulnerabilidades, este campo se almacena codificado en la base
  de datos y solo se descodifica a la hora de realizar las comprobaciones
  de inicio de sesión.
 \end_layout
@@ -36001,10 +36394,16 @@ password
 auth_group
 \family default
 .
- Esta tabla contiene los diferentes grupos de usuarios disponibles en CygnusClou
-d.
- Como ya hemos dicho, CygnusCloud dispone de 3 tipos de usuarios (alumnos,
- profesores y administradores).
+ Esta tabla contiene los diferentes grupos de usuarios disponibles en 
+\shape italic
+CygnusCloud
+\shape default
+.
+ Como ya hemos dicho, 
+\shape italic
+CygnusCloud
+\shape default
+ dispone de tres tipos de usuarios (alumnos, profesores y administradores).
  Esta tabla es creada automáticamente por web2py.
  Las columnas que la forman son:
 \end_layout
@@ -36127,7 +36526,7 @@ time_stamp
 client_ip
 \family default
 .
- dirección ip desde la cual se conecto el cliente.
+ dirección ip desde la cual se conectó el cliente.
 \end_layout
 
 \begin_layout Itemize
@@ -36213,7 +36612,7 @@ placesNumber
 \family default
 .
  Indica el número de plazas disponibles en este grupo de asignatura.
- Esta columna se usa para determinar el número de instancias de una máquina
+ Esta columna se usa para determinar el número de instancias de una imagen
  que deben crearse a la hora de desplegarse, con el fin de poder ofrecer
  a todos los usuarios matriculados en este grupo de asignatura una máquina
  virtual con la que poder trabajar en paralelo con el resto de sus compañeros.
@@ -36308,7 +36707,7 @@ VMByGroup
  id único, con el grupo de asignatura en la cual se ha registrado la máquina
  virtual.
  Un usuario, a excepción de los administradores, solo puede acceder a las
- máquinas virtuales que se encuentre registradas en uno de los grupos de
+ máquinas virtuales que se encuentren registradas en uno de los grupos de
  asignaturas en los cuales se haya matriculado dicho usuario.
  Las columnas que formas esta tabla son:
 \end_layout
@@ -36346,7 +36745,7 @@ osPicture
 .
  Define el conjunto de imágenes, registradas en la web, que representan
  cada una de las variantes de sistemas operativos que pueden estar instalados
- en las máquinas virtuales.
+ en las imagenes.
  Esta tabla contiene las siguientes columnas:
 \end_layout
 
@@ -36416,19 +36815,6 @@ pictureId
 \end_layout
 
 \end_deeper
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Sección sobre el conector
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Vista de procesos
 \end_layout
