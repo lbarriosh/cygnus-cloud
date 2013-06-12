@@ -745,6 +745,22 @@ cluster
 \begin_layout Itemize
 
 \series bold
+infraestructura
+\series default
+: conjunto formado por todos los 
+\emph on
+clusters
+\emph default
+ que utiliza el sistema 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
 imagen de disco
 \series default
 : fichero almacenado en el disco duro de la máquina anfitrión, en el que
@@ -24689,6 +24705,14 @@ cluster
 \end_layout
 
 \begin_layout Itemize
+el contenido del fichero de configuración del servidor de 
+\emph on
+cluster
+\emph default
+ es incorrecto.
+\end_layout
+
+\begin_layout Itemize
 no se puede establecer la conexión de red con el repositorio de imágenes.
 \end_layout
 
@@ -28724,7 +28748,7 @@ Solicitud de estado de servidores de máquinas virtuales
 \family default
 , 
 \family sans
-Solicitud de estadísticas servidores de máquinas virtuales
+Solicitud de estadísticas servidores de máquinas virtuales,
 \family default
  
 \family sans
@@ -32499,7 +32523,7 @@ serverId
 \family typewriter
 imageID
 \family default
-: identificador único de una imagen de disco.
+: identificador único de una imagen.
  Se trata de un valor entero que, junto con el identificador del servidor
  de máquinas virtuales, es la clave primaria de la tabla.
 \end_layout
@@ -33479,13 +33503,6 @@ VanillaImageFamilyOfNewVM
  El resto de tablas de la base de datos residen en memoria.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Newpage clearpage
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 El paquete 
 \family typewriter
@@ -33493,24 +33510,2326 @@ clusterEndpoint
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+Como ya hemos visto, el servidor de 
+\emph on
+cluster
+\emph default
+ puede llegar a mantener un elevado número de conexiones de red con los
+ servidores de máquinas virtuales.
+ 
+\end_layout
+
+\begin_layout Standard
+Así, cuanto menor sea el número de conexiones de red existentes entre el
+ servidor web y el servidor de 
+\emph on
+cluster
+\emph default
+, mayor podrá ser el número de servidores de máquinas virtuales a los que
+ este puede atender y, por tanto, mayor podrá ser el número de usuarios
+ que pueden utilizar el sistema simultáneamente.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+ se utilizará a través de una aplicación web.
+ La implementación de la misma se simplifica considerablemente si se interactúa
+ con la infraestructura a través de una base de datos.
+\end_layout
+
+\begin_layout Standard
+Por tanto, al abordar el desarrollo de la aplicación web, decidimos
+\end_layout
+
+\begin_layout Itemize
+reducir el número de conexiones de red entre el servidor web y el servidor
+ de 
+\emph on
+cluster
+\emph default
+, utilizando una única conexión para enviar todas las peticiones al servidor
+ de 
+\emph on
+cluster
+\emph default
+, y
+\end_layout
+
+\begin_layout Itemize
+utilizar una base de datos para interactuar con la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Para que esto sea posible, el servidor web albergará un demonio, al que
+ llamaremos 
+\emph on
+endpoint
+\emph default
+ de la aplicación web o, abreviadamente, 
+\emph on
+endpoint
+\emph default
+.
+ Este proceso se conectará a un servidor de 
+\emph on
+cluster
+\emph default
+ y les enviará las peticiones de los usuarios.
+ En esta sección, mostraremos detalladamente su diseño.
+\end_layout
+
+\begin_layout Subsubsection
+La base de datos del 
+\emph on
+endpoint
+\end_layout
+
+\begin_layout Standard
+Para que los alumnos y los profesores puedan utilizar máquinas virtuales
+ y modificar las imágenes disponibles en el
+\emph on
+ cluster
+\emph default
+, la aplicación web necesita conocer, entre otras cosas,
+\end_layout
+
+\begin_layout Itemize
+las características de todas las familias de máquinas virtuales, 
+\end_layout
+
+\begin_layout Itemize
+las características de todas las imágenes existentes en el 
+\emph on
+cluster
+\emph default
+, es decir, su nombre, descripción, identificador y la familia de máquinas
+ virtuales asociada, y
+\end_layout
+
+\begin_layout Itemize
+la distribución de las imágenes de disco en el 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, para que los administradores puedan hacer su trabajo, la
+ aplicación web también necesita tener acceso a la configuración básica
+ y al estado de todas las máquinas que forman parte del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Esta información se almacenará en una base de datos residente en el servidor
+ 
+\emph on
+web
+\emph default
+, a la que llamaremos base de datos del 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+El 
+\emph on
+endpoint
+\emph default
+ de la aplicación web deberá actualizar esta base de datos a medida que
+ los usuarios realicen peticiones y la infraestructura las procese.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que la aplicación 
+\emph on
+web
+\emph default
+ nunca modificará directamente esta base de datos: siempre lo hará a través
+ del 
+\emph on
+endpoint.
+\end_layout
+
+\begin_layout Subsubsection
+La base de datos de comandos
+\end_layout
+
+\begin_layout Standard
+La base de datos del 
+\emph on
+endpoint
+\emph default
+ permite a la aplicación web extraer toda la información necesaria para
+ construir las peticiones que se enviarán a la infraestructura.
+\end_layout
+
+\begin_layout Standard
+Ahora bien, si utilizamos exclusivamente esa base de datos, la aplicación
+ web no podrá enviar dichas peticiones a la infraestructura ni obtener sus
+ resultados.
+ Para ello, el servidor web
+\emph on
+ 
+\emph default
+alberga una base de datos especial, la base de datos de comandos.
+\end_layout
+
+\begin_layout Standard
+A través de ella, la aplicación web podrá enviar peticiones a la infraestructura
+ y obtener sus resultados.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, dado que la aplicación web no se conecta directamente al
+ servidor de 
+\emph on
+cluster
+\emph default
+, el proceso 
+\emph on
+endpoint
+\emph default
+ también se encargará de
+\end_layout
+
+\begin_layout Itemize
+extraer de la base de datos de comandos todas las peticiones emitidas por
+ la aplicación web y enviarlas a la infraestructura, y de
+\end_layout
+
+\begin_layout Itemize
+almacenar en la base de datos de comandos las respuestas que la infraestructura
+ devuelve como resultado de todas esas peticiones.
+\end_layout
+
+\begin_layout Subsubsection
+Control de acceso
+\end_layout
+
+\begin_layout Standard
+Para acotar la complejidad del proceso 
+\emph on
+endoint
+\emph default
+, a la hora de enviar las peticiones al servidor de 
+\emph on
+cluster
+\emph default
+ este no realiza ningún tipo de control de acceso.
+ Por tanto,
+\end_layout
+
+\begin_layout Itemize
+no realiza distinción alguna entre alumnos, profesores, administradores,\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Itemize
+no distingue asignaturas, grupos de clase,\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Itemize
+no limita el tipo de las operaciones que pueden enviar los usuarios a la
+ infraestructura.
+ Por ejemplo, el 
+\emph on
+endpoint
+\emph default
+ permite a un alumno apagar todos los servidores de la infraestructura.
+\end_layout
+
+\begin_layout Standard
+Naturalmente, en el sistema 
+\emph on
+CygnusCloud
+\emph default
+ sí existen restricciones de acceso, y la aplicación web se ocupará de garantiza
+r su cumplimiento.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, debemos evitar que los usuarios envíen a la infraestructura
+ un número arbitrario de peticiones por unidad de tiempo.
+ 
+\end_layout
+
+\begin_layout Standard
+Puesto que el proceso 
+\emph on
+endpoint
+\emph default
+ es el que envía estas peticiones a la infraestructura, lo más adecuado
+ es hacer que también limite el número de peticiones por unidad de tiempo
+ que cada usuario puede enviar a la infraestructura.
+\end_layout
+
+\begin_layout Subsubsection
+Identificación de las peticiones
+\end_layout
+
+\begin_layout Standard
+Al exponer el diseño del servidor de máquinas virtuales y del servidor de
+ 
+\emph on
+cluster
+\emph default
+, hemos mencionado en múltiples ocasiones el uso del identificador único
+ de la petición.
+\end_layout
+
+\begin_layout Standard
+Todas las peticiones que el 
+\emph on
+endpoint
+\emph default
+ envía a la infraestructura tienen asociado un identificador único, que
+ se generará durante la creación de las mismas.
+\end_layout
+
+\begin_layout Standard
+Estos identificadores son cadenas de caracteres de la forma
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+UserID|Timestamp
+\end_layout
+
+\begin_layout Standard
+\noindent
+donde 
+\family typewriter
+UserID
+\family default
+ es el identificador del usuario que ha generado la petición, y 
+\family typewriter
+Timestamp
+\family default
+ es el número de milisegundos transcurridos desde el 1 de enero de 1970
+ con una precisión de dos dígitos decimales.
+\end_layout
+
+\begin_layout Standard
+Puesto que los servidores de máquinas virtuales y los servidores de 
+\emph on
+cluster
+\emph default
+ nunca descomponen ni modifican los identificadores únicos de las peticiones
+ que reciben.
+ Así, resulta muy sencillo modificar la forma en que se generan estos identifica
+dores.
+\end_layout
+
+\begin_layout Subsubsection
+Envío de peticiones
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Clases-envío-peticiones"
+
+\end_inset
+
+ muestra las clases que intervienen en el envío de peticiones y sus relaciones.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-TODO.
- control temporal de peticiones.
- Emitir x por segundo como máximo
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Endoint/Procesamiento comandos.pdf
+	scale 80
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Plain Layout
-TODO.
- No control de acceso.
- Se delega en el servidor web para hacer eso.
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Clases-envío-peticiones"
+
+\end_inset
+
+Clases que intervienen en el envío de peticiones a la infraestructura
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En primer lugar, la clase 
+\family typewriter
+CommandsProcessor
+\family default
+ dispone de métodos que extraen peticiones de la base de datos de comandos.
+ Para ello, se utilizan los servicios de un objeto 
+\family typewriter
+CommandsDBConnector
+\family default
+.
+ Como todas las clases que manipulan una base de datos, la clase 
+\family typewriter
+CommandsDBConnector
+\family default
+ hereda de la clase 
+\family typewriter
+BasicDBConnector
+\family default
+, definida en el paquete 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, para enviar las peticiones a la infraestructura los objetos
+ 
+\family typewriter
+CommandsProcessor
+\family default
+ utilizan un objeto 
+\family typewriter
+NetworkManager
+\family default
+ y un objeto 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+.
+ Como sabemos, la clase 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+ se define en el paquete 
+\family typewriter
+clusterServer.packetHandling
+\family default
+, y dispone de métodos para leer y crear los distintos tipos de paquete
+ utilizados por los servidores de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, para simplificar la implementación del 
+\emph on
+endpoint
+\emph default
+, todas las peticiones que se almacenan en la base de datos de comandos
+ están serializadas.
+ Para deserializarlas, la clase 
+\family typewriter
+CommandsProcessor
+\family default
+ utiliza los métodos de la clase 
+\family typewriter
+CommandsHandler
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Procesamiento de las respuestas de la infraestructura
+\end_layout
+
+\begin_layout Standard
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Clases-procesamiento-respuestas"
+
+\end_inset
+
+ muestra las principales clases que intervienen en el procesamiento de las
+ respuestas de la infraestructura.
+ Por claridad, de ahora en adelante abreviaremos 
+\family typewriter
+ClusterEndpoint
+\family default
+ como 
+\family typewriter
+CE
+\family default
+ en todos los diagramas UML.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Endoint/Procesamiento respuestas.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Clases-procesamiento-respuestas"
+
+\end_inset
+
+Clases que intervienen en el procesamiento de las respuestas de la infraestructu
+ra
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama, la clase 
+\family typewriter
+ClusterEndpointPacketReactor
+\family default
+ hereda de 
+\family typewriter
+NetworkCallback
+\family default
+, por lo que procesará los paquetes enviados por el servidor de 
+\emph on
+cluster
+\emph default
+.
+ Para leerlos, utilizará un objeto 
+\family typewriter
+ClusterServerPacketHandler
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los códigos de error generados por la infraestructura no
+ se muestran directamente a los usuarios: previamente, se convierten a 
+\emph on
+strings
+\emph default
+.
+ Para ello, el objeto 
+\family typewriter
+ClusterEndointPacketReactor
+\family default
+ utiliza un objeto 
+\family typewriter
+SpanishCodesTranslator
+\family default
+ a través de la interfaz definida por la clase abstracta 
+\family typewriter
+CodesTranslator
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Asimismo, cuando el servidor de 
+\emph on
+cluster 
+\emph default
+envía al servidor web un paquete con el resultado de una petición, estos
+ datos deben almacenarse en la base de datos de comandos.
+ Para ello, los objetos 
+\family typewriter
+ClusterEndpointPacketReactor
+\family default
+ utilizan un objeto 
+\family typewriter
+CommandsDBConnector
+\family default
+ y los métodos de serialización de resultados de la clase 
+\family typewriter
+CommandsHandler
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los objetos 
+\family typewriter
+ClusterEndpointPacketReactor
+\family default
+ utilizarán un objeto 
+\family typewriter
+ClusterEndpointDBConnector
+\family default
+ para actualizar la base de datos del 
+\emph on
+endpoint
+\emph default
+ tras recibir los paquetes correspondientes enviados por el servidor de
+ 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, la clase 
+\family typewriter
+ClusterEndpointDBConnector
+\family default
+ no hereda directamente de la clase 
+\family typewriter
+BasicDBConnector
+\family default
+, sino que lo hace a través de la calse 
+\family typewriter
+MinCEDBConnector
+\family default
+.
+ Como veremos más adelante, la aplicación web utilizará los servicios de
+ la clase 
+\family typewriter
+MinCEDBConnector
+\family default
+ para hacer consultas sobre la base de datos del 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+La clase 
+\family typewriter
+ClusterEndpointEntryPoint
+\end_layout
+
+\begin_layout Standard
+La clase 
+\family typewriter
+ClusterEndpointEntryPoint
+\family default
+ es la clase principal del proceso 
+\emph on
+endpoint
+\emph default
+ del servidor web.
+ Su principal responsabilidad es realizar los procesos de arranque y apagado
+ del proceso 
+\emph on
+endpoint
+\emph default
+.
+ El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-entrypoint"
+
+\end_inset
+
+ muestra sus relaciones más importantes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Endoint/Relaciones entry point.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-relaciones-entrypoint"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+ClusterEndpointEntryPoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para establecer la conexión con el servidor de 
+\emph on
+cluster
+\emph default
+, los objetos 
+\family typewriter
+ClusterEndpointEntryPoint
+\family default
+ utilizan un objeto 
+\family typewriter
+NetworkManger
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Asimismo, para atender las peticiones de los usuarios y actualizar periódicament
+e la base de datos del 
+\emph on
+enpdoint
+\emph default
+, utilizan un objeto 
+\family typewriter
+ClusterEndpointPacketReactor
+\family default
+ y un objeto 
+\family typewriter
+CommandsProcessor
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los objetos 
+\family typewriter
+ClusterEndpointEntryPoint
+\family default
+ utilizan dos hilos de las clases 
+\family typewriter
+DBUpdateThread
+\family default
+ y 
+\family typewriter
+CommandsMonitoringThread
+\family default
+.
+ Los primeros permiten iniciar la actualización periódica de la base de
+ datos del 
+\emph on
+endpoint
+\emph default
+, y los segundos permiten generar errores por 
+\emph on
+timeout
+\emph default
+ durante el procesamiento de las peticiones.
+ 
+\end_layout
+
+\begin_layout Standard
+Como la gran mayoría de las clases de hilo de la infraestructura, la clase
+ 
+\family typewriter
+DBUpdateThread
+\family default
+ y la clase 
+\family typewriter
+CommandsMonitoringThread
+\family default
+ heredan de la clase 
+\family typewriter
+BasicThread
+\family default
+, definida en el paquete 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Asimismo, los objetos 
+\family typewriter
+ClusterServerEndpoint
+\family default
+ utilizan un objeto 
+\family typewriter
+ClusterEndpointConfigurationFileParser
+\family default
+ para procesar el fichero de configuración del proceso 
+\emph on
+endpoint
+\emph default
+.
+ Como sucedía con el resto de 
+\emph on
+parsers
+\emph default
+ de ficheros de configuración, la clase 
+\family typewriter
+ClusterEndpointConfigurationFileParser
+\family default
+ hereda de la clase abstracta 
+\family typewriter
+ConfigurationFileParser
+\family default
+, definida en el paquete 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, el resto de dependencias del diagrama de clases de la figura
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-entrypoint"
+
+\end_inset
+
+ se deben al proceso de instanciación.
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del proceso 
+\emph on
+endpoint
+\emph default
+: secuencia básica
+\end_layout
+
+\begin_layout Standard
+Para que la base de datos del 
+\emph on
+endpoint
+\emph default
+ y la base de datos de comandos se inicialicen correctamente, el proceso
+ 
+\emph on
+endpoint
+\emph default
+ debe arrancarse antes que la aplicación web.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-endpoint"
+
+\end_inset
+
+ muestra los principales pasos de dicho proceso de arranque.
+ Por claridad, estamos asumiendo que no se produce ningún error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Endpoint/Arranque sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-endpoint"
+
+\end_inset
+
+Arranque del proceso 
+\emph on
+endpoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia, se siguen los siguientes
+ pasos:
+\end_layout
+
+\begin_layout Enumerate
+se procesa el contenido del fichero de configuración.
+\end_layout
+
+\begin_layout Enumerate
+se configuran las bases de datos y se establecen las conexiones con ellas.
+\end_layout
+
+\begin_layout Enumerate
+se crea todo lo necesario para procesar los paquetes recibidos desde el
+ servidor de 
+\emph on
+cluster
+\emph default
+ y para procesar las peticiones de los usuarios.
+\end_layout
+
+\begin_layout Enumerate
+se establece la conexión con el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se inicializan los hilos de actualización de la base de datos del 
+\emph on
+endpoint
+\emph default
+ y de monitorización de peticiones.
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal pasa a procesar las peticiones enviadas por los usuarios
+ a través de la aplicación web.
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del proceso 
+\emph on
+endpoint
+\emph default
+: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Durante el proceso de arranque del 
+\emph on
+endpoint
+\emph default
+, se producirán errores si
+\end_layout
+
+\begin_layout Itemize
+el contenido del fichero de configuración no es correcto.
+\end_layout
+
+\begin_layout Itemize
+no es posible configurar las bases de datos.
+\end_layout
+
+\begin_layout Itemize
+no es posible establecer la conexión con el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Para tratar todos estos errores, se procede de la siguiente manera:
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal termina inmediatamente de procesar las peticiones de los
+ usuarios.
+\end_layout
+
+\begin_layout Enumerate
+si es necesario, se cierra la conexión de red con el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+si es necesario, se detiene el hilo de actualización de la base de datos
+ y el hilo de monitorización de peticiones.
+\end_layout
+
+\begin_layout Subsubsection
+Actualización de la base de datos del 
+\emph on
+endpoint
+\end_layout
+
+\begin_layout Standard
+Para actualizar el contenido de la base de datos del 
+\emph on
+endpoint
+\emph default
+, el proceso 
+\emph on
+endpoint
+\emph default
+ enviará periódicamente al servidor de 
+\emph on
+cluster
+\emph default
+ cinco paquetes de los tipos 
+\family sans
+Solicitud de estado de servidores de máquinas virtuales
+\family default
+, 
+\family sans
+Solicitud de estadísticas servidores de máquinas virtuales,
+\family default
+ 
+\family sans
+Solicitud de estado del repositorio
+\family default
+, 
+\family sans
+Solicitud de distribución de imágenes
+\family default
+ y 
+\family sans
+Solicitud de datos de conexión VNC
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-BD-endpoint"
+
+\end_inset
+
+ muestra cómo se procesan estos paquetes.
+ Por claridad, en él
+\end_layout
+
+\begin_layout Itemize
+hemos abreviado la fase creación y de envío de los paquetes 
+\family sans
+Solicitud de estado de servidores de máquinas virtuales
+\family default
+, 
+\family sans
+Solicitud de estadísticas servidores de máquinas virtuales,
+\family default
+ 
+\family sans
+Solicitud de estado del repositorio
+\family default
+, 
+\family sans
+Solicitud de distribución de imágenes
+\family default
+ y 
+\family sans
+Solicitud de datos de conexión VNC
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+sólo mostramos el procesamiento de dos respuestas: un paquete del tipo 
+\family sans
+Estadísticas servidores de máquinas virtuales
+\family default
+ y un paquete del tipo 
+\family sans
+Distribución de imágenes
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Endpoint/Actualización estado.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Actualización-BD-endpoint"
+
+\end_inset
+
+Actualización de la base de datos del 
+\emph on
+endpoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-BD-endpoint"
+
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Enumerate
+tras crear y enviar los cinco paquetes, el hilo de actualización de la base
+ de datos del 
+\emph on
+endpoint
+\emph default
+ dormirá hasta la siguiente actualización programada.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+El intervalo de actualización de la base de datos del 
+\emph on
+endpoint
+\emph default
+ se define en su fichero de configuración.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+cuando se reciben los datos procedentes del servidor de 
+\emph on
+cluster
+\emph default
+, estos se utilizan para actualizar la base de datos del 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Procesamiento de una petición: secuencia básica
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Procesamiento-petición"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para procesar las peticiones de los usuarios, 
+\end_layout
+
+\begin_layout Enumerate
+el proceso 
+\emph on
+endpoint
+\emph default
+ las extrae de la base de datos de comandos y las deserializa.
+\end_layout
+
+\begin_layout Enumerate
+acto seguido, inicia la interacción correspondiente con el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+cuando recibe el paquete de respuesta procedente del servidor de 
+\emph on
+cluster
+\emph default
+, el proceso 
+\emph on
+endpoint
+\emph default
+ la serializa y la almacena en la base de datos de comandos.
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura muestra cómo se procesa una petición
+ de arranque de una máquina virtual.
+ Por claridad, a la hora de construir el diagrama hemos asumido que no se
+ produce ningún error al procesar dicha petición.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Endpoint/Arranque MV.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Arranque de una máquina virtual desde el 
+\emph on
+endpoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en el diagrama de secuencia, se siguen los siguientes
+ pasos:
+\end_layout
+
+\begin_layout Enumerate
+se extrae la petición de la base de datos de comandos.
+ Todas las peticiones se encuentran almacenadas en una cola, y se atenderán
+ por estricto orden de recepción.
+\end_layout
+
+\begin_layout Enumerate
+se deserializa la petición para obtener sus datos.
+\end_layout
+
+\begin_layout Enumerate
+se crea un paquete del tipo 
+\family sans
+Arranque de máquina virtual
+\family default
+.
+ Acto seguido, se envía dicho paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+el servidor de 
+\emph on
+cluster
+\emph default
+ responde a la petición enviando al 
+\emph on
+endpoint
+\emph default
+ un paquete del tipo 
+\family sans
+Datos de conexión a máquina virtual
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+utilizando la información contenida en ese paquete, se genera la salida
+ de la petición.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Es importante notar que todas las peticiones que envía un usuario tienen
+ asociado un identificador único.
+ Esto permite
+\end_layout
+
+\begin_layout Itemize
+identificar las peticiones que han sido atendidas por la infraestructura,
+ y
+\end_layout
+
+\begin_layout Itemize
+extraer los argumentos de la petición original de la base de comandos durante
+ la generación de la salida.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+finalmente, la salida de la petición se serializa y se añade a la base de
+ datos de comandos.
+ A partir de este momento, la aplicación 
+\emph on
+web
+\emph default
+ podrá leerla y utilizarla.
+\end_layout
+
+\begin_layout Subsubsection
+Procesamiento de una petición: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Cuando el procesamiento de la petición falla en el servidor de 
+\emph on
+cluster
+\emph default
+, el 
+\emph on
+endpoint
+\emph default
+ recibirá un paquete de error.
+ 
+\end_layout
+
+\begin_layout Standard
+En estos casos, la salida de la petición se genera de forma muy similar.
+ No obstante, si el paquete recibido contiene un código de error, este se
+ traducirá a 
+\emph on
+string
+\emph default
+ durante el proceso de generación de la salida.
+\end_layout
+
+\begin_layout Subsubsection
+Procesamiento de una petición: peticiones de alta latencia
+\end_layout
+
+\begin_layout Standard
+Las peticiones de creación, edición, despliegue y borrado son peticiones
+ de muy alta latencia: desde que se envían a la infraestructura hasta que
+ terminan de ejecutarse pueden transcurrir horas.
+\end_layout
+
+\begin_layout Standard
+Para facilitar la implementación de la aplicación web, las salidas de estas
+ peticiones se almacenan de forma diferenciada en la base de datos de comandos.
+ Así, de ahora en adelante, llamaremos 
+\series bold
+notificación
+\series default
+ a la salida de una petición de alta latencia.
+\end_layout
+
+\begin_layout Standard
+La salida de las peticiones de alta latencia se registra casi igual que
+ en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Procesamiento-petición"
+
+\end_inset
+
+.
+ No obstante, a la hora de realizar la actualización de la base de datos
+ de comandos, las salidas de estas peticiones se marcarán para distinguirlas
+ del resto.
+\end_layout
+
+\begin_layout Subsubsection
+Apagado de toda la infraestructura
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Endpoint/Apagado.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-endpoint"
+
+\end_inset
+
+Apagado del proceso 
+\emph on
+endpoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cuando desde la aplicación web se emite una petición de apagado de la infraestru
+ctura, se inicia el proceso de apagado de la infraestructura y del proceso
+ 
+\emph on
+endpoint
+\emph default
+.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-endpoint"
+
+\end_inset
+
+ muestra cómo se actúa en estos casos:
+\end_layout
+
+\begin_layout Enumerate
+se crea un paquete del tipo Apagar infraestructura.
+ Acto seguido, se envía ese paquete al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal termina inmediatamente de procesar las peticiones de los
+ usuarios.
+ 
+\end_layout
+
+\begin_layout Enumerate
+acto seguido, el hilo principal
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+detiene los hilos de actualización de la base de datos y de monitorización
+ de peticiones, y
+\end_layout
+
+\begin_layout Enumerate
+cierra la conexión con el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+el proceso 
+\emph on
+endpoint
+\emph default
+ termina.
+ A medida que el servidor de 
+\emph on
+cluster
+\emph default
+ vaya enviando los paquetes correspondientes, las máquinas de la infraestructura
+ también irán apagándose.
+\end_layout
+
+\begin_layout Subsubsection
+Desconexión abrupta del servidor de 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+El proceso 
+\emph on
+endpoint
+\emph default
+ es capaz de tratar una desconexión abrupta del servidor de 
+\emph on
+cluster
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Para ello, la base de datos de comandos almacena el instante de tiempo en
+ el que se inició el procesamiento de todas las peticiones generadas por
+ los usuarios.
+\end_layout
+
+\begin_layout Standard
+Como ya hemos mencionado, existe un hilo de monitorización de peticiones.
+ Periódicamente, este hilo generará salidas de error para todas las peticiones
+ que verifiquen
+\begin_inset Formula 
+\[
+\textrm{instante actual}-\textrm{instante entrada}\geq\textrm{tiempo máximo}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+donde el tiempo máximo se lee del fichero de configuración del proceso 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Naturalmente, cuando la salida de una petición se registra en la base de
+ datos de comandos, el hilo de monitorización dejará de considerar dicha
+ petición.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, tras detectar la desconexión del servidor de 
+\emph on
+cluster
+\emph default
+, el 
+\emph on
+endpoint
+\emph default
+ iniciará el proceso de reconexión, utilizando para ello la funcionalidad
+ de las clases del paquete 
+\family typewriter
+network
+\family default
+.
+ Como dijimos en su momento, durante el proceso de reconexión se utilizará
+ el algoritmo de retroceso exponencial binario truncado, con un máximo de
+ 15 intentos.
+ En la práctica, se intentará reestablecer la conexión durante 15 minutos
+ aproximadamente.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en caso de que no se pueda reestablecer la conexión con el servidor
+ de 
+\emph on
+cluster
+\emph default
+, el proceso 
+\emph on
+endpoint
+\emph default
+ terminará.
+\end_layout
+
+\begin_layout Subsubsection
+Esquema de la base de datos de comandos
+\end_layout
+
+\begin_layout Standard
+La base de datos de comandos contiene las siguientes tablas:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+QueuedCommand
+\family default
+.
+ En ella, se almacenan los identificadores de las peticiones que aún no
+ se han atendido.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+userID
+\family default
+: es el identificador único del usuario que ha creado la petición.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+timestamp
+\family default
+.
+ este valor de punto flotante contiene el instante de entrada de la petición
+ representado como el número de milisegundos transcurridos desde el 1 de
+ enero de 1970.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+PendingCommand
+\family default
+.
+ Esta tabla contiene los datos de todas las peticiones que se están ejecutando
+ o que están a la espera de ser ejecutadas.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+userID
+\family default
+, 
+\family typewriter
+timestamp
+\family default
+.
+ Son idénticas a las de la tabla 
+\family typewriter
+QueuedCommand
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+commandType
+\family default
+.
+ Se trata de un 
+\emph on
+byte
+\emph default
+, que codifica el tipo de la petición.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+commandArgs
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 100 
+\emph on
+bytes
+\emph default
+ de longitud que contiene los argumentos de la petición serializados.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+RunCommandOutput
+\family default
+.
+ Esta tabla contiene las salidas asociadas a todas las peticiones que han
+ terminado de ejecutarse.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+userID
+\family default
+, 
+\family typewriter
+timestamp
+\family default
+.
+ Son idénticas a las de la tabla 
+\family typewriter
+QueuedCommand
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+outputType
+\family default
+.
+ Se trata de un 
+\emph on
+byte
+\emph default
+, que codifica el tipo de la salida.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+commandOutput
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 200 
+\emph on
+bytes
+\emph default
+ de longitud que contiene la salida de la petición serializada.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isNotification
+\family default
+.
+ Se trata de un 
+\emph on
+bit
+\emph default
+ que indica si una fila de la tabla es la salida de un comando de alta latencia
+ o no.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Todas estas tablas utilizan la clave primaria (
+\family typewriter
+userID
+\family default
+, 
+\family typewriter
+timestamp
+\family default
+).
+ Asimismo, por motivos de eficiencia, todas ellas residen en memoria.
+\end_layout
+
+\begin_layout Subsubsection
+Esquema de la base de datos del 
+\emph on
+endpoint
+\end_layout
+
+\begin_layout Standard
+Las principales tablas de la base de datos del 
+\emph on
+endpoint
+\emph default
+ son las siguientes:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+VirtualMachineServer
+\family default
+.
+ Esta tabla almacena los datos básicos de los servidores de máquinas virtuales
+ pertenecientes al 
+\emph on
+cluster
+\emph default
+.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverName
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el nombre del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+serverStatus
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará la representación textual del estado del servidor
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+serverIP
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 15 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará la dirección IP del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+serverPort
+\family default
+.
+ Este valor entero almacenará el puerto de la conexión de control del servidor
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isEditionServer
+\family default
+.
+ Se trata de un 
+\emph on
+bit
+\emph default
+, que indica si el servidor de máquinas virtuales es un servidor de edición
+ o no.
+\end_layout
+
+\begin_layout Standard
+La columna 
+\family typewriter
+serverName
+\family default
+ es la clave primaria de esta tabla.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+VirtualMachineServerStatus
+\family default
+.
+ Esta tabla almacena el estado de todos los servidores de máquinas virtuales
+ del 
+\emph on
+cluster
+\emph default
+, y es idéntica a la tabla 
+\family typewriter
+VMServerStatus
+\family default
+ de la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ImageRepositoryStatus
+\family default
+.
+ Esta tabla almacena el estado del repositorio de imágenes del 
+\emph on
+cluster
+\emph default
+, y es idéntica a su tabla homónima de la base de datos del servidor de
+ 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ImageDistribution
+\family default
+.
+ Esta tabla almacena la distribución de las imágenes.
+ Contiene las siguientes columnas:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverName
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el nombre del servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+: identificador único de una imagen.
+ Se trata de un valor entero que, junto con la columna 
+\family typewriter
+serverName
+\family default
+, es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageStatus
+\family default
+: Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud que almacenará la representación textual del estado de la copia
+ de la imagen.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+ActiveVirtualMachine
+\family default
+.
+ Esta tabla contiene los datos asociados a todas las máquinas virtuales
+ activas.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+serverName
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 30 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el nombre del anfitrión de la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+domainUID
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el identificador único de la máquina virtual.
+ Esta columna es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ownerID
+\family default
+.
+ Se trata de un valor entero que almacena el identificador del propietario
+ de la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Es el identificador único de la imagen utilizada por la máquina virtual.
+ Se trata de un valor entero.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+port
+\family default
+.
+ Es el puerto del 
+\emph on
+websocket
+\emph default
+ asociado al servidor VNC de la máquina virtual.
+ Se trata de un valor entero.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+password
+\family default
+.
+ Se trata de una cadena de caracteres de 65 
+\emph on
+bytes
+\emph default
+ de longitud que almacenará la contraseña del servidor VNC asociado a la
+ máquina virtual.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+VMFamily
+\family default
+.
+ Esta tabla es idéntica a su tabla homónima de la base de datos del servidor
+ de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+Image
+\family default
+.
+ Esta tabla almacena los datos básicos de una imagen de disco que no se
+ está creando o editando.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Es el identificador único de la imagen.
+ Se trata de un valor entero, que es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+vmFamilyID
+\family default
+.
+ Es el identificador único de la familia de máquinas virtuales asociada
+ a la imagen.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+name
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 20 
+\emph on
+bytes
+\emph default
+ de longitud que almacenará el nombre de la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+description
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 200 
+\emph on
+bytes
+\emph default
+ de longitud que almacenará la descripción de la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+osFamily
+\family default
+, 
+\family typewriter
+osVariant
+\family default
+.
+ Estos valores ocupan un 
+\emph on
+byte
+\emph default
+, y asignan una familia de sistemas operativos y un sistema operativo concreto
+ a la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isBaseImage
+\family default
+.
+ Indica si la imagen es una imagen base o no.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isBootable
+\family default
+.
+ Indica si la imagen se puede utilizar para arrancar máquinas virtuales
+ convencionales o no.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+EditedImage
+\family default
+.
+ Esta tabla almacena los datos básicos de una imagen de disco que se está
+ creando o editando.
+ Sus columnas son las siguientes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+temporaryID
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el identificador único de la petición de creación
+ o edición de imagen.
+ Esta columna es la clave primaria de la tabla.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+imageID
+\family default
+.
+ Es el identificador único asignado a la imagen.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+vmFamilyID
+\family default
+.
+ Es el identificador único de la familia de máquinas virtuales asociada
+ a la imagen.
+ Se trata de un valor entero.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+name
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 20 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará el nombre de la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+description
+\family default
+.
+ Se trata de una cadena de caracteres de hasta 200 
+\emph on
+bytes
+\emph default
+ de longitud, que almacenará la descripción de la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+osFamily
+\family default
+, 
+\family typewriter
+osVariant
+\family default
+.
+ Estos valores ocupan un 
+\emph on
+byte
+\emph default
+, y asignan una familia de sistemas operativos y un sistema operativo concreto
+ a la imagen.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isBaseImage
+\family default
+.
+ Indica si la imagen es una imagen base o no.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+isBootable
+\family default
+.
+ Indica si la imagen se puede utilizar para arrancar máquinas virtuales
+ convencionales o no.
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+El paquete 
+\family typewriter
+clusterConnector
 \end_layout
 
 \begin_layout Subsection
