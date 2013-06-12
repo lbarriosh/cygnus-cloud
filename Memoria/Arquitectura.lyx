@@ -24831,6 +24831,14 @@ cluster
 \end_layout
 
 \begin_layout Itemize
+el contenido del fichero de configuración del servidor de 
+\emph on
+cluster
+\emph default
+ es incorrecto.
+\end_layout
+
+\begin_layout Itemize
 no se puede establecer la conexión de red con el repositorio de imágenes.
 \end_layout
 
@@ -34310,7 +34318,7 @@ reference "fig:Principales-relaciones-entrypoint"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -34478,6 +34486,269 @@ reference "fig:Principales-relaciones-entrypoint"
 \end_inset
 
  se deben al proceso de instanciación.
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del proceso 
+\emph on
+endpoint
+\emph default
+: secuencia básica
+\end_layout
+
+\begin_layout Standard
+Para que la base de datos del 
+\emph on
+endpoint
+\emph default
+ y la base de datos de comandos se inicialicen correctamente, el proceso
+ 
+\emph on
+endpoint
+\emph default
+ debe arrancarse antes que la aplicación web.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Arranque-endpoint"
+
+\end_inset
+
+ muestra los principales pasos de dicho proceso de arranque.
+ Por claridad, estamos asumiendo que no se produce ningún error.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Endpoint/Arranque sin errores.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-endpoint"
+
+\end_inset
+
+Arranque del proceso 
+\emph on
+endpoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como podemos observar el diagrama de secuencia, se siguen los siguientes
+ pasos:
+\end_layout
+
+\begin_layout Enumerate
+se procesa el contenido del fichero de configuración.
+\end_layout
+
+\begin_layout Enumerate
+se configuran las bases de datos y se establecen las conexiones con ellas.
+\end_layout
+
+\begin_layout Enumerate
+se crea todo lo necesario para procesar los paquetes recibidos desde el
+ servidor de 
+\emph on
+cluster
+\emph default
+ y para procesar las peticiones de los usuarios.
+\end_layout
+
+\begin_layout Enumerate
+se establece la conexión con el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+se inicializan los hilos de actualización de la base de datos del 
+\emph on
+endpoint
+\emph default
+ y de monitorización de comandos.
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal pasa a procesar las peticiones enviadas por los usuarios
+ a través de la aplicación web.
+\end_layout
+
+\begin_layout Subsubsection
+Arranque del proceso 
+\emph on
+endpoint
+\emph default
+: tratamiento de errores
+\end_layout
+
+\begin_layout Standard
+Durante el proceso de arranque del 
+\emph on
+endpoint
+\emph default
+, se producirán errores si
+\end_layout
+
+\begin_layout Itemize
+el contenido del fichero de configuración no es correcto.
+\end_layout
+
+\begin_layout Itemize
+no es posible configurar las bases de datos.
+\end_layout
+
+\begin_layout Itemize
+no es posible establecer la conexión con el servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Para tratar todos estos errores, se procede de la siguiente manera:
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal termina inmediatamente de procesar las peticiones de los
+ usuarios.
+\end_layout
+
+\begin_layout Enumerate
+si es necesario, se cierra la conexión de red con el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+si es necesario, se detiene el hilo de actualización de la base de datos
+ y el hilo de monitorización de comandos.
+\end_layout
+
+\begin_layout Subsubsection
+Actualización de la base de datos del 
+\emph on
+endpoint
+\end_layout
+
+\begin_layout Standard
+Para actualizar el contenido de la base de datos del 
+\emph on
+endpoint
+\emph default
+, el proceso 
+\emph on
+endpoint
+\emph default
+ enviará periódicamente al servidor de 
+\emph on
+cluster
+\emph default
+ cinco paquetes de los tipos 
+\family sans
+Solicitud de estado de servidores de máquinas virtuales
+\family default
+, 
+\family sans
+Solicitud de estadísticas servidores de máquinas virtuales
+\family default
+ 
+\family sans
+Solicitud de estado del repositorio
+\family default
+, 
+\family sans
+Solicitud de distribución de imágenes
+\family default
+ y 
+\family sans
+Solicitud de datos de conexión VNC
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Actualización-BD-endpoint"
+
+\end_inset
+
+ muestra cómo se procesan estos paquetes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Actualización-BD-endpoint"
+
+\end_inset
+
+Actualización de la base de datos del 
+\emph on
+endpoint
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
