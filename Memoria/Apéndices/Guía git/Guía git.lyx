@@ -6046,5 +6046,26 @@ os en un repositorio remoto
 .
 \end_layout
 
+\begin_layout Section
+Referencias
+\end_layout
+
+\begin_layout Standard
+Parte del material utilizado en este documento( 
+\family typewriter
+\color black
+Git: guía de referencia
+\family default
+\color inherit
+) ha sido tomado del libro 
+\family typewriter
+\color black
+Pro Git
+\family default
+\color inherit
+, escrito por Scott Chacon y publicado por Apress bajo una licencia Creative
+ Commons 3.0.
+\end_layout
+
 \end_body
 \end_document
