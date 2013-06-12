@@ -34189,8 +34189,9 @@ ClusterServerPacketHandler
 \end_layout
 
 \begin_layout Standard
-Por otra parte, los códigos de error generados por la infraestructura no
- se muestran directamente a los usuarios: previamente, se convierten a 
+Por otra parte, los códigos de error generados por la infraestructura y
+ los códigos de estado de los servidores e imágenes no se muestran directamente
+ a los usuarios: previamente, se convierten a 
 \emph on
 strings
 \emph default
