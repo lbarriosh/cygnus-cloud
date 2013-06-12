@@ -745,6 +745,22 @@ cluster
 \begin_layout Itemize
 
 \series bold
+infraestructura
+\series default
+: conjunto formado por todos los 
+\emph on
+clusters
+\emph default
+ que utiliza el sistema 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
 imagen de disco
 \series default
 : fichero almacenado en el disco duro de la máquina anfitrión, en el que
@@ -33605,13 +33621,6 @@ VanillaImageFamilyOfNewVM
  El resto de tablas de la base de datos residen en memoria.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Newpage clearpage
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 El paquete 
 \family typewriter
@@ -33619,24 +33628,282 @@ clusterEndpoint
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO.
- control temporal de peticiones.
- Emitir x por segundo como máximo
+Como ya hemos visto, el servidor de 
+\emph on
+cluster
+\emph default
+ puede llegar a mantener un elevado número de conexiones de red con los
+ servidores de máquinas virtuales.
+ 
 \end_layout
 
-\begin_layout Plain Layout
-TODO.
- No control de acceso.
- Se delega en el servidor web para hacer eso.
+\begin_layout Standard
+Así, cuanto menor sea el número de conexiones de red existentes entre el
+ servidor web y el servidor de 
+\emph on
+cluster
+\emph default
+, mayor podrá ser el número de servidores de máquinas virtuales a los que
+ este puede atender y, por tanto, mayor podrá ser el número de usuarios
+ que pueden utilizar el sistema simultáneamente.
 \end_layout
 
-\end_inset
+\begin_layout Standard
+Por otra parte, la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+ se utilizará a través de una aplicación web.
+ La implementación de la misma se simplifica considerablemente si se interactúa
+ con la infraestructura a través de una base de datos.
+\end_layout
 
+\begin_layout Standard
+Por tanto, al abordar el desarrollo de la aplicación web, decidimos
+\end_layout
 
+\begin_layout Itemize
+reducir el número de conexiones de red entre el servidor web y el servidor
+ de 
+\emph on
+cluster
+\emph default
+, utilizando una única conexión para enviar todas las peticiones al servidor
+ de 
+\emph on
+cluster
+\emph default
+, y
+\end_layout
+
+\begin_layout Itemize
+utilizar una base de datos para interactuar con la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Para que esto sea posible, el servidor web albergará un demonio, al que
+ llamaremos 
+\emph on
+endpoint
+\emph default
+ de la aplicación web o, abreviadamente, 
+\emph on
+endpoint
+\emph default
+.
+ Este proceso se conectará a todos los servidores de 
+\emph on
+cluster
+\emph default
+ y les enviará las peticiones de los usuarios.
+ En esta sección, mostraremos detalladamente su diseño.
+\end_layout
+
+\begin_layout Subsubsection
+La base de datos del 
+\emph on
+endpoint
+\end_layout
+
+\begin_layout Standard
+Para que los alumnos y los profesores puedan utilizar máquinas virtuales
+ y modificar las imágenes disponibles en cada 
+\emph on
+cluster
+\emph default
+, la aplicación web necesita conocer, entre otras cosas,
+\end_layout
+
+\begin_layout Itemize
+las características de todas las familias de máquinas virtuales, 
+\end_layout
+
+\begin_layout Itemize
+las características de todas las imágenes existentes en cada 
+\emph on
+cluster
+\emph default
+, es decir, su nombre, descripción, identificador y la familia de máquinas
+ virtuales asociada, y
+\end_layout
+
+\begin_layout Itemize
+la distribución de las imágenes de disco de cada 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, para que los administradores puedan hacer su trabajo, la
+ aplicación web también necesita tener acceso a la configuración básica
+ y al estado de todas las máquinas de cada 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Esta información se almacenará en una base de datos residente en el servidor
+ 
+\emph on
+web
+\emph default
+, a la que llamaremos base de datos del 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+El 
+\emph on
+endpoint
+\emph default
+ de la aplicación web deberá actualizar esta base de datos a medida que
+ los usuarios realicen peticiones y la infraestructura las procese.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que la aplicación 
+\emph on
+web
+\emph default
+ nunca modificará directamente esta base de datos: siempre lo hará a través
+ del 
+\emph on
+endpoint.
+\end_layout
+
+\begin_layout Subsubsection
+La base de datos de comandos
+\end_layout
+
+\begin_layout Standard
+La base de datos del 
+\emph on
+endpoint
+\emph default
+ permite a la aplicación web extraer toda la información necesaria para
+ construir las peticiones que se enviarán a la infraestructura.
+\end_layout
+
+\begin_layout Standard
+Ahora bien, si utilizamos exclusivamente esa base de datos, la aplicación
+ web no podrá enviar dichas peticiones a la infraestructura ni obtener sus
+ resultados.
+ Para ello, el servidor web
+\emph on
+ 
+\emph default
+alberga una base de datos especial, la base de datos de comandos.
+\end_layout
+
+\begin_layout Standard
+A través de ella, la aplicación web podrá enviar peticiones a la infraestructura
+ y obtener sus resultados.
+\end_layout
+
+\begin_layout Standard
+Puesto que la aplicación web no se conecta directamente al servidor de 
+\emph on
+cluster
+\emph default
+, el proceso 
+\emph on
+endpoint
+\emph default
+ también se encargará de
+\end_layout
+
+\begin_layout Itemize
+extraer de la base de datos de comandos todas las peticiones emitidas por
+ la aplicación web y enviarlas a la infraestructura, y de
+\end_layout
+
+\begin_layout Itemize
+almacenar en la base de datos de comandos las respuestas que la infraestructura
+ devuelve como resultado de todas esas peticiones.
+\end_layout
+
+\begin_layout Subsubsection
+Control de acceso
+\end_layout
+
+\begin_layout Standard
+Para acotar su complejidad, a la hora de enviar las peticiones a los servidores
+ de 
+\emph on
+cluster
+\emph default
+ el proceso 
+\emph on
+endpoint
+\emph default
+ no realiza ningún tipo de control de acceso.
+ Por tanto,
+\end_layout
+
+\begin_layout Itemize
+no realiza distinción alguna entre alumnos, profesores, administradores,\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Itemize
+no distingue asignaturas, grupos de clase,\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Itemize
+no limita el tipo de las operaciones que pueden enviar los usuarios a la
+ infraestructura.
+ Por ejemplo, en principio el 
+\emph on
+endpoint
+\emph default
+ permitiría a un alumno apagar todos los servidores de la infraestructura.
+\end_layout
+
+\begin_layout Standard
+Naturalmente, en el sistema 
+\emph on
+CygnusCloud
+\emph default
+ sí existen restricciones de acceso, y la aplicación web se ocupará de garantiza
+r su cumplimiento.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, debemos evitar que los usuarios envíen a la infraestructura
+ un número arbitrario de peticiones por unidad de tiempo.
+ 
+\end_layout
+
+\begin_layout Standard
+Puesto que el proceso 
+\emph on
+endpoint
+\emph default
+ es el que envía estas peticiones a la infraestructura, lo más adecuado
+ es hacer que también limite el número de peticiones por unidad de tiempo
+ que cada usuario puede enviar a la infraestructura.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Subsection
+El paquete 
+\family typewriter
+clusterConnector
 \end_layout
 
 \begin_layout Subsection
