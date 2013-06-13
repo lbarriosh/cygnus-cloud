@@ -511,6 +511,17 @@ filename "Apéndices/Guía git/Guía git.lyx"
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "Apéndices/Organización repositorio GitHub/Organizacion repositorio GitHub.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 

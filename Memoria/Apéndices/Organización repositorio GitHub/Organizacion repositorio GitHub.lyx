@@ -1,0 +1,359 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass memoir
+\use_default_options true
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman charter
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement h
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Git: guía de referencia"
+\pdf_author "Luis Barrios Hernández"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip smallskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Chapter
+Organización del repositorio GitHub
+\end_layout
+
+\begin_layout Section
+Introducción
+\end_layout
+
+\begin_layout Standard
+En este documento hablaremos acerca de como se encuentran distribuidos los
+ ficheros que componen 
+\shape italic
+CygnusCloud
+\shape default
+ en las diferentes ramas del repositorio de GitHub.
+ 
+\end_layout
+
+\begin_layout Standard
+Es posible acceder al repositorio de 
+\shape italic
+CygnusCloud
+\shape default
+ por medio de la dirección 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://github.com/lbarriosh/cygnus-cloud
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En él los usuarios pueden descargar el código, además de ver los diferentes
+ 
+\shape italic
+commits
+\shape default
+ realizados y las 
+\shape italic
+issues
+\shape default
+ corregidas a lo largo del desarrollo de proyecto.
+\end_layout
+
+\begin_layout Section
+Descarga del contenido
+\end_layout
+
+\begin_layout Standard
+Cualquier usuario puede descargar el contenido del repositorio a su propio
+ ordenador para poder ejecutar y utilizar el código y cualquiera de los
+ ficheros aportados en él, siempre y cuando cumpla la licencia asociada
+ (Véase 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Licencia"
+
+\end_inset
+
+) .
+\end_layout
+
+\begin_layout Standard
+La descarga del contenido del repositorio puede llevarse a cabo por medio
+ de dos métodos diferentes:
+\end_layout
+
+\begin_layout Itemize
+Descargando el contenido como un fichero comprimido 
+\family sans
+\shape italic
+.
+\shape default
+zip
+\family default
+ directamente desde la página
+\end_layout
+
+\begin_layout Itemize
+Realizando un fetch con la dirección 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://github.com/lbarriosh/cygnus-cloud.git
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Section
+La rama master
+\end_layout
+
+\begin_layout Standard
+Esta rama contiene la última versión estable de CygnusCloud.
+ El objetivo de esta rama es ir almacenando las versiones de 
+\shape italic
+CygnusCloud
+\shape default
+ que ya han sido completamente terminadas y depuradas.
+ Por lo tanto, esta rama nunca debe contener código a medio desarrollar
+ o con posibles bugs contemplados para la versión que corresponda.
+\end_layout
+
+\begin_layout Standard
+La distribución de directorios principales en esta rama es:
+\end_layout
+
+\begin_layout Itemize
+Arquitectura.
+ Este directorio contiene los diseños previos de arquitectura que ya han
+ sido introducidos en la versión estable.
+\end_layout
+
+\begin_layout Itemize
+Certificados.
+ Incluye los ficheros de certificados utilizados en la versión estable.
+\end_layout
+
+\begin_layout Itemize
+Documentación interna.
+ En este directorio se incluye un conjunto de documentos auxiliares, desarrollad
+os por 
+\shape italic
+CygnusCloud
+\shape default
+ con el fin de facilitar la labor de aprendizaje de las diferentes herramientas
+ necesarias para el desarrollo de la versión estable.
+\end_layout
+
+\begin_layout Itemize
+Ficheros de configuración.
+ Incluye los ficheros de configuración utilizados para configurar los servidores
+ del sistema.
+ Estos ficheros deben ser compatibles con la versión estable que se encuentra
+ en esta rama.
+\end_layout
+
+\begin_layout Itemize
+Memoria.
+ En este directorio se incluye la memoria con los apartados que ya han sido
+ revisados y pueden considerarse casi definitivos.
+ Los miembros de 
+\shape italic
+CygnusCloud
+\shape default
+ solo subirán un apartado a esta rama cuando este terminado y sea prácticamente
+ definitivo.
+ 
+\end_layout
+
+\begin_layout Itemize
+Src.
+ En este directorio se incluye todo el código de la última versión estable
+ de 
+\shape italic
+CygnusCloud
+\shape default
+.
+ Este código, permanece inalterable durante cada iteración y solo es actualizado
+ cuando se completa una versión estable y funcional del sistema.
+ Dentro de este directorio podemos destacar dos directorios:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\shape italic
+CygnusCloud
+\shape default
+.
+ Incluye el código de toda la infraestructura, a excepción de la web.
+\end_layout
+
+\begin_layout Itemize
+web.
+ Incluye el código de la aplicación web.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+La rama develop
+\end_layout
+
+\begin_layout Standard
+Esta rama esta destinada a mantener todo el código en desarrollo de la última
+ versión de CygnusCloud.
+ Debe garantizarse que todo el código subido a esta rama puede ser compilado
+ y no provoca ningún tipo de problema al resto de usuarios que se encuentren
+ trabajando sobre esta versión.
+ Sin embargo, a diferencia que en la rama 
+\family sans
+master
+\family default
+, el código que se sube en esta rama no tiene por qué estar terminado ni
+ completamente depurado.
+\end_layout
+
+\begin_layout Standard
+Los principales directorios que podemos encontrar en esta rama son:
+\end_layout
+
+\begin_layout Itemize
+Arquitectura.
+ Incluye tanto los diseños antiguos, ya implantados en la última versión
+ estable, como los nuevos diseños que pueden estar o no implantados en la
+ versión en desarrollo.
+\end_layout
+
+\begin_layout Itemize
+Certificados.
+ Incluye todos los certificados necesarios.
+ En nuestro caso por lo general contendrá los mismos ficheros que la rama
+ 
+\family sans
+master
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Documentación interna.
+ Incluye tanto los documentos desarrollados para el aprendizaje de las herramien
+tas utilizadas en la última versión estable, como todos aquellos documentos
+ nuevos que hayan podido desarrollarse para facilitar el aprendizaje de
+ las nuevas herramientas que se pretenden utilizar en la versión en desarrollo.
+\end_layout
+
+\begin_layout Itemize
+Ficheros de configuración.
+ Incluyen los ficheros de configuración para los servidores de la infraestructur
+a.
+ Deben se compatibles con los servidores en desarrollo para esta última
+ versión.
+\end_layout
+
+\begin_layout Itemize
+Memoria.
+ Incluye tanto los apartados de la memoria que se han mantenido desde la
+ última versión estable, como aquellos que han sido modificados para ajustarse
+ a la nueva versión en desarrollo y los que han sido creados de nuevo.
+ Los apartados subido a esta rama deben poder compilarse para no entorpecer
+ el trabajo del resto de usuarios pero no tienen por qué estar terminados
+ ni completamente revisados.
+\end_layout
+
+\begin_layout Itemize
+Src.
+ Incluye el código de la versión en desarrollo de 
+\shape italic
+CygnusCloud
+\shape default
+.
+ Como ya se mencionó anteriormente, los usuarios deben garantizar que el
+ código subido a esta rama compila, pero puede no estar terminado ni completamen
+te depurado.
+ Los subdirectorios relevantes en este directorio son los mismos que los
+ mencionados en la rama 
+\family sans
+master
+\family default
+.
+\end_layout
+
+\end_body
+\end_document
