@@ -70,20 +70,24 @@ Introducción
 
 \begin_layout Standard
 Desde el principio del proyecto pensamos en reutilizar los recursos de los
- que disponemos, para así poder reducir el coste total.
- Al ser un 
+ que disponíamos, para así poder reducir el coste total lo máximo posible.
+ Como 
+\shape italic
+CygnusCloud
+\shape default
+ utiliza un 
 \emph on
 cloud
 \emph default
- privado, nos permite decidir que computadores componen dicho 
+ privado, esto nos permite decidir que computadores componen dicho 
 \emph on
 cloud
 \emph default
 .
- Asi que vamos a valorar que requisitos necesitan los distintos componentes
- de 
+ Así, podemos valorar libremente que requisitos necesitan los distintos
+ componentes de 
 \emph on
-CygnusCloud
+nuestro sistema
 \emph default
  para saber que recursos dedicar a cada propósito.
 \end_layout
@@ -96,9 +100,9 @@ hardware
 \emph default
  específico para tratar la carga de trabajo que tendrán los distintos componente
 s.
- Para ello hemos creado tres configuraciones de servidores, cada uno con
- mejores características, con los que discutiremos que opción es la mejor
- para cada componente
+ Para ello hemos creado tres configuraciones de servidores, cada una con
+ unas características mejores que la anterior, con las que discutiremos
+ que opción es la mejor para cada componente
 \begin_inset Note Note
 status collapsed
 
@@ -475,8 +479,7 @@ Requisitos mínimos
 \end_layout
 
 \begin_layout Standard
-Los siguientes requisitos mínimos están pensandos para que se puedan utilizar
- con PCs.
+Los siguientes requisitos mínimos están pensados para serutilizados en PCs.
 \end_layout
 
 \begin_layout Subsection
@@ -485,13 +488,14 @@ Servidores de máquinas virtuales.
 
 \begin_layout Standard
 Para los servidores de máquinas virtuales necesitamos que los procesadores
- permitan virtualización, esto no es un gran requisito, ya que tanto AMD
- (desde 2006) como Intel (desde 2005), incluyen en sus procesadores tecnología
- que soporta virtualización completa.
- Por lo que en la actualidad casi cualquier ordenador tiene este tipo de
- tecnología, esto nos permite usar ordenadores como servidores, aunque debido
- a las limitaciones, tanto de CPU como de memoria RAM, nos impone un número
- máximo de máquinas que soportaría.
+ permitan usar virtualización, esto no es un gran requisito, ya que tanto
+ AMD (desde 2006) como Intel (desde 2005), incluyen en sus procesadores
+ tecnología que soporta virtualización completa.
+ Por ello, en la actualidad, casi cualquier ordenador tiene este tipo de
+ tecnología incorporado.
+ Esto nos permite usar ordenadores como servidores, aunque debido a las
+ limitaciones, tanto de CPU como de memoria RAM, nos impone un número máximo
+ de máquinas que es capaz de soportar.
 \end_layout
 
 \begin_layout Standard
@@ -510,7 +514,7 @@ reference "tab:Características-vanilla-linux"
 \end_inset
 
 , y las características de los PCs actuales (un mínimo de dos núcleos, 4
- GB de RAM y 200 GB de disco duro), facilmente podremos arrancar dos máquinas
+ GB de RAM y 200 GB de disco duro), fácilmente podríamos arrancar dos máquinas
  
 \emph on
 small
@@ -534,15 +538,15 @@ name "sub:Servidor-de-cluster"
 \end_layout
 
 \begin_layout Standard
-El servidor de cluster tiene mucha carga de trabajo, ya que se tiene que
- comunicar con el resto de componentes y gestionarlo todo, para poder hacer
- su trabajo se necesitaría como mínimo un PC con 2 
+El servidor de cluster tiene que soportar mucha carga de trabajo, ya que
+ debe comunicarse con el resto de componentes y gestionarlo todo.
+ Para poder hacer su trabajo se necesita como mínimo un PC con 2 
 \emph on
 cores
 \emph default
- y 2 GB de RAM, en cuanto al espacio en disco no requiere demasiado, porque
- su trabajo consiste básicamente, en comunicar al resto lo que tiene que
- hacer.
+ y 2 GB de RAM.
+ En cuanto al espacio en disco no requiere demasiado, ya que su trabajo
+ consiste básicamente en comunicar al resto lo que tiene que hacer.
 \end_layout
 
 \begin_layout Subsection
@@ -552,11 +556,12 @@ Servidor web
 \begin_layout Standard
 Aunque normalmente las páginas web deben estar preparadas para atender a
  cientos de miles, incluso millones, de usuarios, esta web solo va a ser
- de uso interno a la institución, lo que supondría varios de miles, en el
- peor de los casos.
- Esto nos permite poner un PC con un par de núcleos, 2 GB de RAM y 100 GB,
- para poder gestionar toda la información, tanto de los usuarios como de
- las máquinas que se pueden arrancar.
+ de uso interno a la institución, lo que supondría a lo sumo varios miles
+ de usuarios conectados a la vez.
+ Esto nos permite usar un PC con un par de núcleos, 2 GB de RAM y 100 GB
+ de disco.
+ Con esto, podríamos gestionar toda la información, tanto de los usuarios
+ como de las máquinas que se pueden arrancar.
 \end_layout
 
 \begin_layout Subsection
@@ -565,27 +570,32 @@ Repositorio
 
 \begin_layout Standard
 El repositorio no requiere gran cantidad de recursos, salvo por el almacenamient
-o, ya que básicamente es un servidor FTP pero con un número limitado de
- conexiones, que como se ha dicho en la sección 
+o.
+ Esto se debe a que se comporta básicamente como un servidor FTP pero con
+ un número limitado de conexiones, que como se ha dicho en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:El-servidor-FTP"
 
 \end_inset
 
- es configurable, pero no debería admitir muchas mas conexiones de 10, ya
- que puede provocar un cuello de botella.
+, es configurable.
+ En ningún caso debería admitir muchas mas conexiones de 10, ya que puede
+ provocar un cuello de botella.
 \end_layout
 
 \begin_layout Standard
-Como la mayor parte del tiempo va a estar enviando o recibiendo archivos,
- no requiere demasiado tiempo de CPU, por lo que con un núcleo tendríamos
- suficiente, quizás si que debiera tener RAM, por el tema de cache de archivos,
- pero debería bastar con 2GB.
- Esto es una ventaja porque se podría usar cualquier ordenador, incluso
- un ordenador de bajo consumo que son muy baratos.
- Lo que sí que es importante, es el almacenamiento, ya que es donde se van
- a guardar todas las máquinas virtuales.
+Con respecto al tiempo de CPU no será muy elevado , ya que la mayor parte
+ del tiempo estará enviando o recibiendo archivos.
+\end_layout
+
+\begin_layout Standard
+Con respecto a la memoria RAM, debería bastar con 2GB como máximo, los cuales
+ se usarían principalmente en la cache de archivos.
+ Esto es una ventaja ya que se podría usar cualquier ordenador, incluso
+ un ordenador de bajo consumo, aprovechando el bajo coste de los mismos.
+ Lo que sí que es importante, es el almacenamiento, ya que es donde se guardarán
+ todas las máquinas virtuales.
 \end_layout
 
 \begin_layout Subsection
@@ -593,12 +603,12 @@ Resumen
 \end_layout
 
 \begin_layout Standard
-Esto requisitos mínimos se pueden cubrir facilmente con PCs por lo que el
+Esto requisitos mínimos se pueden cubrir fácilmente con PCs por lo que el
  coste sería de 0.
 \end_layout
 
 \begin_layout Standard
-Todos estos requisitos mínimos se podrían reducir en la tabla 
+Todos estos requisitos mínimos aparecen resumidos en la tabla 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Requisitos-mínimos-para"
@@ -851,8 +861,8 @@ CygnusCloud
 
 \begin_layout Standard
 Como se puede observar en la tabla no aparecen los servidores de máquinas
- virtuales, esto se debe a que depende del tipo de máquina que se quiera
- ejecutar.
+ virtuales, esto se debe a que sus requisitos mínimos dependen del tipo
+ de máquina que se quiera ejecutar.
 \end_layout
 
 \begin_layout Section
@@ -860,8 +870,8 @@ Servidor de máquinas virtuales
 \end_layout
 
 \begin_layout Standard
-En los servidores de máquinas virtuales, el tipo de servidores que necesitaríamo
-s depende del número máximo de máquinas virtuales que queramos tener activas
+En los servidores de máquinas virtuales, el tipo de servidores que necesitamos
+ depende del número máximo de máquinas virtuales que queramos tener activas
  en un momento dado.
  
 \end_layout
@@ -881,8 +891,8 @@ reference "tab:Características-vanilla-linux"
 
 \end_inset
 
-) y el uso que se van a hacer de estas una distribución del uso de cada
- tipo podría ser la que se propone en la tabla 
+) y el uso que se van a hacer de estas, una posible distribución del uso
+ de cada tipo podría ser la que se propone en la tabla 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Distribución-de-los"
@@ -1029,16 +1039,24 @@ name "sec:Ejemplo-MV"
 
 \end_inset
 
-En una institución como la FdI existen unos 300 puestos de laboratorios,
- teniendo eso como máximo y suponiendo que los distintos tipos de máquinas
- que existen se distribuyen como indica la tabla 
+En una institución como la 
+\family typewriter
+Facultad de Informática
+\family default
+ de la 
+\family typewriter
+Universidad Complutense de Madrid,
+\family default
+ existen unos 300 puestos de laboratorios.
+ Estableciendo esto como tope y suponiendo que los distintos tipos de máquinas
+ que existen se distribuyen como se indica en la tabla 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Distribución-de-los"
 
 \end_inset
 
-, tenemos que soportar lo siguiente:
+, es necesario un sistema capaz de soportar lo siguiente:
 \begin_inset Formula 
 \[
 \textrm{Máquinas \emph{small}: }300*0.6=180
@@ -1066,7 +1084,8 @@ reference "tab:Distribución-de-los"
 \end_layout
 
 \begin_layout Standard
-Esto con los servidores que hemos propuesto al principio del capitulo 
+Teniendo en cuenta esto y los servidores de máquinas virtuales propuestos
+ al principio del capítulo 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Precios-servidores"
@@ -1092,9 +1111,9 @@ medio
 .
  La ventaja que tendría usar un servidor 
 \emph on
-big
+grande
 \emph default
- es que tambieé podría albergar una máquina 
+ es que también podría albergar una máquina 
 \emph on
 medium
 \emph default
@@ -1122,10 +1141,10 @@ Para las máquinas
 \emph on
 medium
 \emph default
-, podríamos usar cualquiera de las tres servidores, como podemos usar el
- espacio de los servidores 
+, podríamos usar cualquiera de los tres servidores.
+ Como podemos usar el espacio de los servidores 
 \emph on
-grandes, 
+grandes 
 \emph default
 para almacenar 30 de las máquinas, vamos a hacer los cálculos con las 60
  restantes:
@@ -1169,14 +1188,16 @@ grandes
 \end_layout
 
 \begin_layout Standard
-Parece obvio que la opcion de usar servidores 
+Como podemos ver, parece obvio que la opción de usar servidores 
 \emph on
 pequeños
 \emph default
- está descartada, ahora entre las otras opciones la diferecia no es muy
- grande, habría que valorar el ahorro compesa el tener mas máquinas en el
- mismo servidor físico, ya que si surge algún problema estaríamos perdiendo
- más capacidad de procesamiento.
+ está totalmente descartada.
+ Entre las otras dos opciones la diferencia no es muy relevante, por lo
+ habría que valorar si el ahorro en los servidores grandes compensa frente
+ a tener mas máquinas en el mismo servidor físico.
+ La ventaja de esto último es que si surge algún problema en uno de los
+ servidores, estaríamos perdiendo una menor capacidad de procesamiento.
 \end_layout
 
 \end_deeper
@@ -1185,7 +1206,7 @@ Para las
 \emph on
 small
 \emph default
- tambien tenemos los tres tipos de servidores como opción:
+ también es posible utilizar los tres tipos de servidores como opción:
 \end_layout
 
 \begin_deeper
@@ -1234,12 +1255,14 @@ y
 \emph on
 grandes
 \emph default
-, no es muy notoria, y tendremos que tener la misma consideración.
+ no es muy notoria, y tendremos que tener en cuenta la misma consideración
+ aplicada anteriormente.
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-En total podríamos tener los 300 puestos funcionando por un total de 
+En resumen, podríamos tener los 300 puestos funcionando por un total de
+ 
 \begin_inset Formula $100000$
 \end_inset
 
@@ -1247,24 +1270,24 @@ En total podríamos tener los 300 puestos funcionando por un total de
 \end_layout
 
 \begin_layout Section
-Servidor de clúster
+Servidor de cluster
 \end_layout
 
 \begin_layout Standard
-Como ya se ha comentado en la sección de requisitos mínimos 
+Como ya se ha comentado en la sección de requisitos mínimos (sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Servidor-de-cluster"
 
 \end_inset
 
- y aunque las necesidades de RAM y CPU se cubren con un servidor 
+) y aunque las necesidades de RAM y CPU se cubren con un servidor 
 \emph on
 medio
 \emph default
-, quizás sea excesiva la capacidad del disco duro, ya que no va a necesitar
- tanto porque la mayoría de los datos que maneja en ejecución, no guarda
- datos entre varias ejecuciones.
+, quizás la capacidad del disco duro pueda resultar excesiva, ya que la
+ mayoría de los datos que maneja en ejecución, no son guardados entre varias
+ ejecuciones.
 \end_layout
 
 \begin_layout Section
@@ -1273,10 +1296,11 @@ Servidor web y repositorio
 
 \begin_layout Standard
 Debido a la distinta naturaleza de trabajo del servidor web y el repositorio,
- es posible que compartan el servidor, para reducir el coste total.
- Los requisitos del repositorio son mas de capacidad de disco y RAM, mientras
- que para el servidor web de CPU y de RAM.
- Un vistazo a la tabla 
+ ambos podrían compartir un mismo servidor, reduciendose así el coste total.
+ Los requisitos del repositorio requieren una mayor capacidad de disco y
+ RAM, mientras que el servidor web necesita un mayor tiempo de CPU y tamaño
+ de RAM.
+ La tabla 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Precios-servidores"
@@ -1287,7 +1311,7 @@ reference "tab:Precios-servidores"
 \emph on
 medio
 \emph default
-.
+ para mantener ambos sistemas.
 \end_layout
 
 \begin_layout Section
@@ -1295,9 +1319,8 @@ Clientes
 \end_layout
 
 \begin_layout Standard
-Para los clientes, al usar un cliente VNC web, lo único que requiere es
- que pueda ejecutar un navegador con soporte para las tecnologias HTML,
- 
+Los clientes, al usar un cliente VNC web, lo único que requieren es que
+ poder ejecutar un navegador con soporte para las tecnologías HTML, 
 \emph on
 webscokets
 \emph default
@@ -1305,8 +1328,8 @@ webscokets
 \emph on
 canvas
 \emph default
-, lo que se puede conseguir con un ordenador de gama baja, lo que puede
- suponer unos 400 € por equipo.
+, lo cual puede conseguirse con un ordenador de gama baja.
+ Esto supone unos 400 € de coste por equipo.
 \end_layout
 
 \begin_layout Subsection
@@ -1314,8 +1337,9 @@ Renovación de un aula de informático
 \end_layout
 
 \begin_layout Standard
-El tener ordenadores de gama baja como clientes, nos supone un ahorro importante
- cuando hay que cambiar los ordenadores de todo un aula.
+El hecho de tener ordenadores de gama baja como clientes, nos supone un
+ ahorro importante cuando queramos aplicar el sistema en los ordenadores
+ de todo un aula.
  Como pudimos ver en el apartado 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1323,13 +1347,14 @@ reference "sub:Sobrecoste-de-los"
 
 \end_inset
 
- un ordenador actualmente cuesta entre 784 y 960 €, lo que implica un ahorro
+, un ordenador actualmente cuesta entre 784 y 960 €, lo que implica un ahorro
  mínimo del 49%.
  
 \end_layout
 
 \begin_layout Standard
-Vamos a hacer un calculo del ahorro que supone en cada aula:
+Teniendo en cuenta esto, vamos a calcular el ahorro que se produciría en
+ cada aula:
 \end_layout
 
 \begin_layout Itemize
@@ -1451,14 +1476,14 @@ Licencias
 \end_layout
 
 \begin_layout Standard
-Aunque ya se dispongan de licencias de 
+Aunque actualmente ya se dispongan de licencias de 
 \emph on
 Windows
 \emph default
-, no es suficiente, ya que es necesario tener licencias con derecho a virtualiza
-ción, esto supone un coste de 100$ (unos 75€) anuales por cada 4 máquinas
- virtuales arrancadas.
- Por lo que tendremos que decidir el máximo de máquinas con 
+, esto no es suficiente.
+ Es necesario tener licencias con derecho a virtualización, lo cual supone
+ un coste de 100$ (unos 75€) anuales por cada 4 máquinas virtuales arrancadas.
+ Por ello, tendremos que decidir el máximo número de máquinas con 
 \emph on
 Windows
 \emph default
@@ -1466,18 +1491,18 @@ Windows
 \end_layout
 
 \begin_layout Standard
-Siguiendo con los ejemplos 
+Siguiendo con los ejemplos del apartado 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Ejemplo-MV"
 
 \end_inset
 
- y suponiendo un 60% de las máquinas están usando 
+ y suponiendo que un 60% de las máquinas están usando 
 \emph on
-Windows
+Windows,
 \emph default
- supone que:
+ podemos concluir que:
 \end_layout
 
 \begin_layout Standard
@@ -1500,13 +1525,20 @@ Windows
 \end_layout
 
 \begin_layout Section
-Coste total
+Coste final
 \end_layout
 
 \begin_layout Standard
-Después de ver cuales serían los mejores servidores para todos los elementos
- del sistema, para ello vamos a elaborar una tabla con los servidores que
- necesitariamos para cada componente:
+Ahora que ya sabemos cuales serían los mejores servidores para todos los
+ elementos del sistema,podemos concluir en que los costes requeridos en
+ cada uno de ellos son los expresados en la tabla 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:coste-final-servidores"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -1654,6 +1686,12 @@ Cliente
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:coste-final-servidores"
+
+\end_inset
+
 Servidor para cada componente del sistema
 \end_layout
 
@@ -1672,27 +1710,30 @@ Servidor para cada componente del sistema
 \end_layout
 
 \begin_layout Standard
-Para los servidores de máquinas virtuales dependerá del número total de
- puesto y el tipo de máquinas que se quieran tener activas.
- Si usamos las máquinas del ejemplo de antes (
+En el caso de los servidores de máquinas virtuales, el coste final dependerá
+ del número total de puesto y del tipo de máquinas que se quieran tener
+ activas.
+ Si usamos las máquinas del ejemplo anterior (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Ejemplo-MV"
 
 \end_inset
 
-), tenemos que los servidores que soporten los 300 puesto de laboratorios
- costarían 
+), tenemos que para soportar los 300 puesto de laboratorios necesitaríamos
+ servidores por valor de 
 \begin_inset Formula $100000$
 \end_inset
 
-€, mas los servidores necesarios para el resto de la infraestructura (
+€.
+ A esto habría que añadir los servidores necesarios para el resto de la
+ infraestructura (
 \begin_inset Formula $1750$
 \end_inset
 
 €).
- Si quiere hacer una implantación desde 0, tambien es necesario proporcionar
- los 300 puesto, lo que costaría: 
+ Si se quiere hacer una implantación desde 0, también sería necesario proporcion
+ar el coste de los 300 puesto, lo que resultaría: 
 \begin_inset Formula 
 \[
 300*400\text{€}=120000\text{€}
@@ -1704,7 +1745,8 @@ reference "sec:Ejemplo-MV"
 \end_layout
 
 \begin_layout Standard
-El coste total sería por lo tanto:
+Con todo esto, el coste final para poder implantar toda la infraestructura
+ sería de
 \end_layout
 
 \begin_layout Standard
