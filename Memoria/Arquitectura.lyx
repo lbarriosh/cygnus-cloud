@@ -7010,7 +7010,7 @@ reactors
 .
  Contiene las clases 
 \family typewriter
-EndointPacketReactor
+EndpointPacketReactor
 \family default
 , 
 \family typewriter
@@ -11355,9 +11355,10 @@ el hilo principal para el servidor FTP y cierra la conexión de control.
 \end_layout
 
 \begin_layout Standard
-En todos los procesos de apagado, el servicio de red nunca debe detenerse
- desde un hilo creado por la red: si se intenta hacer esto, el hilo de red
- esperará hasta su propia terminación y, por tanto, se producirá un cuelgue.
+Es importante notar que, en todos los procesos de apagado, el servicio de
+ red nunca debe detenerse desde un hilo creado por la red.
+ Si se intenta hacer esto, el hilo de red esperará hasta su propia terminación
+ y, por tanto, se producirá un cuelgue.
 \end_layout
 
 \begin_layout Subsubsection
@@ -12704,6 +12705,18 @@ Apagado
 
 \begin_layout Enumerate
 el hilo principal para el servidor FTP y detiene el servicio de red.
+\end_layout
+
+\begin_layout Standard
+Nuevamente, y por las mismas razones que comentamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+, el servicio de red deberá detenerse desde el hilo principal para evitar
+ que se produzca un cuelgue.
 \end_layout
 
 \begin_layout Subsubsection
@@ -18376,6 +18389,18 @@ se cierra la conexión de control y se detiene el servicio de red.
  peticiones.
 \end_layout
 
+\begin_layout Standard
+Nuevamente, y por las mismas razones que comentamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+, el servicio de red deberá detenerse desde el hilo principal para evitar
+ que se produzca un cuelgue.
+\end_layout
+
 \begin_layout Subsubsection
 Interacciones básicas con el servidor de 
 \emph on
@@ -19521,6 +19546,19 @@ Apagado inmediato
  No obstante, al procesarlos el tiempo de espera será siempre 0, por lo
  que nunca se esperará a que los usuarios apaguen las máquinas virtuales
  activas.
+\end_layout
+
+\begin_layout Standard
+Finalmente, el servicio de red deberá detenerse desde el hilo principal
+ para evitar que se produzca un cuelgue.
+ Justificamos esto en detalle en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -28929,6 +28967,155 @@ Datos de conexión VNC
 \end_layout
 
 \begin_layout Subsubsection
+Apagado de todas las máquinas del 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+Cuando el servidor web envía un paquete del tipo 
+\family sans
+Apagar infraestructura
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+, este apagará todas las máquinas del 
+\emph on
+cluster
+\emph default
+ y terminará.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-cluster"
+
+\end_inset
+
+ muestra el proceso de apagado de todas las máquinas del 
+\emph on
+cluster
+\emph default
+.
+ En él, es posible distinguir los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se determina qué servidores de máquinas virtuales están arrancados.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Apagado con espera
+\family default
+.
+ Acto seguido, se enviará a todos los servidores de máquinas virtuales arrancado
+s.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+A medida que los servidores de máquinas virtuales reciban el paquete, irán
+ apagándose progresivamente.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Apagado
+\family default
+.
+ A continuación, se envía al repositorio de imágenes.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Cuando este reciba el paquete, se apagará.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+el hilo principal deja inmediatamente de monitorizar los comandos de arranque
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal detiene el hilo de actualización del estado del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal cierra todas las conexiones de red.
+ A partir de este momento, el servidor de 
+\emph on
+cluster
+\emph default
+ dejará de atender peticiones.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Apagado cluster.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-cluster"
+
+\end_inset
+
+Apagado de todas las máquinas del 
+\emph on
+cluster
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+, el servicio de red debe detenerse desde el hilo principal.
+ Si no lo hacemos así, se producirá un cuelgue.
+\end_layout
+
+\begin_layout Subsubsection
 Formatos de paquete
 \end_layout
 
@@ -28982,7 +29169,7 @@ io es.
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -30359,7 +30546,7 @@ _ERROR
 \begin_layout Plain Layout
 
 \family sans
-Apagado forzoso de virtual
+Apagado forzoso de máquina virtual
 \end_layout
 
 \end_inset
@@ -33639,14 +33826,18 @@ cluster
 \end_layout
 
 \begin_layout Standard
-Así, cuanto menor sea el número de conexiones de red existentes entre el
- servidor web y el servidor de 
+Cuanto menor sea el número de conexiones de red existentes entre el servidor
+ web y el servidor de 
 \emph on
 cluster
 \emph default
 , mayor podrá ser el número de servidores de máquinas virtuales a los que
  este puede atender y, por tanto, mayor podrá ser el número de usuarios
- que pueden utilizar el sistema simultáneamente.
+ que pueden utilizar el mismo 
+\emph on
+cluster
+\emph default
+ simultáneamente.
 \end_layout
 
 \begin_layout Standard
@@ -33693,7 +33884,7 @@ endpoint
 \emph default
  de la aplicación web o, abreviadamente, proceso 
 \emph on
-endoint
+endpoint
 \emph default
  o 
 \emph on
@@ -33704,7 +33895,16 @@ endpoint
 \emph on
 cluster
 \emph default
- y les enviará las peticiones de los usuarios.
+, extraerá las peticiones de los usuarios de una base de datos, las enviará
+ al servidor de 
+\emph on
+cluster
+\emph default
+ y procesará las respuestas del servidor de 
+\emph on
+cluster
+\emph default
+.
  En esta sección, mostraremos detalladamente su diseño.
 \end_layout
 
@@ -33715,7 +33915,7 @@ endpoint
 \end_layout
 
 \begin_layout Standard
-Para que los alumnos y los profesores puedan utilizar máquinas virtuales
+Para que los alumnos y los profesores puedan arrancar máquinas virtuales
  y modificar las imágenes disponibles en el
 \emph on
  cluster
@@ -33772,8 +33972,8 @@ El
 \emph on
 endpoint
 \emph default
- de la aplicación web deberá actualizar esta base de datos a medida que
- los usuarios realicen peticiones y la infraestructura las procese.
+ deberá actualizar esta base de datos a medida que los usuarios realicen
+ peticiones y la infraestructura las procese.
 \end_layout
 
 \begin_layout Standard
@@ -33804,16 +34004,13 @@ endpoint
 Ahora bien, si utilizamos exclusivamente esa base de datos, la aplicación
  web no podrá enviar dichas peticiones a la infraestructura ni obtener sus
  resultados.
- Para ello, el servidor web
+ Para hacer esto posible, el servidor web
 \emph on
  
 \emph default
 alberga una base de datos especial, la base de datos de comandos.
-\end_layout
-
-\begin_layout Standard
-A través de ella, la aplicación web podrá enviar peticiones a la infraestructura
- y obtener sus resultados.
+ Ejecutando consultas y actualizaciones sobre ella, la aplicación web podrá
+ enviar peticiones a la infraestructura y obtener sus resultados.
 \end_layout
 
 \begin_layout Standard
@@ -33846,7 +34043,7 @@ Control de acceso
 \begin_layout Standard
 Para acotar la complejidad del proceso 
 \emph on
-endoint
+endpoint
 \emph default
 , a la hora de enviar las peticiones al servidor de 
 \emph on
@@ -33886,19 +34083,16 @@ r su cumplimiento.
 \end_layout
 
 \begin_layout Standard
-Por otra parte, debemos evitar que los usuarios envíen a la infraestructura
- un número arbitrario de peticiones por unidad de tiempo.
- 
-\end_layout
-
-\begin_layout Standard
-Puesto que el proceso 
+Por otra parte, para hacer más robusto el sistema debemos evitar que los
+ usuarios puedan enviar a la infraestructura un número arbitrario de peticiones
+ por unidad de tiempo.
+ Puesto que el proceso 
 \emph on
 endpoint
 \emph default
  es el que envía estas peticiones a la infraestructura, lo más adecuado
- es hacer que también limite el número de peticiones por unidad de tiempo
- que cada usuario puede enviar a la infraestructura.
+ es hacer que este también limite el número de peticiones por unidad de
+ tiempo que cada usuario puede enviar a la infraestructura.
 \end_layout
 
 \begin_layout Subsubsection
@@ -33925,7 +34119,11 @@ endpoint
 \end_layout
 
 \begin_layout Standard
-Estos identificadores son cadenas de caracteres de la forma
+Estos identificadores son cadenas de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+ de longitud, cuyo contenido es de la forma
 \end_layout
 
 \begin_layout Standard
@@ -33956,9 +34154,8 @@ Puesto que los servidores de máquinas virtuales y los servidores de
 cluster
 \emph default
  nunca descomponen ni modifican los identificadores únicos de las peticiones
- que reciben.
- Así, resulta muy sencillo modificar la forma en que se generan estos identifica
-dores.
+ que reciben, es posible modificar la forma en que se generan estos identificado
+res de forma sencilla.
 \end_layout
 
 \begin_layout Subsubsection
@@ -34172,7 +34369,7 @@ Como podemos observar en el diagrama, la clase
 \family typewriter
 ClusterEndpointPacketReactor
 \family default
- hereda de 
+ hereda de la clase abstracta 
 \family typewriter
 NetworkCallback
 \family default
@@ -34198,7 +34395,7 @@ strings
 .
  Para ello, el objeto 
 \family typewriter
-ClusterEndointPacketReactor
+ClusterEndpointPacketReactor
 \family default
  utiliza un objeto 
 \family typewriter
@@ -34234,7 +34431,7 @@ CommandsHandler
 \end_layout
 
 \begin_layout Standard
-Por otra parte, los objetos 
+Por otro lado, los objetos 
 \family typewriter
 ClusterEndpointPacketReactor
 \family default
@@ -34263,7 +34460,7 @@ ClusterEndpointDBConnector
 \family typewriter
 BasicDBConnector
 \family default
-, sino que lo hace a través de la calse 
+, sino que lo hace a través de la clase 
 \family typewriter
 MinCEDBConnector
 \family default
@@ -34398,7 +34595,7 @@ Por otra parte, los objetos
 \family typewriter
 ClusterEndpointEntryPoint
 \family default
- utilizan dos hilos de las clases 
+ utilizan dos instancias de las clases de hilo 
 \family typewriter
 DBUpdateThread
 \family default
@@ -34407,12 +34604,12 @@ DBUpdateThread
 CommandsMonitoringThread
 \family default
 .
- Los primeros permiten iniciar la actualización periódica de la base de
- datos del 
+ El primero permite iniciar la actualización periódica de la base de datos
+ del 
 \emph on
 endpoint
 \emph default
-, y los segundos permiten generar errores por 
+, y el segundo permite generar errores por 
 \emph on
 timeout
 \emph default
@@ -34656,6 +34853,19 @@ si es necesario, se detiene el hilo de actualización de la base de datos
  y el hilo de monitorización de peticiones.
 \end_layout
 
+\begin_layout Standard
+Finalmente, es importante notar que el servicio de red se detendrá desde
+ el hilo principal.
+ Como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+, si no lo detenemos así se producirá un cuelgue.
+\end_layout
+
 \begin_layout Subsubsection
 Actualización de la base de datos del 
 \emph on
@@ -34825,7 +35035,8 @@ cuando se reciben los datos procedentes del servidor de
 \emph on
 cluster
 \emph default
-, estos se utilizan para actualizar la base de datos del 
+, estos se utilizan para actualizar el contenido de las tablas de la base
+ de datos del 
 \emph on
 endpoint
 \emph default
@@ -34856,7 +35067,11 @@ endpoint
 \end_layout
 
 \begin_layout Enumerate
-acto seguido, inicia la interacción correspondiente con el servidor de 
+acto seguido, el proceso 
+\emph on
+endpoint
+\emph default
+ inicia la interacción correspondiente con el servidor de 
 \emph on
 cluster
 \emph default
@@ -34872,7 +35087,8 @@ cluster
 \emph on
 endpoint
 \emph default
- la serializa y la almacena en la base de datos de comandos.
+ genera la salida correspondiente, la serializa y la almacena en la base
+ de datos de comandos.
 \end_layout
 
 \begin_layout Standard
@@ -34984,7 +35200,8 @@ utilizando la información contenida en ese paquete, se genera la salida
 \begin_deeper
 \begin_layout Standard
 Es importante notar que todas las peticiones que envía un usuario tienen
- asociado un identificador único.
+ asociado un identificador único, y que este forma parte de las respuestas
+ que devuelve la infraestructura.
  Esto permite
 \end_layout
 
@@ -35042,8 +35259,8 @@ Procesamiento de una petición: peticiones de alta latencia
 
 \begin_layout Standard
 Las peticiones de creación, edición, despliegue y borrado son peticiones
- de muy alta latencia: desde que se envían a la infraestructura hasta que
- terminan de ejecutarse pueden transcurrir horas.
+ de alta latencia: desde que se envían a la infraestructura hasta que terminan
+ de ejecutarse pueden transcurrir horas.
 \end_layout
 
 \begin_layout Standard
@@ -35057,8 +35274,8 @@ notificación
 \end_layout
 
 \begin_layout Standard
-La salida de las peticiones de alta latencia se registra casi igual que
- en la sección 
+Las salidas de las peticiones de alta latencia se registran en la base de
+ datos de comandos casi del modo que vimos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Procesamiento-petición"
@@ -35137,7 +35354,11 @@ reference "fig:Apagado-endpoint"
 \end_layout
 
 \begin_layout Enumerate
-se crea un paquete del tipo Apagar infraestructura.
+se crea un paquete del tipo 
+\family sans
+Apagar infraestructura
+\family default
+.
  Acto seguido, se envía ese paquete al servidor de 
 \emph on
 cluster
@@ -35182,6 +35403,20 @@ cluster
 \emph default
  vaya enviando los paquetes correspondientes, las máquinas de la infraestructura
  también irán apagándose.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que el servicio de red debe detenerse desde el hilo
+ principal.
+ Si no lo hacemos así, se producirá un cuelgue.
+ Justificamos esto en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -36004,7 +36239,7 @@ realiza consultas sobre la base de datos del
 \emph on
 endpoint
 \emph default
-, y
+, e
 \end_layout
 
 \begin_layout Itemize
@@ -36012,7 +36247,7 @@ inserta peticiones y extrae sus resultados en la base de datos de comandos.
 \end_layout
 
 \begin_layout Standard
-Para ello, la aplicación web utiliza la clase 
+Para ello, utiliza la clase 
 \family typewriter
 ClusterConnector
 \family default
@@ -36044,7 +36279,14 @@ ClusterConnector
 \end_layout
 
 \begin_layout Standard
-El diagrama de clases de la figura muestra las relaciones de la clase 
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Relaciones-ClusterConnector"
+
+\end_inset
+
+ muestra las relaciones de la clase 
 \family typewriter
 ClusterConnector
 \family default
@@ -36055,7 +36297,7 @@ ClusterConnector
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -36073,6 +36315,12 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Relaciones-ClusterConnector"
+
+\end_inset
+
 Relaciones de la clase 
 \family typewriter
 ClusterConnector
@@ -36202,7 +36450,7 @@ Estas consultas se ejecutan sobre la base de datos del
 endpoint
 \emph default
 .
- En el caso del ejemplo, se consultan los datos de las imágenes para mostrársela
+ En el caso del ejemplo, se consultan los datos de las imágenes para mostrárselo
 s al usuario.
 \end_layout
 
@@ -36217,6 +36465,26 @@ ClusterConnector
  
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+En la llamada al método correspondiente del objeto 
+\family sans
+ClusterConnector
+\family default
+, la aplicación web incluirá todo lo que necesita la infraestructura para
+ atender la petición (en este caso, todo lo que hace falta para construir
+ el paquete del tipo 
+\family sans
+Arranque de máquina virtual
+\family default
+ que se enviará al servidor de 
+\emph on
+cluster
+\emph default
+).
+\end_layout
+
+\end_deeper
 \begin_layout Enumerate
 el objeto 
 \family typewriter
@@ -36310,9 +36578,11 @@ Obtención del resultado de la petición
 \end_layout
 
 \begin_layout Standard
-En el primer caso, la aplicación web utiliza el identificador único que
- obtuvo al enviar la petición a la infraestructura.
- Para obtener la salida de la misma,
+Para obtener la salida asociada a una petición normal, la aplicación web
+ utiliza el identificador único que obtuvo al enviar dicha petición a la
+ infraestructura.
+ Como podemos observar en el diagrama, la salida de la petición se genera
+ de la siguiente manera:
 \end_layout
 
 \begin_layout Enumerate
@@ -36328,8 +36598,8 @@ se devuelve un diccionario con el contenido de la misma.
 \end_layout
 
 \begin_layout Standard
-Por otra parte, la extracción de las notificaciones de la base de datos
- de comandos es bastante parecida.
+Por otra parte, la salidas de las peticiones de alta latencia o notificaciones
+ se obtienen de forma similar.
  No obstante, de cara a facilitar la implementación de la aplicación web,
  las notificaciones no se extraen una a una: para obtenerlas, se utiliza
  un identificador de usuario.
@@ -39487,7 +39757,7 @@ el servidor web alberga tres bases de datos, una aplicación web y un demonio.
 la aplicación web se comunicará con el demonio utilizando la base de datos
  de comandos y la base de datos del 
 \emph on
-endoint
+endpoint
 \emph default
 .
 \end_layout
