@@ -5432,18 +5432,30 @@ web2py
 \end_layout
 
 \begin_layout Standard
-Al ser un framework web, web2py ofrece un rígido diseño de cara a la seguridad.
+Al ser un framework web, 
+\family typewriter
+web2py
+\family default
+ ofrece un rígido diseño de cara a la seguridad.
  Así, es capaz de resolver ciertas vulnerabilidades de forma automática
  siguiendo unas prácticas bien establecidas.
- Por ejemplo, web2py gestiona automáticamente el formateo de las entradas
- y salidas, aplica acciones de encriptado en los ficheros subidos y controla
- el área de maniobra de los desarrolladores de cara a la seguridad del sistema.
+ Por ejemplo, 
+\family typewriter
+web2py
+\family default
+ gestiona automáticamente el formateo de las entradas y salidas, aplica
+ acciones de encriptado en los ficheros subidos y controla el área de maniobra
+ de los desarrolladores de cara a la seguridad del sistema.
 \end_layout
 
 \begin_layout Standard
-Además web2py ofrece una capa de abstracción de base de datos (DAL por su
- acrónimo inglés), que genera código SQL de forma transparente al modelo
- de gestión de datos utilizado (SQLite, MySQL, PostgreSQL, Oracle ...).
+Además 
+\family typewriter
+web2py
+\family default
+ ofrece una capa de abstracción de base de datos (DAL por su acrónimo inglés),
+ que genera código SQL de forma transparente al modelo de gestión de datos
+ utilizado (SQLite, MySQL, PostgreSQL, Oracle ...).
 \end_layout
 
 \begin_layout Subsubsection*
@@ -5468,16 +5480,24 @@ INICIO
 \end_layout
 
 \begin_layout Standard
-Las principales razones por las cuales hemos decidido utilizar web2py frente
- a otros frameworks web basados en python tales como Django o Grok son:
+Las principales razones por las cuales hemos decidido utilizar 
+\family typewriter
+web2py
+\family default
+ frente a otros frameworks web basados en python tales como Django o Grok
+ son:
 \end_layout
 
 \begin_layout Itemize
 Ofrece una estructura sencilla que permite a los usuarios aprender sobre
  el desarrollo web sin comprometer la funcionalidad del sistema.
- Por esta razón, web2py no requiere instalación ni configuración, no tiene
- dependencias, y expone la mayor parte de su funcionalidad a través de una
- interfaz de navegador web.
+ Por esta razón, 
+\family typewriter
+web2py
+\family default
+ no requiere instalación ni configuración, no tiene dependencias, y expone
+ la mayor parte de su funcionalidad a través de una interfaz de navegador
+ web.
 \end_layout
 
 \begin_layout Itemize
@@ -6884,7 +6904,7 @@ reactors
 .
  Contiene las clases 
 \family typewriter
-EndointPacketReactor
+EndpointPacketReactor
 \family default
 , 
 \family typewriter
@@ -11236,9 +11256,10 @@ el hilo principal para el servidor FTP y cierra la conexión de control.
 \end_layout
 
 \begin_layout Standard
-En todos los procesos de apagado, el servicio de red nunca debe detenerse
- desde un hilo creado por la red: si se intenta hacer esto, el hilo de red
- esperará hasta su propia terminación y, por tanto, se producirá un cuelgue.
+Es importante notar que, en todos los procesos de apagado, el servicio de
+ red nunca debe detenerse desde un hilo creado por la red.
+ Si se intenta hacer esto, el hilo de red esperará hasta su propia terminación
+ y, por tanto, se producirá un cuelgue.
 \end_layout
 
 \begin_layout Subsubsection
@@ -12585,6 +12606,18 @@ Apagado
 
 \begin_layout Enumerate
 el hilo principal para el servidor FTP y detiene el servicio de red.
+\end_layout
+
+\begin_layout Standard
+Nuevamente, y por las mismas razones que comentamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+, el servicio de red deberá detenerse desde el hilo principal para evitar
+ que se produzca un cuelgue.
 \end_layout
 
 \begin_layout Subsubsection
@@ -18257,6 +18290,18 @@ se cierra la conexión de control y se detiene el servicio de red.
  peticiones.
 \end_layout
 
+\begin_layout Standard
+Nuevamente, y por las mismas razones que comentamos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+, el servicio de red deberá detenerse desde el hilo principal para evitar
+ que se produzca un cuelgue.
+\end_layout
+
 \begin_layout Subsubsection
 Interacciones básicas con el servidor de 
 \emph on
@@ -19402,6 +19447,19 @@ Apagado inmediato
  No obstante, al procesarlos el tiempo de espera será siempre 0, por lo
  que nunca se esperará a que los usuarios apaguen las máquinas virtuales
  activas.
+\end_layout
+
+\begin_layout Standard
+Finalmente, el servicio de red deberá detenerse desde el hilo principal
+ para evitar que se produzca un cuelgue.
+ Justificamos esto en detalle en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -28810,6 +28868,155 @@ Datos de conexión VNC
 \end_layout
 
 \begin_layout Subsubsection
+Apagado de todas las máquinas del 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+Cuando el servidor web envía un paquete del tipo 
+\family sans
+Apagar infraestructura
+\family default
+ al servidor de 
+\emph on
+cluster
+\emph default
+, este apagará todas las máquinas del 
+\emph on
+cluster
+\emph default
+ y terminará.
+ El diagrama de secuencia de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Apagado-cluster"
+
+\end_inset
+
+ muestra el proceso de apagado de todas las máquinas del 
+\emph on
+cluster
+\emph default
+.
+ En él, es posible distinguir los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+se determina qué servidores de máquinas virtuales están arrancados.
+\end_layout
+
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Apagado con espera
+\family default
+.
+ Acto seguido, se enviará a todos los servidores de máquinas virtuales arrancado
+s.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+A medida que los servidores de máquinas virtuales reciban el paquete, irán
+ apagándose progresivamente.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+se construye un paquete del tipo 
+\family sans
+Apagado
+\family default
+.
+ A continuación, se envía al repositorio de imágenes.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Cuando este reciba el paquete, se apagará.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+el hilo principal deja inmediatamente de monitorizar los comandos de arranque
+ de máquinas virtuales.
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal detiene el hilo de actualización del estado del 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+el hilo principal cierra todas las conexiones de red.
+ A partir de este momento, el servidor de 
+\emph on
+cluster
+\emph default
+ dejará de atender peticiones.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways true
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor cluster/Apagado cluster.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Apagado-cluster"
+
+\end_inset
+
+Apagado de todas las máquinas del 
+\emph on
+cluster
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+, el servicio de red debe detenerse desde el hilo principal.
+ Si no lo hacemos así, se producirá un cuelgue.
+\end_layout
+
+\begin_layout Subsubsection
 Formatos de paquete
 \end_layout
 
@@ -28863,7 +29070,7 @@ io es.
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -30240,7 +30447,7 @@ _ERROR
 \begin_layout Plain Layout
 
 \family sans
-Apagado forzoso de virtual
+Apagado forzoso de máquina virtual
 \end_layout
 
 \end_inset
@@ -33520,14 +33727,18 @@ cluster
 \end_layout
 
 \begin_layout Standard
-Así, cuanto menor sea el número de conexiones de red existentes entre el
- servidor web y el servidor de 
+Cuanto menor sea el número de conexiones de red existentes entre el servidor
+ web y el servidor de 
 \emph on
 cluster
 \emph default
 , mayor podrá ser el número de servidores de máquinas virtuales a los que
  este puede atender y, por tanto, mayor podrá ser el número de usuarios
- que pueden utilizar el sistema simultáneamente.
+ que pueden utilizar el mismo 
+\emph on
+cluster
+\emph default
+ simultáneamente.
 \end_layout
 
 \begin_layout Standard
@@ -33574,7 +33785,7 @@ endpoint
 \emph default
  de la aplicación web o, abreviadamente, proceso 
 \emph on
-endoint
+endpoint
 \emph default
  o 
 \emph on
@@ -33585,7 +33796,16 @@ endpoint
 \emph on
 cluster
 \emph default
- y les enviará las peticiones de los usuarios.
+, extraerá las peticiones de los usuarios de una base de datos, las enviará
+ al servidor de 
+\emph on
+cluster
+\emph default
+ y procesará las respuestas del servidor de 
+\emph on
+cluster
+\emph default
+.
  En esta sección, mostraremos detalladamente su diseño.
 \end_layout
 
@@ -33596,7 +33816,7 @@ endpoint
 \end_layout
 
 \begin_layout Standard
-Para que los alumnos y los profesores puedan utilizar máquinas virtuales
+Para que los alumnos y los profesores puedan arrancar máquinas virtuales
  y modificar las imágenes disponibles en el
 \emph on
  cluster
@@ -33653,8 +33873,8 @@ El
 \emph on
 endpoint
 \emph default
- de la aplicación web deberá actualizar esta base de datos a medida que
- los usuarios realicen peticiones y la infraestructura las procese.
+ deberá actualizar esta base de datos a medida que los usuarios realicen
+ peticiones y la infraestructura las procese.
 \end_layout
 
 \begin_layout Standard
@@ -33685,16 +33905,13 @@ endpoint
 Ahora bien, si utilizamos exclusivamente esa base de datos, la aplicación
  web no podrá enviar dichas peticiones a la infraestructura ni obtener sus
  resultados.
- Para ello, el servidor web
+ Para hacer esto posible, el servidor web
 \emph on
  
 \emph default
 alberga una base de datos especial, la base de datos de comandos.
-\end_layout
-
-\begin_layout Standard
-A través de ella, la aplicación web podrá enviar peticiones a la infraestructura
- y obtener sus resultados.
+ Ejecutando consultas y actualizaciones sobre ella, la aplicación web podrá
+ enviar peticiones a la infraestructura y obtener sus resultados.
 \end_layout
 
 \begin_layout Standard
@@ -33727,7 +33944,7 @@ Control de acceso
 \begin_layout Standard
 Para acotar la complejidad del proceso 
 \emph on
-endoint
+endpoint
 \emph default
 , a la hora de enviar las peticiones al servidor de 
 \emph on
@@ -33767,19 +33984,16 @@ r su cumplimiento.
 \end_layout
 
 \begin_layout Standard
-Por otra parte, debemos evitar que los usuarios envíen a la infraestructura
- un número arbitrario de peticiones por unidad de tiempo.
- 
-\end_layout
-
-\begin_layout Standard
-Puesto que el proceso 
+Por otra parte, para hacer más robusto el sistema debemos evitar que los
+ usuarios puedan enviar a la infraestructura un número arbitrario de peticiones
+ por unidad de tiempo.
+ Puesto que el proceso 
 \emph on
 endpoint
 \emph default
  es el que envía estas peticiones a la infraestructura, lo más adecuado
- es hacer que también limite el número de peticiones por unidad de tiempo
- que cada usuario puede enviar a la infraestructura.
+ es hacer que este también limite el número de peticiones por unidad de
+ tiempo que cada usuario puede enviar a la infraestructura.
 \end_layout
 
 \begin_layout Subsubsection
@@ -33806,7 +34020,11 @@ endpoint
 \end_layout
 
 \begin_layout Standard
-Estos identificadores son cadenas de caracteres de la forma
+Estos identificadores son cadenas de caracteres de hasta 70 
+\emph on
+bytes
+\emph default
+ de longitud, cuyo contenido es de la forma
 \end_layout
 
 \begin_layout Standard
@@ -33837,9 +34055,8 @@ Puesto que los servidores de máquinas virtuales y los servidores de
 cluster
 \emph default
  nunca descomponen ni modifican los identificadores únicos de las peticiones
- que reciben.
- Así, resulta muy sencillo modificar la forma en que se generan estos identifica
-dores.
+ que reciben, es posible modificar la forma en que se generan estos identificado
+res de forma sencilla.
 \end_layout
 
 \begin_layout Subsubsection
@@ -34053,7 +34270,7 @@ Como podemos observar en el diagrama, la clase
 \family typewriter
 ClusterEndpointPacketReactor
 \family default
- hereda de 
+ hereda de la clase abstracta 
 \family typewriter
 NetworkCallback
 \family default
@@ -34070,15 +34287,16 @@ ClusterServerPacketHandler
 \end_layout
 
 \begin_layout Standard
-Por otra parte, los códigos de error generados por la infraestructura no
- se muestran directamente a los usuarios: previamente, se convierten a 
+Por otra parte, los códigos de error generados por la infraestructura y
+ los códigos de estado de los servidores e imágenes no se muestran directamente
+ a los usuarios: previamente, se convierten a 
 \emph on
 strings
 \emph default
 .
  Para ello, el objeto 
 \family typewriter
-ClusterEndointPacketReactor
+ClusterEndpointPacketReactor
 \family default
  utiliza un objeto 
 \family typewriter
@@ -34114,7 +34332,7 @@ CommandsHandler
 \end_layout
 
 \begin_layout Standard
-Por otra parte, los objetos 
+Por otro lado, los objetos 
 \family typewriter
 ClusterEndpointPacketReactor
 \family default
@@ -34143,7 +34361,7 @@ ClusterEndpointDBConnector
 \family typewriter
 BasicDBConnector
 \family default
-, sino que lo hace a través de la calse 
+, sino que lo hace a través de la clase 
 \family typewriter
 MinCEDBConnector
 \family default
@@ -34278,7 +34496,7 @@ Por otra parte, los objetos
 \family typewriter
 ClusterEndpointEntryPoint
 \family default
- utilizan dos hilos de las clases 
+ utilizan dos instancias de las clases de hilo 
 \family typewriter
 DBUpdateThread
 \family default
@@ -34287,12 +34505,12 @@ DBUpdateThread
 CommandsMonitoringThread
 \family default
 .
- Los primeros permiten iniciar la actualización periódica de la base de
- datos del 
+ El primero permite iniciar la actualización periódica de la base de datos
+ del 
 \emph on
 endpoint
 \emph default
-, y los segundos permiten generar errores por 
+, y el segundo permite generar errores por 
 \emph on
 timeout
 \emph default
@@ -34536,6 +34754,19 @@ si es necesario, se detiene el hilo de actualización de la base de datos
  y el hilo de monitorización de peticiones.
 \end_layout
 
+\begin_layout Standard
+Finalmente, es importante notar que el servicio de red se detendrá desde
+ el hilo principal.
+ Como vimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+, si no lo detenemos así se producirá un cuelgue.
+\end_layout
+
 \begin_layout Subsubsection
 Actualización de la base de datos del 
 \emph on
@@ -34705,7 +34936,8 @@ cuando se reciben los datos procedentes del servidor de
 \emph on
 cluster
 \emph default
-, estos se utilizan para actualizar la base de datos del 
+, estos se utilizan para actualizar el contenido de las tablas de la base
+ de datos del 
 \emph on
 endpoint
 \emph default
@@ -34736,7 +34968,11 @@ endpoint
 \end_layout
 
 \begin_layout Enumerate
-acto seguido, inicia la interacción correspondiente con el servidor de 
+acto seguido, el proceso 
+\emph on
+endpoint
+\emph default
+ inicia la interacción correspondiente con el servidor de 
 \emph on
 cluster
 \emph default
@@ -34752,7 +34988,8 @@ cluster
 \emph on
 endpoint
 \emph default
- la serializa y la almacena en la base de datos de comandos.
+ genera la salida correspondiente, la serializa y la almacena en la base
+ de datos de comandos.
 \end_layout
 
 \begin_layout Standard
@@ -34864,7 +35101,8 @@ utilizando la información contenida en ese paquete, se genera la salida
 \begin_deeper
 \begin_layout Standard
 Es importante notar que todas las peticiones que envía un usuario tienen
- asociado un identificador único.
+ asociado un identificador único, y que este forma parte de las respuestas
+ que devuelve la infraestructura.
  Esto permite
 \end_layout
 
@@ -34922,8 +35160,8 @@ Procesamiento de una petición: peticiones de alta latencia
 
 \begin_layout Standard
 Las peticiones de creación, edición, despliegue y borrado son peticiones
- de muy alta latencia: desde que se envían a la infraestructura hasta que
- terminan de ejecutarse pueden transcurrir horas.
+ de alta latencia: desde que se envían a la infraestructura hasta que terminan
+ de ejecutarse pueden transcurrir horas.
 \end_layout
 
 \begin_layout Standard
@@ -34937,8 +35175,8 @@ notificación
 \end_layout
 
 \begin_layout Standard
-La salida de las peticiones de alta latencia se registra casi igual que
- en la sección 
+Las salidas de las peticiones de alta latencia se registran en la base de
+ datos de comandos casi del modo que vimos en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Procesamiento-petición"
@@ -35017,7 +35255,11 @@ reference "fig:Apagado-endpoint"
 \end_layout
 
 \begin_layout Enumerate
-se crea un paquete del tipo Apagar infraestructura.
+se crea un paquete del tipo 
+\family sans
+Apagar infraestructura
+\family default
+.
  Acto seguido, se envía ese paquete al servidor de 
 \emph on
 cluster
@@ -35062,6 +35304,20 @@ cluster
 \emph default
  vaya enviando los paquetes correspondientes, las máquinas de la infraestructura
  también irán apagándose.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que el servicio de red debe detenerse desde el hilo
+ principal.
+ Si no lo hacemos así, se producirá un cuelgue.
+ Justificamos esto en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Arranque-del-repositorio-error"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -35884,7 +36140,7 @@ realiza consultas sobre la base de datos del
 \emph on
 endpoint
 \emph default
-, y
+, e
 \end_layout
 
 \begin_layout Itemize
@@ -35892,7 +36148,7 @@ inserta peticiones y extrae sus resultados en la base de datos de comandos.
 \end_layout
 
 \begin_layout Standard
-Para ello, la aplicación web utiliza la clase 
+Para ello, utiliza la clase 
 \family typewriter
 ClusterConnector
 \family default
@@ -35924,7 +36180,14 @@ ClusterConnector
 \end_layout
 
 \begin_layout Standard
-El diagrama de clases de la figura muestra las relaciones de la clase 
+El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Relaciones-ClusterConnector"
+
+\end_inset
+
+ muestra las relaciones de la clase 
 \family typewriter
 ClusterConnector
 \family default
@@ -35935,7 +36198,7 @@ ClusterConnector
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -35953,6 +36216,12 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Relaciones-ClusterConnector"
+
+\end_inset
+
 Relaciones de la clase 
 \family typewriter
 ClusterConnector
@@ -36082,7 +36351,7 @@ Estas consultas se ejecutan sobre la base de datos del
 endpoint
 \emph default
 .
- En el caso del ejemplo, se consultan los datos de las imágenes para mostrársela
+ En el caso del ejemplo, se consultan los datos de las imágenes para mostrárselo
 s al usuario.
 \end_layout
 
@@ -36097,6 +36366,26 @@ ClusterConnector
  
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+En la llamada al método correspondiente del objeto 
+\family sans
+ClusterConnector
+\family default
+, la aplicación web incluirá todo lo que necesita la infraestructura para
+ atender la petición (en este caso, todo lo que hace falta para construir
+ el paquete del tipo 
+\family sans
+Arranque de máquina virtual
+\family default
+ que se enviará al servidor de 
+\emph on
+cluster
+\emph default
+).
+\end_layout
+
+\end_deeper
 \begin_layout Enumerate
 el objeto 
 \family typewriter
@@ -36190,9 +36479,11 @@ Obtención del resultado de la petición
 \end_layout
 
 \begin_layout Standard
-En el primer caso, la aplicación web utiliza el identificador único que
- obtuvo al enviar la petición a la infraestructura.
- Para obtener la salida de la misma,
+Para obtener la salida asociada a una petición normal, la aplicación web
+ utiliza el identificador único que obtuvo al enviar dicha petición a la
+ infraestructura.
+ Como podemos observar en el diagrama, la salida de la petición se genera
+ de la siguiente manera:
 \end_layout
 
 \begin_layout Enumerate
@@ -36208,8 +36499,8 @@ se devuelve un diccionario con el contenido de la misma.
 \end_layout
 
 \begin_layout Standard
-Por otra parte, la extracción de las notificaciones de la base de datos
- de comandos es bastante parecida.
+Por otra parte, la salidas de las peticiones de alta latencia o notificaciones
+ se obtienen de forma similar.
  No obstante, de cara a facilitar la implementación de la aplicación web,
  las notificaciones no se extraen una a una: para obtenerlas, se utiliza
  un identificador de usuario.
@@ -36254,8 +36545,11 @@ framework
 \shape default
  web que nos facilitase algunos aspectos y estructurase el sistema de forma
  correcta.
- Para ello, hemos optado por la utilización de Web2py cuyas principales
- características se mencionaron en la sección 
+ Para ello, hemos optado por la utilización de 
+\family typewriter
+web2py
+\family default
+ cuyas principales características se mencionaron en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Uso-web2py"
@@ -36266,7 +36560,11 @@ reference "sub:Uso-web2py"
 \end_layout
 
 \begin_layout Standard
-Web2py fuerza al desarrollador a utilizar unas buenas prácticas de ingeniería
+
+\family typewriter
+web2py
+\family default
+ fuerza al desarrollador a utilizar unas buenas prácticas de ingeniería
  del software, evitando la repetición de código en la medida de lo posible
  y estandarizando la manera de hacer las cosas.
  
@@ -36290,8 +36588,11 @@ vista-controlador
 \end_layout
 
 \begin_layout Standard
-El flujo de trabajo típico de una petición web2py viene representado en
- el diagrama 
+El flujo de trabajo típico de una petición 
+\family typewriter
+web2py
+\family default
+ viene representado en el diagrama 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Diagrama-de-secuencia-web2py"
@@ -36329,7 +36630,9 @@ name "fig:Diagrama-de-secuencia-web2py"
 
 \end_inset
 
-Diagrama de secuencia web2py
+Procesamiento de una petición en 
+\family typewriter
+web2py
 \end_layout
 
 \end_inset
@@ -36351,8 +36654,11 @@ El navegador, a partir del cual el usuario se conectará a la web.
 \end_layout
 
 \begin_layout Itemize
-El servidor, puede ser el servidor incluido en web2py o un servidor de terceros,
- tal como Apache.
+El servidor, puede ser el servidor incluido en 
+\family typewriter
+web2py
+\family default
+ o un servidor de terceros, tal como Apache.
 \end_layout
 
 \begin_layout Itemize
@@ -36380,8 +36686,12 @@ Todas las llamadas se encierran en una transacción.
 \end_layout
 
 \begin_layout Standard
-Con web2py es posible registrar tareas recurrentes para ejecutarse en horas
- específicas y/o después de determinadas acciones.
+Con 
+\family typewriter
+web2py
+\family default
+ es posible registrar tareas recurrentes para ejecutarse en horas específicas
+ y/o después de determinadas acciones.
  También es posible alojar varias aplicaciones en una misma instancia.
  
 \begin_inset CommandInset citation
@@ -36398,7 +36708,11 @@ Estructura general de la web
 \end_layout
 
 \begin_layout Standard
-Como web2py estructura las aplicaciones siguiendo un modelo 
+Como 
+\family typewriter
+web2py
+\family default
+ estructura las aplicaciones siguiendo un modelo 
 \shape italic
 vista-controlador
 \shape default
@@ -36442,8 +36756,12 @@ html
  en las páginas y su comportamiento.
  Entendemos por comportamiento de un componente, su capacidad para realizar
  ciertas acciones que mejoren la interacción con los usuarios.
- Según las restricciones de web2py será necesario disponer de un fichero
- de vista por cada sección disponible en la web.
+ Según las restricciones de 
+\family typewriter
+web2py
+\family default
+ será necesario disponer de un fichero de vista por cada sección disponible
+ en la web.
  Cada uno de estos ficheros de vista reciben los componentes creados en
  el controlador asociado, ajustan su aspecto al que se mostrará en la página,
  y los posicionan en el lugar deseado.
@@ -36467,7 +36785,11 @@ VNC
 \family sans
 appAdmin
 \family default
- creado automáticamente por web2py para la gestión de las bases de datos.
+ creado automáticamente por 
+\family typewriter
+web2py
+\family default
+ para la gestión de las bases de datos.
  Dentro de cada módulo encontramos una función asociada a cada una de las
  secciones que forman la aplicación web.
  Hablaremos más en profundidad sobre este tema en la sección 
@@ -36499,15 +36821,22 @@ menu.py
 tags
 \shape default
  de búsqueda\SpecialChar \ldots{}
- Este par de módulos son creados y exigidos por web2py.
+ Este par de módulos son creados y exigidos por 
+\family typewriter
+web2py
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
 Lenguajes: Este grupo incluye los diccionarios de traducción de las páginas
  de la web.
  Estos diccionarios deben ser rellenados por el desarrollador y son usados
- internamente por web2py para traducir todas las palabras que aparezcan
- en los mismos.
+ internamente por 
+\family typewriter
+web2py
+\family default
+ para traducir todas las palabras que aparezcan en los mismos.
 \end_layout
 
 \begin_layout Itemize
@@ -36548,10 +36877,14 @@ name "sub:Estructura-de-direcciones"
 
 \begin_layout Standard
 Con el fin de poder gestionar la web de la forma más modular posible y aprovecha
-ndo el flujo de direcciones usado por web2py, vamos a estructurar los diferentes
- apartados de la web en forma de árbol de direcciones, de forma que cada
- uno de sus nodos pueda realizar saltos a cualquier otro nodo del árbol
- según las acciones llevadas a cabo por los usuarios.
+ndo el flujo de direcciones usado por 
+\family typewriter
+web2py
+\family default
+, vamos a estructurar los diferentes apartados de la web en forma de árbol
+ de direcciones, de forma que cada uno de sus nodos pueda realizar saltos
+ a cualquier otro nodo del árbol según las acciones llevadas a cabo por
+ los usuarios.
  Así, el elemento principal será la aplicación en sí (
 \family typewriter
 /CygnusCloud
@@ -36859,7 +37192,7 @@ name "fig:Estructura-de-direcciones-estudiantes"
 
 \end_inset
 
-Estructura de direcciones para los alumnos
+Estructura de direcciones de la web para los alumnos
 \end_layout
 
 \end_inset
@@ -36903,7 +37236,7 @@ name "fig:Estructura-de-direcciones-profesores"
 
 \end_inset
 
-Estructura de direcciones para los profesores
+Estructura de direcciones de la web para los profesores
 \end_layout
 
 \end_inset
@@ -36943,7 +37276,7 @@ name "fig:Estructura-de-direcciones-administradores"
 
 \end_inset
 
-Estructura de direcciones para los administradores
+Estructura de direcciones de la web para los administradores
 \end_layout
 
 \end_inset
@@ -36994,7 +37327,7 @@ CygnusCloud
 Alumnos: En este tipo se incluyen todos los alumnos que cursan alguna de
  las asignaturas registradas en la web.
  Este tipo de usuarios es el más restringido, dándole únicamente acceso
- a la página de arranque de máquinas virtuales , asociadas a las asignaturas
+ a la página de arranque de máquinas virtuales, asociadas a las asignaturas
  matriculadas por el alumno, y a la página de visualización, detención y
  apertura de sus máquinas arrancadas.
 \end_layout
@@ -37651,9 +37984,17 @@ La barra de secciones permanente en la web muestra la distribución de las
 
 \begin_layout Standard
 De cara a la implementación, es necesario ajustar esta estructura para que
- siga el modelo definido por web2py.
- Web2py gestiona sus direcciones con respecto a la estructura de los módulos
- python que actúan como controladores.
+ siga el modelo definido por 
+\family typewriter
+web2py
+\family default
+.
+ 
+\family typewriter
+web2py
+\family default
+ gestiona sus direcciones con respecto a la estructura de los módulos python
+ que actúan como controladores.
  El conjunto de controladores presentes en la aplicación web coincide con
  los tipos de usuarios definidos en el primer nivel.
  Así disponemos de 5 controladores:
@@ -37828,7 +38169,7 @@ barra de direcciones para alumnos.
 \begin_layout Itemize
 barra de direcciones para profesores.
  Esta barra incluye las páginas de arranque de máquinas virtuales y creación
- y edición de imagenes, accesibles para los profesores.
+ y edición de imágenes, accesibles para los profesores.
  También incluye la página de visualización de notificaciones pendientes
  para profesores.
 \end_layout
@@ -37848,7 +38189,11 @@ Gestión de usuarios
 
 \begin_layout Standard
 Para llevar a cabo la gestión de usuarios hemos optado por utilizar una
- de las librerías que web2py nos ofrece.
+ de las librerías que 
+\family typewriter
+web2py
+\family default
+ nos ofrece.
  Esta librería, de nombre 
 \family sans
 auth
@@ -37923,8 +38268,12 @@ nombre del controlador que la contiene, el nombre de la función de la sección
 \family typewriter
 redirect
 \family default
-, es web2py el encargado de llamar a la función del controlador que corresponda
- y pasarle los argumentos y variables.
+, es 
+\family typewriter
+web2py
+\family default
+ el encargado de llamar a la función del controlador que corresponda y pasarle
+ los argumentos y variables.
 \end_layout
 
 \begin_layout Enumerate
@@ -37997,25 +38346,16 @@ CygnusCloud
  útil como por ejemplo los resultados de las búsquedas.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Revisar diferencias
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsubsection
 Seguridad
 \end_layout
 
 \begin_layout Standard
-Con respecto a la seguridad, web2py, y por extensión 
+Con respecto a la seguridad, 
+\family typewriter
+web2py
+\family default
+, y por extensión 
 \shape italic
 CygnusCloud
 \shape default
@@ -38268,7 +38608,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Secuencia de arranque de una máquina virtual.
+Secuencia de arranque de una máquina virtual desde la web.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Secuencia-de-arranque"
@@ -38317,12 +38657,12 @@ Main
 \end_layout
 
 \begin_layout Enumerate
-Una vez iniciada la sesión , al ser el usuario de tipo profesor, es redirecciona
-do a la función 
+Una vez iniciada la sesión, al ser el usuario de tipo profesor, es redireccionad
+o a la función 
 \family sans
 runVM
 \family default
- , dentro del controlador 
+, dentro del controlador 
 \family sans
 teacher
 \family default
@@ -38459,7 +38799,8 @@ name "fig:Diagrama-de-secuencia-creacionMV-web"
 
 \end_inset
 
-Diagrama de secuencia creación de una máquina virtual por parte del profesor
+Diagrama de secuencia creación de una imagen por parte del profesor desde
+ la web
 \end_layout
 
 \end_inset
@@ -38752,7 +39093,7 @@ reference "fig:Diagrama-de-secuencia-edicionMV-web"
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -38774,7 +39115,8 @@ name "fig:Diagrama-de-secuencia-edicionMV-web"
 
 \end_inset
 
-Diagrama de secuencia de edición de una máquina virtual por parte del profesor
+Diagrama de secuencia de edición de una imagen por parte del profesor desde
+ la web
 \end_layout
 
 \end_inset
@@ -38792,8 +39134,8 @@ Diagrama de secuencia de edición de una máquina virtual por parte del profesor
 \end_layout
 
 \begin_layout Subsubsection
-Arranque de un servidor de máquinas virtuales desde la web ipor un administrador
-: secuencia básica
+Arranque de un servidor de máquinas virtuales desde la web por un administrador:
+ secuencia básica
 \end_layout
 
 \begin_layout Standard
@@ -39005,7 +39347,8 @@ name "fig:Diagrama-de-secuencia-arranque-servidor-Administrador"
 
 \end_inset
 
-Diagrama de secuencia de arranque de un servidor de máquinas virtuales 
+Diagrama de secuencia de arranque de un servidor de máquinas virtuales desde
+ la web
 \end_layout
 
 \end_inset
@@ -39043,7 +39386,11 @@ auth
 \family default
 para gestionar los inicios y cierres de sesión, además de las restricciones
  de acceso a cada página.
- Es creada automáticamente por web2py y 
+ Es creada automáticamente por 
+\family typewriter
+web2py
+\family default
+ y 
 \shape italic
 CygnusCloud
 \shape default
@@ -39106,7 +39453,11 @@ CygnusCloud
 CygnusCloud
 \shape default
  dispone de tres tipos de usuarios (alumnos, profesores y administradores).
- Esta tabla es creada automáticamente por web2py.
+ Esta tabla es creada automáticamente por 
+\family typewriter
+web2py
+\family default
+.
  Las columnas que la forman son:
 \end_layout
 
@@ -39148,7 +39499,11 @@ auth_membership
  Esta tabla relaciona a cada usuario con el grupo de usuarios al que pertenece.
  Todos los usuarios deben tener un, y solo un, grupo de usuarios asociados.
  Al igual que las dos anteriores, esta tabla es creada automáticamente por
- web2py y contiene las siguientes columnas:
+ 
+\family typewriter
+web2py
+\family default
+ y contiene las siguientes columnas:
 \end_layout
 
 \begin_deeper
@@ -39194,7 +39549,10 @@ auth_event
 log
 \shape default
  sobre los últimos movimientos.
- Al igual que las anteriores, esta tabla es creada automática por web2py
+ Al igual que las anteriores, esta tabla es creada automática por 
+\family typewriter
+web2py
+\family default
  y en este caso, será totalmente gestionada por el módulo 
 \family typewriter
 auth
@@ -39674,13 +40032,13 @@ reference "fig:Diagrama-de-despliegue-CC"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de despliegue/Diagrama despliegue CC.pdf
+	filename graficos/Arquitectura/Vista de despliegue/Diagrama despliegue CC.pdf
 	scale 80
 
 \end_inset
@@ -39752,7 +40110,7 @@ el servidor web alberga tres bases de datos, una aplicación web y un demonio.
 la aplicación web se comunicará con el demonio utilizando la base de datos
  de comandos y la base de datos del 
 \emph on
-endoint
+endpoint
 \emph default
 .
 \end_layout
@@ -39795,8 +40153,899 @@ qcow2
  y los ficheros de definición que se usarán para crear máquinas virtuales.
 \end_layout
 
+\begin_layout Standard
+Por claridad, en el diagrama de despliegue no hemos mostrado todos los artefacto
+s de los que dependen los distintos demonios, el proceso 
+\emph on
+endpoint
+\emph default
+ y la aplicación web.
+ En la 
+\family sans
+Vista de implementación
+\family default
+, estudiaremos estas dependencias en detalle.
+ 
+\end_layout
+
 \begin_layout Section
 Vista de implementación
+\end_layout
+
+\begin_layout Standard
+Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Descomposición-del-sistema"
+
+\end_inset
+
+, 
+\emph on
+CygnusCloud 
+\emph default
+se descompone en cuatro subsistemas: el servidor de 
+\emph on
+cluster
+\emph default
+, el servidor de máquinas virtuales, el servidor web y el repositorio de
+ imágenes.
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos los artefactos más relevantes que se usan en
+ estos subsistemas.
+ Para ello, distinguiremos cuatro casos: uno para subsistema de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Por claridad, en esta sección no haremos referencia a los ficheros que,
+ como los ficheros 
+\family sans
+.zip
+\family default
+ o las imágenes de disco, sólo contienen los datos que se utilizarán para
+ crear las máquinas virtuales.
+ Asimismo, tampoco haremos referencia a las imágenes, hojas de estilo, ficheros
+ JavaScript,\SpecialChar \ldots{}
+ utilizados en la implementación de la aplicación web.
+\end_layout
+
+\begin_layout Subsection
+Repositorio de imágenes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista de implementación/CygnusCloud_Repositorio.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Artefactos-repositorio"
+
+\end_inset
+
+Principales artefactos utilizados en el repositorio de imágenes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como puede observarse en el diagrama de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Artefactos-repositorio"
+
+\end_inset
+
+, en el repositorio de imágenes se utilizan diez artefactos principales:
+\end_layout
+
+\begin_layout Itemize
+los módulos del servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+.
+ Estos contienen el código básico del servidor FTP que utiliza el repositorio
+ de imágenes.
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería de red 
+\emph on
+twisted
+\emph default
+.
+ Estos se utilizarán para manipular los 
+\emph on
+sockets
+\emph default
+ asociados a las distintas conexiones de red.
+\end_layout
+
+\begin_layout Itemize
+el ejecutable 
+\family typewriter
+ethtool
+\family default
+.
+ Este se utilizará para averiguar el ancho de banda que puede utilizar el
+ tráfico FTP.
+\end_layout
+
+\begin_layout Itemize
+los módulos servidor del paquete 
+\family typewriter
+ftp
+\family default
+.
+ Estos se utilizarán para crear y utilizar el servidor FTP a un elevado
+ nivel de abstracción.
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería estándar de 
+\emph on
+Python
+\emph default
+.
+ Estos se distribuyen junto con el intérprete de 
+\emph on
+Python
+\emph default
+, y estarán disponibles siempre que este esté instalado.
+\end_layout
+
+\begin_layout Itemize
+el ejecutable del gestor de bases de datos MariaDB.
+ Este se utilizará para manipular la base de datos del repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+los módulos del conector oficial 
+\emph on
+Python
+\emph default
+ de MySQL.
+ Estos se utilizarán para interactuar con el gestor de bases de datos MariaDB
+ desde código 
+\emph on
+Python
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los módulos de los paquetes 
+\family typewriter
+network
+\family default
+ y 
+\family typewriter
+ccutils
+\family default
+.
+ Estos se utilizan para realizar las comunicaciones con el resto de máquinas
+ de la infraestructura, y también en la implementación del demonio del repositor
+io de imágenes.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+imageRepository
+\family default
+.
+ Como sabemos, estos módulos contienen todo el código específico del demonio
+ del repositorio de imágenes y su punto de entrada.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los módulos de los paquetes 
+\family typewriter
+network
+\family default
+ y 
+\family typewriter
+ccutil
+\family default
+s, los módulos de la librería de red 
+\emph on
+twisted
+\emph default
+, el ejecutable del gestor de bases de datos MariaDB y los módulos del conector
+ de MySQL estarán presentes en el resto de máquinas de la infraestructura
+ y en el servidor web.
+ De ahora en adelante, hablaremos brevemente de ellos.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que sólo los módulos de los paquetes 
+\family typewriter
+network
+\family default
+, 
+\family typewriter
+ftp
+\family default
+, 
+\family typewriter
+ccutils
+\family default
+ e 
+\family typewriter
+imageRepository
+\family default
+ forman parte de la distribución de 
+\emph on
+CygnusCloud
+\emph default
+.
+ El resto de artefactos utilizados en el repositorio de imágenes deberán
+ instalarse manualmente.
+\end_layout
+
+\begin_layout Subsection
+Servidor de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista de implementación/CygnusCloud_ServidorMVs.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Artefactos-servidor-MVs"
+
+\end_inset
+
+Principales artefactos utilizados en el servidor de máquinas virtuales
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los principales artefactos que se utilizan en el servidor de máquinas virtuales
+ son los siguientes:
+\end_layout
+
+\begin_layout Itemize
+los ejecutables 
+\family typewriter
+zip
+\family default
+ y 
+\family typewriter
+unzip
+\family default
+, que se utilizan para crear y extraer los ficheros .zip que se intercambiarán
+ con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+el ejecutable 
+\family typewriter
+qemu-img
+\family default
+, que se utiliza para crear las imágenes de disco 
+\emph on
+copy-on-write
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los ejecutables 
+\family typewriter
+cp
+\family default
+ y 
+\family typewriter
+rm
+\family default
+, que forman parte de las utilidades estándar de los sistemas tipo UNIX.
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería de red 
+\emph on
+twisted
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos cliente del paquete 
+\family typewriter
+ftp
+\family default
+.
+ Estos se utilizarán para utilizar el cliente FTP de la librería estándar
+ de 
+\emph on
+Python
+\emph default
+ a un elevado nivel de abstracción.
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería estándar de 
+\emph on
+Python
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+el ejecutable del gestor de bases de datos MariaDB.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos del conector oficial 
+\emph on
+Python
+\emph default
+ de MySQL.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos de los paquetes 
+\family typewriter
+network
+\family default
+ y 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+imageRepository
+\family default
+ que manipulan los distintos tipos de paquete del repositorio de imágenes.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Estos módulos se utilizarán para leer y generar los paquetes que los servidores
+ de máquinas virtuales intercambiarán con el repositorio de imágenes.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+el hipervisor KVM, que se utilizará para gestionar las máquinas virtuales
+ que se alojan en el servidor.
+\end_layout
+
+\begin_layout Itemize
+la librería 
+\family typewriter
+libvirt
+\family default
+, que se utilizará para interactuar con el hipervisor KVM.
+\end_layout
+
+\begin_layout Itemize
+los 
+\emph on
+bindings
+\emph default
+ 
+\emph on
+Python
+\emph default
+ de 
+\family typewriter
+libvirt
+\family default
+.
+ Estos se utilizarán para interactuar con la librería 
+\family typewriter
+libvirt
+\family default
+ desde código 
+\emph on
+Python
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+virtualMachineServer
+\family default
+.
+ Como sabemos, estos módulos contienen todo el código específico del demonio
+ del servidor de máquinas virtuales y su punto de entrada.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que sólo los módulos de los paquetes 
+\family typewriter
+network
+\family default
+, 
+\family typewriter
+ftp
+\family default
+, 
+\family typewriter
+ccutils
+\family default
+, 
+\family typewriter
+imageRepository
+\family default
+ y 
+\family typewriter
+virtualMachineServer
+\family default
+ forman parte de la distribución de 
+\emph on
+CygnusCloud
+\emph default
+.
+ El resto de artefactos utilizados en el servidor de máquinas virtuales
+ deberán instalarse manualmente.
+\end_layout
+
+\begin_layout Subsection
+Servidor de 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista de implementación/CygnusCloud_Servidorcluster.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Artefactos-servidor-cluster"
+
+\end_inset
+
+Principales artefactos utilizados en el servidor de 
+\emph on
+cluster
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los principales artefactos que se utilizan en el servidor de 
+\emph on
+cluster
+\emph default
+ son los siguientes:
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería de red 
+\emph on
+twisted
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería estándar de 
+\emph on
+Python
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+el ejecutable del gestor de bases de datos MariaDB.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos del conector oficial 
+\emph on
+Python
+\emph default
+ de MySQL.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos de los paquetes 
+\family typewriter
+network
+\family default
+ y 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+imageRepository
+\family default
+ que manipulan los distintos tipos de paquete del repositorio de imágenes.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Estos módulos se utilizarán para leer y generar los paquetes que los servidores
+ de 
+\emph on
+cluster
+\emph default
+ intercambiarán con el repositorio de imágenes.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+virtualMachineServer
+\family default
+ que manipulan los distintos tipos de paquete del servidor de máquinas virtuales.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Nuevamente, estos módulos se utilizarán para leer y generar los paquetes
+ que los servidores de 
+\emph on
+cluster
+\emph default
+ intercambiarán con los los servidores de máquinas virtuales.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+clusterServer
+\family default
+.
+ Como sabemos, estos módulos contienen todo el código específico del demonio
+ del servidor de 
+\emph on
+cluster
+\emph default
+ y su punto de entrada.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que sólo los módulos de los paquetes 
+\family typewriter
+network
+\family default
+, 
+\family typewriter
+ccutils
+\family default
+, 
+\family typewriter
+imageRepository
+\family default
+, 
+\family typewriter
+virtualMachineServer
+\family default
+ y 
+\family typewriter
+clusterServer
+\family default
+ forman parte de la distribución de 
+\emph on
+CygnusCloud
+\emph default
+.
+ El resto de artefactos utilizados en el servidor de cluster deberán instalarse
+ manualmente.
+\end_layout
+
+\begin_layout Subsection
+Servidor web
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista de implementación/CygnusCloud_Servidorweb.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Artefactos-servidor-cluster-1"
+
+\end_inset
+
+Principales artefactos utilizados en el servidor web
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los principales artefactos que se utilizan en el servidor web son los siguientes
+:
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería de red 
+\emph on
+twisted
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería estándar de 
+\emph on
+Python
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+el ejecutable del gestor de bases de datos MariaDB.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos del conector oficial 
+\emph on
+Python
+\emph default
+ de MySQL.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos de los paquetes 
+\family typewriter
+network
+\family default
+ y 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+clusterServer
+\family default
+ que manipulan los distintos tipos de paquete del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Estos módulos se utilizarán para leer y generar los paquetes que los procesos
+ 
+\emph on
+endpoint 
+\emph default
+intercambiarán con los servidores de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+clusterEndpoint
+\family default
+.
+ Como sabemos, estos módulos contienen todo el código específico del proceso
+ 
+\emph on
+endpoint
+\emph default
+ y su punto de entrada.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+clusterConnector
+\family default
+.
+ Como sabemos, estos permiten que la aplicación web se comunique con el
+ proceso 
+\emph on
+endpoint
+\emph default
+ a través de una base de datos.
+\end_layout
+
+\begin_layout Itemize
+los módulos del 
+\emph on
+framework
+\emph default
+ web 
+\family typewriter
+web2py
+\family default
+.
+ Estos se utilizarán como base para construir la aplicación web, y también
+ para arrancar el servidor web a través del cual se interactuará con ella.
+\end_layout
+
+\begin_layout Itemize
+los módulos de la aplicación web de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que sólo los módulos de la aplicación web,
+ junto con los módulos del 
+\emph on
+framework 
+\family typewriter
+\emph default
+web2py
+\family default
+ y los módulos de los paquetes 
+\family typewriter
+network
+\family default
+, 
+\family typewriter
+ccutils
+\family default
+, 
+\family typewriter
+clusterServer
+\family default
+ y 
+\family typewriter
+clusterEndpoint
+\family default
+, forman parte de la distribución de 
+\emph on
+CygnusCloud
+\emph default
+.
+ El resto de artefactos utilizados en el servidor web deberán instalarse
+ manualmente.
 \end_layout
 
 \end_body

@@ -74,7 +74,6 @@
       {\normalfont\normalsize\bfseries}}
 \makeatother
 
-\renewcommand{\thefigure}{\arabic{figure}}
 \usepackage[htt]{hyphenat}
 \usepackage{charter}
 \renewcommand{\sfdefault}{lmss}
@@ -82,9 +81,6 @@
 \end_preamble
 \options a4paper
 \use_default_options true
-\begin_modules
-fixltx2e
-\end_modules
 \maintain_unincluded_children false
 \language spanish
 \language_package auto
@@ -521,12 +517,10 @@ filename "Apéndices/Guía git/Guía git.lyx"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: organización del repositorio
-\end_layout
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "Apéndices/Organización repositorio GitHub/Organizacion repositorio GitHub.lyx"
 
 \end_inset
 

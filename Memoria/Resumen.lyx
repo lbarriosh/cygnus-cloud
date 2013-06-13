@@ -61,7 +61,7 @@
 
 \begin_body
 
-\begin_layout Chapter*
+\begin_layout Section*
 
 \series bold
 Resumen
@@ -83,7 +83,7 @@ thispagestyle{empty}
 
 \end_layout
 
-\begin_layout Chapter*
+\begin_layout Section*
 
 \series bold
 Abstract

@@ -62,7 +62,14 @@
 \begin_body
 
 \begin_layout Chapter
-Licencia
+Licencia 
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Licencia"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
