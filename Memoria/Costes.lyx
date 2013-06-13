@@ -98,7 +98,7 @@ hardware
 s.
  Para ello hemos creado tres configuraciones de servidores, cada uno con
  mejores características, con los que discutiremos que opción es la mejor
- para cada componente.
+ para cada componente
 \begin_inset Note Note
 status collapsed
 
@@ -108,10 +108,25 @@ Mucho componente, no se me ocurre otra cosa
 
 \end_inset
 
+.
+ Estas configuraciones se pueden ver en la tabla 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Precios-servidores"
 
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="8">
 <features tabularvalignment="middle">
@@ -164,7 +179,7 @@ Disco Duro
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+Precio
 \end_layout
 
 \end_inset
@@ -244,7 +259,7 @@ pequeño
 \begin_inset Text
 
 \begin_layout Plain Layout
-~600 €
+600 €
 \end_layout
 
 \end_inset
@@ -309,7 +324,7 @@ medio
 \begin_inset Text
 
 \begin_layout Plain Layout
-500
+1000
 \end_layout
 
 \end_inset
@@ -318,7 +333,7 @@ medio
 \begin_inset Text
 
 \begin_layout Plain Layout
-~850 €
+850 €
 \end_layout
 
 \end_inset
@@ -345,7 +360,7 @@ medio
 \begin_inset Text
 
 \begin_layout Plain Layout
--
+1
 \end_layout
 
 \end_inset
@@ -392,7 +407,7 @@ grande
 \begin_inset Text
 
 \begin_layout Plain Layout
-~1250 €
+1250 €
 \end_layout
 
 \end_inset
@@ -432,8 +447,36 @@ grande
 
 \end_layout
 
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Precios-servidores"
+
+\end_inset
+
+Precios servidores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Requisitos mínimos
+\end_layout
+
+\begin_layout Standard
+Los siguientes requisitos mínimos están pensandos para que se puedan utilizar
+ con PCs.
 \end_layout
 
 \begin_layout Subsection
@@ -491,7 +534,8 @@ El servidor de cluster tiene mucha carga de trabajo, ya que se tiene que
 cores
 \emph default
  y 2 GB de RAM, en cuanto al espacio en disco no requiere demasiado, porque
- su trabajo ...
+ su trabajo consiste básicamente, en comunicar al resto lo que tiene que
+ hacer.
 \end_layout
 
 \begin_layout Subsection
@@ -538,37 +582,30 @@ Como la mayor parte del tiempo va a estar enviando o recibiendo archivos,
 \end_layout
 
 \begin_layout Subsection
-Máquinas clientes
-\end_layout
-
-\begin_layout Standard
-Para los clientes, al usar un cliente VNC web, lo único que requiere es
- que pueda ejecutar un navegador con soporte para las tecnologias HTML,
- 
-\emph on
-webscokets
-\emph default
- y 
-\emph on
-canvas
-\emph default
-, lo que se puede conseguir con un ordenador de gama baja.
-\end_layout
-
-\begin_layout Subsection
 Resumen
 \end_layout
 
 \begin_layout Standard
-Todos estos requisitos mínimos se podrían reducir en una tabla como la que
- sigue:
+Esto requisitos mínimos se pueden cubrir facilmente con PCs por lo que el
+ coste sería de 0.
+\end_layout
+
+\begin_layout Standard
+Todos estos requisitos mínimos se podrían reducir en la tabla 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Requisitos-mínimos-para"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -873,6 +910,12 @@ Cliente
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Requisitos-mínimos-para"
+
+\end_inset
+
 Requisitos mínimos para soportar la infraestructura de 
 \emph on
 CygnusCloud
@@ -896,6 +939,393 @@ CygnusCloud
 Servidor de máquinas virtuales
 \end_layout
 
+\begin_layout Standard
+En los servidores de máquinas virtuales, el tipo de servidores que necesitaríamo
+s depende del número máximo de máquinas virtuales que queramos tener activas
+ en un momento dado.
+ 
+\end_layout
+
+\begin_layout Standard
+Dado los distintos tipos de máquinas virtuales que podemos tener (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Características-vanilla-win"
+
+\end_inset
+
+ y 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Características-vanilla-linux"
+
+\end_inset
+
+) y el uso que se van a hacer de estas una distribución del uso de cada
+ tipo podría ser la que se propone en la tabla 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Distribución-de-los"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Tipo de máquina
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+small
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+60
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+medium
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+30
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+big
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Distribución-de-los"
+
+\end_inset
+
+Distribución de los distintos tipos de máquinas
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Ejemplo-MV"
+
+\end_inset
+
+En una institución como la FdI existen unos 300 puestos de laboratorios,
+ teniendo eso como máximo y suponiendo que los distintos tipos de máquinas
+ que existen se distribuyen como indica la tabla 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Distribución-de-los"
+
+\end_inset
+
+, tenemos que soportar lo siguiente:
+\begin_inset Formula 
+\[
+\textrm{Máquinas \emph{small}: }300\text{·}0.6=180
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\textrm{Máquinas \emph{medium}: }300\text{·}0.3=90
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\textrm{Máquinas \emph{big}: }300\text{·}0.1=30
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Esto con los servidores que hemos propuesto al principio del capitulo 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Precios-servidores"
+
+\end_inset
+
+ veremos cuanto puede costar una infraestructura que soporte esas 300 máquinas:
+\end_layout
+
+\begin_layout Itemize
+Para poder soportar las 30 máquinas 
+\emph on
+big
+\emph default
+, podríamos usar tanto un servidor 
+\emph on
+grande
+\emph default
+ como uno 
+\emph on
+medio
+\emph default
+.
+ La ventaja que tendría usar un servidor 
+\emph on
+big
+\emph default
+ es que tambieé podría albergar una máquina 
+\emph on
+medium
+\emph default
+, por lo que con cada servidor 
+\emph on
+grande
+\emph default
+ podemos tener funcionando una máquina 
+\emph on
+big
+\emph default
+ y otra 
+\emph on
+medium
+\emph default
+, por un coste de 
+\begin_inset Formula $30\text{·}1250=37500$
+\end_inset
+
+€.
+\end_layout
+
+\begin_layout Itemize
+Para las máquinas 
+\emph on
+medium
+\emph default
+, podríamos usar cualquiera de las tres servidores, como podemos usar el
+ espacio de los servidores 
+\emph on
+grandes, 
+\emph default
+para almacenar 30 de las máquinas, vamos a hacer los cálculos con las 60
+ restantes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Con servidores 
+\emph on
+pequeños
+\emph default
+:
+\begin_inset Formula $60\text{·}600=36000$
+\end_inset
+
+€
+\end_layout
+
+\begin_layout Itemize
+Con servidores 
+\emph on
+medios
+\emph default
+: 
+\begin_inset Formula $60/2*850=25500$
+\end_inset
+
+€
+\end_layout
+
+\begin_layout Itemize
+Con servidores 
+\emph on
+grandes
+\emph default
+: 
+\begin_inset Formula $60/3*1250=25000$
+\end_inset
+
+€
+\end_layout
+
+\begin_layout Standard
+Parece obvio que la opcion de usar servidores 
+\emph on
+pequeños
+\emph default
+ está descartada, ahora entre las otras opciones la diferecia no es muy
+ grande, habría que valorar el ahorro compesa el tener mas máquinas en el
+ mismo servidor físico, ya que si surge algún problema estaríamos perdiendo
+ más capacidad de procesamiento.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Para las 
+\emph on
+small
+\emph default
+ tambien tenemos los tres tipos de servidores como opción:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Con servidores 
+\emph on
+pequeños
+\emph default
+:
+\begin_inset Formula $180/2\text{·}600=54000$
+\end_inset
+
+€
+\end_layout
+
+\begin_layout Itemize
+Con servidores 
+\emph on
+medios
+\emph default
+: 
+\begin_inset Formula $180/4*850=38250$
+\end_inset
+
+€
+\end_layout
+
+\begin_layout Itemize
+Con servidores 
+\emph on
+grandes
+\emph default
+: 
+\begin_inset Formula $180/6*1250=37500$
+\end_inset
+
+€
+\end_layout
+
+\begin_layout Standard
+En este caso ocurre como antes, la diferencia entre los 
+\emph on
+medios 
+\emph default
+y 
+\emph on
+grandes
+\emph default
+, no es muy notoria, y tendremos que tener la misma consideración.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+En total podríamos tener los 300 puestos funcionando por un total de 
+\begin_inset Formula $100000$
+\end_inset
+
+€.
+\end_layout
+
 \begin_layout Section
 Servidor de clúster
 \end_layout
@@ -904,12 +1334,99 @@ Servidor de clúster
 Servidor web y repositorio
 \end_layout
 
+\begin_layout Standard
+Debido a la distinta naturaleza del trabajo del servidor web y el repositorio,
+ es posible que compartan el servidor, para reducir el coste total.
+ Los requisitos del repositorio son mas de capacidad de disco y RAM, mientras
+ que para el servidor web de CPU y de RAM.
+ Un vistazo a la tabla 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Precios-servidores"
+
+\end_inset
+
+ nos indica que podríamos y usar un servidor de tamaño medio.
+\end_layout
+
 \begin_layout Section
 Clientes
 \end_layout
 
+\begin_layout Standard
+Para los clientes, al usar un cliente VNC web, lo único que requiere es
+ que pueda ejecutar un navegador con soporte para las tecnologias HTML,
+ 
+\emph on
+webscokets
+\emph default
+ y 
+\emph on
+canvas
+\emph default
+, lo que se puede conseguir con un ordenador de gama baja, lo que puede
+ suponer unos 300 €.
+\end_layout
+
 \begin_layout Section
 Licencias
+\end_layout
+
+\begin_layout Standard
+Aunque ya se dispongan de licencias de 
+\emph on
+Windows
+\emph default
+, no es suficiente, ya que es necesario tener licencias con derecho a virtualiza
+ción, esto supone un coste de 100$ (unos 75€) anuales por cada 4 máquinas
+ virtuales arrancadas.
+ Por lo que tendremos que decidir el máximo de máquinas con 
+\emph on
+Windows
+\emph default
+ que queremos tener activas.
+\end_layout
+
+\begin_layout Standard
+Siguiendo con los ejemplos 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Ejemplo-MV"
+
+\end_inset
+
+ y suponiendo un 60% de las máquinas están usando 
+\emph on
+Windows
+\emph default
+ supone que:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $300\text{·}0.6=180$
+\end_inset
+
+ máquinas usan 
+\emph on
+Windows
+\emph default
+ lo que supone que necesitamos 
+\begin_inset Formula $180/4=45$
+\end_inset
+
+ suscripciones, y eso se traduce en un coste de 
+\begin_inset Formula $45\text{·}75=3375$
+\end_inset
+
+€ anuales.
+\end_layout
+
+\begin_layout Standard
+Si en vez de limitarnos a la FdI, nos planteamos usar 
+\emph on
+CygnusCloud
+\emph default
+ en toda la UCM, el coste sería de 
 \end_layout
 
 \end_body
