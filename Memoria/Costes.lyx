@@ -69,39 +69,390 @@ Introducción
 \end_layout
 
 \begin_layout Standard
-Desde el principio del proyecto pensamos en el que el coste total fuese
- el más bajo posible, para eso teniamos que poder reutilizar todos los recursos
- de los que disponíamos.
+Desde el principio del proyecto pensamos en reutilizar los recursos de los
+ que disponemos, para así poder reducir el coste total.
  Al ser un 
 \emph on
 cloud
 \emph default
- privado, nos permitía decidir que computadores componen dicho 
+ privado, nos permite decidir que computadores componen dicho 
 \emph on
 cloud
 \emph default
 .
- Ahora solo tenemos que ver que recursos vamos a utilizar para cada uno
- de los servidores, con tal de hacer el uso óptimo de esos recursos.
+ Asi que vamos a valorar que requisitos necesitan los distintos componentes
+ de 
+\emph on
+CygnusCloud
+\emph default
+ para saber que recursos dedicar a cada propósito.
+\end_layout
+
+\begin_layout Standard
+Aunque la reutilización de recursos es una opción, también podemos dedicar
+ 
+\emph on
+hardware
+\emph default
+ específico para tratar la carga de trabajo que tendrán los distintos componente
+s.
+ Para ello hemos creado tres configuraciones de servidores, cada uno con
+ mejores características, con los que discutiremos que opción es la mejor
+ para cada componente.
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Mucho componente, no se me ocurre otra cosa
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="8">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+CPU
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RAM
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Disco Duro
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+# 
+\emph on
+small
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+# 
+\emph on
+medium
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+# 
+\emph on
+big
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+pequeño
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+500
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+~600 €
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+medio
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+500
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+~850 €
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+grande
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1000
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+~1250 €
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
+Requisitos mínimos
+\end_layout
+
+\begin_layout Subsection
 Servidores de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
-Para los servidores de máquinas virtuales, necesitamos que los procesadores
+Para los servidores de máquinas virtuales necesitamos que los procesadores
  permitan virtualización, esto no es un gran requisito, ya que tanto AMD
- (desde 2006) como Intel (desde 2005), tienen tecnología que soporta virtualizac
-ión completa.
+ (desde 2006) como Intel (desde 2005), incluyen en sus procesadores tecnología
+ que soporta virtualización completa.
  Por lo que en la actualidad casi cualquier ordenador tiene este tipo de
- tecnología, podríamos usar estos ordenadores como servidores, aunque debido
+ tecnología, esto nos permite usar ordenadores como servidores, aunque debido
  a las limitaciones, tanto de CPU como de memoria RAM, nos impone un número
  máximo de máquinas que soportaría.
 \end_layout
 
 \begin_layout Standard
-Como se puede ver en los cuadros 
+Si nos fijamos en los cuadros 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Características-vanilla-win"
@@ -115,37 +466,49 @@ reference "tab:Características-vanilla-linux"
 
 \end_inset
 
-, las características de las dos primeras instancias de ambas tablas se
- puede suplir con facilidad e incluso se podrían crear varias instancias
- en la misma máquina, mientras que la últimas solo se podrán crear una instancia
- por máquina.
+, y las características de los PCs actuales (un mínimo de dos núcleos, 4
+ GB de RAM y 200 GB de disco duro), facilmente podremos arrancar dos máquinas
+ 
+\emph on
+small
+\emph default
+ o una 
+\emph on
+medium
+\emph default
+.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Servidor de cluster
 \end_layout
 
 \begin_layout Standard
-El servidor de cluster tambien tiene mucha carga de trabajo, ya que se tiene
- que comunicar con el resto de componentes y gestionarlo todo, por lo que
- también sería necesario un equipo suficientemente potente para soportar
- la carga.
+El servidor de cluster tiene mucha carga de trabajo, ya que se tiene que
+ comunicar con el resto de componentes y gestionarlo todo, para poder hacer
+ su trabajo se necesitaría como mínimo un PC con 2 
+\emph on
+cores
+\emph default
+ y 2 GB de RAM, en cuanto al espacio en disco no requiere demasiado, porque
+ su trabajo ...
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Servidor web
 \end_layout
 
 \begin_layout Standard
 Aunque normalmente las páginas web deben estar preparadas para atender a
- cientos de miles, incluso millones, usuarios, esta web solo va a ser de
- uso interno a la institución, solo lo van a usar unas decenas de miles,
- en el peor de los casos.
- Esto nos facilita la búsqueda de un sistema que soporte todos esos accesos,
- ya que no necesita tantos recursos.
+ cientos de miles, incluso millones, de usuarios, esta web solo va a ser
+ de uso interno a la institución, lo que supondría varios de miles, en el
+ peor de los casos.
+ Esto nos permite poner un PC con un par de núcleos, 2 GB de RAM y 100 GB,
+ para poder gestionar toda la información, tanto de los usuarios como de
+ las máquinas que se pueden arrancar.
 \end_layout
 
-\begin_layout Section
+\begin_layout Subsection
 Repositorio
 \end_layout
 
@@ -165,9 +528,388 @@ reference "sub:El-servidor-FTP"
 
 \begin_layout Standard
 Como la mayor parte del tiempo va a estar enviando o recibiendo archivos,
- no requiere demasiado tiempo de CPU, pero si de entrada/salida.
+ no requiere demasiado tiempo de CPU, por lo que con un núcleo tendríamos
+ suficiente, quizás si que debiera tener RAM, por el tema de cache de archivos,
+ pero debería bastar con 2GB.
  Esto es una ventaja porque se podría usar cualquier ordenador, incluso
- un ordenador de bajo consumo, que no son muy potentes, pero son muy baratos.
+ un ordenador de bajo consumo que son muy baratos.
+ Lo que sí que es importante, es el almacenamiento, ya que es donde se van
+ a guardar todas las máquinas virtuales.
+\end_layout
+
+\begin_layout Subsection
+Máquinas clientes
+\end_layout
+
+\begin_layout Standard
+Para los clientes, al usar un cliente VNC web, lo único que requiere es
+ que pueda ejecutar un navegador con soporte para las tecnologias HTML,
+ 
+\emph on
+webscokets
+\emph default
+ y 
+\emph on
+canvas
+\emph default
+, lo que se puede conseguir con un ordenador de gama baja.
+\end_layout
+
+\begin_layout Subsection
+Resumen
+\end_layout
+
+\begin_layout Standard
+Todos estos requisitos mínimos se podrían reducir en una tabla como la que
+ sigue:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+CPU
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RAM
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Disco Duro
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Servidor máquinas virtuales
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Servidor de clúster
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Servidor web
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+100GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Repositorio
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+500GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cliente
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Requisitos mínimos para soportar la infraestructura de 
+\emph on
+CygnusCloud
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Servidor de máquinas virtuales
+\end_layout
+
+\begin_layout Section
+Servidor de clúster
+\end_layout
+
+\begin_layout Section
+Servidor web y repositorio
+\end_layout
+
+\begin_layout Section
+Clientes
+\end_layout
+
+\begin_layout Section
+Licencias
 \end_layout
 
 \end_body
