@@ -39679,13 +39679,13 @@ reference "fig:Diagrama-de-despliegue-CC"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de despliegue/Diagrama despliegue CC.pdf
+	filename graficos/Arquitectura/Vista de despliegue/Diagrama despliegue CC.pdf
 	scale 80
 
 \end_inset
@@ -39802,6 +39802,862 @@ qcow2
 
 \begin_layout Section
 Vista de implementación
+\end_layout
+
+\begin_layout Standard
+Como dijimos en la sección 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Descomposición-del-sistema"
+
+\end_inset
+
+, 
+\emph on
+CygnusCloud 
+\emph default
+se descompone en cuatro subsistemas: el servidor de 
+\emph on
+cluster
+\emph default
+, el servidor de máquinas virtuales, el servidor web y el repositorio de
+ imágenes.
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos los artefactos más relevantes que se usan en
+ estos subsistemas.
+ Por claridad, distinguiremos cuatro casos: uno para subsistema de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Repositorio de imágenes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista de implementación/CygnusCloud_Repositorio.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Artefactos-repositorio"
+
+\end_inset
+
+Principales artefactos utilizados en el repositorio de imágenes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Como puede observarse en el diagrama de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Artefactos-repositorio"
+
+\end_inset
+
+, en el repositorio de imágenes se utilizan diez artefactos principales:
+\end_layout
+
+\begin_layout Itemize
+los módulos del servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+.
+ Estos contienen el código básico del servidor FTP que utiliza el repositorio
+ de imágenes.
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería de red 
+\emph on
+twisted
+\emph default
+.
+ Estos se utilizarán para manipular los 
+\emph on
+sockets
+\emph default
+ asociados a las distintas conexiones de red.
+\end_layout
+
+\begin_layout Itemize
+el ejecutable 
+\family typewriter
+ethtool
+\family default
+.
+ Este se utilizará para averiguar el ancho de banda que puede utilizar el
+ tráfico FTP.
+\end_layout
+
+\begin_layout Itemize
+los módulos servidor del paquete 
+\family typewriter
+ftp
+\family default
+.
+ Estos se utilizarán para crear y utilizar el servidor FTP a un elevado
+ nivel de abstracción.
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería estándar de 
+\emph on
+Python
+\emph default
+.
+ Estos se distribuyen junto con el intérprete de 
+\emph on
+Python
+\emph default
+, y estarán disponibles siempre que este esté instalado.
+\end_layout
+
+\begin_layout Itemize
+el ejecutable del gestor de bases de datos MariaDB.
+ Este se utilizará para manipular la base de datos del repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+los módulos del conector oficial 
+\emph on
+Python
+\emph default
+ de MySQL.
+ Estos se utilizarán para interactuar con el gestor de bases de datos MariaDB
+ desde código 
+\emph on
+Python
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los módulos de los paquetes 
+\family typewriter
+network
+\family default
+ y 
+\family typewriter
+ccutils
+\family default
+.
+ Estos se utilizan para realizar las comunicaciones con el resto de máquinas
+ de la infraestructura, y también en la implementación del demonio del repositor
+io de imágenes.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+imageRepository
+\family default
+.
+ Como sabemos, estos módulos contienen todo el código específico del demonio
+ del repositorio de imágenes y su punto de entrada.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los módulos de los paquetes 
+\family typewriter
+network
+\family default
+ y 
+\family typewriter
+ccutil
+\family default
+s, los módulos de la librería de red 
+\emph on
+twisted
+\emph default
+, el ejecutable del gestor de bases de datos MariaDB y los módulos del conector
+ de MySQL estarán presentes en el resto de máquinas de la infraestructura
+ y en el servidor web.
+ De ahora en adelante, hablaremos brevemente de ellos.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que sólo los módulos de los paquetes 
+\family typewriter
+network
+\family default
+, 
+\family typewriter
+ftp
+\family default
+, 
+\family typewriter
+ccutils
+\family default
+ e 
+\family typewriter
+imageRepository
+\family default
+ forman parte de la distribución de 
+\emph on
+CygnusCloud
+\emph default
+.
+ El resto de artefactos utilizados en el repositorio de imágenes deberán
+ instalarse manualmente.
+\end_layout
+
+\begin_layout Subsection
+Servidor de máquinas virtuales
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista de implementación/CygnusCloud_ServidorMVs.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Artefactos-servidor-MVs"
+
+\end_inset
+
+Principales artefactos utilizados en el servidor de máquinas virtuales
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los principales artefactos que se utilizan en el servidor de máquinas virtuales
+ son los siguientes:
+\end_layout
+
+\begin_layout Itemize
+los ejecutables 
+\family typewriter
+zip
+\family default
+ y 
+\family typewriter
+unzip
+\family default
+, que se utilizan para crear y extraer los ficheros .zip que se intercambiarán
+ con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+el ejecutable 
+\family typewriter
+qemu-img
+\family default
+, que se utiliza para crear las imágenes de disco 
+\emph on
+copy-on-write
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los ejecutables 
+\family typewriter
+cp
+\family default
+ y 
+\family typewriter
+rm
+\family default
+, que forman parte de las utilidades estándar de los sistemas tipo UNIX.
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería de red 
+\emph on
+twisted
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos cliente del paquete 
+\family typewriter
+ftp
+\family default
+.
+ Estos se utilizarán para utilizar el cliente FTP de la librería estándar
+ de 
+\emph on
+Python
+\emph default
+ a un elevado nivel de abstracción.
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería estándar de 
+\emph on
+Python
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+el ejecutable del gestor de bases de datos MariaDB.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos del conector oficial 
+\emph on
+Python
+\emph default
+ de MySQL.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos de los paquetes 
+\family typewriter
+network
+\family default
+ y 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+imageRepository
+\family default
+ que manipulan los distintos tipos de paquete del repositorio de imágenes.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Estos módulos se utilizarán para leer y generar los paquetes que los servidores
+ de máquinas virtuales intercambiarán con el repositorio de imágenes.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+el hipervisor KVM, que se utilizará para gestionar las máquinas virtuales
+ que se alojan en el servidor.
+\end_layout
+
+\begin_layout Itemize
+la librería 
+\family typewriter
+libvirt
+\family default
+, que se utilizará para interactuar con el hipervisor KVM.
+\end_layout
+
+\begin_layout Itemize
+los 
+\emph on
+bindings
+\emph default
+ 
+\emph on
+Python
+\emph default
+ de 
+\family typewriter
+libvirt
+\family default
+.
+ Estos se utilizarán para interactuar con la librería 
+\family typewriter
+libvirt
+\family default
+ desde código 
+\emph on
+Python
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+virtualMachineServer
+\family default
+.
+ Como sabemos, estos módulos contienen todo el código específico del demonio
+ del servidor de máquinas virtuales y su punto de entrada.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que sólo los módulos de los paquetes 
+\family typewriter
+network
+\family default
+, 
+\family typewriter
+ftp
+\family default
+, 
+\family typewriter
+ccutils
+\family default
+, 
+\family typewriter
+imageRepository
+\family default
+ y 
+\family typewriter
+virtualMachineServer
+\family default
+ forman parte de la distribución de 
+\emph on
+CygnusCloud
+\emph default
+.
+ El resto de artefactos utilizados en el servidor de máquinas virtuales
+ deberán instalarse manualmente.
+\end_layout
+
+\begin_layout Subsection
+Servidor de 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista de implementación/CygnusCloud_Servidorcluster.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Artefactos-servidor-cluster"
+
+\end_inset
+
+Principales artefactos utilizados en el servidor de 
+\emph on
+cluster
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los principales artefactos que se utilizan en el servidor de 
+\emph on
+cluster
+\emph default
+ son los siguientes:
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería de red 
+\emph on
+twisted
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería estándar de 
+\emph on
+Python
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+el ejecutable del gestor de bases de datos MariaDB.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos del conector oficial 
+\emph on
+Python
+\emph default
+ de MySQL.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos de los paquetes 
+\family typewriter
+network
+\family default
+ y 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+imageRepository
+\family default
+ que manipulan los distintos tipos de paquete del repositorio de imágenes.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Estos módulos se utilizarán para leer y generar los paquetes que los servidores
+ de 
+\emph on
+cluster
+\emph default
+ intercambiarán con el repositorio de imágenes.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+virtualMachineServer
+\family default
+ que manipulan los distintos tipos de paquete del servidor de máquinas virtuales.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Nuevamente, estos módulos se utilizarán para leer y generar los paquetes
+ que los servidores de 
+\emph on
+cluster
+\emph default
+ intercambiarán con los los servidores de máquinas virtuales.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+clusterServer
+\family default
+.
+ Como sabemos, estos módulos contienen todo el código específico del demonio
+ del servidor de 
+\emph on
+cluster
+\emph default
+ y su punto de entrada.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que sólo los módulos de los paquetes 
+\family typewriter
+network
+\family default
+, 
+\family typewriter
+ccutils
+\family default
+, 
+\family typewriter
+imageRepository
+\family default
+, 
+\family typewriter
+virtualMachineServer
+\family default
+ y 
+\family typewriter
+clusterServer
+\family default
+ forman parte de la distribución de 
+\emph on
+CygnusCloud
+\emph default
+.
+ El resto de artefactos utilizados en el servidor de cluster deberán instalarse
+ manualmente.
+\end_layout
+
+\begin_layout Subsection
+Servidor web
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista de implementación/CygnusCloud_Servidorweb.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Artefactos-servidor-cluster-1"
+
+\end_inset
+
+Principales artefactos utilizados en el servidor web
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los principales artefactos que se utilizan en el servidor web son los siguientes
+:
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería de red 
+\emph on
+twisted
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos de la librería estándar de 
+\emph on
+Python
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+el ejecutable del gestor de bases de datos MariaDB.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos del conector oficial 
+\emph on
+Python
+\emph default
+ de MySQL.
+ 
+\end_layout
+
+\begin_layout Itemize
+los módulos de los paquetes 
+\family typewriter
+network
+\family default
+ y 
+\family typewriter
+ccutils
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+clusterServer
+\family default
+ que manipulan los distintos tipos de paquete del servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Estos módulos se utilizarán para leer y generar los paquetes que los procesos
+ 
+\emph on
+endpoint 
+\emph default
+intercambiarán con los servidores de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+clusterEndpoint
+\family default
+.
+ Como sabemos, estos módulos contienen todo el código específico del proceso
+ 
+\emph on
+endpoint
+\emph default
+ y su punto de entrada.
+\end_layout
+
+\begin_layout Itemize
+los módulos del paquete 
+\family typewriter
+clusterConnector
+\family default
+.
+ Como sabemos, estos permiten que la aplicación web se comunique con el
+ proceso 
+\emph on
+endpoint
+\emph default
+ a través de una base de datos.
+\end_layout
+
+\begin_layout Itemize
+los módulos del 
+\emph on
+framework
+\emph default
+ web web2py.
+ Estos se utilizarán como base para construir la aplicación web, y también
+ para arrancar el servidor web a través del cual se interactuará con ella.
+\end_layout
+
+\begin_layout Itemize
+los módulos de la aplicación web de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, es importante notar que sólo los módulos de la aplicación web,
+ junto con los módulos del 
+\emph on
+framework 
+\emph default
+web2py y los módulos de los paquetes 
+\family typewriter
+network
+\family default
+, 
+\family typewriter
+ccutils
+\family default
+, 
+\family typewriter
+clusterServer
+\family default
+ y 
+\family typewriter
+clusterEndpoint
+\family default
+, forman parte de la distribución de 
+\emph on
+CygnusCloud
+\emph default
+.
+ El resto de artefactos utilizados en el servidor web deberán instalarse
+ manualmente.
 \end_layout
 
 \end_body
