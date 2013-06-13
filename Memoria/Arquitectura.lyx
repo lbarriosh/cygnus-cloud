@@ -40166,6 +40166,21 @@ qcow2
  y los ficheros de definición que se usarán para crear máquinas virtuales.
 \end_layout
 
+\begin_layout Standard
+Por claridad, en el diagrama de despliegue no hemos mostrado todos los artefacto
+s de los que dependen los distintos demonios, el proceso 
+\emph on
+endpoint
+\emph default
+ y la aplicación web.
+ En la 
+\family sans
+Vista de implementación
+\family default
+, estudiaremos estas dependencias en detalle.
+ 
+\end_layout
+
 \begin_layout Section
 Vista de implementación
 \end_layout
@@ -40193,11 +40208,24 @@ cluster
 \begin_layout Standard
 En esta sección, mostraremos los artefactos más relevantes que se usan en
  estos subsistemas.
- Por claridad, distinguiremos cuatro casos: uno para subsistema de 
+ Para ello, distinguiremos cuatro casos: uno para subsistema de 
 \emph on
 CygnusCloud
 \emph default
 .
+\end_layout
+
+\begin_layout Standard
+Por claridad, en esta sección no haremos referencia a los ficheros que,
+ como los ficheros 
+\family sans
+.zip
+\family default
+ o las imágenes de disco, sólo contienen los datos que se utilizarán para
+ crear las máquinas virtuales.
+ Asimismo, tampoco haremos referencia a las imágenes, hojas de estilo, ficheros
+ JavaScript,\SpecialChar \ldots{}
+ utilizados en la implementación de la aplicación web.
 \end_layout
 
 \begin_layout Subsection

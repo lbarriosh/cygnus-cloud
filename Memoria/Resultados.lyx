@@ -29,7 +29,7 @@
 \spacing single
 \use_hyperref false
 \papersize default
-\use_geometry false
+\use_geometry true
 \use_amsmath 1
 \use_esint 1
 \use_mhchem 1
@@ -44,6 +44,10 @@
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation skip
@@ -62,7 +66,454 @@
 \begin_body
 
 \begin_layout Chapter
-Resultados
+Conclusiones
+\end_layout
+
+\begin_layout Standard
+A lo largo del desarrollo de 
+\emph on
+CygnudCloud
+\emph default
+ hemos descubierto una rama del mundo de la informática, la del 
+\emph on
+Cloud Computing
+\emph default
+, que nos era totalmente desconocida.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, durante los diez meses que ha durado el proceso de desarrollo, también
+ hemos logrado dominar varios lenguajes y tecnologías que, desde nuestro
+ punto de vista, son esenciales para completar nuestra formación y mejorar
+ nuestras perspectivas ante nuestra inminente incorporación al mercado laboral.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, hemos obtenido una visión muy completa del estado del arte
+ actual de todas las tecnologías que hemos utilizado.
+ Así, nos sentimos lo suficientemente capacitados como para asesorar en
+ el uso de las mismas y para sugerir alternativas.
+\end_layout
+
+\begin_layout Standard
+Para comenzar, en esta sección mostraremos los conocimientos que hemos adquirido.
+ Posteriormente, enumeraremos las principales características de 
+\emph on
+CygnusCloud
+\emph default
+ y su potencial.
+ Para finalizar, hablaremos de los principales problemas a los que nos hemos
+ enfrentado durante el proceso de desarrollo y de las repercusiones que
+ ha tenido nuestro proyecto.
+\end_layout
+
+\begin_layout Section
+Conocimientos adquiridos
+\end_layout
+
+\begin_layout Subsection
+
+\emph on
+Cloud Computing
+\end_layout
+
+\begin_layout Standard
+En los últimos años, el grado de adopción de tecnologías 
+\emph on
+cloud
+\emph default
+ no ha parado de aumentar.
+ Aunque no lo notemos, la gran mayoría de servicios 
+\emph on
+web 
+\emph default
+que utilizamos en nuestra vida diaria, desde las redes sociales hasta los
+ servicios de almacenamiento de ficheros, utilizan, de una manera u otra,
+ una o más tecnologías 
+\emph on
+cloud
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Asimismo, considerando la actual coyuntura económica, las tecnologías 
+\emph on
+cloud
+\emph default
+ tienen mucho que aportar en lo que a la reducción de costes se refiere,
+ ya que
+\end_layout
+
+\begin_layout Itemize
+permiten eliminar los costes de adquisición y mantenimiento de la infraestructur
+a, que asumirá el proveedor del servicio.
+\end_layout
+
+\begin_layout Itemize
+es posible utilizar el 
+\emph on
+software
+\emph default
+ a través de un modelo de pago por suscripción, lo que permite no pagar
+ por las licencias de 
+\emph on
+software
+\emph default
+ que no se utilizan.
+\end_layout
+
+\begin_layout Itemize
+los usuarios pueden utilizar equipos menos potentes y, por tanto, más baratos
+ y con un menor consumo energético, ya que todas las tareas de procesamiento
+ tienen lugar en los servidores del proveedor del servicio.
+\end_layout
+
+\begin_layout Standard
+Por otro lado, el estudio de las distintas soluciones basadas en tecnologías
+ 
+\emph on
+cloud
+\emph default
+ permite aprender cómo atender de forma rápida y eficiente a un gran número
+ de usuarios.
+ 
+\end_layout
+
+\begin_layout Standard
+En definitiva, nos parece que el uso de tecnologías 
+\emph on
+cloud
+\emph default
+ ha resultado sumamente útil tanto para completar nuestra formación como
+ ingenieros informáticos como para mejorar nuestras perspectivas laborales.
+\end_layout
+
+\begin_layout Subsection
+Sistemas IaaS (
+\emph on
+Infrastructure as a Service
+\emph default
+)
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+CygnusCloud
+\emph default
+ ofrece un servicio del tipo Infraestructura como Servicio (en inglés, 
+\emph on
+Infrastructure as a Service
+\emph default
+ o IaaS).
+ 
+\end_layout
+
+\begin_layout Standard
+Aunque hemos diseñado e implementado una infraestructura 
+\emph on
+ad-hoc
+\emph default
+, muchas de las decisiones que hemos tomado durante el proceso de desarrollo
+ están presentes en soluciones del tipo Infraestructura como Servicio existentes
+ en el mercado, como 
+\emph on
+OpenStack
+\emph default
+ y 
+\emph on
+OpenNebula
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Así, la base de conocimientos que hemos adquirido durante el desarrollo
+ de 
+\emph on
+CygnusCloud
+\emph default
+ nos permitirá reducir el tiempo que tardaremos en familiarizarnos con otras
+ soluciones del tipo IaaS existentes en el mercado.
+\end_layout
+
+\begin_layout Subsection
+Tecnologías de virtualización
+\end_layout
+
+\begin_layout Standard
+Al inicio del desarrollo, tuvimos que evaluar distintas tecnologías de virtualiz
+ación 
+\emph on
+software
+\emph default
+ (como VirtualBox y VMWare) y distintas tecnologías de paravirtualización
+ y de virtualización completa (Xen y KVM).
+\end_layout
+
+\begin_layout Standard
+Aunque ya estábamos bastante familiarizados con VirtualBox y VMWare, nunca
+ habíamos utilizado Xen ni KVM.
+ Por ello, decidimos familiarizarnos con estos sistemas y a hacer pruebas
+ de integración.
+ De esta manera, en la actualidad conocemos sus ventajas e inconvenientes,
+ cómo utilizarlos e incluso su funcionamiento interno.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, hace nueve meses estábamos acostumbrados a interactuar con
+ los sistemas de virtualización a través de interfaces gráficas o a través
+ de la línea de comandos.
+ Por ello, tuvimos que aprender a utilizar la librería 
+\family typewriter
+libvirt
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Considerando todas las funciones que aporta 
+\family typewriter
+libvirt
+\family default
+ y, sobre todo, la posibilidad de interactuar con múltiples hipervisores
+ de forma muy similar, creemos que los conocimientos que hemos adquirido
+ nos serán de suma utilidad en el futuro.
+\end_layout
+
+\begin_layout Subsection
+Tecnologías de red
+\end_layout
+
+\begin_layout Standard
+Todas las máquinas de la infraestructura deben comunicarse entre sí a través
+ de una red.
+ Por ello, durante el desarrollo de 
+\emph on
+CygnusCloud 
+\emph default
+ha sido obligatorio el uso de distintas tecnologías de red.
+\end_layout
+
+\begin_layout Standard
+Al inicio del desarrollo, sabíamos manipular 
+\emph on
+sockets
+\emph default
+ para comunicar máquinas, por lo que podíamos comprender el funcionamiento
+ de la gran mayoría de librerías de red.
+ No obstante, debido a sus enormes dimensiones y a la 
+\begin_inset Quotes eld
+\end_inset
+
+calidad
+\begin_inset Quotes erd
+\end_inset
+
+ de su documentación, el uso de la librería 
+\emph on
+twisted 
+\emph default
+ha supuesto todo un reto.
+ 
+\end_layout
+
+\begin_layout Standard
+En este momento, conocemos al detalle su arquitectura y su funcionamiento
+ interno.
+ Asimismo, hemos construido sobre ella un módulo de comunicaciones de propósito
+ general, que puede utilizarse en cualquier aplicación
+\emph on
+ Python
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, también hemos afianzado conceptos de redes que hemos aprendido
+ durante la carrera, tales como el funcionamiento de los protocolos IP versión
+ 4 e IP versión 6, el funcionamiento del protocolo TCP, el formato de las
+ direcciones MAC\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Standard
+Asimismo, hemos aprendido a configurar redes en modo NAT, lo cual resulta
+ fundamental para superar la gran limitación del protocolo IP versión 4:
+ la escasez de direcciones.
+\end_layout
+
+\begin_layout Subsection
+El lenguaje 
+\emph on
+Python
+\end_layout
+
+\begin_layout Standard
+En la actualidad, 
+\emph on
+Python
+\emph default
+ es uno de los lenguajes de programación de propósito general más utilizados.
+ Por su potencia y simplicidad, cada vez más organizaciones lo adoptan en
+ sus desarrollos.
+ Asimismo, un gran número de servicios web muy populares contienen código
+ escrito en 
+\emph on
+Python.
+\end_layout
+
+\begin_layout Standard
+Durante el proceso de desarrollo, hemos logrado dominar las dos ramas de
+ 
+\emph on
+Python
+\emph default
+, la 2.7.x y la 3.x.
+ Estos conocimientos nos serán extremadamente útiles en el mundo laboral.
+\end_layout
+
+\begin_layout Subsection
+Tecnologías web
+\end_layout
+
+\begin_layout Standard
+A nuestro parecer, el gran inconveniente de nuestro plan de estudios es
+ la ausencia de contenidos relacionados con las tecnologías web.
+ Durante los cinco años de la carrera, no existe ninguna asignatura troncal,
+ obligatoria u optativa en la se enseñe a utilizar alguna tecnología web,
+ a pesar de que estas son cada vez más demandadas por el mercado laboral.
+\end_layout
+
+\begin_layout Standard
+Durante el desarrollo de 
+\emph on
+CygnusCloud
+\emph default
+, nos hemos familiarizado con los lenguajes HTML5, CCS3 y 
+\emph on
+JavaScript
+\emph default
+, y también con los 
+\emph on
+frameworks
+\emph default
+ 
+\family typewriter
+web2py
+\family default
+ y 
+\emph on
+JQuery
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Los conocimientos que hemos adquirido nos permitirán evaluar y aprender
+ a utilizar nuevas tecnologías web de forma más rápida y adecuada.
+\end_layout
+
+\begin_layout Subsection
+Programación concurrente
+\end_layout
+
+\begin_layout Standard
+Para garantizar la eficiencia en los distintos subsistemas de 
+\emph on
+CygnusCloud
+\emph default
+, resulta imprescindible sacar el máximo partido al 
+\emph on
+hardware
+\emph default
+.
+ Y como la gran mayoría de CPUs actuales son 
+\emph on
+dual-core 
+\emph default
+o
+\emph on
+ quad-core
+\emph default
+ e incluso soportan 
+\emph on
+multithreading
+\emph default
+ simultáneo, para aprovechar el 
+\emph on
+hardware
+\emph default
+ resulta imprescindible utilizar varios hilos.
+\end_layout
+
+\begin_layout Standard
+Aunque al inicio del proyecto ya contábamos con conocimientos de programación
+ concurrente, durante el proceso de desarrollo los hemos afianzado y ampliado.
+\end_layout
+
+\begin_layout Subsection
+Administración de sistemas 
+\emph on
+Linux
+\end_layout
+
+\begin_layout Standard
+Al inicio del proceso de desarrollo, contábamos con cierta experiencia en
+ el uso de sistemas 
+\emph on
+Linux
+\emph default
+.
+ No obstante, durante el desarrollo del proyecto hemos aprendido a
+\end_layout
+
+\begin_layout Itemize
+configurar manualmente interfaces de red, crear interfaces de red virtuales
+ y a configurar encaminadores.
+\end_layout
+
+\begin_layout Itemize
+utilizar el sistema de gestión de paquetes 
+\family typewriter
+apt
+\family default
+ de forma avanzada, incluyendo la resolución de conflictos y la reparación
+ de bases de datos de paquetes corruptas.
+\end_layout
+
+\begin_layout Itemize
+compilar e instalar módulos del 
+\emph on
+kernel.
+\end_layout
+
+\begin_layout Itemize
+compilar e instalar librerías.
+\end_layout
+
+\begin_layout Itemize
+modificar el proceso de arranque, indicando los módulos del 
+\emph on
+kernel
+\emph default
+ que se instalarán y los servicios que se iniciarán.
+\end_layout
+
+\begin_layout Itemize
+gestionar usuarios y grupos de usuarios.
+\end_layout
+
+\begin_layout Standard
+Teniendo en cuenta que en la actualidad 
+\emph on
+Linux
+\emph default
+ es el sistema operativo dominante en el mercado de los servidores, creemos
+ que estos conocimientos nos resultarán muy útiles en el futuro inmediato.
 \end_layout
 
 \end_body
