@@ -247,8 +247,11 @@ un mínimo de 30
 gigabytes
 \emph default
  de espacio en disco si sólo se desea alojar máquinas virtuales Linux.
- Si también se pretende alojar máquinas virtuales Windows, se requiere un
- mínimo de 60 
+ Si también se pretende alojar máquinas virtuales 
+\emph on
+Windows
+\emph default
+, se requiere un mínimo de 60 
 \emph on
 gigabytes 
 \emph default
@@ -1631,7 +1634,11 @@ reference "fig:Contenido-inicial-VM"
 \end_inset
 
 .
- Debemos recordar que, tras inicializar el contenido de este fichero, debemos
+ 
+\end_layout
+
+\begin_layout Standard
+Debemos recordar que, tras inicializar el contenido de este fichero, debemos
  borrar o comentar la sección 
 \family typewriter
 Uninitialized file
@@ -2081,6 +2088,315 @@ Configuración del módulo de
 CygnusCloud
 \end_layout
 
+\begin_layout Standard
+Si intentamos arrancar el demonio del servidor de 
+\emph on
+cluster
+\emph default
+ sin haber inicializado previamente su fichero de configuración, se generará
+ un mensaje de error.
+ El fichero de configuración de este demonio, 
+\family typewriter
+ClusterServer_settings.conf
+\family default
+, se encuentra en la raíz del directorio de instalación.
+ Su contenido inicial aparece en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Contenido-inicial-VM-1"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Debemos recordar que, tras inicializar el contenido de este fichero, debemos
+ borrar o comentar la sección 
+\family typewriter
+Uninitialized file
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+# Comment or delete the following line after initializing this file 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Uninitialized file]
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Database configuration] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+mysqlRootsPassword = 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+dbUser = cygnuscloud 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+dbUserPassword = cygnuscloud
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Network configuration] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+useSSL = False 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+certificatePath = /home/luis/Infraestructura/Certificates 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+listenningPort = 9000
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Load balancer configuration] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+loadBalancingAlgorithm = penalty-based # The simple load balancing algorithm
+ is no longer supported 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+vCPUsWeight = 0.2 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+vCPUsExcessThreshold = 0.2 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+ramWeight = 0.3 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+storageSpaceWeight = 0.2 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+temporarySpaceWeight = 0.3
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Other settings] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+vmBootTimeout = 120 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+averageCompressionRatio = 0.5 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+statusUpdateInterval = 5
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Image repository connection data] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+imageRepositoryIP = 192.168.0.5 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+imageRepositoryPort = 3000
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Contenido-inicial-VM-1"
+
+\end_inset
+
+Contenido inicial del fichero 
+\family typewriter
+ClusterServer_settings.conf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En primer lugar, la sección 
+\family typewriter
+Database configuration
+\family default
+ especifica la información que se utilizará para configurar la base de datos
+ del servidor de 
+\emph on
+cluster
+\emph default
+: la contraseña del usuario 
+\emph on
+root
+\emph default
+ y el nombre y la contraseña del usuario que empleará el demonio.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la sección 
+\family typewriter
+Network configuration
+\family default
+ especifica la configuración de la conexión de control.
+ En ella, se indicará si se desea cifrar el tráfico de esta conexión, la
+ ruta de los certificados 
+\family typewriter
+server.crt
+\family default
+ y 
+\family typewriter
+server.key
+\family default
+ (sólo se utilizará cuando se cifra el tráfico) y el puerto asociado a la
+ conexión de control.
+\end_layout
+
+\begin_layout Standard
+Por otro lado, la sección 
+\family typewriter
+Load balancer configuration
+\family default
+ especifica los parámetros de configuración del algoritmo de balanceado
+ de carga.
+\end_layout
+
+\begin_layout Standard
+Asimismo, la sección 
+\family typewriter
+Other settings
+\family default
+ especifica
+\end_layout
+
+\begin_layout Itemize
+el tiempo máximo que se esperará antes de generar un error de arranque de
+ máquina virtual (en segundos).
+\end_layout
+
+\begin_layout Itemize
+el ratio de compresión medio de las imágenes de disco.
+ Este parámetro se utilizará para reservar espacio en disco en los servidores
+ de máquinas virtuales y en el repositorio de imágenes en las operaciones
+ de despliegue, creación, borrado y edición de imágenes.
+\end_layout
+
+\begin_layout Itemize
+el intervalo de actualización del estado de la infraestructura (en segundos).
+\end_layout
+
+\begin_layout Standard
+Finalmente, la sección 
+\family typewriter
+Image repository connection data
+\family default
+ especifica los datos de conexión al repositorio de imágenes.
+\end_layout
+
 \begin_layout Subsection
 Servidor web
 \begin_inset CommandInset label
@@ -2103,7 +2419,7 @@ Al igual que en los casos anteriores, la instalación del servidor web es
  análoga a la de la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Instalación-del-módulo-servidor-vms"
+reference "sub:Instalación-del-módulo"
 
 \end_inset
 
@@ -2146,11 +2462,23 @@ Para arrancar el servidor web, hay que ejecutar cada uno de ellos en un
 \family typewriter
 webServerEndpoint.sh
 \family default
-, lanza el demonio que comunica la aplicación web2py y el servidor de 
+, lanza el demonio que comunica la aplicación 
+\family typewriter
+web2py
+\family default
+ y el servidor de 
 \emph on
 cluster
 \emph default
-, y el segundo lanza el servidor web que aloja la aplicación web2py.
+ (proceso 
+\emph on
+endpoint
+\emph default
+), y el segundo lanza el servidor web que aloja la aplicación 
+\family typewriter
+web2py
+\family default
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -2159,13 +2487,300 @@ Configuración del módulo de
 CygnusCloud
 \end_layout
 
+\begin_layout Standard
+Si intentamos arrancar el proceso 
+\emph on
+endpoint
+\emph default
+ sin haber inicializado previamente su fichero de configuración, se generará
+ un mensaje de error.
+ El fichero de configuración de este demonio, 
+\family typewriter
+Endpoint_settings.conf
+\family default
+, se encuentra en la raíz del directorio de instalación.
+ Su contenido inicial aparece en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Contenido-inicial-VM-1-1"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Debemos recordar que, tras inicializar el contenido de este fichero, debemos
+ borrar o comentar la sección 
+\family typewriter
+Uninitialized file
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+# Comment or delete the following line after initializing this file 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Uninitialized file]
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Database configuration] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+mysqlRootsPassword = 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+websiteUser = website_user 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+websiteUserPassword = CygnusCloud 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+endpointUser = endpoint_user 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+endpointUserPassword = CygnusCloud
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Network configuration] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+useSSL = False 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+certificatePath = /home/luis/Infraestructura/Certificates
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Cluster server connection data] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+clusterServerIP = 192.168.0.5 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+clusterServerListenningPort = 9000
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Other settings] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+statusDBUpdateInterval = 2 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+minCommandInterval = 1 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+commandTimeout = 300 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+commandTimeoutCheckInterval = 10
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Contenido-inicial-VM-1-1"
+
+\end_inset
+
+Contenido inicial del fichero 
+\family typewriter
+Endpoint_settings.conf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En primer lugar, la sección 
+\family typewriter
+Database configuration
+\family default
+ especifica la información que se empleará para configurar las dos bases
+ de datos que utilizará la aplicación web para interactuar con la infraestructur
+a: 
+\end_layout
+
+\begin_layout Itemize
+la contraseña del usuario 
+\emph on
+root
+\emph default
+, 
+\end_layout
+
+\begin_layout Itemize
+el nombre y la contraseña del usuario que empleará el demonio, y
+\end_layout
+
+\begin_layout Itemize
+el nombre y la contraseña del usuario que empleará la aplicación web.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la sección 
+\family typewriter
+Network configuration
+\family default
+ especifica la configuración básica de la conexión de control.
+ En ella, se indicará si se desea cifrar el tráfico de esta conexión y la
+ ruta de los certificados 
+\family typewriter
+server.crt
+\family default
+ y 
+\family typewriter
+server.key
+\family default
+ (sólo se utilizará cuando se cifra el tráfico).
+\end_layout
+
+\begin_layout Standard
+Por otro lado, la sección 
+\family typewriter
+Cluster server connection data
+\family default
+ especifica los parámetros de conexión al servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, la sección 
+\family typewriter
+Other settings
+\family default
+ especifica
+\end_layout
+
+\begin_layout Itemize
+el intervalo de actualización de las bases de datos (en segundos)
+\end_layout
+
+\begin_layout Itemize
+el intervalo de tiempo que debe separar dos peticiones consecutivas del
+ mismo usuario (en segundos)
+\end_layout
+
+\begin_layout Itemize
+el tiempo máximo que tardarán todos los comandos en ejecutarse (en segundos),
+ y
+\end_layout
+
+\begin_layout Itemize
+el intervalo de espera del hilo de monitorización de comandos.
+\end_layout
+
 \begin_layout Section
 Creación de imágenes 
 \end_layout
 
 \begin_layout Standard
-Para poder crear máquinas virtuales, es necesario disponer previamente de
- algunas imágenes de disco en formato qcow2.
+Para poder utilizar el sistema, es necesario disponer previamente de algunas
+ imágenes de disco en formato 
+\family typewriter
+qcow2
+\family default
+.
  En esta sección mostraremos cómo crearlas de forma sencilla utilizando
  
 \family typewriter
@@ -2176,16 +2791,20 @@ virt-manager
 CygnusCloud
 \emph default
 .
- Naturalmente, también es posible importar a 
+ 
+\end_layout
+
+\begin_layout Standard
+Naturalmente, también es posible importar a 
 \emph on
 CygnusCloud
 \emph default
  imágenes creadas manualmente.
- No obstante, por simplicidad, en este manual 
+ No obstante, por claridad, en este manual 
 \emph on
 no
 \emph default
- mostraremos cómo crear una imagen manualmente.
+ describiremos el proceso de creación manual de una imagen.
 \end_layout
 
 \begin_layout Subsection
@@ -2676,7 +3295,11 @@ reference "fig:Configuración-CPU-MV"
 \end_layout
 
 \begin_layout Standard
-A continuación, crearemos las imágenes de disco qcow2 que utilizará la máquina.
+A continuación, crearemos las imágenes de disco 
+\family typewriter
+qcow2
+\family default
+ que utilizará la máquina.
  Tenemos que crear dos: 
 \end_layout
 
@@ -2797,14 +3420,21 @@ A la hora de especificar el tamaño, hay que tener en cuenta que
 \begin_layout Itemize
 la imagen del SO debe tener un tamaño adecuado para lo que queremos instalar
  en ella.
- Para un sistema Linux, basta con 10 GB, pero un sistema Windows requiere
- un mínimo de 25 GB.
+ Para un sistema Linux, basta con 10 GB, pero un sistema 
+\emph on
+Windows
+\emph default
+ requiere un mínimo de 25 GB.
 \end_layout
 
 \begin_layout Itemize
 en Linux, la partición swap debe tener el mismo tamaño que la RAM.
- En Windows, se recomienda que el fichero de paginación sea dos veces más
- grande que la RAM.
+ En 
+\emph on
+Windows
+\emph default
+, se recomienda que el fichero de paginación sea dos veces más grande que
+ la RAM.
 \end_layout
 
 \begin_layout Standard
@@ -3033,8 +3663,11 @@ Importante
 \end_layout
 
 \begin_layout Plain Layout
-Para poder instalar un sistema operativo Windows, hay que suministrar al
- instalador los drivers VirtIO.
+Para poder instalar un sistema operativo 
+\emph on
+Windows
+\emph default
+, hay que suministrar al instalador los drivers VirtIO.
  Mostraremos cómo hacer esto en la siguiente sección.
 \end_layout
 
@@ -3048,7 +3681,9 @@ Instalación de los
 \emph on
 drivers
 \emph default
- en Windows
+ en 
+\emph on
+Windows
 \end_layout
 
 \begin_layout Standard
@@ -3115,7 +3750,11 @@ En ocasiones,
 virt-manager
 \family default
  selecciona la nueva unidad de CD-ROM (y no la que tiene el medio de instalación
- de Windows) para arrancar.
+ de 
+\emph on
+Windows
+\emph default
+) para arrancar.
  Si eso ocurre, basta con volver a abrir el diálogo de configuración de
  la máquina (hacemos clic derecho sobre la máquina en la ventana principal
  de 
@@ -3211,7 +3850,9 @@ name "fig:Corrección-problemas-arranque-Windows"
 
 \end_inset
 
-Corrección de los problemas de arranque en instalaciones Windows
+Corrección de los problemas de arranque en instalaciones 
+\emph on
+Windows
 \end_layout
 
 \end_inset
@@ -3273,7 +3914,11 @@ VBoxManage clonehd <fichero fuente>.vdi <fichero destino>.vmdk --format VMDK
 
 \end_deeper
 \begin_layout Enumerate
-Convertir las imágenes al formato qcow2.
+Convertir las imágenes al formato 
+\family typewriter
+qcow2
+\family default
+.
  Para ello, ejecutaríamos la orden
 \end_layout
 
@@ -3327,7 +3972,11 @@ status collapsed
 Importante
 \series default
 \color inherit
-: este procedimiento puede no funcionar en sistemas operativos Windows.
+: este procedimiento puede no funcionar en sistemas operativos 
+\emph on
+Windows
+\emph default
+.
 \end_layout
 
 \end_inset
@@ -3365,31 +4014,56 @@ En esta sección mostraremos cómo instalar y configurar samba para que esto
 \end_layout
 
 \begin_layout Itemize
-El PC y la máquina virtual tienen instalado un sistema operativo Windows.
+El PC y la máquina virtual tienen instalado un sistema operativo 
+\emph on
+Windows
+\emph default
+.
  Llamaremos a este caso 
 \series bold
-compartición Windows a Windows
+compartición 
+\emph on
+Windows
+\emph default
+ a 
+\emph on
+Windows
 \series default
+\emph default
 .
 \end_layout
 
 \begin_layout Itemize
-El PC tiene instalado un sistema operativo Windows, y la máquina virtual
- tiene instalado un sistema operativo Linux.
+El PC tiene instalado un sistema operativo 
+\emph on
+Windows
+\emph default
+, y la máquina virtual tiene instalado un sistema operativo Linux.
  Llamaremos a este caso
 \series bold
- compartición Windows a Linux
+ compartición 
+\emph on
+Windows
+\emph default
+ a Linux
 \series default
 .
 \end_layout
 
 \begin_layout Itemize
 El PC tiene instalado un sistema operativo Linux, y la máquina virtual tiene
- instalado un sistema operativo Windows.
+ instalado un sistema operativo 
+\emph on
+Windows
+\emph default
+.
  Llamaremos a este caso 
 \series bold
-compartición Linux a Windows
+compartición Linux a 
+\emph on
+Windows
 \series default
+\emph default
 .
 \end_layout
 
@@ -3406,7 +4080,11 @@ compartición Linux a Linux
 \begin_layout Standard
 Antes de empezar, mostraremos qué hace falta instalar en máquinas Linux
  (con distros derivadas de Debian o Ubuntu).
- En Windows, no es necesario instalar nada.
+ En 
+\emph on
+Windows
+\emph default
+, no es necesario instalar nada.
 \end_layout
 
 \begin_layout Subsubsection
@@ -3532,7 +4210,15 @@ Importante
 \end_layout
 
 \begin_layout Subsubsection
-Compartición de Windows a Windows 
+Compartición de 
+\emph on
+Windows
+\emph default
+ a 
+\emph on
+Windows
+\emph default
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Compartición-Windows-a-Windows"
@@ -3547,7 +4233,11 @@ Configuración del PC
 \end_layout
 
 \begin_layout Standard
-Para compartir una carpeta en Windows, basta con seguir estos pasos:
+Para compartir una carpeta en 
+\emph on
+Windows
+\emph default
+, basta con seguir estos pasos:
 \end_layout
 
 \begin_layout Enumerate
@@ -3906,7 +4596,11 @@ sudo umount --force <punto de montaje>
 
 \end_deeper
 \begin_layout Subsubsection
-Compartición de Windows a Linux
+Compartición de 
+\emph on
+Windows
+\emph default
+ a Linux
 \end_layout
 
 \begin_layout Standard
@@ -3930,7 +4624,9 @@ reference "sub:Compartición-Linux-a-Linux"
 \end_layout
 
 \begin_layout Subsubsection
-Compartición de Linux a Windows
+Compartición de Linux a 
+\emph on
+Windows
 \end_layout
 
 \begin_layout Standard
@@ -4205,7 +4901,9 @@ Instalación y uso del
 \shape italic
 framework
 \shape default
- web2py
+ 
+\family typewriter
+web2py
 \end_layout
 
 \begin_layout Standard
@@ -4265,8 +4963,11 @@ http://www.web2py.com/init/default/download
 \end_inset
 
  y descargamos la versión deseada.
- Es posible descargar versiones para Linux, Windows o Mac OS, aunque para
- poder ejecutar 
+ Es posible descargar versiones para Linux, 
+\emph on
+Windows
+\emph default
+ o Mac OS, aunque para poder ejecutar 
 \emph on
 CygnusCloud 
 \emph default
@@ -5047,7 +5748,11 @@ reference "MU-Pagina_creacion_MV_Profesor"
 
 \end_inset
 
- muestra un ejemplo de creación de una máquina virtual Windows.
+ muestra un ejemplo de creación de una máquina virtual 
+\emph on
+Windows
+\emph default
+.
 \end_layout
 
 \begin_layout Standard
