@@ -3866,7 +3866,7 @@ Windows
 \end_layout
 
 \begin_layout Subsection
-Importar máquinas virtuales existentes a 
+Importar imágenes existentes a 
 \family typewriter
 virt-manager
 \end_layout
@@ -3972,7 +3972,8 @@ status collapsed
 Importante
 \series default
 \color inherit
-: este procedimiento puede no funcionar en sistemas operativos 
+: este procedimiento puede no funcionar con imágenes de disco que utilicen
+ el sistema operativo 
 \emph on
 Windows
 \emph default
@@ -3989,7 +3990,7 @@ Uso de
 \emph on
 samba
 \emph default
- para configurar las máquinas virtuales
+ para configurar las imágenes
 \end_layout
 
 \begin_layout Standard
@@ -4650,15 +4651,15 @@ reference "sub:Compartición-Windows-a-Windows"
 \end_layout
 
 \begin_layout Subsection
-Importar máquinas virtuales a 
+Importar imágenes a 
 \emph on
 CygnusCloud
 \end_layout
 
 \begin_layout Standard
-Una vez preparadas las máquinas virtuales, tenemos que borrar las unidades
- de CD-ROM que hemos utilizado para realizar la instalación del sistema
- operativo, y también la tarjeta de sonido.
+Una vez preparadas las imágenes de disco de las máquinas virtuales, tenemos
+ que borrar las unidades de CD-ROM que hemos utilizado para realizar la
+ instalación del sistema operativo, y también la tarjeta de sonido.
  Los pasos a seguir son los siguientes:
 \end_layout
 
@@ -4702,167 +4703,144 @@ Una vez hecho esto,
 \end_layout
 
 \begin_layout Enumerate
+creamos un directorio.
+\end_layout
+
+\begin_layout Enumerate
 copiamos el fichero de definición de la máquina, ubicado en 
 \family typewriter
 /etc/libvirt/qemu
 \family default
-, al directorio 
-\family typewriter
-configFilePath
-\family default
- que especificamos en el fichero de configuración.
+, a dicho directorio.
 \end_layout
 
 \begin_layout Enumerate
-copiamos las imágenes de disco de la máquina al directorio 
+copiamos las dos imágenes de disco 
 \family typewriter
-sourceImagePath
+qcow2
 \family default
- que especificamos en el fichero de configuración.
-\end_layout
-
-\begin_layout Enumerate
-registramos la máquina virtual en el servidor de máquinas virtuales.
- Para ello, editamos el fichero 
-\family typewriter
-bin/database/VMServerDB.sql
-\family default
-, añadiendo al final las líneas
+ a dicho directorio.
+ Acto seguido, las renombramos de la siguiente manera:
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
+\begin_inset Formula 
+\[
+\textrm{Imagen del sistema operativo}\longrightarrow\texttt{OS.qcow2}
+\]
 
-\family typewriter
-INSERT IGNORE INTO VirtualMachine VALUES (<id de la máquina>, '<Nombre de
- la máquina>', '<ruta imagen datos>', '<ruta imagen SO>', '<ruta fichero
- definición>');
-\end_layout
+\end_inset
 
-\begin_layout Standard
-Las tres rutas son relativas.
- Por ejemplo, si 
-\end_layout
 
-\begin_layout Itemize
+\begin_inset Formula 
+\[
+\textrm{Imagen restante}\longrightarrow\texttt{Data.qcow2}
+\]
 
-\family typewriter
-sourceImagePath
-\family default
- es 
-\family typewriter
-/home/luis
-\family default
- 
-\end_layout
+\end_inset
 
-\begin_layout Itemize
-la imagen del sistema operativo se llama 
-\family typewriter
-OS.qcow2
-\family default
-, y está en 
-\family typewriter
-/home/luis/Debian
-\end_layout
 
-\begin_layout Itemize
-la imagen con los datos del usuario y el fichero de paginación se llama
- 
-\family typewriter
-Data.qcow2 
-\family default
-y está en 
-\family typewriter
-/home/luis/Debian
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-configFilePath 
-\family default
-es 
-\family typewriter
-/home/luis
-\end_layout
-
-\begin_layout Itemize
-el fichero de definición se llama 
-\family typewriter
-debian.xml
-\family default
- y está en 
-\family typewriter
-/home/luis/Debian
-\end_layout
-
-\begin_layout Itemize
-hay ya dos máquinas virtuales, con IDs 
-\family typewriter
-1
-\family default
- y 
-\family typewriter
-2
-\end_layout
-
-\begin_layout Itemize
-la máquina se llamará 
-\family typewriter
-Debian
-\end_layout
-
-\begin_layout Standard
-la línea a añadir sería
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-INSERT IGNORE INTO VirtualMachine VALUES (3, 'Debian', 'Debian/Data.qcow2',
- 'OS.qcow2', 'Debian/Debian.xml');
 \end_layout
 
 \end_deeper
 \begin_layout Enumerate
-registramos la máquina virtual en el servidor de 
+creamos un fichero 
+\family typewriter
+zip
+\family default
+ que contenga el fichero de definición y las dos imágenes de disco 
+\family typewriter
+qcow2
+\family default
+ 
 \emph on
-cluster
+renombradas
 \emph default
 .
- Asumiendo que la colocaremos en el servidor 
-\family typewriter
-1
-\family default
-, editamos el fichero 
-\family typewriter
+ Estos archivos 
+\emph on
+deben estar ubicados en la raíz del fichero comprimido
+\emph default
+.
+\end_layout
 
-\begin_inset Newline newline
+\begin_deeper
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\series default
+\color inherit
+: si 
+\end_layout
+
+\begin_layout Itemize
+no se respetan los nombres de los ficheros 
+\family typewriter
+qcow2
+\family default
+ o 
+\end_layout
+
+\begin_layout Itemize
+los tres archivos no están en la raíz del fichero comprimido
+\end_layout
+
+\begin_layout Standard
+la infraestructura 
+\series bold
+no
+\series default
+ podrá utilizar la imagen.
+\end_layout
+
 \end_inset
 
-bin/database/VMServerDB.sql
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+subimos el fichero 
+\family typewriter
+.zip
 \family default
-, añadiendo la siguientes línea:
+ al repositorio de imágenes mediante la utilidad de transferencia de imágenes.
+ Su última versión está disponible en
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://cygnusclouducm.wordpress.com/descargas/"
+target "http://cygnusclouducm.wordpress.com/descargas/"
 
-\family typewriter
-INSERT IGNORE INTO ImageOnServer VALUES (1, 3);
-\end_layout
+\end_inset
 
-\end_deeper
-\begin_layout Enumerate
-reiniciamos la infraestructura.
- A partir de este momento, la nueva máquina podrá utilizarse.
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset Box Boxed
+\begin_inset Box Frameless
 position "t"
 hor_pos "c"
 has_inner_box 1
@@ -4882,14 +4860,191 @@ status collapsed
 Importante
 \series default
 \color inherit
-: este procedimiento es sólo provisional, y se automatizará completamente
- en la versión 2.0.
- 
+: hay que anotar el identificador devuelto por la utilidad de conexión.
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+abrimos el fichero 
+\family typewriter
+cc/clusterServer/database/ClusterServerDB.sql
+\family default
+, siendo 
+\family typewriter
+cc
+\family default
+ el directorio de instalación del servidor de 
+\emph on
+cluster
+\emph default
+.
+ Acto seguido, añadimos la línea
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+INSERT IGNORE INTO VanillaImageFamilyOf VALUES (IDi, IDf);
+\end_layout
+
+\begin_layout Standard
+al final del mismo.
+ 
+\family typewriter
+IDi
+\family default
+ es el identificador que ha devuelto la utilidad de conexión, e 
+\family typewriter
+IDf
+\family default
+ es el identificador de la familia de máquinas virtuales a la que está asociada
+ la imagen.
+ El fichero 
+\family typewriter
+.sql
+\family default
+ contiene la definición de todas las familias de máquinas virtuales.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+abrimos el fichero 
+\family typewriter
+ws/ClusterEndpoint/databases/ClusterEndpointDB.sql
+\family default
+, donde 
+\family typewriter
+ws
+\family default
+ es el directorio de instalación del servidor 
+\emph on
+web
+\emph default
+.
+ Acto seguido, añadimos al final de ese fichero la línea
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "80col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+INSERT IGNORE INTO Image VALUES 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+(IDi, IDf, 'Nombre imagen', 'Descripción imagen',
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+ID_osf, ID_osv, 1, 0);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+siendo 
+\family typewriter
+ID_osf
+\family default
+ el identificador de la familia de sistemas operativos a la que pertenece
+ la imagen, e 
+\family typewriter
+ID_osv
+\family default
+ el identificador de la variante del sistema operativo que utiliza la imagen.
+ Estos valores se extraen de las tablas 
+\family typewriter
+OSFamily
+\family default
+ y 
+\family typewriter
+OSVariant
+\family default
+, ya rellenadas.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+reiniciamos la infraestructura.
+ A partir de este momento, podremos utilizar la imagen como base para crear
+ otras nuevas.
 \end_layout
 
 \begin_layout Section
@@ -5081,7 +5236,7 @@ web2py
 \begin_layout Standard
 
 \family typewriter
-Web2py
+web2py
 \family default
  ofrece una interfaz para el desarrollo de aplicaciones web accesible desde
  cualquier navegador.
@@ -6668,9 +6823,11 @@ Despliegue de la aplicación web
 Aunque 
 \family typewriter
 \shape italic
+\emph on
 web2py
 \family default
 \shape default
+\emph default
  ofrece su propio servidor web para mantener las aplicaciones que se hayan
  desarrollado, este servidor está más orientado a que los usuarios puedan
  realizar en él pruebas de depuración de las aplicaciones.
@@ -6686,7 +6843,7 @@ Si el usuario quiere desplegar su aplicación para que pueda ser usado por
 \begin_layout Standard
 
 \family typewriter
-Web2py
+web2py
 \family default
  ofrece la posibilidad de migrar sus aplicaciones web para ser utilizadas
  bajo un servidor 
@@ -6744,7 +6901,6 @@ Si lo prefiere, el usuario puede realizar la instalación de forma manual
 \family typewriter
 web2py
 \family default
-.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -6752,7 +6908,7 @@ key "Web2PyBook"
 
 \end_inset
 
-
+.
 \end_layout
 
 \end_body
