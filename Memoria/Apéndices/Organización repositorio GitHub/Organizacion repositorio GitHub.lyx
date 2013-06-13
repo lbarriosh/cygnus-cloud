@@ -181,7 +181,9 @@ https://github.com/lbarriosh/cygnus-cloud.git
 \end_layout
 
 \begin_layout Section
-La rama master
+La rama 
+\family typewriter
+oldstable
 \end_layout
 
 \begin_layout Standard
@@ -208,29 +210,49 @@ La distribución de directorios principales en esta rama es:
 \end_layout
 
 \begin_layout Itemize
-Arquitectura.
+
+\family typewriter
+Arquitectura
+\family default
+.
  Este directorio contiene los diseños previos de arquitectura que ya han
  sido introducidos en la versión estable.
 \end_layout
 
 \begin_layout Itemize
-Certificados.
+
+\family typewriter
+Certificados
+\family default
+.
  Incluye los ficheros de certificados utilizados en la versión estable.
 \end_layout
 
 \begin_layout Itemize
-Documentación interna.
+
+\family typewriter
+Documentación interna
+\family default
+.
  En este directorio se incluye un conjunto de documentos auxiliares, desarrollad
 os por 
 \shape italic
 CygnusCloud
 \shape default
  con el fin de facilitar la labor de aprendizaje de las diferentes herramientas
- necesarias para el desarrollo de la versión residente en master.
+ necesarias para el desarrollo de la versión residente en 
+\family typewriter
+oldstable
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
-Ficheros de configuración.
+
+\family typewriter
+Ficheros de configuración
+\family default
+.
  Incluye los ficheros de configuración utilizados para configurar los servidores
  del sistema.
  Estos ficheros deben ser compatibles con la versión que se encuentra en
@@ -238,7 +260,11 @@ Ficheros de configuración.
 \end_layout
 
 \begin_layout Itemize
-Memoria.
+
+\family typewriter
+Memoria
+\family default
+.
  En este directorio se incluye la memoria con los apartados que ya han sido
  revisados y pueden considerarse casi definitivos.
  Los miembros de 
@@ -251,7 +277,11 @@ CygnusCloud
 \end_layout
 
 \begin_layout Itemize
-Src.
+
+\family typewriter
+Src
+\family default
+.
  En este directorio se incluye todo el código de la última versión estable
  de 
 \shape italic
@@ -266,21 +296,29 @@ CygnusCloud
 \begin_deeper
 \begin_layout Itemize
 
+\family typewriter
 \shape italic
 CygnusCloud
+\family default
 \shape default
 .
  Incluye el código de toda la infraestructura, a excepción de la web.
 \end_layout
 
 \begin_layout Itemize
-web.
+
+\family typewriter
+web
+\family default
+.
  Incluye el código de la aplicación web.
 \end_layout
 
 \end_deeper
 \begin_layout Section
-La rama develop
+La rama 
+\family typewriter
+master
 \end_layout
 
 \begin_layout Standard
@@ -294,8 +332,8 @@ CygnusCloud
  y no provoca ningún tipo de problema al resto de usuarios que se encuentren
  trabajando sobre esta versión.
  Sin embargo, a diferencia que en la rama 
-\family sans
-master
+\family typewriter
+oldstable
 \family default
 , el código que se sube en esta rama no tiene por qué estar terminado ni
  completamente depurado.
@@ -306,7 +344,11 @@ Los principales directorios que podemos encontrar en esta rama son:
 \end_layout
 
 \begin_layout Itemize
-Arquitectura.
+
+\family typewriter
+Arquitectura
+\family default
+.
  Incluye tanto los diseños antiguos, ya implantados en la última versión
  estable, como los nuevos diseños que pueden 
 \shape italic
@@ -316,18 +358,26 @@ estar
 \end_layout
 
 \begin_layout Itemize
-Certificados.
+
+\family typewriter
+Certificados
+\family default
+.
  Incluye todos los certificados necesarios.
  En nuestro caso por lo general contendrá los mismos ficheros que la rama
  
-\family sans
-master
+\family typewriter
+oldstable
 \family default
 .
 \end_layout
 
 \begin_layout Itemize
-Documentación interna.
+
+\family typewriter
+Documentación interna
+\family default
+.
  Incluye tanto los documentos desarrollados para el aprendizaje de las herramien
 tas utilizadas en la última versión estable, como todos aquellos documentos
  nuevos que hayan podido desarrollarse para facilitar el aprendizaje de
@@ -335,7 +385,11 @@ tas utilizadas en la última versión estable, como todos aquellos documentos
 \end_layout
 
 \begin_layout Itemize
-Ficheros de configuración.
+
+\family typewriter
+Ficheros de configuración
+\family default
+.
  Incluyen los ficheros de configuración para los servidores de la infraestructur
 a.
  Deben se compatibles con los servidores en desarrollo para esta última
@@ -343,7 +397,11 @@ a.
 \end_layout
 
 \begin_layout Itemize
-Memoria.
+
+\family typewriter
+Memoria
+\family default
+.
  Incluye tanto los apartados de la memoria que se han mantenido desde la
  última versión estable, como aquellos que han sido modificados para ajustarse
  a la nueva versión en desarrollo y los que han sido creados de nuevo.
@@ -353,7 +411,11 @@ Memoria.
 \end_layout
 
 \begin_layout Itemize
-Src.
+
+\family typewriter
+Src
+\family default
+.
  Incluye el código de la versión en desarrollo de 
 \shape italic
 CygnusCloud
@@ -364,8 +426,8 @@ CygnusCloud
  ni completamente depurado.
  Los subdirectorios relevantes en este directorio son los mismos que los
  mencionados en la rama 
-\family sans
-master
+\family typewriter
+oldstable
 \family default
 .
 \end_layout
