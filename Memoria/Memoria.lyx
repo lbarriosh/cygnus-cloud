@@ -593,7 +593,7 @@ filename "Apéndices/Guía NAT/Configuración NAT.lyx"
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 btprint "btPrintAll"
-bibfiles "intro,cloudcomputing,virtualizacion,arquitectura,resultados,manualusuario"
+bibfiles "intro,cloudcomputing,virtualizacion,arquitectura,resultados,manualusuario,apendices"
 options "alpha"
 
 \end_inset

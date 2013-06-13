@@ -29,7 +29,7 @@
 \spacing single
 \use_hyperref false
 \papersize default
-\use_geometry false
+\use_geometry true
 \use_amsmath 1
 \use_esint 1
 \use_mhchem 1
@@ -44,6 +44,10 @@
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation skip
@@ -70,7 +74,7 @@ Requisitos mínimos
 \end_layout
 
 \begin_layout Standard
-Cada máquina de la infraestructura de 
+Cada servidor de la infraestructura de 
 \emph on
 CygnusCloud
 \emph default
@@ -84,6 +88,8 @@ servidor de máquinas virtuales
 \series default
 .
  Estos equipos alojan las máquinas virtuales activas de los usuarios.
+ Asimismo, estas máquinas también se utilizan para crear y editar las configurac
+iones de las máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
@@ -97,6 +103,17 @@ cluster
 .
  Estas máquinas realizan el balanceado de carga entre varios servidores
  de máquinas virtuales.
+ También se ocupan de la gestión de estas máquinas.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+repositorio de imágenes
+\series default
+.
+ Estas máquinas almacenan las configuraciones de todas las máquinas virtuales
+ que pueden utilizarse en la infraestructura.
 \end_layout
 
 \begin_layout Itemize
@@ -134,16 +151,15 @@ hardware
 \end_layout
 
 \begin_layout Standard
-El 
+Las máquinas que se utilicen como servidores de 
 \emph on
-hardware
+cluster
 \emph default
- de los servidores de cluster y de los servidores web debe cumplir los siguiente
-s requisitos mínimos:
+ o servidores web deben cumplir los siguientes requisitos mínimos:
 \end_layout
 
 \begin_layout Itemize
-CPU Intel Pentium 4 a 2,4 GHz
+CPU Intel® Pentium 4® a 2,4 GHz o superior
 \end_layout
 
 \begin_layout Itemize
@@ -173,15 +189,47 @@ fast ethernet
 \end_layout
 
 \begin_layout Standard
-Por otra parte, los requisitos mínimos que debe cumplir el 
-\emph on
-hardware
-\emph default
- de los servidores de máquinas virtuales son los siguientes:
+Por otra parte, las máquinas que se utilicen como repositorios de imágenes
+ tienen unos requisitos mínimos muy similares:
 \end_layout
 
 \begin_layout Itemize
-CPU Intel Core 2 Duo E4400
+CPU Intel® Pentium 4® a 2,4 GHz o superior
+\end_layout
+
+\begin_layout Itemize
+un mínimo de 512 
+\emph on
+megabytes
+\emph default
+ de memoria RAM.
+ Se recomienda 1 GB para un funcionamiento óptimo.
+\end_layout
+
+\begin_layout Itemize
+un mínimo de 20 
+\emph on
+gigabytes
+\emph default
+ de espacio en disco.
+\end_layout
+
+\begin_layout Itemize
+tarjeta de red 
+\emph on
+fast ethernet
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Por otro lado, las máquinas que se utilicen como servidores de máquinas
+ virtuales deben cumplir los siguientes requisitos mínimos:
+\end_layout
+
+\begin_layout Itemize
+CPU Intel® Core 2 Duo® E4400 o superior
 \end_layout
 
 \begin_layout Itemize
@@ -190,7 +238,7 @@ un mínimo de 2
 gigabytes
 \emph default
  de memoria RAM.
- Se recomienda 4 GB para un funcionamiento óptimo.
+ Se recomiendan 4 GB para un funcionamiento óptimo.
 \end_layout
 
 \begin_layout Itemize
@@ -198,7 +246,7 @@ un mínimo de 30
 \emph on
 gigabytes
 \emph default
- de espacio en disco si sólo se desea alojar máquinas virtuales GNU/Linux.
+ de espacio en disco si sólo se desea alojar máquinas virtuales Linux.
  Si también se pretende alojar máquinas virtuales Windows, se requiere un
  mínimo de 60 
 \emph on
@@ -218,7 +266,7 @@ fast ethernet
 
 \begin_layout Standard
 Finalmente, todas las máquinas de la infraestructura deben estar conectadas
- a una misma red de área local, que deberá soportar, como mínimo, una tasa
+ a una misma red, que deberá soportar, como mínimo, una tasa de transferencia
  de 100 
 \emph on
 megabits
@@ -233,22 +281,41 @@ software
 \end_layout
 
 \begin_layout Standard
-Todas las máquinas de la infraestructura deben tener instalado un sistema
- operativo GNU/Linux.
- En principio, el funcionamiento debería ser correcto en cualquier máquina
- con una distribución de la misma época o posterior a Ubuntu 12.04 LTS, aunque
- por falta de tiempo sólo podemos garantizar que el funcionamiento es correcto
- en Ubuntu 12.04 LTS.
+Todas las máquinas de la infraestructura deben tener instalado el sistema
+ operativo 
+\emph on
+Linux
+\emph default
+.
+ 
 \end_layout
 
 \begin_layout Standard
-En todas las máquinas de la infraestructura, debe estar instalados, además
+En principio, los demonios de 
+\emph on
+CygnusCloud 
+\emph default
+deberían funcionar de forma correcta en cualquier distribución 
+\emph on
+Linux
+\emph default
+ publicada tras el mes de abril del año 2012.
+ No obstante, por falta de tiempo, sólo hemos podido hacer pruebas con las
+ distribuciones Ubuntu 12.04 LTS, Ubuntu 13.04, Debian 7, openSUSE 12.2 y openSUSE
+ 12.3.
+\end_layout
+
+\begin_layout Standard
+En todas las máquinas de la infraestructura deberán estar instalados, además
  del sistema operativo, 
 \end_layout
 
 \begin_layout Itemize
-una versión de la rama 2.7 del intérprete de Python, igual o superior a la
- 2.7.3.
+una versión de la rama 2.7 del intérprete de 
+\emph on
+Python
+\emph default
+, igual o superior a la 2.7.3.
 \end_layout
 
 \begin_layout Itemize
@@ -260,11 +327,66 @@ twisted
 \end_layout
 
 \begin_layout Itemize
-el gestor de bases de datos MySQL, versión 5.5.29 o superior.
+el gestor de bases de datos MariaDB, versión 5.5.31 o superior.
 \end_layout
 
 \begin_layout Itemize
-el conector de MySQL MySQLdb, versión 1.2.3 o superior.
+las utilidades 
+\family typewriter
+mv
+\family default
+, 
+\family typewriter
+cp
+\family default
+ y 
+\family typewriter
+rm
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+el conector 
+\emph on
+Python 
+\emph default
+de MySQL.
+ Este puede descargarse desde
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+\begin_inset CommandInset href
+LatexCommand href
+name "http://dev.mysql.com/downloads/connector/python/"
+target "http://dev.mysql.com/downloads/connector/python/"
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+el conector MySQL 
+\family typewriter
+mysqldb
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+la orden 
+\family typewriter
+openssl
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -286,30 +408,31 @@ status collapsed
 \series bold
 \color red
 Importante
-\end_layout
-
-\begin_layout Itemize
-a causa de las limitaciones impuestas por libvirt y por la librería twisted,
+\series default
+\color inherit
+:
+\series bold
+\color red
  
-\emph on
-no
-\emph default
- es posible utilizar un intérprete de Python de la rama 3.x.
-\end_layout
-
-\begin_layout Itemize
-la última versión de la librería 
+\series default
+\color inherit
+a causa de las limitaciones impuestas por 
+\family typewriter
+libvirt
+\family default
+ y por la librería 
 \emph on
 twisted
 \emph default
-, 13.0.1, provoca errores cuando se hacen pruebas en local utilizando el adaptador
- 
+, 
 \emph on
-loopback
+no
 \emph default
-.
- Por ello, le recomendamos el uso del paquete que forma parte de su distribución
- GNU/Linux.
+ es posible utilizar un intérprete de 
+\emph on
+Python
+\emph default
+ de la rama 3.x.
 \end_layout
 
 \end_inset
@@ -318,7 +441,43 @@ loopback
 \end_layout
 
 \begin_layout Standard
-Por otra parte, en los servidores de máquinas virtuales debe estar instalado
+Por otra parte, en los repositorios de imágenes también deberán estar instalados
+\end_layout
+
+\begin_layout Itemize
+el servidor FTP 
+\family typewriter
+pytfpdlib
+\family default
+.
+ Este puede descargarse desde
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+\begin_inset CommandInset href
+LatexCommand href
+name "http://code.google.com/p/pyftpdlib/"
+target "http://code.google.com/p/pyftpdlib/"
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+la utilidad 
+\family typewriter
+ethtool.
+\end_layout
+
+\begin_layout Standard
+Finalmente, en los servidores de máquinas virtuales también debe estar instalado
  el siguiente 
 \emph on
 software
@@ -347,11 +506,76 @@ el sistema de virtualización QEMU, versión 2.0 o superior
 \end_layout
 
 \begin_layout Itemize
-la librería libvirt, versión 0.9.8 o superior
+la librería 
+\family typewriter
+libvirt
+\family default
+, versión 0.9.8 o superior
+\end_layout
+
+\begin_layout Itemize
+las utilidades 
+\family typewriter
+zip
+\family default
+ y 
+\family typewriter
+unzip
+\family default
+.
 \end_layout
 
 \begin_layout Section
 Instrucciones de instalación y configuración en Ubuntu 12.04
+\end_layout
+
+\begin_layout Standard
+La última versión de todos los subsistemas de 
+\family typewriter
+CygnusCloud
+\family default
+ puede descargarse desde
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://cygnusclouducm.wordpress.com/descargas/"
+target "http://cygnusclouducm.wordpress.com/descargas/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Al exponer el proceso de instalación de los distintos subsistemas de 
+\emph on
+CygnusCloud
+\emph default
+, asumiremos que el fichero .tar.gz que contiene los módulos de dicho subsistema
+ ya se ha descargado en la máquina que se pretende utilizar.
+\end_layout
+
+\begin_layout Standard
+\noindent
+Por ejemplo, en el proceso de instalación del repositorio de imágenes, omitiremo
+s el paso inicial, en el que se descarga el fichero comprimido 
+\family typewriter
+ImageRepository.tar.gz
+\family default
+ desde la página web 
+\begin_inset CommandInset href
+LatexCommand href
+name "http://cygnusclouducm.wordpress.com/descargas/"
+target "http://cygnusclouducm.wordpress.com/descargas/"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -360,12 +584,336 @@ Pasos comunes
 
 \begin_layout Standard
 Con independencia del papel que desempeñe la máquina en la infraestructura,
- siempre es necesario instalar la librería 
+ siempre es necesario 
+\end_layout
+
+\begin_layout Enumerate
+instalar el gestor de bases de datos MariaDB.
+ Para ello, ejecutamos las órdenes
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "80col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo apt-get install python-software-properties 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo apt-key adv --recv-keys 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+--keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo add-apt-repository 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+'deb http://mariadb.cu.be//repo/5.5/ubuntu precise main'
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo apt-get update sudo apt-get install mariadb-server
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+instalar el conector oficial de MySQL.
+ Para ello,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+descargamos el fichero 
+\family typewriter
+.tar
+\family default
+ desde 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://dev.mysql.com/downloads/connector/python/"
+target "http://dev.mysql.com/downloads/connector/python/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para que aparezca el enlace de descarga, debemos seleccionar 
+\family sans
+Source Code
+\family default
+ en el 
+\emph on
+combobox
+\emph default
+ que aparece en la página.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+extraemos el fichero 
+\family typewriter
+.tar
+\family default
+ mediante la orden
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+tar xvzf mysql-connector-python-1.0.10.tar.gz -C <ruta del directorio de extracción>
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+navegamos hasta el directorio en el que hemos extraído el fichero 
+\family typewriter
+.tar
+\family default
+.
+ Acto seguido, ejecutamos los comandos
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "60col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+
+\family typewriter
+python setup.py build
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo python setup.py install
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+instalar la librería de red 
 \emph on
 twisted
 \emph default
-, el gestor de bases de datos MySQL y el conector MySQLdb.
- Para ello, debemos ejecutar la orden
+.
+ y el conector MySQL 
+\family typewriter
+MysqlDB
+\family default
+.
+ Para ello, ejecutamos la orden
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo apt-get install python-twisted python-mysqldb
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Repositorio de imágenes
+\end_layout
+
+\begin_layout Subsubsection
+Instalación y configuración del software adicional requerido
+\end_layout
+
+\begin_layout Standard
+Una vez instalados los componentes comunes, en el repositorio de imágenes
+ también es necesario instalar el servidor FTP 
+\family typewriter
+pyftpdlib
+\family default
+ y la orden 
+\family typewriter
+ethtool
+\family default
+.
+ Para ello, seguimos los siguientes pasos:
+\end_layout
+
+\begin_layout Enumerate
+descargamos el fichero 
+\family typewriter
+.tar
+\family default
+ desde 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://pyftpdlib.googlecode.com/files/pyftpdlib-1.0.1.tar.gz"
+target "http://pyftpdlib.googlecode.com/files/pyftpdlib-1.0.1.tar.gz"
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+extraemos dicho fichero.
+ Para ello, ejecutamos la orden 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+tar xvzf pyftpdlib-1.0.1.tar.gz -C <ruta del directorio de extracción>
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+navegamos hasta el directorio en el que hemos extraído el contenido del
+ fichero 
+\family typewriter
+.tar
+\family default
+.
+ Acto seguido, ejecutamos los comandos
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "60col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+
+\family typewriter
+python setup.py build
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+sudo python setup.py install
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+ejecutamos el comando 
 \end_layout
 
 \begin_layout Standard
@@ -373,7 +921,451 @@ twisted
 \align center
 
 \family typewriter
-sudo apt-get install python-twisted mysql-server python-mysqldb
+sudo apt-get install ethtool
+\end_layout
+
+\begin_layout Subsubsection
+Instalación del módulo de 
+\emph on
+CygnusCloud 
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Instalación-del-módulo"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Los pasos a seguir son los siguientes:
+\end_layout
+
+\begin_layout Enumerate
+descomprimimos el fichero 
+\family typewriter
+ImageRepository.tar.gz
+\family default
+ en el directorio de instalación.
+ Para ello, ejecutamos la orden
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+tar xvzf ImageRepository.tar.gz -C <ruta del directorio de instalación>
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+tomamos posesión de todos los ficheros extraídos.
+ Para ello, ejecutamos la orden
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sudo chown -R <nuestro usuario>:<nuestro usuario> <ruta del directorio de
+ instalación>
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+ejecutamos el 
+\emph on
+script
+\emph default
+ 
+\family typewriter
+build.py
+\family default
+, ubicado en la raíz del directorio de instalación.
+ Para ello, utilizamos el comando
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+python build.py
+\end_layout
+
+\begin_layout Standard
+o el comando
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
+\family typewriter
+sh build.py
+\end_layout
+
+\begin_layout Standard
+El 
+\emph on
+script
+\emph default
+ comprobará que se satisfacen todas las dependencias e informará de los
+ errores que detecte.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+si se satisfacen las dependencias, el 
+\emph on
+script 
+\emph default
+generará el fichero 
+\family typewriter
+imageRepository.sh
+\family default
+.
+ Este fichero es el 
+\emph on
+script
+\emph default
+ de arranque del demonio del repositorio de imágenes.
+\end_layout
+
+\begin_layout Subsubsection
+Configuración del módulo de 
+\emph on
+CygnusCloud 
+\end_layout
+
+\begin_layout Standard
+Si intentamos arrancar el demonio del repositorio de imágenes sin haber
+ inicializado previamente su fichero de configuración, se generará un mensaje
+ de error.
+ El fichero de configuración de este demonio, 
+\family typewriter
+ImageRepository_settings.conf
+\family default
+, se encuentra en la raíz del directorio de instalación.
+ 
+\end_layout
+
+\begin_layout Standard
+El formato de todos los ficheros de configuración es el siguiente:
+\end_layout
+
+\begin_layout Itemize
+las líneas que empiezan por almohadilla (
+\family typewriter
+#
+\family default
+) o por punto y coma (
+\family typewriter
+;
+\family default
+) son comentarios.
+ Los comentarios de línea también están soportados.
+\end_layout
+
+\begin_layout Itemize
+las cadenas de caracteres rodeadas por corchetes (
+\family typewriter
+[]
+\family default
+) son encabezados de sección.
+ 
+\series bold
+No
+\series default
+ deben modificarse jamás.
+\end_layout
+
+\begin_layout Itemize
+el resto de líneas del fichero de configuración son de la forma 
+\begin_inset Formula $\texttt{parámetro}\texttt{ = }\texttt{valor}$
+\end_inset
+
+.
+ Si no aparece ningún valor a la derecha del símbolo 
+\begin_inset Formula $\texttt{=}$
+\end_inset
+
+, el valor asociado al parámetro será la cadena vacía.
+\end_layout
+
+\begin_layout Standard
+El contenido inicial del fichero de configuración del repositorio de imágenes
+ aparece en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Contenido-inicial-IR"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+
+\family typewriter
+# Comment or delete the following line after initializing this file 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Uninitialized file]
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Database configuration] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+mysqlRootsPassword = 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+dbUser = cygnuscloud 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+dbUserPassword = cygnuscloud
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[Network configuration] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+useSSL = False 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+certificatePath = /home/luis/Infraestructura/Certificates 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+commandsPort = 3000
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+[FTP Server configuration] 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+FTPListenningInterface = eth0 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+FTPPort = 2121 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+maxConnections = 10 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+maxConnectionsPerIP = 1 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+uploadBandwidthRatio = 0.9 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+downloadBandwidthRatio = 0.9 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+FTPRootDirectory = /home/luis/Infraestructura/ImageRepository 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+FTPPasswordLength = 20 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+FTPUserName = cygnuscloud
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Contenido-inicial-IR"
+
+\end_inset
+
+Contenido inicial del fichero 
+\family typewriter
+ImageRepository_settings.conf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En primer lugar, la sección 
+\family typewriter
+Database configuration
+\family default
+ especifica la información que se utilizará para configurar la base de datos
+ del repositorio de imágenes: la contraseña del usuario 
+\emph on
+root
+\emph default
+ y el nombre y la contraseña del usuario que empleará el demonio.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la sección 
+\family typewriter
+Network configuration
+\family default
+ especifica la configuración de la conexión de control.
+ En ella, se indicará si se desea cifrar el tráfico de esta conexión, la
+ ruta de los certificados 
+\family typewriter
+server.crt
+\family default
+ y 
+\family typewriter
+server.key
+\family default
+ (sólo se utilizará cuando se cifra el tráfico) y el puerto asociado a la
+ conexión de control.
+\end_layout
+
+\begin_layout Standard
+Asimismo, la sección 
+\family typewriter
+FTP Server configuration
+\family default
+ especifica la configuración del servidor FTP que reside en el repositorio
+ de imágenes.
+ En ella, se indicará
+\end_layout
+
+\begin_layout Itemize
+la interfaz de red por la que circulará el tráfico FTP.
+\end_layout
+
+\begin_layout Itemize
+el puerto del servidor FTP.
+\end_layout
+
+\begin_layout Itemize
+el número máximo de conexiones activas en total y el número máximo de conexiones
+ activas de cada dirección IP.
+\end_layout
+
+\begin_layout Itemize
+la fracción del ancho de banda de bajada y del ancho de banda de subida
+ que podrá ser utilizada por el tráfico FTP.
+\end_layout
+
+\begin_layout Itemize
+la ruta del directorio raíz del servidor FTP.
+\end_layout
+
+\begin_layout Itemize
+el nombre de usuario y la longitud de la contraseña a utilizar.
+ Las contraseñas se generan aleatoriamente en cada arranque.
+\end_layout
+
+\begin_layout Standard
+Finalmente, tras inicializar el contenido de este fichero, debemos borrar
+ o comentar la sección 
+\family typewriter
+Uninitialized file
+\family default
+.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -385,10 +1377,13 @@ Instalación y configuración de KVM
 \end_layout
 
 \begin_layout Standard
-Una vez instalados los paquetes comunes, debemos instalar el hipervisor
- KVM, la librería 
+Una vez instalados los paquetes comunes, en los servidores de máquinas virtuales
+ debemos instalar el hipervisor KVM, la librería 
+\family typewriter
+libvirt
+\family default
 \emph on
-libvirt 
+ 
 \emph default
 y el sistema de virtualización QEMU.
  Para ello, ejecutamos la orden
@@ -437,8 +1432,12 @@ sudo addgroup <nombre de nuestro usuario> kvm
 \end_layout
 
 \begin_layout Standard
-Además, debemos configurar libvirt para que nos permita crear máquinas y
- redes virtuales sin necesidad de ser 
+Además, debemos configurar 
+\family typewriter
+libvirt
+\family default
+ para que nos permita crear máquinas y redes virtuales sin necesidad de
+ ser 
 \emph on
 root
 \emph default
@@ -481,7 +1480,11 @@ auth_unix_rw = "none"
 \end_layout
 
 \begin_layout Standard
-Finalmente, reiniciamos libvirt mediante el comando
+Finalmente, reiniciamos el demonio de 
+\family typewriter
+libvirt
+\family default
+ mediante el comando
 \end_layout
 
 \begin_layout Standard
@@ -502,13 +1505,6 @@ y reiniciamos nuestra sesión.
 Instalación del módulo de 
 \emph on
 CygnusCloud 
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Instalación-del-módulo-servidor-vms"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -555,7 +1551,11 @@ ejecutamos el
 \emph on
 script
 \emph default
- build.py, ubicado en la raíz del directorio de instalación.
+ 
+\family typewriter
+build.py
+\family default
+, ubicado en la raíz del directorio de instalación.
  Para ello, utilizamos el comando
 \end_layout
 
@@ -605,38 +1605,52 @@ virtualMachineServer.sh
 \emph on
 script
 \emph default
- de arranque del módulo servidor de máquinas virtuales.
+ de arranque del demonio del servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Subsubsection
 Configuración del módulo de 
 \emph on
 CygnusCloud 
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Configuración-del-módulo-servidor-mvs"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
-Si intenta ejecutar el módulo sin haber rellenado previamente el fichero
- de configuración, se producirán errores.
-\end_layout
-
-\begin_layout Standard
-En el caso del servidor de máquinas virtuales, el fichero de configuración,
- 
+Si intentamos arrancar el demonio del servidor de máquinas virtuales sin
+ haber inicializado previamente su fichero de configuración, se generará
+ un mensaje de error.
+ El fichero de configuración de este demonio, 
 \family typewriter
 VMServer_settings.conf
 \family default
-, también se encuentra en la raíz del directorio de instalación.
- Su contenido inicial es el siguiente:
+, se encuentra en la raíz del directorio de instalación.
+ Su contenido inicial aparece en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Contenido-inicial-VM"
+
+\end_inset
+
+.
+ Debemos recordar que, tras inicializar el contenido de este fichero, debemos
+ borrar o comentar la sección 
+\family typewriter
+Uninitialized file
+\family default
+.
+ 
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Box Frameless
 position "t"
 hor_pos "c"
@@ -653,226 +1667,212 @@ status collapsed
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# Virtual machine server configuration file 
+# Comment or delete the following line after initializing this file 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# Version 1.5 
+[Uninitialized file]
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# File format: 
+[Database configuration] 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# - if nothing appears after =, the value will be the empty string 
+mysqlRootsPassword = 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# - multiline string values start with " and end with " 
+databaseUserName = cygnuscloud 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# - the lines starting with # are line comments.
- Inline comments ARE NOT # supported.
- #
+databasePassword = cygnuscloud
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# Delete the following line after editing this file
-\color green
- 
+[Virtual Network Configuration] 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-uninitializedFile
-\color inherit
- = Yes
+createVirtualNetworkAsRoot = True 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# Database configuration
+vnName = ccnet 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-mysqlRootsPassword
-\color inherit
- = 
+gatewayIP = 192.168.77.1 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-databaseUserName
-\color inherit
- = cygnuscloud 
+netMask = 255.255.255.0 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-databasePassword
-\color inherit
- = cygnuscloud
+dhcpStartIP = 192.168.77.2 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# Virtual network setup
+dhcpEndIP = 192.168.77.254
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-createVirtualNetworkAsRoot
-\color inherit
- = No
+[VNC server configuration] 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-vnName
-\color inherit
- = ccnet 
+vncNetworkInterface = eth0 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-gatewayIP 
-\color inherit
-= 192.168.77.1 
+passwordLength = 46
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-netMask
-\color inherit
- = 255.255.255.0 
+useQEMUWebsockets = False
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-dhcpStartIP
-\color inherit
- = 192.168.77.2 
+websockifyPath = /home/luis/Infraestructura/websockify
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-dhcpEndIP
-\color inherit
- = 192.168.77.254
+[FTP Client Configuration] 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# VNC server settings
+FTPTimeout = 100 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-vncNetworkInterface
-\color inherit
- = lo 
+MaxTransferAttempts = 5
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-passwordLength 
-\color inherit
-= 46 
+[Network configuration] 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color red
-# Server settings
+useSSL = False 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-listenningPort 
-\color inherit
-= 15800 
+certificatePath = /home/luis/Infraestructura/Certificates 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-configFilePath
-\color inherit
- = /home/luis/VirtualMachineServer/configuraciones/ 
+listenningPort = 15800
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-sourceImagePath 
-\color inherit
-= /home/luis/VirtualMachineServer/imagenes/ 
+[Paths] 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-\color blue
-executionImagePath 
-\color inherit
-= /home/luis/VirtualMachineServer/imagenes_en_ejecucion/ 
+configFilePath = /home/luis/Infraestructura/VirtualMachineServer/configuraciones
+/ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+sourceImagePath = /home/luis/Infraestructura/VirtualMachineServer/imagenes/
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+executionImagePath = /home/luis/Infraestructura/VirtualMachineServer/imagenes_en
+_ejecucion/ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+TransferDirectory = /home/luis/Infraestructura/VirtualMachineServer/Transfers
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Contenido-inicial-VM"
+
+\end_inset
+
+Contenido inicial del fichero 
+\family typewriter
+VMServer_settings.conf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -881,194 +1881,152 @@ executionImagePath
 \end_layout
 
 \begin_layout Standard
-Tal y como indica el encabezado del fichero,
-\end_layout
-
-\begin_layout Itemize
-todas las líneas que empiezan por almohadilla (
+En primer lugar, la sección 
 \family typewriter
-#
+Database configuration
 \family default
-) son comentarios.
- 
-\end_layout
-
-\begin_layout Itemize
-todos los valores que aparecen a la derecha del símbolo 
-\family typewriter
-=
-\family default
- son cadenas de caracteres.
- 
-\emph on
-No
-\emph default
- pueden contener espacios.
- Si no aparece nada a la derecha del símbolo 
-\family typewriter
-=
-\family default
-, el valor será la cadena vacía.
-\end_layout
-
-\begin_layout Itemize
-es posible que una misma cadena de caracteres ocupe varias líneas, siempre
- que se delimite con comillas dobles (
-\family typewriter
-
-\begin_inset Quotes eld
-\end_inset
-
-
-\begin_inset Quotes erd
-\end_inset
-
-
-\family default
-).
- En cualquier caso, estas cadenas 
-\emph on
-tampoco
-\emph default
- pueden contener espacios.
-\end_layout
-
-\begin_layout Standard
-La primera línea del fichero indica que este no ha sido modificado, y debe
- borrarse tras terminar de editarlo.
- Tras ella, aparecen cuatro grupos de parámetros:
-\end_layout
-
-\begin_layout Itemize
-el primer grupo especifica la configuración de la base de datos del servidor
- de máquinas virtuales.
- Además de la contraseña de 
+ especifica la información que se utilizará para configurar la base de datos
+ del servidor de máquinas virtuales: la contraseña del usuario 
 \emph on
 root
 \emph default
-, imprescindible para poderla crear, hay que suministrar el el nombre y
- la contraseña del usuario que se utilizará para manipularla.
+ y el nombre y la contraseña del usuario que empleará el demonio.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la sección 
+\family typewriter
+Virtual Network Configuration
+\family default
+ especifica la configuración de la red virtual que alberga el servidor de
+ máquinas virtuales.
+ En ella, se indica
 \end_layout
 
 \begin_layout Itemize
-el segundo grupo especifica la configuración de la red virtual: su nombre,
- la IP de la puerta de enlace, la máscara y las direcciones inicial y final
- del rango que manipulará el servidor DHCP.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-La primera línea de este grupo indica si se debe crear la red virtual como
+si la red virtual se debe crear como un usuario normal o como el usuario
  
 \emph on
 root
 \emph default
- o no.
- Esto no es necesario en Ubuntu 12.04, pero sí en distros derivadas de RedHat.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-el tercer grupo especifica la configuración del servidor VNC: la interfaz
- en la que escuchará y la longitud de la contraseña.
+,
 \end_layout
 
 \begin_layout Itemize
-el cuarto grupo especifica el puerto en el que el servidor escuchará, y
- también
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-la ruta del directorio en el que están los ficheros .xml de definición de
- las máquinas virtuales (
-\family typewriter
-configFilePath
-\family default
-).
+el nombre de la red virtual,
 \end_layout
 
 \begin_layout Itemize
-la ruta del directorio donde están las imágenes de disco de las máquinas
- que se pueden arrancar (
-\family typewriter
-sourceImagePath
-\family default
-)
+la dirección IP y la máscara de red del encaminador predeterminado de dicha
+ red, y
 \end_layout
 
 \begin_layout Itemize
-la ruta de directorio donde están las imágenes de disco de las máquinas
- activas (
-\family typewriter
-executionImagePath
-\family default
-)
+el rango de direcciones IP que asignará el servidor DHCP.
 \end_layout
 
 \begin_layout Standard
-Todos los directorios deben estar en un sistema de ficheros tipo UNIX.
- Además, el usuario actual debe tener permisos de lectura en los dos primeros,
- y de lectura y escritura en el último.
+Por otro lado, la sección 
+\family typewriter
+VNC server configuration
+\family default
+ especifica 
 \end_layout
 
-\end_deeper
+\begin_layout Itemize
+la interfaz de red por la que circulará el tráfico VNC,
+\end_layout
+
+\begin_layout Itemize
+la longitud de las contraseñas de los servidores VNC que residen en este
+ servidor de máquinas virtuales,
+\end_layout
+
+\begin_layout Itemize
+qué 
+\emph on
+software
+\emph default
+ utilizamos para crear los 
+\emph on
+websockets
+\emph default
+ (QEMU o 
+\family typewriter
+websockify
+\family default
+), y
+\end_layout
+
+\begin_layout Itemize
+la ruta del proceso 
+\family typewriter
+websockify
+\family default
+.
+ El valor de este último parámetro sólo se utiliza cuando los 
+\emph on
+websockets
+\emph default
+ se crean mediante 
+\family typewriter
+websockify
+\family default
+.
+\end_layout
+
 \begin_layout Standard
-\begin_inset Box Boxed
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status collapsed
+La sección 
+\family typewriter
+FTP Client Configuration
+\family default
+ especifica el 
+\emph on
+timeout
+\emph default
+ y el número de veces que se reintentará realizar una transferencia fallida
+ con el repositorio de imágenes.
+\end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
+Asimismo, la sección 
+\family typewriter
+Network configuration
+\family default
+ especifica la configuración de la conexión de control.
+ En ella, se indicará si se desea cifrar el tráfico de esta conexión, la
+ ruta de los certificados 
+\family typewriter
+server.crt
+\family default
+ y 
+\family typewriter
+server.key
+\family default
+ (sólo se utilizará cuando se cifra el tráfico) y el puerto asociado a la
+ conexión de control.
+\end_layout
 
-\series bold
-\color red
-Importante
+\begin_layout Standard
+Finalmente, la sección 
+\family typewriter
+Paths
+\family default
+ especifica las rutas de los diversos directorios de trabajo del servidor
+ de máquinas virtuales en los que se almacenan 
 \end_layout
 
 \begin_layout Itemize
-Si tiene configurado un 
-\emph on
-firewall
-\emph default
- en su equipo o red, asegúrese de que el puerto de escucha que ha escogido
- y los puertos TCP del 15000 al 15507 están abiertos.
+los ficheros de definición, los ficheros de imagen y los ficheros de imagen
+ que utilizan las máquinas virtuales durante su ejecución, y 
 \end_layout
 
 \begin_layout Itemize
-Puesto que la funcionalidad de modificación de imágenes está en desarrollo,
- las pruebas, por defecto, sólo pueden hacerse en local.
- Por ello, el servidor VNC debe escuchar en el adaptador 
-\emph on
-loopback
-\emph default
-, y el servidor de máquinas virtuales, en el puerto 15800.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Plain Layout
-Esta
-\emph on
- 
-\emph default
-limitación puede superarse registrando manualmente los servidores de máquinas
- virtuales en el sistema, cosa que enseñaremos a hacer en la siguiente sección.
-\end_layout
-
-\end_deeper
-\end_inset
-
-
+los ficheros 
+\family typewriter
+.zip
+\family default
+ que se intercambian con el repositorio de imágenes.
 \end_layout
 
 \begin_layout Subsection
@@ -1085,7 +2043,7 @@ CygnusCloud
 La instalación del módulo es totalmente análoga a la de la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Instalación-del-módulo-servidor-vms"
+reference "sub:Instalación-del-módulo"
 
 \end_inset
 
@@ -1121,243 +2079,6 @@ clusterServer.sh
 Configuración del módulo de 
 \emph on
 CygnusCloud
-\end_layout
-
-\begin_layout Standard
-Nuevamente, es necesario configurar el módulo para poder utilizarlo.
- Para ello, se utiliza el fichero 
-\family typewriter
-ClusterServer_settings.conf
-\family default
-, también ubicado en la raíz del directorio de instalación.
- Su contenido inicial es el siguiente:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Cluster server configuration file 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Version 2.0 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# File format: 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# - if nothing appears after =, the value will be the empty string 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# - multiline string values start with " and end with " 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# - the lines starting with # are line comments.
- Inline comments ARE NOT # supported.
- 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Delete the following line after editing this file
-\color green
- 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-uninitializedFile
-\color inherit
- = Yes
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Database configuration 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-mysqlRootsPassword
-\color inherit
- = 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-dbUser
-\color inherit
- = cygnuscloud 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-dbPassword
-\color inherit
- = cygnuscloud 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Listenning port 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-listenningPort
-\color inherit
- = 9000
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Virtual machine boot timeout (in seconds) 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-vmBootTimeout
-\color inherit
- = 30
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-El formato de este fichero es el mismo que el de la sección 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Configuración-del-módulo-servidor-mvs"
-
-\end_inset
-
-.
- En este caso, distinguimos tres grupos:
-\end_layout
-
-\begin_layout Itemize
-en el primero se configura la base de datos, introduciendo nuevamente la
- contraseña de 
-\emph on
-root
-\emph default
-, el nombre de usuario y la contraseña a utilizar para manipularla.
-\end_layout
-
-\begin_layout Itemize
-en el segundo se indica el puerto en el que el servidor de 
-\emph on
-cluster
-\emph default
- escuchará.
-\end_layout
-
-\begin_layout Itemize
-en el tercero se indica (en segundos) el 
-\emph on
-timeout
-\emph default
- considerado al arrancar máquinas virtuales.
- Cuando se supere ese tiempo, el proceso de arranque se abortará, y se asumirá
- que ha fallado.
-\end_layout
-
-\begin_layout Standard
-Finalmente, también es necesario borrar la primera línea del fichero tras
- editar este fichero de configuración.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Boxed
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status collapsed
-
-\begin_layout Plain Layout
-
-\series bold
-\color red
-Importante
-\end_layout
-
-\begin_layout Itemize
-Si su equipo o red de área local utilizan un 
-\emph on
-firewall
-\emph default
-, asegúrese de que, además de los puertos en los que escuchan los servidores
- de máquinas virtuales, el puerto TCP 9000 está abierto.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -1436,349 +2157,6 @@ cluster
 Configuración del módulo de 
 \emph on
 CygnusCloud
-\end_layout
-
-\begin_layout Standard
-En este caso será necesario editar dos ficheros de configuración.
- 
-\end_layout
-
-\begin_layout Standard
-El primero, 
-\family typewriter
-Endpoint_settings.conf
-\family default
-, contiene los datos de configuración del proceso que comunica la aplicación
- web2py y el servidor de cluster.
- Este fichero se encuentra en la raíz del directorio de instalación y su
- contenido inicial es el siguiente:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status collapsed
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Cluster server endpoint configuration file 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Version 1.3 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-#
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# File format: 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# - if nothing appears after =, the value will be the empty string 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# - multiline string values start with " and end with " 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# - the lines starting with # are line comments.
- Inline comments ARE NOT # supported.
- 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-#
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Delete the following line after editing this file
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-uninitializedFile
-\color inherit
- = Yes
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Database configuration parameters
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-mysqlRootsPassword
-\color inherit
- = 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-statusdbSQLFilePath
-\color inherit
- = ../../database/SystemStatusDB.sql
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-commandsdbSQLFilePath
-\color inherit
- = ../../database/CommandsDB.sql
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-websiteUser
-\color inherit
- = website
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-websiteUserPassword
-\color inherit
- = CygnusCloud
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-endpointUser
-\color inherit
- = connector_user
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-endpointUserPassword
-\color inherit
- = CygnusCloud
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Network parameters
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-clusterServerIP
-\color inherit
- = 127.0.0.1
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-clusterServerListenningPort
-\color inherit
- = 9000 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-statusDBUpdateInterval
-\color inherit
- = 2 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-En este fichero, , distinguimos dos grupos:
-\end_layout
-
-\begin_layout Itemize
-en el primero se configura la base de datos, introduciendo la contraseña
- de 
-\emph on
-root
-\emph default
-, la ruta de los ficheros con la estructura de la base de datos y el nombre
- y contraseña para los usuarios encargados de gestionar ambos servidores.
-\end_layout
-
-\begin_layout Itemize
-en el segundo se indica el puerto y la ip para la conexión con el servidor
- de cluster, así como el intervalo de actualización de la información del
- servidor de cluster accesible al servidor web (en segundos).
-\end_layout
-
-\begin_layout Standard
-Por otra parte, el fichero 
-\family typewriter
-userInputConstants.py
-\family default
- contiene los datos de configuración del servidor web.
- Nuevamente, este fichero se encuentra en la raíz del directorio de instalación
- y su contenido por defecto es el siguiente:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status collapsed
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-#
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Web server configuration file 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Version 1.2 
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-#
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-# Database configuration parameters
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-rootPassword
-\color inherit
- = ''
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color red
-#Network parameters
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-serverIp
-\color inherit
- = "127.0.0.1"
-\end_layout
-
-\begin_layout Plain Layout
-
-\family typewriter
-\color blue
-serverPort
-\color inherit
- = 9000
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-En este fichero, debemos introducir la contraseña del usuario root de MySQL
- y la IP y el puerto en los que estará disponible el endPoint.
 \end_layout
 
 \begin_layout Section
@@ -2419,12 +2797,12 @@ A la hora de especificar el tamaño, hay que tener en cuenta que
 \begin_layout Itemize
 la imagen del SO debe tener un tamaño adecuado para lo que queremos instalar
  en ella.
- Para un sistema GNU/Linux, basta con 10 GB, pero un sistema Windows requiere
+ Para un sistema Linux, basta con 10 GB, pero un sistema Windows requiere
  un mínimo de 25 GB.
 \end_layout
 
 \begin_layout Itemize
-en GNU/Linux, la partición swap debe tener el mismo tamaño que la RAM.
+en Linux, la partición swap debe tener el mismo tamaño que la RAM.
  En Windows, se recomienda que el fichero de paginación sea dos veces más
  grande que la RAM.
 \end_layout
@@ -2541,7 +2919,7 @@ Debido a un
 bug
 \emph default
  en el cargador de arranque, todas las distribuciones derivadas de Debian
- GNU/Linux 6 (
+ Linux 6 (
 \emph on
 squeeze
 \emph default
@@ -2853,7 +3231,7 @@ virt-manager
 \end_layout
 
 \begin_layout Standard
-Siempre que una máquina virtual tenga instalado un sistema GNU/Linux y utilice
+Siempre que una máquina virtual tenga instalado un sistema Linux y utilice
  una única imagen de disco podrá utilizarse en 
 \emph on
 CygnusCloud
