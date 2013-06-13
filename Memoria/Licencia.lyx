@@ -87,23 +87,8 @@ status open
 \begin_layout Standard
 Nosotros, Luis Barrios Hernández, Adrián Fernández Hernández y Samuel Guayerbas
  Martín, autores del presente documento y del proyecto 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-{
-\backslash
-textit{
-\backslash
-getProyecto}}
-\end_layout
-
-\end_inset
-
-
 \emph on
-,
+CygnusCloud: provisión de puestos de laboratorio virtuales bajo demanda,
 \emph default
  autorizamos a la Universidad Complutense a difundir y utilizar con fines
  académicos, no comerciales y mencionando expresamente a sus autores, tanto

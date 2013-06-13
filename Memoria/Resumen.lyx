@@ -61,10 +61,11 @@
 
 \begin_body
 
-\begin_layout Section*
+\begin_layout Standard
+\begin_inset Newpage cleardoublepage
+\end_inset
 
-\series bold
-Resumen
+
 \end_layout
 
 \begin_layout Standard
@@ -81,6 +82,60 @@ thispagestyle{empty}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section*
+
+\series bold
+Resumen
+\end_layout
+
+\begin_layout Standard
+En la actualidad, las aulas de informática de varios centros no disponen
+ de puestos suficientes como para cubrir la demanda.
+ Aunque existen aulas de informática infrautilizadas en el campus, estas
+ no tienen instalado el 
+\emph on
+software
+\emph default
+ que utilizan todos los alumnos.
+ Por ello, para realizar trabajos o prácticas, en muchos casos los alumnos
+ deben utilizar sus portátiles o trabajar desde sus casas.
+\end_layout
+
+\begin_layout Standard
+En este documento presentamos un sistema que aprovecha las virtudes de la
+ computación 
+\emph on
+cloud
+\emph default
+ para crear puestos de laboratorio virtuales.
+ Estos permitirán que los alumnos de cualquier titulación puedan trabajar
+ desde cualquier aula de informática del campus.
+\end_layout
+
+\begin_layout Standard
+Asimismo, el sistema elimina los lentos procesos burocráticos asociados
+ a la modificación de la configuración de los equipos de las aulas de informátic
+a.
+ Al utilizarlo, los profesores podrán modificar una configuración en cuestión
+ de horas (y no de semanas o meses).
+\end_layout
+
+\begin_layout Standard
+Finalmente, la solución propuesta permite reducir los efectos de los recortes
+ en el sector educativo, ya que en las aulas de informática podrán utilizarse
+ equipos más baratos y con un menor consumo energético.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Palabras clave
+\series default
+: Cloud Computing, IaaS, KVM, libvirt, web2py, twisted, Python
+\emph on
+.
 \end_layout
 
 \begin_layout Section*
@@ -90,19 +145,42 @@ Abstract
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-thispagestyle{empty}
+Nowadays, the computers from several faculty labs are often insufficient
+ to meet the demand.
+ Although there are underutilized computer rooms in the campus, the software
+ that every student needs is not always installed on their PCs.
+ Therefore, many students must use their own laptops to do their assignments
+ or work from home.
 \end_layout
 
-\end_inset
+\begin_layout Standard
+In this document, we introduce a system that takes advantage of the the
+ cloud computing's virtues to create virtual lab machines.
+ These machines will allow every student from every degree to work at every
+ computer room in the campus.
+\end_layout
 
+\begin_layout Standard
+Furthermore, this system eliminates the time-consuming bureaucratic procedures
+ needed to install or configure software on the computer rooms.
+ By using it, teachers can modify a system configuration within a few hours.
+ Currently, this takes several weeks and even months.
+\end_layout
 
+\begin_layout Standard
+Last, but not least, the proposed solution helps to reduce the effects of
+ budget cuts in education by allowing the use of cheaper and more energy-efficie
+nt PCs in the computer rooms.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Keywords
+\series default
+: Cloud Computing, IaaS, KVM, libvirt, web2py, twisted, Python
+\emph on
+.
 \end_layout
 
 \end_body
