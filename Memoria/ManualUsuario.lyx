@@ -2771,17 +2771,18 @@ el intervalo de espera del hilo de monitorización de comandos.
 \end_layout
 
 \begin_layout Section
-Creación de imágenes 
+Creación de imágenes base
 \end_layout
 
 \begin_layout Standard
-Para poder utilizar el sistema, es necesario disponer previamente de algunas
- imágenes de disco en formato 
-\family typewriter
-qcow2
-\family default
-.
- En esta sección mostraremos cómo crearlas de forma sencilla utilizando
+Para poder utilizar el sistema, es necesario disponer de un conjunto de
+ configuraciones base, que se utilizarán para crear el resto de configuraciones
+ de la infraestructura.
+ 
+\end_layout
+
+\begin_layout Standard
+En esta sección, mostraremos cómo crearlas de forma sencilla utilizando
  
 \family typewriter
 virt-manager
@@ -2791,11 +2792,7 @@ virt-manager
 CygnusCloud
 \emph default
 .
- 
-\end_layout
-
-\begin_layout Standard
-Naturalmente, también es posible importar a 
+ Naturalmente, también es posible importar a 
 \emph on
 CygnusCloud
 \emph default
@@ -2898,7 +2895,7 @@ virt-manager
 \end_layout
 
 \begin_layout Standard
-Para empezar a crear una máquina, hacemos clic sobre el botón 
+Para empezar, hacemos clic sobre el botón 
 \family sans
 Create a new virtual machine
 \family default
@@ -2911,7 +2908,8 @@ reference "fig:Pasos-1-y-2-asistente-crear-mv"
 \end_inset
 
 .
- En todos los casos, avanzamos al paso siguiente haciendo clic sobre 
+ En todos los casos, avanzamos a la ventana siguiente haciendo clic sobre
+ 
 \family sans
 Forward
 \family default
@@ -2957,16 +2955,16 @@ create a new virtual machine
 \end_layout
 
 \begin_layout Standard
-Los pasos a seguir son los siguientes:
+Los pasos a seguir son estos:
 \end_layout
 
 \begin_layout Enumerate
-Introducimos el nombre de la máquina virtual.
+introducimos el nombre de la máquina virtual.
  
 \end_layout
 
 \begin_layout Enumerate
-Aparecerá la segunda ventana de la figura 
+aparecerá la segunda ventana de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Pasos-1-y-2-asistente-crear-mv"
@@ -2996,7 +2994,7 @@ Linux
 
 \end_deeper
 \begin_layout Enumerate
-Aparecerá la primera ventana de la figura 
+aparecerá la primera ventana de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Pasos-3-y-4-asistente-crear-mv"
@@ -3009,7 +3007,7 @@ reference "fig:Pasos-3-y-4-asistente-crear-mv"
 \end_layout
 
 \begin_layout Enumerate
-Desmarcamos la casilla 
+desmarcamos la casilla 
 \family sans
 Enable storage for this virtual machine
 \family default
@@ -3017,7 +3015,7 @@ Enable storage for this virtual machine
 \end_layout
 
 \begin_layout Enumerate
-En la ventana final del asistente, que aparece en la figura 
+en la ventana final del asistente, que aparece en la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Paso-5-asistente-creación-máquinas-virtuales"
@@ -3185,7 +3183,7 @@ Configuración de la máquina virtual
 \end_layout
 
 \begin_layout Standard
-Con los pasos de la sección 
+Tras los pasos de la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Pasos-básicos-virt-manager"
@@ -3217,7 +3215,7 @@ la tarjeta de vídeo
 \end_layout
 
 \begin_layout Standard
-Tras salir del asistente, aparecerá la ventana de la figura 
+Cuando se cierra el asistente, aparecerá la ventana de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Diálogo-de-configuración-máquina"
@@ -3414,31 +3412,15 @@ Creación de las imágenes de disco
 \end_layout
 
 \begin_layout Standard
-A la hora de especificar el tamaño, hay que tener en cuenta que
+A la hora de especificar el tamaño de ambas, debemos 
 \end_layout
 
 \begin_layout Itemize
-la imagen del SO debe tener un tamaño adecuado para lo que queremos instalar
- en ella.
- Para un sistema Linux, basta con 10 GB, pero un sistema 
-\emph on
-Windows
-\emph default
- requiere un mínimo de 25 GB.
+escoger una familiar de máquinas virtuales, y
 \end_layout
 
 \begin_layout Itemize
-en Linux, la partición swap debe tener el mismo tamaño que la RAM.
- En 
-\emph on
-Windows
-\emph default
-, se recomienda que el fichero de paginación sea dos veces más grande que
- la RAM.
-\end_layout
-
-\begin_layout Standard
-Para crear las dos imágenes de disco, debemos seleccionar 
+seleccionar 
 \family sans
 Virtio disk
 \family default
@@ -3549,7 +3531,7 @@ Debido a un
 bug
 \emph default
  en el cargador de arranque, todas las distribuciones derivadas de Debian
- Linux 6 (
+ 6 (
 \emph on
 squeeze
 \emph default
@@ -3694,10 +3676,12 @@ Para que el instalador pueda acceder a los discos duros virtuales, hay que
 
 \begin_layout Enumerate
 Descargamos la imagen ISO correspondiente a la última versión desde
-\begin_inset Newline newline
-\end_inset
+\end_layout
 
-
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
 \begin_inset CommandInset href
 LatexCommand href
 target "http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/"
@@ -3707,6 +3691,7 @@ target "http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/"
 .
 \end_layout
 
+\end_deeper
 \begin_layout Enumerate
 A la hora de configurar la máquina, creamos otra unidad 
 \family sans
@@ -3872,8 +3857,16 @@ virt-manager
 \end_layout
 
 \begin_layout Standard
-Siempre que una máquina virtual tenga instalado un sistema Linux y utilice
- una única imagen de disco podrá utilizarse en 
+Siempre que una imagen de disco tenga instalado un sistema 
+\emph on
+Linux
+\emph default
+ y uno de los tamaños asociados a las imágenes del sistema operativo de
+ las familias de máquinas virtuales 
+\emph on
+Linux
+\emph default
+, podrá utilizarse en 
 \emph on
 CygnusCloud
 \emph default
@@ -3882,7 +3875,7 @@ CygnusCloud
 \end_layout
 
 \begin_layout Enumerate
-Convertir las imágenes de disco a un formato soportado por QEMU: 
+se convierte la imagen de disco a un formato soportado por QEMU (
 \family typewriter
 raw
 \family default
@@ -3898,9 +3891,12 @@ qcow2
 \family typewriter
 qcow2
 \family default
-.
- Por ejemplo, en el caso de una imagen de VirtualBox, habría que ejecutar
- el comando 
+).
+ Por ejemplo, en el caso de una imagen de 
+\emph on
+VirtualBox
+\emph default
+, habría que ejecutar el comando 
 \end_layout
 
 \begin_deeper
@@ -3914,7 +3910,7 @@ VBoxManage clonehd <fichero fuente>.vdi <fichero destino>.vmdk --format VMDK
 
 \end_deeper
 \begin_layout Enumerate
-Convertir las imágenes al formato 
+se convierte la imagen al formato 
 \family typewriter
 qcow2
 \family default
@@ -3933,7 +3929,7 @@ qemu-img convert <fichero fuente>.vmdk -O qcow2 <fichero destino>.qcow2
 
 \end_deeper
 \begin_layout Enumerate
-En lugar de crear una nueva imagen para el sistema operativo, en el diálogo
+en lugar de crear una nueva imagen para el sistema operativo, en el diálogo
  se importa la existente seleccionando la casilla 
 \family sans
 Select managed or other existing storage
@@ -3942,13 +3938,17 @@ Select managed or other existing storage
 \end_layout
 
 \begin_layout Enumerate
-Creamos una imagen de disco para almacenar los datos del usuario y el fichero
+se crea una imagen de disco para almacenar los datos del usuario y el fichero
  de paginación.
 \end_layout
 
 \begin_layout Enumerate
-Movemos el fichero de paginación y los datos del usuario a la imagen correspondi
-ente.
+tras arrancar la máquina virtual, se mueve el fichero de paginación y el
+ directorio 
+\family typewriter
+/home
+\family default
+ a la imagen de disco correspondiente.
 \end_layout
 
 \begin_layout Standard
@@ -3972,8 +3972,8 @@ status collapsed
 Importante
 \series default
 \color inherit
-: este procedimiento puede no funcionar con imágenes de disco que utilicen
- el sistema operativo 
+: este procedimiento no funcionará con imágenes de disco que utilicen el
+ sistema operativo 
 \emph on
 Windows
 \emph default
@@ -3988,7 +3988,7 @@ Windows
 \begin_layout Subsection
 Uso de 
 \emph on
-samba
+Samba
 \emph default
  para configurar las imágenes
 \end_layout
@@ -4001,21 +4001,23 @@ software
 \emph default
 de internet: también es posible, utilizando 
 \emph on
-samba
+Samba
 \emph default
-, acceder desde la máquina virtual a los recursos de la máquina anfitrión
- o de cualquier otro PC conectado a la misma red de área local que en la
- máquina anfitrión.
+, acceder a los recursos de la máquina anfitrión o de cualquier otro PC
+ conectado a la misma red de área local que la máquina anfitrión.
 \end_layout
 
 \begin_layout Standard
-En esta sección mostraremos cómo instalar y configurar samba para que esto
- sea posible.
- Distinguiremos cuatro casos
+En esta sección mostraremos cómo instalar y configurar 
+\emph on
+Samba
+\emph default
+ para que esto sea posible.
+ Distinguiremos cuatro casos:
 \end_layout
 
 \begin_layout Itemize
-El PC y la máquina virtual tienen instalado un sistema operativo 
+el PC y la máquina virtual tienen instalado un sistema operativo 
 \emph on
 Windows
 \emph default
@@ -4035,53 +4037,84 @@ Windows
 \end_layout
 
 \begin_layout Itemize
-El PC tiene instalado un sistema operativo 
+el PC tiene instalado un sistema operativo 
 \emph on
 Windows
 \emph default
-, y la máquina virtual tiene instalado un sistema operativo Linux.
+, y la máquina virtual tiene instalado un sistema operativo 
+\emph on
+Linux
+\emph default
+.
  Llamaremos a este caso
 \series bold
  compartición 
 \emph on
 Windows
 \emph default
- a Linux
-\series default
-.
-\end_layout
-
-\begin_layout Itemize
-El PC tiene instalado un sistema operativo Linux, y la máquina virtual tiene
- instalado un sistema operativo 
+ a 
 \emph on
-Windows
-\emph default
-.
- Llamaremos a este caso 
-\series bold
-compartición Linux a 
-\emph on
-Windows
+Linux
 \series default
 \emph default
 .
 \end_layout
 
 \begin_layout Itemize
-El PC tiene instalado un sistema operativo Linux, y la máquina virtual tiene
- instalado un sistema operativo Linux.
+el PC tiene instalado un sistema operativo 
+\emph on
+Linux
+\emph default
+, y la máquina virtual tiene instalado un sistema operativo 
+\emph on
+Windows
+\emph default
+.
  Llamaremos a este caso 
 \series bold
-compartición Linux a Linux
+compartición 
+\emph on
+Linux
+\emph default
+ a 
+\emph on
+Windows
 \series default
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+el PC tiene instalado un sistema operativo 
+\emph on
+Linux
+\emph default
+, y la máquina virtual tiene instalado un sistema operativo 
+\emph on
+Linux
+\emph default
+.
+ Llamaremos a este caso 
+\series bold
+compartición 
+\emph on
+Linux
+\emph default
+ a 
+\emph on
+Linux
+\series default
+\emph default
 .
 \end_layout
 
 \begin_layout Standard
-Antes de empezar, mostraremos qué hace falta instalar en máquinas Linux
- (con distros derivadas de Debian o Ubuntu).
- En 
+Antes de empezar, mostraremos qué hace falta instalar en las imágenes 
+\emph on
+Linux 
+\emph default
+que utilicen distribuciones derivadas de Debian o Ubuntu.
+ En las imágenes 
 \emph on
 Windows
 \emph default
@@ -4089,7 +4122,11 @@ Windows
 \end_layout
 
 \begin_layout Subsubsection
-Prerrequisitos (sólo en Linux)
+Prerrequisitos (sólo en 
+\emph on
+Linux
+\emph default
+)
 \end_layout
 
 \begin_layout Paragraph
@@ -4097,8 +4134,16 @@ Máquina virtual
 \end_layout
 
 \begin_layout Standard
-Si la máquina virtual utiliza un sistema operativo Linux, habrá que instalar
- todo lo necesario para que se convierta en un cliente Samba.
+Si la máquina virtual utiliza un sistema operativo 
+\emph on
+Linux
+\emph default
+, habrá que instalar todo lo necesario para que se convierta en un cliente
+ 
+\emph on
+Samba
+\emph default
+.
  Para ello, basta con ejecutar la orden
 \end_layout
 
@@ -4110,17 +4155,21 @@ Si la máquina virtual utiliza un sistema operativo Linux, habrá que instalar
 sudo apt-get install smbclient smbfs
 \end_layout
 
-\begin_layout Standard
-Con esto, es suficiente.
-\end_layout
-
 \begin_layout Paragraph
 PC
 \end_layout
 
 \begin_layout Standard
-Si el PC tiene instalado un sistema operativo Linux, habrá que instalar
- todo lo necesario para que se convierta en un servidor Samba.
+Si el PC tiene instalado un sistema operativo 
+\emph on
+Linux
+\emph default
+, habrá que instalar todo lo necesario para que se convierta en un servidor
+ 
+\emph on
+Samba
+\emph default
+.
  Para ello, ejecutaremos la orden
 \end_layout
 
@@ -4162,8 +4211,16 @@ workgroup = WORKGROUP
 
 \begin_layout Standard
 Para terminar, definimos una contraseña para nuestro usuario.
- Samba no nos obliga a utilizar nuestro propio usuario: podemos crear a
- propósito un usuario para samba.
+ 
+\emph on
+Samba
+\emph default
+ no nos obliga a utilizar nuestro propio usuario: podemos crear a propósito
+ un usuario para 
+\emph on
+Samba
+\emph default
+.
  De todas formas, lo más sencillo es utilizar el que ya tenemos.
  El comando que tenemos que escribir es
 \end_layout
@@ -4202,7 +4259,7 @@ Importante
 \series default
 \color inherit
 : si omitimos este paso, no será posible montar ninguna carpeta compartida.
- Este error es muy difícil de ver.
+ Este error es muy difícil de detectar.
 \end_layout
 
 \end_inset
@@ -4242,7 +4299,7 @@ Windows
 \end_layout
 
 \begin_layout Enumerate
-Hacemos clic derecho sobre la carpeta que queremos compartir y seleccionamos
+hacemos clic derecho sobre la carpeta que queremos compartir y seleccionamos
  
 \family sans
 Propiedades
@@ -4251,7 +4308,7 @@ Propiedades
 \end_layout
 
 \begin_layout Enumerate
-Vamos a la pestaña 
+vamos a la pestaña 
 \family sans
 Compartir
 \family default
@@ -4261,7 +4318,7 @@ Uso compartido avanzado
 \end_layout
 
 \begin_layout Enumerate
-Marcamos la casilla 
+marcamos la casilla 
 \family sans
 Compartir esta carpeta
 \family default
@@ -4288,12 +4345,12 @@ nombre-del-recurso
 \end_layout
 
 \begin_layout Standard
-Recordad el nombre del recurso: os hará falta más adelante.
+Debemos recordar el nombre del recurso: nos hará falta más adelante.
 \end_layout
 
 \end_deeper
 \begin_layout Enumerate
-Si queremos escribir en la carpeta desde otra máquina, basta con hacer clic
+si queremos escribir en la carpeta desde otra máquina, basta con hacer clic
  sobre 
 \family sans
 Permisos
@@ -4315,7 +4372,7 @@ Para conectarnos a la carpeta compartida desde la máquina virtual, seguimos
 \end_layout
 
 \begin_layout Enumerate
-Hacemos clic sobre 
+hacemos clic sobre 
 \family sans
 Equipo
 \family default
@@ -4327,7 +4384,7 @@ Conectar a unidad de red
 \end_layout
 
 \begin_layout Enumerate
-En el diálogo que aparece, metemos este nombre para la máquina:
+en el diálogo que aparece, metemos este nombre para la máquina:
 \end_layout
 
 \begin_deeper
@@ -4347,7 +4404,7 @@ nombre-del-recurso
 
 \end_deeper
 \begin_layout Enumerate
-Confirmamos los cambios.
+confirmamos los cambios.
  A partir de este momento, la carpeta compartida aparecerá montada en 
 \family sans
 Equipo
@@ -4356,7 +4413,15 @@ Equipo
 \end_layout
 
 \begin_layout Subsubsection
-Compartición de Linux a Linux 
+Compartición de 
+\emph on
+Linux
+\emph default
+ a 
+\emph on
+Linux
+\emph default
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Compartición-Linux-a-Linux"
@@ -4375,7 +4440,7 @@ Para compartir la carpeta, seguimos los siguientes pasos:
 \end_layout
 
 \begin_layout Enumerate
-Añadimos una entrada como la siguiente 
+añadimos una entrada como la siguiente 
 \emph on
 al final
 \emph default
@@ -4404,10 +4469,14 @@ height_special "totalheight"
 status open
 
 \begin_layout Plain Layout
+
+\family typewriter
 [nombre-del-recurso]         
 \end_layout
 
 \begin_layout Plain Layout
+
+\family typewriter
 \begin_inset space \quad{}
 \end_inset
 
@@ -4415,6 +4484,8 @@ comment = <comentario>
 \end_layout
 
 \begin_layout Plain Layout
+
+\family typewriter
 \begin_inset space \quad{}
 \end_inset
 
@@ -4422,6 +4493,8 @@ read only = yes | no
 \end_layout
 
 \begin_layout Plain Layout
+
+\family typewriter
 \begin_inset space \quad{}
 \end_inset
 
@@ -4429,6 +4502,8 @@ guest ok = yes | no
 \end_layout
 
 \begin_layout Plain Layout
+
+\family typewriter
 \begin_inset space \quad{}
 \end_inset
 
@@ -4436,6 +4511,8 @@ browsable = yes
 \end_layout
 
 \begin_layout Plain Layout
+
+\family typewriter
 \begin_inset space \quad{}
 \end_inset
 
@@ -4443,6 +4520,8 @@ force user = <nuestro usuario>
 \end_layout
 
 \begin_layout Plain Layout
+
+\family typewriter
 \begin_inset space \quad{}
 \end_inset
 
@@ -4530,7 +4609,11 @@ no
 
 \end_deeper
 \begin_layout Enumerate
-Reiniciamos el servidor Samba.
+reiniciamos el servidor 
+\emph on
+Samba
+\emph default
+.
  Para ello, ejecutamos la orden
 \end_layout
 
@@ -4552,7 +4635,7 @@ Para montar la carpeta compartida en la máquina virtual, seguimos los siguiente
 \end_layout
 
 \begin_layout Enumerate
-Creamos el punto de montaje.
+creamos el punto de montaje.
  Por ejemplo, si queremos montar la carpeta en /mnt/smbshare, ejecutaremos
  el comando 
 \end_layout
@@ -4568,7 +4651,7 @@ sudo mkdir /mnt/smbshare
 
 \end_deeper
 \begin_layout Enumerate
-Montamos la carpeta utilizando el comando 
+montamos la carpeta utilizando el comando 
 \end_layout
 
 \begin_deeper
@@ -4583,7 +4666,7 @@ sudo mount -t cifs -o username=<nombre de usuario>,password=<contraseña>
 
 \end_deeper
 \begin_layout Enumerate
-Para desconectarnos de la carpeta compartida, basta con ejecutar el comando
+para desconectarnos de la carpeta compartida, basta con ejecutar el comando
 \end_layout
 
 \begin_deeper
@@ -4601,7 +4684,9 @@ Compartición de
 \emph on
 Windows
 \emph default
- a Linux
+ a 
+\emph on
+Linux
 \end_layout
 
 \begin_layout Standard
@@ -4625,7 +4710,11 @@ reference "sub:Compartición-Linux-a-Linux"
 \end_layout
 
 \begin_layout Subsubsection
-Compartición de Linux a 
+Compartición de 
+\emph on
+Linux
+\emph default
+ a 
 \emph on
 Windows
 \end_layout
@@ -4795,7 +4884,7 @@ no se respetan los nombres de los ficheros
 \family typewriter
 qcow2
 \family default
- o 
+, incluyendo la distinción entre mayúsculas y minúsculas, o 
 \end_layout
 
 \begin_layout Itemize
@@ -4901,7 +4990,8 @@ al final del mismo.
 \family typewriter
 IDi
 \family default
- es el identificador que ha devuelto la utilidad de conexión, e 
+ es el identificador de imagen que ha devuelto la utilidad de conexión,
+ e 
 \family typewriter
 IDf
 \family default
@@ -4924,11 +5014,7 @@ ws/ClusterEndpoint/databases/ClusterEndpointDB.sql
 \family typewriter
 ws
 \family default
- es el directorio de instalación del servidor 
-\emph on
-web
-\emph default
-.
+ es el directorio de instalación del servidor web.
  Acto seguido, añadimos al final de ese fichero la línea
 \end_layout
 
@@ -5118,7 +5204,11 @@ http://www.web2py.com/init/default/download
 \end_inset
 
  y descargamos la versión deseada.
- Es posible descargar versiones para Linux, 
+ Es posible descargar versiones para 
+\emph on
+Linux
+\emph default
+, 
 \emph on
 Windows
 \emph default
@@ -5126,7 +5216,11 @@ Windows
 \emph on
 CygnusCloud 
 \emph default
-sólo puede usarse la versión de Linux.
+sólo puede usarse la versión de 
+\emph on
+Linux
+\emph default
+.
  También es posible elegir entre 3 tipos de descargas de cara al uso que
  se quiera hacer de 
 \family typewriter
