@@ -5432,18 +5432,30 @@ web2py
 \end_layout
 
 \begin_layout Standard
-Al ser un framework web, web2py ofrece un rígido diseño de cara a la seguridad.
+Al ser un framework web, 
+\family typewriter
+web2py
+\family default
+ ofrece un rígido diseño de cara a la seguridad.
  Así, es capaz de resolver ciertas vulnerabilidades de forma automática
  siguiendo unas prácticas bien establecidas.
- Por ejemplo, web2py gestiona automáticamente el formateo de las entradas
- y salidas, aplica acciones de encriptado en los ficheros subidos y controla
- el área de maniobra de los desarrolladores de cara a la seguridad del sistema.
+ Por ejemplo, 
+\family typewriter
+web2py
+\family default
+ gestiona automáticamente el formateo de las entradas y salidas, aplica
+ acciones de encriptado en los ficheros subidos y controla el área de maniobra
+ de los desarrolladores de cara a la seguridad del sistema.
 \end_layout
 
 \begin_layout Standard
-Además web2py ofrece una capa de abstracción de base de datos (DAL por su
- acrónimo inglés), que genera código SQL de forma transparente al modelo
- de gestión de datos utilizado (SQLite, MySQL, PostgreSQL, Oracle ...).
+Además 
+\family typewriter
+web2py
+\family default
+ ofrece una capa de abstracción de base de datos (DAL por su acrónimo inglés),
+ que genera código SQL de forma transparente al modelo de gestión de datos
+ utilizado (SQLite, MySQL, PostgreSQL, Oracle ...).
 \end_layout
 
 \begin_layout Subsubsection*
@@ -5468,16 +5480,24 @@ INICIO
 \end_layout
 
 \begin_layout Standard
-Las principales razones por las cuales hemos decidido utilizar web2py frente
- a otros frameworks web basados en python tales como Django o Grok son:
+Las principales razones por las cuales hemos decidido utilizar 
+\family typewriter
+web2py
+\family default
+ frente a otros frameworks web basados en python tales como Django o Grok
+ son:
 \end_layout
 
 \begin_layout Itemize
 Ofrece una estructura sencilla que permite a los usuarios aprender sobre
  el desarrollo web sin comprometer la funcionalidad del sistema.
- Por esta razón, web2py no requiere instalación ni configuración, no tiene
- dependencias, y expone la mayor parte de su funcionalidad a través de una
- interfaz de navegador web.
+ Por esta razón, 
+\family typewriter
+web2py
+\family default
+ no requiere instalación ni configuración, no tiene dependencias, y expone
+ la mayor parte de su funcionalidad a través de una interfaz de navegador
+ web.
 \end_layout
 
 \begin_layout Itemize
@@ -36525,8 +36545,11 @@ framework
 \shape default
  web que nos facilitase algunos aspectos y estructurase el sistema de forma
  correcta.
- Para ello, hemos optado por la utilización de Web2py cuyas principales
- características se mencionaron en la sección 
+ Para ello, hemos optado por la utilización de 
+\family typewriter
+web2py
+\family default
+ cuyas principales características se mencionaron en la sección 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Uso-web2py"
@@ -36537,7 +36560,11 @@ reference "sub:Uso-web2py"
 \end_layout
 
 \begin_layout Standard
-Web2py fuerza al desarrollador a utilizar unas buenas prácticas de ingeniería
+
+\family typewriter
+web2py
+\family default
+ fuerza al desarrollador a utilizar unas buenas prácticas de ingeniería
  del software, evitando la repetición de código en la medida de lo posible
  y estandarizando la manera de hacer las cosas.
  
@@ -36561,8 +36588,11 @@ vista-controlador
 \end_layout
 
 \begin_layout Standard
-El flujo de trabajo típico de una petición web2py viene representado en
- el diagrama 
+El flujo de trabajo típico de una petición 
+\family typewriter
+web2py
+\family default
+ viene representado en el diagrama 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Diagrama-de-secuencia-web2py"
@@ -36600,7 +36630,9 @@ name "fig:Diagrama-de-secuencia-web2py"
 
 \end_inset
 
-Diagrama de secuencia web2py
+Procesamiento de una petición en 
+\family typewriter
+web2py
 \end_layout
 
 \end_inset
@@ -36622,8 +36654,11 @@ El navegador, a partir del cual el usuario se conectará a la web.
 \end_layout
 
 \begin_layout Itemize
-El servidor, puede ser el servidor incluido en web2py o un servidor de terceros,
- tal como Apache.
+El servidor, puede ser el servidor incluido en 
+\family typewriter
+web2py
+\family default
+ o un servidor de terceros, tal como Apache.
 \end_layout
 
 \begin_layout Itemize
@@ -36651,8 +36686,12 @@ Todas las llamadas se encierran en una transacción.
 \end_layout
 
 \begin_layout Standard
-Con web2py es posible registrar tareas recurrentes para ejecutarse en horas
- específicas y/o después de determinadas acciones.
+Con 
+\family typewriter
+web2py
+\family default
+ es posible registrar tareas recurrentes para ejecutarse en horas específicas
+ y/o después de determinadas acciones.
  También es posible alojar varias aplicaciones en una misma instancia.
  
 \begin_inset CommandInset citation
@@ -36669,7 +36708,11 @@ Estructura general de la web
 \end_layout
 
 \begin_layout Standard
-Como web2py estructura las aplicaciones siguiendo un modelo 
+Como 
+\family typewriter
+web2py
+\family default
+ estructura las aplicaciones siguiendo un modelo 
 \shape italic
 vista-controlador
 \shape default
@@ -36713,8 +36756,12 @@ html
  en las páginas y su comportamiento.
  Entendemos por comportamiento de un componente, su capacidad para realizar
  ciertas acciones que mejoren la interacción con los usuarios.
- Según las restricciones de web2py será necesario disponer de un fichero
- de vista por cada sección disponible en la web.
+ Según las restricciones de 
+\family typewriter
+web2py
+\family default
+ será necesario disponer de un fichero de vista por cada sección disponible
+ en la web.
  Cada uno de estos ficheros de vista reciben los componentes creados en
  el controlador asociado, ajustan su aspecto al que se mostrará en la página,
  y los posicionan en el lugar deseado.
@@ -36738,7 +36785,11 @@ VNC
 \family sans
 appAdmin
 \family default
- creado automáticamente por web2py para la gestión de las bases de datos.
+ creado automáticamente por 
+\family typewriter
+web2py
+\family default
+ para la gestión de las bases de datos.
  Dentro de cada módulo encontramos una función asociada a cada una de las
  secciones que forman la aplicación web.
  Hablaremos más en profundidad sobre este tema en la sección 
@@ -36770,15 +36821,22 @@ menu.py
 tags
 \shape default
  de búsqueda\SpecialChar \ldots{}
- Este par de módulos son creados y exigidos por web2py.
+ Este par de módulos son creados y exigidos por 
+\family typewriter
+web2py
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
 Lenguajes: Este grupo incluye los diccionarios de traducción de las páginas
  de la web.
  Estos diccionarios deben ser rellenados por el desarrollador y son usados
- internamente por web2py para traducir todas las palabras que aparezcan
- en los mismos.
+ internamente por 
+\family typewriter
+web2py
+\family default
+ para traducir todas las palabras que aparezcan en los mismos.
 \end_layout
 
 \begin_layout Itemize
@@ -36819,10 +36877,14 @@ name "sub:Estructura-de-direcciones"
 
 \begin_layout Standard
 Con el fin de poder gestionar la web de la forma más modular posible y aprovecha
-ndo el flujo de direcciones usado por web2py, vamos a estructurar los diferentes
- apartados de la web en forma de árbol de direcciones, de forma que cada
- uno de sus nodos pueda realizar saltos a cualquier otro nodo del árbol
- según las acciones llevadas a cabo por los usuarios.
+ndo el flujo de direcciones usado por 
+\family typewriter
+web2py
+\family default
+, vamos a estructurar los diferentes apartados de la web en forma de árbol
+ de direcciones, de forma que cada uno de sus nodos pueda realizar saltos
+ a cualquier otro nodo del árbol según las acciones llevadas a cabo por
+ los usuarios.
  Así, el elemento principal será la aplicación en sí (
 \family typewriter
 /CygnusCloud
@@ -37922,9 +37984,17 @@ La barra de secciones permanente en la web muestra la distribución de las
 
 \begin_layout Standard
 De cara a la implementación, es necesario ajustar esta estructura para que
- siga el modelo definido por web2py.
- Web2py gestiona sus direcciones con respecto a la estructura de los módulos
- python que actúan como controladores.
+ siga el modelo definido por 
+\family typewriter
+web2py
+\family default
+.
+ 
+\family typewriter
+web2py
+\family default
+ gestiona sus direcciones con respecto a la estructura de los módulos python
+ que actúan como controladores.
  El conjunto de controladores presentes en la aplicación web coincide con
  los tipos de usuarios definidos en el primer nivel.
  Así disponemos de 5 controladores:
@@ -38119,7 +38189,11 @@ Gestión de usuarios
 
 \begin_layout Standard
 Para llevar a cabo la gestión de usuarios hemos optado por utilizar una
- de las librerías que web2py nos ofrece.
+ de las librerías que 
+\family typewriter
+web2py
+\family default
+ nos ofrece.
  Esta librería, de nombre 
 \family sans
 auth
@@ -38194,8 +38268,12 @@ nombre del controlador que la contiene, el nombre de la función de la sección
 \family typewriter
 redirect
 \family default
-, es web2py el encargado de llamar a la función del controlador que corresponda
- y pasarle los argumentos y variables.
+, es 
+\family typewriter
+web2py
+\family default
+ el encargado de llamar a la función del controlador que corresponda y pasarle
+ los argumentos y variables.
 \end_layout
 
 \begin_layout Enumerate
@@ -38286,7 +38364,11 @@ Seguridad
 \end_layout
 
 \begin_layout Standard
-Con respecto a la seguridad, web2py, y por extensión 
+Con respecto a la seguridad, 
+\family typewriter
+web2py
+\family default
+, y por extensión 
 \shape italic
 CygnusCloud
 \shape default
@@ -39317,7 +39399,11 @@ auth
 \family default
 para gestionar los inicios y cierres de sesión, además de las restricciones
  de acceso a cada página.
- Es creada automáticamente por web2py y 
+ Es creada automáticamente por 
+\family typewriter
+web2py
+\family default
+ y 
 \shape italic
 CygnusCloud
 \shape default
@@ -39380,7 +39466,11 @@ CygnusCloud
 CygnusCloud
 \shape default
  dispone de tres tipos de usuarios (alumnos, profesores y administradores).
- Esta tabla es creada automáticamente por web2py.
+ Esta tabla es creada automáticamente por 
+\family typewriter
+web2py
+\family default
+.
  Las columnas que la forman son:
 \end_layout
 
@@ -39422,7 +39512,11 @@ auth_membership
  Esta tabla relaciona a cada usuario con el grupo de usuarios al que pertenece.
  Todos los usuarios deben tener un, y solo un, grupo de usuarios asociados.
  Al igual que las dos anteriores, esta tabla es creada automáticamente por
- web2py y contiene las siguientes columnas:
+ 
+\family typewriter
+web2py
+\family default
+ y contiene las siguientes columnas:
 \end_layout
 
 \begin_deeper
@@ -39468,7 +39562,10 @@ auth_event
 log
 \shape default
  sobre los últimos movimientos.
- Al igual que las anteriores, esta tabla es creada automática por web2py
+ Al igual que las anteriores, esta tabla es creada automática por 
+\family typewriter
+web2py
+\family default
  y en este caso, será totalmente gestionada por el módulo 
 \family typewriter
 auth
@@ -40885,7 +40982,11 @@ los módulos del
 \emph on
 framework
 \emph default
- web web2py.
+ web 
+\family typewriter
+web2py
+\family default
+.
  Estos se utilizarán como base para construir la aplicación web, y también
  para arrancar el servidor web a través del cual se interactuará con ella.
 \end_layout
@@ -40903,8 +41004,11 @@ Finalmente, es importante notar que sólo los módulos de la aplicación web,
  junto con los módulos del 
 \emph on
 framework 
+\family typewriter
 \emph default
-web2py y los módulos de los paquetes 
+web2py
+\family default
+ y los módulos de los paquetes 
 \family typewriter
 network
 \family default
