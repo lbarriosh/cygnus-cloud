@@ -532,19 +532,6 @@ filename "Apéndices/Organización repositorio GitHub/Organizacion repositorio G
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: organización del repositorio
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
 preview true

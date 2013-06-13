@@ -38268,7 +38268,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Secuencia de arranque de una máquina virtual.
+Secuencia de arranque de una máquina virtual desde la web.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Secuencia-de-arranque"
@@ -38459,7 +38459,8 @@ name "fig:Diagrama-de-secuencia-creacionMV-web"
 
 \end_inset
 
-Diagrama de secuencia creación de una máquina virtual por parte del profesor
+Diagrama de secuencia creación de una imagen por parte del profesor desde
+ la web
 \end_layout
 
 \end_inset
@@ -38752,7 +38753,7 @@ reference "fig:Diagrama-de-secuencia-edicionMV-web"
 \begin_inset Float figure
 wide false
 sideways true
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -38774,7 +38775,8 @@ name "fig:Diagrama-de-secuencia-edicionMV-web"
 
 \end_inset
 
-Diagrama de secuencia de edición de una máquina virtual por parte del profesor
+Diagrama de secuencia de edición de una imagen por parte del profesor desde
+ la web
 \end_layout
 
 \end_inset
@@ -39005,7 +39007,8 @@ name "fig:Diagrama-de-secuencia-arranque-servidor-Administrador"
 
 \end_inset
 
-Diagrama de secuencia de arranque de un servidor de máquinas virtuales 
+Diagrama de secuencia de arranque de un servidor de máquinas virtuales desde
+ la web
 \end_layout
 
 \end_inset

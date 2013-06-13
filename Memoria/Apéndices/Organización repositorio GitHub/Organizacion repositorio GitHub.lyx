@@ -136,9 +136,9 @@ Descarga del contenido
 \end_layout
 
 \begin_layout Standard
-Cualquier usuario puede descargar el contenido del repositorio a su propio
- ordenador para poder ejecutar y utilizar el código y cualquiera de los
- ficheros aportados en él, siempre y cuando cumpla la licencia asociada
+Cualquier persona que lo desee puede descargar el contenido del repositorio
+ a su propio ordenador para poder ejecutar y utilizar el código y cualquiera
+ de los ficheros aportados en él, siempre y cuando cumpla la licencia asociada
  (Véase 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -185,14 +185,22 @@ La rama master
 \end_layout
 
 \begin_layout Standard
-Esta rama contiene la última versión estable de CygnusCloud.
+Esta rama contiene la última versión estable de 
+\shape italic
+CygnusCloud
+\shape default
+.
  El objetivo de esta rama es ir almacenando las versiones de 
 \shape italic
 CygnusCloud
 \shape default
  que ya han sido completamente terminadas y depuradas.
  Por lo tanto, esta rama nunca debe contener código a medio desarrollar
- o con posibles bugs contemplados para la versión que corresponda.
+ o con posibles 
+\shape italic
+bugs
+\shape default
+ contemplados para la versión que corresponda.
 \end_layout
 
 \begin_layout Standard
@@ -218,15 +226,15 @@ os por
 CygnusCloud
 \shape default
  con el fin de facilitar la labor de aprendizaje de las diferentes herramientas
- necesarias para el desarrollo de la versión estable.
+ necesarias para el desarrollo de la versión residente en master.
 \end_layout
 
 \begin_layout Itemize
 Ficheros de configuración.
  Incluye los ficheros de configuración utilizados para configurar los servidores
  del sistema.
- Estos ficheros deben ser compatibles con la versión estable que se encuentra
- en esta rama.
+ Estos ficheros deben ser compatibles con la versión que se encuentra en
+ esta rama.
 \end_layout
 
 \begin_layout Itemize
@@ -251,8 +259,8 @@ CygnusCloud
 \shape default
 .
  Este código, permanece inalterable durante cada iteración y solo es actualizado
- cuando se completa una versión estable y funcional del sistema.
- Dentro de este directorio podemos destacar dos directorios:
+ cuando se completa una versión funcional del sistema.
+ Dentro de este directorio podemos destacar dos subdirectorios:
 \end_layout
 
 \begin_deeper
@@ -277,7 +285,11 @@ La rama develop
 
 \begin_layout Standard
 Esta rama esta destinada a mantener todo el código en desarrollo de la última
- versión de CygnusCloud.
+ versión de 
+\shape italic
+CygnusCloud
+\shape default
+.
  Debe garantizarse que todo el código subido a esta rama puede ser compilado
  y no provoca ningún tipo de problema al resto de usuarios que se encuentren
  trabajando sobre esta versión.
@@ -296,8 +308,11 @@ Los principales directorios que podemos encontrar en esta rama son:
 \begin_layout Itemize
 Arquitectura.
  Incluye tanto los diseños antiguos, ya implantados en la última versión
- estable, como los nuevos diseños que pueden estar o no implantados en la
- versión en desarrollo.
+ estable, como los nuevos diseños que pueden 
+\shape italic
+estar
+\shape default
+ o no implantados en la versión en desarrollo.
 \end_layout
 
 \begin_layout Itemize
