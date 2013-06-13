@@ -2042,7 +2042,122 @@ Uso de otro formato de fichero comprimido
 
 \begin_layout Standard
 Para ahorrar ancho de banda, el repositorio de imágenes y los servidores
- de máquinas virtuales
+ de máquinas virtuales intercambian las imágenes de disco de las distintas
+ configuraciones en formato comprimido.
+\end_layout
+
+\begin_layout Standard
+Aunque hemos decidido utilizar el formato 
+\family typewriter
+zip
+\family default
+ para crear estos ficheros, resulta sencillo utilizar otro formato distinto.
+ 
+\end_layout
+
+\begin_layout Standard
+Para ello, sólo es necesario modificar la clase que crea y extrae los ficheros
+ comprimidos en el servidor de máquinas virtuales.
+ Puesto que el repositorio de imágenes nunca extrae los ficheros comprimidos,
+ no es necesario realizar ninguna modificación en él.
+\end_layout
+
+\begin_layout Section
+Cambio del algoritmo de balanceado de carga
+\end_layout
+
+\begin_layout Standard
+Como hemos visto en el capítulo de arquitectura, el servidor de 
+\emph on
+cluster
+\emph default
+ utiliza la interfaz 
+\family typewriter
+LoadBalancer
+\family default
+ para interactuar con las instancias de las clases asociadas a los algoritmos
+ de balanceado de carga.
+\end_layout
+
+\begin_layout Standard
+Por ello, resulta muy sencillo implementar nuevos algoritmos de balanceado
+ de carga: bastará con crear nuevas clases que implementen esa interfaz.
+\end_layout
+
+\begin_layout Standard
+Como vimos en su momento, los algoritmos de balanceado de carga podrán trabajar
+ con esta información:
+\end_layout
+
+\begin_layout Itemize
+número de CPUs virtuales, tamaño de la memoria RAM, tamaño de la imagen
+ del sistema operativo y tamaño de la imagen con los datos temporales de
+ la máquina virtual a crear.
+\end_layout
+
+\begin_layout Itemize
+número de instancias, número de CPUs virtuales, número de CPUs físicas,
+ memoria RAM ocupada, memoria RAM total, espacio de almacenamiento ocupado,
+ espacio de almacenamiento total, espacio de almacenamiento temporal ocupado
+ y espacio de almacenamiento temporal total en todos los servidores de máquinas
+ virtuales arrancados.
+\end_layout
+
+\begin_layout Itemize
+modo de funcionamiento (normal o reservado para crear y editar imágenes)
+ de todos los servidores de máquinas virtuales arrancados.
+\end_layout
+
+\begin_layout Section
+Uso de dos
+\emph on
+ 
+\emph default
+límites temporales en el proceso 
+\emph on
+endpoint
+\end_layout
+
+\begin_layout Standard
+Cuando se produce una caída del servidor de 
+\emph on
+cluster
+\emph default
+, el proceso 
+\emph on
+endpoint
+\emph default
+ generará errores para las distintas peticiones mediante un mecanismo basado
+ en 
+\emph on
+timeouts
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Ahora bien, en la implementación actual se utiliza un único límite temporal.
+ Por ello, si no se ajusta de forma suficientemente cuidadosa, pueden generarse
+ errores por 
+\emph on
+timeout 
+\emph default
+para las peticiones de alta latencia (como la creación y el despliegue de
+ imágenes).
+\end_layout
+
+\begin_layout Standard
+Por ello, resulta interesante modificar el proceso 
+\emph on
+endpoint
+\emph default
+ para que, a la hora de generar errores por 
+\emph on
+timeout
+\emph default
+, utilice dos límites temporales: uno para las operaciones de alta latencia
+ y otro para el resto de operaciones.
 \end_layout
 
 \end_body
