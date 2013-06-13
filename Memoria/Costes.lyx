@@ -61,7 +61,7 @@
 \begin_body
 
 \begin_layout Chapter
-Costes
+Estudio de costes
 \end_layout
 
 \begin_layout Section
@@ -69,8 +69,9 @@ Introducción
 \end_layout
 
 \begin_layout Standard
-Desde el principio del proyecto pensamos en reutilizar los recursos de los
- que disponíamos, para así poder reducir el coste total lo máximo posible.
+Desde el principio del desarrollo del proyecto pensamos en reutilizar los
+ recursos de los que disponíamos, para así poder reducir el coste total
+ lo máximo posible.
  Como 
 \shape italic
 CygnusCloud

@@ -2216,5 +2216,134 @@ timeout
  y otro para el resto de operaciones.
 \end_layout
 
+\begin_layout Section
+Registro de imágenes base desde la aplicación web
+\end_layout
+
+\begin_layout Standard
+Tras instalar los módulos de 
+\emph on
+CygnusCloud
+\emph default
+ en las máquinas del 
+\emph on
+cluster
+\emph default
+, no existe ninguna configuración registrada.
+ Para que los usuarios puedan empezar a utilizar la infraestructura, los
+ administradores tendrán que crear y registrar manualmente una o más imágenes
+ base en el 
+\emph on
+cluster
+\emph default
+.
+ Para ello, es necesario que
+\end_layout
+
+\begin_layout Itemize
+los administradores creen las imágenes de disco fuera del sistema 
+\emph on
+CygnusCloud
+\emph default
+, que
+\end_layout
+
+\begin_layout Itemize
+generen los ficheros comprimidos que hay que transferir al repositorio de
+ imágenes, que 
+\end_layout
+
+\begin_layout Itemize
+transfieran esos ficheros al repositorio de imágenes (mediante una utilidad
+ de conexión al repositorio), y que
+\end_layout
+
+\begin_layout Itemize
+registren las nuevas imágenes base en la base de datos del servidor de 
+\emph on
+cluster
+\emph default
+ y en la base de datos del 
+\emph on
+endpoint
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Puesto que las imágenes base se transfieren mediante el protocolo FTP, es
+ posible integrar la mayor parte este proceso en la aplicación web.
+ Para ello, es necesario
+\end_layout
+
+\begin_layout Itemize
+modificar el proceso 
+\emph on
+endpoint
+\emph default
+ para que interactúe con el repositorio de imágenes y realice las actualizacione
+s correspondientes en la base de datos del 
+\emph on
+endpoint
+\emph default
+, 
+\end_layout
+
+\begin_layout Itemize
+modificar la aplicación web para que los administradores puedan transferir
+ ficheros comprimidos al servidor web, y
+\end_layout
+
+\begin_layout Itemize
+modificar el servidor de 
+\emph on
+cluster
+\emph default
+ añadiendo una petición que registra identificadores de imágenes de disco.
+\end_layout
+
+\begin_layout Standard
+De esta manera, los administradores sólo tendrán que ocuparse de la creación
+ manual de las imágenes de disco, lo que simplifica mucho su labor y, sobre
+ todo, evita la aparición de errores.
+\end_layout
+
+\begin_layout Section
+Detección de errores por 
+\emph on
+timeout
+\emph default
+ en el servidor de 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+Como sabemos, el servidor de 
+\emph on
+cluster
+\emph default
+ monitoriza todos los comandos de arranque de máquinas virtuales.
+ De esta manera, cuando el tiempo que transcurrido desde que se envió la
+ petición al servidor de máquinas virtuales alcanza cierto umbral, el servidor
+ de 
+\emph on
+cluster 
+\emph default
+asume que esta ha fallado e informará del error.
+ 
+\end_layout
+
+\begin_layout Standard
+Para tratar las desconexiones de los servidores de máquinas virtuales de
+ forma más adecuada, podemos ampliar este mecanismo, de modo que puedan
+ generarse errores por 
+\emph on
+timeout
+\emph default
+ para todas las peticiones recibidas (y no sólo para las peticiones de arranque
+ de máquinas virtuales).
+\end_layout
+
 \end_body
 \end_document
