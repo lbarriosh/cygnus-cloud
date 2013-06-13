@@ -516,5 +516,967 @@ Linux
  que estos conocimientos nos resultarán muy útiles en el futuro inmediato.
 \end_layout
 
+\begin_layout Section
+Características y capacidades del sistema 
+\emph on
+CygnusCloud
+\end_layout
+
+\begin_layout Subsection
+Funciones básicas
+\end_layout
+
+\begin_layout Standard
+En 
+\emph on
+CygnusCloud
+\emph default
+, existen tres tipos de usuarios: alumnos, profesores y administradores.
+ 
+\end_layout
+
+\begin_layout Standard
+En primer lugar, los alumnos pueden
+\end_layout
+
+\begin_layout Itemize
+arrancar una máquina virtual asociada a cualquier asignatura en la que estén
+ matriculados y utilizarla para trabajar.
+\end_layout
+
+\begin_layout Itemize
+forzar el apagado o el reinicio de una de sus máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+conectarse y desconectarse del servidor VNC asociado a una de sus máquinas
+ virtuales.
+ Esto les permite, por ejemplo, trasladarse a otro aula de informática para
+ continuar trabajando sin necesidad de apagar la máquina.
+\end_layout
+
+\begin_layout Itemize
+introducir y extraer datos de la máquina virtual a través de internet.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los profesores pueden realizar las mismas tareas que los
+ alumnos.
+ Asimismo, pueden
+\end_layout
+
+\begin_layout Itemize
+crear y borrar las asociaciones entre sus máquinas virtuales y las asignaturas
+ que imparten, pudiendo compartir máquinas virtuales entre distintas asignaturas
+ cuando lo estimen oportuno.
+\end_layout
+
+\begin_layout Itemize
+crear una configuración nueva para una máquina virtual, tomando como base
+ cualquier configuración existente en el sistema.
+ Este proceso puede hacerse en varias fases.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Por ejemplo, un profesor puede empezar a crear una configuración a última
+ hora de la tarde, apagar la máquina virtual correspondiente y proseguir
+ el día siguiente.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+editar la configuración de una de sus máquinas virtuales.
+ Nuevamente, este proceso puede hacerse en varias fases.
+\end_layout
+
+\begin_layout Itemize
+establecer, desde el sistema operativo de la máquina virtual, conexiones
+ con servidores CIFS o NFS.
+ Esto permite a los profesores utilizar los datos almacenados en su propio
+ equipo para crear o editar configuraciones.
+\end_layout
+
+\begin_layout Itemize
+desplegar una configuración nueva sin la intervención de los administradores.
+ Para ello, se considerará el número de alumnos matriculados en la asignatura
+ asociada a la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+desplegar las modificaciones de una configuración sin que tengan que intervenir
+ los administradores.
+\end_layout
+
+\begin_layout Itemize
+borrar una de sus configuraciones de todo el sistema.
+\end_layout
+
+\begin_layout Standard
+Por otro lado, los administradores pueden realizar las mismas tareas que
+ los profesores.
+ Además, pueden
+\end_layout
+
+\begin_layout Itemize
+realizar las altas, bajas, arranques y apagados de los servidores que alojarán
+ las máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+apagar todos los servidores del 
+\emph on
+cluster
+\emph default
+ de forma ordenada.
+\end_layout
+
+\begin_layout Itemize
+realizar las altas y bajas de usuarios y asignaturas.
+\end_layout
+
+\begin_layout Itemize
+fijar los privilegios de los distintos usuarios.
+\end_layout
+
+\begin_layout Itemize
+desplegar manualmente una configuración en cierto servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+borrar manualmente una configuración de cierto servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+modificar la configuración básica de los servidores de máquinas virtuales
+ y su uso durante el balanceado de carga.
+\end_layout
+
+\begin_layout Standard
+Finalmente, todos los usuarios interactuarán con el sistema 
+\emph on
+CygnusCloud
+\emph default
+ utilizando una aplicación web que, además, realizará las labores de control
+ de acceso.
+\end_layout
+
+\begin_layout Subsection
+Errores tratados
+\end_layout
+
+\begin_layout Standard
+Para que 
+\emph on
+CygnusCloud
+\emph default
+ pueda utilizarse en una prueba piloto o incluso en producción, es necesario
+ que la infraestructura detecte y trate un gran número de errores, que enumerare
+mos en esta sección.
+ Por claridad, agruparemos estos errores en función del subsistema en el
+ que se detecten.
+\end_layout
+
+\begin_layout Standard
+En primer lugar, en el repositorio de imágenes se detectarán y tratarán
+ errores cuando
+\end_layout
+
+\begin_layout Itemize
+el servidor de 
+\emph on
+cluster
+\emph default
+ intenta borrar del repositorio un fichero comprimido que no existe.
+\end_layout
+
+\begin_layout Itemize
+un servidor de máquinas virtuales intenta descargar o transferir al repositorio
+ un fichero comprimido que no está asociado a ninguna configuración registrada.
+\end_layout
+
+\begin_layout Itemize
+un servidor de máquinas virtuales intenta descargar un fichero comprimido
+ que ha sido concedido en exclusividad a otro servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+un servidor de máquinas virtuales intenta sobreescribir un fichero comprimido
+ que no está siendo modificado en ningún servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, en el servidor de máquinas virtuales se detectarán y tratarán
+ errores cuando
+\end_layout
+
+\begin_layout Itemize
+falla el hipervisor KVM.
+\end_layout
+
+\begin_layout Itemize
+el servidor de 
+\emph on
+cluster 
+\emph default
+ordena el arranque de una máquina virtual que no está registrada.
+\end_layout
+
+\begin_layout Itemize
+el servidor de 
+\emph on
+cluster
+\emph default
+ ordena la edición de una configuración que se está modificando en otro
+ servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+falla la compresión o la descompresión de los ficheros 
+\family typewriter
+.zip
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+no se puede establecer la conexión con el repositorio de imágenes para subir
+ o descargar de él un fichero 
+\family typewriter
+.zip
+\family default
+.
+ Para evitar que se pierdan los cambios en las configuraciones de las máquinas
+ virtuales, el servidor de máquinas virtuales intentará reestablecer la
+ conexión en varias ocasiones antes de generar el error.
+\end_layout
+
+\begin_layout Itemize
+falla la descarga o la subida de un fichero 
+\family typewriter
+.zip
+\family default
+ al repositorio de imágenes.
+ Para evitar que se pierdan los cambios en las configuraciones de las máquinas
+ virtuales, el servidor de máquinas virtuales intentará volver a realizar
+ la operación en varias ocasiones antes de generar el error.
+\end_layout
+
+\begin_layout Standard
+Además, si el servidor de máquinas virtuales se apaga de forma brusca, en
+ su siguiente arranque
+\end_layout
+
+\begin_layout Itemize
+se detectarán las máquinas virtuales que siguen activas,
+\end_layout
+
+\begin_layout Itemize
+se borrarán del disco los ficheros 
+\family typewriter
+.zip
+\family default
+ parcialmente generados, 
+\end_layout
+
+\begin_layout Itemize
+se reiniciarán las transferencias con el repositorio de imágenes (para no
+ perder los cambios que han hecho los usuarios en las configuraciones de
+ las máquinas virtuales), y
+\end_layout
+
+\begin_layout Itemize
+se liberarán todos los recursos asignados a las máquinas virtuales que se
+ han apagado.
+\end_layout
+
+\begin_layout Standard
+Por otro lado, en el servidor de 
+\emph on
+cluster
+\emph default
+ se detectarán y tratarán errores cuando
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta actualizar todas las copias de una imagen o configuración
+ que no se ha modificado.
+\end_layout
+
+\begin_layout Itemize
+un usuario ordena el despliegue automático de una imagen a la que afecta
+ otra operación de despliegue anterior.
+\end_layout
+
+\begin_layout Itemize
+a la hora de realizar el despliegue automático de la imagen, los servidores
+ de máquinas virtuales no pueden albergar el número máximo de máquinas virtuales
+ activas solicitado.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta borrar una imagen que se está editando.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta borrar una imagen que está afectada por una operación
+ de borrado anterior.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta arrancar una máquina virtual que no está registrada.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta crear una imagen a partir de otra imagen que no existe.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta editar una imagen que no existe.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta borrar una imagen que no existe.
+\end_layout
+
+\begin_layout Itemize
+para procesar la petición es necesario interactuar con el repositorio de
+ imágenes, y la conexión con dicha máquina se ha perdido.
+\end_layout
+
+\begin_layout Itemize
+el repositorio de imágenes no tiene suficiente espacio en disco como para
+ crear una nueva imagen.
+\end_layout
+
+\begin_layout Itemize
+se intenta apagar, parar o dar de baja un servidor de máquinas virtuales
+ que no está registrado.
+\end_layout
+
+\begin_layout Itemize
+se intenta enviar una petición a un servidor de máquinas virtuales que está
+ arrancando.
+\end_layout
+
+\begin_layout Itemize
+se intenta desplegar una imagen de disco en un servidor de máquinas virtuales
+ que ya la almacena.
+\end_layout
+
+\begin_layout Itemize
+se intenta borrar una imagen de disco de un servidor de máquinas virtuales
+ que no la almacena.
+\end_layout
+
+\begin_layout Itemize
+un servidor de máquinas virtuales no dispone de suficiente espacio en disco
+ como para almacenar la imagen a desplegar.
+\end_layout
+
+\begin_layout Itemize
+no se puede establecer la conexión con el servidor de máquinas virtuales
+ al que afecta la petición.
+\end_layout
+
+\begin_layout Itemize
+se ha perdido la conexión con el servidor de máquinas virtuales al que afecta
+ la petición.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta apagar o reiniciar una máquina virtual que no existe.
+\end_layout
+
+\begin_layout Itemize
+se intenta modificar la configuración de un servidor de máquinas virtuales
+ que ya está arrancado.
+\end_layout
+
+\begin_layout Itemize
+el nuevo nombre o la nueva dirección IP asignados a un servidor de máquinas
+ virtuales ya están en uso.
+\end_layout
+
+\begin_layout Itemize
+el despliegue automático de una imagen falla en algunos servidores de máquinas
+ virtuales.
+\end_layout
+
+\begin_layout Itemize
+el borrado de una imagen falla en algunos servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+se excede el tiempo máximo de arranque de una máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+no hay ningún servidor de máquinas virtuales que pueda albergar la máquina
+ virtual que se pretende arrancar.
+\end_layout
+
+\begin_layout Itemize
+no hay servidores de máquinas virtuales en los que se pueda editar la imagen
+ seleccionada.
+\end_layout
+
+\begin_layout Itemize
+no hay servidores de máquinas virtuales en los que pueda desplegarse una
+ imagen.
+ Este error estará asociado a las operaciones de despliegue automático.
+\end_layout
+
+\begin_layout Itemize
+todos los servidores de máquinas virtuales que se usan para crear o editar
+ imágenes no disponen de recursos suficientes como para editar una imagen
+ más.
+\end_layout
+
+\begin_layout Standard
+Finalmente, el servidor web detectará y tratará las caídas del servidor
+ de 
+\emph on
+cluster
+\emph default
+.
+ En estos casos,
+\end_layout
+
+\begin_layout Itemize
+intentará reestablecer la conexión con el mismo, y
+\end_layout
+
+\begin_layout Itemize
+cuando se exceda el tiempo máximo de procesamiento de una petición, generará
+ el error correspondiente
+\end_layout
+
+\begin_layout Section
+Problemas encontrados durante el desarrollo
+\end_layout
+
+\begin_layout Standard
+Durante el desarrollo de 
+\emph on
+CygnusCloud
+\emph default
+, hemos tenido que resolver dos situaciones problemáticas: la necesidad
+ de cambiar de hipervisor y el uso de una librería de red pésimamente documentad
+a.
+\end_layout
+
+\begin_layout Subsection
+Cambio de hipervisor
+\end_layout
+
+\begin_layout Standard
+En la fase inicial del proyecto, evaluamos los hipervisores Xen y KVM.
+ Puesto que ambos cuentan con el mismo rendimiento y, en principio, soportan
+ las mismas funciones, decidimos utilizar Xen por su mayor soporte comercial.
+\end_layout
+
+\begin_layout Standard
+Así, estuvimos familiarizándonos con este hipervisor durante una semana.
+ En ese periodo de tiempo, lo instalamos y lo utilizamos para crear distintas
+ máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Tras adquirir suficiente experiencia, decidimos empezar a utilizar imágenes
+ 
+\emph on
+copy-on-write
+\emph default
+.
+ Esto marcó el el inicio de todos nuestros problemas con Xen.
+\end_layout
+
+\begin_layout Standard
+En primer lugar, encontramos un 
+\emph on
+bug
+\emph default
+ en el parser de los ficheros de definición: los dos elementos XML que se
+ utilizan para indicar la ruta de la imagen de disco no pueden estar separados
+ por espacios, tabuladores ni líneas en blanco.
+ Para averiguar la causa de este 
+\emph on
+bug
+\emph default
+, tuvimos que invertir cerca de una semana, en la que examinamos el código
+ que se utilizaba para interactuar con Xen.
+ 
+\end_layout
+
+\begin_layout Standard
+Por suerte para nosotros, ese código está escrito en 
+\emph on
+Python
+\emph default
+, por lo que es pudimos modificarlo rápidamente para hacer pruebas.
+ 
+\end_layout
+
+\begin_layout Standard
+Una vez resuelto este inconveniente descubrimos, también perdiendo cerca
+ de una semana, que la versión 
+\emph on
+open-source
+\emph default
+ de Xen no soporta todas las características que se indican en su documentación
+ oficial.
+ Aunque esta afirma que Xen soporta imágenes de disco RAW, 
+\family typewriter
+qcow
+\family default
+, 
+\family typewriter
+qcow2
+\family default
+ y 
+\family typewriter
+vmdk
+\family default
+, en la práctica sólo es posible utilizar imágenes RAW y 
+\family typewriter
+qcow
+\family default
+ en modo no 
+\emph on
+copy-on-write
+\emph default
+.
+ Asimismo, en ninguno de los escasos foros y listas de correo que contienen
+ información sobre Xen se mencionaba este aspecto.
+\end_layout
+
+\begin_layout Standard
+En un último intento, decidimos compilar manualmente la versión más reciente
+ de Xen, la 4.2.
+ Tras hacerlo y comprobar que 
+\end_layout
+
+\begin_layout Itemize
+estos problemas seguían estando presentes, que
+\end_layout
+
+\begin_layout Itemize
+la documentación de la nueva versión era prácticamente inexistente, y que
+\end_layout
+
+\begin_layout Itemize
+hasta la publicación de la nueva versión de Xen, que tendría lugar a mediados
+ de 2013, los integrantes del proyecto Xen no tenían intención de resolver
+ ningún 
+\emph on
+bug
+\emph default
+,
+\end_layout
+
+\begin_layout Standard
+decidimos utilizar KVM.
+ Esta ha sido una de las mejores decisiones de diseño que hemos tomado:
+ tras un fin de semana, pudimos iniciar, con un mes de retraso, el desarrollo
+ de los servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Subsection
+La librería de red 
+\emph on
+twisted
+\end_layout
+
+\begin_layout Standard
+Cuando comenzamos a trabajar en el proyecto, decidimos utilizar una librería
+ de red escrita en 
+\emph on
+Python
+\emph default
+ y, de ser posible, muy utilizada.
+ En caso de tener problemas, esto último nos permitiría obtener mucha informació
+n.
+\end_layout
+
+\begin_layout Standard
+Así, nos decantamos por utilizar la librería de red 
+\emph on
+twisted
+\emph default
+.
+ Aunque encontramos bastantes tutoriales para aprender a utilizar esta librería,
+ ninguno de ellos profundizaba lo suficiente como para cubrir nuestras necesidad
+es.
+\end_layout
+
+\begin_layout Standard
+Por ello, decidimos tomar los tutoriales como base y, a partir de la documentaci
+ón oficial de 
+\emph on
+twisted
+\emph default
+, extenderlos para implementar el módulo de comunicaciones.
+\end_layout
+
+\begin_layout Standard
+Durante el desarrollo de este módulo observamos que, aunque utilizásemos
+ la última versión de 
+\emph on
+twisted
+\emph default
+ y la versión más actualizada de su documentación, muchos de los ejemplos
+ incluidos en la misma no funcionaban.
+ 
+\end_layout
+
+\begin_layout Standard
+Para confirmar que la documentación de 
+\emph on
+twisted 
+\emph default
+se contradice a sí misma, decidimos utilizar la función 
+\family typewriter
+dir()
+\family default
+ de 
+\emph on
+Python
+\emph default
+.
+ Al evaluarse, esta función devuelve una lista con todos los atributos de
+ un objeto.
+ 
+\end_layout
+
+\begin_layout Standard
+Aunque existen muchos foros en los que se resuelven dudas sobre el uso de
+ la librería 
+\emph on
+twisted
+\emph default
+, en la inmensa mayoría de ellos no se indica la versión de 
+\emph on
+twisted
+\emph default
+ que se está utilizando, Por tanto, para utilizar la librería 
+\emph on
+twisted
+\emph default
+ es necesario recurrir al método de prueba y error en bastantes ocasiones.
+ 
+\end_layout
+
+\begin_layout Standard
+Cuando detectamos este inconveniente, habíamos invertido un esfuerzo considerabl
+e en comprender el funcionamiento de 
+\emph on
+twisted
+\emph default
+ y en implementar el módulo de comunicaciones.
+ Por ello, decidimos seguir utilizando esta librería de red.
+\end_layout
+
+\begin_layout Section
+Repercusiones
+\end_layout
+
+\begin_layout Standard
+El esfuerzo que hemos invertido en 
+\emph on
+CygnusCloud
+\emph default
+ se ha visto recompensado de varias formas.
+ 
+\end_layout
+
+\begin_layout Standard
+En primer lugar, un artículo en el que se mostraban las ideas básicas de
+ 
+\emph on
+CygnusCloud 
+\emph default
+y del proyecto 
+\emph on
+SmartCloud
+\emph default
+ fue portada de la prestigiosa publicación 
+\emph on
+HPC In The Cloud
+\emph default
+ durante más de un mes.
+ Dicho artículo puede consultarse en 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.hpcinthecloud.com/hpccloud/2013-01-04/student_projects_highlight_cloud_s_potential.html"
+target "http://www.hpcinthecloud.com/hpccloud/2013-01-04/student_projects_highlight_cloud_s_potential.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Conclusiones/portada HPC.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Portada de la publicación HPC In The Cloud en enero de 2013
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tras la publicación de ese artículo, fuimos entrevistados junto con los
+ miembros de los proyectos 
+\emph on
+SmartCloud
+\emph default
+ y 
+\emph on
+Horadrim 
+\emph default
+en el programa Hoy por hoy Madrid de la Cadena Ser.
+ En dicho espacio, hablamos de las alternativas que ofrece 
+\emph on
+CygnusCloud 
+\emph default
+y el 
+\emph on
+Cloud Computing
+\emph default
+ en general para adelantar la salida de la crisis económica.
+ El audio de esta entrevista está disponible en
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://tinyurl.com/ox428wq"
+target "http://tinyurl.com/ox428wq"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por otra parte, 
+\emph on
+CygnusCloud
+\emph default
+ recibió el premio al mejor proyecto comunitario en la final nacional de
+ la séptima edición del Concurso Universitario de Software Libre, que se
+ celebró en Granada el día 24 de mayo de 2013.
+ La lista completa de premiados en ese evento está disponible en
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.concursosoftwarelibre.org/1213/premiados-vii-cusl"
+target "http://www.concursosoftwarelibre.org/1213/premiados-vii-cusl"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Conclusiones/Foto CUSL.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Foto de familia de la final nacional de la 7ª edición Concurso Universitario
+ de Software Libre.
+ Los miembros de 
+\emph on
+CygnusCloud 
+\emph default
+aparecen en la segunda fila, a la izquierda.
+ 
+\emph on
+Fuente: Concurso Universitario de Software Libre
+\emph default
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Durante ese evento, profesores de la Universidad de Granada nos indicaron
+ que estudiarán la posible implantación del sistema 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, a lo largo del proceso de desarrollo hemos ido actualizando
+ un 
+\emph on
+blog
+\emph default
+, que está disponible en
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://cygnusclouducm.wordpress.com/"
+target "http://cygnusclouducm.wordpress.com/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A través de él, hemos resuelto las dudas de varios usuarios.
+ Asimismo, algunas entradas del 
+\emph on
+blog
+\emph default
+, como la comparativa de Xen y KVM, aparecen en los primeros resultados
+ de la búsqueda de 
+\emph on
+Google.
+ 
+\end_layout
+
+\begin_layout Standard
+Finalmente, a fecha de 13 de Junio de 2013, el 
+\emph on
+blog
+\emph default
+ de 
+\emph on
+CygnusCloud 
+\emph default
+cuenta con un total de 4657 visitas.
+ En la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Distribución-geográfica-blog"
+
+\end_inset
+
+ se recoge la distribución geográfica de la mayor parte de este tráfico.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Conclusiones/blog.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Distribución-geográfica-blog"
+
+\end_inset
+
+Distribución geográfica de las visitas al 
+\emph on
+blog 
+\emph default
+de 
+\emph on
+CygnusCloud
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
