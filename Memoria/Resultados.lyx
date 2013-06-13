@@ -1478,5 +1478,572 @@ CygnusCloud
 
 \end_layout
 
+\begin_layout Chapter
+Trabajo futuro
+\end_layout
+
+\begin_layout Standard
+Durante el presente curso académico, hemos tenido que compaginar el desarrollo
+ de 
+\emph on
+CygnusCloud
+\emph default
+ con la realización de prácticas y la preparación de exámenes de otras asignatur
+as.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, cuando decidimos presentar este proyecto a la séptima edición
+ del Concurso Universitario de Software Libre, tuvimos que cumplir con las
+ bases del mismo.
+ Esto ha supuesto
+\end_layout
+
+\begin_layout Itemize
+la creación y actualización del 
+\emph on
+blog
+\emph default
+, en el que hemos reflejado las decisiones de diseño más relevantes que
+ hemos tomado, y
+\end_layout
+
+\begin_layout Itemize
+la creación de la versión 
+\emph on
+release
+\emph default
+ que ha utilizado el jurado del concurso para evaluar nuestro pryecto.
+\end_layout
+
+\begin_layout Standard
+Asimismo, como hemos visto en el capítulo anterior, durante el proceso de
+ desarrollo nos hemos tenido que enfrentar a un cambio de hipervisor, lo
+ que supuso, literalmente, perder un mes de trabajo.
+\end_layout
+
+\begin_layout Standard
+Además, cuando iniciamos el desarrollo de 
+\emph on
+CygnusCloud
+\emph default
+ nos propusimos que la versión final fuese lo suficientemente robusta y
+ estable como para ser utilizada en una prueba piloto o incluso en producción.
+\end_layout
+
+\begin_layout Standard
+Por todos estos motivos, hemos tenido que dejar en el tintero muchas ideas
+ que han ido surgiendo en el proceso de desarrollo.
+ 
+\end_layout
+
+\begin_layout Standard
+En este capítulo, sugeriremos un conjunto de modificaciones que pueden incorpora
+rse a la versión final de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Section
+Soporte 
+\emph on
+multi-cluster
+\end_layout
+
+\begin_layout Standard
+Como dijimos al presentar la arquitectura del sistema, el proceso 
+\emph on
+endpoint
+\emph default
+, que comunica la aplicación web y la infraestructura a través de una base
+ de datos, sólo se conectará a un único servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+A medida que aumenta el número de usuarios, también aumentará el número
+ de máquinas virtuales que estarán activas a la vez.
+ Para albergarlas, habrá que asignar más servidores de máquinas virtuales
+ al 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Por tanto, a medida que aumenta el número de usuarios también aumentará
+ el número de servidores de máquinas virtuales a los que el servidor de
+ 
+\emph on
+cluster
+\emph default
+ tendrá que atender simultáneamente.
+ Como los recursos de los que dispone el servidor de 
+\emph on
+cluster
+\emph default
+ son limitados, llegará un momento en el que no será posible añadir más
+ servidores de máquinas virtuales al 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Para superar esta limitación, es preciso añadir más 
+\emph on
+clusters
+\emph default
+ a la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+, y modificar el proceso 
+\emph on
+endpoint
+\emph default
+ del servidor web para que, en tiempo de ejecución, pueda interactuar con
+ varios servidores de 
+\emph on
+cluster
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+A la hora de distribuir las peticiones entre los servidores de 
+\emph on
+cluster
+\emph default
+, el proceso 
+\emph on
+endpoint
+\emph default
+ deberá utilizar un algoritmo de balanceado de carga.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, en este caso, sólo es necesario realizar modificaciones
+ en el proceso 
+\emph on
+endpoint
+\emph default
+.
+ El resto de subsistemas de 
+\emph on
+CygnusCloud
+\emph default
+ podrán utilizarse directamente tras realizar esta optimización.
+\end_layout
+
+\begin_layout Section
+Uso de varios servidores web
+\end_layout
+
+\begin_layout Standard
+Los recursos del servidor web también están limitados.
+ Por ello, a medida que el número de usuarios de 
+\emph on
+CygnusCloud
+\emph default
+ crece, llegará un momento en el que el servidor 
+\emph on
+web
+\emph default
+ no podrá atenderlos a todos.
+\end_layout
+
+\begin_layout Standard
+Para superar esta limitación, es necesario utilizar varios servidores web.
+ Puesto que la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+ utiliza identificadores únicos de petición muy largos cuyo contenido puede
+ ser arbitrario, para utilizar varios servidores 
+\emph on
+web 
+\emph default
+sólo será necesario modificar el proceso 
+\emph on
+endpoint
+\emph default
+ y modificar ligeramente el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+En el proceso 
+\emph on
+endpoint
+\emph default
+ hay que introducir dos cambios muy sencillos:
+\end_layout
+
+\begin_layout Itemize
+debemos modificar el algoritmo que genera los identificadores únicos de
+ las peticiones, de forma que podamos garantizar que dos servidores web
+ distintos nunca generen peticiones con el mismo identificador único.
+\end_layout
+
+\begin_layout Itemize
+para ahorrar ancho de banda, sólo uno de los procesos 
+\emph on
+endpoint
+\emph default
+ enviará los paquetes de solicitud de estado al servidor de 
+\emph on
+cluster
+\emph default
+.
+ El resto, sólo procesará los datos de estado enviados por el servidor de
+ 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, las modificaciones que hay que introducir en el servidor
+ de 
+\emph on
+cluster 
+\emph default
+son triviales:
+\end_layout
+
+\begin_layout Itemize
+los paquetes que contienen información de estado
+\emph on
+ 
+\emph default
+se enviarán a los servidores web, como hasta ahora, en modo 
+\emph on
+multicast
+\emph default
+.
+ Así, todos ellos los recibirán.
+\end_layout
+
+\begin_layout Itemize
+el resto de paquetes se enviarán en modo 
+\emph on
+unicast
+\emph default
+ a los servidores de máquinas virtuales.
+ Así, sólo el servidor de máquinas virtuales que emitió la petición recibirá
+ la respuesta.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Esta última modificación nos permite ahorrar mucho ancho de banda.
+ Por ejemplo, cuando la infraestructura genera un error sólo el servidor
+ web que envió la petición, y no todos, recibirán el paquete correspondiente.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Optimizaciones en el servidor de 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+El servidor de 
+\emph on
+cluster
+\emph default
+ procesa todas las peticiones que recibe de forma secuencial.
+ Si utilizamos como servidor de 
+\emph on
+cluster
+\emph default
+ una máquina relativamente moderna, esta tendrá una CPU 
+\emph on
+dual-core
+\emph default
+ o 
+\emph on
+quad-core
+\emph default
+ que incluso puede soportar 
+\emph on
+multithreading 
+\emph default
+simultáneo.
+\end_layout
+
+\begin_layout Standard
+Aunque en el demonio del servidor de 
+\emph on
+cluster 
+\emph default
+ya existen varios hilos, podemos aprovechar aún más la potencia del 
+\emph on
+hardware 
+\emph default
+si procesamos las peticiones de los usuarios en paralelo.
+\end_layout
+
+\begin_layout Standard
+Para ello, es necesario
+\end_layout
+
+\begin_layout Itemize
+utilizar varios hilos de procesamiento de peticiones, y
+\end_layout
+
+\begin_layout Itemize
+garantizar que todas las actualizaciones de la base de datos del servidor
+ de 
+\emph on
+cluster
+\emph default
+ sean atómicas.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, para aplicar esta optimización, no es necesario
+ modificar el proceso 
+\emph on
+endpoint
+\emph default
+ ni el resto de subsistemas de 
+\emph on
+CygnusCloud
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Section
+Cambio de la arquitectura del servidor web
+\end_layout
+
+\begin_layout Standard
+Como sabemos, la aplicación web interactúa con la infraestructura de 
+\emph on
+CygnusCloud
+\emph default
+ a través de dos bases de datos.
+ Por ello, resulta muy sencillo crear otra aplicación web totalmente diferente
+ e interactuar con 
+\emph on
+CygnusCloud
+\emph default
+ a través de ella.
+\end_layout
+
+\begin_layout Standard
+Esta nueva aplicación web no tiene por qué utilizar el 
+\emph on
+framework 
+\family typewriter
+\emph default
+web2py
+\family default
+ ni estar escrita en 
+\emph on
+Python
+\emph default
+: puede estar escrita en cualquier lenguaje de programación para el que
+ exista un conector de MySQL.
+ Al implementarla, sólo es necesario serializar las peticiones y deserializar
+ sus resultados adecuadamente.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, también es posible prescindir del proceso 
+\emph on
+endpoint
+\emph default
+: siempre que se le envíen paquetes de los tipos adecuados, el servidor
+ de 
+\emph on
+cluster 
+\emph default
+procesará sin problemas las peticiones correspondientes.
+\end_layout
+
+\begin_layout Standard
+Todas estas características hacen que el sistema 
+\emph on
+CygnusCloud
+\emph default
+ pueda integrarse fácilmente en muchos entornos.
+\end_layout
+
+\begin_layout Section
+Uso de varios repositorios de imágenes en cada 
+\emph on
+cluster
+\end_layout
+
+\begin_layout Standard
+Cada 
+\emph on
+cluster
+\emph default
+ tiene asociado un repositorio de imágenes.
+ En esta máquina, se almacenarán todas las configuraciones o imágenes que
+ pueden utilizar las máquinas virtuales del 
+\emph on
+cluster.
+\end_layout
+
+\begin_layout Standard
+Puesto que el repositorio de imágenes interviene en todas las operaciones
+ de creación, edición y despliegue de imágenes, se convertirá en un cuello
+ de botella.
+ 
+\end_layout
+
+\begin_layout Standard
+Si
+\end_layout
+
+\begin_layout Itemize
+el 
+\emph on
+cluster
+\emph default
+ contiene un elevado número de servidores de máquinas virtuales, o si
+\end_layout
+
+\begin_layout Itemize
+las operaciones de creación, edición y despliegue de imágenes son muy frecuentes
+,
+\end_layout
+
+\begin_layout Standard
+podremos mejorar su funcionamiento utilizando varios repositorios de imágenes.
+ Los cambios que hay que introducir en este caso son los siguientes:
+\end_layout
+
+\begin_layout Itemize
+hay que modificar la forma en que se generan los identificadores de imagen,
+ garantizando que dos repositorios distintos nunca puedan generar el mismo
+ identificador.
+\end_layout
+
+\begin_layout Itemize
+hay que modificar el servidor de 
+\emph on
+cluster
+\emph default
+ para que
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+se conecte a múltiples repositorios de imágenes,
+\end_layout
+
+\begin_layout Itemize
+recopile el estado de todos ellos, y
+\end_layout
+
+\begin_layout Itemize
+realice el balanceado de carga entre estas máquinas.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Finalmente, puesto que los servidores de máquinas virtuales reciben los
+ datos de conexión al repositorio de imágenes en todas las peticiones de
+ creación y edición de imágenes, no es preciso incluir ninguna modificación
+ en este subsistema de 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Section
+Cancelar la creación o edición de una imagen
+\end_layout
+
+\begin_layout Standard
+Como sabemos, en los procesos de creación y edición de imágenes de disco
+ se realizan dos transferencias de ficheros entre un servidor de máquinas
+ virtuales y el repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Puesto que los ficheros que intercambian estas máquinas contienen imágenes
+ de disco, estas transferencias requieren mucho tiempo y ancho de banda.
+\end_layout
+
+\begin_layout Standard
+Para no desperdiciar el ancho de banda disponible, resulta muy interesante
+ que los usuarios puedan cancelar la ejecución de las operaciones de creación
+ y edición de imágenes.
+ Para ello, basta con introducir los siguientes cambios:
+\end_layout
+
+\begin_layout Itemize
+cuando reciban la petición correspondiente, los servidores de máquinas virtuales
+ deben abortar las transferencias pendientes con el repositorio de imágenes,
+ liberar la imagen y borrar los ficheros correspondientes de su disco duro.
+\end_layout
+
+\begin_layout Itemize
+el servidor de 
+\emph on
+cluster
+\emph default
+ procesará un nuevo tipo de petición.
+ Cuando reciba el paquete correspondiente, actualizará su base de datos
+ y avisará al servidor de máquinas virtuales en el que se esté editando
+ la imagen.
+\end_layout
+
+\begin_layout Itemize
+el proceso 
+\emph on
+endpoint
+\emph default
+ será capaz de procesar un nuevo tipo de petición.
+ Esencialmente, debe deserializarla, enviar el paquete correspondiente al
+ servidor de 
+\emph on
+cluster
+\emph default
+ y procesar los nuevos tipos de error generados por el servidor de 
+\emph on
+cluster
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+finalmente, la aplicación web debe ser capaz de realizar una nueva actualización
+ de la base de datos de comandos.
+ Asimismo, también será necesario modificar la interfaz de usuario para
+ incluir en ella la nueva petición.
+\end_layout
+
+\begin_layout Section
+Uso de otro formato de fichero comprimido
+\end_layout
+
+\begin_layout Standard
+Para ahorrar ancho de banda, el repositorio de imágenes y los servidores
+ de máquinas virtuales
+\end_layout
+
 \end_body
 \end_document
