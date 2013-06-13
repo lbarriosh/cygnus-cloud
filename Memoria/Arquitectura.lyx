@@ -37192,7 +37192,7 @@ name "fig:Estructura-de-direcciones-estudiantes"
 
 \end_inset
 
-Estructura de direcciones para los alumnos
+Estructura de direcciones de la web para los alumnos
 \end_layout
 
 \end_inset
@@ -37236,7 +37236,7 @@ name "fig:Estructura-de-direcciones-profesores"
 
 \end_inset
 
-Estructura de direcciones para los profesores
+Estructura de direcciones de la web para los profesores
 \end_layout
 
 \end_inset
@@ -37276,7 +37276,7 @@ name "fig:Estructura-de-direcciones-administradores"
 
 \end_inset
 
-Estructura de direcciones para los administradores
+Estructura de direcciones de la web para los administradores
 \end_layout
 
 \end_inset
@@ -38169,7 +38169,7 @@ barra de direcciones para alumnos.
 \begin_layout Itemize
 barra de direcciones para profesores.
  Esta barra incluye las páginas de arranque de máquinas virtuales y creación
- y edición de imagenes, accesibles para los profesores.
+ y edición de imágenes, accesibles para los profesores.
  También incluye la página de visualización de notificaciones pendientes
  para profesores.
 \end_layout
@@ -38344,19 +38344,6 @@ CygnusCloud
  que debe ejecutarse dentro de la sección correspondiente.
  El campo de variables se utiliza para trasmitir el resto de información
  útil como por ejemplo los resultados de las búsquedas.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Revisar diferencias
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsubsection
@@ -39147,8 +39134,8 @@ Diagrama de secuencia de edición de una imagen por parte del profesor desde
 \end_layout
 
 \begin_layout Subsubsection
-Arranque de un servidor de máquinas virtuales desde la web ipor un administrador
-: secuencia básica
+Arranque de un servidor de máquinas virtuales desde la web por un administrador:
+ secuencia básica
 \end_layout
 
 \begin_layout Standard

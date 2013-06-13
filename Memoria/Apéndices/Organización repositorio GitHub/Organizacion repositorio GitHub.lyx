@@ -119,16 +119,16 @@ https://github.com/lbarriosh/cygnus-cloud
 \end_layout
 
 \begin_layout Standard
-En él los usuarios pueden descargar el código, además de ver los diferentes
- 
+En él los usuarios pueden descargar el código, ver los diferentes 
 \shape italic
 commits
 \shape default
- realizados y las 
+ realizados, las 
 \shape italic
 issues
 \shape default
- corregidas a lo largo del desarrollo de proyecto.
+ corregidas a lo largo del desarrollo de proyecto y las gráficas con la
+ evolución de proyecto.
 \end_layout
 
 \begin_layout Section
@@ -146,7 +146,7 @@ reference "chap:Licencia"
 
 \end_inset
 
-) .
+).
 \end_layout
 
 \begin_layout Standard
@@ -348,7 +348,7 @@ Memoria.
  última versión estable, como aquellos que han sido modificados para ajustarse
  a la nueva versión en desarrollo y los que han sido creados de nuevo.
  Los apartados subido a esta rama deben poder compilarse para no entorpecer
- el trabajo del resto de usuarios pero no tienen por qué estar terminados
+ el trabajo del resto de desarrolladores pero no tienen por qué estar terminados
  ni completamente revisados.
 \end_layout
 
@@ -359,9 +359,9 @@ Src.
 CygnusCloud
 \shape default
 .
- Como ya se mencionó anteriormente, los usuarios deben garantizar que el
- código subido a esta rama compila, pero puede no estar terminado ni completamen
-te depurado.
+ Como ya se mencionó anteriormente, los desarrolladores deben garantizar
+ que el código subido a esta rama compila, pero puede no estar terminado
+ ni completamente depurado.
  Los subdirectorios relevantes en este directorio son los mismos que los
  mencionados en la rama 
 \family sans
