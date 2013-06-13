@@ -37327,7 +37327,7 @@ CygnusCloud
 Alumnos: En este tipo se incluyen todos los alumnos que cursan alguna de
  las asignaturas registradas en la web.
  Este tipo de usuarios es el más restringido, dándole únicamente acceso
- a la página de arranque de máquinas virtuales , asociadas a las asignaturas
+ a la página de arranque de máquinas virtuales, asociadas a las asignaturas
  matriculadas por el alumno, y a la página de visualización, detención y
  apertura de sus máquinas arrancadas.
 \end_layout
@@ -38670,12 +38670,12 @@ Main
 \end_layout
 
 \begin_layout Enumerate
-Una vez iniciada la sesión , al ser el usuario de tipo profesor, es redirecciona
-do a la función 
+Una vez iniciada la sesión, al ser el usuario de tipo profesor, es redireccionad
+o a la función 
 \family sans
 runVM
 \family default
- , dentro del controlador 
+, dentro del controlador 
 \family sans
 teacher
 \family default

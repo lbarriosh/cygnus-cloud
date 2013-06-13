@@ -3831,11 +3831,19 @@ framework
 \end_layout
 
 \begin_layout Standard
-La web de CygnusCloud se ha desarrollado utilizando el 
+La web de 
+\shape italic
+CygnusCloud
+\shape default
+ se ha desarrollado utilizando el 
 \shape italic
 framework
 \shape default
- web2py.
+ 
+\family typewriter
+web2py
+\family default
+.
  Para poder utilizar este 
 \emph on
 framework
@@ -3853,8 +3861,11 @@ reference "sub:Instalacion-Servidor-web"
 \family typewriter
 .tar.gz 
 \family default
-ya incluye la última versión estable de web2py (2.4.5) y la aplicación web
- de 
+ya incluye la última versión estable de 
+\family typewriter
+web2py
+\family default
+ (2.5.1) y la aplicación web de 
 \emph on
 CygnusCloud 
 \emph default
@@ -3882,11 +3893,15 @@ http://www.web2py.com/init/default/download
 CygnusCloud 
 \emph default
 sólo puede usarse la versión de Linux.
- También es posible elegir entre 3 tipos de descargas de cara a el uso que
- se quiera hacer de web2py.
- En nuestro caso, usaremos la opción 
-\family sans
-For Normal Users
+ También es posible elegir entre 3 tipos de descargas de cara al uso que
+ se quiera hacer de 
+\family typewriter
+web2py
+\family default
+.
+ En nuestro caso, usaremos la opción
+\family typewriter
+ For Normal Users
 \family default
 .
 \end_layout
@@ -3962,13 +3977,21 @@ el
 \emph on
 tarball 
 \emph default
-que hemos publicado ya incluye una versión de web2py estable y configurada.
+que hemos publicado ya incluye una versión de 
+\family typewriter
+web2py
+\family default
+ estable y configurada.
  Sólo tendrán que seguir este procedimiento aquellos usuarios que quieran
  utilizar una versión diferente del 
 \emph on
 framework
 \emph default
- web2py.
+ 
+\family typewriter
+web2py
+\family default
+.
 \end_layout
 
 \end_inset
@@ -3977,8 +4000,12 @@ framework
 \end_layout
 
 \begin_layout Standard
-Web2py ofrece una interfaz para el desarrollo de aplicaciones web accesible
- desde cualquier navegador .
+
+\family typewriter
+Web2py
+\family default
+ ofrece una interfaz para el desarrollo de aplicaciones web accesible desde
+ cualquier navegador.
  Tras realizar la instalación y ejecutar el script 
 \family typewriter
 webServer.sh
@@ -3987,7 +4014,11 @@ webServer.sh
 \end_layout
 
 \begin_layout Enumerate
-introducimos la URL 
+introducimos la 
+\family typewriter
+URL
+\family default
+ 
 \begin_inset Flex URL
 status open
 
@@ -4035,7 +4066,11 @@ reference "fig:Escritorio-de-aplicaciones-web2py"
 
 \end_inset
 
-, con el nombre de las aplicaciones que podemos gestionar desde web2py.
+, con el nombre de las aplicaciones que podemos gestionar desde 
+\family typewriter
+web2py
+\family default
+.
  Sobre 
 \family sans
 CygnusCloud
@@ -4057,7 +4092,7 @@ CygnusCloud
 \begin_inset Quotes erd
 \end_inset
 
- .
+.
  
 \family default
 En esta página podemos ver todo el código fuente de la web de 
@@ -4149,7 +4184,11 @@ de arranque del servidor web y del endpoint, podemos acceder a la página
 \emph on
 CygnusCloud
 \emph default
- introduciendo la URL 
+ introduciendo la 
+\family typewriter
+URL
+\family default
+ 
 \begin_inset Flex URL
 status collapsed
 
@@ -4173,7 +4212,7 @@ reference "fig:MU-Pagina_inicio_sesion"
 \end_layout
 
 \begin_layout Standard
-En ella, podemos introducir el correo electrónico y la contraseña del usuario
+En ella, debemos introducir el correo electrónico y la contraseña del usuario
  que va a iniciar sesión.
  
 \end_layout
@@ -4298,10 +4337,17 @@ Desde la barra de menú de acceso público, también es posible acceder a la
 \family typewriter
 Acerca de, 
 \family default
-en la cual se incluye un breve resumen sobre que es CygnusCloud y para que
- sirve.
+en la cual se incluye un breve resumen sobre que es 
+\shape italic
+CygnusCloud
+\shape default
+ y para que sirve.
  También aparece en esta página información de interés sobre el desarrollo
- de CygnusCloud, tales como entrevistas, notas de prensas o premios recibidos.
+ de 
+\shape italic
+CygnusCloud
+\shape default
+, tales como entrevistas, notas de prensas o premios recibidos.
 \end_layout
 
 \begin_layout Subsubsection
@@ -4309,17 +4355,17 @@ Páginas accesibles para los estudiantes
 \end_layout
 
 \begin_layout Standard
-Tras iniciar sesión como un estudiante, la web nos muestra una página como
- la de la figura 
+Tras iniciar sesión como un estudiante, la aplicación web nos muestra una
+ página como la de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:MU-Pagina_arranque_alumno"
 
 \end_inset
 
-, en la cual aparecen todas las asignaturas matriculadas por el alumno.
- Para cada asignatura, se indica las máquinas virtuales creadas por el profesor
- de dicha asignatura.
+, en la cual aparecen todas las asignaturas matriculadas por el estudiante.
+ Para cada asignatura, se indica las máquinas creadas por el profesor de
+ dicha asignatura.
  
 \end_layout
 
@@ -4430,7 +4476,8 @@ name "fig:MU-Pagina_MV_Arrancada"
 
 \end_inset
 
-Página con máquina virtual arrancada por un estudiante
+Página con el escritorio remoto de una máquina virtual arrancada por un
+ estudiante
 \end_layout
 
 \end_inset
@@ -4455,14 +4502,14 @@ Máquinas arrancadas \SpecialChar \menuseparator
 Detener máquina y Máquinas arrancadas \SpecialChar \menuseparator
 Abrir maquina)
 \family default
- .
+.
  La forma de proceder en ambas páginas es similar.
  Una vez haya accedido a alguna de las páginas, se le muestra una lista
  con todas las máquinas que tiene arrancadas.
  Al seleccionar cualquiera de ellas aparece la descripción de la máquina
  y los botones con las acciones que puede realizar sobre dicha máquina.
  En el caso de la página de detención, se muestra un botón que permite detener
- la máquina y otro que permite forzar el reiniciado.
+ la máquina y otro que permite forzar el reinicio.
  En el caso de la página de apertura, aparece un único botón que permite
  abrir una nueva pestaña con el escritorio de alguna de las máquinas en
  ejecución.
@@ -4504,7 +4551,7 @@ name "MU-Pagina_detencion_MV_Alumno"
 
 \end_inset
 
-Página de detención de máquinas virtuales para los estudiantes
+Página de detención de máquinas virtuales en ejecución para los estudiantes
 \end_layout
 
 \end_inset
@@ -4543,7 +4590,7 @@ Importante
 \end_layout
 
 \begin_layout Itemize
-para poder arrancar una máquina virtual, un administrador debe arrancar
+para poder arrancar una máquina virtual, un administrador debe haber arrancado
  previamente al menos uno de los servidores de máquinas virtuales en los
  que se encuentra.
 \end_layout
@@ -4552,19 +4599,11 @@ para poder arrancar una máquina virtual, un administrador debe arrancar
 para que el rendimiento del visor de escritorio remoto sea adecuado, es
  imprescindible utilizar la última versión de 
 \emph on
-Internet Explorer
+Google Chrome,Mozilla Firefox, Internet Explorer
 \emph default
-, 
+ o 
 \emph on
 Safari
-\emph default
-, 
-\emph on
-Mozilla Firefox 
-\emph default
-o 
-\emph on
-Google Chrome
 \emph default
 .
 \end_layout
@@ -4595,18 +4634,18 @@ es similar al explicado en la sección de estudiantes, por lo que no se repetir�
 \end_layout
 
 \begin_layout Standard
-La página de creación de máquinas virtuales (
+La página de creación de imágenes (
 \family typewriter
 Crear y editar \SpecialChar \menuseparator
  Crear nueva máquina
 \family sans
 ) 
 \family default
-permite a los profesores crear nuevas máquinas virtuales sobre las cuales
- instalará las herramientas necesarias para poder ser utilizadas por los
- estudiantes matriculados en una de las asignaturas que imparte.
- Para llevar a cabo la creación de una máquina virtual, el profesor debe
- indicar un nombre y una descripción que se les mostrará a los estudiantes.
+permite a los profesores crear nuevas imágenes sobre las cuales instalarán
+ las herramientas necesarias para poder ser utilizadas por los estudiantes
+ matriculados en una de las asignaturas que imparten.
+ Para llevar a cabo la creación de una imagen, el profesor debe indicar
+ un nombre y una descripción que se les mostrará a los estudiantes.
  Además, debe seleccionar una imagen base sobre la cual instalará las herramient
 as necesarias.
  Las imágenes bases se distinguen por el sistema operativo instalado en
@@ -4681,12 +4720,12 @@ Página de creación de máquinas virtuales para los profesores
 \end_layout
 
 \begin_layout Standard
-La página de edición de máquinas virtuales (
+La página de edición de imagenes (
 \family typewriter
 Crear y editar \SpecialChar \menuseparator
  Editar máquina
 \family sans
-) permite a los profesores editar sus máquinas virtuales ya creadas.
+) permite a los profesores editar sus máquinas ya creadas.
  
 \end_layout
 
@@ -4798,17 +4837,17 @@ Por último la página de asociación de asignaturas (
 Asociar asignatura
 \family default
 ) permite al profesor indicar desde cual de las asignaturas que imparte
- va a ser accesible la máquina virtual que está editando.
+ va a ser accesible la imagen que está editando.
  Esta página esta formada por dos apartados.
- En el superior el profesor puede seleccionar una de las máquinas virtuales
- en edición y asociarle una asignatura pulsando sobre el botón 
+ En el superior el profesor puede seleccionar una de las imagenes en edición
+ y asociarle una asignatura pulsando sobre el botón 
 \family typewriter
 Asociar asignatura.
 \end_layout
 
 \begin_layout Standard
 En el inferior el profesor puede buscar las asignaturas ya asociadas a alguna
- de las máquinas en edición y desvincularla.
+ de las imagenes en edición y desvincularla.
 \end_layout
 
 \begin_layout Standard
@@ -4896,7 +4935,7 @@ resulta similar que en el caso de las páginas de estudiantes con una diferencia
 \end_layout
 
 \begin_layout Standard
-La página de edición de máquinas virtuales (
+La página de edición de máquinas (
 \family typewriter
 Máquinas virtuales \SpecialChar \menuseparator
  
@@ -4907,21 +4946,21 @@ Editar) permite al administrador tomar ciertas decisiones acerca de las
 \end_layout
 
 \begin_layout Itemize
-Eliminar una máquina virtual de toda la infraestructura
+Eliminar una imagen de toda la infraestructura
 \end_layout
 
 \begin_layout Itemize
-Eliminar una máquina virtual de un determinado servidor de máquinas virtuales
+Eliminar una imagen de un determinado servidor de máquinas virtuales
 \end_layout
 
 \begin_layout Itemize
-Desplegar automáticamente un máquina virtual.
+Desplegar automáticamente un imagen.
  Con esta opción, será el sistema el que decida en que servidores de máquinas
  virtuales se desplegará la máquina.
 \end_layout
 
 \begin_layout Itemize
-Desplegar una máquina virtual en un determinado servidor de máquinas virtuales.
+Desplegar una imagen en un determinado servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
@@ -4934,8 +4973,8 @@ reference "MU-Pagina_edicion_MV_administrador"
 
  muestra la página de edición de máquinas virtuales.
  Al igual que en las páginas anteriores, en la parte superior, podemos observar
- un cuadro de búsqueda que nos permita filtrar el número de máquinas virtuales
- sobre las que buscar la máquina que va a ser editada.
+ un cuadro de búsqueda que nos permita filtrar el número de máquinas sobre
+ las que buscar la máquina que va a ser editada.
 \end_layout
 
 \begin_layout Standard
@@ -5247,7 +5286,7 @@ Página de detención de la infraestructura por el administrador
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Valorar si meter la captura de detención de infraestructura según el número
@@ -5262,8 +5301,8 @@ Valorar si meter la captura de detención de infraestructura según el número
 \begin_layout Standard
 El administrador también puede gestionar los usuarios dados de alta en la
  web.
- Así, la web dispone de páginas para la creación y eliminación de usuarios
- (
+ Así, la aplicación web dispone de páginas para la creación y eliminación
+ de usuarios (
 \family typewriter
 Administrar usuarios \SpecialChar \menuseparator
  Añadir
@@ -5379,7 +5418,7 @@ Administrar asignatura \SpecialChar \menuseparator
  Para crear un nuevo grupo de asignatura, el administrador deberá indicar
  el nombre de la asignatura que se impartirá en dicho grupo, el código único
  asociado a dicha asignatura, el año lectivo en el que va a ser cursado
- dicho grupo , el número de plazas disponibles y el grupo de clase asociado.
+ dicho grupo, el número de plazas disponibles y el grupo de clase asociado.
 \end_layout
 
 \begin_layout Standard
@@ -5392,12 +5431,15 @@ Gestión de notificaciones
 \end_layout
 
 \begin_layout Standard
-Como algunas de las operaciones que ofrece CygnusCloud deben ser gestionadas
- por medio de peticiones, ya que su realización no es inmediata y no podemos
- tener al usuario esperando mientras se completa dicha operación, es necesario
- ofrecer a los usuarios un sistema de notificaciones en el cual puedan consultar
- los mensajes que le envíe el sistema sobre la finalización errónea o no
- de las peticiones enviadas.
+Como algunas de las operaciones que ofrece 
+\shape italic
+CygnusCloud
+\shape default
+ deben ser gestionadas por medio de peticiones, ya que su realización no
+ es inmediata y no podemos tener al usuario esperando mientras se completa
+ dicha operación, es necesario ofrecer a los usuarios un sistema de notificacion
+es en el cual puedan consultar los mensajes que le envíe el sistema sobre
+ la finalización errónea o no de las peticiones enviadas.
  
 \end_layout
 
@@ -5471,7 +5513,7 @@ name "MU-Etiqueta_Notificaciones"
 
 \end_inset
 
-Etiqueta de notificaciones pendientes
+Etiqueta de notificaciones pendientes en la web
 \end_layout
 
 \end_inset
@@ -5489,7 +5531,6 @@ Etiqueta de notificaciones pendientes
 \end_layout
 
 \begin_layout Standard
-o
 \begin_inset Float figure
 wide false
 sideways false
@@ -5530,6 +5571,101 @@ Página de visualización de notificaciones
 \begin_layout Plain Layout
 
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Despliegue de la aplicación web
+\end_layout
+
+\begin_layout Standard
+Aunque 
+\family typewriter
+\shape italic
+web2py
+\family default
+\shape default
+ ofrece su propio servidor web para mantener las aplicaciones que se hayan
+ desarrollado, este servidor está más orientado a que los usuarios puedan
+ realizar en él pruebas de depuración de las aplicaciones.
+ 
+\end_layout
+
+\begin_layout Standard
+Si el usuario quiere desplegar su aplicación para que pueda ser usado por
+ los clientes tendrá que buscar algún otro tipo de servidor destinado a
+ este fin.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+Web2py
+\family default
+ ofrece la posibilidad de migrar sus aplicaciones web para ser utilizadas
+ bajo un servidor 
+\family typewriter
+Apache
+\family default
+.
+ Con este fin, 
+\family typewriter
+web2py
+\family default
+ ofrece un par de 
+\shape italic
+scripts
+\shape default
+ de configuración, bajo el directorio 
+\family typewriter
+/web2py/scripts
+\family default
+, que permite instalar todos los paquetes necesarios para poder realizar
+ el cambio de servidor.
+ 
+\end_layout
+
+\begin_layout Standard
+Podemos encontrar dos 
+\shape italic
+scripts
+\shape default
+ diferentes:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+setup-web2py-fedora.sh
+\family default
+.
+ Para la instalación en Fedora
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+setup-web2py-ubuntu.sh
+\family default
+.
+ Para la instalación en Ubuntu
+\end_layout
+
+\begin_layout Standard
+Si lo prefiere, el usuario puede realizar la instalación de forma manual
+ siguiendo las especificaciones detalladas en el manual de referencia de
+ 
+\family typewriter
+web2py
+\family default
+.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ACWeb2PyBook"
 
 \end_inset
 
