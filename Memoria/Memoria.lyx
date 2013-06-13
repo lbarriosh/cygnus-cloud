@@ -74,7 +74,6 @@
       {\normalfont\normalsize\bfseries}}
 \makeatother
 
-\renewcommand{\thefigure}{\arabic{figure}}
 \usepackage[htt]{hyphenat}
 \usepackage{charter}
 \renewcommand{\sfdefault}{lmss}
@@ -82,9 +81,6 @@
 \end_preamble
 \options a4paper
 \use_default_options true
-\begin_modules
-fixltx2e
-\end_modules
 \maintain_unincluded_children false
 \language spanish
 \language_package auto

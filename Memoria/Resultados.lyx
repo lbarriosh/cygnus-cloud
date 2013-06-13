@@ -990,7 +990,7 @@ Tras adquirir suficiente experiencia, decidimos empezar a utilizar imágenes
 copy-on-write
 \emph default
 .
- Esto marcó el el inicio de todos nuestros problemas con Xen.
+ Esto marcó el inicio de todos nuestros problemas con Xen.
 \end_layout
 
 \begin_layout Standard
