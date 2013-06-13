@@ -664,6 +664,293 @@ CygnusCloud
 Errores tratados
 \end_layout
 
+\begin_layout Standard
+Para que 
+\emph on
+CygnusCloud
+\emph default
+ pueda utilizarse en una prueba piloto o incluso en producción, es necesario
+ que la infraestructura detecte y trate un gran número de errores, que enumerare
+mos en esta sección.
+ Por claridad, agruparemos estos errores en función del subsistema en el
+ que se detecten.
+\end_layout
+
+\begin_layout Standard
+En primer lugar, en el repositorio de imágenes se detectarán y tratarán
+ errores cuando
+\end_layout
+
+\begin_layout Itemize
+el servidor de 
+\emph on
+cluster
+\emph default
+ intenta borrar del repositorio un fichero comprimido que no existe.
+\end_layout
+
+\begin_layout Itemize
+un servidor de máquinas virtuales intenta descargar o transferir al repositorio
+ un fichero comprimido que no está asociado a ninguna configuración registrada.
+\end_layout
+
+\begin_layout Itemize
+un servidor de máquinas virtuales intenta descargar un fichero comprimido
+ que ha sido concedido en exclusividad a otro servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+un servidor de máquinas virtuales intenta sobreescribir un fichero comprimido
+ que no está siendo modificado en ningún servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, en el servidor de máquinas virtuales se detectarán y tratarán
+ errores cuando
+\end_layout
+
+\begin_layout Itemize
+falla el hipervisor KVM.
+\end_layout
+
+\begin_layout Itemize
+el servidor de 
+\emph on
+cluster 
+\emph default
+ordena el arranque de una máquina virtual que no está registrada.
+\end_layout
+
+\begin_layout Itemize
+el servidor de 
+\emph on
+cluster
+\emph default
+ ordena la edición de una configuración que se está modificando en otro
+ servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+falla la compresión o la descompresión de los ficheros 
+\family typewriter
+.zip
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+no se puede establecer la conexión con el repositorio de imágenes para subir
+ o descargar de él un fichero 
+\family typewriter
+.zip
+\family default
+.
+ Para evitar que se pierdan los cambios en las configuraciones de las máquinas
+ virtuales, el servidor de máquinas virtuales intentará reestablecer la
+ conexión en varias ocasiones antes de generar el error.
+\end_layout
+
+\begin_layout Itemize
+falla la descarga o la subida de un fichero 
+\family typewriter
+.zip
+\family default
+ al repositorio de imágenes.
+ Para evitar que se pierdan los cambios en las configuraciones de las máquinas
+ virtuales, el servidor de máquinas virtuales intentará volver a realizar
+ la operación en varias ocasiones antes de generar el error.
+\end_layout
+
+\begin_layout Standard
+Además, si el servidor de máquinas virtuales se apaga de forma brusca, en
+ su siguiente arranque
+\end_layout
+
+\begin_layout Itemize
+se detectarán las máquinas virtuales que siguen activas,
+\end_layout
+
+\begin_layout Itemize
+se borrarán del disco los ficheros 
+\family typewriter
+.zip
+\family default
+ parcialmente generados, 
+\end_layout
+
+\begin_layout Itemize
+se reiniciarán las transferencias con el repositorio de imágenes (para no
+ perder los cambios que han hecho los usuarios en las configuraciones de
+ las máquinas virtuales), y
+\end_layout
+
+\begin_layout Itemize
+se liberarán todos los recursos asignados a las máquinas virtuales que se
+ han apagado.
+\end_layout
+
+\begin_layout Standard
+Por otro lado, en el servidor de 
+\emph on
+cluster
+\emph default
+ se detectarán y tratarán errores cuando
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta actualizar todas las copias de una imagen o configuración
+ que no se ha modificado.
+\end_layout
+
+\begin_layout Itemize
+un usuario ordena el despliegue automático de una imagen a la que afecta
+ otra operación de despliegue anterior.
+\end_layout
+
+\begin_layout Itemize
+a la hora de realizar el despliegue automático de la imagen, los servidores
+ de máquinas virtuales no pueden albergar el número máximo de máquinas virtuales
+ activas solicitado.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta borrar una imagen que se está editando.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta borrar una imagen que está afectada por una operación
+ de borrado anterior.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta arrancar una máquina virtual que no está registrada.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta crear una imagen a partir de otra imagen que no existe.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta editar una imagen que no existe.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta borrar una imagen que no existe.
+\end_layout
+
+\begin_layout Itemize
+para procesar la petición es necesario interactuar con el repositorio de
+ imágenes, y la conexión con dicha máquina se ha perdido.
+\end_layout
+
+\begin_layout Itemize
+el repositorio de imágenes no tiene suficiente espacio en disco como para
+ crear una nueva imagen.
+\end_layout
+
+\begin_layout Itemize
+se intenta apagar, parar o dar de baja un servidor de máquinas virtuales
+ que no está registrado.
+\end_layout
+
+\begin_layout Itemize
+se intenta enviar una petición a un servidor de máquinas virtuales que está
+ arrancando.
+\end_layout
+
+\begin_layout Itemize
+se intenta desplegar una imagen de disco en un servidor de máquinas virtuales
+ que ya la almacena.
+\end_layout
+
+\begin_layout Itemize
+se intenta borrar una imagen de disco de un servidor de máquinas virtuales
+ que no la almacena.
+\end_layout
+
+\begin_layout Itemize
+un servidor de máquinas virtuales no dispone de suficiente espacio en disco
+ como para almacenar la imagen a desplegar.
+\end_layout
+
+\begin_layout Itemize
+no se puede establecer la conexión con el servidor de máquinas virtuales
+ al que afecta la petición.
+\end_layout
+
+\begin_layout Itemize
+se ha perdido la conexión con el servidor de máquinas virtuales al que afecta
+ la petición.
+\end_layout
+
+\begin_layout Itemize
+un usuario intenta apagar o reiniciar una máquina virtual que no existe.
+\end_layout
+
+\begin_layout Itemize
+se intenta modificar la configuración de un servidor de máquinas virtuales
+ que ya está arrancado.
+\end_layout
+
+\begin_layout Itemize
+el nuevo nombre o la nueva dirección IP asignados a un servidor de máquinas
+ virtuales ya están en uso.
+\end_layout
+
+\begin_layout Itemize
+el despliegue automático de una imagen falla en algunos servidores de máquinas
+ virtuales.
+\end_layout
+
+\begin_layout Itemize
+el borrado de una imagen falla en algunos servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+se excede el tiempo máximo de arranque de una máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+no hay ningún servidor de máquinas virtuales que pueda albergar la máquina
+ virtual que se pretende arrancar.
+\end_layout
+
+\begin_layout Itemize
+no hay servidores de máquinas virtuales en los que se pueda editar la imagen
+ seleccionada.
+\end_layout
+
+\begin_layout Itemize
+no hay servidores de máquinas virtuales en los que pueda desplegarse una
+ imagen.
+ Este error estará asociado a las operaciones de despliegue automático.
+\end_layout
+
+\begin_layout Itemize
+todos los servidores de máquinas virtuales que se usan para crear o editar
+ imágenes no disponen de recursos suficientes como para editar una imagen
+ más.
+\end_layout
+
+\begin_layout Standard
+Finalmente, el servidor web detectará y tratará las caídas del servidor
+ de 
+\emph on
+cluster
+\emph default
+.
+ En estos casos,
+\end_layout
+
+\begin_layout Itemize
+intentará reestablecer la conexión con el mismo, y
+\end_layout
+
+\begin_layout Itemize
+cuando se exceda el tiempo máximo de procesamiento de una petición, generará
+ el error correspondiente.
+\end_layout
+
 \begin_layout Section
 Inconvenientes del desarrollo
 \end_layout
