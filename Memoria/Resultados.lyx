@@ -516,5 +516,161 @@ Linux
  que estos conocimientos nos resultarán muy útiles en el futuro inmediato.
 \end_layout
 
+\begin_layout Section
+Características y capacidades del sistema 
+\emph on
+CygnusCloud
+\end_layout
+
+\begin_layout Subsection
+Funciones básicas
+\end_layout
+
+\begin_layout Standard
+En 
+\emph on
+CygnusCloud
+\emph default
+, existen tres tipos de usuarios: alumnos, profesores y administradores.
+ 
+\end_layout
+
+\begin_layout Standard
+En primer lugar, los alumnos pueden
+\end_layout
+
+\begin_layout Itemize
+arrancar una máquina virtual asociada a cualquier asignatura en la que estén
+ matriculados y utilizarla para trabajar.
+\end_layout
+
+\begin_layout Itemize
+forzar el apagado o el reinicio de una de sus máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+conectarse y desconectarse del servidor VNC asociado a una de sus máquinas
+ virtuales.
+ Esto les permite, por ejemplo, trasladarse a otro aula de informática para
+ continuar trabajando sin necesidad de apagar la máquina.
+\end_layout
+
+\begin_layout Itemize
+introducir y extraer datos de la máquina virtual a través de internet.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, los profesores pueden realizar las mismas tareas que los
+ alumnos.
+ Asimismo, pueden
+\end_layout
+
+\begin_layout Itemize
+crear y borrar las asociaciones entre sus máquinas virtuales y las asignaturas
+ que imparten, pudiendo compartir máquinas virtuales entre distintas asignaturas
+ cuando lo estimen oportuno.
+\end_layout
+
+\begin_layout Itemize
+crear una configuración nueva para una máquina virtual, tomando como base
+ cualquier configuración existente en el sistema.
+ Este proceso puede hacerse en varias fases.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Por ejemplo, un profesor puede empezar a crear una configuración a última
+ hora de la tarde, apagar la máquina virtual correspondiente y proseguir
+ el día siguiente.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+editar la configuración de una de sus máquinas virtuales.
+ Nuevamente, este proceso puede hacerse en varias fases.
+\end_layout
+
+\begin_layout Itemize
+desplegar una configuración nueva sin la intervención de los administradores.
+ Para ello, se considerará el número de alumnos matriculados en la asignatura
+ asociada a la máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+desplegar las modificaciones de una configuración sin que tengan que intervenir
+ los administradores.
+\end_layout
+
+\begin_layout Itemize
+borrar una de sus configuraciones de todo el sistema.
+\end_layout
+
+\begin_layout Itemize
+utilizar protocolos de compartición de recursos en red, como CIFS o NFS,
+ para configurar las máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Por otro lado, los administradores pueden realizar las mismas tareas que
+ los profesores.
+ Además, pueden
+\end_layout
+
+\begin_layout Itemize
+realizar las altas, bajas, arranques y apagados de los servidores que alojarán
+ las máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+apagar todos los servidores del 
+\emph on
+cluster
+\emph default
+ de forma ordenada.
+\end_layout
+
+\begin_layout Itemize
+realizar las altas y bajas de usuarios y asignaturas.
+\end_layout
+
+\begin_layout Itemize
+fijar los privilegios de los distintos usuarios.
+\end_layout
+
+\begin_layout Itemize
+desplegar manualmente una configuración en cierto servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+borrar manualmente una configuración de cierto servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+modificar la configuración básica de los servidores de máquinas virtuales
+ y su uso durante el balanceado de carga.
+\end_layout
+
+\begin_layout Standard
+Finalmente, todos los usuarios interactuarán con el sistema 
+\emph on
+CygnusCloud
+\emph default
+ utilizando una aplicación web que, además, realizará las labores de control
+ de acceso.
+\end_layout
+
+\begin_layout Subsection
+Errores tratados
+\end_layout
+
+\begin_layout Section
+Inconvenientes del desarrollo
+\end_layout
+
+\begin_layout Section
+Repercusiones
+\end_layout
+
 \end_body
 \end_document
