@@ -85,8 +85,8 @@ Git y Subversion
 \end_layout
 
 \begin_layout Standard
-Hasta ahora, estamos acostumbrados a trabajar con algo como lo de la figura
- 
+Generalmente, los repositorios más utilizados, tales como SVN, se encuentran
+ estructurados como se indica en la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Subversion"
@@ -98,10 +98,10 @@ reference "fig:Subversion"
 \emph on
 commits
 \emph default
- cuando toca.
- Lo más normal es trabajar en un directorio separado, pegar los ficheros
- modificados en el directorio donde está la copia del repositorio y hacer
- el 
+ cuando es necesario.
+ En estos casos, lo más normal es trabajar en un directorio separado, pegar
+ los ficheros modificados en el directorio donde está la copia del repositorio
+ y hacer el 
 \emph on
 commit
 \emph default
@@ -195,8 +195,8 @@ Git
 \end_layout
 
 \begin_layout Standard
-Con Git la situación es bastante diferente, tal y como podéis ver en la
- figura 
+Con Git la situación es bastante diferente, siguiendo la estructura representada
+ en la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Git"
@@ -216,8 +216,8 @@ La forma de trabajar en Git es bastante distinta: cada desarrollador tendrá
 commits
 \emph default
  cuando quiera.
- Es posible tomar cosas de los repositorios de otros (repositorios remotos),
- y también es posible subir cosas a esos repositorios.
+ Es posible descargar información de los repositorios de otros (repositorios
+ remotos), y también es posible subir información a esos repositorios.
  Así, el repositorio de Google Code será un repositorio más.
 \end_layout
 
@@ -233,9 +233,9 @@ name "sec:Instalación-y-configuración"
 \end_layout
 
 \begin_layout Standard
-Para empezar a utilizar Git, es obvio que hay que tener el binario instalado
+Para empezar a utilizar Git, es necesario diponer del binario instalado
  en nuestro sistema.
- Para ello, abrid un terminal y escribid
+ Para ello, abrimos un terminal y escribimos
 \end_layout
 
 \begin_layout Standard
@@ -247,17 +247,13 @@ $ sudo apt-get install git gitk
 \end_layout
 
 \begin_layout Standard
-Una vez hecho esto, vamos a fijar algunas cosas importantes (como el nombre
+Una vez hecho esto, fijaremos algunas cosas importantes (como el nombre
  de usuario) y otras que no lo son tanto, pero que facilitan el uso de Git.
 \end_layout
 
 \begin_layout Standard
-Empezaremos dejando de lado el 
-\emph on
-Editor de la Bestia
-\emph default
- y utilizando otro algo más agradable.
- Para ello, añadid la línea
+Para determinar el editor que se utilizará a la hora de escribir los commit,
+ escribimos
 \end_layout
 
 \begin_layout Standard
@@ -286,7 +282,7 @@ Lo siguiente que haremos es introducir nuestro nombre de usuario y dirección
 commits
 \emph default
 .
- Para ello, abrid un terminal y escribid
+ Para ello, abrimos un terminal y escribimos
 \end_layout
 
 \begin_layout Standard
@@ -352,8 +348,8 @@ flag
 todos
 \emph default
  los repositorios.
- Si queréis utilizarlos solamente en algunos, id al directorio del repositorio
- y ejecutad estas órdenes sin el 
+ Si queremos utilizarlos solamente en algunos, iremos al directorio del
+ repositorio y ejecutaremos estas órdenes sin el 
 \emph on
 flag
 \emph default
@@ -367,7 +363,7 @@ flag
 \begin_layout Standard
 Finalmente, cambiaremos un poco los colores predeterminados para facilitar
  la lectura de los mensajes de Git.
- Para ello, añadid este texto al fichero 
+ Para ello, añadimos este texto al fichero 
 \family typewriter
 ~/.gitconfig
 \family default
@@ -757,10 +753,11 @@ Uso del repositorio de Google Code
 \end_layout
 
 \begin_layout Standard
-Como ya sabréis, los repositorios de Google Code son públicos, por lo que
- cualquiera puede leer de ellos.
- Empezaremos obteniendo una copia local de nuestro repositorio.
- Para ello, ejecutad la orden
+Los repositorios de Google Code son públicos, por lo que cualquiera puede
+ leer de ellos.
+ Lo primero que debemos hacer para poder comenzar a utilizar nuestro repositorio
+ es obtener una copia local del mismo.
+ Para ello, ejecutamos la orden
 \end_layout
 
 \begin_layout Standard
@@ -804,7 +801,7 @@ Pero aún no hemos terminado: para hacer un
 commit
 \emph default
  es necesario autenticarse.
- Para ello, añadid la línea
+ Para ello, añadimos la línea
 \end_layout
 
 \begin_layout Standard
@@ -840,7 +837,7 @@ al fichero
 ~/.netrc
 \family default
 .
- Con esto, ya podréis utilizar el repositorio de Google Code.
+ Con esto, ya podremos utilizar el repositorio de Google Code.
 \end_layout
 
 \begin_layout Section
@@ -1423,7 +1420,7 @@ README.txt
 staged
 \emph default
 .
- ¿Cómo? Volviendo a utilizar la orden 
+ Para ello volvemos a utilizar la orden 
 \family typewriter
 git add
 \family default
@@ -1518,7 +1515,7 @@ Supongamos que introducimos una modificación de última hora.
 \family typewriter
 git status
 \family default
-, obtenemos algo como
+, obtendremos algo como
 \end_layout
 
 \begin_layout Standard
@@ -1616,8 +1613,8 @@ luis@luis-laptop:~/cygnus-cloud$ git status
 \end_layout
 
 \begin_layout Standard
-y volvemos a estar como al principio.
- ¿Por qué? Porque los datos que se añadirán al repositorio al hacer el 
+Hemos vuelto al mismo estado que al principio ya que los datos que se añadirán
+ al repositorio al hacer el 
 \emph on
 commit
 \emph default
@@ -1643,7 +1640,7 @@ Ignorando ficheros y directorios
 \end_layout
 
 \begin_layout Standard
-Existen ficheros irrelevantes que no tienen que estar en el repositorio.
+Pueden existir ficheros irrelevantes que no queremos que estén en el repositorio.
  Es el caso de los ejecutables, ficheros temporales, 
 \emph on
 logs
@@ -1740,7 +1737,7 @@ Las líneas en blanco y las que empiezan por almohadilla (
 
 \begin_layout Itemize
 Las expresiones regulares deben ser patrones glob.
- Tenéis más información 
+ Podemos encontrar más información sobre esto en 
 \begin_inset CommandInset href
 LatexCommand href
 name "aquí"
@@ -1853,7 +1850,8 @@ luis@luis-laptop:~/cygnus-cloud$ git commit
 \end_layout
 
 \begin_layout Standard
-Nos está indicando que hemos añadido nuestro fichero a la rama 
+Esta salida nos está indicando que hemos añadido nuestro fichero a la rama
+ 
 \family typewriter
 master
 \family default
@@ -1883,14 +1881,6 @@ Mensaje
 
 \family default
 .
-\end_layout
-
-\begin_layout Standard
-Ahora, al examinar el contenido del repositorio remoto en Google Code, os
- daréis cuenta de que\SpecialChar \ldots{}
- ¡no habrá pasado nada! Con lo que ya sabéis, deberíais
- ser capaces de explicar qué ha pasado.
- De todas formas, volveremos a discutir esto más adelante.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1989,7 +1979,7 @@ git rm
 \family default
  puede recibir como argumento rutas de ficheros, directorios y patrones
  glob que hagan referencia a ficheros.
- En caso de utilizar patrones glob, es importante notar que totos los asteriscos
+ En caso de utilizar patrones glob, es importante notar que todos los asteriscos
  deben ir precedidos por 
 \family typewriter
 
@@ -2095,7 +2085,7 @@ Ahora que hemos hecho nuestros primeros
 \emph on
 commits
 \emph default
-, ha llegado el momento de ver qué hemos hecho.
+, podemos consultar como se ha modificado el repositorio.
  Para ello, utilizaremos la orden 
 \family typewriter
 git log
@@ -2195,7 +2185,7 @@ Plantillas de la documentación revisadas
 \end_layout
 
 \begin_layout Standard
-Como podéis ver, aparecen las 
+Como podemos ver, aparecen las 
 \emph on
 checksums
 \emph default
@@ -2745,8 +2735,8 @@ Importante
 \emph on
 no
 \emph default
- todos los procedimientos que se describen en esta sección son reversibles.
- ¡Tened cuidado con lo que hacéis!
+ todos los procedimientos que se describen en esta sección son reversibles
+ por lo que es necesario tener mucho cuidado a la hora de realizarlos.
 \end_layout
 
 \end_inset
@@ -2761,7 +2751,7 @@ commit
 \end_layout
 
 \begin_layout Standard
-Como ya sabréis, no todos los ficheros que se encuentran en el directorio
+Como ya hemos visto, no todos los ficheros que se encuentran en el directorio
  de trabajo se subirán al repositorio al hacer un 
 \emph on
 commit
@@ -2801,8 +2791,8 @@ staged
 \end_layout
 
 \begin_layout Standard
-Para dejar las cosas claras, utilizaré un ejemplo.
- Empezaremos añadiendo el fichero 
+Para dejar este apartado lo suficientemente claro, incluiremos un ejemplo.
+ Empezamos añadiendo el fichero 
 \family typewriter
 basura.txt
 \family default
@@ -2839,7 +2829,7 @@ luis@luis-laptop:~/cygnus-cloud$ touch basura.txt
 \end_layout
 
 \begin_layout Standard
-Ahora, añadiremos a lo loco todos los ficheros a la 
+Ahora, añadiremos todos los ficheros a la 
 \emph on
 staging area
 \emph default
@@ -2954,9 +2944,9 @@ new file: basura.txt
 \end_layout
 
 \begin_layout Standard
-Como podréis suponer, 
+
 \emph on
-no
+Sin embargo, no
 \emph default
  queremos incluir el fichero 
 \family typewriter
@@ -2975,7 +2965,7 @@ staging area
 \family typewriter
 git status
 \family default
- nos está indicando qué hacer.
+ nos indica que podemos hacer.
  
 \end_layout
 
@@ -3098,7 +3088,7 @@ Deshacer los cambios en un fichero
 \end_layout
 
 \begin_layout Standard
-Aquí también utilizaré un ejemplo.
+Aquí también utilizaremos un ejemplo.
  Empezaremos escribiendo algo en nuestro fichero 
 \family typewriter
 en_blanco.txt
@@ -3143,7 +3133,7 @@ foo
 \end_layout
 
 \begin_layout Standard
-Como podréis suponer, queremos dejar el fichero 
+Queremos dejar el fichero 
 \family typewriter
 en_blanco.txt
 \family default
@@ -3340,8 +3330,7 @@ Uso de repositorios remotos
 \end_layout
 
 \begin_layout Standard
-Como podréis suponer, un repositorio remoto no es más que un repositorio
- git alojado en otra máquina.
+Un repositorio remoto no es más que un repositorio git alojado en otra máquina.
  Para mostrar los repositorios remotos que estamos utilizando, es posible
  utilizar la orden 
 \family typewriter
@@ -3526,19 +3515,11 @@ debe
 \end_layout
 
 \begin_layout Standard
-El uso de 
+El uso directo de 
 \family typewriter
 git fetch
 \family default
- 
-\begin_inset Quotes eld
-\end_inset
-
-a pelo
-\begin_inset Quotes erd
-\end_inset
-
- es bastante engorroso.
+ resulta bastante engorroso.
  La situación más habitual es esta:
 \end_layout
 
@@ -3579,7 +3560,7 @@ git pull [nombre-del-repositorio] [nombre-de-la-rama]
 \begin_layout Standard
 Esta orden toma los datos de la rama especificada y trata de mezclarlos
  con lo que hay en el directorio de trabajo.
- Si hay conflictos, tendréis que resolverlos a mano.
+ Si hay conflictos, tendremos que resolverlos a mano.
 \end_layout
 
 \begin_layout Subsubsection
@@ -3587,8 +3568,7 @@ Incorporar los cambios del repositorio local a un repositorio remoto
 \end_layout
 
 \begin_layout Standard
-En esta sección os enseñaré (al fin) a subir cosas al repositorio en Google
- Code.
+En esta sección aprenderemos a subir cosas al repositorio en Google Code.
  El comando que hay que utilizar es
 \end_layout
 
@@ -3611,18 +3591,9 @@ git push origin master
 \end_layout
 
 \begin_layout Standard
-Como podréis suponer, solamente es posible subir cosas a un repositorio
- remoto cuando se dispone de la última versión de sus datos.
- Esto ya ocurre en otros sistemas de control de versiones, como SVN (recordad
- que antes de hacer un 
-\emph on
-commit
-\emph default
- era necesario hacer un 
-\emph on
-checkout
-\emph default
-).
+Solamente es posible subir cosas a un repositorio remoto cuando se dispone
+ de la última versión de sus datos.
+ Esto ya ocurre en otros sistemas de control de versiones, como SVN.
 \end_layout
 
 \begin_layout Subsubsection
@@ -4048,7 +4019,7 @@ Almacenamiento de los datos en Git
 \end_layout
 
 \begin_layout Standard
-Como ya supondréis, al hacer un 
+Al hacer un 
 \emph on
 commit
 \emph default
@@ -4094,7 +4065,7 @@ commits
 \end_layout
 
 \begin_layout Standard
-Para dejar las cosas claras, utilizaré un ejemplo.
+Con el fin de asentar estas ideas, utilizaremos un ejemplo.
  Supongamos que ejecutamos las órdenes
 \end_layout
 
@@ -4274,8 +4245,7 @@ Historia tras dos
 \end_layout
 
 \begin_layout Standard
-Tras este rollo, viene lo importante.
- ¿Qué es una rama? Un puntero a un 
+Una rama es un puntero a un 
 \emph on
 commit
 \emph default
@@ -4410,7 +4380,7 @@ $ git branch testing
 \end_layout
 
 \begin_layout Standard
-¿qué es lo que pasará? Se creará un nuevo puntero al último 
+Se creará un nuevo puntero al último 
 \emph on
 commit
 \emph default
@@ -4471,8 +4441,8 @@ Creación de una nueva rama
 \end_layout
 
 \begin_layout Standard
-¿Cómo averigua Git la rama que hay que utilizar? Manteniendo un puntero
- especial, 
+Git averigua la rama que hay que utilizar manteniendo un puntero especial,
+ 
 \family typewriter
 HEAD
 \family default
@@ -4502,7 +4472,7 @@ no
 git checkout
 \family default
 .
- Como podréis suponer, si ejecutamos la orden
+ Si ejecutamos la orden
 \end_layout
 
 \begin_layout Standard
@@ -4592,7 +4562,7 @@ git checkout testing
 \end_layout
 
 \begin_layout Standard
-¿Y para qué sirve esto? Si hacemos otro 
+Si hacemos otro 
 \emph on
 commit
 \emph default
@@ -4704,7 +4674,7 @@ testing
 \end_layout
 
 \begin_layout Standard
-Fijaos bien: mientras que la rama 
+Mientras que la rama 
 \family typewriter
 testing
 \family default
@@ -5065,7 +5035,7 @@ moo
 \end_layout
 
 \begin_layout Standard
-se producirá un conflicto.
+Esto producirá un conflicto.
 \end_layout
 
 \begin_layout Standard
@@ -5078,8 +5048,7 @@ commit
 \end_layout
 
 \begin_layout Standard
-Resolver conflictos es más sencillo de lo que puede parecer en un principio:
- 
+Para resolver conflictos: 
 \end_layout
 
 \begin_layout Enumerate
@@ -5377,8 +5346,8 @@ $ git fetch origin
 \end_layout
 
 \begin_layout Standard
-Con esto, descargaréis todos los cambios en el repositorio de Google Code
- a vuestro directorio de trabajo.
+Con esto, descargaremos todos los cambios en el repositorio de Google Code
+ a nuestro directorio de trabajo.
 \end_layout
 
 \begin_layout Subsubsection
@@ -5837,7 +5806,7 @@ Si bien el resultado final es el mismo, al usar
 \family typewriter
 rebase
 \family default
- en este caso la historia pasa a ser linear y los 
+ en este caso la historia pasa a ser lineal y los 
 \emph on
 commits
 \emph default
@@ -6069,14 +6038,33 @@ nuevos
 \begin_inset Quotes erd
 \end_inset
 
- y evitar el gran desastre, hay que tener clara una cosa: 
-\series bold
-\color red
-jamás hay que utilizar rebase para modificar commits que se encuentran registrad
+ y evitar posibles errores graves, 
+\color black
+nunca se debe utilizar rebase para modificar commits que se encuentran registrad
 os en un repositorio remoto
-\series default
 \color inherit
 .
+\end_layout
+
+\begin_layout Section
+Referencias
+\end_layout
+
+\begin_layout Standard
+Parte del material utilizado en este documento( 
+\family typewriter
+\color black
+Git: guía de referencia
+\family default
+\color inherit
+) ha sido tomado del libro 
+\family typewriter
+\color black
+Pro Git
+\family default
+\color inherit
+, escrito por Scott Chacon y publicado por Apress bajo una licencia Creative
+ Commons 3.0.
 \end_layout
 
 \end_body
