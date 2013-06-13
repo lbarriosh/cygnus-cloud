@@ -948,11 +948,232 @@ intentará reestablecer la conexión con el mismo, y
 
 \begin_layout Itemize
 cuando se exceda el tiempo máximo de procesamiento de una petición, generará
- el error correspondiente.
+ el error correspondiente
 \end_layout
 
 \begin_layout Section
-Inconvenientes del desarrollo
+Problemas encontrados durante el desarrollo
+\end_layout
+
+\begin_layout Standard
+Durante el desarrollo de 
+\emph on
+CygnusCloud
+\emph default
+, hemos tenido que resolver dos situaciones problemáticas: la necesidad
+ de cambiar de hipervisor y el uso de una librería de red pésimamente documentad
+a.
+\end_layout
+
+\begin_layout Subsection
+Cambio de hipervisor
+\end_layout
+
+\begin_layout Standard
+En la fase inicial del proyecto, evaluamos los hipervisores Xen y KVM.
+ Puesto que ambos cuentan con el mismo rendimiento y, en principio, soportan
+ las mismas funciones, decidimos utilizar Xen por su mayor soporte comercial.
+\end_layout
+
+\begin_layout Standard
+Así, estuvimos familiarizándonos con este hipervisor durante una semana.
+ En ese periodo de tiempo, lo instalamos y lo utilizamos para crear distintas
+ máquinas virtuales.
+\end_layout
+
+\begin_layout Standard
+Tras adquirir suficiente experiencia, decidimos empezar a utilizar imágenes
+ 
+\emph on
+copy-on-write
+\emph default
+.
+ Esto marcó el el inicio de todos nuestros problemas con Xen.
+\end_layout
+
+\begin_layout Standard
+En primer lugar, encontramos un 
+\emph on
+bug
+\emph default
+ en el parser de los ficheros de definición: los dos elementos XML que se
+ utilizan para indicar la ruta de la imagen de disco no pueden estar separados
+ por espacios, tabuladores ni líneas en blanco.
+ Para averiguar la causa de este 
+\emph on
+bug
+\emph default
+, tuvimos que invertir cerca de una semana, en la que examinamos el código
+ que se utilizaba para interactuar con Xen.
+ 
+\end_layout
+
+\begin_layout Standard
+Por suerte para nosotros, ese código está escrito en 
+\emph on
+Python
+\emph default
+, por lo que es pudimos modificarlo rápidamente para hacer pruebas.
+ 
+\end_layout
+
+\begin_layout Standard
+Una vez resuelto este inconveniente descubrimos, también perdiendo cerca
+ de una semana, que la versión 
+\emph on
+open-source
+\emph default
+ de Xen no soporta todas las características que se indican en su documentación
+ oficial.
+ Aunque esta afirma que Xen soporta imágenes de disco RAW, 
+\family typewriter
+qcow
+\family default
+, 
+\family typewriter
+qcow2
+\family default
+ y 
+\family typewriter
+vmdk
+\family default
+, en la práctica sólo es posible utilizar imágenes RAW y 
+\family typewriter
+qcow
+\family default
+ en modo no 
+\emph on
+copy-on-write
+\emph default
+.
+ Asimismo, en ninguno de los escasos foros y listas de correo que contienen
+ información sobre Xen se mencionaba este aspecto.
+\end_layout
+
+\begin_layout Standard
+En un último intento, decidimos compilar manualmente la versión más reciente
+ de Xen, la 4.2.
+ Tras hacerlo y comprobar que 
+\end_layout
+
+\begin_layout Itemize
+estos problemas seguían estando presentes, que
+\end_layout
+
+\begin_layout Itemize
+la documentación de la nueva versión era prácticamente inexistente, y que
+\end_layout
+
+\begin_layout Itemize
+hasta la publicación de la nueva versión de Xen, que tendría lugar a mediados
+ de 2013, los integrantes del proyecto Xen no tenían intención de resolver
+ ningún 
+\emph on
+bug
+\emph default
+,
+\end_layout
+
+\begin_layout Standard
+decidimos utilizar KVM.
+ Esta ha sido una de las mejores decisiones de diseño que hemos tomado:
+ tras un fin de semana, pudimos iniciar, con un mes de retraso, el desarrollo
+ de los servidores de máquinas virtuales.
+\end_layout
+
+\begin_layout Subsection
+La librería de red 
+\emph on
+twisted
+\end_layout
+
+\begin_layout Standard
+Cuando comenzamos a trabajar en el proyecto, decidimos utilizar una librería
+ de red escrita en 
+\emph on
+Python
+\emph default
+ y, de ser posible, muy utilizada.
+ En caso de tener problemas, esto último nos permitiría obtener mucha informació
+n.
+\end_layout
+
+\begin_layout Standard
+Así, nos decantamos por utilizar la librería de red 
+\emph on
+twisted
+\emph default
+.
+ Aunque encontramos bastantes tutoriales para aprender a utilizar esta librería,
+ ninguno de ellos profundizaba lo suficiente como para cubrir nuestras necesidad
+es.
+\end_layout
+
+\begin_layout Standard
+Por ello, decidimos tomar los tutoriales como base y, a partir de la documentaci
+ón oficial de 
+\emph on
+twisted
+\emph default
+, extenderlos para implementar el módulo de comunicaciones.
+\end_layout
+
+\begin_layout Standard
+Durante el desarrollo de este módulo observamos que, aunque utilizásemos
+ la última versión de 
+\emph on
+twisted
+\emph default
+ y la versión más actualizada de su documentación, muchos de los ejemplos
+ incluidos en la misma no funcionaban.
+ 
+\end_layout
+
+\begin_layout Standard
+Para confirmar que la documentación de 
+\emph on
+twisted 
+\emph default
+se contradice a sí misma, decidimos utilizar la función 
+\family typewriter
+dir()
+\family default
+ de 
+\emph on
+Python
+\emph default
+.
+ Al evaluarse, esta función devuelve una lista con todos los atributos de
+ un objeto.
+ 
+\end_layout
+
+\begin_layout Standard
+Aunque existen muchos foros en los que se resuelven dudas sobre el uso de
+ la librería 
+\emph on
+twisted
+\emph default
+, en la inmensa mayoría de ellos no se indica la versión de 
+\emph on
+twisted
+\emph default
+ que se está utilizando, Por tanto, para utilizar la librería 
+\emph on
+twisted
+\emph default
+ es necesario recurrir al método de prueba y error en bastantes ocasiones.
+ 
+\end_layout
+
+\begin_layout Standard
+Cuando detectamos este inconveniente, habíamos invertido un esfuerzo considerabl
+e en comprender el funcionamiento de 
+\emph on
+twisted
+\emph default
+ y en implementar el módulo de comunicaciones.
+ Por ello, decidimos seguir utilizando esta librería de red.
 \end_layout
 
 \begin_layout Section
