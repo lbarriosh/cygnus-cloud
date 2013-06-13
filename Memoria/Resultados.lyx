@@ -176,8 +176,8 @@ Por otro lado, el estudio de las distintas soluciones basadas en tecnologías
 \emph on
 cloud
 \emph default
- permite aprender cómo atender de forma rápida y eficiente a un gran número
- de usuarios.
+ nos ha permitido aprender cómo atender de forma rápida y eficiente a un
+ gran número de usuarios.
  
 \end_layout
 
@@ -256,7 +256,7 @@ software
 \begin_layout Standard
 Aunque ya estábamos bastante familiarizados con VirtualBox y VMWare, nunca
  habíamos utilizado Xen ni KVM.
- Por ello, decidimos familiarizarnos con estos sistemas y a hacer pruebas
+ Por ello, decidimos familiarizarnos con estos sistemas y hacer pruebas
  de integración.
  De esta manera, en la actualidad conocemos sus ventajas e inconvenientes,
  cómo utilizarlos e incluso su funcionamiento interno.
@@ -473,7 +473,7 @@ Linux
 
 \begin_layout Itemize
 configurar manualmente interfaces de red, crear interfaces de red virtuales
- y a configurar encaminadores.
+ y configurar encaminadores.
 \end_layout
 
 \begin_layout Itemize
@@ -600,8 +600,8 @@ establecer, desde el sistema operativo de la máquina virtual, conexiones
 
 \begin_layout Itemize
 desplegar una configuración nueva sin la intervención de los administradores.
- Para ello, se considerará el número de alumnos matriculados en la asignatura
- asociada a la máquina virtual.
+ Para ello, se considerará el número de plazas disponibles en el grupo de
+ asignatura asociado a la máquina virtual.
 \end_layout
 
 \begin_layout Itemize
@@ -633,7 +633,7 @@ cluster
 \end_layout
 
 \begin_layout Itemize
-realizar las altas y bajas de usuarios y asignaturas.
+realizar las altas y bajas de usuarios y grupos de asignaturas.
 \end_layout
 
 \begin_layout Itemize
@@ -659,7 +659,7 @@ Finalmente, todos los usuarios interactuarán con el sistema
 CygnusCloud
 \emph default
  utilizando una aplicación web que, además, realizará las labores de control
- de acceso.
+ de acceso para cada tipo de usuario y gestión de grupos de asignaturas.
 \end_layout
 
 \begin_layout Subsection
@@ -702,7 +702,7 @@ un servidor de máquinas virtuales intenta descargar un fichero comprimido
 \end_layout
 
 \begin_layout Itemize
-un servidor de máquinas virtuales intenta sobreescribir un fichero comprimido
+un servidor de máquinas virtuales intenta sobrescribir un fichero comprimido
  que no está siendo modificado en ningún servidor de máquinas virtuales.
 \end_layout
 
@@ -748,8 +748,8 @@ no se puede establecer la conexión con el repositorio de imágenes para subir
 \family default
 .
  Para evitar que se pierdan los cambios en las configuraciones de las máquinas
- virtuales, el servidor de máquinas virtuales intentará reestablecer la
- conexión en varias ocasiones antes de generar el error.
+ virtuales, el servidor de máquinas virtuales intentará restablecer la conexión
+ en varias ocasiones antes de generar el error.
 \end_layout
 
 \begin_layout Itemize
@@ -945,7 +945,7 @@ cluster
 \end_layout
 
 \begin_layout Itemize
-intentará reestablecer la conexión con el mismo, y
+intentará restablecer la conexión con el mismo, y
 \end_layout
 
 \begin_layout Itemize
@@ -1059,11 +1059,11 @@ En un último intento, decidimos compilar manualmente la versión más reciente
 \end_layout
 
 \begin_layout Itemize
-estos problemas seguían estando presentes, que
+estos problemas seguían estando presentes, 
 \end_layout
 
 \begin_layout Itemize
-la documentación de la nueva versión era prácticamente inexistente, y que
+la documentación de la nueva versión era prácticamente inexistente, y 
 \end_layout
 
 \begin_layout Itemize
@@ -1276,7 +1276,7 @@ y el
 \emph on
 Cloud Computing
 \emph default
- en general para adelantar la salida de la crisis económica.
+ en general como solución a la actual crisis económica.
  El audio de esta entrevista está disponible en
 \end_layout
 
@@ -1287,6 +1287,63 @@ Cloud Computing
 LatexCommand href
 name "http://tinyurl.com/ox428wq"
 target "http://tinyurl.com/ox428wq"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+También, a lo largo del curso 1012/13, la web de la Facultad de informática
+ de la universidad Complutense de Madrid ha publicado un par de artículos
+ sobre nuestro proyecto.
+ Ambos artículos se encuentran disponibles en 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.fdi.ucm.es/Documento.asp?cod=1006"
+target "http://www.fdi.ucm.es/Documento.asp?cod=1006"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.fdi.ucm.es/Documento.asp?cod=1056"
+target "http://www.fdi.ucm.es/Documento.asp?cod=1056"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por si fuera poco, el periódico de la Universidad Complutense, Tribuna Compluten
+se, publicó un artículo en el que se mencionan los objetivos principales
+ de 
+\shape italic
+CygnusCloud
+\shape default
+.
+ Puede leerse en 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://cygnusclouducm.files.wordpress.com/2013/01/tribunacomplutense.pdf"
+target "http://cygnusclouducm.files.wordpress.com/2013/01/tribunacomplutense.pdfhttp://cygnusclouducm.files.wordpress.com/2013/01/tribunacomplutense.pdf"
 
 \end_inset
 
@@ -1364,7 +1421,7 @@ Fuente: Concurso Universitario de Software Libre
 \end_layout
 
 \begin_layout Standard
-Durante ese evento, profesores de la Universidad de Granada nos indicaron
+Durante ese evento, profesores de la Universidad de Granada nos comunicaron
  que estudiarán la posible implantación del sistema 
 \emph on
 CygnusCloud
@@ -1373,8 +1430,7 @@ CygnusCloud
 \end_layout
 
 \begin_layout Standard
-Finalmente, a lo largo del proceso de desarrollo hemos ido actualizando
- un 
+Además, a lo largo del proceso de desarrollo hemos mantenido un 
 \emph on
 blog
 \emph default
@@ -1400,10 +1456,10 @@ A través de él, hemos resuelto las dudas de varios usuarios.
 \emph on
 blog
 \emph default
-, como la comparativa de Xen y KVM, aparecen en los primeros resultados
- de la búsqueda de 
+, como la comparativa entre Xen y KVM, 
 \emph on
-Google.
+aparecen entre los primeros resultados al hacer consultas sobre sus temas
+ en Google.
  
 \end_layout
 
