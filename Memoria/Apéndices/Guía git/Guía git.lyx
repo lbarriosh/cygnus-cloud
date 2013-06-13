@@ -80,6 +80,18 @@
 Git: guía de referencia
 \end_layout
 
+\begin_layout Standard
+Este capítulo contiene material extraído del libro 
+\emph on
+Pro Git
+\emph default
+, escrito por Scott Chacon y publicado bajo una licencia 
+\emph on
+Creative Commons 
+\emph default
+Attribution-NonCommercial-ShareAlike 3.0 Unported.
+\end_layout
+
 \begin_layout Section
 Git y Subversion
 \end_layout
@@ -6044,27 +6056,6 @@ nunca se debe utilizar rebase para modificar commits que se encuentran registrad
 os en un repositorio remoto
 \color inherit
 .
-\end_layout
-
-\begin_layout Section
-Referencias
-\end_layout
-
-\begin_layout Standard
-Parte del material utilizado en este documento( 
-\family typewriter
-\color black
-Git: guía de referencia
-\family default
-\color inherit
-) ha sido tomado del libro 
-\family typewriter
-\color black
-Pro Git
-\family default
-\color inherit
-, escrito por Scott Chacon y publicado por Apress bajo una licencia Creative
- Commons 3.0.
 \end_layout
 
 \end_body

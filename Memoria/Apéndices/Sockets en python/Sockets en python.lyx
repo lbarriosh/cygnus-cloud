@@ -79,17 +79,35 @@ Introducción
 \end_layout
 
 \begin_layout Standard
-Los sockets son un concepto abstracto con el que se designa al punto final
- de una conexión.
- Los programas utilizan sockets para comunicarse con otros programas, que
- pueden estar situados en computadoras distintas.
+Los 
+\emph on
+sockets
+\emph default
+ son un concepto abstracto con el que se designa al punto final de una conexión.
+ Los programas utilizan 
+\emph on
+sockets
+\emph default
+ para comunicarse con otros programas, que pueden estar situados en computadoras
+ distintas.
 \end_layout
 
 \begin_layout Standard
-Un socket queda definido por la dirección IP de la máquina, el puerto en
- el que escucha, y el protocolo que utiliza.
- Los tipos y funciones necesarios para trabajar con sockets se encuentran
- en Python en el módulo socket.
+Un 
+\emph on
+socket
+\emph default
+ queda definido por la dirección IP de la máquina, el puerto en el que escucha,
+ y el protocolo que utiliza.
+ Los tipos y funciones necesarios para trabajar con 
+\emph on
+sockets
+\emph default
+ se encuentran en Python en el módulo 
+\family typewriter
+socket
+\family default
+.
 \end_layout
 
 \begin_layout Section
@@ -97,17 +115,62 @@ Clasificación
 \end_layout
 
 \begin_layout Standard
-Los sockets se clasifican en sockets de flujo (socket.SOCK_STREAM) o sockets
- de datagramas (socket.SOCK_DGRAM) dependiendo de si el servicio utiliza
- TCP, que es orientado a conexión y fiable, o UDP, respectivamente.
+Los 
+\emph on
+sockets
+\emph default
+ se clasifican en 
+\emph on
+sockets
+\emph default
+ de flujo (
+\family typewriter
+socket.SOCK_STREAM
+\family default
+) o 
+\emph on
+sockets
+\emph default
+ de datagramas (
+\family typewriter
+socket.SOCK_DGRAM
+\family default
+) dependiendo de si el servicio utiliza TCP, que es orientado a conexión
+ y fiable, o UDP, respectivamente.
  
 \end_layout
 
 \begin_layout Standard
-Los sockets también se pueden clasificar según la familia.
- Tenemos sockets UNIX (socket.AF_UNIX) que se crearon antes de la concepción
- de las redes y se basan en ficheros, sockets socket.AF_INET que son los
- que nos interesan, sockets socket.AF_INET6 para IPv6, etc.
+Los 
+\emph on
+sockets
+\emph default
+ también se pueden clasificar según la familia.
+ Tenemos 
+\emph on
+sockets 
+\emph default
+UNIX (
+\family typewriter
+socket.AF_UNIX
+\family default
+) que se crearon antes de la concepción de las redes y se basan en ficheros,
+ 
+\emph on
+sockets
+\emph default
+ 
+\family typewriter
+socket.AF_INET
+\family default
+ que son los que nos interesan, 
+\emph on
+sockets 
+\family typewriter
+\emph default
+socket.AF_INET6
+\family default
+ para IPv6, etc.
 \end_layout
 
 \begin_layout Section
@@ -116,111 +179,315 @@ Familias de Sockets
 
 \begin_layout Standard
 Dependiendo del sistema y las opciones de construcción, existen varias familias
- de sockets.
+ de 
+\emph on
+sockets
+\emph default
+.
 \end_layout
 
 \begin_layout Standard
-Las direcciones de sockets pueden representarse como siguen :
+Las direcciones de 
+\emph on
+sockets
+\emph default
+ pueden representarse como siguen:
 \end_layout
 
 \begin_layout Itemize
-Las cadenas de String simples son utilizadas para familias del tipo AF_UNIX
+Las cadenas de caracteres son utilizadas para familias del tipo 
+\family typewriter
+AF_UNIX
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
-Un par de la forma (host,port).
- Se utilizan para las familias de tipo AF_INET donde 
-\begin_inset Quotes eld
-\end_inset
-
+Un par de la forma 
+\family typewriter
+(host, port)
+\family default
+.
+ Se utilizan para las familias de tipo 
+\family typewriter
+AF_INET
+\family default
+ donde 
+\family typewriter
 host
-\begin_inset Quotes erd
-\end_inset
-
- es una cadena que representa un nombre de host en la notación de dominio
- de Internet como 'daring.cwi.nl' o una dirección IPv4 como .50.200.5 '100 ',
- y 
-\begin_inset Quotes eld
-\end_inset
-
+\family default
+ es una cadena que representa un nombre de 
+\emph on
+host
+\emph default
+ en la notación de dominio de internet (como 
+\family typewriter
+daring.cwi.nl
+\family default
+) o una dirección IPv4 como (50.200.5.100), y 
+\family typewriter
 port
-\begin_inset Quotes erd
-\end_inset
-
+\family default
  es un entero.
 \end_layout
 
 \begin_layout Itemize
-En el caso de la familia de tipo AF_INET6, se utiliza una tupla de cuatro
- elementos (host, port, flowinfo, scopeid), donde flowInfo y scopeid representan
- los miembros sin6_flowinfo y sin6_scope_id del registro sockaddr_in6.
+En el caso de la familia de tipo 
+\family typewriter
+AF_INET6
+\family default
+, se utiliza una tupla de cuatro elementos 
+\family typewriter
+(host, port, flowinfo, scopeid)
+\family default
+, donde 
+\family typewriter
+flowInfo
+\family default
+ y 
+\family typewriter
+scopeid
+\family default
+ representan los miembros 
+\family typewriter
+sin6_flowinfo
+\family default
+ y 
+\family typewriter
+sin6_scope_id
+\family default
+ del registro 
+\family typewriter
+sockaddr_in6
+\family default
+.
  Estos parámetros pueden omitirse para compatibilidad con versiones anteriores.
- Sin embargo, la omisión de ScopeId puede causar problemas en la manipulación
- de ámbito de las direcciones IPv6.
+ Sin embargo, la omisión de 
+\family typewriter
+ScopeId
+\family default
+ puede causar problemas en la manipulación de ámbito de las direcciones
+ IPv6.
 \end_layout
 
 \begin_layout Itemize
-Los sockets de la familia AF_NETLINK se representan como pares (pid, grupos).
+Los 
+\emph on
+sockets
+\emph default
+ de la familia 
+\family typewriter
+AF_NETLINK
+\family default
+ se representan como pares 
+\family typewriter
+(pid, grupos)
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
-El soporte de TIPC en linux solo está disponible bajo la familia AF_TIPC.
+El soporte de TIPC en 
+\emph on
+Linux
+\emph default
+ solo está disponible bajo la familia 
+\family typewriter
+AF_TIPC
+\family default
+.
  TIPC es un protocolo abierto, sin IP y basado en red, diseñado para ser
- usado en ambientes con computación en cluster.
+ usado en ambientes con computación en 
+\emph on
+cluster
+\emph default
+.
  Las direcciones son representadas por una tupla, y sus campos dependen
  del tipo de dirección.
- Generalmente suele tener el siguiente aspecto: (addr_type, v1, v2, v3 ,[
- scope]) donde
+ Generalmente suele tener el siguiente aspecto: 
+\family typewriter
+(addr_type, v1, v2, v3 ,[ scope])
+\family default
+ donde
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-addr_type es TIPC_ADDR_NAMESEQ, TIPC_ADDR_NAME, o TIPC_ADDR_ID.
+
+\family typewriter
+addr_type
+\family default
+ es 
+\family typewriter
+TIPC_ADDR_NAMESEQ
+\family default
+, 
+\family typewriter
+TIPC_ADDR_NAME
+\family default
+, o 
+\family typewriter
+TIPC_ADDR_ID
+\family default
+.
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-Si addr_type es TIPC_ADDR_NAME, entonces v1 es el tipo de servidor, v2 es
- el identificador de puerto, y v3 suele ser 0.
+Si 
+\family typewriter
+addr_type
+\family default
+ es 
+\family typewriter
+TIPC_ADDR_NAME
+\family default
+, entonces 
+\family typewriter
+v1
+\family default
+ es el tipo de servidor, 
+\family typewriter
+v2
+\family default
+ es el identificador de puerto, y 
+\family typewriter
+v3
+\family default
+ suele ser 
+\family typewriter
+0
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
-Si addr_type es TIPC_ADDR_NAMESEQ, entonces v1 es el tipo de servidor, v2
- es el número menor del puerto, y v3 es el mayor número de puerto.
+Si 
+\family typewriter
+addr_type
+\family default
+ es 
+\family typewriter
+TIPC_ADDR_NAMESEQ
+\family default
+, entonces 
+\family typewriter
+v1
+\family default
+ es el tipo de servidor, 
+\family typewriter
+v2
+\family default
+ es el número menor del puerto, y 
+\family typewriter
+v3
+\family default
+ es el mayor número de puerto.
 \end_layout
 
 \begin_layout Itemize
-Si addr_type es TIPC_ADDR_ID, entonces v1 es el nodo, v2 es la referencia,
- y v3 suele ser 0.
+Si
+\family typewriter
+ addr_type
+\family default
+ es 
+\family typewriter
+TIPC_ADDR_ID
+\family default
+, entonces 
+\family typewriter
+v1
+\family default
+ es el nodo, 
+\family typewriter
+v2
+\family default
+ es la referencia, y 
+\family typewriter
+v3
+\family default
+ suele ser 
+\family typewriter
+0
+\family default
+.
 \end_layout
 
 \end_deeper
 \begin_layout Itemize
-scope es TIPC_ZONE_SCOPE, TIPC_CLUSTER_SCOPE, o TIPC_NODE_SCOPE.
+
+\family typewriter
+scope
+\family default
+ es 
+\family typewriter
+TIPC_ZONE_SCOPE
+\family default
+, 
+\family typewriter
+TIPC_CLUSTER_SCOPE
+\family default
+, o 
+\family typewriter
+TIPC_NODE_SCOPE
+\family default
+.
 \end_layout
 
 \end_deeper
 \begin_layout Itemize
-Algunas otras familias como AF_BLUETOOTH y AF_PACKET utilizan representaciones
- específicas.
+Algunas otras familias como 
+\family typewriter
+AF_BLUETOOTH
+\family default
+ y 
+\family typewriter
+AF_PACKET
+\family default
+ utilizan representaciones específicas.
 \end_layout
 
 \begin_layout Section
-Creación de un socket
+Creación de un 
+\emph on
+socket
 \end_layout
 
 \begin_layout Standard
-Para crear un socket se utiliza el constructor socket.socket() que puede
- tomar como parámetros opcionales la familia, el tipo y el protocolo.
- Por defecto se utiliza la familia AF_INET y el tipo SOCK_STREAM.
+Para crear un 
+\emph on
+socket
+\emph default
+ se utiliza el constructor 
+\family typewriter
+socket.socket()
+\family default
+ que puede tomar como parámetros opcionales la familia, el tipo y el protocolo.
+ Por defecto se utiliza la familia 
+\family typewriter
+AF_INET
+\family default
+ y el tipo 
+\family typewriter
+SOCK_STREAM
+\family default
+.
 \end_layout
 
 \begin_layout Subsection
-Socket en el servidor
+
+\emph on
+Socket
+\emph default
+ en el servidor
 \end_layout
 
 \begin_layout Standard
-Lo primero que tenemos que hacer es crear un objeto socket para el servidor
+Lo primero que tenemos que hacer es crear un objeto 
+\emph on
+socket
+\emph default
+ para el servidor
 \end_layout
 
 \begin_layout Standard
@@ -253,11 +520,26 @@ end{verbatim}
 
 \begin_layout Standard
 Ahora tenemos que indicar en qué puerto se va a mantener a la escucha nuestro
- servidor utilizando el método bind.
- Para sockets IP, como es nuestro caso, el argumento de bind es una tupla
- que contiene el host y el puerto.
- El host se puede dejar vacío, indicando al método que puede utilizar cualquier
- nombre que esté disponible.
+ servidor utilizando el método 
+\family typewriter
+bind
+\family default
+.
+ Para sockets IP, como es nuestro caso, el argumento de 
+\family typewriter
+bind
+\family default
+ es una tupla que contiene el 
+\emph on
+host
+\emph default
+ y el puerto.
+ El 
+\emph on
+host 
+\emph default
+se puede dejar vacío, indicando al método que puede utilizar cualquier nombre
+ que esté disponible.
 \end_layout
 
 \begin_layout Standard
@@ -289,19 +571,52 @@ end{verbatim}
 \end_layout
 
 \begin_layout Standard
-Por último, utilizamos listen para hacer que el socket acepte conexiones
- y accept para comenzar a escuchar.
- listen requiere de un parámetro que indique el número de conexiones máximas
- que queremos aceptar.
- Evidentemente, este valor debe ser al menos 1.
- accept se mantiene a la espera de conexiones entrantes, bloqueando la ejecución
+Por último, utilizamos 
+\family typewriter
+listen
+\family default
+ para hacer que el 
+\emph on
+socket
+\emph default
+ acepte conexiones y 
+\emph on
+accept
+\emph default
+ para comenzar a escuchar.
+ 
+\family typewriter
+listen
+\family default
+ requiere un parámetro que indique el número de conexiones máximas que queremos
+ aceptar.
+ Evidentemente, este valor debe ser al menos 
+\family typewriter
+1
+\family default
+.
+ 
+\family typewriter
+accept
+\family default
+ se mantiene a la espera de conexiones entrantes, bloqueando la ejecución
  hasta que llegue un mensaje.
 \end_layout
 
 \begin_layout Standard
-Cuando llega un mensaje, accept desbloquea la ejecución, devolviendo un
- objeto socket que representa la conexión del cliente y una tupla que contiene
- el host y el puerto de dicha conexión.
+Cuando llega un mensaje, 
+\family typewriter
+accept
+\family default
+ desbloquea la ejecución, devolviendo un objeto 
+\family typewriter
+socket
+\family default
+ que representa la conexión del cliente y una tupla que contiene el 
+\emph on
+host
+\emph default
+ y el puerto de dicha conexión.
 \end_layout
 
 \begin_layout Standard
@@ -338,11 +653,36 @@ end{verbatim}
 \end_layout
 
 \begin_layout Standard
-Una vez que tenemos este objeto socket podemos comunicarnos con el cliente
- a través suyo, mediante los métodos recv y send (o recvfrom y sendfrom
+Una vez que tenemos este objeto 
+\emph on
+socket
+\emph default
+ podemos comunicarnos con el cliente a su través, mediante los métodos 
+\family typewriter
+recv
+\family default
+ y 
+\family typewriter
+send
+\family default
+ (o 
+\family typewriter
+recvfrom
+\family default
+ y 
+\family typewriter
+sendfrom
+\family default
  en UDP) que permiten recibir o enviar mensajes respectivamente.
- El método send toma como parámetros los datos a enviar, mientras que el
- método recv toma como parámetro el número máximo de bytes a aceptar.
+ El método 
+\family typewriter
+send
+\family default
+ toma como parámetros los datos a enviar, mientras que el método 
+\family typewriter
+recv
+\family default
+ toma como parámetro el número máximo de bytes a aceptar.
 \end_layout
 
 \begin_layout Standard
@@ -384,21 +724,57 @@ end{verbatim}
 \end_layout
 
 \begin_layout Standard
-Una vez que hemos terminado de trabajar con el socket, lo cerramos con el
- método close.
+Una vez que hemos terminado de trabajar con el 
+\emph on
+socket
+\emph default
+, lo cerramos con el método 
+\family typewriter
+close
+\family default
+.
 \end_layout
 
 \begin_layout Subsection
-Socket en el cliente
+
+\emph on
+Socket
+\emph default
+ en el cliente
 \end_layout
 
 \begin_layout Standard
 Crear un cliente es aún más sencillo.
- Solo tenemos que crear el objeto socket, utilizar el método connect para
- conectarnos al servidor y los métodos send y recv que vimos anteriormente
- para enviar y recibir mensajes.
- El argumento de connect es una tupla con el host y el puerto, exactamente
- igual que bind.
+ Solo tenemos que crear el objeto 
+\family typewriter
+socket
+\family default
+, utilizar el método 
+\family typewriter
+connect
+\family default
+ para conectarnos al servidor y los métodos 
+\family typewriter
+send
+\family default
+ y 
+\family typewriter
+recv
+\family default
+ que vimos anteriormente para enviar y recibir mensajes.
+ El argumento de 
+\family typewriter
+connect
+\family default
+ es una tupla con el 
+\emph on
+host
+\emph default
+ y el puerto, exactamente igual que 
+\family typewriter
+bind
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -450,11 +826,19 @@ Ejemplo 1
 \begin_layout Standard
 En este ejemplo el cliente manda al servidor cualquier mensaje que escriba
  el usuario y el servidor no hace más que repetir el mensaje recibido.
- La ejecución termina cuando el usuario escribe “quit”.
+ La ejecución termina cuando el usuario escribe 
+\family typewriter
+quit
+\family default
+.
 \end_layout
 
 \begin_layout Standard
-Este sería el código del script servidor:
+Este sería el código del 
+\emph on
+script 
+\emph default
+servidor:
 \end_layout
 
 \begin_layout Standard
@@ -551,7 +935,11 @@ end{verbatim}
 \end_layout
 
 \begin_layout Standard
-Y este el del script cliente:
+Y este el del 
+\emph on
+script 
+\emph default
+cliente:
 \end_layout
 
 \begin_layout Standard
@@ -1220,52 +1608,6 @@ soc2.close()
 
 \backslash
 end{verbatim}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Bibliografia
-\end_layout
-
-\begin_layout Enumerate
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-http://docs.python.org/3.2/library/socket.html
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-http://docs.python.org/3.1/howto/sockets.html
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-http://ankurs.com/2009/07/a-simple-python-socket-chat-example/
 \end_layout
 
 \end_inset

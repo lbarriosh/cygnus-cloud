@@ -77,7 +77,9 @@
 \begin_body
 
 \begin_layout Chapter
-Organización del repositorio GitHub
+Organización del repositorio 
+\emph on
+GitHub
 \end_layout
 
 \begin_layout Section
@@ -85,21 +87,17 @@ Introducción
 \end_layout
 
 \begin_layout Standard
-En este documento hablaremos acerca de como se encuentran distribuidos los
- ficheros que componen 
+En este documento mostraremos cómo se encuentran distribuidos los ficheros
+ que componen 
 \shape italic
 CygnusCloud
 \shape default
- en las diferentes ramas del repositorio de GitHub.
- 
-\end_layout
-
-\begin_layout Standard
-Es posible acceder al repositorio de 
-\shape italic
-CygnusCloud
-\shape default
- por medio de la dirección 
+ en las diferentes ramas del repositorio de 
+\emph on
+GitHub
+\emph default
+.
+ Es posible acceder al mismo por medio de la dirección 
 \end_layout
 
 \begin_layout Standard
@@ -119,16 +117,20 @@ https://github.com/lbarriosh/cygnus-cloud
 \end_layout
 
 \begin_layout Standard
-En él los usuarios pueden descargar el código, ver los diferentes 
+A través del repositorio en 
+\emph on
+GitHub
+\emph default
+, los usuarios podrán descargar el código, ver los diferentes 
 \shape italic
 commits
 \shape default
- realizados, las 
+ realizados y los 
 \shape italic
 issues
 \shape default
- corregidas a lo largo del desarrollo de proyecto y las gráficas con la
- evolución de proyecto.
+ corregidos a lo largo del desarrollo de proyecto y también visualizar gráficas
+ con las estadísticas del proyecto.
 \end_layout
 
 \begin_layout Section
@@ -139,7 +141,7 @@ Descarga del contenido
 Cualquier persona que lo desee puede descargar el contenido del repositorio
  a su propio ordenador para poder ejecutar y utilizar el código y cualquiera
  de los ficheros aportados en él, siempre y cuando cumpla la licencia asociada
- (Véase 
+ (véase el apéndice 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "chap:Licencia"
@@ -155,31 +157,34 @@ La descarga del contenido del repositorio puede llevarse a cabo por medio
 \end_layout
 
 \begin_layout Itemize
-Descargando el contenido como un fichero comprimido 
-\family sans
+descargando un fichero comprimido 
+\family typewriter
 \shape italic
 .
 \shape default
 zip
 \family default
- directamente desde la página
+ desde la página de 
+\emph on
+GitHub
+\emph default
+.
 \end_layout
 
 \begin_layout Itemize
-Realizando un fetch con la dirección 
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-https://github.com/lbarriosh/cygnus-cloud.git
+ejecutando el comando 
 \end_layout
 
-\end_inset
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
 
- 
+\family typewriter
+git clone https://github.com/lbarriosh/cygnus-cloud.git
 \end_layout
 
+\end_deeper
 \begin_layout Section
 La rama 
 \family typewriter
@@ -187,26 +192,13 @@ oldstable
 \end_layout
 
 \begin_layout Standard
-Esta rama contiene la última versión estable de 
-\shape italic
+Esta rama contiene la versión de 
+\emph on
 CygnusCloud
-\shape default
-.
- El objetivo de esta rama es ir almacenando las versiones de 
-\shape italic
-CygnusCloud
-\shape default
- que ya han sido completamente terminadas y depuradas.
- Por lo tanto, esta rama nunca debe contener código a medio desarrollar
- o con posibles 
-\shape italic
-bugs
-\shape default
- contemplados para la versión que corresponda.
-\end_layout
-
-\begin_layout Standard
-La distribución de directorios principales en esta rama es:
+\emph default
+ que presentamos a la 7ª edición del Concurso Universitario de Software
+ Libre.
+ Los principales directorios de esta rama son los siguientes:
 \end_layout
 
 \begin_layout Itemize
@@ -231,90 +223,31 @@ Certificados
 \begin_layout Itemize
 
 \family typewriter
-Documentación interna
-\family default
-.
- En este directorio se incluye un conjunto de documentos auxiliares, desarrollad
-os por 
-\shape italic
-CygnusCloud
-\shape default
- con el fin de facilitar la labor de aprendizaje de las diferentes herramientas
- necesarias para el desarrollo de la versión residente en 
-\family typewriter
-oldstable
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
 Ficheros de configuración
 \family default
 .
- Incluye los ficheros de configuración utilizados para configurar los servidores
- del sistema.
- Estos ficheros deben ser compatibles con la versión que se encuentra en
- esta rama.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-Memoria
-\family default
-.
- En este directorio se incluye la memoria con los apartados que ya han sido
- revisados y pueden considerarse casi definitivos.
- Los miembros de 
-\shape italic
-CygnusCloud
-\shape default
- solo subirán un apartado a esta rama cuando este terminado y sea prácticamente
- definitivo.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-Src
-\family default
-.
- En este directorio se incluye todo el código de la última versión estable
+ Incluye los ficheros de configuración utilizados por los distintos demonios
  de 
-\shape italic
+\emph on
 CygnusCloud
-\shape default
+\emph default
 .
- Este código, permanece inalterable durante cada iteración y solo es actualizado
- cuando se completa una versión funcional del sistema.
- Dentro de este directorio podemos destacar dos subdirectorios:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-
-\family typewriter
-\shape italic
-CygnusCloud
-\family default
-\shape default
-.
- Incluye el código de toda la infraestructura, a excepción de la web.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-web
+src
 \family default
 .
- Incluye el código de la aplicación web.
+ En este directorio se incluye el código de la primera versión estable de
+ 
+\emph on
+CygnusCloud
+\emph default
+.
 \end_layout
 
-\end_deeper
 \begin_layout Section
 La rama 
 \family typewriter
@@ -322,21 +255,22 @@ master
 \end_layout
 
 \begin_layout Standard
-Esta rama esta destinada a mantener todo el código en desarrollo de la última
- versión de 
+Esta rama contiene la última versión estable de 
 \shape italic
 CygnusCloud
 \shape default
 .
- Debe garantizarse que todo el código subido a esta rama puede ser compilado
- y no provoca ningún tipo de problema al resto de usuarios que se encuentren
- trabajando sobre esta versión.
- Sin embargo, a diferencia que en la rama 
-\family typewriter
-oldstable
-\family default
-, el código que se sube en esta rama no tiene por qué estar terminado ni
- completamente depurado.
+ El objetivo de esta rama es ir almacenando las versiones de 
+\shape italic
+CygnusCloud
+\shape default
+ que ya han sido completamente terminadas y depuradas.
+ Por lo tanto, esta rama nunca debe contener código a medio terminar o con
+ posibles 
+\shape italic
+bugs
+\shape default
+ contemplados para la versión que corresponda.
 \end_layout
 
 \begin_layout Standard
@@ -349,12 +283,12 @@ Los principales directorios que podemos encontrar en esta rama son:
 Arquitectura
 \family default
 .
- Incluye tanto los diseños antiguos, ya implantados en la última versión
- estable, como los nuevos diseños que pueden 
+ Incluye tanto los diseños antiguos ya implementados en la última versión
+ estable como los nuevos diseños que pueden 
 \shape italic
 estar
 \shape default
- o no implantados en la versión en desarrollo.
+ o no implementados en la versión en desarrollo.
 \end_layout
 
 \begin_layout Itemize
@@ -378,10 +312,10 @@ oldstable
 Documentación interna
 \family default
 .
- Incluye tanto los documentos desarrollados para el aprendizaje de las herramien
-tas utilizadas en la última versión estable, como todos aquellos documentos
- nuevos que hayan podido desarrollarse para facilitar el aprendizaje de
- las nuevas herramientas que se pretenden utilizar en la versión en desarrollo.
+ Incluye los documentos creados durante la familiarización con las herramientas
+ utilizadas en la última versión estable y todos los documentos nuevos que
+ hayan podido crearse para aprender a utilizar las herramientas empleadas
+ en la versión en desarrollo.
 \end_layout
 
 \begin_layout Itemize
@@ -390,10 +324,9 @@ tas utilizadas en la última versión estable, como todos aquellos documentos
 Ficheros de configuración
 \family default
 .
- Incluyen los ficheros de configuración para los servidores de la infraestructur
-a.
- Deben se compatibles con los servidores en desarrollo para esta última
- versión.
+ Incluye los ficheros de configuración de los diversos demonios de 
+\emph on
+CygnusCloud.
 \end_layout
 
 \begin_layout Itemize
@@ -402,34 +335,95 @@ a.
 Memoria
 \family default
 .
- Incluye tanto los apartados de la memoria que se han mantenido desde la
- última versión estable, como aquellos que han sido modificados para ajustarse
- a la nueva versión en desarrollo y los que han sido creados de nuevo.
- Los apartados subido a esta rama deben poder compilarse para no entorpecer
- el trabajo del resto de desarrolladores pero no tienen por qué estar terminados
- ni completamente revisados.
+ En este directorio se incluye la memoria con los apartados que ya han sido
+ revisados y pueden considerarse casi definitivos.
+ Los miembros de 
+\shape italic
+CygnusCloud
+\shape default
+ solo subirán un apartado a esta rama cuando este terminado y sea prácticamente
+ definitivo.
+ 
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-Src
+src
 \family default
 .
- Incluye el código de la versión en desarrollo de 
+ En este directorio se incluye todo el código de la última versión estable
+ de 
 \shape italic
 CygnusCloud
 \shape default
 .
- Como ya se mencionó anteriormente, los desarrolladores deben garantizar
- que el código subido a esta rama compila, pero puede no estar terminado
- ni completamente depurado.
- Los subdirectorios relevantes en este directorio son los mismos que los
- mencionados en la rama 
+ Este código, permanece inalterado durante cada iteración, y sólo se actualiza
+ cuando se completa una versión funcional del sistema.
+ Dentro de este directorio podemos destacar dos subdirectorios:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
 \family typewriter
-oldstable
+\shape italic
+\emph on
+Infraestructura
+\family default
+\shape default
+\emph default
+.
+ Incluye el código de toda la infraestructura, a excepción de la web.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+web
 \family default
 .
+ Incluye el código de la aplicación web.
+\end_layout
+
+\end_deeper
+\begin_layout Section
+La rama 
+\family typewriter
+develop
+\end_layout
+
+\begin_layout Standard
+Esta rama esta destinada a mantener todo el código de la versión en desarrollo
+ de 
+\shape italic
+CygnusCloud
+\shape default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Debe garantizarse que todo el código subido a esta rama puede ser compilado
+ y que no provoca ningún tipo de problema al resto de desarrolladores.
+ Sin embargo, a diferencia de lo que ocurre en la rama 
+\family typewriter
+master
+\family default
+, el código que se sube en esta rama no tiene por qué estar completamente
+ depurado.
+\end_layout
+
+\begin_layout Standard
+En principio, en la rama 
+\family typewriter
+develop
+\family default
+ existirán los mismos directorios que en la rama 
+\family typewriter
+master
+\family default
+, aunque estos podrán desaparecer o moverse sin previo aviso.
 \end_layout
 
 \end_body
