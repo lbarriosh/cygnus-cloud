@@ -505,7 +505,7 @@ kernel
 \end_layout
 
 \begin_layout Itemize
-el sistema de virtualización QEMU, versión 2.0 o superior
+el sistema de virtualización QEMU, versión 1.4 o superior
 \end_layout
 
 \begin_layout Itemize
@@ -513,7 +513,7 @@ la librería
 \family typewriter
 libvirt
 \family default
-, versión 0.9.8 o superior
+, versión 1.0.6 o superior
 \end_layout
 
 \begin_layout Itemize
@@ -4891,7 +4891,7 @@ qcow2
 los tres archivos no están en la raíz del fichero comprimido
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 la infraestructura 
 \series bold
 no
