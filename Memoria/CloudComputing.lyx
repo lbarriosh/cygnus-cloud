@@ -948,60 +948,33 @@ Amazon Elastic Beanstalk, Cloud Foundry, Heroku, Force.com, EngineYard, Mendix,
 \end_layout
 
 \begin_layout Subsection
-Software como servicio 
+Software como servicio (SaaS)
 \end_layout
 
 \begin_layout Standard
-Del termino inglés Software
+Su nombre procede del termino inglés 
+\emph on
+Software
 \shape italic
- as a service
+ 
+\emph default
+as a Service
 \shape default
- (Saas), este modelo es el que proporciona menos libertad y también menos
- preocupaciones al cliente.
+\emph on
+ 
+\emph default
+(Saas).
+ Este modelo es el que proporciona menos libertad (y también menos preocupacione
+s) al cliente.
  En este caso, el proveedor no solo ofrece la infraestructura y las herramientas
-, sino que sobre ellas instala el conjunto de aplicaciones que será usadas
- por el cliente.
+, sino que sobre ellas instala el conjunto de aplicaciones que utilizará
+ el cliente.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Esto debe pertenecer a otra parte del documento y se ha movido aquí ,pero
- no recuerdo a cual :
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Quotes eld
-\end_inset
-
-Lo que hace diferente a una aplicación ejecutada en la nube del resto de
- aplicaciones es su elasticidad.Esta elasticidad puede entenderse como el
- reparto de las tareas en múltiples maquinas virtuales en tiempo de ejecución
- para acelerar la ejecución de las tareas más demandadas.Unos gestores de
- carga son los encargados de balancear el trabajo entre múltiples maquinas
- virtuales.
- Este proceso es invisible al cliente ya que el solo tiene un punto de acceso
- por el que interactuar con las aplicaciones.
- Para poder dar cabida a tantos usuarios en la nube las aplicaciones pueden
- ser multiusuario, es decir, una maquina puede atender tareas de más de
- un usuario a la vez
-\begin_inset Quotes erd
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Esto no solo libera al cliente de instalar y ejecutar las aplicaciones en
- sus propia computadora sino que también se encarga del mantenimiento, la
- recuperación y el soporte de las mismas.
+Esto libera al cliente de instalar y, ejecutar las aplicaciones, y también
+ de realizar las labores de mantenimiento, recuperación y soporte de las
+ mismas.
 \end_layout
 
 \begin_layout Standard
@@ -1022,7 +995,7 @@ key "TC2011"
 
 .
  Este precio dependerá del número de usuarios que vayan a usar la aplicación
- y puede reajustarse si se añaden o quitan usuarios.
+ y puede reajustarse a medida que se realicen las altas y bajas de usuarios.
 \end_layout
 
 \begin_layout Standard
@@ -1040,54 +1013,64 @@ Otros modelos de servicio especiales
 \end_layout
 
 \begin_layout Standard
-A parte de los tres modelos de servicio fundamentales , existen otro modelos
- menos relevantes que han surgido con el fin de resolver problemas muy puntuales
- .
- En general , estos modelos secundarios han sido creados al mezclar dos
- de los modelos fundamentales.
+Aparte de los tres modelos de servicio fundamentales, existen otros modelos
+ menos relevantes que han surgido para resolver problemas muy puntuales.
+ En general, la mayoría de estos modelos secundarios han surgido mezclando
+ dos los modelos fundamentales.
 \end_layout
 
 \begin_layout Subsection
-Escritorio como servicio
+Escritorio como servicio (DaaS)
 \end_layout
 
 \begin_layout Standard
-Del inglés Desktop as a Service (DaaS) , también conocido como escritorio
- virtual , en el se ofrece al cliente un escritorio con todas las aplicaciones
- pertinentemente instaladas para ser ejecutadas a su gusto.
+Su nombre procede del término inglés 
+\emph on
+Desktop as a Service
+\emph default
+ (DaaS).
+ En el caso de este servicio, también conocido como escritorio virtual,
+ se ofrece al cliente un escritorio con todas las aplicaciones convenientemente
+ instaladas y listas para ser ejecutadas.
  
 \end_layout
 
 \begin_layout Standard
-Este escritorio puede ser usado en paralelo por múltiples usuarios sin que
- las acciones de uno afecte sobre el resto.
- Así cuando el usuario inicia la sesión su configuración personal se carga
- en el escritorio , así como toda la información previa que el usuario había
- dejado guardada en él .
- De igual forma , cuando el usuario se da de baja en la sesión se almacena
- la información y la configuración que el usuario hubiera dejado antes de
- cerrar su sesión.
-\end_layout
-
-\begin_layout Subsection
-Entorno de pruebas como servicio 
+Varios usuarios pueden trabajar en paralelo sobre el mismo escritorio virtual
+ sin que las acciones de unos afecten al resto.
+ 
 \end_layout
 
 \begin_layout Standard
-Del inglés Test environment as a service(TEaaS) , este modelo ofrece al
- cliente un entorno en el que poder realizar sus pruebas sobre un determinado
+Así, cuando el usuario inicia sesión podrá utilizar su configuración personal
+ y toda la información que previamente había guardado en el escritorio.
+ Además, cuando el usuario cierra la sesión se almacenarán la configuración
+ y los datos que haya salvado.
+\end_layout
+
+\begin_layout Subsection
+Entorno de pruebas como servicio (TEaaS)
+\end_layout
+
+\begin_layout Standard
+Su nombre procede del término inglés 
+\emph on
+Test Environment as a Service 
+\emph default
+(TEaaS).
+ Este modelo ofrece al cliente un entorno en el que probar un determinado
  software.
 \end_layout
 
 \begin_layout Standard
-Un ejemplo de entorno de pruebas como servicio viene dado por testersdesk.com.
-\end_layout
+\begin_inset Note Note
+status open
 
 \begin_layout Subsection
 Identidad como servicio (IDaaS)
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 El establecimiento y la prueba de la identidad es una función de red central.
  Un servicio de identidad almacena la información asociada con una entidad
  digital de forma que pueda ser consultado y gestionado para uso en las
@@ -1096,7 +1079,7 @@ El establecimiento y la prueba de la identidad es una función de red central.
 to de datos, motor de búsqueda y control de la integridad de dichos datos.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Ya se trate de la protección del tráfico de red, acceso a recursos privilegiados
 , o algún otro derecho o privilegio definido, la autorización valida de
  un objeto en función de su identidad es el elemento central del diseño
@@ -1104,7 +1087,7 @@ Ya se trate de la protección del tráfico de red, acceso a recursos privilegiad
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 De esta forma la identidad como servicio permite gestionar como y en que
  medida debe ser gestionada los datos enviados y recibidos por un determinado
  usuario.
@@ -1117,7 +1100,7 @@ key "BS2011"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -1131,31 +1114,64 @@ No me acaba de quedar claro como funciona la identidad como servicio pero
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
-Tipos
+Tipos de 
+\emph on
+cloud
 \end_layout
 
 \begin_layout Standard
-De cara a que grupo de clientes se encuentre destinados los servicios y
- donde se encuentren los servidores podemos distinguir tres tipo de computación
- en la nube.
- 
+En función de la ubicación de los servidores y del público al que están
+ destinados los servicios, podemos distinguir cuatro tipos de 
+\emph on
+cloud
+\emph default
+: 
+\emph on
+cloud
+\emph default
+ público, 
+\emph on
+cloud 
+\emph default
+privado, 
+\emph on
+cloud 
+\emph default
+híbrido y 
+\emph on
+cloud 
+\emph default
+comunitario.
 \end_layout
 
 \begin_layout Subsection
-Cloud público 
+
+\emph on
+Cloud
+\emph default
+ público 
 \end_layout
 
 \begin_layout Standard
-Es el tipo más común y el que mejor representa la idea de computación en
- la nube.
- En este tipo, los servicios están destinados al público en general y suelen
- ser gratuitos o bien ligados a un modelo de “pago por uso”.
+Es el tipo más común, y también el que mejor representa la idea de computación
+ en la nube.
+ En caso, los servicios están destinados al público en general y suelen
+ ser gratuitos o estar ligados a un modelo de pago por uso.
  
 \end_layout
 
 \begin_layout Standard
-Este modelo es el mejor para aquellos negocios donde es necesario:
+El uso de 
+\emph on
+clouds 
+\emph default
+públicos resulta muy adecuado cuando hay que
 \end_layout
 
 \begin_layout Itemize
@@ -1163,21 +1179,15 @@ controlar los picos de carga.
 \end_layout
 
 \begin_layout Itemize
-dirigir las aplicaciones del modelo de software como servicio.
-\end_layout
+desarrollar una aplicación utilizando un modelo de plataforma como servicio
+ (PaaS)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "JH2009"
 
-\begin_layout Itemize
-dirigir las aplicaciones que son utilizadas por muchos usuarios que de otra
- manera necesitarían una gran inversión en infraestructuras para sus negocios.
- 
-\end_layout
+\end_inset
 
-\begin_layout Itemize
-usar un servicio compartido por un número elevado de usuarios.
-\end_layout
-
-\begin_layout Itemize
-utilizar herramientas para el testeo y desarrollo de una aplicación.
+.
 \end_layout
 
 \begin_layout Itemize
@@ -1186,87 +1196,102 @@ utilizar un modelo de software como servicio (SaaS) con una buena estrategia
 \end_layout
 
 \begin_layout Itemize
-una capacidad de almacenamiento incremental.
- La capacidad que va a necesitar no se puede aproximar desde el principio.
+desplegar aplicaciones que son utilizadas por muchos usuarios y que, de
+ otra manera, requerirían una gran inversión en infraestructuras.
+ 
 \end_layout
 
 \begin_layout Itemize
-trabajar en un proyecto colaborativo.
-\end_layout
-
-\begin_layout Itemize
-desarrollar una aplicación utilizando un modelo de plataforma como servicio
- (PaaS).
-\begin_inset CommandInset citation
-LatexCommand cite
-key "JH2009"
-
-\end_inset
-
-
+utilizar una capacidad de almacenamiento incremental.
+ En estos casos, la capacidad que va a necesitar no se puede estimar.
 \end_layout
 
 \begin_layout Standard
-Las principales ventajas que ofrece este tipo son la gran flexibilidad,
- la seguridad y el ahorro en su infraestructura.
- Además no requiere grandes inversiones, es escalable y no tiene límite
- de recursos ni de disponibilidad.
- Algunos ejemplos de cloud públicos son el de Amazon, el de Microsoft o
- el de Yahoo.
+Las principales ventajas que ofrece el uso de 
+\emph on
+clouds 
+\emph default
+públicos son la gran flexibilidad, la seguridad y el ahorro en la infraestructur
+a.
+ Además, no requieren grandes inversiones, garantizan la escalabilidad y
+ no tienen límite de recursos ni de disponibilidad.
+ 
+\end_layout
+
+\begin_layout Standard
+Algunos 
+\emph on
+clouds
+\emph default
+ públicos son el 
+\emph on
+Elastic Compute Cloud
+\emph default
+ de 
+\emph on
+Amazon
+\emph default
+ y 
+\emph on
+Windows Azure 
+\emph default
+de 
+\emph on
+Microsoft
+\emph default
+
 \begin_inset CommandInset citation
 LatexCommand cite
 key "NIST2011,IDC2008"
 
 \end_inset
 
- .
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-
-\shape italic
-Facebook, Tuenti, Google yLinkedIn , no me convencen que no sean clouds
- publicos
-\end_layout
-
-\end_inset
-
-
+.
 \end_layout
 
 \begin_layout Subsection
-Cloud privado
+
+\emph on
+Cloud 
+\emph default
+privado
 \end_layout
 
 \begin_layout Standard
 Es el segundo tipo de computación en la nube más utilizado.
- En general se acepta que cualquier centro de datos propiedad de una organizació
-n y destinado a su uso exclusivo es considerado cloud privado.
- Este cloud debe tener cierto nivel de virtualización y autonomía.
+ En general, se acepta que cualquier centro de datos propiedad de una organizaci
+ón, destinado a su uso exclusivo y con cierto nivel de virtualización y
+ autonomía es un 
+\emph on
+cloud 
+\emph default
+privado.
  
 \end_layout
 
 \begin_layout Standard
-En general los proveedores de clouds privados suelen ofrecer infraestructuras
- a grandes empresas para que pueda residir en ellas sus centros de datos.
- Por ello los 
+Los proveedores de 
 \emph on
 clouds
 \emph default
- privados son el tipo que debe prestar una mayor atención a la seguridad
- y mantenimiento de los datos que manejan, lo que hace que los clouds privados
- resulten algo más costosos que el resto de tipos.
+ privados suelen ofrecer centros de procesamiento de datos a grandes empresas.
+ Por ello, en estas instalaciones debe prestarse una mayor atención a la
+ seguridad y a la integridad de los datos que se manejan, lo que hace que
+ los 
+\emph on
+clouds
+\emph default
+ privados resulten algo más costosos que el resto.
 \end_layout
 
 \begin_layout Standard
-Las principales ventajas que ofrece el cloud privado son aislamiento y exclusivi
-dad de su propia infraestructura, así como máximas garantías de seguridad
- y privacidad en sus sistemas de información.
- 
+Las principales ventajas que ofrecen los 
+\emph on
+clouds
+\emph default
+ privados son el aislamiento y la exclusividad de su propia infraestructura,
+ así como máximas garantías de seguridad y privacidad en sus sistemas de
+ procesamiento de información 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "NIST2011,IDC2008,IW2010,GH2009"
@@ -1277,87 +1302,108 @@ key "NIST2011,IDC2008,IW2010,GH2009"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Tengo que mezclar esto con lo anterior de forma que no parezca demasiado
- forzado.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Un cliente suele usar un cloud privado cuando :
+Finalmente, el uso de 
+\emph on
+clouds
+\emph default
+ privados resulta muy adecuado cuando
 \end_layout
 
 \begin_layout Itemize
-su negocio se basa en su información y sus aplicaciones.
+el negocio del cliente se basa en su información y sus aplicaciones.
  Por lo tanto, el control y la seguridad son primordiales.
 \end_layout
 
 \begin_layout Itemize
-su negocio está relacionado con la gestión de la información de otras empresas.
+el negocio del cliente está relacionado con la gestión de la información
+ de otras empresas.
 \end_layout
 
 \begin_layout Itemize
-su empresa es lo suficientemente grande como para poder mantener un sistema
- en la nube propio eficiente.
+una organización es lo suficientemente grande como para poder mantener un
+ sistema en la nube propio y eficiente
 \begin_inset CommandInset citation
 LatexCommand cite
 key "JH2009"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Subsection
-Cloud híbrido
+
+\emph on
+Cloud
+\emph default
+ híbrido
 \end_layout
 
 \begin_layout Standard
-En este tipo se mezclan las características más importantes del cloud privado
- y público, de manera que el cliente gestiona y explota en exclusividad
- su infraestructura pero dispone de acceso al cloud público que mantiene
- el proveedor en sus instalaciones.
- El cloud híbrido combina los beneficios del cloud público junto con los
- del cloud privado .
- Así por un lado extrae del cloud privado la exclusividad de tener un servidor
- propio mientras que por el otro extrae del cloud público la posibilidad
- de aumentar sus recursos obteniéndolos de la nube a modo de ampliación
- y adaptación de su arquitectura.
- 
-\end_layout
-
-\begin_layout Standard
-Dentro del cloud híbrido existen dos submodelos :
+Los 
+\emph on
+clouds
+\emph default
+ híbridos mezclan las características más importantes de los 
+\emph on
+clouds 
+\emph default
+privado y de los 
+\emph on
+clouds 
+\emph default
+públicos, de manera que 
 \end_layout
 
 \begin_layout Itemize
-Cloud Privado "
+el cliente gestiona y explota en exclusividad su infraestructura, y
+\end_layout
+
+\begin_layout Itemize
+dispone de acceso al 
+\emph on
+cloud
+\emph default
+ público que mantiene el proveedor en sus instalaciones.
+\end_layout
+
+\begin_layout Standard
+Podemos distinguir dos tipos de 
+\emph on
+clouds
+\emph default
+ públicos:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+cloud
+\emph default
+ privado 
 \shape italic
-inHouse
+in-house
 \shape default
-" : El cliente pone las máquinas y las instalaciones donde situarlas para
- montar su cloud, es decir, la infraestructura se encuentra físicamente
- en las instalaciones del cliente.
- Este modelo requiere una importante inversión por parte del cliente, tanto
- económica como de recursos, y la seguridad de la información es relativa
- a la experiencia y capacidad técnica disponible.
+.
+ En este caso, la infraestructura se encuentra físicamente en las instalaciones
+ del cliente.
+ Este modelo requiere una importante inversión económica y de recursos por
+ parte del cliente.
+ Además, la seguridad de la información depende de su experiencia y de la
+ capacidad técnica de la que disponga.
  
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Cloud computing/cloud-hosting-hibrido-inhouse.jpg
 	scale 50
@@ -1397,33 +1443,50 @@ inHouse
 
 \end_layout
 
+\end_deeper
 \begin_layout Itemize
-Tanto Cloud Privado como Cloud Público, en 
+
+\emph on
+cloud
+\emph default
+ privado y 
+\emph on
+cloud
+\emph default
+ público en 
 \shape italic
-Datacenter
+datacenter
 \shape default
- del proveedor : La infraestructura del cliente puede residir en el centro
- de datos del proveedor o bien puede subcontratarse, lo que hace desaparecer
+ del proveedor.
+ En este caso, la infraestructura del cliente puede residir en el centro
+ de datos del proveedor o incluso puede subcontratarse, lo que hace desaparecer
  la necesidad de una inversión inicial.
- Esto permite reducir costes al modelo de pago por uso, y escalar de forma
- rápida y flexible y sin inversión extra.
  
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Esto permite reducir costes mediante un modelo de pago por uso y garantizar
+ la escalabilidad de forma rápida, flexible y sin necesidad de una inversión
+ extra 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "NIST2011,AS2012,IDC2008"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Cloud computing/cloud-hosting-hibrido-subcontratado.jpg
 	scale 50
@@ -1455,98 +1518,68 @@ Cloud híbrido en el centro de proceso de datos del proveedor
 
 \end_layout
 
+\end_deeper
 \begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Tengo que mezclar esto con lo anterior de forma que no parezca demasiado
- forzado.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Un cliente suele usar un cloud híbrido cuando:
+Finalmente, el uso de un 
+\emph on
+cloud 
+\emph default
+híbrido resulta muy adecuado cuando una organización
 \end_layout
 
 \begin_layout Itemize
-su compañía sigue una organización privada pero delega ciertas funcionalidades
- en servicios públicos.
- Por ejemplo una empresa mantiene una infraestructura privada para el desarrollo
- de sus aplicaciones pero utiliza servicios públicos para almacenar información.
+utiliza una infraestructura privada para realizar sus actividades y delega
+ en servicios públicos para realizar el almacenaje de la información.
 \end_layout
 
 \begin_layout Itemize
-tiene una empresa que usa un modelo de software como servicio pero necesita
- cierta infraestructura privada para almacenar información que necesita
- unos requisitos de seguridad muy elevados.
+utiliza un modelo de software como servicio y necesita una infraestructura
+ privada para almacenar información con unos requisitos de seguridad muy
+ elevados
 \begin_inset CommandInset citation
 LatexCommand cite
 key "JH2009"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Subsection
-Cloud comunitario
+
+\emph on
+Cloud
+\emph default
+ comunitario
 \end_layout
 
 \begin_layout Standard
-En el caso de este tipo de cloud, dos o más organizaciones forman una alianza
- y comparten una infraestructura con un marco de seguridad y privacidad
- común.
- Esto es posible ya que todas las empresas aliadas tienen unos objetivos
- comunes y requieren de los mismos recursos y herramientas.
- 
-\end_layout
-
-\begin_layout Standard
-De esta forma, las empresas participantes pueden beneﬁciarse de una exclusividad
- casi total reduciendo el coste de compra y de mantenimiento de servidores.
+En este caso, dos o más organizaciones forman una alianza y comparten una
+ infraestructura con un marco de seguridad y privacidad común.
+ Esto les permite beneﬁciarse de una exclusividad casi total reduciendo
+ el coste de compra y de mantenimiento de servidores.
  
 \end_layout
 
 \begin_layout Standard
 El principal inconveniente de este modelo es la pérdida del nivel de seguridad
- característico de los clouds privados, ya que este pasa a ser dependiente
- del anﬁtrión de la infraestructura.
+ característico de los 
+\emph on
+clouds 
+\emph default
+privados, ya que esta pasa a depender de la organización que albergue la
+ infraestructura 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "NIST2011,IDC2008"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Section
 Ventajas e inconvenientes
-\end_layout
-
-\begin_layout Standard
-Tal y como parece el 
-\shape italic
-Cloud Computing
-\shape default
- ofrece a los usuarios una nueva forma de entender.Queda claro que las ventajas
- que ofrece esta computación hará posible que en un futuro no muy lejano
- la idea de utilizar un conjunto de servicios no residentes en nuestros
- ordenadores personales será aceptado como algo común entre los usuarios.
- Sin embargo, aunque las ventajas que ofrece este sistema con respecto a
- los anteriores lo convierta en actualmente la mejor opción no hay que olvidar
- que el 
-\shape italic
-Cloud Computing
-\shape default
- cuenta con un reducido conjunto de desventajas.
- A continuación detallaremos las ventajas y desventajas más relevantes de
- la computación en la nube: 
 \end_layout
 
 \begin_layout Subsection
@@ -1554,11 +1587,11 @@ Ventajas
 \end_layout
 
 \begin_layout Standard
-Entre las ventajas más importantes del 
-\shape italic
+Las principales ventajas del 
+\emph on
 Cloud Computing
-\shape default
- podemos mencionar: 
+\emph default
+ son las siguientes:
 \end_layout
 
 \begin_layout Itemize
@@ -1566,28 +1599,28 @@ Cloud Computing
 \series bold
 Accesibilidad
 \series default
-, que suele ser uno de los principales motivos por el cual se acaba eligiendo
- este sistema frente al resto.
+.
  El uso del 
 \emph on
 Cloud Computing
 \emph default
  permite que todos los empleados puedan acceder a los datos de la organización
- no importando el lugar en el que se encuentren de forma fácil y rápida.
+ de forma fácil y rápida con independencia del lugar en el que se encuentren.
  
 \end_layout
 
 \begin_layout Itemize
 
 \series bold
-Reducción de gastos en infraestructura
+Reducción de costes en infraestructura
 \series default
 ,
 \series bold
  mantenimiento y servicios
 \series default
-, mediante este tipo de tecnología se reduce los gastos de adquisición y
- mantenimiento de los servidores sobre los que se ejecutan las aplicaciones.
+.
+ Al utilizar estas tecnologías, se reducen los gastos de adquisición y mantenimi
+ento de los servidores sobre los que se ejecutan las aplicaciones.
  
 \end_layout
 
@@ -1596,9 +1629,17 @@ Reducción de gastos en infraestructura
 \series bold
 Escalabilidad
 \series default
-, los servidores son capaces de proveer recursos, software y/o datos en
- función de la demanda necesaria en cada momento, sin que el usuario tenga
- conocimiento acerca de los servicios que le son proporcionados.
+.
+ Las infraestructuras 
+\emph on
+cloud 
+\emph default
+son capaces de suministrar recursos, 
+\emph on
+software 
+\emph default
+y/o datos en función de la demanda existente sin que los usuarios perciban
+ diferencias.
 \end_layout
 
 \begin_layout Itemize
@@ -1606,25 +1647,22 @@ Escalabilidad
 \series bold
 Seguridad
 \series default
- a la hora de mantener la integridad de los datos, si bien la cosa depende
- del cloud que se utilice.
+ para mantener la integridad de los datos.
+ Esta dependerá del 
+\emph on
+cloud 
+\emph default
+que se utilice.
 \end_layout
 
 \begin_layout Itemize
-I
+
 \series bold
-ntegración probada de servicios
+Fácil integración de servicios
 \series default
 .
- Las aplicaciones en la nube pueden ser adaptadas con gran rapidez y facilidad
- al resto de aplicaciones empresariales.
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SF2011"
-
-\end_inset
-
-
+ Las aplicaciones en la nube pueden integrarse en con otras de forma rápida
+ y sencilla.
 \end_layout
 
 \begin_layout Itemize
@@ -1633,9 +1671,9 @@ key "SF2011"
 Prestación de servicios a nivel mundial
 \series default
 .
- Independientemente donde se encuentre la infraestructura, los servicios
- que presta cierta organización pueden utilizarse en cualquier parte del
- mundo de manera rápida y sencilla.
+ Con independencia de la ubicación de la infraestructura, los servicios
+ que prestan los proveedores pueden utilizarse en cualquier parte del mundo
+ de manera rápida y sencilla.
 \end_layout
 
 \begin_layout Itemize
@@ -1643,15 +1681,12 @@ Prestación de servicios a nivel mundial
 \series bold
 Actualizaciones automáticas
 \series default
- .
- En sistemas ajenos al 
-\shape italic
-Cloud Computing
-\shape default
- el usuario debe dedicar tiempo y esfuerzo en volver a personalizar e integrar
- la aplicación cada vez que se realice una actualización de la misma.
- Con la computación en la nube estas actualizaciones se realizan de manera
- automática y sin afectar al cliente.
+.
+ En los sistemas convencionales, cada vez que se realiza una actualización
+ de la aplicación el cliente debe dedicar tiempo y esfuerzo para volver
+ a personalizarla e integrarla.
+ Con la computación en la nube, estas actualizaciones se realizan de manera
+ automática y sin que el cliente se vea afectado.
 \end_layout
 
 \begin_layout Subsection
@@ -1663,32 +1698,42 @@ El
 \shape italic
 Cloud Computing
 \shape default
- también tiene sus inconvenientes.
- Las principales desventajas a destacar son : 
+ también tiene varios inconvenientes.
+ Los principales son los siguientes: 
 \end_layout
 
 \begin_layout Itemize
-Privacidad.
- Es más una cuestión de confianza de los usuarios que un problema de la
- computación en la nube en sí.
- Al estar almacenados los datos de los usuarios en equipos externos, este
- teme que otros puedan acceder fácilmente a su información.
+
+\series bold
+Privacidad
+\series default
+.
+ Esta es más una cuestión de confianza de los usuarios que un problema de
+ la computación en la nube en sí.
+ Al estar almacenados los datos de los usuarios en equipos externos, estos
+ temen que otros puedan acceder fácilmente a su información.
  
 \end_layout
 
 \begin_layout Itemize
-La gran dependencia del proveedor de servicios en la nube.
- Esta desventaja reside en que el caso de optar por un sistema en la nube
- no privado el usuario pasa a depender de su proveedor para desarrollar
- total o parcialmente su actividad.
- 
+La 
+\series bold
+gran dependencia del proveedor de servicios en la nube
+\series default
+.
+ Cuando un cliente opta por no utilizar un 
+\emph on
+cloud
+\emph default
+ privado, pasa a depender de su proveedor para desarrollar total o parcialmente
+ su actividad 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "BJ2008"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Itemize
@@ -1697,19 +1742,19 @@ La disponibilidad de los servicios está estrechamente ligada al correcto
 \end_layout
 
 \begin_layout Itemize
-La disponibilidad de herramientas especializadas podría tardar un largo
- periodo de tiempo hasta que sea factible su utilización en la nube.
- Es decir, existen ciertas necesidades que , a día de hoy , la nube no puede
- cubrir.
+En la actualidad existen ciertas necesidades que aún la nube no puede cubrir.
 \end_layout
 
 \begin_layout Itemize
-La escalabilidad debe planificarse con cuidado.
- A medida que más usuarios empiecen a compartir la infraestructura de la
- nube,los servidores se encontrarán más sobrecargados lo cual puede provocar
- importantes degradaciones del servicio en el caso de que la organización
- no haya realizado las previsiones oportunas.
- 
+
+\series bold
+La escalabilidad debe planificarse con cuidado
+\series default
+.
+ A medida que más usuarios empiecen a compartir misma infraestructura, los
+ servidores se encontrarán más sobrecargados.
+ Si la organización no ha hecho las previsiones oportunas, la calidad del
+ servicio puede degradarse de forma muy importante.
 \end_layout
 
 \begin_layout Section
@@ -1722,19 +1767,23 @@ Cloud Computing
 
 \begin_layout Standard
 Si tenemos en cuenta el desarrollo de la computación en nube hasta la fecha,
- es evidente que esta tecnología es el resultado de la convergencia de muchas
- normas diferentes.
- El crecimiento del Cloud Computing ha dado lugar a un importante impulso
- por parte de la industria para crear estándares abiertos basados en la
- nube.
+ podemos observar que esta tecnología es el resultado de la convergencia
+ de muchas normas diferentes.
+ 
 \end_layout
 
 \begin_layout Standard
-En la actualidad, el 
+El crecimiento del 
+\emph on
+Cloud Computing 
+\emph default
+ha dado lugar a un importante impulso por parte de la industria para crear
+ estándares abiertos basados en la nube.
+ Así, en la actualidad, el 
 \shape italic
 Cloud Computing
 \shape default
- se rige por los siguientes estandares tecnológicos:
+ se rige por los siguientes estándares tecnológicos:
 \end_layout
 
 \begin_layout Itemize
@@ -1743,9 +1792,12 @@ Cloud Computing
 Virtualización de la plataforma de recursos
 \series default
 .
- Consiste fundamentalmente en la abstracción de un sistema hardware completo
- permitiendo que diversas instancias de sistemas operativos corran sobre
- él.
+ Esencialmente, consiste en la abstracción de un sistema 
+\emph on
+hardware
+\emph default
+ completo, que permite que diversas instancias de sistemas operativos se
+ ejecuten sobre ella.
 \end_layout
 
 \begin_layout Itemize
@@ -1754,161 +1806,78 @@ Virtualización de la plataforma de recursos
 Arquitectura orientada a servicios
 \series default
 .
- Permite la creación de sistemas de información altamente escalables que
- reflejan el negocio de una organización y a su vez brinda una forma bien
- definida de exposición e invocación de servicios, lo cual facilita la interacci
-ón entre diferentes sistemas propios o de terceros.
+ Permite crear de sistemas de información altamente escalables que reflejan
+ el negocio de una organización.
+ Además, también brinda una forma bien definida de exposición e invocación
+ de servicios, lo cual facilita la interacción entre diferentes sistemas
+ propios o de terceros.
 \end_layout
 
 \begin_layout Itemize
 
 \series bold
 \shape italic
-FrameWork
+Framework
 \shape default
  orientado a aplicaciones web
 \series default
 .
- Consiste en un conjunto de conceptos, prácticas y criterios para enfocar
- un tipo de problemática en las aplicaciones web que sirva como referencia,
- para enfrentar y resolver nuevos problemas de índole similar.
+ Consiste en un conjunto de conceptos, prácticas y criterios orientados
+ a resolver ciertos problemas de las aplicaciones web, que sirven como referenci
+a para resolver nuevos problemas de índole similar.
 \end_layout
 
 \begin_layout Itemize
 
 \series bold
-Despliegue de software de código abierto
+Despliegue de 
+\emph on
+software
+\emph default
+ de código abierto
 \series default
 .
- Basado en la idea del desarrollo de aplicaciones de código abierto que
- puedan ser utilizadas y ampliadas por una comunidad de usuarios.
+ Consiste en el desarrollo de aplicaciones de código abierto, que puedan
+ ser utilizadas y ampliadas por una comunidad de usuarios.
 \end_layout
 
 \begin_layout Itemize
 
 \series bold
-Servicios de web estandarizados
+Servicios web estandarizados
 \series default
 .
- Consiste en el uso de servicios web que sigan los estandares establecidos
- con la finalidad de facilitar la incorporación de dichos servicios en aplicacio
-nes.
+ Consiste en el uso de servicios web que sigan los estándares establecidos.
+ Así, se facilita la incorporación de dichos servicios a las aplicaciones.
 \end_layout
 
 \begin_layout Itemize
 
 \series bold
-Sistemas autónomos
+Uso de sistemas autónomos
 \series default
 .
- Se define como un grupo de redes IP que poseen una política de rutas propia
- e independiente.
- Un sistema autónomo realiza su propia gestión del tráfico que fluye entre
- él y los restantes Sistemas Autónomos que forman Internet.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-No me convence demasiado la definición.
-\end_layout
-
-\end_inset
-
-
+ Un sistema autónomo es un conjunto de redes IP que poseen una política
+ de rutas propia e independiente.
+ Cada sistema autónomo gestiona el tráfico que fluye entre él y los restantes
+ sistemas autónomos que forman internet.
 \end_layout
 
 \begin_layout Itemize
 
 \series bold
 \shape italic
-Computación Grid 
+\emph on
+Computación
+\emph default
+ grid
 \series default
 \shape default
 .
- Permite utilizar de forma coordinada todo tipo de recursos (entre ellos
- cómputo, almacenamiento y aplicaciones específicas) que no están sujetos
- a un control centralizado.
+ Permite utilizar de forma coordinada recursos de tipos muy diversos (como
+ recursos cómputo, de almacenamiento y aplicaciones específicas) que no
+ están sujetos a un control centralizado.
  
-\end_layout
-
-\begin_layout Standard
-Estos estandares permiten ajustar los diferentes modelos de negocio que
- los proveedores de servicios en la nube pueden ofertar.
- Para conseguir que los datos puedan ser portables y accesibles universalmente
- es necesario que estos estandares sean abiertos.
- 
-\end_layout
-
-\begin_layout Standard
-La carrera para crear la primera generación de tecnologías abiertas en la
- nube que competirán con tecnologías patentadas que ofrecen las empresas
- como Microsoft (Azure Platform) y VMware (vSphere) ya está en marcha.
- Algunos ejemplos de ello son:
-\end_layout
-
-\begin_layout Itemize
-Rackspace.com, uno de los grandes proveedores de servicios cloud IaaS, anunció
- en julio de 2010 que está iniciando un proyecto de código abierto llamada
- OpenStack.
- Este software desarrollado se distribuye bajo la licencia Apache 2.0.
-\end_layout
-
-\begin_layout Itemize
-La NASA también ha donado parte de la tecnología Nebula Cloud Platform que
- desarrolló.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "BS2011"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename graficos/Cloud computing/fin.jpg
-	scale 50
-	rotateOrigin rightTop
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-
-\shape italic
-Cloud computing
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_body
