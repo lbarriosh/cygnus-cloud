@@ -592,6 +592,13 @@ editar la configuración de una de sus máquinas virtuales.
 \end_layout
 
 \begin_layout Itemize
+establecer, desde el sistema operativo de la máquina virtual, conexiones
+ con servidores CIFS o NFS.
+ Esto permite a los profesores utilizar los datos almacenados en su propio
+ equipo para crear o editar configuraciones.
+\end_layout
+
+\begin_layout Itemize
 desplegar una configuración nueva sin la intervención de los administradores.
  Para ello, se considerará el número de alumnos matriculados en la asignatura
  asociada a la máquina virtual.
@@ -604,11 +611,6 @@ desplegar las modificaciones de una configuración sin que tengan que intervenir
 
 \begin_layout Itemize
 borrar una de sus configuraciones de todo el sistema.
-\end_layout
-
-\begin_layout Itemize
-utilizar protocolos de compartición de recursos en red, como CIFS o NFS,
- para configurar las máquinas virtuales.
 \end_layout
 
 \begin_layout Standard
@@ -1178,6 +1180,302 @@ twisted
 
 \begin_layout Section
 Repercusiones
+\end_layout
+
+\begin_layout Standard
+El esfuerzo que hemos invertido en 
+\emph on
+CygnusCloud
+\emph default
+ se ha visto recompensado de varias formas.
+ 
+\end_layout
+
+\begin_layout Standard
+En primer lugar, un artículo en el que se mostraban las ideas básicas de
+ 
+\emph on
+CygnusCloud 
+\emph default
+y del proyecto 
+\emph on
+SmartCloud
+\emph default
+ fue portada de la prestigiosa publicación 
+\emph on
+HPC In The Cloud
+\emph default
+ durante más de un mes.
+ Dicho artículo puede consultarse en 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.hpcinthecloud.com/hpccloud/2013-01-04/student_projects_highlight_cloud_s_potential.html"
+target "http://www.hpcinthecloud.com/hpccloud/2013-01-04/student_projects_highlight_cloud_s_potential.html"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Conclusiones/portada HPC.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Portada de la publicación HPC In The Cloud en enero de 2013
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tras la publicación de ese artículo, fuimos entrevistados junto con los
+ miembros de los proyectos 
+\emph on
+SmartCloud
+\emph default
+ y 
+\emph on
+Horadrim 
+\emph default
+en el programa Hoy por hoy Madrid de la Cadena Ser.
+ En dicho espacio, hablamos de las alternativas que ofrece 
+\emph on
+CygnusCloud 
+\emph default
+y el 
+\emph on
+Cloud Computing
+\emph default
+ en general para adelantar la salida de la crisis económica.
+ El audio de esta entrevista está disponible en
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://tinyurl.com/ox428wq"
+target "http://tinyurl.com/ox428wq"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por otra parte, 
+\emph on
+CygnusCloud
+\emph default
+ recibió el premio al mejor proyecto comunitario en la final nacional de
+ la séptima edición del Concurso Universitario de Software Libre, que se
+ celebró en Granada el día 24 de mayo de 2013.
+ La lista completa de premiados en ese evento está disponible en
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://www.concursosoftwarelibre.org/1213/premiados-vii-cusl"
+target "http://www.concursosoftwarelibre.org/1213/premiados-vii-cusl"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Conclusiones/Foto CUSL.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Foto de familia de la final nacional de la 7ª edición Concurso Universitario
+ de Software Libre.
+ Los miembros de 
+\emph on
+CygnusCloud 
+\emph default
+aparecen en la segunda fila, a la izquierda.
+ 
+\emph on
+Fuente: Concurso Universitario de Software Libre
+\emph default
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Durante ese evento, profesores de la Universidad de Granada nos indicaron
+ que estudiarán la posible implantación del sistema 
+\emph on
+CygnusCloud
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Finalmente, a lo largo del proceso de desarrollo hemos ido actualizando
+ un 
+\emph on
+blog
+\emph default
+, que está disponible en
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset CommandInset href
+LatexCommand href
+name "http://cygnusclouducm.wordpress.com/"
+target "http://cygnusclouducm.wordpress.com/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A través de él, hemos resuelto las dudas de varios usuarios.
+ Asimismo, algunas entradas del 
+\emph on
+blog
+\emph default
+, como la comparativa de Xen y KVM, aparecen en los primeros resultados
+ de la búsqueda de 
+\emph on
+Google.
+ 
+\end_layout
+
+\begin_layout Standard
+Finalmente, a fecha de 13 de Junio de 2013, el 
+\emph on
+blog
+\emph default
+ de 
+\emph on
+CygnusCloud 
+\emph default
+cuenta con un total de 4657 visitas.
+ En la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Distribución-geográfica-blog"
+
+\end_inset
+
+ se recoge la distribución geográfica de la mayor parte de este tráfico.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Conclusiones/blog.png
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Distribución-geográfica-blog"
+
+\end_inset
+
+Distribución geográfica de las visitas al 
+\emph on
+blog 
+\emph default
+de 
+\emph on
+CygnusCloud
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
