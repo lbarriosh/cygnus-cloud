@@ -505,7 +505,7 @@ kernel
 \end_layout
 
 \begin_layout Itemize
-el sistema de virtualización QEMU, versión 2.0 o superior
+el sistema de virtualización QEMU, versión 1.4 o superior
 \end_layout
 
 \begin_layout Itemize
@@ -5450,7 +5450,7 @@ que nos permite modificar el fichero de código correspondiente.
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -5551,7 +5551,7 @@ Por defecto, existen tres usuarios de prueba registrados en el sistema:
 
 \begin_layout Itemize
 un estudiante con correo electrónico 
-\family sans
+\family typewriter
 Student1@ucm.es
 \family default
  y contraseña 
@@ -5563,7 +5563,7 @@ Student1@ucm.es
 
 \begin_layout Itemize
 un profesor con correo electrónico 
-\family sans
+\family typewriter
 Teacher01@ucm.es
 \family default
  y contraseña 
@@ -5573,7 +5573,7 @@ Teacher01@ucm.es
 
 \begin_layout Itemize
 un administrador con correo electrónico 
-\family sans
+\family typewriter
 Admin1@ucm.es
 \family default
  y contraseña 
@@ -5584,12 +5584,16 @@ Admin1@ucm.es
 \end_layout
 
 \begin_layout Standard
-Además, desde esta página también es posible acceder a diferentes direcciones
- institucionales tales como el campus virtual o la página web de la 
-\family typewriter
-Universidad Complutense de Madrid
-\family default
-, y visualizar los últimos 
+Además, desde esta página también es posible 
+\end_layout
+
+\begin_layout Itemize
+acceder a diferentes direcciones institucionales tales como el campus virtual
+ o la página web de la UCM, y
+\end_layout
+
+\begin_layout Itemize
+visualizar los últimos 
 \shape italic
 tweets
 \shape default
