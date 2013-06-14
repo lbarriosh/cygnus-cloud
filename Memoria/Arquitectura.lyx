@@ -80,33 +80,6 @@
 Arquitectura del sistema
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: 
-\end_layout
-
-\begin_layout Itemize
-meter referencias noVNC, KVM y Twisted
-\end_layout
-
-\begin_layout Itemize
-revisar sección red para incluir protocolo orientado a líneas
-\end_layout
-
-\begin_layout Itemize
-meter disclaimer diciendo que omitiremos, salvo en la red, los detalles
- de bajo nivel.
- Remitir al código fuente.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Introducción 
 \begin_inset CommandInset label
@@ -1365,7 +1338,7 @@ OpenNebula
 
 \begin_deeper
 \begin_layout Standard
-Ahora bien, para fijar dicho subcojunto y familiarizarnos con estas soluciones
+Ahora bien, para fijar dicho subconjunto y familiarizarnos con estas soluciones
  habríamos necesitado, como mínimo, tres meses.
  Esto supone casi la tercera parte del tiempo de desarrollo del proyecto,
  por lo que no es aceptable.
@@ -1540,7 +1513,7 @@ name "sub:Uso-protocolo-VNC"
 
 \begin_layout Standard
 Para que los usuarios puedan interactuar con la máquina virtual, es imprescindib
-le utilizar un pro- tocolo de escritorio remoto.
+le utilizar un protocolo de escritorio remoto.
  Estos permiten que los clientes interactúen con las máquinas virtuales
  a través de las interfaces gráficas de usuario a las que están acostumbrados.
  En su momento, consideramos dos alternativas: VNC y RDP.
@@ -1853,7 +1826,7 @@ la gestión de los datos de conexión a las máquinas virtuales es muy sencilla.
 
 \begin_layout Standard
 Por otra parte, el uso de un servidor VNC que resida en cada máquina virtual
- tiene una gran ven- taja: aporta mucha más flexibilidad.
+ tiene una gran ventaja: aporta mucha más flexibilidad.
  No obstante, en este caso la gestión de los datos de conexión es más compleja,
  ya que estos se fijan en la máquina virtual y son, 
 \emph on
@@ -1960,7 +1933,7 @@ No obstante, el hecho de que estos clientes estén escritos en C o C++ supone
 \begin_layout Standard
 Por ello, pensamos en una segunda alternativa: el uso de un cliente VNC
  web.
- Aunque el rendimien- to es menor, podemos utilizar una única versión, que
+ Aunque el rendimiento es menor, podemos utilizar una única versión, que
  funcionará en cualquier sistema operativo y en cualquier dispositivo, incluyend
 o PCs, móviles, tabletas,.
  .
@@ -1975,11 +1948,11 @@ CygnusCloud
 
 \begin_layout Standard
 Considerando que los equipos antiguos que actualmente se utilizan en la
- UCM tienen suficiente ca- pacidad de procesamiento para utilizar un cliente
+ UCM tienen suficiente capacidad de procesamiento para utilizar un cliente
  VNC web, nos decantamos por esta segunda alternativa.
- En su momento, valoramos dos soluciones: el applet 
+ En su momento, valoramos dos soluciones: el 
 \emph on
-Java 
+applet Java 
 \emph default
 del proyecto TigerVNC y noVNC.
  
@@ -2034,7 +2007,7 @@ te reciente.
 \end_layout
 
 \begin_layout Itemize
-se adapta a los tamaños y orientacines de pantalla de móviles y tabletas,
+se adapta a los tamaños y orientaciones de pantalla de móviles y tabletas,
  lo que permite utilizarlo en PCs y en estos dispositivos, cada vez más
  extendidos.
  
@@ -2120,7 +2093,7 @@ iones.
 
 \begin_layout Standard
 Para evitar la aparición de estos dos problemas, hemos decidido utilizar
- la librería de virutalización por excelencia: 
+ la librería de virtualización por excelencia: 
 \family typewriter
 libvirt
 \family default
@@ -2657,7 +2630,7 @@ HTTPS
 \series default
  (
 \emph on
-HyperText Transfer Procol Secure
+HyperText Transfer Protocol Secure
 \emph default
 ).
  Estos protocolos, que son la base de las comunicaciones en internet, también
@@ -2805,9 +2778,12 @@ implementa, entre otras cosas, FTPS (FTP Secure, FTP Seguro), el soporte
 \end_layout
 
 \begin_layout Itemize
-dispone de callbacks para detectar múltiples eventos, tales como las conexiones
- y desconexiones de clientes, el inicio y la finalización de transferencia
- de archivos,.
+dispone de 
+\emph on
+callbacks
+\emph default
+ para detectar múltiples eventos, tales como las conexiones y desconexiones
+ de clientes, el inicio y la finalización de transferencia de archivos,.
  .
  .
  
@@ -2874,7 +2850,7 @@ como viene siendo habitual en la librería de red
 \emph on
 twisted
 \emph default
-, la documentación del servidor FTPconstruido sobre 
+, la documentación del servidor FTP construido sobre 
 \emph on
 twisted 
 \emph default
@@ -5653,7 +5629,7 @@ clusterServer
 \series bold
  
 \series default
-contiene todas las clases que implementan el susbsistema servidor del 
+contiene todas las clases que implementan el subsistema servidor del 
 \emph on
 cluster
 \emph default
@@ -5665,7 +5641,7 @@ el paquete
 \family typewriter
 imageRepository
 \family default
- contiene todas las clases que implementan el susbsistema repositorio de
+ contiene todas las clases que implementan el subsistema repositorio de
  imágenes.
 \end_layout
 
@@ -7309,10 +7285,20 @@ Languages
 Static
 \family default
 .
- Este paquete incluye los ficheros css , js e imágenes necesarias para definir
- el aspecto de la web.
- También incluye el controlador noVNC y todos los ficheros html auxiliares
- que se integran en la web.
+ Este paquete incluye los ficheros 
+\family typewriter
+.css
+\family default
+, 
+\family typewriter
+.js
+\family default
+ y las imágenes necesarias para definir el aspecto de la web.
+ También incluye el controlador noVNC y todos los ficheros 
+\family typewriter
+.html
+\family default
+ auxiliares que se integran en la web.
 \end_layout
 
 \begin_layout Itemize
@@ -7321,8 +7307,11 @@ Static
 Modules
 \family default
 .
- En este paquete se encuentran todos los módulos python auxiliares que serán
- utilizados por los controladores.
+ En este paquete se encuentran todos los módulos 
+\emph on
+Python
+\emph default
+ auxiliares que serán utilizados por los controladores.
 \end_layout
 
 \begin_layout Standard
@@ -7462,7 +7451,7 @@ Así, para realizar una prueba piloto o implantar
 \emph on
 CygnusCloud
 \emph default
-, será necesario que todas las máquinas de la infraestructura utilizen la
+, será necesario que todas las máquinas de la infraestructura utilicen la
  versión 4 de dicho protocolo en todas sus comunicaciones.
 \end_layout
 
@@ -8827,7 +8816,7 @@ twisted
 
 \begin_layout Itemize
 su estado, es decir, si la conexión se está estableciendo, si ya se puede
- utilizar, si se está intentando reestablecer, etcétera.
+ utilizar, si se está intentando restablecer, etcétera.
 \end_layout
 
 \begin_layout Itemize
@@ -9284,7 +9273,7 @@ Por otra parte, las reconexiones sólo tienen sentido en conexiones de tipo
 \family sans
 Reconnect
 \family default
- se intentará reestablecer la conexión con el servidor utilizando retroceso
+ se intentará restablecer la conexión con el servidor utilizando retroceso
  exponencial binario truncado.
  Si no se consigue tras quince intentos (suponen unos cinco minutos aproximadame
 nte), se asumirá que la conexión está cerrada.
@@ -9431,7 +9420,7 @@ strategy
 \end_layout
 
 \begin_layout Standard
-Por convenciencia, el hilo que ejecutará el bucle reactor, 
+Por conveniencia, el hilo que ejecutará el bucle reactor, 
 \family typewriter
 TwistedReactorThread
 \family default
@@ -10789,7 +10778,7 @@ reference "fig:Principales-clases-repositorio"
 \family typewriter
 ImageRepository
 \family default
- aparece abrevidado como 
+ aparece abreviado como 
 \family typewriter
 IR,
 \end_layout
@@ -14795,10 +14784,6 @@ Fichero de configuración de una red virtual operando en modo NAT
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -20723,7 +20708,7 @@ Despliegue de imágenes de disco
 \end_layout
 
 \begin_layout Standard
-El proceso de despliegue dei mágenes de disco comienza cuando el servidor
+El proceso de despliegue de imágenes de disco comienza cuando el servidor
  de 
 \emph on
 cluster
@@ -23044,7 +23029,11 @@ bytes
 
 \end_deeper
 \begin_layout Itemize
-FreeVNCPorts.
+
+\family typewriter
+FreeVNCPorts
+\family default
+.
  Esta tabla contiene una única columna, 
 \family typewriter
 vncPort
@@ -24330,7 +24319,7 @@ cluster
 monitorizar los comandos de arranque de máquinas virtuales, generando errores
  por 
 \emph on
-time out
+timeout
 \emph default
  cuando sea necesario.
 \end_layout
@@ -26709,7 +26698,7 @@ cluster
 \family sans
 Estado del repositorio
 \family default
-, actualiza el estado del reopsitorio de imágenes en la base de datos del
+, actualiza el estado del repositorio de imágenes en la base de datos del
  servidor de 
 \emph on
 cluster
@@ -32653,7 +32642,7 @@ RECONNECTING
 \emph on
 Timeout
 \emph default
- al reestablecer conexión
+ al restablecer conexión
 \end_layout
 
 \end_inset
@@ -34478,7 +34467,7 @@ NetworkManger
 Asimismo, para atender las peticiones de los usuarios y actualizar periódicament
 e la base de datos del 
 \emph on
-enpdoint
+endpoint
 \emph default
 , utilizan un objeto 
 \family typewriter
@@ -35391,12 +35380,12 @@ network
  Como dijimos en su momento, durante el proceso de reconexión se utilizará
  el algoritmo de retroceso exponencial binario truncado, con un máximo de
  15 intentos.
- En la práctica, se intentará reestablecer la conexión durante 15 minutos
+ En la práctica, se intentará restablecer la conexión durante 15 minutos
  aproximadamente.
 \end_layout
 
 \begin_layout Standard
-Finalmente, en caso de que no se pueda reestablecer la conexión con el servidor
+Finalmente, en caso de que no se pueda restablecer la conexión con el servidor
  de 
 \emph on
 cluster
@@ -36816,7 +36805,7 @@ db.py
 menu.py
 \family default
  define las características generales de la aplicación web, tales como su
- logo, su autor, sus 
+ logotipo, su autor, sus 
 \shape italic
 tags
 \shape default
@@ -37402,7 +37391,7 @@ En el segundo nivel las páginas se encuentran agrupadas por secciones.
  Cada tipo de usuario tendrá acceso a unas secciones u otras.
  Algunos ejemplos de secciones son la gestión de usuarios, la interacción
  con las máquinas virtuales o el inicio de sesión.
- En la tabla 
+ En el cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Tabla-rtipos-secciones"
@@ -37427,19 +37416,23 @@ status open
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Tipo de usuario
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Secciones
 \end_layout
 
@@ -37597,7 +37590,7 @@ ShowNotifications
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Tabla relación tipos de usuario y secciones.
+Relaciones entre tipos de usuario y secciones
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Tabla-rtipos-secciones"
@@ -37623,7 +37616,7 @@ Por último, en el tercer nivel, las páginas se encuentran organizadas en
  Cada subsección es una página que contiene las funcionalidades relacionadas
  con un aspecto concreto y más limitado que el de la sección que la incluye.
  Existirán por tanto, tantas subsecciones como páginas creadas en la web.
- En la tabla 
+ En el cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Tabla-seccion-subseccion"
@@ -37648,19 +37641,23 @@ status open
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Sección
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Subsección
 \end_layout
 
@@ -37956,7 +37953,7 @@ Remove
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Tabla relación secciones y subsecciones
+Relación entre secciones y subsecciones de la web
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Tabla-seccion-subseccion"
@@ -38636,7 +38633,7 @@ Creación de una imagen desde la web por un profesor: secuencia básica
 A continuación se explicarán cada una de las acciones que deberá realizar
  la aplicación web para poder ejecutar una de las funcionalidades más importante
 s del sistema, la creación de imagen por parte del profesor a partir de
- imagenes creadas previamente.
+ imágenes creadas previamente.
 \end_layout
 
 \begin_layout Standard
@@ -38926,9 +38923,9 @@ createAndEdit
 \family sans
 getEditedImageIDs
 \family default
- del conector, para obtener el identificador de todas las imagenes que se
+ del conector, para obtener el identificador de todas las imágenes que se
  encuentran en edición asociadas a este usuario.
- Para cada una de las imagenes en edición, se extrae la información correspondie
+ Para cada una de las imágenes en edición, se extrae la información correspondie
 nte con el método 
 \family sans
 getImageData
@@ -38939,7 +38936,7 @@ getImageData
 \end_layout
 
 \begin_layout Enumerate
-Una vez recopilada y estructurada en tablas toda la información sobre imagenes
+Una vez recopilada y estructurada en tablas toda la información sobre imágenes
  en edición, la función 
 \family sans
 createAndEdit
@@ -38951,14 +38948,14 @@ createAndEdit
 \family typewriter
 html
 \family default
- asociado a la edición de imagenes por parte del profesor (
+ asociado a la edición de imágenes por parte del profesor (
 \family typewriter
 teacher/createAndEdit.html
 \family default
 ).
  En esta vista, además de aplicar el aspecto deseado y colocar los formularios
  en la página, se comprueba que opciones de edición serán accesibles para
- cada una de las imagenes dependiendo del estado de edición en que se encuentre.
+ cada una de las imágenes dependiendo del estado de edición en que se encuentre.
 \end_layout
 
 \begin_layout Enumerate
@@ -39023,7 +39020,7 @@ noVNC
 \begin_layout Enumerate
 Una vez que el profesor ha introducido los cambios deseados en el escritorio
  remoto y ha apagado la máquina, esta pasa a un estado editada y parada
- y cambia de tabla en la página de edición de imagenes.
+ y cambia de tabla en la página de edición de imágenes.
 \end_layout
 
 \begin_layout Enumerate
@@ -39071,10 +39068,10 @@ Cuando la imagen se haya desplegado por completo, su estado cambiará a parada
 \end_layout
 
 \begin_layout Standard
-Como los procesos de subida y bajada de las imagenes en edición pueden ser
+Como los procesos de subida y bajada de las imágenes en edición pueden ser
  bastante largos, existen un conjunto de estados de transición intermedios,
  durante los cuales los usuarios no dispondrán de ninguna opción de edición
- para las imagenes en edición.
+ para las imágenes en edición.
 \end_layout
 
 \begin_layout Standard
@@ -39093,9 +39090,11 @@ reference "fig:Diagrama-de-secuencia-edicionMV-web"
 \begin_inset Float figure
 wide false
 sideways true
-status open
+status collapsed
 
 \begin_layout Plain Layout
+\noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_Secuencia_Edicion_MV_Profesor.pdf
 	scale 70
@@ -39323,7 +39322,7 @@ reference "fig:Diagrama-de-secuencia-arranque-servidor-Administrador"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -39805,7 +39804,7 @@ osPicture
 .
  Define el conjunto de imágenes, registradas en la web, que representan
  cada una de las variantes de sistemas operativos que pueden estar instalados
- en las imagenes.
+ en las imágenes.
  Esta tabla contiene las siguientes columnas:
 \end_layout
 

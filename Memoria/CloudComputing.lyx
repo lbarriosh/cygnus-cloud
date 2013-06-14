@@ -333,7 +333,7 @@ la planta donde se depurarán las aguas residuales que generamos en nuestro
 \begin_layout Standard
 De esta manera, aunque el sistema de distribución de agua puede llegar a
  ser muy complejo, para disponer de agua potable sólo debemos preocuparnos
- por pagar las factuas de la compañía suministradora.
+ por pagar las facturas de la compañía suministradora.
  
 \end_layout
 
@@ -429,7 +429,7 @@ La principal finalidad con las que se desarrollo el modelo P2P fue su uso
 
 \begin_layout Standard
 En la práctica, puesto que el procesamiento de información requiere tiempo
- y energía y no todos los ordenadores estab conectados permanentemente,
+ y energía y no todos los ordenadores están conectados permanentemente,
  la Red no sigue este modelo de forma estricta: cada usuario sólo puede
  conectarse a un conjunto de servidores, lo que le proporciona mayor libertad
  con respecto al modelo cliente/servidor y permite restringir el control
@@ -445,7 +445,7 @@ Cloud Computing
 
 \begin_layout Standard
 A finales de la década de los 90 aparecieron las primeras empresas que empezaron
- a proporcionar servicios a otras a traves de la 
+ a proporcionar servicios a otras a través de la 
 \emph on
 web
 \emph default
@@ -523,8 +523,15 @@ Por otra parte, las
 \emph on
 killer apps 
 \emph default
-creadas por empresas como Microsoft y Google también han tenido una gran
- importancia en el desarrollo del 
+creadas por empresas como 
+\emph on
+Microsoft
+\emph default
+ y 
+\emph on
+Google 
+\emph default
+también han tenido una gran importancia en el desarrollo del 
 \emph on
 Cloud Computing
 \emph default
@@ -820,8 +827,15 @@ Cuando el cliente contrata la infraestructura y el proveedor acaba de configurar
 la, el cliente la utilizará para alojar sus aplicaciones, que se ejecutarán
  en máquinas virtuales.
  Estas maquinas virtuales pueden gestionarse a través de hipervisores (como
- Xen o KVM) o a través de otros sistemas de virtualización como VirtualBox
- o VMWare.
+ Xen o KVM) o a través de otros sistemas de virtualización como 
+\emph on
+VirtualBox
+\emph default
+ o 
+\emph on
+VMWare
+\emph default
+.
  
 \end_layout
 
@@ -1060,63 +1074,6 @@ Test Environment as a Service
 (TEaaS).
  Este modelo ofrece al cliente un entorno en el que probar un determinado
  software.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Subsection
-Identidad como servicio (IDaaS)
-\end_layout
-
-\begin_layout Plain Layout
-El establecimiento y la prueba de la identidad es una función de red central.
- Un servicio de identidad almacena la información asociada con una entidad
- digital de forma que pueda ser consultado y gestionado para uso en las
- transacciones electrónicas.
- los servicios de identidad tiene como funciones principales las de almacenamien
-to de datos, motor de búsqueda y control de la integridad de dichos datos.
-\end_layout
-
-\begin_layout Plain Layout
-Ya se trate de la protección del tráfico de red, acceso a recursos privilegiados
-, o algún otro derecho o privilegio definido, la autorización valida de
- un objeto en función de su identidad es el elemento central del diseño
- de una red segura.
- 
-\end_layout
-
-\begin_layout Plain Layout
-De esta forma la identidad como servicio permite gestionar como y en que
- medida debe ser gestionada los datos enviados y recibidos por un determinado
- usuario.
-\begin_inset CommandInset citation
-LatexCommand cite
-key "BS2011"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-No me acaba de quedar claro como funciona la identidad como servicio pero
- bueno.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -1419,18 +1376,8 @@ status collapsed
 
 \begin_layout Plain Layout
 Cloud privado 
-\begin_inset Quotes eld
-\end_inset
-
-
 \shape italic
-inHouse
-\shape default
-
-\begin_inset Quotes erd
-\end_inset
-
-
+in-house
 \end_layout
 
 \end_inset
