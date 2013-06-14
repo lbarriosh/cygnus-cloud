@@ -1652,12 +1652,138 @@ Uninitialized file
 \end_layout
 
 \begin_layout Standard
+En primer lugar, la sección 
+\family typewriter
+Database configuration
+\family default
+ especifica la información que se utilizará para configurar la base de datos
+ del servidor de máquinas virtuales: la contraseña del usuario 
+\emph on
+root
+\emph default
+ y el nombre y la contraseña del usuario que empleará el demonio.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la sección 
+\family typewriter
+Virtual Network Configuration
+\family default
+ especifica la configuración de la red virtual que alberga el servidor de
+ máquinas virtuales.
+ En ella, se indica
+\end_layout
+
+\begin_layout Itemize
+si la red virtual se debe crear como un usuario normal o como el usuario
+ 
+\emph on
+root
+\emph default
+,
+\end_layout
+
+\begin_layout Itemize
+el nombre de la red virtual,
+\end_layout
+
+\begin_layout Itemize
+la dirección IP y la máscara de red del encaminador predeterminado de dicha
+ red, y
+\end_layout
+
+\begin_layout Itemize
+el rango de direcciones IP que asignará el servidor DHCP.
+\end_layout
+
+\begin_layout Standard
+Por otro lado, la sección 
+\family typewriter
+VNC server configuration
+\family default
+ especifica 
+\end_layout
+
+\begin_layout Itemize
+la interfaz de red por la que circulará el tráfico VNC,
+\end_layout
+
+\begin_layout Itemize
+la longitud de las contraseñas de los servidores VNC que residen en este
+ servidor de máquinas virtuales,
+\end_layout
+
+\begin_layout Itemize
+qué 
+\emph on
+software
+\emph default
+ utilizamos para crear los 
+\emph on
+websockets
+\emph default
+ (QEMU o 
+\family typewriter
+websockify
+\family default
+), y
+\end_layout
+
+\begin_layout Itemize
+la ruta del proceso 
+\family typewriter
+websockify
+\family default
+.
+ El valor de este último parámetro sólo se utiliza cuando los 
+\emph on
+websockets
+\emph default
+ se crean mediante 
+\family typewriter
+websockify
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+La sección 
+\family typewriter
+FTP Client Configuration
+\family default
+ especifica el 
+\emph on
+timeout
+\emph default
+ y el número de veces que se reintentará realizar una transferencia fallida
+ con el repositorio de imágenes.
+\end_layout
+
+\begin_layout Standard
+Asimismo, la sección 
+\family typewriter
+Network configuration
+\family default
+ especifica la configuración de la conexión de control.
+ En ella, se indicará si se desea cifrar el tráfico de esta conexión, la
+ ruta de los certificados 
+\family typewriter
+server.crt
+\family default
+ y 
+\family typewriter
+server.key
+\family default
+ (sólo se utilizará cuando se cifra el tráfico) y el puerto asociado a la
+ conexión de control.
+\end_layout
+
+\begin_layout Standard
 \noindent
-\align center
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -1834,27 +1960,25 @@ listenningPort = 15800
 \begin_layout Plain Layout
 
 \family typewriter
-configFilePath = /home/luis/Infraestructura/VirtualMachineServer/configuraciones
-/ 
+configFilePath = /home/luis/configuraciones/ 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-sourceImagePath = /home/luis/Infraestructura/VirtualMachineServer/imagenes/
+sourceImagePath = /home/luis//imagenes/
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-executionImagePath = /home/luis/Infraestructura/VirtualMachineServer/imagenes_en
-_ejecucion/ 
+executionImagePath = /home/luis/imagenes_en_ejecucion/ 
 \end_layout
 
 \begin_layout Plain Layout
 
 \family typewriter
-TransferDirectory = /home/luis/Infraestructura/VirtualMachineServer/Transfers
+TransferDirectory = /home/luis/Transfers
 \end_layout
 
 \end_inset
@@ -1882,140 +2006,9 @@ VMServer_settings.conf
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-En primer lugar, la sección 
-\family typewriter
-Database configuration
-\family default
- especifica la información que se utilizará para configurar la base de datos
- del servidor de máquinas virtuales: la contraseña del usuario 
-\emph on
-root
-\emph default
- y el nombre y la contraseña del usuario que empleará el demonio.
-\end_layout
-
-\begin_layout Standard
-Por otra parte, la sección 
-\family typewriter
-Virtual Network Configuration
-\family default
- especifica la configuración de la red virtual que alberga el servidor de
- máquinas virtuales.
- En ella, se indica
-\end_layout
-
-\begin_layout Itemize
-si la red virtual se debe crear como un usuario normal o como el usuario
- 
-\emph on
-root
-\emph default
-,
-\end_layout
-
-\begin_layout Itemize
-el nombre de la red virtual,
-\end_layout
-
-\begin_layout Itemize
-la dirección IP y la máscara de red del encaminador predeterminado de dicha
- red, y
-\end_layout
-
-\begin_layout Itemize
-el rango de direcciones IP que asignará el servidor DHCP.
-\end_layout
-
-\begin_layout Standard
-Por otro lado, la sección 
-\family typewriter
-VNC server configuration
-\family default
- especifica 
-\end_layout
-
-\begin_layout Itemize
-la interfaz de red por la que circulará el tráfico VNC,
-\end_layout
-
-\begin_layout Itemize
-la longitud de las contraseñas de los servidores VNC que residen en este
- servidor de máquinas virtuales,
-\end_layout
-
-\begin_layout Itemize
-qué 
-\emph on
-software
-\emph default
- utilizamos para crear los 
-\emph on
-websockets
-\emph default
- (QEMU o 
-\family typewriter
-websockify
-\family default
-), y
-\end_layout
-
-\begin_layout Itemize
-la ruta del proceso 
-\family typewriter
-websockify
-\family default
-.
- El valor de este último parámetro sólo se utiliza cuando los 
-\emph on
-websockets
-\emph default
- se crean mediante 
-\family typewriter
-websockify
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-La sección 
-\family typewriter
-FTP Client Configuration
-\family default
- especifica el 
-\emph on
-timeout
-\emph default
- y el número de veces que se reintentará realizar una transferencia fallida
- con el repositorio de imágenes.
-\end_layout
-
-\begin_layout Standard
-Asimismo, la sección 
-\family typewriter
-Network configuration
-\family default
- especifica la configuración de la conexión de control.
- En ella, se indicará si se desea cifrar el tráfico de esta conexión, la
- ruta de los certificados 
-\family typewriter
-server.crt
-\family default
- y 
-\family typewriter
-server.key
-\family default
- (sólo se utilizará cuando se cifra el tráfico) y el puerto asociado a la
- conexión de control.
 \end_layout
 
 \begin_layout Standard
@@ -2131,7 +2124,7 @@ Uninitialized file
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -2218,8 +2211,13 @@ listenningPort = 9000
 \begin_layout Plain Layout
 
 \family typewriter
-loadBalancingAlgorithm = penalty-based # The simple load balancing algorithm
- is no longer supported 
+# The simple load balancing algorithm is no longer supported 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+loadBalancingAlgorithm = penalty-based 
 \end_layout
 
 \begin_layout Plain Layout
@@ -5716,6 +5714,105 @@ Arrancar
 \end_layout
 
 \begin_layout Standard
+Una vez el estudiante ha seleccionado la máquina que quiere arrancar y ha
+ pulsado sobre el botón 
+\family typewriter
+Arrancar
+\family default
+, se abre una nueva pestaña en la cual comienza a ejecutarse el escritorio
+ de trabajo de la máquina arrancada.
+ La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:MU-Pagina_MV_Arrancada"
+
+\end_inset
+
+ muestra la página con el escritorio de trabajo arrancado.
+ 
+\end_layout
+
+\begin_layout Standard
+En esta página, además del escritorio de trabajo, se incluye un par de botones
+ que permiten enviar una señal de apagado a la máquina y poner el escritorio
+ en pantalla completa.
+\end_layout
+
+\begin_layout Standard
+Además, el estudiante podrá gestionar sus máquinas arrancadas por medio
+ de las páginas de detención y apertura de máquinas arrancadas (
+\family sans
+Máquinas arrancadas \SpecialChar \menuseparator
+Detener máquina y Máquinas arrancadas \SpecialChar \menuseparator
+Abrir maquina)
+\family default
+.
+ La forma de proceder en ambas páginas es similar.
+ Una vez haya accedido a alguna de las páginas, se le muestra una lista
+ con todas las máquinas que tiene arrancadas.
+ Al seleccionar cualquiera de ellas aparece la descripción de la máquina
+ y los botones con las acciones que puede realizar sobre dicha máquina.
+ En el caso de la página de detención, se muestra un botón que permite detener
+ la máquina y otro que permite forzar el reinicio.
+ En el caso de la página de apertura, aparece un único botón que permite
+ abrir una nueva pestaña con el escritorio de alguna de las máquinas en
+ ejecución.
+ La figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "MU-Pagina_detencion_MV_Alumno"
+
+\end_inset
+
+ muestra una captura de la página de detención.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\color red
+Importante
+\end_layout
+
+\begin_layout Itemize
+para poder arrancar una máquina virtual, un administrador debe haber arrancado
+ previamente al menos uno de los servidores de máquinas virtuales en los
+ que se encuentra.
+\end_layout
+
+\begin_layout Itemize
+para que el rendimiento del visor de escritorio remoto sea adecuado, es
+ imprescindible utilizar la última versión de 
+\emph on
+Google Chrome, Mozilla Firefox, Internet Explorer
+\emph default
+ o 
+\emph on
+Safari
+\emph default
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -5759,31 +5856,6 @@ Página de arranque de máquinas virtuales por un estudiante
 \end_layout
 
 \begin_layout Standard
-Una vez el estudiante ha seleccionado la máquina que quiere arrancar y ha
- pulsado sobre el botón 
-\family typewriter
-Arrancar
-\family default
-, se abre una nueva pestaña en la cual comienza a ejecutarse el escritorio
- de trabajo de la máquina arrancada.
- La figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:MU-Pagina_MV_Arrancada"
-
-\end_inset
-
- muestra la página con el escritorio de trabajo arrancado.
- 
-\end_layout
-
-\begin_layout Standard
-En esta página, además del escritorio de trabajo, se incluye un par de botones
- que permiten enviar una señal de apagado a la máquina y poner el escritorio
- en pantalla completa.
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -5820,49 +5892,16 @@ Página con el escritorio remoto de una máquina virtual arrancada por un
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Además, el estudiante podrá gestionar sus máquinas arrancadas por medio
- de las páginas de detención y apertura de máquinas arrancadas (
-\family sans
-Máquinas arrancadas \SpecialChar \menuseparator
-Detener máquina y Máquinas arrancadas \SpecialChar \menuseparator
-Abrir maquina)
-\family default
-.
- La forma de proceder en ambas páginas es similar.
- Una vez haya accedido a alguna de las páginas, se le muestra una lista
- con todas las máquinas que tiene arrancadas.
- Al seleccionar cualquiera de ellas aparece la descripción de la máquina
- y los botones con las acciones que puede realizar sobre dicha máquina.
- En el caso de la página de detención, se muestra un botón que permite detener
- la máquina y otro que permite forzar el reinicio.
- En el caso de la página de apertura, aparece un único botón que permite
- abrir una nueva pestaña con el escritorio de alguna de las máquinas en
- ejecución.
- La figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "MU-Pagina_detencion_MV_Alumno"
-
-\end_inset
-
- muestra una captura de la página de detención.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
@@ -5892,55 +5931,6 @@ Página de detención de máquinas virtuales en ejecución para los estudiantes
 \end_inset
 
 
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Boxed
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-
-\series bold
-\color red
-Importante
-\end_layout
-
-\begin_layout Itemize
-para poder arrancar una máquina virtual, un administrador debe haber arrancado
- previamente al menos uno de los servidores de máquinas virtuales en los
- que se encuentra.
-\end_layout
-
-\begin_layout Itemize
-para que el rendimiento del visor de escritorio remoto sea adecuado, es
- imprescindible utilizar la última versión de 
-\emph on
-Google Chrome, Mozilla Firefox, Internet Explorer
-\emph default
- o 
-\emph on
-Safari
-\emph default
-.
 \end_layout
 
 \end_inset
@@ -6427,53 +6417,6 @@ Arrancar el servidor
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Manual usuario/webServer/PaginaEdicionServidoresAdministrador.png
-	scale 40
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "MU-Pagina_edicion_servidores_Administrador"
-
-\end_inset
-
-Página de edición de servidores para los administradores
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Los administradores también pueden consultar el estado en el que se encuentra
  los distintos servidores y el repositorio por medio de la página correspondient
 e (
@@ -6507,53 +6450,6 @@ reference "MU-Pagina_estado_Administrador"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Manual usuario/webServer/PaginaEstadoServidoresAdministrador.png
-	scale 40
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "MU-Pagina_estado_Administrador"
-
-\end_inset
-
-Página que muestra el estado del sistema
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 La última página de gestión de servidores permite detener por completo la
  infraestructura, apagando todos los servidores del sistema (
 \family typewriter
@@ -6576,51 +6472,6 @@ reference "MU-Pagina_detencion_sistema_Administrador"
 \end_inset
 
  muestra la página de detención de la infraestructura.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\begin_inset Graphics
-	filename graficos/Manual usuario/webServer/PaginaDetencionInfraestructuraAdministrador.png
-	scale 40
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "MU-Pagina_detencion_sistema_Administrador"
-
-\end_inset
-
-Página de detención de la infraestructura por el administrador
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -6680,47 +6531,6 @@ reference "MU-Pagina_eliminacion_usuarios_Administrador"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\begin_inset Graphics
-	filename graficos/Manual usuario/webServer/PaginaEliminacionUsuariosAdministrador.png
-	scale 40
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\noindent
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "MU-Pagina_eliminacion_usuarios_Administrador"
-
-\end_inset
-
-Página de eliminación de usuarios por parte de un administrador
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Una vez creado un usuario, el administrador puede matricularlo en algún
  grupo de asignatura por medio de la página de asociación de asignaturas
  (
@@ -6763,6 +6573,174 @@ Administrar asignatura \SpecialChar \menuseparator
 \begin_layout Standard
 Para eliminar un grupo de asignatura existente se procederá de forma análoga
  a como se indico en la eliminación de usuarios.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaEdicionServidoresAdministrador.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_edicion_servidores_Administrador"
+
+\end_inset
+
+Página de edición de servidores para los administradores
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaEstadoServidoresAdministrador.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_estado_Administrador"
+
+\end_inset
+
+Página que muestra el estado del sistema
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaDetencionInfraestructuraAdministrador.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_detencion_sistema_Administrador"
+
+\end_inset
+
+Página de detención de la infraestructura por el administrador
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Graphics
+	filename graficos/Manual usuario/webServer/PaginaEliminacionUsuariosAdministrador.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "MU-Pagina_eliminacion_usuarios_Administrador"
+
+\end_inset
+
+Página de eliminación de usuarios por parte de un administrador
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
