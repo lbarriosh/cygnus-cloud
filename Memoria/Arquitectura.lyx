@@ -2968,19 +2968,19 @@ lzma
 \family default
 , 
 \family sans
-.tar.gz
+tar.gz
 \family default
 , 
 \family sans
-.tar.bz2
+tar.bz2
 \family default
 , 
 \family sans
-.tar.lzma
+tar.lzma
 \family default
  y 
 \family sans
-.tar.xz
+tar.xz
 \family default
 .
 \end_layout
@@ -3477,11 +3477,11 @@ zip
 \family default
 , 
 \family sans
-.tar.gz
+tar.gz
 \family default
  y 
 \family sans
-.tar.bz2
+tar.bz2
 \family default
  alcanzan tasas de compresión muy similares.
  Esto se debe a que los tres usan variantes del algoritmo de Lempel-Ziv.
@@ -3537,7 +3537,7 @@ tar.gz
 \family default
  y 
 \family sans
-.tar.bz2
+tar.bz2
 \family default
 .
  De todos ellos, escogimos el formato 
@@ -3551,7 +3551,7 @@ zip
 aunque al comprimir y descomprimir se utiliza más memoria RAM que en el
  caso del formato 
 \family sans
-.tar.gz
+tar.gz
 \family default
 , los usos de la CPU y del disco son inferiores, por lo que los procesos
  de compresión afectarán menos al rendimiento global del servidor.
@@ -3565,11 +3565,11 @@ zip
 ya creado sin necesidad de descomprimirlo, lo cual aporta una gran flexibilidad.
  En el caso de los formatos 
 \family sans
-.tar.gz
+tar.gz
 \family default
  y 
 \family sans
-.tar.bz2
+tar.bz2
 \family default
 , esto no es posible.
 \end_layout

@@ -659,7 +659,7 @@ Redirección del tráfico de un puerto al servidor VNC de una máquina virtual
 \end_layout
 
 \begin_layout Standard
-Por ahora, el servidor VNC corre a cargo de KVM y Qemu, por lo que reside
+Por ahora, el servidor VNC corre a cargo de KVM y QEMU, por lo que reside
  en el servidor de máquinas virtuales.
 \end_layout
 

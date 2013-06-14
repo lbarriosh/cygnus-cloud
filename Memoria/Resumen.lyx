@@ -133,7 +133,8 @@ Finalmente, la solución propuesta permite reducir los efectos de los recortes
 \series bold
 Palabras clave
 \series default
-: Cloud Computing, IaaS, KVM, libvirt, web2py, twisted, Python
+: Cloud Computing, IaaS, virtualización, KVM, libvirt, web2py, twisted,
+ Python
 \emph on
 .
 \end_layout
@@ -178,7 +179,7 @@ nt PCs in the computer rooms.
 \series bold
 Keywords
 \series default
-: Cloud Computing, IaaS, KVM, libvirt, web2py, twisted, Python
+: Cloud Computing, IaaS, virtualization KVM, libvirt, web2py, twisted, Python
 \emph on
 .
 \end_layout
