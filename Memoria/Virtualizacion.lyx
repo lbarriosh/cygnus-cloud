@@ -892,7 +892,11 @@ Por ello, en los sistemas operativos de las máquinas virtuales hay que instalar
 
 \begin_layout Standard
 En la actualidad, los drivers de paravirtualización más utilizados son los
- del proyecto VirtIO, desarrollado por IBM y Red Hat.
+ del proyecto VirtIO, desarrollado por IBM y 
+\emph on
+RedHat
+\emph default
+.
  El objetivo principal de este proyecto es mejorar el rendimiento de las
  máquinas virtuales a través una mejor interacción entre KVM y los sistemas
  operativos de las mismas.
@@ -1014,38 +1018,64 @@ En este apartado, justificaremos por qué decidimos utilizar el hipervisor
 \end_layout
 
 \begin_layout Subsection
-Integración en el kernel
+Integración en el 
+\emph on
+kernel
 \end_layout
 
 \begin_layout Standard
-KVM es el único hipervisor de los dos que a día de hoy se encuentra completament
-e integrado en el kernel de linux.
- Por ello no es necesario realizar ninguna acción especial para poder utilizar
- todos los servicios que KVM nos ofrece.
- KVM utiliza linux para todo, desde la gestión de dispositivos y el intercambio
- de páginas de memoria hasta el uso de algoritmos para optimizar al máximo
- la gestión de los núcleos y el control de virtualización de todo el sistema.
-\end_layout
-
-\begin_layout Standard
-Sin embargo, Xen todavía no ha sido aceptado completamente en el núcleo
- de linux, no pudiendo aprovechar las tecnologías disponibles en este sistema
- operativo, tales como los planificadores CFS, la paginación o la sobre
- explotación de memoria con KSM.
+KVM es el único hipervisor que, a día de hoy, se encuentra completamente
+ integrado en el 
+\emph on
+kernel
+\emph default
+ 
+\emph on
+Linux
+\emph default
+.
+ KVM utiliza el 
+\emph on
+kernel Linux 
+\emph default
+para todo, desde la gestión de dispositivos de entrada/salida hasta el reparto
+ del tiempo de CPU y la gestión de la memoria.
  
 \end_layout
 
 \begin_layout Standard
-Además todavía es necesario la instalación de Xen desde cero, con la creación
- de una máquina virtual especial llamada Dom0, que se encargue de la gestión
- tanto del sistema como de todo el conjunto de dominios que cuelguen de
- él.
+Sin embargo, Xen todavía no ha sido aceptado como parte del núcleo 
+\emph on
+Linux
+\emph default
+, y por ello no puede aprovechar algunas funciones muy útiles que este ofrece,
+ tales como los algoritmos de planificación CFS (
+\emph on
+Completely Fair Scheduler
+\emph default
+), la gestión de la tabla de páginas o la sobreexplotación de la memoria
+ con KSM (
+\emph on
+Kernel Samepage Merging
+\emph default
+).
+ 
 \end_layout
 
 \begin_layout Standard
-En resumen, el hecho de que KVM se encuentre integrado completamente en
- el kernel de linux le confiere una serie de beneficios contra los que Xen
- no puede enfrentarse y necesita parchear de forma externa.
+Además, a diferencia de lo que ocurre en el caso de KVM, Xen requiere modificar
+ sustancialmente el proceso de arranque de las máquinas en las que está
+ instalado: en él, es necesario cargar el hipervisor y crear el dominio
+ cero.
+\end_layout
+
+\begin_layout Standard
+En definitiva, KVM resulta mucho más fácil de instalar y configurar que
+ Xen: basta con instalar un módulo del 
+\emph on
+kernel
+\emph default
+ más durante el proceso de arranque.
 \end_layout
 
 \begin_layout Subsection
@@ -1053,31 +1083,62 @@ Rendimiento
 \end_layout
 
 \begin_layout Standard
-Con respecto al rendimiento KVM y Xen ofrecen beneficios en aspectos muy
- diferentes, lo que hace que en este punto no pueda considerarse uno mejor
- que el otro en todas las tareas posibles, haciendo que sea más indicado
- uno u otro dependiendo de en que puntos se va a basar el sistema.
- Así las máquinas virtuales de Xen presentan un mejor rendimiento con aplicacion
-es de cálculo que las máquinas virtuales de KVM, mientras que para las pruebas
- de escritura en disco, el rendimiento de las máquinas virtuales de KVM
- es mejor que el de las máquinas virtuales de Xen.
+El rendimiento de Xen y KVM es, en términos generales, bastante similar.
+ No obstante,
+\end_layout
+
+\begin_layout Itemize
+cuando en las máquinas virtuales utilizan la CPU de forma intensiva, el
+ rendimiento de Xen es superior al de KVM, y
+\end_layout
+
+\begin_layout Itemize
+cuando las máquinas virtuales realizan muchas operaciones de entrada/salida
+ a disco, el rendimiento de KVM es superior al de Xen.
+\end_layout
+
+\begin_layout Standard
+Para llegar a esta conclusión, en el estudio 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "XenComparison"
+
+\end_inset
+
+ se compiló el 
+\emph on
+kernel Linux
+\emph default
+ y se ejecutó el 
+\emph on
+benchmark
+\emph default
+ 
+\emph on
+IOZone 
+\emph default
+directamente sobre distintas máquinas físicas y sobre máquinas virtuales
+ con diversas características.
+ La primera prueba se caracteriza por el uso intensivo de CPU, y la segunda
+ se caracteriza por realizar un gran número de operaciones de entrada/salida
+ a disco.
+\end_layout
+
+\begin_layout Standard
+Los resultados obtenidos fueron los siguientes:
+\end_layout
+
+\begin_layout Itemize
+en la primera prueba, la pérdida de rendimiento con respecto a la máquina
+ original fue, en promedio, de un 1% en las máquinas virtuales Xen, y de
+ un 36% en las máquinas virtuales KVM.
  
 \end_layout
 
-\begin_layout Standard
-Para llegar a estas conclusiones se realizaron pruebas de rendimiento usando
- los benchmarks de Linpack, el cual se utiliza para conocer el rendimiento
- del sistema en cuanto a cálculo, e IOZone, el cual se utiliza para conocer
- la medida de rendimiento del disco en los procesos de lectura y escritura.
- En el primero se experimentó una perdida del 1% del rendimiento con respecto
- al anfitrión para el hipervisor de Xen, mientras que las perdidas en el
- caso de KVM alcanzaron el 36%.
-\end_layout
-
-\begin_layout Standard
-Con respecto a la segunda prueba, el hipervisor de KVM presento solo un
- 3.6% de perdida de rendimiento para escrituras en disco frente a una perdida
- del 42.9% experimentada por Xen.
+\begin_layout Itemize
+en la segunda prueba, la pérdida de rendimiento con respecto a la máquina
+ original fue, en promedio, de un 42,9% en las máquinas virtuales Xen, y
+ de un 3,6% en las máquinas virtuales KVM.
 \end_layout
 
 \begin_layout Subsection
@@ -1085,19 +1146,64 @@ Soporte técnico
 \end_layout
 
 \begin_layout Standard
-Gracias a la integración en el kernel, así como por ser un sistema más actual
- y en crecimiento, KVM ofrece una mayor atención y soporte técnico a todos
- los usuarios que lo utilizan.
- Esto hace que en la actualidad la mayoría de la empresas opten por utilizar
- KVM frente a Xen.
- Por extensión, la preferencia de las empresas por el uso de KVM otorgan
- al usuario una mayor compatibilidad de su aplicación con otras posibles
- herramientas, las cuales también utilizan este soporte.
- Por otro lado, la adaptación de KVM al sistema de la gran empresa de mantenimie
-nto de linux Red hat, hace que KVM disponga de una gran cantidad de información
- de soporte, además de encontrarse actualizado y adaptado a las últimas
- versiones de linux, algo que Xen debe hacer de manera externa no proporcionando
- siempre unos resultados óptimos.
+Gracias a su integración en el 
+\emph on
+kernel
+\emph default
+, las versiones de KVM se publican con mucha frecuencia, lo que garantiza
+ la rápida corrección de los 
+\emph on
+bugs
+\emph default
+ que se detecten.
+\end_layout
+
+\begin_layout Standard
+Asimismo, 
+\emph on
+RedHat
+\emph default
+ e IBM están realizando una importante apuesta por KVM, publicando y actualizand
+o numerosas páginas de documentación y guías de migración a KVM desde otras
+ soluciones de virtualización como VMWare y Xen.
+\end_layout
+
+\begin_layout Standard
+Por otra parte, la actualización del código de la versión 
+\emph on
+open-source
+\emph default
+ de Xen sólo tiene lugar una vez cada año, por lo que el soporte de Xen
+ es bastante peor que el de KVM.
+ 
+\end_layout
+
+\begin_layout Standard
+Además, la documentación de la versión 
+\emph on
+open-source
+\emph default
+ de Xen es muy escasa y frecuentemente no está actualizada a la última versión.
+\end_layout
+
+\begin_layout Standard
+En definitiva, puesto que
+\end_layout
+
+\begin_layout Itemize
+la instalación y uso de KVM son mucho más sencillos que los de Xen,
+\end_layout
+
+\begin_layout Itemize
+el rendimiento de ambas soluciones es prácticamente idéntico, y
+\end_layout
+
+\begin_layout Itemize
+KVM cuenta con mucho mejor soporte que Xen
+\end_layout
+
+\begin_layout Standard
+decidimos utilizar el hipervisor KVM en lugar del hipervisor Xen.
 \end_layout
 
 \end_body
