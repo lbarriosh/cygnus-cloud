@@ -62,162 +62,98 @@
 \begin_body
 
 \begin_layout Chapter
-Virtualización
+Virtualización 
+\emph on
+hardware
 \end_layout
 
 \begin_layout Section
-Introducción
+Conceptos básicos
 \end_layout
 
 \begin_layout Standard
-En este capítulo veremos como puede ser virtualizado un sistema, que alternativa
-s hay y cuales han sido las seleccionadas para el proyecto.
- 
-\end_layout
-
-\begin_layout Standard
-La virtualización nos permite tener varios sistemas en la misma máquina,
- aislados unos de otros.
- Gracias a que esos sistemas pueden estar en un único archivo, podríamos
- cambiar alguno de ellos a otra máquina o hacer una copia de seguridad de
- forma rápida y sencilla, solo habría que copiar ese archivo al nuevo servidor
- o a un dispositivo de almacenamiento.
- Para conseguir esto, lo que tenemos es un hipervisor que nos permite gestionar
- esos recursos y asignárselos a las máquinas según los van necesitando.
- Este termino es una evolución de otro que se usa para referirse al 
+La virtualización de 
 \emph on
-kernel
+hardware
 \emph default
- de los sistemas operativos, el supervisor.
- Esta gestión puede ser, en el caso de dispositivos de almacenamiento, la
- división de ese espacio según sea asignado por el usuario o, en el caso
- de dispositivos de tratamiento de datos, como puede ser el procesador,
- asignándole un tiempo determinado de ejecución a cada sistema virtualizado.
+ permite ejecutar múltiples sistemas operativos en una misma máquina.
+ Todos ellos estarán aislados unos de otros, y se ejecutarán sobre una máquina
+ virtual.
+\end_layout
+
+\begin_layout Standard
+Una máquina virtual es la implementación 
+\emph on
+software
+\emph default
+ de un computador, y es capaz de ejecutar programas programas como una máquina
+ física.
+ Las máquinas virtuales no accederán directamente al 
+\emph on
+hardware
+\emph default
+ de la máquina física en la que residen: para ello, se comunican con el
+ 
+\emph on
+hipervisor
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Un 
+\emph on
+hipervisor 
+\emph default
+es un programa que crea máquinas virtuales, controla la forma en que estas
+ acceden al 
+\emph on
+hardware
+\emph default
+ de la máquina física y gestiona la ejecución de los sistemas operativos
+ de las máquinas virtuales.
 \end_layout
 
 \begin_layout Section
-Historia
+Esquemas de virtualización 
+\emph on
+hardware
 \end_layout
 
 \begin_layout Standard
-La virtualización, aunque pueda parecerlo, no es nueva, ya se usaba en la
- década de los 1960, antes incluso de los ordenadores personal.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Quitaría lo de aunque pueda parecerlo,no es nueva
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-IBM, en 1964, desarrolló un sistema operativo que gestionaba los recursos
- de
+Existen tres tipos de virtualización 
 \emph on
- 
+hardware
 \emph default
-la máquina, llamado 
+: virtualización completa, paravirtualización y virtualización asistida
+ por 
 \emph on
-VM
+hardware
 \emph default
- (
-\emph on
-Virtual Machine
-\emph default
-, Máquina Virtual), que permitía a varios usuarios usar una misma máquina
- a la vez, dando la apariencia de que eran ordenadores personales independientes.
- Este desarrolló continuó en los dando soporte a los sistemas operativos
- que ya tenía IBM para que pudiesen ejecutarse sobre 
-\emph on
-VM
-\emph default
-, como son 
-\emph on
-PC/DOS
-\emph default
-, 
-\emph on
-MVS
-\emph default
- y 
-\emph on
-DOS/VSE
-\emph default
- e incluso el sistema 
-\emph on
-Unix.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Redefiniría lo de una misma máquina a la vez.
- Pondría algo como permitía a varios usuarios trabajar sobre un mismo puesto
- físico, dando la apariencia de que eran ordenadores personales independientes.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-A raíz de que se popularizó el uso de computadoras personales, en los años
- 80s, la virtualización quedo relegada.
- Hasta que en 1999 VMware sacó el primer producto que permitía la virtualización
- sobre la arquitectura x86, la mas extendida en el mercado de los ordenadores
- personales.
- Luego, en 2003 se inició el proyecto de software libre Xen, en la universidad
- de Cambridge y en 2007 KVM, basado en el kernel de Linux para usarlo como
- hipervisor.
-\end_layout
-
-\begin_layout Standard
-En 2005, la industria de los procesadores, sobre todo Intel y AMD, empezaron
- a desarrollar, independientemente, tecnologías en sus procesador que permitían
- una virtualización más sencilla y eficiente para los programas de virtualizació
-n.
-\end_layout
-
-\begin_layout Section
-Distintos esquemas de virtualización
-\end_layout
-
-\begin_layout Standard
-El tipo de virtualización depende de como quién gestiona los recursos de
- la máquina y como se comunica el sistema virtualizado con esos recursos.
+.
 \end_layout
 
 \begin_layout Subsection
-Virtualización de hardware
+Virtualización completa
 \end_layout
 
 \begin_layout Standard
-En lo que se basa es en que sobre el hardware de la máquina se simula el
- hardware mediante máquinas virtuales, para luego poder ejecutar el sistema.
- El gran inconveniente de este esquema es que las instrucciones de la máquina
- virtualizada debe traducirse a instrucciones de la máquina 
+En este caso, la máquina virtual simula todo el repertorio de instrucciones
+ de la CPU, las operaciones de entrada/salida, las interrupciones, los acceso
+ a memoria y, en general, todo el 
 \emph on
-host
+hardware 
 \emph default
-, lo que requiere mucho tiempo.
+que utilice el sistema operativo que se ejecuta sobre ella.
+ Esto evita la necesidad de modificar el sistema operativo de la máquina
+ virtual.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -232,50 +168,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Virtualización hardware
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Virtualización de software
-\end_layout
-
-\begin_layout Standard
-En este esquema se utiliza un software para simular el ordenador, una máquina
- virtual, este debe ejecutarse sobre un sistema operativo concreto, que
- es el que tiene acceso al hardware y hace de intermediario entre este y
- la máquina virtual.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Virtualizacion/software.png
-	scale 50
-
-\end_inset
-
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Virtualización software
+Virtualización completa
 \end_layout
 
 \end_inset
@@ -289,32 +182,19 @@ Virtualización software
 \end_layout
 
 \begin_layout Standard
-En este caso en el sistema guest, el hardware de almacenamiento, como puede
- ser el disco duro o las unidades ópticas, pueden ser virtuales o reales.
- Si son virtuales, es la máquina virtual la que se encarga de gestionarlo
- mediante archivos en el sistema 
+El gran inconveniente de esta alternativa es la necesidad de traducir las
+ instrucciones de la máquina virtual a instrucciones de la máquina física
+ que la alberga (
+\series bold
+anfitrión 
+\series default
+o 
+\series bold
 \emph on
 host
+\series default
 \emph default
-, en el caso de que sean reales, la máquina virtual, en colaboración con
- el sistema host, le proporcionará al sistema virtualizado acceso a los
- mismos.
- El hardware que no sea posible virtualizar, como pueden ser una cámara
- o un micrófono, debe usar el hardware real, para ello la maquina virtual,
- transforma las llamadas del sistema 
-\emph on
-guest
-\emph default
-, en llamadas al sistema 
-\emph on
-host
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-El mayor inconveniente de este esquema es que, como debe haber un sistema
- operativo ejecutándose, consumido recursos de la máquina.
+), lo cual requiere mucho tiempo.
 \end_layout
 
 \begin_layout Subsection
@@ -322,26 +202,33 @@ Paravirtualización
 \end_layout
 
 \begin_layout Standard
-En este esquema, al contrario que en el anterior, no es necesario de un
- sistema 
+Si ciertas operaciones se ejecutan directamente sobre la máquina física
+ y no sobre la máquina virtual, su rendimiento puede mejorar de forma considerab
+le.
+ Asimismo, la implementación del sistema de virtualización pasa a ser mucho
+ más sencilla y eficiente.
+ Para hacer esto posible, es necesario
+\end_layout
+
+\begin_layout Itemize
+utilizar una capa adicional, a la que llamaremos hipervisor, para gestionar
+ el acceso a los recursos de la máquina anfitrión, y
+\end_layout
+
+\begin_layout Itemize
+utilizar un sistema operativo modificado en la máquina virtual, que interactuará
+ con el hipervisor para acceder al 
 \emph on
-host
+hardware
 \emph default
- para gestionar los recursos, sino que lo que se usa es una capa de virtualizaci
-ón, también llamada hipervisor, que es la que gestiona los recursos.
- Pero no basta con eso, sino que debe haber una comunicación entre el sistema
- 
-\emph on
-guest
-\emph default
- y el hipervisor.
+.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -356,6 +243,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Paravirtualización"
+
+\end_inset
+
 Paravirtualización
 \end_layout
 
@@ -370,93 +263,53 @@ Paravirtualización
 \end_layout
 
 \begin_layout Standard
-Esa comunicación se debe a que en los procesadores hay varios niveles de
- privilegios, llamados 
-\emph on
-ring
-\emph default
-, en concreto tienen 4 niveles, de ellos el 0 está reservado para el 
-\emph on
-kernel
-\emph default
- del sistema operativo.
- Por lo que para que se pueda ejecutar el hipervisor, habría que modificar
- el kernel para que se ejecutase en el nivel 1 y dejar el 0 para el hipervisor.
- Esto no es ningún problema para sistemas operativos en los que el código
- fuente esté disponible y modificarlo, como pueden ser 
-\emph on
-Linux
-\emph default
-, pero en sistemas privativos como 
-\emph on
-Microsoft Windows
-\emph default
- o 
-\emph on
-Mac OSX
-\emph default
-, no es posible hacer este cambio.
- 
+Como podemos observar en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Paravirtualización"
+
+\end_inset
+
+, el sistema operativo de la máquina anfitrión también se ejecutará sobre
+ el hipervisor, y se utilizará para realizar tareas de administración (como,
+ por ejemplo, la creación y destrucción de máquinas virtuales).
 \end_layout
 
 \begin_layout Standard
-Aunque algunos programas de virtualización que usando esta técnica han conseguid
-o ejecutar sistemas operativos sin modificar, para ello lo que hacen es,
- en tiempo de ejecución, detectar las instrucciones problemáticas, las que
- requieren de privilegios de nivel 0, y parchearlas, para que no haya problemas
- en el funcionamiento del sistema operativo, ni que el procesador se queje
- al intentar ejecutar una instrucción en un nivel inadecuado.
+Finalmente, si el sistema operativo de la máquina virtual no ha sido modificado,
+ se procederá como en el caso de la virtualización
+\emph on
+ 
+\emph default
+completa y se simulará todo el 
+\emph on
+hardware
+\emph default
+ de la misma, con la degradación de rendimiento que esto supone.
 \end_layout
 
 \begin_layout Subsection
-Virtualización completa
+Virtualización
+\emph on
+ 
+\emph default
+asistida por 
+\emph on
+hardware
 \end_layout
 
 \begin_layout Standard
-Este esquema es parecido al anterior, también existe el hipervisor, pero
- al contrario que en la paravirtualización, no es necesaria una comunicación.
- Esto es porque en los procesadores que mayor cuota de mercado tiene (Intel
- y AMD) se ha añadido dos modos de ejecución, uno de ellos reservado para
- el hipervisor y el otro mantiene el uso que tenía, es decir, reservando
- el nivel 0 para el kernel, por ello no es necesario modificación alguna
- del sistema 
-\emph on
-guest
-\emph default
-.
- Estos modos son VMX para Intel 
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-referencia: https://docs.google.com/viewer?a=v&q=cache:QyzbSEBX5oAJ:www.intel.com/de
-sign/intarch/papers/316337.pdf+intel+non+root&hl=es&gl=es&pid=bl&srcid=ADGEEShEcj
-1AHpkwlMee1bc1fVeScQvctJ3ctVojmlM3gSspHsPQW5CtRmcCWz89g6emcWDxqdZnJx0Z4vIlwOVUMa
-Ng6gE8WOMCYV_bVlrunVO1KyRlN9LVqH_Ff4tFJ93_henKhbtt&sig=AHIEtbROTMAEF5Ebld_geP6r9
-DR0Y3npCw
-\end_layout
-
-\end_inset
-
- y SVM para AMD
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-referencia: http://developer.amd.com/Resources/documentation/articles/Pages/122120
-05112.aspx
-\end_layout
-
-\end_inset
-
-
+Este esquema explota las características de las CPUs actuales para mejorar
+ resolver los problemas de rendimiento de la virtualización completa.
+ Así, permite que un sistema operativo sin modificar pueda ejecutarse sobre
+ la máquina virtual con un rendimiento muy similar al de la paravirtualización.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -471,7 +324,9 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Virtualización completa
+Virtualización asistida por 
+\emph on
+hardware
 \end_layout
 
 \end_inset
@@ -489,31 +344,48 @@ Software de virtualización
 \end_layout
 
 \begin_layout Standard
-Existen muchos programas de virtualización para todos los tipos como pueden
- ser VMware en sus distintas versiones, Xen, KVM, VirtualBox\SpecialChar \ldots{}
- Lo que buscamos
- en este proyecto es poder tener sistemas bajo demanda a bajo coste, por
- lo que nos centraremos en evaluar el software libre, 
+En la actualidad, existen muchas soluciones de virtualización en el mercado:
+ 
 \emph on
-open source
+VMWare
 \emph default
 , 
 \emph on
-freeware
+VirtualBox
 \emph default
-, con lo queda descartado como opción VMware y aunque VirtualBox tiene una
- versión como software libre, algunas funciones como el soporte USB, está
- bajo una licencia propietario, por lo que también lo descartamos.
+, Xen, KVM,\SpecialChar \ldots{}
+
+\end_layout
+
+\begin_layout Standard
+Considerando la actual coyuntura económica, decidimos utilizar una solución
+ de virtualización lo más eficiente posible y gratuita.
+ Estas soluciones permiten implantar 
+\emph on
+CygnusCloud 
+\emph default
+con coste cero, ya que no es necesario afrontar el coste de ninguna licencia
+ de 
+\emph on
+software
+\emph default
+ y, por el uso que hacen de los recursos, permiten utilizar servidores de
+ hasta seis años de antigüedad para albergar las máquinas virtuales.
  
 \end_layout
 
 \begin_layout Standard
-Aunque siguen existiendo muchas alternativas bajo las condiciones que queremos,
- nos centramos principalmente en Xen y KVM, por ser los que mayor trayectoria
- tienen.
- Debido a que Xen lleva mas años que KVM y estar apoyado por la comunidad,
- a parte de grandes empresas que apoyan el desarrollo como IBM, Intel, Red
- Hat u Oracle, es la mejor opción que podíamos escoger.
+Así pues, descartamos dos soluciones de virtualización muy utilizadas (
+\emph on
+VMWare
+\emph default
+ y 
+\emph on
+VirtualBox
+\emph default
+) y nos centramos en la evaluación de las dos soluciones de virtualización
+ gratuitas que ofrecen el mayor rendimiento: Xen y KVM.
+ 
 \end_layout
 
 \begin_layout Section
@@ -521,11 +393,25 @@ Xen
 \end_layout
 
 \begin_layout Standard
-Xen permite una virtualización de paravirtualización y virtualización completa
- en los procesadores que lo soporten.
+El hipervisor Xen soporta paravirtualización y virtualización asistida por
+ 
+\emph on
+hardware
+\emph default
+ si la CPU de la máquina anfitrión dispone de las instrucciones correspondientes.
 \end_layout
 
 \begin_layout Standard
+Para comprender el funcionamiento de Xen, es fundamental saber cómo gestiona
+ los recursos de las máquinas virtuales.
+ Esto es lo que estudiaremos en la presente sección
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Pero no todo en Xen son ventajas, ya que en el caso de que solo se pueda
  usar paravirtualización en una máquina solo podrán virtualizar los sistemas
  operativos que soporten el hipervisor de Xen.
@@ -538,83 +424,102 @@ guest
  sobre Xen.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Para saber como funciona Xen hay que como gestiona cada uno de los recursos.
  Eso es lo que vamos a ver a continuación:
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
 
 \series bold
-Dom0, DomU.
+Dominios
 \end_layout
 
 \begin_layout Standard
-El nombre con el que se denominan los sistemas guest en Xen es dominio (
+En Xen, las máquinas virtuales se llaman 
+\series bold
+dominios
+\series default
+ (en inglés, 
 \emph on
 domain
 \emph default
-, en inglés).
- Existen dos tipos de dominios diferenciados, un es el 
-\family typewriter
-dom0
-\family default
-, que es el sistema privilegiado con el que se adminstra Xen y puede controlar
- los distintos dominios que se estén ejecutando, solo puede haber uno.
- El otro es el 
-\family typewriter
-domU
-\family default
- es como se denomina a un sistema 
-\emph on
-guest
-\emph default
+).
+ Podemos distinguir dos tipos de dominios:
+\end_layout
+
+\begin_layout Itemize
+el 
+\series bold
+dominio cero
+\series default
 .
+ Se trata de una máquina virtual privilegiada que dispone de acceso completo
+ al 
+\emph on
+hardware
+\emph default
+ y cuyo sistema operativo suministra los 
+\emph on
+drivers
+\emph default
+ que se utilizarán para interactuar con este.
  
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
-El nombre de un dominio es como identifica Xen a cada uno de los sistemas,
- por lo que debe ser único.
- Puede modificarse en el archivo de configuración con el que se arranca
- el 
-\emph on
-guest.
+El dominio cero se creará durante el arranque del equipo, y se utilizará
+ para realizar las tareas de administración del servidor.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+el resto de dominios.
+ Estos son las máquinas virtuales que se crean y destruyen durante el funcionami
+ento del servidor.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que, aunque puede existir un número arbitrario de dominios
+ en la misma máquina, sólo puede haber un único dominio cero.
 \end_layout
 
 \begin_layout Subsection
-Interrupciones
+Tratamiento de interrupciones
 \end_layout
 
 \begin_layout Standard
-Una interrupción se puede ver como una llama de atención del hardware e
- indica que ha ocurrido algo, un timer ha finalizado su cuenta, se ha pulsado
- un botón del ratón\SpecialChar \ldots{}
- Aunque una interrupción requiere de una acción inmediata,
- lo que hace Xen es interceptarla y planificarla, así cuando el 
+Cuando el 
 \emph on
-guest
+hardware
 \emph default
- vuelva a tener acceso al procesador la podrá tratar con el manejador correspond
-iente.
- Este permite que cuando llega una interrupción, no haya que espera a que
- todos los 
-\emph on
-guest
-\emph default
- la procesen, lo que sería muy costoso, por los cambios de dominios necesarios.
+ de la máquina anfitrión genera una interrupción, el hipervisor Xen la intercept
+a y la planifica.
+ Cuando la máquina virtual que la debe atender vuelva a tener acceso a la
+ CPU, realizará el tratamiento correspondiente.
+\end_layout
+
+\begin_layout Standard
+Esto permite que, siempre que se genere una interrupción, no sea necesario
+ esperar a que las máquinas virtuales la procesen, lo cual es muy costoso.
 \end_layout
 
 \begin_layout Subsection
-CPU
+Tiempo de CPU
 \end_layout
 
 \begin_layout Standard
-La CPU es el recursos mas utilizado, ya que es el que ejecuta los programas.
- Xen trata a los distintos dominios como un sistema operativo trataría a
- los programas, es decir, tiene un planificador en el que a cada dominio
- les deja cierto tiempo para que puedan hacer sus cálculos, también debe
- garantizar que a todos los dominios les deje usar la CPU.
+El tiempo de CPU es el recurso más utilizado.
+ Para repartirlo, Xen trata a los distintos dominios como un sistema operativo
+ trataría a los programas, es decir, utiliza un planificador que garantiza
+ que todos los dominios pueden acceder a la CPU.
 \end_layout
 
 \begin_layout Subsection
@@ -623,22 +528,18 @@ Memoria
 
 \begin_layout Standard
 El hipervisor, como gestor de los recursos de la máquina, tiene acceso a
- toda la memoria, la cual debe alojar toda la memoria usada por los distintos
- dominios, pero solo la memoria física y la tabla de página, ya que del
- resto, como la memoria virtual, se encarga cada domU.
- La memoria virtual permite que los procesos accedan a la memoria como si
- no hubiese nadie mas, es decir, acceso relativo, y luego se le suma la
- dirección donde empieza su espacio de memoria.
+ toda la memoria de la máquina anfitrión.
+ En ella, se aloja el contenido de la memoria física de cada máquina virtual
+ y la tabla de páginas de Xen.
+ Es importante notar que cada máquina virtual gestiona su propia memoria
+ virtual.
 \end_layout
 
 \begin_layout Standard
-Como la asociación entre memoria física y virtual se hace a través de las
- tablas de página, que son gestionadas por Xen, le permite tener un control
- de que dominio accede a que partes de la memoria, ya que puede denegar
- el acceso a una pagina si no le pertenece al dominio que se la ha pedido.
- Este permite aislamiento en la memoria, es decir, un dominio solo puede
- acceder a la memoria que le ha asignado Xen y le protege de que otro dominio
- modifique la memoria del primero.
+Como dispone de su propia tabla de páginas, Xen puede controlar las direcciones
+ de memoria físicas a las que acceden las distintas máquinas virtuales.
+ De esta manera, una máquina virtual sólo podrá acceder a la memoria que
+ Xen le ha asignado.
 \end_layout
 
 \begin_layout Subsection
@@ -646,17 +547,26 @@ Dispositivos de entrada/salida
 \end_layout
 
 \begin_layout Standard
-Ningún domU tiene gestión sobre los dispositivos, de esto se encarga el
- hipervisor con ayuda de dom0.
- Xen maneja los dispositivos de E/S mediante dispositivos virtuales, que
- son enlaces entre las interfaces de los domUs y el dispositivo en el dom0.
+Para manipular los dipositivos de entrada/salida, Xen delega en los drivers
+ que forman parte del sistema operativo del dominio cero.
  
 \end_layout
 
 \begin_layout Standard
-El acceso a los dispositivos se hace mediante un buffer en anillo, así los
- dominios pueden acceder al dispositivo directamente sin intervención del
- hipervisor.
+Por otra parte, las máquinas virtuales accederán a los distintos dispositivos
+ de entrada/salida de la máquina anfitrión a través de los dispositivos
+ virtuales, que son enlaces entre las interfaces de las máquinas virtuales
+ y los dipositivos de la máquina física.
+\end_layout
+
+\begin_layout Standard
+Finalmente, para aumentar el rendimiento, el acceso a los dispositivos se
+ hace mediante un 
+\emph on
+buffer 
+\emph default
+en anillo, por lo que los dominios pueden utilizarlos directamente sin que
+ sea necesaria la intervención del hipervisor.
 \end_layout
 
 \begin_layout Subsection
@@ -664,29 +574,34 @@ Red
 \end_layout
 
 \begin_layout Standard
-Como cualquier otro dispositivo, Xen proporciona una interfaz de red virtual
- a los dominios, además de algunas funciones para mover paquetes de la interfaz
- virtual del dominio a una interfaz virtual del dom0.
- El hipervisor en este caso solo mueve los datos de la interfaz física a
- la virtual, y de la virtual a la física cuando el dominio lo pida, pero
- no valida paquetes, eso lo manejan reglas en el dom0.
+Como sucede con el resto de dispositivos, Xen proporciona una interfaz de
+ red virtual a los dominios.
+ Asimismo, Xen implementa las funciones que permiten el flujo de tramas
+ MAC entre las interfaces de red virtuales y las interfaces de red de la
+ máquina anfitrión.
+\end_layout
+
+\begin_layout Standard
+Es importante notar que Xen no valida las tramas MAC que se transfieren
+ entre estas interfaces.
+ Para ello, delega en el sistema operativo del dominio cero.
 \end_layout
 
 \begin_layout Subsection
-Dispositivos de bloque
+Dispositivos de bloques
 \end_layout
 
 \begin_layout Standard
-Son dispositivos de almacenamiento en los que solo se puede leer y escribir
- en bloques de bytes, el tamaño del bloque depende del dispositivo y su
- configuración, estos pueden discos duros, CD-ROMs o memorias USB.
+La gestión de los dispositivos de bloques que hace Xen es bastante similar
+ a la gestión de los dispositivos de red.
+ 
 \end_layout
 
 \begin_layout Standard
-Xen gestiona los dispositivos de bloque casi como los dispositivos de red.
- El hipervisor exporta el dispositivo virtual de bloques al domU y proporciona
- al dom0 la capacidad de mapear la funcionalidad del dispositivo real en
- el virtual.
+En este caso, el hipervisor proporciona un dispositivo de bloques virtual
+ a las distintas máquinas virtuales, y delega en el sistema operativo del
+ dominio cero para mapear los comandos del dispositivo de bloques virtual
+ sobre el dispositivo de bloques físico.
 \end_layout
 
 \begin_layout Section
@@ -701,364 +616,343 @@ name "sec:KVM"
 \end_layout
 
 \begin_layout Standard
-KVM (Kernel-based Virtual Machine) es un hipervisor tipo 1 que proporciona
- una solución completa de virtualización para el sistema operativo Linux
- en arquitecturas x86 que cuenten con las extensiones de virtualización
- Intel VT o AMD-V.
-\end_layout
-
-\begin_layout Standard
-En realidad, el termino más acertado sobre KVM se refiere al nivel del kernel
- donde se aloja la funcionalidad de virtualización, pero en la práctica
- es más utilizado para hacer referencia al componente en el que trabaja
- el usuario.
-\end_layout
-
-\begin_layout Standard
-Usando KVM, se puede ejecutar múltiples máquinas virtuales sin necesidad
- de modificar las imágenes de linux o de windows.
- Cada máquina virtual tiene su propio hardware de virtualización privado
- : su propia tarjeta de red, su disco, su tarjeta gráfica etc.
-\end_layout
-
-\begin_layout Standard
-El componente KVM para el kernel viene incluido en linux desde la versión
- 2.6.20.
- Cuando se carga el modulo KVM, Linux se convierte en un hipervisor 
-\begin_inset Quotes eld
-\end_inset
-
-bare-metal" (tipo 1) capaz de ejecutar varias maquinas virtuales aisladas.
- KVM hospeda las maquinas virtuales como procesos, por lo que cada maquina
- virtual puede beneficiarse de todas las características del kernel de Linux,
- incluyendo todas aquellas referentes al hardware, la seguridad, el almacenamien
-to etc.
-\end_layout
-
-\begin_layout Subsection
-Breve historia de KVM
-\end_layout
-
-\begin_layout Standard
-KVM se inició como un proyecto Open Source por la empresa israelí Qumranet.
- Su principal objetivo era la de dar una infraestructura de escritorio virtual
- (VDI) en entornos windows.
-\end_layout
-
-\begin_layout Standard
-En el año 2007, KVM se integró como un módulo en la rama principal del kernel
- de Linux, convirtiéndose desde entonces en el hipervisor de virtualización
- oficial para linux.
-\end_layout
-
-\begin_layout Standard
-En 2008, Red Hat adquiría Qumranet y con RHEL 6(Red hat entreprise linux)
- centraba su estrategia en convertir KVM en la mejor solución de virtualización
- en el mundo Open Source, desechando la solución de virtualización con Xen
- utilizada en RHEL 5 .
-\end_layout
-
-\begin_layout Standard
-Poco después IBM también apostó por KVM, contribuyendo en áreas como la
- gestión de memoria, mejoras del rendimiento y el subsistema de entrada/salida
- virtual.
-\end_layout
-
-\begin_layout Standard
-Actualmente existen muchos sistemas de virtualización tales como Xen, Bochs,
- UML, Linux VServer, y coLinux, sin embargo, KVM está adquiriendo una mayor
- presencia en el mercado.
+Como sabemos, el 
+\emph on
+kernel
+\emph default
+ 
+\emph on
+Linux
+\emph default
+ es capaz de repartir los recursos de una máquina entre los distintos procesos
+ que se ejecutan sobre la misma.
+ Por ello, incluyendo un reducido conjunto de modificaciones y haciendo
+ que las máquinas virtuales se ejecuten como procesos, es posible lograr
+ que el propio 
+\emph on
+kernel Linux
+\emph default
+ se comporte como un hipervisor.
+ Esta es la idea fundamental del hipervisor KVM (
+\emph on
+Kernel-based Virtual Machine
+\emph default
+), que se distribuye como un módulo del 
+\emph on
+kernel
+\emph default
+.
  
 \end_layout
 
+\begin_layout Standard
+A diferencia de lo que ocurre en el caso de Xen, la CPU de la máquina anfitrión
+ debe incluir soporte para la virtualización asistida por 
+\emph on
+hardware
+\emph default
+.
+ Por ello, en la actualidad, KVM sólo puede utilizarse con CPUs x86 que
+ cuenten con las extensiones de virtualización Intel VT o AMD-V.
+\end_layout
+
 \begin_layout Subsection
-Características de KVM
+Funciones soportadas por KVM
+\end_layout
+
+\begin_layout Subsubsection
+Seguridad
 \end_layout
 
 \begin_layout Standard
-Las principales características de KVM son:
+KVM puede utilizar los mecanismos de seguridad estándar integrados con el
+ kernel 
+\emph on
+Linux
+\emph default
+: SELinux y AppArmor.
+ 
 \end_layout
 
-\begin_layout Itemize
-
-\series bold
-Seguridad 
-\series default
-: KVM se aprovecha de los modelos de seguridad estándar de Linux: SELinux
- y AppArmor.
- Estos modelos proporcionan el aislamiento y el control de recursos necesarios.
- El proyecto SVirt, un esfuerzo de la comunidad para integrar el control
- de acceso obligatorio (MAC) con KVM, esta construido sobre SELinux y proporcion
-a una infraestructura que permite al administrador definir políticas de
- aislamiento para las máquinas virtuales.
- Básicamente SVirt se asegura que los recursos de una maquina virtual no
- puedan ser accedidos por otro proceso o maquina virtual.
+\begin_layout Standard
+Por ejemplo, el proyecto SVirt, construido sobre SELinux, refleja el esfuerzo
+ de la comunidad para integrar el control de acceso obligatorio (en inglés,
+ 
+\emph on
+Mandatory Access Control
+\emph default
+) con KVM.
+ 
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Subsubsection
+Gestión de memoria
+\end_layout
 
-\series bold
-Gestión de memoria : 
-\series default
+\begin_layout Standard
 La memoria utilizada por una máquina virtual se gestionará de la misma forma
- que la de otro proceso, podrá ser guardada en disco (swapped) y utilizada
- en páginas grandes (large pages).
- El soporte NUMA de Linux, permite también el uso por parte de las máquinas
- virtuales de grandes cantidades de memoria.
- Además, KVM soporta las últimas características de virtualización en memoria
- proporcionadas por fabricantes como EPT(Extended Page Table de Intel) o
- RVI (Rapid Virtualization Indexing de AMD).
- La compartición de páginas de memoria se lleva a cabo por medio de la herramien
-ta integrada en linux KSM (Kernel Same-page Merging).
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-Almacenamiento
-\series default
- : KVM utiliza cualquier tipo de almacenamiento soportado por linux para
- el almacenamiento de imágenes de las maquinas virtuales.
- Esto incluye discos locales (IDE/SCSI/SATA), NAS (Network Attached Storage)
- o SAN (iSCSI y Fibre Channel).
- KVM también soporta el almacenamiento en sistemas de ficheros distribuidos
- tales como GFS2, OCFS o ClusterFS.
- 
-\begin_inset Newline newline
-\end_inset
-
-Las imágenes de disco utilizadas, soportan aprovisionamiento bajo demanda
- evitando tener que reservar todo el espacio inicialmente.
- El formato nativo de KVM es QCOW2, el cual permite la realización de compresión
- y cifrado.
- 
-\begin_inset Newline newline
-\end_inset
-
-Con respecto al tipo de almacenamiento podemos destacar dos clases que pueden
- ser gestionadas por KVM:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-
-\series bold
-Almacenamiento local 
-\series default
-: Es el almacenamiento que se produce al conectar directamente al host algún
- dispositivo de almacenamiento.
- Resulta muy útil para entornos de desarrollo, pruebas y pequeños despliegues
- aunque no se recomienda para entornos con muchas máquinas virtuales o que
- requieran de una migración en caliente.
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-Almacenamiento en red 
-\series default
-: Se refiere a los dispositivos de almacenamiento que se comparten en una
- red o a partir de protocolos estándares.
+ que la memoria utilizada por el resto de procesos.
+ Así, podrá ser guardada en disco (
+\emph on
+swapped
+\emph default
+) y utilizada a través de páginas grandes (
+\emph on
+large pages
+\emph default
+).
  
 \end_layout
 
-\end_deeper
+\begin_layout Standard
+Además, KVM soporta las últimas características de virtualización en memoria
+ proporcionadas por fabricantes, como EPT (
+\emph on
+Extended Page Table
+\emph default
+) de Intel o RVI (
+\emph on
+Rapid Virtualization Indexing
+\emph default
+) de AMD.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Migraciones en caliente
+\end_layout
+
+\begin_layout Standard
+KVM soporta migraciones en caliente (en inglés, 
+\emph on
+live migrations
+\emph default
+).
+ Las migraciones en caliente consisten en mover una máquina virtual en ejecución
+ a otro servidor, desde el que seguirá ejecutándose.
+ 
+\end_layout
+
+\begin_layout Standard
+Estas migraciones son totalmente trasparentes para el usuario: mientras
+ la máquina se realoja en otro servidor físico permanece encendida, con
+ sus conexiones de red activas y sus aplicaciones en ejecución.
+\end_layout
+
+\begin_layout Subsubsection
+Gestión del almacenamiento
+\end_layout
+
+\begin_layout Standard
+Para almacenar las imágenes de disco de las máquinas virtuales, es posible
+ utilizar cualquier dispositivo de almacenamiento soportado por el kernel
+ 
+\emph on
+Linux
+\emph default
+.
+ Esto incluye discos duros locales (IDE/SCSI/SATA), servidores NAS (
+\emph on
+Network Attached Storage
+\emph default
+) o redes SAN (
+\emph on
+Storage Area Network
+\emph default
+).
+ Asimismo, también es posible utilizar sistemas de ficheros distribuidos
+ como GFS2, OCFS o ClusterFS.
+\end_layout
+
+\begin_layout Standard
+De forma nativa, KVM soporta los formatos de imagen RAW, 
+\family typewriter
+qcow
+\family default
+, 
+\family typewriter
+qcow2
+\family default
+ y 
+\family typewriter
+vmdk
+\family default
+ (el formato nativo de 
+\emph on
+VMWare
+\emph default
+).
+ Los tres últimos soportan compresión, por lo que el espacio libre en las
+ imágenes de disco que los utilizan no ocupará espacio en disco en la máquina
+ anfitrión.
+\end_layout
+
+\begin_layout Standard
+Finalmente, existen dos alternativas para ubicar las imágenes de disco:
+\end_layout
+
 \begin_layout Itemize
 
 \series bold
-Migración en vivo : 
+almacenamiento local
 \series default
-KVM permite migraciones en caliente (live migrations).
- Estas migraciones permiten mover una máquina virtual en ejecución entre
- servidores físicos (hipervisores) sin intervención del servicio.
- Estas migraciones son trasparentes al usuario ya que la maquina permanece
- encendida, las conexiones de red activas y las aplicaciones en ejecución
- mientras la máquina se realoja en otro servidor físico.
+.
+ En este caso, las imágenes de disco se encuentran en la propia máquina
+ anfitrión.
+ Esto resulta muy útil para entornos de desarrollo, pruebas y pequeños despliegu
+es, aunque no se recomienda en entornos con muchas máquinas virtuales o
+ en los que se realicen migraciones en caliente.
 \end_layout
 
 \begin_layout Itemize
 
 \series bold
-Drivers : 
+almacenamiento en red
 \series default
-KVM soporta virtualización híbrida.
- En los sistemas operativos invitados hay que instalar drivers paravirtualizados
- que permiten utilizar una interfaz de entrada/salida para dispositivos
- de bloques y dispositivos de red.
- El hipervisor KVM utiliza el estándar VirtIO.
- VirtIO es un estándar de drivers paravirtualizados desarrollado por IBM
- y Red Hat con la ayuda de la comunidad Linux.
- El objetivo principal de estos drivers es conseguir una mayor interoperabilidad
- con los invitados.
+.
+ En este caso, las imágenes de disco no se encuentran en la máquina anfitrión,
+ y se accede a ellas a través de una red.
+\end_layout
+
+\begin_layout Subsubsection
+Red en KVM
+\end_layout
+
+\begin_layout Standard
+En KVM, las interfaces de red de las máquinas virtuales pueden operar en
+ tres modos principales:
 \end_layout
 
 \begin_layout Itemize
-
+modo 
 \series bold
-Rendimiento y escalabilidad : 
+\emph on
+bridge
 \series default
-KVM posee los mismos rasgos de rendimiento y escalabilidad que caracterizan
- a Linux.
- Por ello soporta máquinas virtuales de hasta 16 CPUs virtuales y 256 GB
- de Ram, pudiéndose conseguir ratios de hasta 600 máquinas virtuales en
- un solo servidor físico.
+\emph default
+.
+ En este caso, la máquina virtual se conecta directamente a la red que la
+ que forma parte la máquina anfitrión.
+ Desde el exterior, parecerá que la máquina virtual es un equipo físico
+ conectado a esa red.
+\end_layout
+
+\begin_layout Itemize
+modo 
+\series bold
+NAT
+\series default
+ (
+\emph on
+Network Address Translation
+\emph default
+, traducción de direcciones de red).
+ En este caso, se crea una red virtual dentro de la máquina anfitrión, a
+ la que se conectarán todas las máquinas virtuales.
+ Desde el exterior, esta red no será accesible, y parecerá que la máquina
+ anfitrión es la que genera el tráfico de las máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+modo 
+\series bold
+\emph on
+route
+\series default
+\emph default
+.
+ En este caso, las máquinas virtuales se encuentran en una subred virtual,
+ a la que es posible acceder desde el exterior (a través de su encaminador
+ predeterminado).
 \end_layout
 
 \begin_layout Subsection
-Requisitos Hardware
+
+\emph on
+Drivers
 \end_layout
 
 \begin_layout Standard
-KVM está diseñado en torno a las características de virtualización de hardware
- incluidas en los ordenadores AMD (AMD-V) e Intel (VT-x).
- Es compatible con funciones de virtualización de chipsets y dispositivos
- PCI, como la E/S de la unidad de memoria (IOMMU) y la E/S del sistema simple
- de virtualización root (SR-IOV)).
+El hipervisor KVM utiliza virtualización híbrida, combinando la paravirtualizaci
+ón y la virtualización asistida por 
+\emph on
+hardware
+\emph default
+.
+ 
 \end_layout
 
 \begin_layout Standard
-Por ello KVM no podrá ejecutarse si el ordenador no puede soportar la virtualiza
-ción hardware o si la misma no se encuentra activada en la bios.
+Por ello, en los sistemas operativos de las máquinas virtuales hay que instalar
+ drivers de paravirtualización.
+ Estos permiten a dicho sistema operativo utilizar la interfaz de entrada/salida
+ para dispositivos de bloques y dispositivos de red.
+ 
 \end_layout
 
 \begin_layout Standard
-En cuanto al rendimiento, es necesario tener en cuenta que el servidor deberá
- ser capaz de afrontar el incremento de memoria RAM que supone la conexión
- de cada huésped, y tener al menos un núcleo del procesador o un hilo para
- cada uno.
+En la actualidad, los drivers de paravirtualización más utilizados son los
+ del proyecto VirtIO, desarrollado por IBM y Red Hat.
+ El objetivo principal de este proyecto es mejorar el rendimiento de las
+ máquinas virtuales a través una mejor interacción entre KVM y los sistemas
+ operativos de las mismas.
 \end_layout
 
 \begin_layout Subsection
-El paquete KVM
+Ventajas e inconvenientes de KVM
 \end_layout
 
 \begin_layout Standard
-El paquete de KVM contiene el programa qemu-kvm, el cual se encarga de realizar
- la emulación.
- Este programa no es más que una modificación de la aplicación QEMU también
- integrada en linux.
+El uso de KVM tiene las siguientes ventajas:
+\end_layout
+
+\begin_layout Itemize
+su instalación es muy sencilla: basta con incorporar un nuevo módulo al
+ kernel 
+\emph on
+Linux
+\emph default
+.
+\end_layout
+
+\begin_layout Itemize
+permite la migración en caliente de las máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+los servidores que albergan las máquinas virtuales se administran como máquinas
+ Linux convencionales.
+\end_layout
+
+\begin_layout Itemize
+las máquinas virtuales se tratan como procesos, por lo que resulta muy sencillo
+ manipularlas.
 \end_layout
 
 \begin_layout Standard
-Además de este programa el paquete también incluye una utilidad de monitorizació
-n a nivel de depuración(kvm-sat), componentes de firmware, archivos de correlaci
-ón de teclas, scripts y algunos drivers para realizar la paravirtualización
- en windows, aunque se desaconseja el uso de estos últimos por estar bastante
- desactualizados.
-\end_layout
-
-\begin_layout Standard
-Originariamente, el paquete de KVM también contaba con los módulos del kernel
- de KVM.
- Sin embargo, en la actualidad estos módulos se encuentran ya incluidos
- en el kernel y el paquete solo proporciona los componentes de usuario.
-\end_layout
-
-\begin_layout Standard
-Además de las herramientas incluidas en el paquete de KVM es recomendable
- la instalación y uso de otras herramientas secundarias que facilitan la
- gestión del sistema.
- Todas estas herramientas son proporcionadas por los paquetes que llevan
- su nombre.
- Algunos de estos paquetes son:
+Por otra parte, en la actualidad el uso de KVM también tiene asociados varios
+ inconvenientes:
 \end_layout
 
 \begin_layout Itemize
-Libvirt: este paquete incluye la herramienta libvirt que permite la creación,
- eliminación y gestión en general de las diferentes máquinas virtuales.
- Además en este paquete también se incluyen herramientas de gestión de redes
- virtuales y almacenamiento.
+se trata de un proyecto con poco recorrido comercial.
+ Su reciente aparición en el mercado hace que no disponga el mismo soporte
+ que otras soluciones, como Xen y 
+\emph on
+VMWare
+\emph default
+.
 \end_layout
 
 \begin_layout Itemize
-Virt-manager (Virtual Machine Manager): Incluye una herramienta gráfica
- de administración de los huéspedes de las máquinas virtuales.
+no existen herramientas sofisticadas para gestionar servidores y máquinas
+ virtuales.
 \end_layout
 
 \begin_layout Itemize
-Vm-install: configura una nueva maquina virtual e instala un sistema operativo
- en la misma.
-\end_layout
-
-\begin_layout Itemize
-Virt-viewer: Incluye una herramienta que permite interactuar con la virtualizaci
-ón de un determinado huésped.
- Utiliza libvirt y pretende ser un reemplazo para los clientes de VNC y
- SPICE.
-\end_layout
-
-\begin_layout Subsection
-Ventajas de KVM
-\end_layout
-
-\begin_layout Standard
-La virtualización con KVM ofrece las siguientes ventajas:
-\end_layout
-
-\begin_layout Itemize
-Esta diseñada para procesadores x86, centrada en una virtualización total.
-\end_layout
-
-\begin_layout Itemize
-No se modifica el kernel de GNU/Linux.
-\end_layout
-
-\begin_layout Itemize
-Está basada en un módulo que no necesita ninguna clase de parches.
-\end_layout
-
-\begin_layout Itemize
-Contiene soporte para la paravirtualización.
-\end_layout
-
-\begin_layout Itemize
-Funciona en todo tipo de máquinas, servidores, escritorios o laptop actuales.
-\end_layout
-
-\begin_layout Itemize
-Permite una migración en caliente de las máquinas virtuales.
-\end_layout
-
-\begin_layout Itemize
-Permite una administración vía web, gráfica y consola.
-\end_layout
-
-\begin_layout Itemize
-Las máquinas serán reconocidas como procesos, facilitándose así la administració
-n de las mismas.
-\end_layout
-
-\begin_layout Itemize
-Maneja 3 tipos de configuración de red, Bridge, Route y NAT.
-\end_layout
-
-\begin_layout Itemize
-Permite ejecutar múltiples máquinas virtuales, cada una con su propia instancia.
-\end_layout
-
-\begin_layout Subsection
-Desventajas de KVM
-\end_layout
-
-\begin_layout Standard
-La virtualización con KVM ofrece también las siguientes desventajas:
-\end_layout
-
-\begin_layout Itemize
-Es un proyecto aun muy joven.
- la reciente aparición de KVM en el mercado hace que no disponga de toda
- las experiencia presente en otros modelos de virtualización.
-\end_layout
-
-\begin_layout Itemize
-No hay herramientas muy sofisticadas para la gestión de servidores y de
- maquinas virtuales.
-\end_layout
-
-\begin_layout Itemize
-Puede mejorar mucho más en áreas como el soporte de redes virtuales, el
- soporte de almacenamiento virtual, la seguridad, la alta disponibilidad,
- la tolerancia a fallos, la gestión de energía y el soporte en tiempo real.
+deben introducirse mejoras en áreas como el soporte del almacenamiento virtual,
+ la seguridad, la alta disponibilidad, la tolerancia a fallos y la gestión
+ del consumo energético.
 \end_layout
 
 \begin_layout Subsection
@@ -1066,96 +960,41 @@ Limitaciones de KVM
 \end_layout
 
 \begin_layout Standard
-Aunque las máquinas virtuales se comportan casi como máquinas físicas existen
- ciertas limitaciones.
- Estas limitaciones afectan tanto al huésped alojado en la máquina virtual
- como al servidor que la gestiona.
- Las principales limitaciones que podemos encontrar en la virtualización
- con KVM son:
-\end_layout
-
-\begin_layout Itemize
-OverCommits : KVM permite un overcommit tanto en la memoria como en el espacio
- de disco.
- Esto permite aumentar el número de usuarios conectados a un determinado
- servidor.
- Sin embargo, esto también provoca errores permanentes que pueden acarrear
- fallos en la conexión de los huespedes.
- También es posible un overcommit en la CPU, lo cual provoca un empeoramiento
- del rendimiento.
-\end_layout
-
-\begin_layout Itemize
-Tiempo de sincronización : Generalmente los usuarios requieren de un soporte
- adicional para poder utilizar de manera adecuada el tiempo de sincronización.
- Este soporte adicional puede comportarse de manera contraproducente y empeorar
- el rendimiento.
-\end_layout
-
-\begin_layout Itemize
-Direcciones Mac : Si no existe una dirección Mac asociada a una tarjeta
- de red, kvm asignará una por defecto.
- Esto puede dar lugar a problemas en la red cuando más de una tarjeta de
- red recibe la misma dirección Mac.
- Se recomienda usar siempre una dirección Mac única.
-\end_layout
-
-\begin_layout Itemize
-Migración en vivo : La migración en vivo es sólo posible entre los servidores
- host de máquinas virtuales con la misma CPU.
- El almacenamiento de la información de un usuario debe ser accesible desde
- los diferentes servidores, se encuentren o no en la misma CPU.
+El uso del hipervisor KVM tiene varias limitaciones, que afectan tanto al
+ sistema operativo de la máquina virtual como al servidor que aloja las
+ máquinas virtuales.
  
-\end_layout
-
-\begin_layout Itemize
-Permisos de usuario : Las diferentes herramientas de gestión deben ser autentica
-das por libvirt.
- Por ello para que un usuario pueda invocar a qemu-kvm desde linea de comandos,
- el usuario debe ser miembro del grupo de KVM.
-\end_layout
-
-\begin_layout Itemize
-Suspensión e hibernación del servidor de maquinas virtuales : No se permite
- la posibilidad de suspender o hibernar el servidor mientras existan usuarios
- conectados al mismo.
-\end_layout
-
-\begin_layout Subsection
-Red en KVM
 \end_layout
 
 \begin_layout Standard
-Como ya mencionamos en el apartado de ventajas, KVM dispone de tres tipos
- de configuración de red :
+Estas limitaciones están asociadas a
 \end_layout
 
 \begin_layout Itemize
-Bridge : Este tipo de configuración permite crear un puente entre las tarjeta
- de red física y las virtuales, permitiendo al usuario conectarse a la red
- remota como si fueran otras máquinas que estuvieran en la red local.
- La conexión es directa.
- Por ello habrá que asignar IPs a nuestras máquinas virtuales o tomar la
- dirección por DHCP si en la red donde esta conectado el anfitrión hay un
- servidor DHCP.
+los 
+\emph on
+overcommits
+\emph default
+.
+ KVM permite que las máquinas virtuales utilicen más memoria, más CPUs o
+ más espacio en disco del disponible en el servidor.
+ Si bien esto permite atender a más usuarios, también puede dar lugar a
+ un empeoramiento del rendimiento y a fallos en las máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+la generación de las direcciones MAC.
+ Si una interfaz de red virtual no tiene asignada una dirección MAC, KVM
+ generará dicha dirección MAC.
+ Esto puede dar lugar a problemas en la red cuando más de una interfaz de
+ red virtual recibe la misma dirección MAC.
  
 \end_layout
 
 \begin_layout Itemize
-NAT : Este tipo de configuración permite tener máquinas virtuales dentro
- de una red virtual, configurando de manera especial su conexión a la tarjeta
- de red, lo cual ayuda a tener una mayor seguridad en las máquinas virtuales.
- 
-\end_layout
-
-\begin_layout Itemize
-Route : En este modo el switch virtual se conecta a la LAN física del anfitrión,
- pasando todo el trafico entre anfitrión y las máquinas virtuales sin el
- uso de NAT.
- Todas las máquinas virtuales se encuentran en su propia subred, enrutadas
- a través del switch virtual.
- Desde fuera solo se puede acceder a las máquinas virtuales si se definen
- reglas de enrutamiento.
+la suspensión y la hibernación del servidor de maquinas virtuales.
+ Mientras existan máquinas virtuales activas, no es posible suspender o
+ hibernar un servidor de máquinas virtuales.
 \end_layout
 
 \begin_layout Section
@@ -1170,9 +1009,8 @@ name "sec:Xen-vs-KVM"
 \end_layout
 
 \begin_layout Standard
-En este apartado realizaremos una comparación entre Xen y KVM, extrayendo
- los beneficios y defectos de cada uno de ellos y justificando las razones
- que nos han llevado a decantarnos por KVM.
+En este apartado, justificaremos por qué decidimos utilizar el hipervisor
+ KVM en lugar del hipervisor Xen.
 \end_layout
 
 \begin_layout Subsection
@@ -1242,19 +1080,6 @@ Con respecto a la segunda prueba, el hipervisor de KVM presento solo un
  del 42.9% experimentada por Xen.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-No se si estos últimos 2 párrafos formarán parte de la versión final.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Soporte técnico
 \end_layout
@@ -1273,36 +1098,6 @@ nto de linux Red hat, hace que KVM disponga de una gran cantidad de información
  de soporte, además de encontrarse actualizado y adaptado a las últimas
  versiones de linux, algo que Xen debe hacer de manera externa no proporcionando
  siempre unos resultados óptimos.
-\end_layout
-
-\begin_layout Subsection
-Tipo de virtualización
-\end_layout
-
-\begin_layout Standard
-Xen utiliza únicamente paravirtualización.
- En este tipo de virtualización se introduce una capa de abstracción intermedia
- entre el hardware y el sistema operativo que actúa como un árbitro que
- controla el acceso al hardware de las máquinas virtuales.
- Sin embargo, sólo se encarga de algunas de las instrucciones, el resto
- es ejecutado directamente por el hardware en nombre de los sistemas.
- La ventaja principal es que las operaciones no se degradan, y los sistemas
- se ejecutan a una velocidad cercana a la nativa.
- El inconveniente es que los núcleos de los sistemas operativos que se desean
- utilizar necesitan ser adaptados.
- 
-\end_layout
-
-\begin_layout Standard
-Por otro lado en el caso de KVM usa una virtualización completa unida a
- linux mediante una modificación de la aplicación Qemu.
- De esta forma KVM dispone de un módulo en el núcleo de linux que permite
- aprovechar las instrucciones del procesador dedicadas a la virtualización(Intel
--VT y AMD-V).
- Esto permite usar un sistema ligero, rápido y con todos los recursos disponible
-s.
- La contrapartida es que KVM trabaja con procesadores i386 y AMD64 y solo
- aquellos lo suficientemente modernos como para aceptar estas instrucciones.
 \end_layout
 
 \end_body
