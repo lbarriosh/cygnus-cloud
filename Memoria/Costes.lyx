@@ -103,18 +103,8 @@ hardware
 s.
  Para ello hemos creado tres configuraciones de servidores, cada una con
  unas características mejores que la anterior, con las que discutiremos
- que opción es la mejor para cada componente
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Plain Layout
-Mucho componente, no se me ocurre otra cosa
-\end_layout
-
-\end_inset
-
-.
- Estas configuraciones se pueden ver en la tabla 
+ que opción es la mejor para cada componente.
+ Estas configuraciones se pueden ver en el cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Precios-servidores"
@@ -128,7 +118,7 @@ reference "tab:Precios-servidores"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -144,7 +134,7 @@ status open
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -153,46 +143,56 @@ status open
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-CPU
+
+\series bold
+CPUs
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 RAM
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Disco Duro
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Precio
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 # 
 \emph on
 small
@@ -200,10 +200,12 @@ small
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 # 
 \emph on
 medium
@@ -211,10 +213,12 @@ medium
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 # 
 \emph on
 big
@@ -480,7 +484,8 @@ Requisitos mínimos
 \end_layout
 
 \begin_layout Standard
-Los siguientes requisitos mínimos están pensados para serutilizados en PCs.
+Los siguientes requisitos mínimos están pensados para ser utilizados en
+ PCs.
 \end_layout
 
 \begin_layout Subsection
@@ -528,7 +533,11 @@ medium
 \end_layout
 
 \begin_layout Subsection
-Servidor de cluster
+Servidor de 
+\emph on
+cluster
+\emph default
+
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Servidor-de-cluster"
@@ -539,8 +548,12 @@ name "sub:Servidor-de-cluster"
 \end_layout
 
 \begin_layout Standard
-El servidor de cluster tiene que soportar mucha carga de trabajo, ya que
- debe comunicarse con el resto de componentes y gestionarlo todo.
+El servidor de 
+\emph on
+cluster
+\emph default
+ tiene que soportar mucha carga de trabajo, ya que debe comunicarse con
+ el resto de componentes y gestionarlo todo.
  Para poder hacer su trabajo se necesita como mínimo un PC con 2 
 \emph on
 cores
@@ -586,7 +599,7 @@ reference "sub:El-servidor-FTP"
 \end_layout
 
 \begin_layout Standard
-Con respecto al tiempo de CPU no será muy elevado , ya que la mayor parte
+Con respecto al tiempo de CPU no será muy elevado, ya que la mayor parte
  del tiempo estará enviando o recibiendo archivos.
 \end_layout
 
@@ -605,11 +618,11 @@ Resumen
 
 \begin_layout Standard
 Esto requisitos mínimos se pueden cubrir fácilmente con PCs por lo que el
- coste sería de 0.
+ coste sería cero.
 \end_layout
 
 \begin_layout Standard
-Todos estos requisitos mínimos aparecen resumidos en la tabla 
+Todos estos requisitos mínimos aparecen resumidos en el cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Requisitos-mínimos-para"
@@ -623,7 +636,7 @@ reference "tab:Requisitos-mínimos-para"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -635,37 +648,45 @@ status open
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
+\series bold
+Máquina
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 CPU
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 RAM
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Disco Duro
 \end_layout
 
@@ -677,7 +698,9 @@ Disco Duro
 \begin_inset Text
 
 \begin_layout Plain Layout
-Servidor de clúster
+Servidor de 
+\emph on
+cluster
 \end_layout
 
 \end_inset
@@ -861,13 +884,20 @@ CygnusCloud
 \end_layout
 
 \begin_layout Standard
-Como se puede observar en la tabla no aparecen los servidores de máquinas
+Como se puede observar, en el cuadro no aparecen los servidores de máquinas
  virtuales, esto se debe a que sus requisitos mínimos dependen del tipo
  de máquina que se quiera ejecutar.
 \end_layout
 
 \begin_layout Section
-Servidor de máquinas virtuales
+Servidor de máquinas virtuales 
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Ejemplo-MV"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -893,7 +923,7 @@ reference "tab:Características-vanilla-linux"
 \end_inset
 
 ) y el uso que se van a hacer de estas, una posible distribución del uso
- de cada tipo podría ser la que se propone en la tabla 
+ de cada tipo podría ser la que se propone en el cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Distribución-de-los"
@@ -908,7 +938,7 @@ reference "tab:Distribución-de-los"
 placement h
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -918,20 +948,24 @@ status open
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Tipo de máquina
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-%
+
+\series bold
+Presencia (%)
 \end_layout
 
 \end_inset
@@ -1034,12 +1068,6 @@ Distribución de los distintos tipos de máquinas
 \end_layout
 
 \begin_layout Standard
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Ejemplo-MV"
-
-\end_inset
-
 En una institución como la 
 \family typewriter
 Facultad de Informática
@@ -1050,7 +1078,7 @@ Universidad Complutense de Madrid,
 \family default
  existen unos 300 puestos de laboratorios.
  Estableciendo esto como tope y suponiendo que los distintos tipos de máquinas
- que existen se distribuyen como se indica en la tabla 
+ que existen se distribuyen como se indica en el cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Distribución-de-los"
@@ -1060,7 +1088,7 @@ reference "tab:Distribución-de-los"
 , es necesario un sistema capaz de soportar lo siguiente:
 \begin_inset Formula 
 \[
-\textrm{Máquinas \emph{small}: }300*0.6=180
+\textrm{Máquinas \emph{small}: }300\cdot0,6=180
 \]
 
 \end_inset
@@ -1068,7 +1096,7 @@ reference "tab:Distribución-de-los"
 
 \begin_inset Formula 
 \[
-\textrm{Máquinas \emph{medium}: }300*0.3=90
+\textrm{Máquinas \emph{medium}: }300\cdot0,3=90
 \]
 
 \end_inset
@@ -1076,7 +1104,7 @@ reference "tab:Distribución-de-los"
 
 \begin_inset Formula 
 \[
-\textrm{Máquinas \emph{big}: }300*0.1=30
+\textrm{Máquinas \emph{big}: }300\cdot0,1=30
 \]
 
 \end_inset
@@ -1131,10 +1159,10 @@ big
 medium
 \emph default
 , por un coste de 
-\begin_inset Formula $30*1250=37500$
+\begin_inset Formula $30\cdot1250=37500\textrm{ €}$
 \end_inset
 
-€.
+.
 \end_layout
 
 \begin_layout Itemize
@@ -1158,10 +1186,10 @@ Con servidores
 pequeños
 \emph default
 :
-\begin_inset Formula $60*600=36000$
+\begin_inset Formula $60\cdot600=36000\textrm{ €}$
 \end_inset
 
-€
+
 \end_layout
 
 \begin_layout Itemize
@@ -1170,10 +1198,10 @@ Con servidores
 medios
 \emph default
 : 
-\begin_inset Formula $60/2*850=25500$
+\begin_inset Formula ${\displaystyle \frac{60}{2}}\cdot850=25500\textrm{ €}$
 \end_inset
 
-€
+
 \end_layout
 
 \begin_layout Itemize
@@ -1182,10 +1210,10 @@ Con servidores
 grandes
 \emph default
 : 
-\begin_inset Formula $60/3*1250=25000$
+\begin_inset Formula ${\displaystyle \frac{60}{3}}\cdot1250=25000\textrm{ €}$
 \end_inset
 
-€
+
 \end_layout
 
 \begin_layout Standard
@@ -1217,10 +1245,10 @@ Con servidores
 pequeños
 \emph default
 :
-\begin_inset Formula $180/2*600=54000$
+\begin_inset Formula ${\displaystyle \frac{180}{2}}\cdot600=54000\textrm{ €}$
 \end_inset
 
-€
+
 \end_layout
 
 \begin_layout Itemize
@@ -1229,10 +1257,10 @@ Con servidores
 medios
 \emph default
 : 
-\begin_inset Formula $180/4*850=38250$
+\begin_inset Formula ${\displaystyle \frac{180}{4}}\cdot850=38250\textrm{ €}$
 \end_inset
 
-€
+
 \end_layout
 
 \begin_layout Itemize
@@ -1241,10 +1269,10 @@ Con servidores
 grandes
 \emph default
 : 
-\begin_inset Formula $180/6*1250=37500$
+\begin_inset Formula ${\displaystyle \frac{180}{6}}\cdot1250=37500\textrm{ €}$
 \end_inset
 
-€
+
 \end_layout
 
 \begin_layout Standard
@@ -1264,14 +1292,16 @@ grandes
 \begin_layout Standard
 En resumen, podríamos tener los 300 puestos funcionando por un total de
  
-\begin_inset Formula $100000$
+\begin_inset Formula $100000\textrm{ €}$
 \end_inset
 
-€.
+.
 \end_layout
 
 \begin_layout Section
-Servidor de cluster
+Servidor de 
+\emph on
+cluster
 \end_layout
 
 \begin_layout Standard
@@ -1297,11 +1327,11 @@ Servidor web y repositorio
 
 \begin_layout Standard
 Debido a la distinta naturaleza de trabajo del servidor web y el repositorio,
- ambos podrían compartir un mismo servidor, reduciendose así el coste total.
+ ambos podrían compartir un mismo servidor, reduciéndose así el coste total.
  Los requisitos del repositorio requieren una mayor capacidad de disco y
  RAM, mientras que el servidor web necesita un mayor tiempo de CPU y tamaño
  de RAM.
- La tabla 
+ El cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Precios-servidores"
@@ -1323,14 +1353,18 @@ Clientes
 Los clientes, al usar un cliente VNC web, lo único que requieren es que
  poder ejecutar un navegador con soporte para las tecnologías HTML, 
 \emph on
-webscokets
+websockets
 \emph default
  y 
 \emph on
 canvas
 \emph default
 , lo cual puede conseguirse con un ordenador de gama baja.
- Esto supone unos 400 € de coste por equipo.
+ Esto supone unos 
+\begin_inset Formula $400\textrm{ €}$
+\end_inset
+
+ de coste por equipo.
 \end_layout
 
 \begin_layout Subsection
@@ -1348,8 +1382,11 @@ reference "sub:Sobrecoste-de-los"
 
 \end_inset
 
-, un ordenador actualmente cuesta entre 784 y 960 €, lo que implica un ahorro
- mínimo del 49%.
+, un ordenador actualmente cuesta entre 784 y 
+\begin_inset Formula $960\textrm{ €}$
+\end_inset
+
+, lo que implica un ahorro mínimo del 49%.
  
 \end_layout
 
@@ -1364,35 +1401,51 @@ Aula de programación:
 
 \begin_deeper
 \begin_layout Itemize
-Coste del equipo: 784€
-\end_layout
-
-\begin_layout Itemize
-Coste del cliente: 400€
-\end_layout
-
-\begin_layout Itemize
-Coste total del aula sin usar CygnusCloud: 
-\begin_inset Formula $784*20=15680$
+Coste del equipo: 
+\begin_inset Formula $784\textrm{ €}$
 \end_inset
 
-€
+
 \end_layout
 
 \begin_layout Itemize
-Coste total del aula usando CygnusCloud: 
-\begin_inset Formula $400*20=8000$
+Coste del cliente: 
+\begin_inset Formula $400\textrm{ €}$
 \end_inset
 
-€
+
+\end_layout
+
+\begin_layout Itemize
+Coste total del aula sin usar 
+\emph on
+CygnusCloud
+\emph default
+: 
+\begin_inset Formula $784\cdot20=15680\textrm{ €}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Coste total del aula usando 
+\emph on
+CygnusCloud
+\emph default
+: 
+\begin_inset Formula $400\cdot20=8000\textrm{ €}$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
 Ahorro: 
-\begin_inset Formula $15680-8000=7680$
+\begin_inset Formula $15680-8000=7680\textrm{ €}$
 \end_inset
 
-€ (49%)
+ (49%)
 \end_layout
 
 \end_deeper
@@ -1402,35 +1455,51 @@ Aula de informática gráfica:
 
 \begin_deeper
 \begin_layout Itemize
-Coste del equipo: 960€
-\end_layout
-
-\begin_layout Itemize
-Coste del cliente: 400€
-\end_layout
-
-\begin_layout Itemize
-Coste total del aula sin usar CygnusCloud: 
-\begin_inset Formula $960*20=19200$
+Coste del equipo: 
+\begin_inset Formula $960\textrm{ €}$
 \end_inset
 
-€
+
 \end_layout
 
 \begin_layout Itemize
-Coste total del aula usando CygnusCloud: 
-\begin_inset Formula $400*20=8000$
+Coste del cliente: 
+\begin_inset Formula $400\textrm{ €}$
 \end_inset
 
-€
+
+\end_layout
+
+\begin_layout Itemize
+Coste total del aula sin usar 
+\emph on
+CygnusCloud
+\emph default
+: 
+\begin_inset Formula $960\cdot20=19200\textrm{ €}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Coste total del aula usando 
+\emph on
+CygnusCloud
+\emph default
+: 
+\begin_inset Formula $400\cdot20=8000\textrm{ €}$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
 Ahorro: 
-\begin_inset Formula $19200-8000=11200$
+\begin_inset Formula $19200-8000=11200\textrm{ €}$
 \end_inset
 
-€ (58%)
+ (58%)
 \end_layout
 
 \end_deeper
@@ -1440,35 +1509,47 @@ Aula de diseño de circuitos:
 
 \begin_deeper
 \begin_layout Itemize
-Coste del equipo: 941€
-\end_layout
-
-\begin_layout Itemize
-Coste del cliente: 400€
-\end_layout
-
-\begin_layout Itemize
-Coste total del aula sin usar CygnusCloud: 
-\begin_inset Formula $941*20=18820$
+Coste del equipo: 
+\begin_inset Formula $941\textrm{ €}$
 \end_inset
 
-€
+
+\end_layout
+
+\begin_layout Itemize
+Coste del cliente: 
+\begin_inset Formula $400\textrm{ €}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Coste total del aula sin usar 
+\emph on
+CygnusCloud
+\emph default
+: 
+\begin_inset Formula $941\cdot20=18820\textrm{ €}$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
 Coste total del aula usando CygnusCloud: 
-\begin_inset Formula $400*20=8000$
+\begin_inset Formula $400*20=8000\textrm{ €}$
 \end_inset
 
-€
+
 \end_layout
 
 \begin_layout Itemize
 Ahorro: 
-\begin_inset Formula $18820-8000=10820$
+\begin_inset Formula $18820-8000=10820\textrm{ €}$
 \end_inset
 
-€ (57%)
+ (57%)
 \end_layout
 
 \end_deeper
@@ -1483,7 +1564,11 @@ Windows
 \emph default
 , esto no es suficiente.
  Es necesario tener licencias con derecho a virtualización, lo cual supone
- un coste de 100$ (unos 75€) anuales por cada 4 máquinas virtuales arrancadas.
+ un coste de 100 dólares americanos (unos 
+\begin_inset Formula $75\textrm{ €}$
+\end_inset
+
+) anuales por cada 4 máquinas virtuales arrancadas.
  Por ello, tendremos que decidir el máximo número de máquinas con 
 \emph on
 Windows
@@ -1507,7 +1592,7 @@ Windows,
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $300*0.6=180$
+\begin_inset Formula $300\cdot0.6=180$
 \end_inset
 
  máquinas usan 
@@ -1519,10 +1604,10 @@ Windows
 \end_inset
 
  suscripciones, y eso se traduce en un coste de 
-\begin_inset Formula $45*75=3375$
+\begin_inset Formula $45\cdot75=3375\textrm{ €}$
 \end_inset
 
-€ anuales.
+ anuales.
 \end_layout
 
 \begin_layout Section
@@ -1532,7 +1617,7 @@ Coste final
 \begin_layout Standard
 Ahora que ya sabemos cuales serían los mejores servidores para todos los
  elementos del sistema,podemos concluir en que los costes requeridos en
- cada uno de ellos son los expresados en la tabla 
+ cada uno de ellos son los expresados en el cuadro 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:coste-final-servidores"
@@ -1557,11 +1642,13 @@ status open
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
+\series bold
+Máquina
 \end_layout
 
 \end_inset
@@ -1570,6 +1657,8 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Tipo de servidor
 \end_layout
 
@@ -1579,6 +1668,8 @@ Tipo de servidor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\series bold
 Precio
 \end_layout
 
@@ -1590,7 +1681,9 @@ Precio
 \begin_inset Text
 
 \begin_layout Plain Layout
-Servidor de cluster
+Servidor de 
+\emph on
+cluster
 \end_layout
 
 \end_inset
@@ -1723,21 +1816,21 @@ reference "sec:Ejemplo-MV"
 
 ), tenemos que para soportar los 300 puesto de laboratorios necesitaríamos
  servidores por valor de 
-\begin_inset Formula $100000$
+\begin_inset Formula $100000\textrm{ €}$
 \end_inset
 
-€.
+.
  A esto habría que añadir los servidores necesarios para el resto de la
  infraestructura (
-\begin_inset Formula $1750$
+\begin_inset Formula $1750\textrm{ €}$
 \end_inset
 
-€).
- Si se quiere hacer una implantación desde 0, también sería necesario proporcion
-ar el coste de los 300 puesto, lo que resultaría: 
+).
+ Si se quiere hacer una implantación desde cero, también sería necesario
+ proporcionar el coste de los 300 puestos, lo que resultaría: 
 \begin_inset Formula 
 \[
-300*400\text{€}=120000\text{€}
+300\cdot400\text{ €}=120000\text{ €}
 \]
 
 \end_inset
@@ -1753,7 +1846,7 @@ Con todo esto, el coste final para poder implantar toda la infraestructura
 \begin_layout Standard
 \begin_inset Formula 
 \[
-100000+1750+120000=221750\text{€}
+100000+1750+120000=221750\text{ €}
 \]
 
 \end_inset

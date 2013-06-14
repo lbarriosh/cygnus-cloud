@@ -404,34 +404,7 @@ hardware
 \begin_layout Standard
 Para comprender el funcionamiento de Xen, es fundamental saber cómo gestiona
  los recursos de las máquinas virtuales.
- Esto es lo que estudiaremos en la presente sección
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Pero no todo en Xen son ventajas, ya que en el caso de que solo se pueda
- usar paravirtualización en una máquina solo podrán virtualizar los sistemas
- operativos que soporten el hipervisor de Xen.
- Además para que el usuario pueda interactuar con Xen debe ejecutar, sobre
- el hipervisor, un sistema operativo 
-\emph on
-guest
-\emph default
- que tiene más privilegios que los demás sistemas que puedan ejecutarse
- sobre Xen.
-\end_layout
-
-\begin_layout Plain Layout
-Para saber como funciona Xen hay que como gestiona cada uno de los recursos.
- Eso es lo que vamos a ver a continuación:
-\end_layout
-
-\end_inset
-
-
+ Esto es lo que estudiaremos en la presente sección.
 \end_layout
 
 \begin_layout Subsection
@@ -547,7 +520,7 @@ Dispositivos de entrada/salida
 \end_layout
 
 \begin_layout Standard
-Para manipular los dipositivos de entrada/salida, Xen delega en los drivers
+Para manipular los dispositivos de entrada/salida, Xen delega en los drivers
  que forman parte del sistema operativo del dominio cero.
  
 \end_layout
@@ -556,7 +529,7 @@ Para manipular los dipositivos de entrada/salida, Xen delega en los drivers
 Por otra parte, las máquinas virtuales accederán a los distintos dispositivos
  de entrada/salida de la máquina anfitrión a través de los dispositivos
  virtuales, que son enlaces entre las interfaces de las máquinas virtuales
- y los dipositivos de la máquina física.
+ y los dispositivos de la máquina física.
 \end_layout
 
 \begin_layout Standard
@@ -653,7 +626,11 @@ hardware
 \emph default
 .
  Por ello, en la actualidad, KVM sólo puede utilizarse con CPUs x86 que
- cuenten con las extensiones de virtualización Intel VT o AMD-V.
+ cuenten con las extensiones de virtualización 
+\emph on
+Intel
+\emph default
+ VT o AMD-V.
 \end_layout
 
 \begin_layout Subsection

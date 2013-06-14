@@ -203,7 +203,11 @@ un mínimo de 512
 megabytes
 \emph default
  de memoria RAM.
- Se recomienda 1 GB para un funcionamiento óptimo.
+ Se recomienda 1 
+\emph on
+gigabyte
+\emph default
+ para un funcionamiento óptimo.
 \end_layout
 
 \begin_layout Itemize
@@ -1653,7 +1657,7 @@ Uninitialized file
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -2127,7 +2131,7 @@ Uninitialized file
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -2526,7 +2530,7 @@ Uninitialized file
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -4636,8 +4640,11 @@ Para montar la carpeta compartida en la máquina virtual, seguimos los siguiente
 
 \begin_layout Enumerate
 creamos el punto de montaje.
- Por ejemplo, si queremos montar la carpeta en /mnt/smbshare, ejecutaremos
- el comando 
+ Por ejemplo, si queremos montar la carpeta en 
+\family typewriter
+/mnt/smbshare
+\family default
+, ejecutaremos el comando 
 \end_layout
 
 \begin_deeper
@@ -5597,11 +5604,7 @@ visualizar los últimos
 \shape italic
 tweets
 \shape default
- recibidos en la cuenta de 
-\family typewriter
-twitter
-\family default
- de 
+ de la cuenta 
 \family typewriter
 @CygnusCloud
 \end_layout
@@ -5931,7 +5934,7 @@ para poder arrancar una máquina virtual, un administrador debe haber arrancado
 para que el rendimiento del visor de escritorio remoto sea adecuado, es
  imprescindible utilizar la última versión de 
 \emph on
-Google Chrome,Mozilla Firefox, Internet Explorer
+Google Chrome, Mozilla Firefox, Internet Explorer
 \emph default
  o 
 \emph on
@@ -6056,7 +6059,7 @@ Página de creación de máquinas virtuales para los profesores
 \end_layout
 
 \begin_layout Standard
-La página de edición de imagenes (
+La página de edición de imágenes (
 \family typewriter
 Crear y editar \SpecialChar \menuseparator
  Editar máquina
@@ -6175,7 +6178,7 @@ Asociar asignatura
 ) permite al profesor indicar desde cual de las asignaturas que imparte
  va a ser accesible la imagen que está editando.
  Esta página esta formada por dos apartados.
- En el superior el profesor puede seleccionar una de las imagenes en edición
+ En el superior el profesor puede seleccionar una de las imágenes en edición
  y asociarle una asignatura pulsando sobre el botón 
 \family typewriter
 Asociar asignatura.
@@ -6183,7 +6186,7 @@ Asociar asignatura.
 
 \begin_layout Standard
 En el inferior el profesor puede buscar las asignaturas ya asociadas a alguna
- de las imagenes en edición y desvincularla.
+ de las imágenes en edición y desvincularla.
 \end_layout
 
 \begin_layout Standard
@@ -6372,7 +6375,7 @@ Administrar servidores \SpecialChar \menuseparator
 
 \begin_layout Standard
 Para crear un nuevo servidor, el administrador deberá indicar el nombre
- de dicho servidor, único en toda la infraestructura, la dirección ip y
+ de dicho servidor, único en toda la infraestructura, la dirección IP y
  el puerto por el cual se conectará el servidor de máquinas virtuales.
  También, debe indicar, si el servidor será capaz de albergar imágenes base
  o no.
@@ -6412,7 +6415,7 @@ Server1
 \end_layout
 
 \begin_layout Itemize
-Cambiar los datos sobre el nombre, puerto, ip e imagen base del servidor.
+Cambiar los datos sobre el nombre, puerto, IP e imagen base del servidor.
 \end_layout
 
 \begin_layout Itemize
@@ -6979,8 +6982,7 @@ scripts
 \family typewriter
 setup-web2py-fedora.sh
 \family default
-.
- Para la instalación en Fedora
+ (para realizar la instalación en Fedora Core).
 \end_layout
 
 \begin_layout Itemize
@@ -6988,8 +6990,7 @@ setup-web2py-fedora.sh
 \family typewriter
 setup-web2py-ubuntu.sh
 \family default
-.
- Para la instalación en Ubuntu
+ (para la instalación en Ubuntu).
 \end_layout
 
 \begin_layout Standard

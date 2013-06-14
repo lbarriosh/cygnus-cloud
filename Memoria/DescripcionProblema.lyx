@@ -142,18 +142,7 @@ hardware
 \emph default
  del aula y el alojamiento de material docente en la web de la Facultad
  de Informática.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Esto no va a ser tan así si al final hablamos de usar Raspberry Pi's como
- puestos de laboratorios
-\end_layout
-
-\end_inset
-
- 
+  
 \end_layout
 
 \begin_layout Section
@@ -263,7 +252,7 @@ De esta manera, la Facultad debe permitir trabajar a los alumnos en los
 
 \begin_layout Standard
 Por último, también es necesario que en los laboratorios puedan tener lugar
- exámenes de caracter práctico a lo largo de todo el curso académico.
+ exámenes de carácter práctico a lo largo de todo el curso académico.
  
 \end_layout
 
@@ -455,7 +444,7 @@ key "MemoriaFdI0910"
 
 \end_inset
 
-, hay más de 2000 almumnos matriculados en este centro), los alumnos deberán
+, hay más de 2000 alumnos matriculados en este centro), los alumnos deberán
  competir por los distintos puestos.
  Ahora bien, no todos los alumnos que utilizan los puestos del mismo laboratorio
  fuera del horario de clase (horario de práctica libre) tienen por qué estar
@@ -736,9 +725,20 @@ Ahora bien, la cuota actual asignada a los alumnos (
 Por otra parte, sólo es posible acceder a ese espacio de almacenamiento
  desde la propia red de laboratorios, siendo necesario utilizar dispositivos
  de almacenamiento extraíble o servicios de alojamiento de archivos en la
- nube (como Dropbox, Microsoft SkyDrive y Google Drive) para transferir
- datos entre los equipos particulares de los estudiantes y los PCs de la
- red de laboratorios.
+ nube (como 
+\emph on
+Dropbox
+\emph default
+, 
+\emph on
+Microsoft SkyDrive 
+\emph default
+y 
+\emph on
+Google Drive
+\emph default
+) para transferir datos entre los equipos particulares de los estudiantes
+ y los PCs de la red de laboratorios.
 \end_layout
 
 \begin_layout Subsection
@@ -800,18 +800,21 @@ La asignatura de diseño de circuitos requiere un PC con una CPU de gama
 Para realizar la comparación, hemos escogido un proveedor al azar, al que
  llamaremos 
 \family sans
-Proovedor A
+Proveedor A
 \family default
 .
  A fecha de 25 de octubre de 2012, los precios y características de los
  equipos requeridos por las tres asignaturas, a los que llamaremos equipos
- 1, 2 y 3, , son los siguientes:
+ 1, 2 y 3, son los siguientes:
 \end_layout
 
 \begin_layout Itemize
-Equipo 1 (programación): Asustek CM6431, con CPU Intel Core i3 3220, 4 GB
- de memoria RAM, tarjeta gráfica integrada Intel HD Graphics 3000, grabadora
- de DVDs y disco duro de 1 TB.
+Equipo 1 (programación): 
+\emph on
+Asustek
+\emph default
+ CM6431, con CPU Intel Core i3 3220, 4 GB de memoria RAM, tarjeta gráfica
+ integrada Intel HD Graphics 3000, grabadora de DVDs y disco duro de 1 TB.
  Su coste es de 
 \begin_inset ERT
 status open
@@ -850,9 +853,12 @@ EUR{960,16}
 \end_layout
 
 \begin_layout Itemize
-Equipo 3 (diseño de circuitos): Asustek CM6431, con CPU Intel Core i5 3450,
- 6 GB de memoria RAM, tarjeta gráfica integrada Intel HD Graphics 3000,
- grabadora de DVDs y disco duro de 1 TB.
+Equipo 3 (diseño de circuitos): 
+\emph on
+Asustek
+\emph default
+ CM6431, con CPU Intel Core i5 3450, 6 GB de memoria RAM, tarjeta gráfica
+ integrada Intel HD Graphics 3000, grabadora de DVDs y disco duro de 1 TB.
  Su coste es de 
 \begin_inset ERT
 status open
