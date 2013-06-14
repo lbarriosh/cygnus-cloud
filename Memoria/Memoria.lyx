@@ -601,7 +601,7 @@ filename "Apéndices/Guía NAT/Configuración NAT.lyx"
 LatexCommand bibtex
 btprint "btPrintAll"
 bibfiles "intro,cloudcomputing,virtualizacion,arquitectura,resultados,manualusuario,apendices"
-options "alpha"
+options "ieeetr"
 
 \end_inset
 
