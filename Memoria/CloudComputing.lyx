@@ -1429,14 +1429,14 @@ key "NIST2011,AS2012,IDC2008"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
 	filename graficos/Cloud computing/cloud-hosting-hibrido-subcontratado.jpg
-	scale 50
+	scale 43
 	rotateOrigin center
 
 \end_inset

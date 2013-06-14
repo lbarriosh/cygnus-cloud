@@ -245,7 +245,7 @@ name "sec:Instalación-y-configuración"
 \end_layout
 
 \begin_layout Standard
-Para empezar a utilizar Git, es necesario diponer del binario instalado
+Para empezar a utilizar Git, es necesario disponer del binario instalado
  en nuestro sistema.
  Para ello, abrimos un terminal y escribimos
 \end_layout
@@ -758,98 +758,6 @@ whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-Uso del repositorio de Google Code
-\end_layout
-
-\begin_layout Standard
-Los repositorios de Google Code son públicos, por lo que cualquiera puede
- leer de ellos.
- Lo primero que debemos hacer para poder comenzar a utilizar nuestro repositorio
- es obtener una copia local del mismo.
- Para ello, ejecutamos la orden
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "13cm"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-
-\family typewriter
-$ git clone https://code.google.com/p/cygnus-cloud/
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-En el directorio de trabajo aparecerá el directorio 
-\family typewriter
-cygnus-cloud
-\family default
- con todo el contenido del repositorio.
-\end_layout
-
-\begin_layout Standard
-Pero aún no hemos terminado: para hacer un 
-\emph on
-commit
-\emph default
- es necesario autenticarse.
- Para ello, añadimos la línea
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "13cm"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-
-\family typewriter
-machine code.google.com login <correo gmail> password <contraseña google code>
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-al fichero 
-\family typewriter
-~/.netrc
-\family default
-.
- Con esto, ya podremos utilizar el repositorio de Google Code.
 \end_layout
 
 \begin_layout Section

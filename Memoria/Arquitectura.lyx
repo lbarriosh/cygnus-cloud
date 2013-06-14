@@ -5505,13 +5505,7 @@ Es rápido, ofreciendo una velocidad un 30% superior que un servidor Apache
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-FIN
-\end_layout
-
+\begin_inset Newpage clearpage
 \end_inset
 
 
@@ -9083,6 +9077,13 @@ NetworkCallback
  Naturalmente, estos paquetes se borran tras ser procesados.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
 \begin_layout Paragraph
 Estado de las conexiones
 \end_layout
@@ -9709,6 +9710,16 @@ reference "fig:Relaciones-más-importantes-networkmanager"
 \end_layout
 
 \begin_layout Standard
+En el diagrama anterior no aparecen los hilos de recepción ni las colas
+ de paquetes recibidos porque no están asociados a ningún objeto 
+\family typewriter
+NetworkManager
+\family default
+: estos objetos están siempre asociados a una conexión de red, de la que
+ se tomarán en caso de que deban compartirse.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -9749,16 +9760,6 @@ NetworkManager
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-En el diagrama anterior no aparecen los hilos de recepción ni las colas
- de paquetes recibidos porque no están asociados a ningún objeto 
-\family typewriter
-NetworkManager
-\family default
-: estos objetos están siempre asociados a una conexión de red, de la que
- se tomarán en caso de que deban compartirse.
 \end_layout
 
 \begin_layout Subsection
@@ -20194,48 +20195,6 @@ libvirt
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descompresión con error.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Arranque-temporal-fase-2-1"
-
-\end_inset
-
-Creación y edición de imágenes de disco: fallo durante la extracción del
- fichero comprimido
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Todos estos errores se tratan de forma idéntica, por lo que nos centraremos
  en uno cualquiera de ellos: el segundo.
  El diagrama de secuencia de la figura 
@@ -20318,6 +20277,48 @@ libvirt
 DomainHandler
 \family default
  se ocupa de liberar los recursos asociados a la máquina virtual.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/Servidor MVs/Descompresión con error.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Arranque-temporal-fase-2-1"
+
+\end_inset
+
+Creación y edición de imágenes de disco: fallo durante la extracción del
+ fichero comprimido
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Paragraph
@@ -20403,6 +20404,20 @@ reference "fig:Apagado-MV-Edición"
 \end_layout
 
 \begin_layout Standard
+Como podemos observar en dicho diagrama,
+\end_layout
+
+\begin_layout Itemize
+no se borran las imágenes de disco, ya que es necesario añadirlas a un fichero
+ comprimido, y
+\end_layout
+
+\begin_layout Itemize
+se crea y encola una petición de compresión, que contiene todo lo necesario
+ para generar el fichero comprimido.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -20441,20 +20456,6 @@ Creación y edición de imágenes: apagado de la máquina virtual
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Como podemos observar en dicho diagrama,
-\end_layout
-
-\begin_layout Itemize
-no se borran las imágenes de disco, ya que es necesario añadirlas a un fichero
- comprimido, y
-\end_layout
-
-\begin_layout Itemize
-se crea y encola una petición de compresión, que contiene todo lo necesario
- para generar el fichero comprimido.
 \end_layout
 
 \begin_layout Paragraph
@@ -23227,47 +23228,6 @@ pseudocódigo
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/Servidor de cluster/Balanceado carga.pdf
-	scale 85
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Algoritmo-de-balanceado-carga"
-
-\end_inset
-
-Algoritmo de balanceado de carga basado en penalizaciones
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Como podemos observar en esa figura, se siguen los siguientes pasos:
 \end_layout
 
@@ -23472,6 +23432,48 @@ siendo
 
  los restantes parámetros de configuración del algoritmo de balanceado de
  carga.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement p
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas no UML/Servidor de cluster/Balanceado carga.pdf
+	scale 85
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Algoritmo-de-balanceado-carga"
+
+\end_inset
+
+Algoritmo de balanceado de carga basado en penalizaciones
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper

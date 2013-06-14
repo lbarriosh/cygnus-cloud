@@ -78,6 +78,11 @@
 \usepackage{charter}
 \renewcommand{\sfdefault}{lmss}
 \renewcommand{\ttdefault}{lmtt}
+
+\makeatletter
+     \renewcommand*\l@figure{\@dottedtocline{1}{1em}{3.2em}}
+     \renewcommand*\l@table{\@dottedtocline{1}{1em}{3.2em}}
+\makeatother
 \end_preamble
 \options a4paper
 \use_default_options true
@@ -594,7 +599,7 @@ filename "Apéndices/Guía NAT/Configuración NAT.lyx"
 LatexCommand bibtex
 btprint "btPrintAll"
 bibfiles "intro,cloudcomputing,virtualizacion,arquitectura,resultados,manualusuario,apendices"
-options "bibtotoc,alpha"
+options "alpha"
 
 \end_inset
 
