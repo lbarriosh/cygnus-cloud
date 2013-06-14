@@ -537,7 +537,7 @@ Instrucciones de instalación y configuración en Ubuntu 12.04
 \end_layout
 
 \begin_layout Standard
-La última versión de todos los subsistemas de 
+La última versión de todos los subsistemas y utilidades auxiliares de 
 \family typewriter
 CygnusCloud
 \family default
@@ -4881,27 +4881,23 @@ status open
 Importante
 \series default
 \color inherit
-: si 
-\end_layout
-
-\begin_layout Itemize
-no se respetan los nombres de los ficheros 
-\family typewriter
-qcow2
-\family default
-, incluyendo la distinción entre mayúsculas y minúsculas, o 
-\end_layout
-
-\begin_layout Itemize
-los tres archivos no están en la raíz del fichero comprimido
-\end_layout
-
-\begin_layout Plain Layout
-la infraestructura 
+: la infraestructura 
 \series bold
 no
 \series default
- podrá utilizar la imagen.
+ podrá utilizar la imagen cuando
+\end_layout
+
+\begin_layout Itemize
+no se respeten los nombres de los ficheros 
+\family typewriter
+qcow2
+\family default
+, incluyendo la distinción entre mayúsculas y minúsculas, o cuando
+\end_layout
+
+\begin_layout Itemize
+los tres archivos no estén en la raíz del fichero comprimido
 \end_layout
 
 \end_inset
@@ -4916,23 +4912,10 @@ subimos el fichero
 .zip
 \family default
  al repositorio de imágenes mediante la utilidad de transferencia de imágenes.
- Su última versión está disponible en
+ 
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset CommandInset href
-LatexCommand href
-name "http://cygnusclouducm.wordpress.com/descargas/"
-target "http://cygnusclouducm.wordpress.com/descargas/"
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
 \begin_inset Box Frameless
 position "t"
@@ -5901,10 +5884,11 @@ Página con el escritorio remoto de una máquina virtual arrancada por un
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
+\align center
 \begin_inset Graphics
 	filename graficos/Manual usuario/webServer/PaginaDetencionMVAlumno.png
 	scale 40

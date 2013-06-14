@@ -436,15 +436,8 @@ avalancha
 
 \begin_layout Standard
 Puesto que la red de laboratorios cuenta con sólo 300 puestos y un número
- mucho mayor de usuarios (según la memoria de la Facultad del curso 2009/2010
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "MemoriaFdI0910"
-
-\end_inset
-
-, hay más de 2000 alumnos matriculados en este centro), los alumnos deberán
+ mucho mayor de usuarios (según la memoria de la Facultad del curso 2009/2010,
+ hay más de 2000 alumnos matriculados en este centro), los alumnos deberán
  competir por los distintos puestos.
  Ahora bien, no todos los alumnos que utilizan los puestos del mismo laboratorio
  fuera del horario de clase (horario de práctica libre) tienen por qué estar
@@ -886,7 +879,7 @@ si solamente se impartiera la asignatura de programación, el ahorro sería
  de
 \begin_inset Formula 
 \[
-20\cdot(960,16-784,30)=20\cdot175,86=3517,2\,\textrm{euros}
+20\cdot(960,16-784,30)=20\cdot175,86=3517,2\textrm{ €}
 \]
 
 \end_inset
@@ -899,7 +892,7 @@ si solamente se impartieran las asignaturas de programación y diseño de
  circuitos, el ahorro sería de
 \begin_inset Formula 
 \[
-20\cdot(960,16-941,48)=20\cdot18,64=373,6\,\textrm{euros}
+20\cdot(960,16-941,48)=20\cdot18,64=373,6\textrm{ €}
 \]
 
 \end_inset
@@ -978,7 +971,7 @@ Home Premium
 , el sobrecoste aumenta en 
 \begin_inset Formula 
 \[
-20\cdot102,90=2058\textrm{ euros}
+20\cdot102,90=2058\textrm{ €}
 \]
 
 \end_inset
@@ -991,7 +984,7 @@ Professional
 ), el sobrecoste aumenta en
 \begin_inset Formula 
 \[
-20\cdot142,90=2858\textrm{ euros}
+20\cdot142,90=2858\textrm{ €}
 \]
 
 \end_inset

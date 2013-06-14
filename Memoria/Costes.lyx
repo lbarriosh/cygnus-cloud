@@ -636,7 +636,7 @@ reference "tab:Requisitos-mínimos-para"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -756,7 +756,7 @@ Servidor web
 \begin_inset Text
 
 \begin_layout Plain Layout
-2GB
+2 GB
 \end_layout
 
 \end_inset
@@ -765,7 +765,7 @@ Servidor web
 \begin_inset Text
 
 \begin_layout Plain Layout
-100GB
+100 GB
 \end_layout
 
 \end_inset
@@ -794,7 +794,7 @@ Repositorio
 \begin_inset Text
 
 \begin_layout Plain Layout
-2GB
+2 GB
 \end_layout
 
 \end_inset
@@ -803,7 +803,7 @@ Repositorio
 \begin_inset Text
 
 \begin_layout Plain Layout
-500GB
+500 GB
 \end_layout
 
 \end_inset
@@ -832,7 +832,7 @@ Cliente
 \begin_inset Text
 
 \begin_layout Plain Layout
-1GB
+1 GB
 \end_layout
 
 \end_inset
