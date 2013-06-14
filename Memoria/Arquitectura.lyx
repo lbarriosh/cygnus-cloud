@@ -23198,9 +23198,6 @@ LoadBalancer
 PenaltyBasedLoadBalancer
 \family default
 .
-\end_layout
-
-\begin_layout Standard
 \begin_inset Newpage clearpage
 \end_inset
 
@@ -23713,22 +23710,6 @@ EndpointPacketReactor
 \end_layout
 
 \begin_layout Standard
-Las instancias de la clase 
-\family typewriter
-EndpointPacketReactor
-\family default
- se utilizan para procesar los paquetes enviados por el servidor web.
- El diagrama de clases de la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Principales-relaciones-EndpointPacketReactor"
-
-\end_inset
-
- muestra las principales relaciones de esta clase.
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -23766,13 +23747,25 @@ EndpointPacketReactor
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Las instancias de la clase 
+\family typewriter
+EndpointPacketReactor
+\family default
+ se utilizan para procesar los paquetes enviados por el servidor web.
+ El diagrama de clases de la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-EndpointPacketReactor"
+
+\end_inset
+
+ muestra las principales relaciones de esta clase.
 \end_layout
 
 \begin_layout Standard
@@ -23945,10 +23938,6 @@ ImageRepositoryPacketReactor
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -24068,53 +24057,6 @@ VMServerPacketReactor
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor cluster/Relaciones VMServerPacketReactor.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Principales-relaciones-VMServerPacketReactor"
-
-\end_inset
-
-Principales relaciones de la clase 
-\family typewriter
-VMServerPacketReactor
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Como podemos observar en el diagrama de clases, al igual que sucede con
  los objetos 
 \family typewriter
@@ -24155,13 +24097,56 @@ NetworkManager
 \begin_layout Itemize
 un objeto 
 \family typewriter
-ClsuterServerDBConnector
+ClusterServerDBConnector
 \family default
  para manipular la base de datos del servidor de 
 \emph on
 cluster
 \emph default
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor cluster/Relaciones VMServerPacketReactor.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-relaciones-VMServerPacketReactor"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+VMServerPacketReactor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -24201,6 +24186,47 @@ reference "fig:Principales-relaciones-NetworkEventsReactor"
  muestra las principales relaciones de la clase 
 \family typewriter
 NetworkEventsReactor
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Como podemos observar en la figura 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Principales-relaciones-NetworkEventsReactor"
+
+\end_inset
+
+, los objetos 
+\family typewriter
+VMServerCallback
+\family default
+ e 
+\family typewriter
+ImageRepositoryCallback
+\family default
+ utilizan un objeto 
+\family typewriter
+NetworkEventsReactor
+\family default
+ para procesar los eventos asociados a las conexiones de red.
+\end_layout
+
+\begin_layout Standard
+Para procesar esos eventos, los objetos 
+\family typewriter
+NetworkEventsReactor
+\family default
+ se limitan a actualizar el estado de la máquinas correspondiente en la
+ base de datos del servidor de 
+\emph on
+cluster
+\emph default
+.
+ Para ello, utilizan un objeto 
+\family typewriter
+ClusterServerDBConnector
 \family default
 .
 \end_layout
@@ -24248,47 +24274,6 @@ NetworkEventsReactor
 
 \end_layout
 
-\begin_layout Standard
-Como podemos observar en la figura 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Principales-relaciones-NetworkEventsReactor"
-
-\end_inset
-
-, los objetos 
-\family typewriter
-VMServerCallback
-\family default
- e 
-\family typewriter
-ImageRepositoryCallback
-\family default
- utilizan un objeto 
-\family typewriter
-NetworkEventsReactor
-\family default
- para procesar los eventos asociados a las conexiones de red.
-\end_layout
-
-\begin_layout Standard
-Para procesar esos eventos, los objetos 
-\family typewriter
-NetworkEventsReactor
-\family default
- se limitan a actualizar el estado de la máquinas correspondiente en la
- base de datos del servidor de 
-\emph on
-cluster
-\emph default
-.
- Para ello, utilizan un objeto 
-\family typewriter
-ClusterServerDBConnector
-\family default
-.
-\end_layout
-
 \begin_layout Subsubsection
 La clase 
 \family typewriter
@@ -24324,53 +24309,6 @@ monitorizar los comandos de arranque de máquinas virtuales, generando errores
 timeout
 \emph default
  cuando sea necesario.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor cluster/Relaciones ClusterServerMainReactor.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Principales-relaciones-ClusterServerMainReactor"
-
-\end_inset
-
-Principales relaciones de la clase 
-\family typewriter
-ClusterServerMainReactor
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -24490,6 +24428,49 @@ ClusterServerMainReactor
 NetworkEventsReactor
 \family default
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista lógica/Diagramas de clase/Servidor cluster/Relaciones ClusterServerMainReactor.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Principales-relaciones-ClusterServerMainReactor"
+
+\end_inset
+
+Principales relaciones de la clase 
+\family typewriter
+ClusterServerMainReactor
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -29058,10 +29039,230 @@ io es.
 \end_layout
 
 \begin_layout Standard
+El contenido de los distintos tipos de paquetes es el siguiente:
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Registro de servidor de máquinas virtuales
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Cambiar configuración de servidor de máquinas virtuales
+\family default
+\series default
+ contienen un nombre, una dirección IP, el identificador de la petición,
+ un 
+\emph on
+flag
+\emph default
+ y un puerto.
+ 
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\family sans
+\series bold
+Solicitud de estado de servidores de máquinas virtuales
+\family default
+\series default
+, 
+\family sans
+\series bold
+Solicitud de distribución de imágenes
+\family default
+\series default
+, 
+\family sans
+\series bold
+Solicitud de datos de conexión VNC
+\family default
+\series default
+, 
+\family sans
+\series bold
+Apagar infraestructura
+\family default
+\series default
+, 
+\family sans
+\series bold
+Solicitud estado del repositorio
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Solicitud de estadísticas de servidores de máquinas virtuales
+\family default
+\series default
+ no contienen información adicional.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Estado de servidores de máquinas virtuales
+\family default
+\series default
+ contienen las direcciones IP, el número de CPUs físicas, el número de CPUs
+ virtuales, la memoria RAM utilizada, la memoria RAM instalada, el espacio
+ de almacenamiento utilizado, el espacio de almacenamiento total, el espacio
+ de almacenamiento temporal utilizado y el espacio de almacenamiento temporal
+ total de los servidores de máquinas virtuales arrancados.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Distribución de imágenes
+\family default
+\series default
+ contienen los nombres de todos los servidores de máquinas virtuales y los
+ identificadores de las imágenes que estos albergan.
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\family sans
+\series bold
+Borrar o dar de baja servidor de máquinas virtuales
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Arrancar servidor de máquinas virtuales
+\family default
+\series default
+ contienen el identificador único de la petición y el nombre o la dirección
+ IP de un servidor de máquinas virtuales.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Arranque de máquina virtual
+\family default
+\series default
+ contienen un identificador de usuario, el identificador de la imagen a
+ arrancar y el identificador de la petición.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Datos de conexión a máquina virtual
+\family default
+\series default
+ contienen la dirección IP, el puerto y la contraseña del servidor VNC asociado
+ a una máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Comando ejecutado 
+\family default
+\series default
+contienen el identificador de una petición.
+\end_layout
+
+\begin_layout Itemize
+los paquetes 
+\family sans
+\series bold
+Apagado forzoso de máquina virtual
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Reinicio forzoso de máquina virtual
+\family default
+\series default
+ contienen un identificador de petición y un identificador de máquina virtual.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Estado del repositorio
+\family default
+\series default
+ contienen el espacio en disco usado y disponible en el repositorio de imágenes.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Desplegar imagen
+\family default
+\series default
+ contienen un identificador de imagen y un identificador de petición.
+\end_layout
+
+\begin_layout Itemize
+los paquetes del tipo 
+\family sans
+\series bold
+Borrar imagen
+\family default
+\series default
+ contienen un nombre, un identificador de petición y un identificador de
+ imagen.
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\family sans
+\series bold
+Crear imagen
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Editar imagen
+\family default
+\series default
+ contienen un identificador de imagen, un identificador de petición y un
+ identificador de usuario.
+\end_layout
+
+\begin_layout Itemize
+los paquetes de los tipos 
+\family sans
+\series bold
+Imagen creada
+\family default
+\series default
+ y 
+\family sans
+\series bold
+Imagen editada 
+\family default
+\series default
+contienen un identificador de imagen y un identificador de petición.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -32039,226 +32240,6 @@ cluster
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-El contenido de los distintos tipos de paquetes es el siguiente:
-\end_layout
-
-\begin_layout Itemize
-los paquetes del tipo 
-\family sans
-\series bold
-Registro de servidor de máquinas virtuales
-\family default
-\series default
- y 
-\family sans
-\series bold
-Cambiar configuración de servidor de máquinas virtuales
-\family default
-\series default
- contienen un nombre, una dirección IP, el identificador de la petición,
- un 
-\emph on
-flag
-\emph default
- y un puerto.
- 
-\end_layout
-
-\begin_layout Itemize
-los paquetes de los tipos 
-\family sans
-\series bold
-Solicitud de estado de servidores de máquinas virtuales
-\family default
-\series default
-, 
-\family sans
-\series bold
-Solicitud de distribución de imágenes
-\family default
-\series default
-, 
-\family sans
-\series bold
-Solicitud de datos de conexión VNC
-\family default
-\series default
-, 
-\family sans
-\series bold
-Apagar infraestructura
-\family default
-\series default
-, 
-\family sans
-\series bold
-Solicitud estado del repositorio
-\family default
-\series default
- y 
-\family sans
-\series bold
-Solicitud de estadísticas de servidores de máquinas virtuales
-\family default
-\series default
- no contienen información adicional.
-\end_layout
-
-\begin_layout Itemize
-los paquetes del tipo 
-\family sans
-\series bold
-Estado de servidores de máquinas virtuales
-\family default
-\series default
- contienen las direcciones IP, el número de CPUs físicas, el número de CPUs
- virtuales, la memoria RAM utilizada, la memoria RAM instalada, el espacio
- de almacenamiento utilizado, el espacio de almacenamiento total, el espacio
- de almacenamiento temporal utilizado y el espacio de almacenamiento temporal
- total de los servidores de máquinas virtuales arrancados.
-\end_layout
-
-\begin_layout Itemize
-los paquetes del tipo 
-\family sans
-\series bold
-Distribución de imágenes
-\family default
-\series default
- contienen los nombres de todos los servidores de máquinas virtuales y los
- identificadores de las imágenes que estos albergan.
-\end_layout
-
-\begin_layout Itemize
-los paquetes de los tipos 
-\family sans
-\series bold
-Borrar o dar de baja servidor de máquinas virtuales
-\family default
-\series default
- y 
-\family sans
-\series bold
-Arrancar servidor de máquinas virtuales
-\family default
-\series default
- contienen el identificador único de la petición y el nombre o la dirección
- IP de un servidor de máquinas virtuales.
-\end_layout
-
-\begin_layout Itemize
-los paquetes del tipo 
-\family sans
-\series bold
-Arranque de máquina virtual
-\family default
-\series default
- contienen un identificador de usuario, el identificador de la imagen a
- arrancar y el identificador de la petición.
-\end_layout
-
-\begin_layout Itemize
-los paquetes del tipo 
-\family sans
-\series bold
-Datos de conexión a máquina virtual
-\family default
-\series default
- contienen la dirección IP, el puerto y la contraseña del servidor VNC asociado
- a una máquina virtual.
-\end_layout
-
-\begin_layout Itemize
-los paquetes del tipo 
-\family sans
-\series bold
-Comando ejecutado 
-\family default
-\series default
-contienen el identificador de una petición.
-\end_layout
-
-\begin_layout Itemize
-los paquetes 
-\family sans
-\series bold
-Apagado forzoso de máquina virtual
-\family default
-\series default
- y 
-\family sans
-\series bold
-Reinicio forzoso de máquina virtual
-\family default
-\series default
- contienen un identificador de petición y un identificador de máquina virtual.
-\end_layout
-
-\begin_layout Itemize
-los paquetes del tipo 
-\family sans
-\series bold
-Estado del repositorio
-\family default
-\series default
- contienen el espacio en disco usado y disponible en el repositorio de imágenes.
-\end_layout
-
-\begin_layout Itemize
-los paquetes del tipo 
-\family sans
-\series bold
-Desplegar imagen
-\family default
-\series default
- contienen un identificador de imagen y un identificador de petición.
-\end_layout
-
-\begin_layout Itemize
-los paquetes del tipo 
-\family sans
-\series bold
-Borrar imagen
-\family default
-\series default
- contienen un nombre, un identificador de petición y un identificador de
- imagen.
-\end_layout
-
-\begin_layout Itemize
-los paquetes de los tipos 
-\family sans
-\series bold
-Crear imagen
-\family default
-\series default
- y 
-\family sans
-\series bold
-Editar imagen
-\family default
-\series default
- contienen un identificador de imagen, un identificador de petición y un
- identificador de usuario.
-\end_layout
-
-\begin_layout Itemize
-los paquetes de los tipos 
-\family sans
-\series bold
-Imagen creada
-\family default
-\series default
- y 
-\family sans
-\series bold
-Imagen editada 
-\family default
-\series default
-contienen un identificador de imagen y un identificador de petición.
 \end_layout
 
 \begin_layout Standard
@@ -37160,7 +37141,7 @@ reference "fig:Estructura-de-direcciones-administradores"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -37204,7 +37185,7 @@ Estructura de direcciones de la web para los alumnos
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -37244,7 +37225,7 @@ Estructura de direcciones de la web para los profesores
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -37400,14 +37381,30 @@ reference "tab:Tabla-rtipos-secciones"
 
 \end_inset
 
-puede verse el conjunto de secciones asociadas a cada tipo de usuario.
+ puede verse el conjunto de secciones asociadas a cada tipo de usuario.
+\end_layout
+
+\begin_layout Standard
+Por último, en el tercer nivel, las páginas se encuentran organizadas en
+ subsecciones.
+ Cada subsección es una página que contiene las funcionalidades relacionadas
+ con un aspecto concreto y más limitado que el de la sección que la incluye.
+ Existirán por tanto, tantas subsecciones como páginas creadas en la web.
+ En el cuadro 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tabla-seccion-subseccion"
+
+\end_inset
+
+ pueden verse las diferentes subsecciones asociadas a cada sección.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -37613,26 +37610,10 @@ name "tab:Tabla-rtipos-secciones"
 \end_layout
 
 \begin_layout Standard
-Por último, en el tercer nivel, las páginas se encuentran organizadas en
- subsecciones.
- Cada subsección es una página que contiene las funcionalidades relacionadas
- con un aspecto concreto y más limitado que el de la sección que la incluye.
- Existirán por tanto, tantas subsecciones como páginas creadas en la web.
- En el cuadro 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Tabla-seccion-subseccion"
-
-\end_inset
-
- pueden verse las diferentes subsecciones asociadas a cada sección.
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \noindent
@@ -38587,7 +38568,7 @@ reference "fig:Secuencia-de-arranque"
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways false
+sideways true
 status open
 
 \begin_layout Plain Layout
@@ -38595,7 +38576,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_secuencia_arranque_MV_Web.pdf
-	scale 50
+	scale 80
 	rotateOrigin center
 
 \end_inset
@@ -38773,7 +38754,7 @@ reference "fig:Diagrama-de-secuencia-creacionMV-web"
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways false
+sideways true
 status open
 
 \begin_layout Plain Layout
@@ -38781,7 +38762,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_Secuencia_creacion_MV_profesor.pdf
-	scale 50
+	scale 80
 
 \end_inset
 
@@ -39323,15 +39304,15 @@ reference "fig:Diagrama-de-secuencia-arranque-servidor-Administrador"
 \begin_layout Standard
 \begin_inset Float figure
 wide false
-sideways false
-status collapsed
+sideways true
+status open
 
 \begin_layout Plain Layout
 \noindent
 \align center
 \begin_inset Graphics
 	filename graficos/Arquitectura/Vista lógica/Diagramas de secuencia/web/CygnusCloud_Secuencia_arranque_Servidor_MV.pdf
-	scale 50
+	scale 80
 
 \end_inset
 
@@ -39876,8 +39857,58 @@ pictureId
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Vista de despliegue
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename graficos/Arquitectura/Vista de despliegue/Diagrama despliegue CC.pdf
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Diagrama-de-despliegue-CC"
+
+\end_inset
+
+Diagrama de despliegue de 
+\emph on
+CygnusCloud
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -40030,53 +40061,6 @@ reference "fig:Diagrama-de-despliegue-CC"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\noindent
-\align center
-\begin_inset Graphics
-	filename graficos/Arquitectura/Vista de despliegue/Diagrama despliegue CC.pdf
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Diagrama-de-despliegue-CC"
-
-\end_inset
-
-Diagrama de despliegue de 
-\emph on
-CygnusCloud
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Como podemos observar en el diagrama de despliegue de la figura 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -40167,6 +40151,13 @@ Vista de implementación
 \family default
 , estudiaremos estas dependencias en detalle.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
