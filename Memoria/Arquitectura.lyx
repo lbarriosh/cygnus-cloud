@@ -14838,6 +14838,10 @@ ip
 .
  Usando notación CIDR, en el fichero anterior se especifica que 
 \family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
 192.168.122.1/24
 \family default
  será la dirección IP del encaminador predeterminado.

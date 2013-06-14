@@ -113,7 +113,7 @@
 \pdf_title "Cygnus Cloud: provisión de puestos de laboratorio virtuales bajo demanda"
 \pdf_author "Luis Barrios, Adrián Fernández, Samuel Guayerbas"
 \pdf_subject "Sistemas Informáticos, curso 2012/13. Facultad de Informática, UCM"
-\pdf_keywords "Cloud Computing IaaS KVM libvirt web2py twisted Python."
+\pdf_keywords "Cloud Computing, IaaS, Virtualización, KVM, libvirt, web2py, twisted, Python"
 \pdf_bookmarks true
 \pdf_bookmarksnumbered false
 \pdf_bookmarksopen false
