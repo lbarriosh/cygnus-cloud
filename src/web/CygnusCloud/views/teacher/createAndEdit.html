@@ -1,0 +1,165 @@
+{{extend 'layout.html'}}
+{{if(request.args(0) == 'createVanillaVM'):}}
+<h1>{{=T('Crear nueva máquina virtual')}}</h1>
+{{=progressBarStyle}}
+{{=form}}
+<script>
+jQuery(document).ready(function(){
+    jQuery('#osTypeSelect').change(function(){
+   		var i;
+   		var j;
+   		var actualValue;
+        var actualValueS;
+        //Actualizamos los selects
+        var id = jQuery('#osTypeSelect').val();
+        for(i = 0 ; i <= {{=num}}; i++){  
+            actualValue = jQuery('#' +i).val();
+            if((actualValue.split('c')[0] == id) || (actualValue.split('c')[0] == '-1') ||
+            	id == '-1'){
+            	jQuery('#' + i).show();
+            }else{
+                jQuery('#' + i).hide();
+            }   
+        }
+        jQuery('#osVariantSelect').val(0);
+        
+        
+        //Actualizamos la tabla
+        for(j = 0 ; j < {{=num2}}; j++){  
+            actualValueS = jQuery('#s'+ j).val();
+            if((actualValueS.split('c')[0] == id) || (id == '-1')){
+            	jQuery('#t' + j).show("slow");
+            	jQuery('#r' + j).show("slow");
+            }else{
+                jQuery('#t' + j).hide("slow");
+                jQuery('#r' + j).hide("slow");
+            }
+  
+        } 
+	       
+
+
+   		
+   				
+    });
+    
+    jQuery('#osVariantSelect').change(function(){
+        var j;
+        var actualValueS;
+        var auxName;
+        //Actualizamos la tabla
+        var id = jQuery('#osVariantSelect').val();
+        for(j = 0 ; j < {{=num2}}; j++){  
+            actualValueS = jQuery('#s'+ j).val();
+            auxName = actualValueS.split('c')[0] + 'c' + actualValueS.split('c')[1];
+            if((auxName == id) || ((id == '-1c-1') && 
+            	((actualValueS.split('c')[0] == jQuery('#osTypeSelect').val()) || (jQuery('#osTypeSelect').val() == '-1')))){
+            	jQuery('#t' + j).show("slow");
+            	jQuery('#r' + j).show("slow");
+            }else{
+                jQuery('#t' + j).hide("slow");
+                jQuery('#r' + j).hide("slow");
+            }
+  
+        }     	
+    });
+
+});
+</script>
+{{pass}}
+{{if(request.args(0) == 'editVM'):}}
+<h1>{{=T('Edición de máquinas virtuales')}}</h1>
+{{=form1}}
+{{=form2}}
+<script>
+jQuery(document).ready(function(){
+    var i;
+    var j;
+    clearComponentsT1();
+    clearComponentsT2();
+    for(i=0;i<{{=num1}};i++){
+    	jQuery('#n1'+i).hide();
+       jQuery('#a' +i).change(function(){
+            for(j = 0 ; j < {{=num1}} ; j++){
+                if(jQuery('#a' +j).attr('checked')){
+                    jQuery('#n1' +j).show("slow");
+					clearComponentsT1();
+                    //Mostramos solo lo que corresponda al estado 
+                    var actualValue = jQuery('#a' +j).val();
+                    var status = actualValue.split('w')[0];
+                    switch (parseInt(status)) {
+                        case 0:
+                            jQuery('#notAvaibleSMessage').show("slow");	
+                            break;
+                        case 3:
+                            jQuery('#saveChangesButton').show("slow");
+                            jQuery('#continueEditingButton' ).show("slow");
+                            break;
+                        case 8:
+                            jQuery('#continueEditingButton' ).show("slow");
+                            break;
+                        default:
+                            jQuery('#editButton').show("slow");
+                            jQuery('#deleteButton').show("slow");
+                    }
+
+               }else{
+               		jQuery('#n1' +j).hide("slow");
+               }
+       		}
+                       
+       });}
+       
+    for(i=0;i<{{=num2}};i++){
+       jQuery('#n2'+i).hide();
+       jQuery('#b' +i).change(function(){
+            for(j = 0 ; j < {{=num2}} ; j++){
+                if(jQuery('#b' +j).attr('checked')){
+                    jQuery('#n2' +j).show("slow");
+					clearComponentsT2();
+                    //Mostramos solo lo que corresponda al estado 
+                    var actualValue = jQuery('#b' +j).val();
+                    var status = actualValue.split('w')[0];
+                    switch (parseInt(status)) {
+                        case 1:
+                            jQuery('#openButton').show("slow");
+                            jQuery('#stopButton').show("slow");	
+                            break;
+                        case 2:
+                            jQuery('#notAvaibleRMessage').show("slow");
+                            break;
+                        case 4:
+                            jQuery('#notAvaibleRMessage').show("slow");
+                            break;
+                        default:
+                            jQuery('#notAvaibleRMessage').show("slow");
+                    }
+
+               }else{
+               		jQuery('#n2' +j).hide("slow");
+               }
+       		}
+                       
+       });}
+});
+
+function clearComponentsT1()
+{
+	//Ocultamos todos los botones  
+    jQuery('#continueEditingButton' ).hide();
+    jQuery('#editButton').hide();
+    jQuery('#deleteButton').hide();
+    jQuery('#saveChangesButton').hide();
+    jQuery('#notAvaibleSMessage').hide();
+
+}
+
+function clearComponentsT2()
+{
+	//Ocultamos todos los botones  
+    jQuery('#openButton').hide();
+    jQuery('#stopButton').hide();
+    jQuery('#notAvaibleRMessage').hide();
+}
+</script>
+{{pass}}

@@ -36,20 +36,22 @@ div.flash {
  position: fixed;
  float: right;
  padding: 5px;
- top: 180px;
+ bottom: 0px;
  right: 90px;
  opacity: 0.9;
  margin: 5px 5px 5px 5px;
  text-align: center;
  clear: both;
- color: #fff;
+ color: #11213e;
  font-size: 11pt;
  text-align: center;
  vertical-align: middle;
  cursor: pointer;
+ /*
  border: 2px solid #fff;
  -moz-border-radius: 10px;
  -webkit-border-radius: 10px;
+ */
  z-index: 2;
  }
 div.error {

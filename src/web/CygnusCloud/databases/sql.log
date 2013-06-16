@@ -1329,3 +1329,16 @@ success!
 timestamp: 2013-06-08T09:56:23.199650
 ALTER TABLE ClassGroup DROP COLUMN placenumber;
 success!
+timestamp: 2013-06-16T18:11:05.749474
+ALTER TABLE ClassGroup ADD cursegroup__tmp VARCHAR(1) NOT NULL;
+success!
+UPDATE ClassGroup SET cursegroup__tmp=cursegroup;
+success!
+ALTER TABLE ClassGroup DROP COLUMN cursegroup;
+success!
+ALTER TABLE ClassGroup ADD cursegroup VARCHAR(1) NOT NULL;
+success!
+UPDATE ClassGroup SET cursegroup=cursegroup__tmp;
+success!
+ALTER TABLE ClassGroup DROP COLUMN cursegroup__tmp;
+success!

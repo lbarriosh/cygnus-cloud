@@ -124,7 +124,7 @@ def showNotifications():
     
 def createAdressBar():
     response.menu=[[T('Arrancar máquina'),False,URL('runVM')],
-                        [SPAN(T('Máquinas arrancadas'), _class='highlighted'), False,URL(f ='runVM',args = ['run']),[
+                        [SPAN(T('Máquinas arrancadas'), _class='highlighted'), False,URL(f ='runningVM',args = ['stopVM']),[
                             (T('Detener máquina'),False,URL(f = 'runningVM',args = ['stopVM'])),
                             (T('Abrir máquina'),False,URL(f = 'runningVM',args = ['openVM']))]],
                         [T('Notificaciones'),False,URL('showNotifications')]]
@@ -138,8 +138,8 @@ def createTable(subject,j):
         imageInfo = connector.getBootableImagesData([l.VMId])
         if len(imageInfo) != 0:
                 table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = l.VMId,_id = "c"+str(i + j))),
-                TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda'),TD(LABEL(subject.Subjects.name),_class='izquierda')
-                ,TD(LABEL(subject.UserGroup.curseGroup)),TD(DIV(P(imageInfo[0]["ImageDescription"]),
+                TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda')
+                ,TD(DIV(P(imageInfo[0]["ImageDescription"]),
                 CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar')))
                 ,_id = str(i + j)),_class='izquierda')))
         i = i + 1  

@@ -35,17 +35,13 @@ h2{
     padding: 0;
 }
 h3, h4, h5, h6 {
-    color: #2f90d1;
+    color: #006eb9;
     font-weight: normal;
     margin: 0;
     padding: 0;
 }
 
-ul {
-    list-style-type: none;
-    margin-left: 0;
-    padding-left: 0;
-}
+
 
 a {
     color: #0164de;
@@ -409,28 +405,29 @@ th.izquierda{
 
 div.flash {
     font-weight:bold;
+	position:relative;
+ 	left:-5px;
     display:none;
-    position:fixed;
     padding:10px;
-    top:48px;
-    right:100px;
-    min-width:180px;
-    opacity:0.95;
-    margin:0px 0px 10px 10px;
+    width:99%;
+    opacity:0.9;
+    margin:0px 0px 0px 0px;
     vertical-align:middle;
     cursor:pointer;
     color:#000;
-    background-color:#316AC5 ;
+    background-color:#2c86bb;
+    /*
     border:2px solid #fff;
-    border-radius:8px;
-    -o-border-radius: 8px;
-    -moz-border-radius:8px;
-    -webkit-border-radius:8px;
+    border-radius:3px;
+    -o-border-radius: 3px;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
     background-image: -webkit-linear-gradient(top,#316AC5,#9DB9EB);
     background-image: -o-linear-gradient(top,#316AC5,#9DB9EB);
     background-image: -moz-linear-gradient(90deg, #316AC5, #9DB9EB);
     background-image: linear-gradient(top,#316AC5,#9DB9EB);
     background-repeat: repeat-x;
+    */
     font-family: Arial, MS Sans Serif, Tahoma, Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
     z-index:2000;

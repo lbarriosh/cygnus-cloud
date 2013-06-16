@@ -109,22 +109,22 @@ def showNotifications():
     #Establecemos la conexión con el servidor 
     connector = conectToServer()
     #Creamos la tabla
-    table = TABLE(_class='data', _name='table')
-    table.append(TR(TH('Tipo'),TH('Notificación',_class='izquierda')))
+    table = TABLE(_class='state_table', _name='table')
+    table.append(TR(TH('Tipo',_class='state_table'),TH('Notificación',_class='izquierda state_table')))
     notifications = connector.getPendingNotifications()
     if len(notifications) == 0:
         form = FORM(CENTER(LABEL(T("No hay notificaciones pendientes."))))
     else:
         for note in notifications:
-            table.append(TR(TD(note["outputType"]),TD(note["commandOutput"],_class='izquierda')))
-        form = FORM(CENTER(table))
+            table.append(TR(TD(note[0],_class='state_table'),TD(note[1],_class='izquierda state_table')))
+        form = FORM(table)
     return dict(form=form)
     
     
     
 def createAdressBar():
     response.menu=[[T('Arrancar máquina'),False,URL('runVM')],
-                        [SPAN(T('Máquinas arrancadas'), _class='highlighted'), False,URL(f ='runVM',args = ['run']),[
+                        [SPAN(T('Máquinas arrancadas'), _class='highlighted'), False,URL(f ='runningVM',args = ['stopVM']),[
                             (T('Detener máquina'),False,URL(f = 'runningVM',args = ['stopVM'])),
                             (T('Abrir máquina'),False,URL(f = 'runningVM',args = ['openVM']))]],
                         [T('Notificaciones'),False,URL('showNotifications')]]
@@ -138,7 +138,7 @@ def createTable(subject,j):
         imageInfo = connector.getBootableImagesData([l.VMId])
         if len(imageInfo) != 0:
                 table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = l.VMId,_id = "c"+str(i + j))),
-                TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda'),TD(LABEL(subject.Subjects.name),_class='izquierda')
+                TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda')
                 ,TD(LABEL(subject.UserGroup.curseGroup)),TD(DIV(P(imageInfo[0]["ImageDescription"]),
                 CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar')))
                 ,_id = str(i + j)),_class='izquierda')))
@@ -162,8 +162,8 @@ def searchVMServerIp(servers, serverName):
 def createNotificationAdvise(form,connector):
     notificationNumber= connector.countPendingNotifications()
     if notificationNumber == 1 :
-        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificación pendiente.",_href=URL(c='teacher',f='showNotifications'),_style="padding: 8px;"),
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificación pendiente.",_href=URL(c='student',f='showNotifications'),_style="padding: 8px;"),
             _class="notificationTag"))
     elif notificationNumber > 1 :
-        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='teacher',f='showNotifications'),_style="padding: 8px;"),
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='student',f='showNotifications'),_style="padding: 8px;"),
             _class="notificationTag"))

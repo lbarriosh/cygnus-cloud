@@ -2,7 +2,7 @@
 <html>
 	<head>
 		
-		<title>Práctica 4 : Sentiment Analysis</title>
+		<title>Acerca de CygnusCloud</title>
         <link rel="stylesheet" type="text/css" href="/CygnusCloud/static/css/css_info.css">
 		<meta charset='UTF-8'/>
 	</head>
@@ -19,7 +19,6 @@
                 <li> Alargar la vida útil y reducir el coste de renovación y el consumo energético de los equipos de las aulas de informática (gracias a que es posible utilizar PCs menos potentes).
             </ul>
         </p>
-        
         <h2>CygnusCloud en la nube</h2>
         <p> Para llevar a cabo el desarrollo de CygnusCloud ha sido necesario la utilización de la computación en la nube o Cloud Computing. Esta tecnología permite a los usuarios olvidarse del hardware con el que van a trabajar  , y por lo tanto de los costes derivados del mismo, y centrarse en los servicios que necesita para realizar su trabajo. Así el usuario solo debe preocuparse de que quiere hacer y no de como debe configurar todo  su entorno para conseguir lo que necesita. Gracias a esto, los usuarios podrán centrarse en utilizar nuestra aplicación sin preocuparse de las características del equipo que usarán para trabajar.
         </p>

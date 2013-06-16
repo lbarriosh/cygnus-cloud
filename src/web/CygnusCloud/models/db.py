@@ -32,7 +32,7 @@ userDB.define_table('ClassGroup',
    Field('cod','integer','reference Subjects'),
    Field('curseGroup', length=1),
    Field('placesNumber','integer'),
-   primarykey=['cod'],migrate= True)
+   primarykey=['cod','curseGroup'],migrate= True)
 
 userDB.define_table('UserGroup',
    Field('userId',length = 512 ),
