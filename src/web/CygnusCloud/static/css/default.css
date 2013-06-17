@@ -291,7 +291,9 @@ th.izquierda{
     text-align: left;
 }
 
-.button
+
+
+input[type=file]::-webkit-file-upload-button,.button
 			{
 	cursor:pointer;
 	margin: 5px;
@@ -314,13 +316,13 @@ th.izquierda{
 				
 }
 
-.button, .button span
+input[type=file]::-webkit-file-upload-button,.button, .button span
 {
 	-moz-border-radius: .3em;
 	border-radius: .3em;
 }
 
-.button span
+input[type=file]::-webkit-file-upload-button span,.button span
 {
 	border-top: 1px solid #fff; /* Fallback style */
 	border-top: 1px solid rgba(255, 255, 255, 0.5);
@@ -357,7 +359,7 @@ th.izquierda{
 	position: relative;
 	top: 1px;
 }
-.button-blue
+input[type=file]::-webkit-file-upload-button,.button-blue
 {
 	background: #1778c9;
 	background: -webkit-gradient(linear, left top, left bottom, from(#1986e0), to(#1778c9) );
@@ -367,7 +369,7 @@ th.izquierda{
 	width: 75px;
 }
 
-.button-blue:hover
+input[type=file]::-webkit-file-upload-button:hover,.button-blue:hover
 {
 	background: #1aa8e6;
 	background: -webkit-gradient(linear, left top, left bottom, from(#1792c7), to(#1aa8e6) );
@@ -375,7 +377,7 @@ th.izquierda{
 	filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1792c7', endColorstr='#1aa8e6');            
 }
 
-.button-blue:active
+input[type=file]::-webkit-file-upload-button:active,.button-blue:active
 {
 	background: #43c3d3;
 }
@@ -401,6 +403,12 @@ th.izquierda{
 .button-red:active
 {
 	background: #ee0000;
+}
+
+input[type=file]::-webkit-file-upload-button{
+	width:160px;
+	margin-top:1px;
+	margin-left:0px;
 }
 
 div.flash {
@@ -474,6 +482,7 @@ select {
    -o-border-radius: 4px;
    -moz-border-radius:4px;
    -webkit-border-radius:4px;
+   margin-bottom:3px;
 }
 
 select:after{
@@ -514,5 +523,12 @@ div.notificationTag{
 	right:140px;
 	border-radius:20px;
 	border: 1.3px solid rgba(65, 141, 236, 1);
+	
+}
+
+img.profile{
+	border: 2px solid rgba(65, 141, 236, 1);
+    border-radius:10px;
+	border-radius:10px;
 	
 }

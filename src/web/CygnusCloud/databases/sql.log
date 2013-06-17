@@ -1342,3 +1342,9 @@ UPDATE ClassGroup SET cursegroup=cursegroup__tmp;
 success!
 ALTER TABLE ClassGroup DROP COLUMN cursegroup__tmp;
 success!
+timestamp: 2013-06-17T12:47:14.868434
+CREATE TABLE userImage(
+    userId VARCHAR(255) NOT NULL,
+    file VARCHAR(255),
+    PRIMARY KEY(userId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!

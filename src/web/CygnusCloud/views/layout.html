@@ -24,7 +24,15 @@
       <div id=navbar>              
           {{try:}}
           {{if(auth.user):}}
+          {{image=userDB(auth.user['email']==userDB.userImage.userId).select()}}
+          {{if len(image) > 0:}}
+          {{=SPAN(B(T('Sesión iniciada como  '))
+          ,IMG(_src=URL('appadmin/download/userDB/',image[0].file),_style="height:35px;width:35px;vertical-align: middle;",_class='profile')
+          ,B('  ' + str(auth.user['email']) + '     '),
+          A(T('Salir'),_href= URL(c = 'main' , f = 'logoutUser')))}}
+          {{else:}}
           {{=SPAN(B(T('Sesión iniciada como %(user)s     ', dict(user=str(auth.user['email'])))),A(T('Salir'),_href= URL(c = 'main' , f = 'logoutUser')))}}
+          {{pass}}
           {{pass}}
           {{except:}}
           {{=SPAN(A(T('Salir'),_href= URL(c = 'main' , f = 'logoutUser')))}}

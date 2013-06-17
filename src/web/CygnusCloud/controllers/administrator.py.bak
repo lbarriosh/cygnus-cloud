@@ -1,4 +1,5 @@
 # coding: utf8
+import os
 from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 
@@ -406,7 +407,7 @@ def servers():
         INPUT(_name='ip',_value=infoServer[1],_style="width:95%;"),_style="position:absolute;left:27%;float:left;"),
         DIV( T('Puerto: '),BR(),INPUT(_name ='port',_value=infoServer[2],_style="width:50%;"),_style="position:absolute;left:45%;float:left"),
         DIV(BR(), T('Imagen base: '),INPUT(_type="checkbox",_name ='isVanilla',_checked=infoServer[4],_style="width:30px;")
-                ,_style="position:absolute;left:60%;"),BR(),_style="margin-bottom:100px;"),DIV(buttons,BR(),_style="margin-bottom:10px;"))           
+                ,_style="position:absolute;left:57%;"),BR(),_style="margin-bottom:100px;"),DIV(buttons,BR(),_style="margin-bottom:10px;"))           
         
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
             sInfo = connector.getVMServersData()[int(form1.vars.server)]
@@ -562,7 +563,9 @@ def users():
         form = FORM(HR(),H2(T('Añadir un nuevo usuario')),DIV( T('Nombre: '),BR(),INPUT(_name = 'name')),
                 DIV( T('Contraseña: '),BR(),INPUT(_name ='password')),
                 DIV(T('Grupo: '),BR(),SELECT(_name = 'group',*[OPTION(T(str(row.role)),_value = row.role,_selected="selected") 
-                for row in userDB().select(userDB.auth_group.role)])),HR(),CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'add' ,_value=T('Añadir Usuario'),_style="width:130px")))                
+                for row in userDB().select(userDB.auth_group.role)])),
+                DIV(T('Imagen de perfíl'),BR(),INPUT(_type='file',_name='imageLoader')),HR(),
+                CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'add' ,_value=T('Añadir Usuario'),_style="width:130px")))               
         
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
             if(form.vars.name != None) and (form.vars.name != "") and (form.vars.password != None) and (form.vars.password != ""):
@@ -571,11 +574,13 @@ def users():
                     #Añadimos el nuevo usuario a la base de datos
                     userId = userDB.auth_user.insert(email = form.vars.name,password = userDB.auth_user.password.validate(form.vars.password)[0])
                     groupId = userDB(userDB.auth_group.role == form.vars.group).select(userDB.auth_group.id)[0]
-                    userDB.auth_membership.insert(group_id = groupId, user_id = userId)
-                    
+                    userDB.auth_membership.insert(group_id = groupId, user_id = userId)   
+                    if form.vars.imageLoader != "":
+                         image = userDB.userImage.file.store(form.vars.imageLoader.file, form.vars.imageLoader.filename)
+                         userDB.userImage.insert(file=image,userId=form.vars.name)
+                         
             #redireccinamos 
-            redirect(URL(c='administrator',f='users',args = ['add'],vars = dict(usersFind=request.vars.usersFind) ))
-            
+            redirect(URL(c='administrator',f='users',args = ['add'],vars = dict(usersFind=request.vars.usersFind) ))                
         #Creamos la etiqueta de notificacion si procede         
         createNotificationAdvise(form,connector)
         #Devolvemos el formulario             
@@ -591,10 +596,11 @@ def users():
             listUsers = []
             listUsers.append(request.vars.usersFind)
         #Creamos el segundo formulario    
-        form2 = FORM(H2(T('Añadir asignatura')),DIV(T('Usuario'),BR(),SELECT(_name = 'usersSelect', *listUsers)),
+        form2 = FORM(H2(T('Añadir asignatura')),DIV(T('Usuario'),BR(),SELECT(_name = 'usersSelect',_id='usersSelect', *listUsers)),
               DIV( T('Código: '),BR(),INPUT(_name = 'code')),DIV( T('Grupo de clase: '),BR(),
               INPUT(_name ='classGroup')),INPUT(_type = 'submit',_class="button button-blue",_name = 'add',_value = T('Añadir')),
-              INPUT(_type="submit",_class="button button-blue",_name = 'remove',_value=T("Eliminar")))
+              INPUT(_type="submit",_class="button button-blue",_name = 'remove',_value=T("Eliminar")),
+              IMG(_src="",_style="height:90px;width:90px;",_class='profile',_name='profileImage',_id='profileImage'))
         #Acción según el botón pulsado
         if form2.accepts(request.vars,keepvalues=True) and form2.vars.add:
            if(len(form2.vars.code) >= 3) and (len(form2.vars.classGroup) == 1): 
@@ -642,10 +648,15 @@ def users():
             if(form2.vars.selection != ""):
                 #Extraemos el id del usuario
                 userId = userDB(userDB.auth_user.email == listUsers[int(form2.vars.selection)]).select()[0].id
+                #Borramos la imagen si existe
+                image = userDB(listUsers[int(form2.vars.selection)]==userDB.userImage.userId).select()
+                if len(image) > 0: 
+                    os.remove(os.getcwd() + "/applications/CygnusCloud/uploads/" + image[0].file)                   
+                    userDB(listUsers[int(form2.vars.selection)]==userDB.userImage.userId).delete()
                 #Borramos su referencia en la tabla relacional
                 userDB(userDB.auth_membership.user_id == userId).delete()
                 #Borramos el usuario
-                userDB(userDB.auth_user.id == userId).delete()        
+                userDB(userDB.auth_user.id == userId).delete()      
                 #redireccinamos 
                 listUsers.remove(listUsers[int(form2.vars.selection)])
                 redirect(URL(c='administrator',f='users',args = ['remove'],vars = dict(usersFind=listUsers) ))
@@ -902,11 +913,22 @@ def createUserTable(listUsers):
     table.append(TR(TH('Selección'),TH(T('Nombre')), TH(T('Grupo'))))
     i = 0
     for l in listUsers:
-        table.append(TR(\
-        TD(INPUT(_type='radio',_name = 'selection',_value = i)),\
-        TD(LABEL(l)),\
-        TD(LABEL(userDB((userDB.auth_user.email==l) & (userDB.auth_membership.user_id == userDB.auth_user.id) \
-         & (userDB.auth_membership.group_id == userDB.auth_group.id)).select(userDB.auth_group.role)[0].role))))
+        #Añadimos la imagen si existe
+        image = userDB(l==userDB.userImage.userId).select()
+        if len(image) > 0:
+            table.append(TR(\
+            TD(INPUT(_type='radio',_name = 'selection',_value = i)),\
+            TD(LABEL(l)),\
+            TD(LABEL(userDB((userDB.auth_user.email==l) & (userDB.auth_membership.user_id == userDB.auth_user.id) \
+             & (userDB.auth_membership.group_id == userDB.auth_group.id)).select(userDB.auth_group.role)[0].role)),
+            TD(DIV(IMG(_src=URL('appadmin/download/userDB/',image[0].file),_style="height:90px;width:90px;",_class='profile')))))  
+            print URL('appadmin/download/userDB/',image[0].file)    
+        else:
+            table.append(TR(\
+            TD(INPUT(_type='radio',_name = 'selection',_value = i)),\
+            TD(LABEL(l)),\
+            TD(LABEL(userDB((userDB.auth_user.email==l) & (userDB.auth_membership.user_id == userDB.auth_user.id) \
+             & (userDB.auth_membership.group_id == userDB.auth_group.id)).select(userDB.auth_group.role)[0].role))))
         i = i + 1
     pass
     return table

@@ -7,7 +7,7 @@ from gluon.tools import Auth
 from userInputConstants import rootPassword
 import os
 
-print os.getcwd()
+
 
 
 
@@ -63,3 +63,8 @@ userDB.define_table('pictureByOSId',
    Field('variantId','integer'),
    Field('pictureId','integer','reference osPictures'),
    primarykey=['osId','variantId'],migrate= True)
+   
+userDB.define_table('userImage',
+    Field('userId',length = 512 ),
+    Field('file', 'upload'),
+    primarykey=['userId',],migrate= True)

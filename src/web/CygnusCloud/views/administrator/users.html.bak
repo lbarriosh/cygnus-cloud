@@ -1,10 +1,23 @@
 {{extend 'layout.html'}}
 {{if(request.args(0) == 'add'):}}
-<h1>{{=T('Administración de usuarios')}}</h1>
+<h1>{{=T('Añadir usuarios')}}</h1>
 {{=form}}
 {{pass}}
 {{if(request.args(0) == 'associate_subjects'):}}
 <h1>{{=T('Asociar asignaturas')}}</h1>
+{{=form1}}
+{{=form2}}
+<script>
+jQuery(document).ready(function(){
+	jQuery('#usersSelect').change(function(){
+    	var userId = jQuery('#usersSelect').val();
+		$("#profileImage").attr("src",{{=URL('static','logo.png')}});
+    });
+});
+</script>
+{{pass}}
+{{if(request.args(0) == 'remove'):}}
+<h1>{{=T('Eliminar usuarios')}}</h1>
 {{=form1}}
 {{=form2}}
 {{pass}}

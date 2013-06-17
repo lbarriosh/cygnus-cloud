@@ -7,6 +7,17 @@
 <h1>{{=T('Asociar asignaturas')}}</h1>
 {{=form1}}
 {{=form2}}
+<script>
+jQuery(document).ready(function(){
+	jQuery('#usersSelect').change(function(){
+    	var userId = jQuery('#usersSelect').val();
+        "{{image = userDB(" + userId + "==userDB.userImage.userId).select()}}"
+        {{if len(image) > 0:}}
+        $("#profileImage").attr("src",{{=URL('appadmin/download/userDB/',image[0].file)}});
+        {{pass}}
+    });
+});
+</script>
 {{pass}}
 {{if(request.args(0) == 'remove'):}}
 <h1>{{=T('Eliminar usuarios')}}</h1>
