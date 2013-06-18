@@ -1401,7 +1401,8 @@ y el sistema de virtualización QEMU.
 \align center
 
 \family typewriter
-sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder bridge-utils
+sudo apt-get install qemu-kvm libvirt-bin python-libvirt ubuntu-vm-builder
+ bridge-utils
 \end_layout
 
 \begin_layout Standard
