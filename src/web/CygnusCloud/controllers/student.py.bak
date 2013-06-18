@@ -21,9 +21,13 @@ def runVM():
     form = FORM(HR(),_target='_blank')
     i = 0
     divMaquinas = DIV(_id='maquinas')
-    for table in tables:     
-        form.append(DIV(H3(B(T(userDB(userDB.Subjects.code == listSubjects[i].UserGroup.cod)
-            .select(userDB.Subjects.name)[0].name))),BR(),H4(table),BR()))
+    for table in tables: 
+        #Extraemos el escudio de la facultad asociada a la carrera
+        careerName = userDB((listSubjects[i].UserGroup.cod == userDB.ClassGroup.cod) & \
+         (listSubjects[i].UserGroup.curseGroup == userDB.ClassGroup.curseGroup)).select(userDB.ClassGroup.career)[0].career
+        facultyPath = userDB(careerName == userDB.careerPictures.careerName ).select(userDB.careerPictures.picturePath)[0].picturePath    
+        form.append(DIV(TABLE(TR(TH(IMG(_src=URL('static',str(facultyPath)),_style="width:30px;",_class='profile')),TH(H3(B(T(userDB(userDB.Subjects.code == listSubjects[i].UserGroup.cod)
+            .select(userDB.Subjects.name)[0].name))),_class='izquierda'))),H4(table,_style="margin-left:60px;"),BR()))
         i = i + 1
     if(form.accepts(request.vars)) and (form.vars.run):
             if(form.vars.selection != ""):
@@ -139,7 +143,7 @@ def createTable(subject,j):
         if len(imageInfo) != 0:
                 table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = l.VMId,_id = "c"+str(i + j))),
                 TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda')
-                ,TD(LABEL(subject.UserGroup.curseGroup)),TD(DIV(P(imageInfo[0]["ImageDescription"]),
+                ,TD(DIV(P(imageInfo[0]["ImageDescription"]),
                 CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar')))
                 ,_id = str(i + j)),_class='izquierda')))
         i = i + 1  

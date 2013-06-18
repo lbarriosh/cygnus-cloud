@@ -32,6 +32,7 @@ userDB.define_table('ClassGroup',
    Field('cod','integer','reference Subjects'),
    Field('curseGroup', length=1),
    Field('placesNumber','integer'),
+   Field('career',length=100),
    primarykey=['cod','curseGroup'],migrate= True)
 
 userDB.define_table('UserGroup',
@@ -68,3 +69,8 @@ userDB.define_table('userImage',
     Field('userId',length = 512 ),
     Field('file', 'upload'),
     primarykey=['userId',],migrate= True)
+    
+userDB.define_table('careerPictures',
+   Field('careerName',length=100),
+   Field('picturePath',length=100 ),
+   primarykey=['careerName'],migrate= True)

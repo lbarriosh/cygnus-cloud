@@ -515,6 +515,7 @@
 'try': 'intente',
 'try something like': 'intente algo como',
 'Twitter': 'Twitter',
+'TÉCNICAS EXPERIMENTALES EN FÍSICA II': 'TÉCNICAS EXPERIMENTALES EN FÍSICA II',
 'Unable to check for upgrades': 'No es posible verificar la existencia de actualizaciones',
 'unable to create application "%s"': 'no es posible crear la aplicación "%s"',
 'unable to delete file "%(filename)s"': 'no es posible eliminar el archivo "%(filename)s"',

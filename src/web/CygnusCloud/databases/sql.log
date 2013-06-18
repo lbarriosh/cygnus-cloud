@@ -1348,3 +1348,12 @@ CREATE TABLE userImage(
     file VARCHAR(255),
     PRIMARY KEY(userId))  ENGINE=InnoDB CHARACTER SET utf8;
 success!
+timestamp: 2013-06-18T18:20:20.511641
+ALTER TABLE ClassGroup ADD career VARCHAR(100);
+success!
+timestamp: 2013-06-18T18:54:41.456412
+CREATE TABLE careerPictures(
+    careerName VARCHAR(100) NOT NULL,
+    picturePath VARCHAR(100),
+    PRIMARY KEY(careerName))  ENGINE=InnoDB CHARACTER SET utf8;
+success!

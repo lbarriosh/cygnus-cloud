@@ -21,9 +21,13 @@ def runVM():
     form = FORM(HR(),_target='_blank')
     i = 0
     divMaquinas = DIV(_id='maquinas')
-    for table in tables:     
-        form.append(DIV(H3(B(T(userDB(userDB.Subjects.code == listSubjects[i].UserGroup.cod)
-            .select(userDB.Subjects.name)[0].name))),BR(),H4(table),BR()))
+    for table in tables: 
+        #Extraemos el escudio de la facultad asociada a la carrera
+        careerName = userDB((listSubjects[i].UserGroup.cod == userDB.ClassGroup.cod) & \
+         (listSubjects[i].UserGroup.curseGroup == userDB.ClassGroup.curseGroup)).select(userDB.ClassGroup.career)[0].career
+        facultyPath = userDB(careerName == userDB.careerPictures.careerName ).select(userDB.careerPictures.picturePath)[0].picturePath    
+        form.append(DIV(TABLE(TR(TH(IMG(_src=URL('static',str(facultyPath)),_style="width:30px;height:30px;",_class='profile')),TH(H3(B(T(userDB(userDB.Subjects.code == listSubjects[i].UserGroup.cod)
+            .select(userDB.Subjects.name)[0].name))),_class='izquierda'))),H4(table,_style="margin-left:60px;"),BR()))
         i = i + 1
     if(form.accepts(request.vars)) and (form.vars.run):
             if(form.vars.selection != ""):
