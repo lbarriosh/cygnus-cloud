@@ -195,7 +195,7 @@ class LibvirtConnector(object):
             Nada
         """             
         targetDomain = self.__libvirtConnection.lookupByName(domainName)
-        targetDomain.reboot(0) # Flags seguros. No se usan.  
+        targetDomain.reset(0) # Flags seguros. No se usan.  
             
     def getActiveDomainNames(self):
         """
