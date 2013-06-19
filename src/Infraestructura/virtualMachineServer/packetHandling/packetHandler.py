@@ -200,7 +200,7 @@ class VMServerPacketHandler(object):
         return p
     
     def createErrorPacket(self, packet_type, errorDescription, commandID):
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(packet_type)
         p.writeInt(errorDescription)
         p.writeString(commandID)
@@ -237,7 +237,7 @@ class VMServerPacketHandler(object):
         return p
     
     def createInternalErrorPacket(self, commandID):
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(VM_SERVER_PACKET_T.INTERNAL_ERROR)
         p.writeString(commandID)
         return p

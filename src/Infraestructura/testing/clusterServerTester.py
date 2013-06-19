@@ -188,7 +188,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Infraestructura/Certificates")
+    networkManager = NetworkManager("/home/luis/Infrastructure/Certificates")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = ClusterServerPacketHandler(networkManager)
@@ -197,7 +197,7 @@ if __name__ == "__main__" :
     port = raw_input("Server port: ")
     try :
         port = int(port)
-        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), False)
+        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
         while not networkManager.isConnectionReady(ip_address, port) :
             sleep(0.1)
         end = False

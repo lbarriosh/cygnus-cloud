@@ -22,7 +22,7 @@ class VMServerDBConnector(BasicDBConnector):
              Devuelve una lista con todos los identificadores de imágenes que se 
               encuentran registradas en el servidor de máquinas virtuales.
         '''      
-        sql = "SELECT ImageID FROM VirtualMachine" 
+        sql = "SELECT ImageID FROM Image" 
         results = self._executeQuery(sql, False)
         imageIds = []
         for r in results:
@@ -34,7 +34,7 @@ class VMServerDBConnector(BasicDBConnector):
             Devuelve la ruta donde se encuentra físicamente la imagen cuyo identificador 
              de imagen se pasa como argumento.
         '''
-        sql = "SELECT dataImagePath FROM VirtualMachine WHERE ImageID = {0};".format(imageID)   
+        sql = "SELECT dataImagePath FROM Image WHERE ImageID = {0};".format(imageID)   
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
@@ -45,7 +45,7 @@ class VMServerDBConnector(BasicDBConnector):
             Devuelve la ruta donde se encuentra físicamente la imagen del SO cuyo identificador 
              de imagen se pasa como argumento.
         '''
-        sql = "SELECT osImagePath FROM VirtualMachine WHERE ImageID = {0};".format(imageID)
+        sql = "SELECT osImagePath FROM Image WHERE ImageID = {0};".format(imageID)
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
@@ -56,7 +56,7 @@ class VMServerDBConnector(BasicDBConnector):
             Devuelve la ruta donde se encuentra el fichero de configuración asociado a 
              la imagen cuyo identificador se pasa como argumento
         '''
-        sql = "SELECT definitionFilePath FROM VirtualMachine WHERE ImageID = {0};".format(imageID)   
+        sql = "SELECT definitionFilePath FROM Image WHERE ImageID = {0};".format(imageID)   
         result = self._executeQuery(sql)
         if (result == None) : 
             return None
@@ -69,17 +69,17 @@ class VMServerDBConnector(BasicDBConnector):
         if (bootable) : bootableFlag = 1
         else : bootableFlag = 0
         
-        update = "INSERT INTO VirtualMachine VALUES ({0}, '{1}', '{2}', '{3}', {4})"\
+        update = "INSERT INTO Image VALUES ({0}, '{1}', '{2}', '{3}', {4})"\
             .format(imageID, osImagePath, dataImagePath, definitionFilePath, bootableFlag)          
         self._executeUpdate(update)  
         
     def getBootableFlag(self, imageID):
-        query = "SELECT bootable FROM VirtualMachine WHERE ImageID = {0};".format(imageID)
+        query = "SELECT bootable FROM Image WHERE ImageID = {0};".format(imageID)
         flag = self._executeQuery(query, True)
         return flag == 1
     
     def deleteImage(self, imageID):
-        sql = "DELETE FROM VirtualMachine WHERE ImageID = {0};".format(imageID)
+        sql = "DELETE FROM Image WHERE ImageID = {0};".format(imageID)
         self._executeUpdate(sql) 
     
     def generateMACsAndUUIDs(self): 
@@ -161,7 +161,7 @@ class VMServerDBConnector(BasicDBConnector):
             Devuelve la ruta asociada a la copia de la imagen de la máquina virtual que se encuentra 
              en ejecución en el puertoVNC pasado como argumento.
         '''
-        sql = "SELECT dataImagePath FROM ActualVM  WHERE domainName = '{0}';".format(domainName)        
+        sql = "SELECT dataImagePath FROM ActiveVM  WHERE domainName = '{0}';".format(domainName)        
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
@@ -171,7 +171,7 @@ class VMServerDBConnector(BasicDBConnector):
         '''
             Devuelve la dirección MAC del cliente VNC cuyo puerto se pasa como argumento.
         '''
-        sql = "SELECT macAddress FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        sql = "SELECT macAddress FROM ActiveVM WHERE domainName = '" + str(domainName) + "'" 
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
@@ -181,7 +181,7 @@ class VMServerDBConnector(BasicDBConnector):
         '''
             Devuelve la uuid del cliente VNC cuyo puerto se pasa como argumento.
         '''
-        sql = "SELECT uuid FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        sql = "SELECT uuid FROM ActiveVM WHERE domainName = '" + str(domainName) + "'" 
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
@@ -191,17 +191,7 @@ class VMServerDBConnector(BasicDBConnector):
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         '''         
-        sql = "SELECT VNCPass FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
-        result = self._executeQuery(sql, True)
-        if (result == None) : 
-            return None
-        return result
-
-    def getWebsockifyDaemonPID(self, domainName): 
-        '''
-            Devuelve la contraseña que se ha dado el dominio que se le pasa como argumento.
-        ''' 
-        sql = "SELECT webSockifyPID FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        sql = "SELECT VNCPass FROM ActiveVM WHERE domainName = '" + str(domainName) + "'" 
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
@@ -212,7 +202,7 @@ class VMServerDBConnector(BasicDBConnector):
         '''
             Devuelve la contraseña que se ha dado al dominio que se le pasa como argumento.
         '''         
-        sql = "SELECT osImagePath FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        sql = "SELECT osImagePath FROM ActiveVM WHERE domainName = '" + str(domainName) + "'" 
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
@@ -223,7 +213,7 @@ class VMServerDBConnector(BasicDBConnector):
             Devuelve el identificador de la máquina virtual que se encuentra en ejecución en el 
             dominio pasado como argumento.
         '''
-        sql = "SELECT ImageID FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        sql = "SELECT ImageID FROM ActiveVM WHERE domainName = '" + str(domainName) + "'" 
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
@@ -233,19 +223,26 @@ class VMServerDBConnector(BasicDBConnector):
         '''
             Devuelve la contraseña que se ha dado al puerto VNC que se le pasa como argumento.
         '''        
-        sql = "SELECT domainName FROM ActualVM WHERE VNCPort = '" + str(vncPort) + "'" 
+        sql = "SELECT domainName FROM ActiveVM WHERE VNCPort = '" + str(vncPort) + "'" 
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
         return result
     
-    def registerVMResources(self, domainName, ImageID, vncPort, vncPassword, userId, webSockifyPID, osImagePath, dataImagePath, mac, uuid):
+    def getWebsockifyDaemonPID(self, domainName):
+        sql = "SELECT websockifyPID FROM ActiveVM WHERE domainName = '" + str(domainName) + "'" 
+        result = self._executeQuery(sql, True)
+        if (result == None) : 
+            return None
+        return result      
+    
+    def registerVMResources(self, domainName, ImageID, vncPort, vncPassword, userId, websockifyPID, osImagePath, dataImagePath, mac, uuid):
         '''
             Permite dar de alta una nueva máquina virtual en ejecución cuyas características se pasan
              como argumentos.
         '''
-        sql = "INSERT INTO ActualVM VALUES('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', '{7}', '{8}', '{9}')" \
-            .format(domainName, ImageID, vncPort, vncPassword[:-1], userId, webSockifyPID,
+        sql = "INSERT INTO ActiveVM VALUES('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', '{7}', '{8}', '{9}')" \
+            .format(domainName, ImageID, vncPort, vncPassword[:-1], userId, websockifyPID,
                     osImagePath, dataImagePath, mac, uuid);
         self._executeUpdate(sql)        
         return vncPort 
@@ -255,7 +252,7 @@ class VMServerDBConnector(BasicDBConnector):
             Da de baja en la base de datos el puerto VNC que se le pasa como argumento 
              y con él, todas las características asociadas al mismo.
         ''' 
-        update = "DELETE FROM ActualVM WHERE domainName = '" + str(domainName) + "'"
+        update = "DELETE FROM ActiveVM WHERE domainName = '" + str(domainName) + "'"
         self._executeUpdate(update)    
     
     def getDomainOwnerID(self, domainName):
@@ -263,7 +260,7 @@ class VMServerDBConnector(BasicDBConnector):
             Devuelve el identificador del usuario asociado a la mv que se encuentra en ejecución en el 
             dominio pasado como argumento.
         '''
-        sql = "SELECT userId FROM ActualVM WHERE domainName = '" + str(domainName) + "'" 
+        sql = "SELECT userId FROM ActiveVM WHERE domainName = '" + str(domainName) + "'" 
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None
@@ -277,8 +274,8 @@ class VMServerDBConnector(BasicDBConnector):
         Devuelve:
             Lista de diccionarios con los datos de conexión a las máquinas virtuales
         '''
-        query = "SELECT ActiveDomainUIDs.commandID, ActualVM.userId, ActualVM.ImageID, ActualVM.domainName, ActualVM.VNCPort, ActualVM.VNCPass\
-            FROM ActualVM, ActiveDomainUIDs WHERE ActualVM.domainName = ActiveDomainUIDs.domainName;"
+        query = "SELECT ActiveDomainUIDs.commandID, ActiveVM.userId, ActiveVM.ImageID, ActiveVM.domainName, ActiveVM.VNCPort, ActiveVM.VNCPass\
+            FROM ActiveVM, ActiveDomainUIDs WHERE ActiveVM.domainName = ActiveDomainUIDs.domainName;"
         results = self._executeQuery(query, False)
         if (results == None) :
             return []
@@ -309,7 +306,7 @@ class VMServerDBConnector(BasicDBConnector):
             return result
     
     def __getAssignedResources(self):
-        query = "SELECT macAddress, VNCPort FROM ActualVM;"
+        query = "SELECT macAddress, VNCPort FROM ActiveVM;"
         result = self._executeQuery(query, False)
         assignedMACs, assignedVNCPorts = ([], [])
         if (result != None) :
@@ -359,7 +356,7 @@ class VMServerDBConnector(BasicDBConnector):
         Devuelve:
             Lisa de strings con los nombres de los dominios activos.
         """
-        query = "SELECT domainName FROM ActualVM;"
+        query = "SELECT domainName FROM ActiveVM;"
         results = self._executeQuery(query, False)
         if (results == None) :
             return []

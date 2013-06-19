@@ -28,16 +28,20 @@ class VMServerConfigurationFileParser(ConfigurationFileParser):
         keys = ['vnName', 'gatewayIP', 'netMask', 'dhcpStartIP', 'dhcpEndIP']
         for key in keys:
             self._readString('Virtual Network Configuration', key)
-            
-        self._readString('VNC server configuration', 'vncNetworkInterface')
-        self._readString('VNC server configuration', 'passwordLength')
+        
+        keys = ['vncNetworkInterface', 'passwordLength', 'websockifyPath']
+        for key in keys:
+            self._readString('VNC server configuration', key)
+        self._readBoolean('VNC server configuration', 'useQEMUWebsockets')
         
         self._readBoolean('Network configuration', 'useSSL')
         self._readString('Network configuration', 'certificatePath')
         self._readInt('Network configuration', 'listenningPort')
         
-        self._readInt('FTP Client Configuration', 'FTPTimeout')
+        keys = ['FTPTimeout', 'MaxTransferAttempts']
+        for key in keys:
+            self._readInt('FTP Client Configuration', key)
         
-        keys = ['configFilePath', 'sourceImagePath', 'executionImagePath', 'websockifyPath', 'TransferDirectory']
+        keys = ['configFilePath', 'sourceImagePath', 'executionImagePath', 'TransferDirectory']
         for key in keys:
             self._readString('Paths', key)

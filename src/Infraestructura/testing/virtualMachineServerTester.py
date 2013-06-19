@@ -69,11 +69,11 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         return False
     try :
         command = tokens.pop(0)
-        if (command == "createvm") :
-            userID = int(tokens.pop(0))
+        if (command == "createvm") :            
             machineID = int(tokens.pop(0))
+            userID = int(tokens.pop(0))
             commandID = tokens.pop(0)
-            p = pHandler.createVMBootPacket(userID, machineID, commandID)
+            p = pHandler.createVMBootPacket(machineID, userID, commandID)
             networkManager.sendPacket(ip_address, port, p)
             return False
         elif (command == "destroyvm") :
@@ -136,7 +136,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Infraestructura/Certificates")
+    networkManager = NetworkManager("/home/luis/Infrastructure/Certificates")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = VMServerPacketHandler(networkManager)
@@ -145,7 +145,7 @@ if __name__ == "__main__" :
     port = raw_input("Server port: ")
     try :
         port = int(port)
-        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), False)
+        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
         while not networkManager.isConnectionReady(ip_address, port) :
             sleep(0.1)
         end = False
