@@ -20,6 +20,7 @@ import os
 import multiprocessing
 import sys
 import re
+from math import ceil
 from errors.codes import ERROR_DESC_T
 
 class VMServerReactor(NetworkCallback):
@@ -280,8 +281,6 @@ class VMServerReactor(NetworkCallback):
         """
         info = self.__domainHandler.getLibvirtStatusInfo()
         realCPUNumber = multiprocessing.cpu_count()
-        diskStats_storage = os.statvfs(self.__parser.getConfigurationParameter("sourceImagePath"))
-        diskStats_temporaryData = os.statvfs(self.__parser.getConfigurationParameter("executionImagePath"))
         freeOutput = ChildProcessManager.runCommandInForeground("free -k", VMServerException)
         
         # free devuelve la siguiente salida
@@ -294,15 +293,65 @@ class VMServerReactor(NetworkCallback):
            
         availableMemory = int(freeOutput.split("\n")[1].split()[1])
         freeMemory = int(freeOutput.split("\n")[2].split()[2])
-        freeStorageSpace = diskStats_storage.f_bfree * diskStats_storage.f_frsize / 1024
-        availableStorageSpace = diskStats_storage.f_bavail * diskStats_storage.f_frsize / 1024
-        freeTemporaryStorage = diskStats_temporaryData.f_bfree * diskStats_temporaryData.f_frsize / 1024
-        availableTemporaryStorage = diskStats_temporaryData.f_bavail * diskStats_temporaryData.f_frsize / 1024
+        
+        freeStorageSpace, availableStorageSpace, freeTemporaryStorage, availableTemporaryStorage = self.__generateDiskStats()
         packet = self.__packetManager.createVMServerStatusPacket(self.__vncServerIP, info["#domains"], freeMemory, availableMemory, 
                                                                  freeStorageSpace, availableStorageSpace, 
                                                                  freeTemporaryStorage, availableTemporaryStorage,
                                                                  info["#vcpus"], realCPUNumber)
-        self.__networkManager.sendPacket('', self.__listenningPort, packet)   
+        self.__networkManager.sendPacket('', self.__listenningPort, packet) 
+        
+    def __generateDiskStats(self):
+        # Leer el espacio en dico realmetne utilizado
+        diskStats_storage = os.statvfs(self.__parser.getConfigurationParameter("sourceImagePath"))
+        diskStats_temporaryData = os.statvfs(self.__parser.getConfigurationParameter("executionImagePath"))
+        allocatedStorageSpace, allocatedTemporaryStorageSpace = self.__checkDiskImagesSpace()
+        freeStorageSpace = diskStats_storage.f_bfree * diskStats_storage.f_frsize / 1024 - allocatedStorageSpace
+        availableStorageSpace = diskStats_storage.f_bavail * diskStats_storage.f_frsize / 1024
+        freeTemporaryStorageSpace = diskStats_temporaryData.f_bfree * diskStats_temporaryData.f_frsize / 1024 - allocatedTemporaryStorageSpace
+        availableTemporaryStorageSpace = diskStats_temporaryData.f_bavail * diskStats_temporaryData.f_frsize / 1024
+        return freeStorageSpace, availableStorageSpace, freeTemporaryStorageSpace, availableTemporaryStorageSpace
+    
+    def __checkDiskImagesSpace(self):
+        activeDomainNames = self.__dbConnector.getRegisteredDomainNames()
+        allocatedStorageSpace = 0
+        allocatedTemporaryStorageSpace = 0
+        for domainName in activeDomainNames:            
+            dataImagePath = self.__dbConnector.getDomainDataImagePath(domainName)
+            osImagePath = self.__dbConnector.getDomainOSImagePath(domainName)             
+            isEditedImage = self.__dbConnector.getBootableFlag(self.__dbConnector.getDomainImageID(domainName))            
+            dataSpace = self.__getAllocatedSpace(dataImagePath)
+            if (isEditedImage) :
+                osSpace = self.__getAllocatedSpace(osImagePath)
+                allocatedStorageSpace += osSpace + dataSpace
+            else :
+                allocatedTemporaryStorageSpace += dataSpace
+                
+        return allocatedStorageSpace, allocatedTemporaryStorageSpace
+            
+    def __getAllocatedSpace(self, imagePath):
+        try :
+            output = ChildProcessManager.runCommandInForeground("qemu-img info " + imagePath, Exception)
+            lines = output.split("\n")
+            virtualSize = VMServerReactor.__extractImageSize(lines[2].split(":")[1].split("(")[0])
+            usedSpace = VMServerReactor.__extractImageSize(lines[3].split(":")[0])            
+            return virtualSize - usedSpace
+        except Exception as e:
+            print e
+            return 0
+            
+    @staticmethod
+    def __extractImageSize(string):
+        if ("G" in string) :
+            power = 2
+        elif ("M" in string):
+            power = 1
+        else:
+            power = 0                                
+        string = string.replace("G", "")
+        string = string.replace("M", "")
+        string = string.replace("k", "")
+        return int(ceil(float(string))) * 1024 ** power        
     
     def __sendActiveDomainUIDs(self):
         """

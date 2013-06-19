@@ -265,7 +265,7 @@ class VMServerDBConnector(BasicDBConnector):
         if (result == None) : 
             return None
         return int(result)
-    
+        
     def getDomainsConnectionData(self):
         '''
         Devuelve una lista con los datos de conexión a las máquinas vituales activas
