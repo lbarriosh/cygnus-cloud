@@ -22,7 +22,8 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
     Clase del gestor de dominios. Estos objetos interactúan con libvirt para manipular dominios.
     """
     
-    def __init__(self, dbConnector, vncServerIP, networkManager, packetManager, listenningPort, definitionFileDirectory,
+    def __init__(self, dbConnector, vncServerIP, networkManager, packetManager, listenningPort, 
+                 useQEMUWebsockets, websockifyPath, definitionFileDirectory,
                  sourceImageDirectory, executionImageDirectory, vncPasswordLength):
         """
         Inicializa el estado del gestor de dominios
@@ -43,6 +44,8 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         self.__networkManager = networkManager
         self.__packetManager = packetManager
         self.__listenningPort = listenningPort
+        self.__useQEMUWebsockets = useQEMUWebsockets
+        self.__websockifyPath = websockifyPath
         self.__definitionFileDirectory = definitionFileDirectory
         self.__sourceImagePath = sourceImageDirectory
         self.__executionImagePath = executionImageDirectory
@@ -112,24 +115,29 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             commandID: el identificador único del comando de arranque de la nueva máquina virtual
         Devuelve:
             Nada
-        """
-        definitionFile = self.__definitionFileDirectory + self.__dbConnector.getDefinitionFilePath(imageID)
-        originalName = "{0}_".format(imageID)
-        dataImagePath = self.__dbConnector.getDataImagePath(imageID)
-        osImagePath = self.__dbConnector.getOSImagePath(imageID)
-        isBootable = self.__dbConnector.getBootableFlag(imageID)        
-           
+        """    
         
-        # Obtengo los parámetros de configuración de la máquina virtual
-        newUUID, newMAC = self.__dbConnector.extractFreeMACAndUUID()
-        newPort = self.__dbConnector.extractFreeVNCPort()
-        newName = originalName + str(newPort)        
-        newPassword = self.__generateVNCPassword()
-        sourceOSDisk = self.__sourceImagePath + osImagePath                
-        
-        diskImagesCreated = False
-        
-        try :        
+        try : 
+            diskImagesCreated = False
+            websockifyPID = -1       
+            imageFound = False
+            newUUID = None
+            newMAC = None
+            
+            definitionFile = self.__definitionFileDirectory + self.__dbConnector.getDefinitionFilePath(imageID)
+            originalName = "{0}_".format(imageID)
+            dataImagePath = self.__dbConnector.getDataImagePath(imageID)
+            osImagePath = self.__dbConnector.getOSImagePath(imageID)
+            isBootable = self.__dbConnector.getBootableFlag(imageID)        
+            imageFound = True
+            
+            # Obtengo los parámetros de configuración de la máquina virtual
+            newUUID, newMAC = self.__dbConnector.extractFreeMACAndUUID()
+            newPort = self.__dbConnector.extractFreeVNCPort()
+            newName = originalName + str(newPort)        
+            newPassword = self.__generateVNCPassword()
+            sourceOSDisk = self.__sourceImagePath + osImagePath               
+            
             if(isBootable):                           
                 # Saco el nombre de los archivos (sin la extension)
                 trimmedDataImagePath = dataImagePath
@@ -173,25 +181,33 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             xmlFile.setDomainIdentifiers(newName, newUUID)
             xmlFile.setImagePaths(newOSDisk, newDataDisk)            
             xmlFile.setVirtualNetworkConfiguration(self.__virtualNetworkName, newMAC)
-            xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword)
+            xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword, self.__useQEMUWebsockets)
             
             string = xmlFile.generateConfigurationString()        
             # Arranco la máquina        
             self.__libvirtConnection.startDomain(string)
             
+            if (not self.__useQEMUWebsockets) :
+                websockifyPID = self.__childProcessManager.runCommandInBackground([self.__websockifyPath,
+                                            self.__vncServerIP + ":" + str(newPort + 1),
+                                            self.__vncServerIP + ":" + str(newPort)])
+            
             # Todo ha ido bien => registramos los recursos de la máquina como siempre        
         
-            self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, newOSDisk,  newDataDisk, newMAC, newUUID)
+            self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, websockifyPID, newOSDisk,  newDataDisk, newMAC, newUUID)
             self.__dbConnector.addVMBootCommand(newName, commandID)
        
         except Exception:
             # TODO: cancelar la edición en el repositorio
-            if (not isBootable) :
+            if (imageFound and not isBootable) :
                 # Borrar la imagen
                 self.__dbConnector.deleteImage(imageID)
-            self.__dbConnector.freeMACAndUUID(newUUID, newMAC)
+            if (newUUID != None) :
+                self.__dbConnector.freeMACAndUUID(newUUID, newMAC)
             if (diskImagesCreated) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(newOSDisk), None)
+            if (websockifyPID != -1) :
+                ChildProcessManager.runCommandInForeground("kill " + websockifyPID, None)
             p = self.__packetManager.createInternalErrorPacket(commandID)
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             
@@ -270,10 +286,14 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         dataImagePath = self.__dbConnector.getDomainDataImagePath(domainName)
         osImagePath = self.__dbConnector.getDomainOSImagePath(domainName)
         imageID = self.__dbConnector.getDomainImageID(domainName)
+        websockify_pid = self.__dbConnector.getWebsockifyDaemonPID(domainName)
         isBootable = self.__dbConnector.getBootableFlag(imageID)        
         commandID = self.__dbConnector.getVMBootCommand(domainName)
         
         self.__dbConnector.unregisterDomainResources(domainName)     
+        
+        if (websockify_pid != -1) :
+            ChildProcessManager.runCommandInForeground("kill -s TERM " + str(websockify_pid), None)   
         
         if isBootable :
             # Nota: al destruir el dominio manualmente, libvirt ya se carga las imágenes.

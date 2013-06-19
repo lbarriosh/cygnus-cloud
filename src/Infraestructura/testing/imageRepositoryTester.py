@@ -13,8 +13,6 @@ from imageRepository.packetHandling.packetHandler import ImageRepositoryPacketHa
 from time import sleep
 from ftp.ftpClient import FTPClient
 
-user_input = False
-
 class TesterCallback(NetworkCallback):    
     def __init__(self, packetHandler, ip_address):
         self.__repositoryPacketHandler = packetHandler
@@ -130,6 +128,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
 
 if __name__ == "__main__" :
     global user_input
+    user_input = False
     print('*' * 80)
     print('*' * 80)
     printLogo()
@@ -138,7 +137,7 @@ if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Infraestructura/Certificates")
+    networkManager = NetworkManager("/home/luis/Infrastructure/Certificates")
     networkManager.startNetworkService()
     # Create the packet handler
     pHandler = ImageRepositoryPacketHandler(networkManager)
@@ -147,7 +146,7 @@ if __name__ == "__main__" :
     port = raw_input("Repository commands port: ")
     try :
         port = int(port)
-        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler, ip_address), False)
+        networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler, ip_address), True)
         while not networkManager.isConnectionReady(ip_address, port) :
             sleep(0.1)
         end = False

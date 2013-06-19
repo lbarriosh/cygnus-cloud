@@ -42,6 +42,7 @@ class DefinitionFileEditor(object):
         self.__vncServerPassword = None
         self.__dataImagePath = None
         self.__osImagePath = None
+        self.__useQEMUWebsockets = None
         
     def setDomainIdentifiers(self, name, uuid):
         """
@@ -67,7 +68,7 @@ class DefinitionFileEditor(object):
         self.__virtualNetworkName = virtualNetwork
         self.__macAddress = macAddress
         
-    def setVNCServerConfiguration(self, ipAddress, port, password):
+    def setVNCServerConfiguration(self, ipAddress, port, password, useQEMUWebsockets):
         """
         Define los parámetros de configuración del servidor VNC
         Argumentos:
@@ -78,6 +79,7 @@ class DefinitionFileEditor(object):
         self.__vncServerIPAddress = ipAddress
         self.__vncServerPort = port
         self.__vncServerPassword = password
+        self.__useQEMUWebsockets = useQEMUWebsockets
         
     def setImagePaths(self, osImagePath, dataImagePath):
         """
@@ -135,7 +137,8 @@ class DefinitionFileEditor(object):
         
         graphics = devices.find("graphics")
         graphics.set("port", str(self.__vncServerPort))
-        graphics.set("websocket", str(self.__vncServerPort + 1))
+        if (self.__useQEMUWebsockets) :
+            graphics.set("websocket", str(self.__vncServerPort + 1))
         graphics.set("passwd", self.__vncServerPassword)
         listen = graphics.find("listen")
         listen.set("address", self.__vncServerIPAddress)
@@ -158,7 +161,7 @@ class DefinitionFileEditor(object):
             raise DefinitionFileEditorException("The domain identifiers have not been set")
         if (self.__virtualNetworkName == None or self.__macAddress == None) :
             raise DefinitionFileEditorException("The network configuration parameters have not been set")
-        if (self.__vncServerIPAddress == None or self.__vncServerPassword == None or self.__vncServerPort == None) :
+        if (self.__vncServerIPAddress == None or self.__vncServerPassword == None or self.__vncServerPort == None or self.__useQEMUWebsockets == None) :
             raise DefinitionFileEditorException("The VNC server configuration parameters have not been set")
         if (self.__dataImagePath == None or self.__osImagePath == None) :
             raise DefinitionFileEditorException("The data image path has not been set")    

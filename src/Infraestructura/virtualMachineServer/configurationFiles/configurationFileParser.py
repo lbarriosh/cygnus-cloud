@@ -28,9 +28,11 @@ class VMServerConfigurationFileParser(ConfigurationFileParser):
         keys = ['vnName', 'gatewayIP', 'netMask', 'dhcpStartIP', 'dhcpEndIP']
         for key in keys:
             self._readString('Virtual Network Configuration', key)
-            
-        self._readString('VNC server configuration', 'vncNetworkInterface')
-        self._readString('VNC server configuration', 'passwordLength')
+        
+        keys = ['vncNetworkInterface', 'passwordLength', 'websockifyPath']
+        for key in keys:
+            self._readString('VNC server configuration', key)
+        self._readBoolean('VNC server configuration', 'useQEMUWebsockets')
         
         self._readBoolean('Network configuration', 'useSSL')
         self._readString('Network configuration', 'certificatePath')

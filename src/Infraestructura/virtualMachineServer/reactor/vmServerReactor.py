@@ -81,6 +81,8 @@ class VMServerReactor(NetworkCallback):
         self.__connectToDatabases("VMServerDB", self.__parser.getConfigurationParameter("databaseUserName"), self.__parser.getConfigurationParameter("databasePassword"))
             
         self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
+                                                 self.__parser.getConfigurationParameter("useQEMUWebsockets"),
+                                                 self.__parser.getConfigurationParameter("websockifyPath"),
                                                  self.__parser.getConfigurationParameter("configFilePath"),
                                                  self.__parser.getConfigurationParameter("sourceImagePath"), self.__parser.getConfigurationParameter("executionImagePath"),
                                                  self.__parser.getConfigurationParameter("passwordLength"))
