@@ -19,6 +19,10 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
     def __init__(self, sqlUser, sqlPassword, databaseName):
         BasicDBConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         
+    def getImageID(self, temporaryID):
+        query = "SELECT imageID FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
+        return self._executeQuery(query, True)        
+        
     def getActiveVMsData(self, ownerID, show_edited):
         """
         Devuelve los datos de las máquinas virtuales activas

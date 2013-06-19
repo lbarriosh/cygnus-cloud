@@ -165,13 +165,6 @@ class ImageRepositoryReactor(object):
                         packet_type = PACKET_T.RETR_ERROR
                     p = self.__repositoryPacketHandler.createErrorPacket(packet_type, ERROR_DESC_T.IR_IMAGE_DELETED)
                     self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
-                elif (imageData["imageStatus"] == IMAGE_STATUS_T.EDITION):
-                    if (store) :
-                        packet_type = PACKET_T.STOR_ERROR
-                    else :
-                        packet_type = PACKET_T.RETR_ERROR
-                    p = self.__repositoryPacketHandler.createErrorPacket(packet_type, ERROR_DESC_T.IR_IMAGE_EDITED)
-                    self.__networkManager.sendPacket('', self.__commandsListenningPort, p, clientIP, clientPort)
                 else :
                     compressedFilePath = imageData["compressedFilePath"]    
                     
