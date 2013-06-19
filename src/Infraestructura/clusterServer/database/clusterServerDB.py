@@ -369,7 +369,10 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
                               activeVCPUs, physicalCPUs, serverID)
             self._executeUpdate(query)
         
-        update = "DELETE FROM AllocatedVMServerResources WHERE serverID = {0} AND remove = 1;".format(serverID)
+        update = "DELETE FROM AllocatedVMServerResources WHERE serverID = {0} AND freeStorageSpace = 0 AND remove = 1;".format(serverID)
+        self._executeUpdate(update)
+        
+        update = "UPDATE AllocatedVMServerResources SET freeStorageSpace = 0, remove = 0 WHERE remove = 1 AND freeStorageSpace <> 0;"
         self._executeUpdate(update)
             
             

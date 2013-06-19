@@ -199,8 +199,9 @@ class VMServerPacketReactor(object):
         p = self.__packetHandler.createVMConnectionDataPacket(data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)      
-        # Preparar la "liberación" de los recursos asignados a la máquina.
+                
         self.__dbConnector.freeVMServerResources(data["CommandID"], False)
+            
         
     def __processActiveDomainUIDs(self, data):
         vmServerID = self.__dbConnector.getVMServerID(data["VMServerIP"])

@@ -385,11 +385,13 @@ class EndpointPacketReactor(object):
         # Registrar los recursos consumidos por la máquina virtual
         familyID = self.__dbConnector.getFamilyID(data["ImageID"])
         familyFeatures = self.__dbConnector.getVanillaImageFamilyFeatures(familyID)
+        zipFileAllocatedSpace = self.__averageCompressionRatio * (familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"])
         self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
-                                                         familyFeatures["RAMSize"], familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 0, 
+                                                         familyFeatures["RAMSize"], familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
+                                                         zipFileAllocatedSpace, 
                                                          familyFeatures["vCPUs"], 1)
         self.__dbConnector.allocateImageRepositoryResources(self.__repositoryIP, self.__repositoryPort, data["CommandID"], 
-                                                            familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"])
+            zipFileAllocatedSpace)
         
         connectionData = self.__dbConnector.getVMServerBasicData(serverID)
         p = self.__vmServerPacketHandler.createImageEditionPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], modify, data["CommandID"], 
