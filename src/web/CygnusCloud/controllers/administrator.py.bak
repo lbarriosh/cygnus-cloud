@@ -37,7 +37,7 @@ def runVM():
                     TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda')
                     ,TD(LABEL(l[2])),TD(DIV(P(imageInfo[0]["ImageDescription"]),
                     CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar')))
-                    ,_id = str(j)),_class='izquierda')))
+                    ,_id = 'r' + str(j)),_class='izquierda')))
                 i = i + 1
                 j = j + 1
         
@@ -327,6 +327,20 @@ def runVM():
                         response.flash = T(errorInfo['ErrorMessage'])
                     else:
                         redirect(URL(f = 'runVM',args = ['stop']))
+        if(form2.accepts(request.vars)) and (form2.vars.restart):
+            if(form2.vars.selection != ""):
+                activeVMConectData = connector.getActiveVMsData(True,False)
+                for vmInfo in activeVMConectData:
+                    if vmInfo["VMID"] == int(form2.vars.selection):
+                        #Forzamos el reinicio
+                        commandId = connector.rebootDomain(vmInfo["DomainUID"])
+                        #Esperamos la contestacion
+                        errorInfo = connector.waitForCommandOutput(commandId)
+                        if(errorInfo != None):
+                            response.flash = T(errorInfo['ErrorMessage'])
+                        else:
+                            redirect(URL(f = 'runningVM' , args = ['stop']))
+                            
         if(form2.accepts(request.vars)) and (form2.vars.open):
              if(form2.vars.selection != ""):
                 activeVMConectData = connector.getActiveVMsData(True,False)

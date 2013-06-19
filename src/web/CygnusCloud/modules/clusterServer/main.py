@@ -29,7 +29,7 @@ if __name__ == "__main__":
     reactor.connectToDatabase(parser.getConfigurationParameter("mysqlRootsPassword"), "ClusterServerDB", 
                               parser.getConfigurationParameter("dbUser"), parser.getConfigurationParameter("dbUserPassword"), 
                               "./database/ClusterServerDB.sql")
-    reactor.startListenning(parser.getConfigurationParameter("certificatePath"), parser.getConfigurationParameter("listenningPort"), 
+    reactor.startListenning(parser.getConfigurationParameter("useSSL"), parser.getConfigurationParameter("certificatePath"), parser.getConfigurationParameter("listenningPort"), 
                             parser.getConfigurationParameter("imageRepositoryIP"), parser.getConfigurationParameter("imageRepositoryPort"), 
                             parser.getConfigurationParameter("statusUpdateInterval"))
     reactor.monitorVMBootCommands()

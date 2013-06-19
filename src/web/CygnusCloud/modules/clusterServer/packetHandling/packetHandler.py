@@ -245,6 +245,21 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
+    def createDomainRebootPacket(self, domainID, commandID):
+        """
+        Crea un paquete de destrucción de dominios
+        Argumentos:
+            domainID: el identificador único del dominio a destruir
+            commandID: el identificador único del comando
+        Devuelve:
+            un paquete con los datos de los argumentos
+        """
+        p = self.__packetCreator.createPacket(4) # Todo lo que sea liberar carga es bueno. Por eso es ligeramente más prioritario que los otros
+        p.writeInt(CLUSTER_SERVER_PACKET_T.DOMAIN_REBOOT)
+        p.writeString(domainID)
+        p.writeString(commandID)
+        return p
+    
     def createRepositoryStatusPacket(self, freeDiskSpace, availableDiskSpace, status):
         p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.REPOSITORY_STATUS)
@@ -390,7 +405,8 @@ class ClusterServerPacketHandler(object):
         elif (packet_type == CLUSTER_SERVER_PACKET_T.COMMAND_EXECUTED) :
             result["CommandID"] = p.readString()
             
-        elif (packet_type == CLUSTER_SERVER_PACKET_T.DOMAIN_DESTRUCTION) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.DOMAIN_DESTRUCTION or
+              packet_type == CLUSTER_SERVER_PACKET_T.DOMAIN_REBOOT) :
             result["DomainID"] = p.readString()
             result["CommandID"] = p.readString()
             
@@ -434,6 +450,7 @@ class ClusterServerPacketHandler(object):
               packet_type == CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR or 
               packet_type == CLUSTER_SERVER_PACKET_T.VM_BOOT_FAILURE or 
               packet_type == CLUSTER_SERVER_PACKET_T.DOMAIN_DESTRUCTION_ERROR or
+              packet_type == CLUSTER_SERVER_PACKET_T.DOMAIN_REBOOT_ERROR or
               packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR or 
               packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_CREATION_ERROR or
               packet_type == CLUSTER_SERVER_PACKET_T.IMAGE_EDITION_ERROR or

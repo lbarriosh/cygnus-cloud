@@ -82,14 +82,29 @@ def runningVM():
     if(request.args(0) == 'stopVM'):
         form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table)
         if(form.accepts(request.vars)) and (form.vars.stop):
-                #Paramos la máquina virtual
-                commandId = connector.destroyDomain(form.vars.selection)
-                #Esperamos la contestacion
-                errorInfo = connector.waitForCommandOutput(commandId)
-                if(errorInfo != None):
-                    response.flash = T(errorInfo['ErrorMessage'])
-                else:
-                    redirect(URL(f = 'stopVM'))
+            activeVMConectData = connector.getActiveVMsData(False,False)
+            for vmInfo in activeVMConectData:
+                if vmInfo["VMID"] == int(form.vars.selection):
+                    #Paramos la máquina virtual
+                    commandId = connector.destroyDomain(vmInfo["DomainUID"])
+                    #Esperamos la contestacion
+                    errorInfo = connector.waitForCommandOutput(commandId)
+                    if(errorInfo != None):
+                        response.flash = T(errorInfo['ErrorMessage'])
+                    else:
+                        redirect(URL(f = 'runningVM' , args = ['stopVM']))
+        if(form.accepts(request.vars)) and (form.vars.restart):
+            activeVMConectData = connector.getActiveVMsData(False,False)
+            for vmInfo in activeVMConectData:
+                if vmInfo["VMID"] == int(form.vars.selection):
+                    #Forzamos el reinicio
+                    commandId = connector.rebootDomain(vmInfo["DomainUID"])
+                    #Esperamos la contestacion
+                    errorInfo = connector.waitForCommandOutput(commandId)
+                    if(errorInfo != None):
+                        response.flash = T(errorInfo['ErrorMessage'])
+                    else:
+                        redirect(URL(f = 'runningVM' , args = ['stopVM']))
     else:
         form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table,_target='_blank')
         if(form.accepts(request.vars)) and (form.vars.open):

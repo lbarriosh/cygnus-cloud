@@ -327,6 +327,20 @@ def runVM():
                         response.flash = T(errorInfo['ErrorMessage'])
                     else:
                         redirect(URL(f = 'runVM',args = ['stop']))
+        if(form2.accepts(request.vars)) and (form2.vars.restart):
+            if(form2.vars.selection != ""):
+                activeVMConectData = connector.getActiveVMsData(True,False)
+                for vmInfo in activeVMConectData:
+                    if vmInfo["VMID"] == int(form2.vars.selection):
+                        #Forzamos el reinicio
+                        commandId = connector.rebootDomain(vmInfo["DomainUID"])
+                        #Esperamos la contestacion
+                        errorInfo = connector.waitForCommandOutput(commandId)
+                        if(errorInfo != None):
+                            response.flash = T(errorInfo['ErrorMessage'])
+                        else:
+                            redirect(URL(f = 'runVM' , args = ['stop']))
+                            
         if(form2.accepts(request.vars)) and (form2.vars.open):
              if(form2.vars.selection != ""):
                 activeVMConectData = connector.getActiveVMsData(True,False)

@@ -65,8 +65,7 @@ CREATE TABLE IF NOT EXISTS OSVariant(familyID SMALLINT, variantID SMALLINT, vari
 
 INSERT IGNORE INTO OSVariant VALUES
 	(1, 1, 'Debian Squeeze AMD64'),
-	(2, 1, 'Windows 7 Professional x86'),
-	(2, 2, 'Windows 8 Professional x86');
+	(2, 1, 'Windows 7 Professional x86');
 	
 CREATE TABLE IF NOT EXISTS Image(imageID INTEGER PRIMARY KEY, vanillaImageFamilyID SMALLINT, name VARCHAR(20), description VARCHAR(200), 
 	osFamily SMALLINT, osVariant SMALLINT, isBaseImage BOOL, isBootable BOOL,
@@ -74,13 +73,7 @@ CREATE TABLE IF NOT EXISTS Image(imageID INTEGER PRIMARY KEY, vanillaImageFamily
 	FOREIGN KEY(osFamily, osVariant) REFERENCES OSVariant(familyID, variantID) ON DELETE CASCADE ON UPDATE CASCADE);
 
 INSERT IGNORE INTO Image VALUES
-	(1, 1, 'Debian-Squeeze', 'Imagen Debian para la realizacion de las practicas de Sistemas operativos', 1, 1, 1, 0),
-	(3, 5, 'Windows 7 IGR', 'Imagen Windows para la realizacion de las practicas de la asignatura de
-		informática gráfica', 2, 1, 0, 0),
-	(2, 6, 'Windows LEC 2013', 'Imagen Windows para la realización de las prácticas de la asignatura de
-		laboratorio de estructura de computadores', 2, 1, 0, 0),
-	(33, 1, 'Debian-Minimal', 'Imagen vanilla Minimal', 1, 1, 1, 0),
-	(34, 5, 'Windows-Medium', 'Imagen vanilla Minimal', 2, 1, 1, 0);
+	(1, 1, 'Debian-Squeeze', 'Imagen vanilla', 1, 1, 1, 0);
 	
 CREATE TABLE IF NOT EXISTS EditedImage(temporaryID VARCHAR(70) PRIMARY KEY, vanillaImageFamilyID SMALLINT, 
 	imageID INTEGER, name VARCHAR(20), description VARCHAR(200),

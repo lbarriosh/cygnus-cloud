@@ -309,6 +309,7 @@
 'Join translators': 'Buscar traductores',
 'Key': 'Clave',
 'La imagen no existe en el repositorio': 'La imagen no existe en el repositorio',
+'La máquina virtual no está registrada': 'La máquina virtual no está registrada',
 'LABORATORIO DE ESTRUCTURA DE COMPUTADORES': 'LABORATORIO DE ESTRUCTURA DE COMPUTADORES',
 'language file "%(filename)s" created/updated': 'archivo de lenguaje "%(filename)s" creado/actualizado',
 'Language files (static strings) updated': 'Archivos de lenguaje (cadenas estáticas) actualizados',

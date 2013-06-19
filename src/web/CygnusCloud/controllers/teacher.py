@@ -61,11 +61,12 @@ def runningVM():
             if(request.args(0) == 'stopVM'):
                 print vm['DomainUID']
                 table.append(TR(\
-                TD(INPUT(_type='radio',_name = 'selection',_value = vm['DomainUID'],_id = "c"+str(j))),\
+                TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
                 TD(LABEL(vminfo[0]["ImageName"])),
                 TD(DIV(P(vminfo[0]["ImageDescription"],_class='izquierda'),_id= 'd' + str(j))),
                 TD(DIV(INPUT(_type='submit',_name = 'restart',  _value = T('Reiniciar'),_class="button button-blue"),_id = 'r' +  str(j))),
                 TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = 'o' +  str(j)))))
+           
             else:
                 #Extramos el nombre de la máquina y su descripcion
                 table.append(TR(\
@@ -90,7 +91,20 @@ def runningVM():
                 if(errorInfo != None):
                     response.flash = T(errorInfo['ErrorMessage'])
                 else:
-                    redirect(URL(f = 'stopVM'))
+                    redirect(URL(f = 'runningVM' , args = ['stopVM']))
+                    
+        if(form.accepts(request.vars)) and (form.vars.restart):
+            activeVMConectData = connector.getActiveVMsData(False,False)
+            for vmInfo in activeVMConectData:
+                if vmInfo["VMID"] == int(form.vars.selection):
+                    #Forzamos el reinicio
+                    commandId = connector.rebootDomain(vmInfo["DomainUID"])
+                    #Esperamos la contestacion
+                    errorInfo = connector.waitForCommandOutput(commandId)
+                    if(errorInfo != None):
+                        response.flash = T(errorInfo['ErrorMessage'])
+                    else:
+                        redirect(URL(f = 'runningVM' , args = ['stopVM']))
     else:
         form = FORM(HR(),LABEL(H2(T('Máquinas en ejecución'))),table,_target='_blank')
         if(form.accepts(request.vars)) and (form.vars.open):
