@@ -174,6 +174,17 @@ class LibvirtConnector(object):
         """             
         targetDomain = self.__libvirtConnection.lookupByName(domainName)
         targetDomain.destroy()
+        
+    def shutdownDomain(self, domainName):
+        """
+        Destruye el dominio cuyo nombre se nos proporciona como argumento.
+        Argumentos:
+            domainName: el nombre del dominio a destruir
+        Devuelve:
+            Nada
+        """             
+        targetDomain = self.__libvirtConnection.lookupByName(domainName)
+        targetDomain.shutdown() 
             
     def getActiveDomainNames(self):
         """
@@ -216,6 +227,7 @@ class LibvirtConnector(object):
         vcpus = 0
         for idVM in idsMV :
             domain = self.__libvirtConnection.lookupByID(idVM)
+            print dir(domain)
             info = domain.info()
             vcpus += info[3]
         return {"#domains" : self.__libvirtConnection.numOfDomains(),

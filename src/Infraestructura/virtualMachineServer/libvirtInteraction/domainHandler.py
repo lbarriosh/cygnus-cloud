@@ -224,11 +224,15 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         domainName = self.__dbConnector.getDomainNameFromVMBootCommand(domainUID)
         if (domainName == None) :
             # Ignoramos la petición: el dominio ya está apagado
-            return 
-        self.__libvirtConnection.destroyDomain(domainName)
-        # Libvirt borra las imágenes de disco, por lo que sólo tenemos que encargarnos de actualizar
-        # las bases de datos.
-        self.__freeDomainResources(domainName, False)
+            return
+        bootableFlag = self.__dbConnector.getBootableFlag(self.__dbConnector.getDomainImageID(domainName))
+        if (bootableFlag) :
+            self.__libvirtConnection.destroyDomain(domainName)
+            # Libvirt borra las imágenes de disco, por lo que sólo tenemos que encargarnos de actualizar
+            # las bases de datos.
+            self.__freeDomainResources(domainName, False)
+        else:
+            self.__libvirtConnection.shutdownDomain(domainName)
         
     def onDomainStart(self, domain):
         """
