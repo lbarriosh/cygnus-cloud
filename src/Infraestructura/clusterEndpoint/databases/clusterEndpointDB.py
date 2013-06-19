@@ -394,9 +394,9 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
             
     def moveRowToImage(self, temporaryID):
         imageData = self.getImageData(temporaryID)
-        update = "INSERT INTO Image VALUES ({0}, {1}, '{2}', '{3}', {4}, {5}, 0, 1);"\
+        update = "INSERT INTO Image VALUES ({0}, {1}, '{2}', '{3}', {4}, {5}, {6}, 1);"\
             .format(imageData["ImageID"], imageData["VanillaImageFamilyID"], imageData["ImageName"], imageData["ImageDescription"],
-                    imageData["OSFamily"], imageData["OSVariant"], imageData["IsBaseImage"])
+                    imageData["OSFamily"], imageData["OSVariant"], int(imageData["IsBaseImage"]))
         self._executeUpdate(update)
         update = "DELETE FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
         self._executeUpdate(update)
