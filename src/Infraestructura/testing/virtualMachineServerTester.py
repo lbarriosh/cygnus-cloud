@@ -81,6 +81,11 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createVMShutdownPacket(machineID)
             networkManager.sendPacket(ip_address, port, p)
             return False
+        elif (command == "rebootvm"):
+            machineID = tokens.pop(0)
+            p = pHandler.createVMRebootPacket(machineID)
+            networkManager.sendPacket(ip_address, port, p)
+            return False
         elif (command == "shutdown") :
             p = pHandler.createVMServerShutdownPacket()
             networkManager.sendPacket(ip_address, port, p)

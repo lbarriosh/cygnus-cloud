@@ -233,6 +233,20 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             self.__freeDomainResources(domainName, False)
         else:
             self.__libvirtConnection.shutdownDomain(domainName)
+            
+    def rebootDomain(self, domainUID):
+        """
+        Destruye una máquina virtual por petición explícita de su propietario.
+        Argumentos:
+            packet: un diccionario con los datos del paquete de destrucción
+        Devuelve:
+            Nada
+        """
+        domainName = self.__dbConnector.getDomainNameFromVMBootCommand(domainUID)
+        if (domainName == None) :
+            # Ignoramos la petición: el dominio ya está apagado
+            return
+        self.__libvirtConnection.rebootDomain(domainName)
         
     def onDomainStart(self, domain):
         """

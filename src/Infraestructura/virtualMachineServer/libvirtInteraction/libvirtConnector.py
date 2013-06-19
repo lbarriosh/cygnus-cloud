@@ -184,7 +184,18 @@ class LibvirtConnector(object):
             Nada
         """             
         targetDomain = self.__libvirtConnection.lookupByName(domainName)
-        targetDomain.shutdown() 
+        targetDomain.shutdown()
+        
+    def rebootDomain(self, domainName):
+        """
+        Destruye el dominio cuyo nombre se nos proporciona como argumento.
+        Argumentos:
+            domainName: el nombre del dominio a destruir
+        Devuelve:
+            Nada
+        """             
+        targetDomain = self.__libvirtConnection.lookupByName(domainName)
+        targetDomain.reboot(0) # Flags seguros. No se usan.  
             
     def getActiveDomainNames(self):
         """

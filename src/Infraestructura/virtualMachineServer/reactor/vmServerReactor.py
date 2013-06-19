@@ -162,6 +162,8 @@ class VMServerReactor(NetworkCallback):
             self.__sendDomainsVNCConnectionData()
         elif (data['packet_type'] == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
             self.__domainHandler.destroyDomain(data["DomainID"])
+        elif (data['packet_type'] == VM_SERVER_PACKET_T.REBOOT_DOMAIN) :
+            self.__domainHandler.rebootDomain(data["DomainID"])
         elif (data['packet_type'] == VM_SERVER_PACKET_T.QUERY_ACTIVE_DOMAIN_UIDS) :
             self.__sendActiveDomainUIDs()
         elif (data['packet_type'] == VM_SERVER_PACKET_T.IMAGE_EDITION) :

@@ -53,6 +53,20 @@ class VMServerPacketHandler(object):
                             # es un string.
         return p
     
+    def createVMRebootPacket(self, domainUID):
+        """
+        Crea un paquete para apagar una máquina virtual
+        Argumentos:
+            domainUID: el identificador único de la máquina virtual a apager
+        Devuelve:
+            Un paquete que contiene los datos especificados
+        """
+        p = self.__packetCreator.createPacket(5)
+        p.writeInt(VM_SERVER_PACKET_T.REBOOT_DOMAIN)
+        p.writeString(domainUID) # domainUID es el identificador del comando de arranque de la máquina. Por eso
+                                # es un string.
+        return p
+    
     def createVMConnectionParametersPacket(self, vncServerIP, vncServerPort, password, commandID):
         """
         Crea un paquete que contiene los datos de conexión VNC de una máquina virtual
@@ -259,7 +273,8 @@ class VMServerPacketHandler(object):
             result["MachineID"] = p.readInt()
             result["UserID"] = p.readInt()
             result["CommandID"] = p.readString()
-        elif (packet_type == VM_SERVER_PACKET_T.DESTROY_DOMAIN) :
+        elif (packet_type == VM_SERVER_PACKET_T.DESTROY_DOMAIN or 
+            packet_type == VM_SERVER_PACKET_T.REBOOT_DOMAIN):
             result["DomainID"] = p.readString()
         elif (packet_type == VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA):
             result["VNCServerIP"] = p.readString()
