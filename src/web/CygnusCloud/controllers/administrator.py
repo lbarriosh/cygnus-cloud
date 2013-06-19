@@ -2,6 +2,7 @@
 import os
 from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
+if session.authorized: redirect(URL(r=request,c='main',f='login'))
 
 @auth.requires_membership('Administrator')
 def runVM():
@@ -36,7 +37,7 @@ def runVM():
                     TD(LABEL(imageInfo[0]["ImageName"]),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda')
                     ,TD(LABEL(l[2])),TD(DIV(P(imageInfo[0]["ImageDescription"]),
                     CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'run',  _value = T('Arrancar')))
-                    ,_id = str(j)),_class='izquierda')))
+                    ,_id = 'r' + str(j)),_class='izquierda')))
                 i = i + 1
                 j = j + 1
         
@@ -354,7 +355,7 @@ def servers():
                 DIV( T('Dirección IP: '),BR(),INPUT(_name ='ipDir',_style="width:87%;"),_style="position:absolute;left:25%;"),
                 DIV( T('Puerto: '),BR(),INPUT(_name ='port',_style="width:40%;"),_style="position:absolute;left:42%;"),
                 DIV(BR(), T('Imagen base: '),INPUT(_type="checkbox",_name ='isVanilla',_style="width:30px;")
-                ,_style="position:absolute;left:55%;"),BR(),BR(),
+                ,_style="position:absolute;left:55%;"),BR(),BR(),BR(),
                 DIV(HR(),CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'add' ,_value=T('Añadir Servidor'),_style="width:150px;"))))                
         
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:

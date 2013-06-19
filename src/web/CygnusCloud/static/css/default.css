@@ -129,10 +129,13 @@ a:hover {
     display: inline;
     width:auto;
     height:auto;
-    margin-top: 1px;
+    margin-top: 0px;
     float: left;
     position: relative;
-    
+	border-radius:5px;
+    -o-border-radius: 5px;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;    
 }
 
 
@@ -145,14 +148,20 @@ a:hover {
     font-weight: bold;
     margin-right: 3px;
     margin-top: 5px;
-    padding: 5px 20px;
+    padding: 6px 20px;
     text-decoration: none;
     text-transform: uppercase;
     
+
+    
 }
 #menu a:hover {
-    background:url("../images/image03.jpg") no-repeat bottom left; color:#232323;
+    background:url("../images/image03.jpg") no-repeat right; color:#232323;
     color: #FFFFFF;
+	border-radius:5px;
+    -o-border-radius: 5px;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
     
 }
 
@@ -483,12 +492,17 @@ select {
    -moz-border-radius:4px;
    -webkit-border-radius:4px;
    margin-bottom:3px;
+
+   
 }
 
 select:after{
    box-shadow: 0 0 7px rgba(65, 141, 236, 1);
    border: 1.3px solid rgba(65, 141, 236, 1);
 }
+
+
+
 
 textArea{
 	width: 70%;

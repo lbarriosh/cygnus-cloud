@@ -2,6 +2,7 @@
 import os
 from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
+if session.authorized: redirect(URL(r=request,c='main',f='login'))
 
 @auth.requires_membership('Administrator')
 def runVM():
@@ -354,7 +355,7 @@ def servers():
                 DIV( T('Dirección IP: '),BR(),INPUT(_name ='ipDir',_style="width:87%;"),_style="position:absolute;left:25%;"),
                 DIV( T('Puerto: '),BR(),INPUT(_name ='port',_style="width:40%;"),_style="position:absolute;left:42%;"),
                 DIV(BR(), T('Imagen base: '),INPUT(_type="checkbox",_name ='isVanilla',_style="width:30px;")
-                ,_style="position:absolute;left:55%;"),BR(),BR(),
+                ,_style="position:absolute;left:55%;"),BR(),BR(),BR(),
                 DIV(HR(),CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'add' ,_value=T('Añadir Servidor'),_style="width:150px;"))))                
         
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
@@ -599,8 +600,8 @@ def users():
         form2 = FORM(H2(T('Añadir asignatura')),DIV(T('Usuario'),BR(),SELECT(_name = 'usersSelect',_id='usersSelect', *listUsers)),
               DIV( T('Código: '),BR(),INPUT(_name = 'code')),DIV( T('Grupo de clase: '),BR(),
               INPUT(_name ='classGroup')),INPUT(_type = 'submit',_class="button button-blue",_name = 'add',_value = T('Añadir')),
-              INPUT(_type="submit",_class="button button-blue",_name = 'remove',_value=T("Eliminar")),
-              IMG(_src="",_style="height:90px;width:90px;",_class='profile',_name='profileImage',_id='profileImage'))
+              INPUT(_type="submit",_class="button button-blue",_name = 'remove',_value=T("Eliminar")))
+              #,IMG(_src="",_style="height:90px;width:90px;",_class='profile',_name='profileImage',_id='profileImage')
         #Acción según el botón pulsado
         if form2.accepts(request.vars,keepvalues=True) and form2.vars.add:
            if(len(form2.vars.code) >= 3) and (len(form2.vars.classGroup) == 1): 

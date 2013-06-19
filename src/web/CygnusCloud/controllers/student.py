@@ -2,6 +2,7 @@
 from gluon import *
 from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
+if  session.authorized: redirect(URL(r=request,c='main',f='login'))
 
 #Método encargado de manejar la página de arranque de máquinas para el usuario
 @auth.requires_membership('Student')
