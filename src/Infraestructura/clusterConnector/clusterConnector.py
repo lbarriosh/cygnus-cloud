@@ -442,6 +442,16 @@ class ClusterConnector(object):
             Una lista con las notificaciones pendientes del usuario.
         """
         return self.__commandsDBConnector.getPendingNotifications(self.__userID)
+        
+    def countPendingNotifications(self):
+        """
+        Cuenta el número de notificaciones pendientes para el usuario
+        Argumentos:
+            Ninguno
+        Devuelve:
+            el número de notificaciones pendientes
+        """
+        return self.__commandsDBConnector.countPendingNotifications(self.__userID)
     
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
