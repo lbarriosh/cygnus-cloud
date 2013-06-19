@@ -175,6 +175,18 @@ class ClusterConnector(object):
         (commandType, commandArgs) = self.__commandsHandler.createDomainDestructionCommand(domainID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
+    def rebootDomain(self, domainID):
+        """
+        Destruye una máquina virtual
+        Argumentos:
+            domainID: el identificador único de la máquina virtual a destruir
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        """
+        (commandType, commandArgs) = self.__commandsHandler.createDomainRebootCommand(domainID)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+    
     def deployImage(self, serverNameOrIPAddress, imageID):
         """
         Realiza el despliegue manual de una imagen
@@ -432,8 +444,8 @@ class ClusterConnector(object):
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "website_user", "CygnusCloud")
-    connector.bootUpVMServer("Server1")
-    sleep(5)
-    connector.shutDownInfrastructure(True)
+    commandID = connector.rebootDomain("f")
+    print connector.waitForCommandOutput(commandID)
+    
     # sleep(10)
     # connector.bootUpVM(1)

@@ -124,6 +124,16 @@ class CommandsHandler(object):
             Una tupla (tipo de comando, argumentos) con el tipo del comando y sus argumentos serializados
         """
         return (COMMAND_TYPE.DESTROY_DOMAIN, domainID)
+    
+    def createDomainRebootCommand(self, domainID):
+        """
+        Crea un comando de destrucción de un dominio
+        Argumentos:
+            domainID: el identificador único del dominio que hay que destruir
+        Devuelve:
+            Una tupla (tipo de comando, argumentos) con el tipo del comando y sus argumentos serializados
+        """
+        return (COMMAND_TYPE.REBOOT_DOMAIN, domainID)
 
     def deserializeCommandArgs(self, commandType, commandArgs):
         """
@@ -152,7 +162,8 @@ class CommandsHandler(object):
             result["UserID"] = int(l[1])
         elif (commandType == COMMAND_TYPE.HALT) :
             result["HaltVMServers"] = l[0] == 'True'
-        elif (commandType == COMMAND_TYPE.DESTROY_DOMAIN):
+        elif (commandType == COMMAND_TYPE.DESTROY_DOMAIN or 
+              commandType == COMMAND_TYPE.REBOOT_DOMAIN):
             result["DomainID"] = l[0]
         elif (commandType == COMMAND_TYPE.VM_SERVER_CONFIGURATION_CHANGE) :
             result["VMServerNameOrIPAddress"] = l[0]
@@ -192,6 +203,8 @@ class CommandsHandler(object):
             return COMMAND_OUTPUT_TYPE.VM_SERVER_UNREGISTRATION_ERROR
         elif (packet_type == PACKET_T.DOMAIN_DESTRUCTION_ERROR):
             return COMMAND_OUTPUT_TYPE.DOMAIN_DESTRUCTION_ERROR
+        elif (packet_type == PACKET_T.DOMAIN_REBOOT_ERROR):
+            return COMMAND_OUTPUT_TYPE.DOMAIN_REBOOT_ERROR
         elif (packet_type == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR):
             return COMMAND_OUTPUT_TYPE.VM_SERVER_CONFIGURATION_CHANGE_ERROR
         elif (packet_type == PACKET_T.IMAGE_DEPLOYMENT_ERROR):
