@@ -130,9 +130,10 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             d["IsBootable"] = result[6] == 1
             d["State"] = EDITION_STATE_T.NOT_EDITED
             d["ImageID"] = int(result[7])
+            d["EditedImage"] = False
         else :
             query = "SELECT name, description, vanillaImageFamilyID,\
-                osFamily, osVariant, ownerID, imageID, state FROM EditedImage WHERE temporaryID = '{0}'".format(imageID)
+                osFamily, osVariant, ownerID, imageID, state, editedImage FROM EditedImage WHERE temporaryID = '{0}'".format(imageID)
             result = self._executeQuery(query, True)
             d = dict()
             d["ImageName"] = str(result[0])
@@ -145,7 +146,7 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             d["State"] = int(result[7])
             d["OwnerID"] = int(result[5])
             d["ImageID"] = int(result[6])
-        
+            d["EditedImage"] = bool(result[1])
         return d       
     
     def getBootableImagesData(self, imageIDs):

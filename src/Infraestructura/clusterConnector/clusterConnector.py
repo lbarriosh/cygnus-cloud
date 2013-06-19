@@ -446,6 +446,4 @@ class ClusterConnector(object):
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "website_user", "CygnusCloud")
-    commandID = connector.bootUpVMServer("Server1")
-    connector.waitForCommandOutput(commandID)
-    connector.editImage(1)
+    connector.editImage(7)
