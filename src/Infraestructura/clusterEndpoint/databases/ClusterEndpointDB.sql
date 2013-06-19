@@ -72,8 +72,6 @@ CREATE TABLE IF NOT EXISTS Image(imageID INTEGER PRIMARY KEY, vanillaImageFamily
 	FOREIGN KEY(vanillaImageFamilyID) REFERENCES VanillaImageFamily(familyID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY(osFamily, osVariant) REFERENCES OSVariant(familyID, variantID) ON DELETE CASCADE ON UPDATE CASCADE);
 
-INSERT IGNORE INTO Image VALUES
-	(1, 1, 'Debian-Squeeze', 'Imagen vanilla', 1, 1, 1, 0);
 	
 CREATE TABLE IF NOT EXISTS EditedImage(temporaryID VARCHAR(70) PRIMARY KEY, vanillaImageFamilyID SMALLINT, 
 	imageID INTEGER, name VARCHAR(20), description VARCHAR(200),
