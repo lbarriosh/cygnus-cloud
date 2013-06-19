@@ -62,7 +62,9 @@ class EndpointPacketReactor(object):
         elif (data["packet_type"] == PACKET_T.QUERY_ACTIVE_VM_DATA) :
             self.__requestVNCConnectionData()
         elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION) :
-            self.__destroyDomain(data)
+            self.__destroyOrRebootDomain(data, False)
+        elif (data["packet_type"] == PACKET_T.DOMAIN_REBOOT) :
+            self.__destroyOrRebootDomain(data, True)
         elif (data["packet_type"] == PACKET_T.VM_SERVER_CONFIGURATION_CHANGE):
             self.__changeVMServerConfiguration(data)
         elif (data["packet_type"] == PACKET_T.QUERY_REPOSITORY_STATUS):
@@ -613,7 +615,7 @@ class EndpointPacketReactor(object):
             errorMessage = self.__networkManager.sendPacket(cd["ServerIP"], cd["ServerPort"], p)
             NetworkManager.printConnectionWarningIfNecessary(cd["ServerIP"], cd["ServerPort"], "VNC connection data request", errorMessage)   
             
-    def __destroyDomain(self, data):
+    def __destroyOrRebootDomain(self, data, reboot):
         """
         Destruye una máquina virtual activa
         Argumentos:
@@ -625,22 +627,33 @@ class EndpointPacketReactor(object):
         serverID = self.__dbConnector.getActiveVMHostID(data["DomainID"])
         if (serverID == None) :
             # Error
-            packet = self.__packetHandler.createErrorPacket(PACKET_T.DOMAIN_DESTRUCTION_ERROR, 
+            if (reboot) :
+                packet_type = PACKET_T.DOMAIN_REBOOT_ERROR
+            else:
+                packet_type = PACKET_T.DOMAIN_DESTRUCTION_ERROR
+            packet = self.__packetHandler.createErrorPacket(packet_type, 
                                                                       ERROR_DESC_T.CLSRVR_DOMAIN_NOT_REGISTERED, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             return       
         
         # Averiguar los datos del servidor y pedirle que se la cargue
         connectionData = self.__dbConnector.getVMServerBasicData(serverID)
-        packet = self.__vmServerPacketHandler.createVMShutdownPacket(data["DomainID"])
+        if (reboot) :
+            packet = self.__vmServerPacketHandler.createVMRebootPacket(data["DomainID"])
+        else :
+            packet = self.__vmServerPacketHandler.createVMShutdownPacket(data["DomainID"])
         errorMessage = self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], packet)
         if (errorMessage != None) :
-            packet = self.__packetHandler.createErrorPacket(PACKET_T.DOMAIN_DESTRUCTION_ERROR, 
-                                                                                ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_LOST, data["CommandID"])
+            if (reboot) :
+                packet_type = PACKET_T.DOMAIN_REBOOT_ERROR
+            else:
+                packet_type = PACKET_T.DOMAIN_DESTRUCTION_ERROR
+            packet = self.__packetHandler.createErrorPacket(packet_type, ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_LOST, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
         else :
-            # Borrar la máquina virtual de la base de datos           
-            self.__dbConnector.deleteActiveVMLocation(data["CommandID"])         
+            if (not reboot) :
+                # Borrar la máquina virtual de la base de datos           
+                self.__dbConnector.deleteActiveVMLocation(data["CommandID"])         
             # Indicar al endpoint que todo fue bien
             packet = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, packet)

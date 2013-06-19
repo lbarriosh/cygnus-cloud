@@ -129,6 +129,9 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         elif (command == "destroyDomain") :
             p = pHandler.createDomainDestructionPacket(tokens.pop(0), "")
             networkManager.sendPacket(ip_address, port, p)
+        elif (command == "rebootDomain") :
+            p = pHandler.createDomainRebootPacket(tokens.pop(0), "")
+            networkManager.sendPacket(ip_address, port, p)
         elif (command == "obtainImageRepositoryStatus") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_REPOSITORY_STATUS)
             networkManager.sendPacket(ip_address, port, p)

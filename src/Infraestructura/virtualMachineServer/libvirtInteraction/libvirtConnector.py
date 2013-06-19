@@ -238,7 +238,6 @@ class LibvirtConnector(object):
         vcpus = 0
         for idVM in idsMV :
             domain = self.__libvirtConnection.lookupByID(idVM)
-            print dir(domain)
             info = domain.info()
             vcpus += info[3]
         return {"#domains" : self.__libvirtConnection.numOfDomains(),
