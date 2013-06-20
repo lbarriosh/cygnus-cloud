@@ -373,7 +373,7 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
     def addNewImage(self, temporaryID, baseImageID, ownerID, imageName, imageDescription):
         # Sacar los datos de la imagen base
         baseImageData = self.getImageData(baseImageID)
-        update = "INSERT INTO EditedImage VALUES('{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, {7}, {8});"\
+        update = "INSERT INTO EditedImage VALUES('{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, {7}, {8}, 0);"\
             .format(temporaryID, baseImageData["VanillaImageFamilyID"], -1, imageName, imageDescription,
                     baseImageData["OSFamily"], baseImageData["OSVariant"], ownerID, EDITION_STATE_T.TRANSFER_TO_VM_SERVER)
         self._executeUpdate(update)
@@ -387,16 +387,16 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
             imageData = self.getImageData(imageID)
             update = "DELETE FROM Image WHERE imageID = {0};".format(imageID)
             self._executeUpdate(update)
-            update = "INSERT INTO EditedImage VALUES('{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, {7}, {8});"\
+            update = "INSERT INTO EditedImage VALUES('{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, {7}, {8}, 1);"\
                 .format(commandID, imageData["VanillaImageFamilyID"], imageID, imageData["ImageName"], imageData["ImageDescription"],
                         imageData["OSFamily"], imageData["OSVariant"], ownerID, EDITION_STATE_T.TRANSFER_TO_VM_SERVER)
             self._executeUpdate(update)
             
     def moveRowToImage(self, temporaryID):
         imageData = self.getImageData(temporaryID)
-        update = "INSERT INTO Image VALUES ({0}, {1}, '{2}', '{3}', {4}, {5}, 0, 1);"\
+        update = "INSERT INTO Image VALUES ({0}, {1}, '{2}', '{3}', {4}, {5}, {6}, 1);"\
             .format(imageData["ImageID"], imageData["VanillaImageFamilyID"], imageData["ImageName"], imageData["ImageDescription"],
-                    imageData["OSFamily"], imageData["OSVariant"], imageData["IsBaseImage"])
+                    imageData["OSFamily"], imageData["OSVariant"], int(imageData["IsBaseImage"]))
         self._executeUpdate(update)
         update = "DELETE FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
         self._executeUpdate(update)

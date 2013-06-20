@@ -284,6 +284,7 @@ def createAndEdit():
             if form1.accepts(request.vars,keepvalues=True) and form1.vars.edit:
                    #Creamos la MV
                    if len(form1.vars.selection2) > 0:
+                               print form1.vars.selection2.split('w')[1]
                                errorInfo = connector.editImage(form1.vars.selection2.split('w')[1])
                                evaluateCommand(connector,errorInfo,"Petición de edición enviada")
         
@@ -301,10 +302,25 @@ def createAndEdit():
             if form1.accepts(request.vars,keepvalues=True) and form1.vars.saveChanges:
                    #Creamos la MV
                    if len(form1.vars.selection2) > 0:
+                               imageInfo = connector.getImageData(form1.vars.selection2.split('w')[1]) 
+                               if imageInfo["EditedImage"]:
+                                       errorInfo = connector.deployEditedImage(form1.vars.selection2.split('w')[1])
+                                       evaluateCommand(connector,errorInfo,"Petición de despliegue enviada")
+                               else:
+                                   #Obtenemos el número de instancias
+                                   placesNumberInfo = userDB((userDB.VMByGroup.VMId== imageInfo["ImageID"]) & \
+                                       (userDB.VMByGroup.VMByGroup.cod == userDB.ClassGroup.cod) & \
+                                       (userDB.VMByGroup.VMByGroup.curseGroup == userDB.ClassGroup.curseGroup)).select(\
+                                           userDB.ClassGroup.placesNumber)
+                                   #Nos quedamos con el máximo
+                                   maxPlaces = 0
+                                   for places in placesNumberInfo:
+                                       auxPlaceNumber = int(places.placesNumber) 
+                                       maxPlaces = max(auxPlaceNumber,maxPlaces)
+                                   #Desplegamos la nueva imagen
+                                   errorInfo = connector.deployNewImage(form1.vars.selection2.split('w')[1],maxPlaces)
+                                   evaluateCommand(connector,errorInfo,"Petición de despliegue enviada")
                                
-                              # errorInfo = connector.autoDeployImage(form1.vars.selection2.split('w')[1])
-                               errorInfo = connector.deployNewImage(form1.vars.selection2.split('w')[1],1)
-                               evaluateCommand(connector,errorInfo,"Petición de edición enviada")
         
                    else:
                            response.flash = "Debe seleccionar una imagen base"

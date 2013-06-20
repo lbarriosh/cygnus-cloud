@@ -36,7 +36,7 @@ class ClusterConnector(object):
             Nada
         """
         self.__endpointDBConnector = MinimalClusterEndpointDBConnector(databaseUser, databasePassword, endpointDBName)
-        self.__commandsDBConnector = CommandsDatabaseConnector(databaseUser, databasePassword, commandsDBName, 1)
+        self.__commandsDBConnector = CommandsDatabaseConnector(databaseUser, databasePassword, commandsDBName, 1)    
         
     def dispose(self):
         """
@@ -236,6 +236,8 @@ class ClusterConnector(object):
             El identificador único del comando.
             @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
+        if (isinstance(imageID, str)) :
+            imageID = self.__endpointDBConnector.getImageID(imageID)
         (commandType, commandArgs) = self.__commandsHandler.createImageEditionCommand(imageID, self.__userID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
@@ -440,7 +442,7 @@ class ClusterConnector(object):
             Una lista con las notificaciones pendientes del usuario.
         """
         return self.__commandsDBConnector.getPendingNotifications(self.__userID)
-    
+        
     def countPendingNotifications(self):
         """
         Cuenta el número de notificaciones pendientes para el usuario
@@ -454,8 +456,4 @@ class ClusterConnector(object):
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "website_user", "CygnusCloud")
-    commandID = connector.rebootDomain("f")
-    print connector.waitForCommandOutput(commandID)
-    
-    # sleep(10)
-    # connector.bootUpVM(1)
+    connector.editImage(7)
