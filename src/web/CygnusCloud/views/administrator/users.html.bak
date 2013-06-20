@@ -11,7 +11,10 @@
 jQuery(document).ready(function(){
 	jQuery('#usersSelect').change(function(){
     	var userId = jQuery('#usersSelect').val();
-		$("#profileImage").attr("src",{{=URL('static','logo.png')}});
+        "{{image = userDB(" + userId + "==userDB.userImage.userId).select()}}"
+        {{if len(image) > 0:}}
+        $("#profileImage").attr("src",{{=URL('appadmin/download/userDB/',image[0].file)}});
+        {{pass}}
     });
 });
 </script>

@@ -20,23 +20,3 @@ jQuery(document).ready(function(){
         }
 });
 </script>
-
-<script type="text/javascript">
-    function changeDescription(desc,actual,m){
-        //Recorremos los elementos borrando las descripciones.
-        // y añadimos la descripción del objeto seleccionado
-       	
-        var d = document.createElement('div');
-        d.innerHTML = "Entra";
-        
-        for(i = 0 ; i < m ; i++){
-            if(i == actual){
-                form.getElementById(str(i)).innerHTML=desc;
-            }else{
-                form.getElementById(str(i)).innerHTML="";
-            }
-        
-        }
-
-    }
-</script>

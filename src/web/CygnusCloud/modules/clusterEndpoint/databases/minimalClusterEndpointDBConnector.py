@@ -116,7 +116,7 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             result = self._executeQuery(query, True)
             if (result == None) : 
                 query = "SELECT name, description, vanillaImageFamilyID,\
-                osFamily, osVariant, isBaseImage, imageID FROM EditedImage WHERE imageID = {0}".format(imageID)
+                osFamily, osVariant, imageID FROM EditedImage WHERE imageID = {0}".format(imageID)
                 result = self._executeQuery(query, True)
                 if (result == None) :
                     return None
@@ -126,10 +126,13 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             d["VanillaImageFamilyID"] = int(result[2])
             d["OSFamily"] = int(result[3])
             d["OSVariant"] = int(result[4])
-            d["IsBaseImage"] = result[5] == 1
-            d["IsBootable"] = result[6] == 1
+            if (len(result) == 8) :
+                d["IsBaseImage"] = bool(result[7])
+            else:
+                d["IsBaseImage"] = False
+            d["IsBootable"] = result[5] == 1
             d["State"] = EDITION_STATE_T.NOT_EDITED
-            d["ImageID"] = int(result[7])
+            d["ImageID"] = int(result[6])
             d["EditedImage"] = False
         else :
             query = "SELECT name, description, vanillaImageFamilyID,\
@@ -151,7 +154,7 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
     
     def getBootableImagesData(self, imageIDs):
         query = "SELECT imageID, name, description, vanillaImageFamilyID,\
-                osFamily, osVariant FROM Image WHERE isBootable = 0"
+                osFamily, osVariant FROM Image WHERE isBootable = 1"
         if (imageIDs != []) :
             query += " AND ("
             i = 0

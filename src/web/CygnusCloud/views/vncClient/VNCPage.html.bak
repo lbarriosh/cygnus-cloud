@@ -1,4 +1,5 @@
 <link rel="stylesheet" type="text/css" href="../static/noVNC/include/base.css" media="screen" />
+{{response.files.insert(0,URL('static','js/jquery.js'))}}
 {{if(error):}}
 <center><p>ERROR: {{=errorMessage}}</p></center>
 {{else:}}

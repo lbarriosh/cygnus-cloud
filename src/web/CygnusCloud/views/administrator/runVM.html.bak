@@ -30,10 +30,10 @@ jQuery(document).ready(function(){
        jQuery('#r'+i).hide();
        jQuery('#c' +i).change(function(){
             for(j = 0 ; j < {{=num}} ; j++){
-                if(jQuery('#c' +j).attr('checked'))
+                if(jQuery('#c' +j).attr('checked')){
                     jQuery('#r' +j).show("slow");
                     jQuery('#s' +j).show("slow");
-                else{
+                }else{
                  jQuery('#s' +j).hide("slow");
                  jQuery('#r' +j).hide("slow");
                 }

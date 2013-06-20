@@ -1,3 +1,29 @@
+'''
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+   
+    File: teacher.py   
+    Version: 2.0
+    Description: teacher controller
+   
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández, 
+                      Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+'''
+
 # coding: utf8
 from gluon import *
 from clusterEndpoint.databases.editionState_t import EDITION_STATE_T
@@ -85,13 +111,17 @@ def runningVM():
                 #Establecemos la conexión con el servidor 
                 connector = conectToServer()
                 #Paramos la máquina virtual
-                commandId = connector.destroyDomain(form.vars.selection)
-                #Esperamos la contestacion
-                errorInfo = connector.waitForCommandOutput(commandId)
-                if(errorInfo != None):
-                    response.flash = T(errorInfo['ErrorMessage'])
-                else:
-                    redirect(URL(f = 'runningVM' , args = ['stopVM']))
+                activeVMConectData = connector.getActiveVMsData(False,False)
+                for vmInfo in activeVMConectData:
+                    if vmInfo["VMID"] == int(form.vars.selection):
+                        print vmInfo["DomainUID"]
+                        commandId = connector.destroyDomain(vmInfo["DomainUID"])
+                        #Esperamos la contestacion
+                        errorInfo = connector.waitForCommandOutput(commandId)
+                        if(errorInfo != None):
+                            response.flash = T(errorInfo['ErrorMessage'])
+                        else:
+                            redirect(URL(f = 'runningVM' , args = ['stopVM']))
                     
         if(form.accepts(request.vars)) and (form.vars.restart):
             activeVMConectData = connector.getActiveVMsData(False,False)
@@ -265,27 +295,28 @@ def createAndEdit():
             
             if form1.accepts(request.vars,keepvalues=True) and form1.vars.continueEditing:
                    #Creamos la MV
-                   """
+                   
                    if len(form1.vars.selection2) > 0:
                                print form1.vars.selection2.split('w')[1]
                                errorInfo = connector.editImage(form1.vars.selection2.split('w')[1])
                                evaluateCommand(connector,errorInfo,"Petición de arranque de máquina en edición enviada")
                    else:
                            response.flash = "Debe seleccionar una imagen base"
-                  """
+                   """
                    print form1.vars.selection2.split('w')[1]
                    commandId = connector.editImage(form1.vars.selection2.split('w')[1])
                    errorInfo = connector.waitForCommandOutput(commandId)
                    if errorInfo != None:
                        response.flash = T(errorInfo['ErrorMessage'])
                    else:
-                       response.flash = "Petición de creación enviada"          
+                       response.flash = "Petición de creación enviada"  
+                   """        
                            
             if form1.accepts(request.vars,keepvalues=True) and form1.vars.edit:
                    #Creamos la MV
                    if len(form1.vars.selection2) > 0:
-                               print form1.vars.selection2.split('w')[1]
-                               errorInfo = connector.editImage(form1.vars.selection2.split('w')[1])
+                               print "Edicion " + form1.vars.selection2.split('w')[1]
+                               errorInfo = connector.editImage(int(form1.vars.selection2.split('w')[1]))
                                evaluateCommand(connector,errorInfo,"Petición de edición enviada")
         
                    else:
@@ -302,8 +333,11 @@ def createAndEdit():
             if form1.accepts(request.vars,keepvalues=True) and form1.vars.saveChanges:
                    #Creamos la MV
                    if len(form1.vars.selection2) > 0:
+                               print "identificador " + form1.vars.selection2.split('w')[1]
                                imageInfo = connector.getImageData(form1.vars.selection2.split('w')[1]) 
+                               print imageInfo["EditedImage"]
                                if imageInfo["EditedImage"]:
+                                       print "ya editada"
                                        errorInfo = connector.deployEditedImage(form1.vars.selection2.split('w')[1])
                                        evaluateCommand(connector,errorInfo,"Petición de despliegue enviada")
                                else:
@@ -318,6 +352,7 @@ def createAndEdit():
                                        auxPlaceNumber = int(places.placesNumber) 
                                        maxPlaces = max(auxPlaceNumber,maxPlaces)
                                    #Desplegamos la nueva imagen
+                                   print "numero de plazas:  " + str(maxPlaces)
                                    errorInfo = connector.deployNewImage(form1.vars.selection2.split('w')[1],maxPlaces)
                                    evaluateCommand(connector,errorInfo,"Petición de despliegue enviada")
                                
@@ -334,7 +369,6 @@ def createAndEdit():
                                 print form2.vars.selection1.split('w')[1]
                                 for vmInfo in activeVMConectData:
                                     if vmInfo["DomainUID"] == form2.vars.selection1.split('w')[1]:
-                                        
                                         serverIp = searchVMServerIp(connector.getVMServersData(), vmInfo["VMServerName"])
                                         vncInfo = dict(OutputType=2,VNCServerIPAddress=serverIp,VNCServerPort=int(vmInfo["VNCPort"])+ 1
                                                 ,VNCServerPassword=str(vmInfo["VNCPassword"]))
