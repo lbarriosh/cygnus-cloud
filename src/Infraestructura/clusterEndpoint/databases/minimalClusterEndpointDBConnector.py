@@ -154,7 +154,7 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
     
     def getBootableImagesData(self, imageIDs):
         query = "SELECT imageID, name, description, vanillaImageFamilyID,\
-                osFamily, osVariant FROM Image WHERE isBootable = 0"
+                osFamily, osVariant FROM Image WHERE isBootable = 1"
         if (imageIDs != []) :
             query += " AND ("
             i = 0
