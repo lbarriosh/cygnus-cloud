@@ -456,4 +456,7 @@ class ClusterConnector(object):
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "website_user", "CygnusCloud")
-    connector.shutDownInfrastructure(True)
+    print connector.getImageData(1)
+    print connector.getImageData("1|1371710656.44")
+    print connector.getImageData("1|1371712264.21")
+    

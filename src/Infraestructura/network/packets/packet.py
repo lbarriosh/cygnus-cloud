@@ -1,26 +1,45 @@
 # -*- coding: utf8 -*-
-"""
-Packet-related definitions
-@author: Luis Barrios Hernández
-@version: 2.1
-"""
+'''
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: packet.py    
+    Version: 3.0
+    Description: network packet definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+'''
 
 from ccutils.enums import enum
 from network.exceptions.packetException import PacketException
 
+# Packet type enum type. DO NOT MODIFY!
 Packet_TYPE = enum('DATA')
 
+# Data type enum type. DO NOT MOFIFY!
 _DATA_TYPE = enum("INT", "LONG", "STRING", "FLOAT")
 
 class _Packet(object):
     """
-    A class that stands for a packet
-    @attention: _Packet instances MUST ONLY be created through a NetworkManager
-    to avoid priority issues that can cause serious errors in the network
-    subsystem.
+    These objects stand for network packets.
+    @attention: in order to avoid priority issues that can cause errors or malfunctions in the network
+    subsystem, _Packet instances MUST be created through a NetworkManager object.
     @attention: The single underscore methods are semi-private, and MUST NOT
-    be used along the user's code.
-    @attention: All the read operations are destructive.
+    be used at the user's code.
     """
     def __init__(self, packetType=Packet_TYPE.DATA, priority= 10):
         """
@@ -35,17 +54,32 @@ class _Packet(object):
         self.__sender_ip = None
         self.__sender_port = None
         
-    def setSenderData(self, sender_ip, sender_port):
+    def _setSenderData(self, sender_ip, sender_port):
+        """
+        Stores the sender's data into the packet.
+        Args:
+            senderIP: the sender's IPv4 address
+            sender_port: the sender's port
+        Returns:
+            Nothing
+        """
         self.__sender_ip = sender_ip
         self.__sender_port = sender_port
         
     def getSenderData(self):
+        """
+        Returns the sender's IPv4 address and port
+        Args:
+            None
+        Returns:
+            A tuple (sender_ip, sender_port) containing the sender's IPv4
+            address and port.
+        """
         return (self.__sender_ip, self.__sender_port)
         
     def _setContent(self, priority, data, packetType=Packet_TYPE.DATA):
         """
-        Fills the packet with its arguments. This method is only used to create
-        unit tests.
+        Sets the packet's content.
         Args:
             priority: the new packet's priority
             data: the new packet's data
@@ -142,6 +176,7 @@ class _Packet(object):
     def readInt(self):
         """
         Reads an integer value from the packet.
+        @attention: All the read operations are destructive.
         Args:
             None
         Returns:
@@ -155,6 +190,7 @@ class _Packet(object):
     def readLong(self):
         """
         Reads a long value from the packet
+        @attention: All the read operations are destructive.
         Args:
             None
         Returns:
@@ -168,6 +204,7 @@ class _Packet(object):
     def readBool(self):
         """
         Reads a bool value from the packet
+        @attention: All the read operations are destructive.
         Args:
             None
         Returns:
@@ -181,6 +218,7 @@ class _Packet(object):
     def readString(self):
         """
         Reads a string from the packet
+        @attention: All the read operations are destructive.
         Args:
             None
         Returns:
@@ -193,7 +231,8 @@ class _Packet(object):
     
     def readFloat(self):
         """
-        Reads a float value from the packet
+        Reads a float value from the packet        
+        @attention: All the read operations are destructive.
         Args:
             None
         Returns:
@@ -298,6 +337,13 @@ class _Packet(object):
         
         
     def __eq__(self, other):
+        """
+        Compares to packets by their content.
+        Args:
+            other: the other packet to consider
+        Returns:
+            True if both packets have identical content, and False otherwise.
+        """
         if isinstance(other, _Packet):
             samePriority = self.__priority == other.__priority
             sameType = self.__packetType == other.__packetType

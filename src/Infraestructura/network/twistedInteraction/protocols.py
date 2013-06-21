@@ -156,5 +156,5 @@ class CygnusCloudProtocolFactory(Factory):
             The incoming packages queue
         """
         p = _Packet._deserialize(p)
-        p.setSenderData(peerAddr, peerPort)
+        p._setSenderData(peerAddr, peerPort)
         self._queue.queue(p.getPriority(), p)

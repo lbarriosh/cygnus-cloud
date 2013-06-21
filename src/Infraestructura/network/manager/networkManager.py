@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Network manager class definitions.
-@author: Luis Barrios Hernández
-@version: 7.1
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: networkManager.py    
+    Version: 7.0
+    Description: network manager and network callback definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 from twisted.internet import reactor
 from ccutils.dataStructures.multithreadingPriorityQueue import GenericThreadSafePriorityQueue
@@ -18,7 +37,6 @@ from network.threads.connectionMonitoring import ConnectionMonitoringThread
         
 class NetworkCallback(object):
     """
-    A class that represents a network callback object.
     These objects can process an incoming package properly.
     """
     def processPacket(self, packet):
@@ -26,9 +44,10 @@ class NetworkCallback(object):
         Processes an incoming packet
         Args:
             packet: the packet to process
+            @attention: the sender's IPv4 address and port are stored in the packet,
+            and can be read through the getSenderData() method.
         Returns:
-            Nothing
-        
+            Nothing        
         """
         raise NotImplementedError   
     
@@ -216,8 +235,8 @@ class NetworkManager():
             True if the connection is ready or False otherwise.
         Raises:
             NetworkManagerException: a NetworkManagerException will be raised if 
-                - there were errors while establishing the connection, or 
-                - the connection was abnormally closed, or
+                - there were errors while establishing the connection, or if
+                - the connection was abnormally closed, or if
                 - the supplied port is free
         """
         if not self.__connectionPool.has_key((host,port)) :
@@ -249,13 +268,16 @@ class NetworkManager():
             port: The port assigned to the connection that will be used to send the packet.
             packet: The packet to send.
             client_IP: the client's ipv4 address
-            @attention: The last parameter will only be used in server connections working in UNICAST mode.
+            client_port: the client's port
+            @attention: The last two parameters can only be used in server connections. In this case,
+            - if both are None, the packet will be sent to all the clients (MULTICAST mode)
+            - otherwise, the pacekt will be sent to a specific client (UNICAST mode)
         Returns:
             None if the packet was successfully sent and an error message if it wasn't.
         Raises:
             Nothing
-        @attention: If the connection is not ready, the packet will not be sent.
-        To avoid this, you must check the connection's availability BEFORE using it.
+        @attention: If the connection is not ready, the packet will be discarded.
+        So PLEASE, check the connection's status BEFORE using it.
         """
         if not self.__connectionPool.has_key((host, port)) :
             return "There's nothing attached to the port " + str(port)

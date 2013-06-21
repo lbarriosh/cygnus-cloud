@@ -1,16 +1,34 @@
-# -*- coding: utf8 -*-
+# -*- coding: UTF8 -*-
 '''
-Data processing threads definitions.
-@author: Luis Barrios Hernández
-@version: 1.1
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: dataProcessing.py    
+    Version: 1.5
+    Description: data processing thread definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 from ccutils.threads.queueProcessingThread import QueueProcessingThread
 from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
 
 class IncomingDataThread(QueueProcessingThread):
     """
-    Incoming packages thread class.
-    This threads will process the incoming packages.
+    This threads will process the incoming network packets.
     """
     def __init__(self, transferQueue, callbackObject):
         """
@@ -65,13 +83,18 @@ class IncomingDataThread(QueueProcessingThread):
         self.__callbackObject.processPacket(e)
         
 class OutgoingDataThread(QueueProcessingThread):
+    """
+    These threads will sent the outgoing packets.
+    """
     
     def __init__(self, transferQueue):
+        """
+        Initializes the thread's state.
+        Args:
+        """
         QueueProcessingThread.__init__(self, "Outgoing data processing thread", transferQueue)
         
-    """
-    Outgoing packages thread class.
-    """
+    
     def processElement(self, e):
         """
         Processes an (connection, packet to send) pair.

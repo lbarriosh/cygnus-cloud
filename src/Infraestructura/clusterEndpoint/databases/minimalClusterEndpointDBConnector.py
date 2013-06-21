@@ -110,31 +110,30 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
     
     def getImageData(self, imageID):
         
+        lookAtEditedImage = True
+        
         if (isinstance(imageID, int)) :
             query = "SELECT name, description, vanillaImageFamilyID,\
                 osFamily, osVariant, isBaseImage, isBootable, imageID FROM Image WHERE imageID = {0}".format(imageID)
             result = self._executeQuery(query, True)
-            if (result == None) : 
-                query = "SELECT name, description, vanillaImageFamilyID,\
-                osFamily, osVariant, imageID FROM EditedImage WHERE imageID = {0}".format(imageID)
-                result = self._executeQuery(query, True)
-                if (result == None) :
-                    return None
-            d = dict()
-            d["ImageName"] = str(result[0])
-            d["ImageDescription"] = str(result[1])
-            d["VanillaImageFamilyID"] = int(result[2])
-            d["OSFamily"] = int(result[3])
-            d["OSVariant"] = int(result[4])
-            if (len(result) == 8) :
-                d["IsBaseImage"] = bool(result[7])
-            else:
-                d["IsBaseImage"] = False
-            d["IsBootable"] = result[5] == 1
-            d["State"] = EDITION_STATE_T.NOT_EDITED
-            d["ImageID"] = int(result[6])
-            d["EditedImage"] = False
-        else :
+            if (result != None) :
+                lookAtEditedImage = False
+                d = dict()
+                d["ImageName"] = str(result[0])
+                d["ImageDescription"] = str(result[1])
+                d["VanillaImageFamilyID"] = int(result[2])
+                d["OSFamily"] = int(result[3])
+                d["OSVariant"] = int(result[4])
+                d["IsBaseImage"] = bool(result[5])
+                d["IsBootable"] = bool(result[6])
+                d["ImageID"] = int(result[7])                
+                d["EditedImage"] = False                
+                d["State"] = EDITION_STATE_T.NOT_EDITED
+            else :
+                query = "SELECT temporaryID FROM EditedImage WHERE imageID = {0}".format(imageID)
+                imageID = self._executeQuery(query, True)
+            
+        if (lookAtEditedImage) :
             query = "SELECT name, description, vanillaImageFamilyID,\
                 osFamily, osVariant, ownerID, imageID, state, editedImage FROM EditedImage WHERE temporaryID = '{0}'".format(imageID)
             result = self._executeQuery(query, True)
@@ -149,7 +148,8 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             d["State"] = int(result[7])
             d["OwnerID"] = int(result[5])
             d["ImageID"] = int(result[6])
-            d["EditedImage"] = bool(result[1])
+            d["EditedImage"] = bool(result[8])
+        
         return d       
     
     def getBootableImagesData(self, imageIDs):
