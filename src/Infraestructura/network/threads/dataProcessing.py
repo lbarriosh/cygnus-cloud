@@ -6,7 +6,7 @@
     
     File: dataProcessing.py    
     Version: 1.5
-    Description: data processing thread definitions
+    Description: data processing threads definitions
     
     Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
         Samuel Guayerbas Martín

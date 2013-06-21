@@ -1,15 +1,33 @@
-# -*- coding: utf8 -*-
+# -*- coding: UTF8 -*-
 '''
-Common connection definitions
-@author: Luis Barrios Hernández
-@version: 7.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: connection.py    
+    Version: 7.0
+    Description: basic network connection definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from ccutils.enums import enum
 from connectionStatus import ConnectionStatus
 from protocols import CygnusCloudProtocolFactory
 from ccutils.dataStructures.multithreadingCounter import MultithreadingCounter
-from twisted.internet.error import *
 
 """
 Connection status enum type.
@@ -18,7 +36,7 @@ CONNECTION_STATUS = enum("OPENING", "READY_WAIT", "READY", "CLOSING", "CLOSED", 
 
 class Connection(object):
     """
-    A class that represents a generic network connection.
+    This is the base class for all network connections.
     """
     def __init__(self, useSSL, certificatesDirectory, port, transferQueue, incomingDataThread, callbackObject):
         """
@@ -140,7 +158,8 @@ class Connection(object):
         Args:
             p: the packet to send
             client_IP: the client's IPv4 address
-        @attention: The two last parameters will only be used with server and unicast connections.
+            client_port: the client's port
+            @attention: The two last parameters will only be used with server connections.
         Returns:
             Nothing
         """
@@ -193,6 +212,9 @@ class Connection(object):
     def isInErrorState(self):
         """
         Checks if the connection is in an error state.
+        Args:
+            None
+        Returns: True if the connection is in an error state, and False if it isn't.
         """
         return self._status.get() == CONNECTION_STATUS.ERROR
     
@@ -202,6 +224,9 @@ class Connection(object):
         in two different ways:
             1) All the clients disconnect from a server.
             2) A server disconnects from all its clients.
+        Args: None
+        Returns:
+            True if the connection was unexpectedly closed, and False if it wasn't.
         """
         return self._unexpectedlyClosed
         
