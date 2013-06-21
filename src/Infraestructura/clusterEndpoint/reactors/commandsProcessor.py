@@ -59,7 +59,7 @@ class CommandsProcessor(object):
                         packet = self.__packetHandler.createVMBootRequestPacket(parsedArgs["VMID"], parsedArgs["UserID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.DESTROY_DOMAIN):
                         packet = self.__packetHandler.createDomainDestructionPacket(parsedArgs["DomainID"], serializedCommandID)
-                        self.__endpointDBConnector.unregisterDomain(parsedArgs["DomainUID"])
+                        self.__endpointDBConnector.unregisterDomain(parsedArgs["DomainID"])
                     elif (commandType == COMMAND_TYPE.REBOOT_DOMAIN):
                         packet = self.__packetHandler.createDomainRebootPacket(parsedArgs["DomainID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.VM_SERVER_CONFIGURATION_CHANGE) :
