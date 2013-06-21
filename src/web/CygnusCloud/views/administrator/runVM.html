@@ -25,16 +25,19 @@
 
 {{extend 'layout.html'}}
 {{if(request.args(0) == 'run'):}}
+<META HTTP-EQUIV="refresh" CONTENT="30">
 <h1>{{=T('Arrancar máquinas')}}</h1>
 {{=form1}}
 {{=form2}}
 {{pass}}
 {{if(request.args(0) == 'stop'):}}
+<META HTTP-EQUIV="refresh" CONTENT="30">
 <h1>{{=T('Máquinas arrancadas')}}</h1>
 {{=form1}}
 {{=form2}}
 {{pass}}
 {{if(request.args(0) == 'open'):}}
+<META HTTP-EQUIV="refresh" CONTENT="30">
 <h1>{{=T('Máquinas arrancadas')}}</h1>
 {{=form1}}
 {{=form2}}

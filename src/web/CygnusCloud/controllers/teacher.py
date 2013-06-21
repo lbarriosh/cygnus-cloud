@@ -216,7 +216,8 @@ def createAndEdit():
                                else:
                                         response.flash = "Petición de creación enviada"
                                
-                               """      
+                               """   
+                               print "Identificador de la imagen base: " + str(form.vars.selection.split('c')[2])   
                                errorInfo = connector.createImage(form.vars.selection.split('c')[2], form.vars.newVMName, form.vars.description)  
                                if(len(connector.getCommandOutput(errorInfo))==0):
                                    response.flash = "Petición de creación enviada"
@@ -239,7 +240,7 @@ def createAndEdit():
             num2= 0
             for image in editedImages:
                 imageInfo = connector.getImageData(image)
-                print str(imageInfo["State"]) + 'W' + str(image)
+                
                 if (imageInfo["State"] == EDITION_STATE_T.TRANSFER_TO_REPOSITORY) or (imageInfo["State"] == EDITION_STATE_T.VM_ON) or \
                         (imageInfo["State"] == EDITION_STATE_T.AUTO_DEPLOYMENT) or (imageInfo["State"] == EDITION_STATE_T.AUTO_DEPLOYMENT_ERROR):
                     runningImages.append(TR(TD(INPUT(_type='radio',_name = 'selection1',_value = str(imageInfo["State"]) + 'w' + str(image),
@@ -333,9 +334,9 @@ def createAndEdit():
             if form1.accepts(request.vars,keepvalues=True) and form1.vars.saveChanges:
                    #Creamos la MV
                    if len(form1.vars.selection2) > 0:
-                               print "identificador " + form1.vars.selection2.split('w')[1]
                                imageInfo = connector.getImageData(form1.vars.selection2.split('w')[1]) 
-                               print imageInfo["EditedImage"]
+                               print "Llamo a despligue de imagen con id temporal: " + str(form1.vars.selection2.split('w')[1])
+                               print "Valor del campo EditedImage: " + str(imageInfo["EditedImage"]) 
                                if imageInfo["EditedImage"]:
                                        print "ya editada"
                                        errorInfo = connector.deployEditedImage(form1.vars.selection2.split('w')[1])
@@ -343,8 +344,8 @@ def createAndEdit():
                                else:
                                    #Obtenemos el número de instancias
                                    placesNumberInfo = userDB((userDB.VMByGroup.VMId== imageInfo["ImageID"]) & \
-                                       (userDB.VMByGroup.VMByGroup.cod == userDB.ClassGroup.cod) & \
-                                       (userDB.VMByGroup.VMByGroup.curseGroup == userDB.ClassGroup.curseGroup)).select(\
+                                       (userDB.VMByGroup.cod == userDB.ClassGroup.cod) & \
+                                       (userDB.VMByGroup.curseGroup == userDB.ClassGroup.curseGroup)).select(\
                                            userDB.ClassGroup.placesNumber)
                                    #Nos quedamos con el máximo
                                    maxPlaces = 0
@@ -382,14 +383,20 @@ def createAndEdit():
             if form2.accepts(request.vars,keepvalues=True) and form2.vars.stop:
                    #Creamos la MV
                    if len(form2.vars.selection1) > 0:
+                        imageInfo = connector.getImageData(form2.vars.selection1.split('w')[1]) 
+                        print "Detengo imagen con identificador temporal: " + str(form2.vars.selection1.split('w')[1])
+                        print "Valor del campo EditedImage: " + str(imageInfo["EditedImage"]) 
                         #Paramos la máquina virtual
                         commandId = connector.destroyDomain(form2.vars.selection1.split('w')[1])
-                        #Esperamos la contestacion
-                        errorInfo = connector.waitForCommandOutput(commandId)
-                        if(errorInfo != None):
-                            response.flash = T(errorInfo['ErrorMessage'])
-                        else:
-                            redirect(URL(f = 'editVM'))
+                        evaluateCommand(connector,commandId,"Petición de detenció enviada")
+                        activeVMConectData = connector.getActiveVMsData(True,True)
+                        for vmInfo in activeVMConectData:
+                            if vmInfo["DomainUID"] == form2.vars.selection1.split('w')[1]:
+                                serverIp = searchVMServerIp(connector.getVMServersData(), vmInfo["VMServerName"])
+                                vncInfo = dict(OutputType=2,VNCServerIPAddress=serverIp,VNCServerPort=int(vmInfo["VNCPort"])+ 1
+                                    ,VNCServerPassword=str(vmInfo["VNCPassword"]))
+                            if vncInfo != None:            
+                                 redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
         
                    else:
                            response.flash = "Debe seleccionar una imagen base"
