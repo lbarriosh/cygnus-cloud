@@ -1,19 +1,38 @@
 # -*- coding: utf8 -*-
 '''
-Thread-safe counter definitions
-@author: Luis Barrios Hernández
-@version: 1.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: multithreadingCounter.py    
+    Version: 2.0
+    Description: thread-safe counter definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from threading import BoundedSemaphore
 
 class MultithreadingCounter(object):
     """
-    A thred-safe counter.
+    A thread-safe counter.
     """
     def __init__(self):
         """
-        Initializes the counter.
+        Initializes the counter
         Args:
             None
         """
@@ -22,7 +41,7 @@ class MultithreadingCounter(object):
         
     def read(self):
         """
-        Retuns the counter's current value.
+        Reads the counter's current value
         Args:
             None
         Returns:
@@ -32,7 +51,7 @@ class MultithreadingCounter(object):
     
     def increment(self):
         """
-        Increments the counter.
+        Increments the counter
         Args:
             None
         Returns:
@@ -43,7 +62,7 @@ class MultithreadingCounter(object):
             
     def decrement(self):
         """
-        Decrements the counter.
+        Decrements the counter
         Args:
             None
         Returns:
@@ -56,11 +75,13 @@ class MultithreadingCounter(object):
     
     def incrementIfGreaterThan(self, n):
         """
-        Increments the counter if is greater than a value.
+        Increments the counter if its value is greater than a given
+            threshold
         Args:
-            n : value to test
+            n: the threshold to consider
         Returns:
-            If the counter has been modified
+            True if the counter was incremented, and False
+            otherwise.
         """
         with self.__semaphore:
             if (self.__counter > n):
@@ -71,11 +92,13 @@ class MultithreadingCounter(object):
             
     def decrementIfGreaterThan(self, n):
         """
-        Decrements the counter if is greater than a value.
+        Decrements the counter if its value is greater than a given
+            threshold
         Args:
-            n : value to test
+            n: the threshold to consider
         Returns:
-            If the counter has been modified
+            True if the counter was decremented, and False
+            otherwise.
         """
         with self.__semaphore:
             if (self.__counter > n):
@@ -86,11 +109,13 @@ class MultithreadingCounter(object):
             
     def decrementIfLessThan(self, n):
         """
-        Decrements the counter if is less than a value.
+        Decrements the counter if its value is less than a given
+            threshold
         Args:
-            n : value to test
+            n: the threshold to consider
         Returns:
-            If the counter has been modified
+            True if the counter was decremented, and False
+            otherwise.
         """
         with self.__semaphore:
             if (self.__counter < n):

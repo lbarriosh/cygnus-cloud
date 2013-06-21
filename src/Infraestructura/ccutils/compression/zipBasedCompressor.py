@@ -8,7 +8,8 @@
     Version: 3.0
     Description: zip-based compressor definitions
     
-    Copyright 2012-13 Luis Barrios Hernández, Samuel Guayerbas Martín
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -39,6 +40,9 @@ class ZipBasedCompressor():
             fileNameList: the files that will be added to the .zip file.
         Returns:
             Nothing
+        Raises: Exception
+            When the compressed file cannot be created, an exception will be
+            raised.
         '''
         args = filePath + " "
         for fileName in fileNameList :
@@ -59,6 +63,9 @@ class ZipBasedCompressor():
             outputDirectory: the directory where the .zip file content will be extracted.
         Returns:
             Nothing
+        Raises: Exception
+            When the compressed file cannot be extracted, an exception will be
+            raised.
         '''
         if (outputDirectory == None) :
             outputDirectory = path.dirname(path)

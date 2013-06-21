@@ -1,14 +1,34 @@
 # -*- coding: UTF8 -*-
 '''
-    In this module, we define the database configurator class. Its instances
-    can configure a MySQL database.
-    @author: Adrián Fernández Hernández
-    @author: Luis Barrios Hernández
-    @version: 2.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: configuration.py    
+    Version: 2.5
+    Description: Database configurator definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 import MySQLdb
 
 class DBConfigurator(object):
+    """
+    This class provides methods to configure databases.
+    """
 
     def __init__(self, rootPassword):
         '''
@@ -44,6 +64,10 @@ class DBConfigurator(object):
     def createDatabase(self, databaseName):
         '''
         Creates a MySQL database
+        Args:
+            databaseName: the new database's name
+        Returns:
+            Nothing
         '''   
         db = MySQLdb.connect(host='localhost',user="root",passwd=self.__rootPassword)
         command = "CREATE DATABASE " + databaseName + ";"
@@ -53,6 +77,13 @@ class DBConfigurator(object):
         db.close()
         
     def dropDatabase(self, databaseName):
+        '''
+        Deletes a MySQL database
+        Args:
+            databaseName: the database to delete's name
+        Returns:
+            Nothing
+        '''
         db = MySQLdb.connect(host='localhost',user="root",passwd=self.__rootPassword)
         command = "DROP DATABASE " + databaseName + ";"
         cursor = db.cursor()

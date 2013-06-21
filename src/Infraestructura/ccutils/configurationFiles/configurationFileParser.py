@@ -9,7 +9,8 @@
     Version: 3.0
     Description: ConfigParser-based configuration file parser
     
-    Copyright 2012-13 Luis Barrios Hernández
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

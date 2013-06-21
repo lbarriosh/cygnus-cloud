@@ -1,31 +1,51 @@
 # -*- coding: utf8 -*-
 '''
-A module that contains the thread-safe priority queue definitions
-@author: Luis Barrios Hernández
-@version 1.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: multithreadingPriorityQueue.py    
+    Version: 1.5
+    Description: thread-safe priority definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from threading import BoundedSemaphore
-from threading import Thread
 from ccutils.dataStructures.queue import Queue
 
 class GenericThreadSafePriorityQueueException(Exception):
+    """
+    Thread-safe priority queue exception class
+    """
     pass
 
 class GenericThreadSafePriorityQueue(Queue):
     """
-    A priority queue with multi-threading support.
-    @attention: This objects are NOT iterable to avoid nasty iterator issues.    
+    A thread-safe priority queue
+    @attention: In order to avoid nasty iterator issues, these objects are NOT iterable.    
     """
     def __init__(self):
         """
-        Creates an empty priority transferQueue
+        Creates an empty priority queue
         Args:
             None
         Returns:
             Nothing
         """
-        # We use this to speed up the transferQueue operations
         self._data = dict()
         # We use a semaphore to avoid compilation problems in Python 3.x
         self.__semaphore = BoundedSemaphore(1) 
@@ -39,9 +59,6 @@ class GenericThreadSafePriorityQueue(Queue):
             data: the data to add to the queue
         Returns:
             Nothing
-        Raises:
-            GenericThreadSafePriorityQueueException: this exceptions will be raised when
-            the priority is not an integer value.
         """
         # Check arguments
         if not isinstance(priority, int) :
@@ -60,8 +77,6 @@ class GenericThreadSafePriorityQueue(Queue):
             None
         Returns:
             The popped element.
-        Raises:
-            GenericThreadSafePriorityQueueException: this exceptions will be raised when the queue is empty.
         """
         with self.__semaphore:
             if self.__elements == 0:
@@ -76,49 +91,11 @@ class GenericThreadSafePriorityQueue(Queue):
     
     def isEmpty(self):
         """
-        Checks if the list es empty or not
+        Checks if the queue is empty
         Args:
             None
         Returns:
-            True if the queue is empty and false otherwise.
+            True if the queue is empty and False if its not.
         """
         with self.__semaphore:
             return self.__elements == 0
-        
-if __name__ == "__main__" :
-    
-    class DumbThread(Thread):
-        def __init__(self, transferQueue, thid, threshold):
-            Thread.__init__(self)
-            self.__queue = transferQueue
-            self.__thid = thid
-            self.__threshold = threshold
-    
-        def run(self):
-            print 'Dumb thread ' + str(self.__thid) + " is running now\n"
-            priority = range(-self.__threshold, self.__threshold)
-            for item in priority :
-                self.__queue.queue(item, "Dumb thread " + str(self.__thid) + " " + str(item))
-            
-        
-    # Create an empty queue
-    q = GenericThreadSafePriorityQueue()
-    # Add some stuff to it in three separate threads
-    dumb1 = DumbThread(q, 1, 2)
-    dumb2 = DumbThread(q, 2, 4)
-    dumb3 = DumbThread(q, 3, 6)
-    dumb1.start()
-    dumb2.start()
-    dumb3.start()
-    dumb1.join()
-    dumb2.join()
-    dumb3.join()
-    print "Queue content:"
-    # Print all the data stored into the queue
-    while not q.isEmpty():
-        print q.dequeue()
-    
-    
-        
-    
-        
