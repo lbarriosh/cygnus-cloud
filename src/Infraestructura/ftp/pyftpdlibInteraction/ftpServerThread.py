@@ -1,22 +1,38 @@
 # -*- coding: utf8 -*-
-'''
-Created on May 31, 2013
-
-@author: luis
+'''  
+    File: ftpServerThread.py 
+    Description: FTP server thread definitions
+    
+    Copyright 2007-2013 Giampaolo Rodola' <g.rodola@gmail.com>
+    
+                             All Rights Reserved
+    
+     Permission is hereby granted, free of charge, to any person
+     obtaining a copy of this software and associated documentation
+     files (the "Software"), to deal in the Software without
+     restriction, including without limitation the rights to use,
+     copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the
+     Software is furnished to do so, subject to the following
+     conditions:
+    
+     The above copyright notice and this permission notice shall be
+     included in all copies or substantial portions of the Software.
+    
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+     OTHER DEALINGS IN THE SOFTWARE.
 '''
 from threading import Thread, Lock, Event
 
-class FTPServerThread(Thread):
-    """
-    Clase para el hilo que ejecutará el bucle del servidor FTP
-    """
+class FTPServerThread(Thread):   
     
-    def __init__(self, ftpServer):
-        """
-        Inicializa el estado del hilo
-        Argumentos:
-            ftpServer: servidor FTP cuyo bucle vamos a ejecutar
-        """
+    def __init__(self, ftpServer):        
         Thread.__init__(self, name="FTP server thread")
         self.__serving = False
         self.__stopped = False
@@ -24,14 +40,7 @@ class FTPServerThread(Thread):
         self.__flag = Event()
         self.server = ftpServer        
     
-    def __restart(self):
-        """
-        Reinicia la ejecución del hilo
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
-        """
+    def __restart(self):        
         Thread.__init__(self)
         self.__serving = False
         self.__stopped = False
@@ -42,15 +51,7 @@ class FTPServerThread(Thread):
     def running(self):
         return self.__serving
     
-    def start(self, timeout=0.001):
-        """
-        Inicia la ejecución del hilo
-        Argumentos:
-            timeout: tiempo durante el que se estará ejecutando el bucle
-            del servidor FTP ANTES de comprobar si hay que acabar o no
-        Devuelve:
-            Nada        
-        """
+    def start(self, timeout=0.001):        
         if self.__serving:
             raise RuntimeError("Server already started")
         if self.__stopped:            
@@ -59,15 +60,7 @@ class FTPServerThread(Thread):
         Thread.start(self)
         self.__flag.wait()
     
-    def run(self):
-        """
-        Ejecuta el bucle del servidor FTP y comprueba si hay que parar o no
-        cada timeout segundos.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
-        """    
+    def run(self):        
         self.__serving = True 
         self.__flag.set()
         while self.__serving:
@@ -76,14 +69,7 @@ class FTPServerThread(Thread):
             self.__lock.release()
         self.server.close_all()
             
-    def stop(self):
-        """
-        Finaliza (ordenadamente) la ejecución del bucle del servidor FTP
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
-        """
+    def stop(self):        
         if not self.__serving:
             raise RuntimeError("Server not started yet")
         self.__serving = False

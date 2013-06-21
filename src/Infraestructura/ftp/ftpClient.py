@@ -1,30 +1,54 @@
-# # -*- coding: utf8 -*-
+# -*- coding: utf8 -*-
+'''
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: ftpClient.py    
+    Version: 1.3
+    Description: FTP client definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+'''
 from ftplib import FTP
 import os
 
 class FTPClient(object):
     """
-    Clase para el cliente FTP basado en ftplib
-    """
-    
+    This class provides methods to interact with Python's FTP client
+    at a higher abstraction level.
+    """    
     def __init__(self):
         """
-        Inicializa el estado del cliente
-        Argumentos:
-            Ninguno
+        Initializes the client's state
+        Args:
+            None
         """
         self.__ftp = FTP()
 
     
     def connect(self, host, port, timeout, user, password):
         """"
-        Establece la conexión con el servidor FTP
-        Argumentos:
-            host: la IP del servidor FTP
-            port: el puerto de escucha del servidor FTP
-            timeout: timeout máximo (en segundos) para establecer la conexión
-            user: usuario a utilizar
-            password: contraseña a utilizar
+        Establishes a connection with a FTP server
+        Args:
+            host: the FTP server's IPv4 address
+            port: the FTP server's listenning port
+            timeout: connection timeout (in seconds)
+            user: an username
+            password: a password
         """
         self.__ftp.connect(host, port, timeout)
         self.__ftp.login(user, password)
@@ -32,14 +56,14 @@ class FTPClient(object):
     
     def storeFile(self, fileName, localDirectory, serverDirectory=None):
         """
-        Almacena un fichero en el servidor FTP
-        Argumentos:
-            fileName: nombre (OJO, solo nombre) del fichero a subir
-            localDirectory: directorio LOCAL en el que está el fichero a subir
-            serverDirectory: directorio del servidor al que queremos subir el fichero. Si es None,
-            se guardará en la raíz.
-        Devuelve:
-            Nada
+        Stores a file in the FTP server
+        Args:
+            fileName: a file name (NOT a path)
+            localDirectory: a local directory, where the file to upload is located.
+            serverDirectory: a server directory. If it's None, the file will be uploaded
+                to the server's root directory
+        Returns:
+            Nothing
         """
         if (serverDirectory != None) :
             self.__ftp.cwd(serverDirectory)        
@@ -47,14 +71,14 @@ class FTPClient(object):
     
     def retrieveFile(self, fileName, localDirectory, serverDirectory=None):
         """
-        Descarga un fichero del servidor FTP
-        Argumentos:
-            fileName: nombre (OJO, solo nombre) del fichero a descargar
-            localDirectory: directorio LOCAL en el que estará el fichero a descargar
-            serverDirectory: directorio del servidor en el que está el fichero a descargar. Si es None,
-            se asumirá que el fichero está en la raíz
-        Devuelve:
-            Nada
+        Downloads a file from the FTP server
+        Args:
+            fileName: a file name (NOT a path)
+            localDirectory: a local directory, where the downloaded file will be located.
+            serverDirectory: a server directory. If it's None, the file will be uploaded
+                to the server's root directory
+        Returns:
+            Nothing
         """
         if (serverDirectory != None) :
             self.__ftp.cwd(serverDirectory)
@@ -65,15 +89,10 @@ class FTPClient(object):
     
     def disconnect(self):
         """
-        Cierra educadamente la conexión con el servidor FTP
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Closes the connection with the FTP server
+        Args:
+            None
+        Returns:
+            Nothing
         """
         self.__ftp.quit()
-        
-if __name__ == "__main__" :
-    ftpClient = FTPClient()
-    ftpClient.connect("127.0.0.1", 2121, 100, "cygnuscloud", "cygnuscloud")
-    ftpClient.retrieveFile("earth-horizon.jpg", "/home/luis")

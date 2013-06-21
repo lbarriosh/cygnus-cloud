@@ -72,7 +72,7 @@ class NetworkCallback(object):
 
 class NetworkManager():
     """
-    This class provides a facade to use Twisted in a higher abstraction level way.    
+    This class provides a facade to use Twisted at a higher abstraction level.    
     @attention: If you don't want everything to conk out, DO NOT USE MORE THAN
     ONE NetworkManager IN THE SAME PROGRAM.
     @attention: Due to some Twisted related limitations, do NOT stop the network service 
