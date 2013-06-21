@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Basic thread class definitions.
-@author: Luis Barrios Hernández
-@version: 1.2
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: queueProcessingThread.py    
+    Version: 1.5
+    Description: queue processing thread class definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from ccutils.threads.basicThread import BasicThread
@@ -10,18 +29,16 @@ from time import sleep
 
 class QueueProcessingThread(BasicThread):
     """
-    A class associated with a data processing thread.
-    These threads read data from a queue and process
-    them in an abstract way.
+    These threads read elements from a queue and process them.
     """
-    def __init__(self, threadName, compressionQueue):
+    def __init__(self, threadName, queue):
         """
         Initializes the thread's state
         Args:
-            compressionQueue: the compressionQueue to monitor.
+            queue: the queue to use
         """
         BasicThread.__init__(self, threadName)        
-        self._queue = compressionQueue   
+        self._queue = queue 
         
     def processElement(self, element):
         """
@@ -34,9 +51,7 @@ class QueueProcessingThread(BasicThread):
         raise NotImplementedError
     
     def run(self):
-        """
-        Processes the queue until it's empty and the thread is finish.
-        """        
+        # Run method, common to all threads      
         while not (self.finish() and self._queue.isEmpty()):
             while not self._queue.isEmpty() :
                 element = self._queue.dequeue()

@@ -1,9 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Child process manager definitios
-@author: Luis Barrios Hernández
-@author: Samuel Guayerbas
-@version: 3.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: childProcessManager.py    
+    Version: 3.0
+    Description: child process manager definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from subprocess import Popen, PIPE, STDOUT
@@ -19,11 +37,23 @@ class ChildProcessManager(object):
     return values.
     """
     def __init__(self):
+        """
+        Initializes the manager's state
+        Args:
+            None
+        """
         self.__backgroundProcesses = GenericThreadSafeList()
         self.__thread = BackgroundProcessesPollingThread(self.__backgroundProcesses)
         self.__thread.start()
         
     def waitForBackgroundChildrenToTerminate(self):
+        """
+        Waits for all the child processes running in background to terminate.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         self.__thread.stop()
         while not self.__thread.finish() :
             sleep(0.1)
@@ -54,7 +84,7 @@ class ChildProcessManager(object):
             Args:
                 cmd: a string with the command's name and its arguments
             Returns:
-                a PID
+                the child process' PID
         """
         p = Popen(cmd, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
         self.__backgroundProcesses.append(p)
@@ -65,7 +95,7 @@ class ChildProcessManager(object):
         """
         Sends a SIGTERM signal to a process
         Args:
-            pid: A PID
+            pid: a process' PID
             ExceptionClass: the exception that will be raised if something goes wrong
         Returns :
             Nothing

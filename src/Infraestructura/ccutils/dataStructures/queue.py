@@ -5,7 +5,7 @@
     ========================================================================
     
     File: queue.py    
-    Version: 1.5
+    Version: 1.0
     Description: Queue interface definitions
     
     Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
