@@ -28,8 +28,14 @@ def enum(*sequence):
     """
     This function extends Python's syntax in order to handle enum types. 
     The integer values assigned to the enum constants will be generated automatically.    
-    @attention: The attribute reverse_mapping returns the enum constant
-    assigned to an integer.
+    Args:
+        sequence: a list of values
+    Returns:
+        an Enum object that represents the enum type. 
+        For example, if it has the values A and B, <Enum Object>.A returns the
+        integer value associated with the A enum constant.         
+        @attention: The attribute reverse_mapping returns the enum constant
+        assigned to an integer.
     """
     values = dict(zip(sequence, range(len(sequence))))
     reverse_values = dict((value, key) for key, value in values.iteritems())

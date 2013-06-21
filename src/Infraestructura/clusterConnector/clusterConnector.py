@@ -456,4 +456,4 @@ class ClusterConnector(object):
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "website_user", "CygnusCloud")
-    connector.destroyDomain("1|1371796503.46")
+    connector.shutDownInfrastructure(True)
