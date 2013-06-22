@@ -27,7 +27,7 @@ class ClusterServerPacketHandler(object):
         return p
         
     def createAutoDeployPacket(self, imageID, instances, commandID):
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(CLUSTER_SERVER_PACKET_T.AUTO_DEPLOY)
         p.writeInt(imageID)
         p.writeInt(instances)
@@ -47,7 +47,7 @@ class ClusterServerPacketHandler(object):
         Devuelve:
             un paquete con los datos de los argumentos
         """
-        p = self.__packetCreator.createPacket(3)
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(CLUSTER_SERVER_PACKET_T.REGISTER_VM_SERVER)
         p.writeString(IPAddress)
         p.writeInt(port)
@@ -64,7 +64,7 @@ class ClusterServerPacketHandler(object):
         Devuelve:
             un paquete con los datos de los argumentos
         """
-        p = self.__packetCreator.createPacket(3)
+        p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.COMMAND_EXECUTED)
         p.writeString(commandID)
         return p  
@@ -85,7 +85,7 @@ class ClusterServerPacketHandler(object):
          Devuelve:
             un paquete con los datos de los argumentos
         """
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(10)
         p.writeInt(query)
         return p
     
@@ -99,7 +99,7 @@ class ClusterServerPacketHandler(object):
         Devuelve:
             un paquete con los datos de los argumentos
         """
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(10)
         p.writeInt(CLUSTER_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA)
         p.writeInt(segment)
         p.writeInt(sequenceSize)
@@ -160,7 +160,7 @@ class ClusterServerPacketHandler(object):
         Devuelve:
             un paquete con los datos de los argumentos
         """
-        p = self.__packetCreator.createPacket(3)
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(CLUSTER_SERVER_PACKET_T.BOOTUP_VM_SERVER)
         p.writeString(serverNameOrIPAddress)
         p.writeString(commandID)
@@ -176,7 +176,7 @@ class ClusterServerPacketHandler(object):
         Devuelve:
             un paquete con los datos de los argumentos
         """
-        p = self.__packetCreator.createPacket(4)
+        p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.VM_BOOT_REQUEST)
         p.writeInt(imageID)
         p.writeInt(userID)
@@ -194,7 +194,7 @@ class ClusterServerPacketHandler(object):
         Devuelve:
             un paquete con los datos de los argumentos
         """
-        p = self.__packetCreator.createPacket(4)
+        p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.VM_CONNECTION_DATA)
         p.writeString(IPAddress)
         p.writeInt(port)
@@ -211,8 +211,8 @@ class ClusterServerPacketHandler(object):
         Devuelve:
             un paquete con los datos de los argumentos
         """
-        p = self.__packetCreator.createPacket(5)
-        p.writeInt(CLUSTER_SERVER_PACKET_T.ACTIVE_VM_DATA)
+        p = self.__packetCreator.createPacket(10)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.ACTIVE_VM_VNC_DATA)
         p.dumpData(data)
         return p
     
@@ -239,7 +239,7 @@ class ClusterServerPacketHandler(object):
         Devuelve:
             un paquete con los datos de los argumentos
         """
-        p = self.__packetCreator.createPacket(4) # Todo lo que sea liberar carga es bueno. Por eso es ligeramente más prioritario que los otros
+        p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.DOMAIN_DESTRUCTION)
         p.writeString(domainID)
         p.writeString(commandID)
@@ -254,14 +254,14 @@ class ClusterServerPacketHandler(object):
         Devuelve:
             un paquete con los datos de los argumentos
         """
-        p = self.__packetCreator.createPacket(4) # Todo lo que sea liberar carga es bueno. Por eso es ligeramente más prioritario que los otros
+        p = self.__packetCreator.createPacket(5) 
         p.writeInt(CLUSTER_SERVER_PACKET_T.DOMAIN_REBOOT)
         p.writeString(domainID)
         p.writeString(commandID)
         return p
     
     def createRepositoryStatusPacket(self, freeDiskSpace, availableDiskSpace, status):
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(10)
         p.writeInt(CLUSTER_SERVER_PACKET_T.REPOSITORY_STATUS)
         p.writeInt(freeDiskSpace)
         p.writeInt(availableDiskSpace)
@@ -269,7 +269,7 @@ class ClusterServerPacketHandler(object):
         return p
         
     def createVMServerConfigurationChangePacket(self, serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior, commandID):
-        p = self.__packetCreator.createPacket(2)
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(CLUSTER_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE)
         p.writeString(serverNameOrIPAddress)
         p.writeString(newName)
@@ -296,7 +296,7 @@ class ClusterServerPacketHandler(object):
         return p
     
     def createImageDeletionPacket(self, imageID, commandID):
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE)
         p.writeInt(imageID)
         p.writeString(commandID)
@@ -355,7 +355,7 @@ class ClusterServerPacketHandler(object):
                 data.append((p.readString(), p.readInt(), p.readInt()))
             result["Data"] = data
             
-        elif (packet_type == CLUSTER_SERVER_PACKET_T.ACTIVE_VM_DATA) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.ACTIVE_VM_VNC_DATA) :
             result["Segment"] = p.readInt()
             result["SequenceSize"] = p.readInt()
             result["VMServerIP"] = p.readString()

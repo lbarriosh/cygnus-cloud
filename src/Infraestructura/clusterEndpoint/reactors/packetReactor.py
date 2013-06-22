@@ -47,7 +47,7 @@ class ClusterEndpointPacketReactor(object):
             self.__updateImageRepositoryStatus(data)            
         elif (data["packet_type"] == PACKET_T.VM_SERVERS_RESOURCE_USAGE) :
             self.__endpointDBConnector.processVMServerResourceUsageSegment(data["Segment"], data["SequenceSize"], data["Data"])            
-        elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
+        elif (data["packet_type"] == PACKET_T.ACTIVE_VM_VNC_DATA) :
             self.__endpointDBConnector.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])                        
         else :
             # El resto de paquetes contienen la salida de un comando

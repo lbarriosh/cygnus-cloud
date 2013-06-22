@@ -60,7 +60,7 @@ class VMServerMonitoringThread(BasicThread):
         errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)        
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Virtual machine distribution", errorMessage)
         
-        p = self.__packetHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
+        p = self.__packetHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_VNC_DATA)
         errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Active virtual machines data", errorMessage)
         

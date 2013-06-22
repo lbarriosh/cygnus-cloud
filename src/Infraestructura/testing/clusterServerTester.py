@@ -44,7 +44,7 @@ class TesterCallback(NetworkCallback):
             print("\tVNC server IP address: " + data["VNCServerIPAddress"])
             print("\tVNC server port: " + str(data["VNCServerPort"]))
             print("\tVNC server password: " + data["VNCServerPassword"])
-        elif (data["packet_type"] == PACKET_T.ACTIVE_VM_DATA) :
+        elif (data["packet_type"] == PACKET_T.ACTIVE_VM_VNC_DATA) :
             print("VNC connection data")
             print("\tSegment " + str(data["Segment"]) + " of " + str(data["SequenceSize"]))
             print("\tVNC server IP address: " + data["VMServerIP"])
@@ -124,7 +124,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createHaltPacket(True)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "obtainActiveVMsData") :
-            p = pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_DATA)
+            p = pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_VNC_DATA)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "destroyDomain") :
             p = pHandler.createDomainDestructionPacket(tokens.pop(0), "")

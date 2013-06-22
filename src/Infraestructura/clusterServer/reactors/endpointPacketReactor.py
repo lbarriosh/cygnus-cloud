@@ -59,7 +59,7 @@ class EndpointPacketReactor(object):
             self.__doImmediateShutdown(data)
         elif (data["packet_type"] == PACKET_T.QUERY_VM_DISTRIBUTION) :
             self.__sendStatusData(self.__dbConnector.getHostedImages, self.__packetHandler.createVMDistributionPacket)
-        elif (data["packet_type"] == PACKET_T.QUERY_ACTIVE_VM_DATA) :
+        elif (data["packet_type"] == PACKET_T.QUERY_ACTIVE_VM_VNC_DATA) :
             self.__requestVNCConnectionData()
         elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION) :
             self.__destroyOrRebootDomain(data, False)
@@ -610,7 +610,7 @@ class EndpointPacketReactor(object):
         Devuelve:
             Nada
         """
-        p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_VM_DATA)
+        p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_VM_VNC_DATA)
         
         connectionData = self.__dbConnector.getActiveVMServersConnectionData()
         for cd in connectionData :            
