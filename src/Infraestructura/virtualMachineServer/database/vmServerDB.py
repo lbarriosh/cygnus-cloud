@@ -86,16 +86,16 @@ class VMServerDBConnector(BasicDBConnector):
         '''
             Función encargada de crear la tabla inicial de pares (UUID,MAC) libres
         '''
-        sql = "DROP TABLE IF EXISTS FreeMACs"         
+        sql = "DROP TABLE IF EXISTS FreeMACsAndUUIDs"         
         self._executeUpdate(sql)  
-        sql = "CREATE TABLE IF NOT EXISTS FreeMACs(UUID VARCHAR(40) ,MAC VARCHAR(20),PRIMARY KEY(UUID,MAC)) ENGINE=MEMORY;"
+        sql = "CREATE TABLE IF NOT EXISTS FreeMACsAndUUIDs(UUID VARCHAR(40) ,MAC VARCHAR(20),PRIMARY KEY(UUID,MAC)) ENGINE=MEMORY;"
         self._executeUpdate(sql)
         v = 0
         while v < 256 :
             x = str(hex(v))[2:].upper()
             if v < 16:
                 x = '0' + x
-            sql = "INSERT INTO FreeMACs VALUES (UUID(),'" + '2C:00:00:00:00:' + x + "');"
+            sql = "INSERT INTO FreeMACsAndUUIDs VALUES (UUID(),'" + '2C:00:00:00:00:' + x + "');"
             self._executeUpdate(sql)
             v = v + 1
             
@@ -121,11 +121,11 @@ class VMServerDBConnector(BasicDBConnector):
             Función que devuelve la primera ocurrencia de la tabla de macs libres y
              la elimina de la tabla
         '''
-        sql = "SELECT * FROM FreeMACs"
+        sql = "SELECT * FROM FreeMACsAndUUIDs"
         result = self._executeQuery(sql, True)
         if (result == None) : 
             return None        
-        sql = "DELETE FROM FreeMACs WHERE UUID = '" + result[0] + "' AND MAC ='" + result[1] + "'"
+        sql = "DELETE FROM FreeMACsAndUUIDs WHERE UUID = '" + result[0] + "' AND MAC ='" + result[1] + "'"
         self._executeUpdate(sql)
         return (result[0], result[1])
     
@@ -133,7 +133,7 @@ class VMServerDBConnector(BasicDBConnector):
         '''
             Añade un nuevo par del tipo UUID , MAC a la tabla freeMAC
         '''
-        sql = "INSERT INTO FreeMACs VALUES ('" + UUID + "','" + MAC + "')"
+        sql = "INSERT INTO FreeMACsAndUUIDs VALUES ('" + UUID + "','" + MAC + "')"
         self._executeUpdate(sql)
         
     def extractFreeVNCPort(self):
@@ -317,7 +317,7 @@ class VMServerDBConnector(BasicDBConnector):
         return (assignedMACs, assignedVNCPorts)      
     
     def __allocateMACAddressAndUUID(self, macAddr):
-        command = "DELETE FROM FreeMACs WHERE MAC ='{0}';".format(macAddr)    
+        command = "DELETE FROM FreeMACsAndUUIDs WHERE MAC ='{0}';".format(macAddr)    
         self._executeUpdate(command)      
         
     def __allocatePort(self, port):
