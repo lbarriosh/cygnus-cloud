@@ -1,65 +1,81 @@
 # -*- coding: utf8 -*-
 '''
-Gestor de paquetes del servidor de máquinas virtuales
-@author: Luis Barrios Hernández
-@version: 4.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: packetHandler.py    
+    Version: 5.0
+    Description: virtual machine server packet handler definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T
 
 class VMServerPacketHandler(object):
     """
-    Gestor de paquetes del servidor de máquinas virtuales
+    Virtual machine server packet handler
     """
     
-    def __init__(self, packetCreator):
+    def __init__(self, networkManager):
         """
-        Inicializa el estado del gestor de paquetes.
-        Argumentos:
-            packetCreator: objeto que se usará para crear paquetes.
-        Devuelve:
-            Nada
+        Initializes the handler's state
+        Args:
+            networkManager: the object that will create the network packets
         """
-        self.__packetCreator = packetCreator
+        self.__packetCreator = networkManager
     
-    def createVMBootPacket(self, machineId, userId, commandID):
+    def createVMBootPacket(self, imageID, userID, commandID):
         """
-        Crea un paquete de arranque de una máquina virtual
-        Argumentos:
-            machineId: el identificador único de la máquina virtual a arrancar
-            userId: el identificador único del usuario que quiere arrancarla
-            commandID: el identificador único del comando de arranque
-        Devuelve:
-            Un paquete construido a partir de sus argumentos.
+        Creates a virtual machine boot packet
+        Args:
+            imageID: an image ID
+            userID: the virtual machine owner's ID
+            commandID: the virtual machine boot command's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.CREATE_DOMAIN)
-        p.writeInt(machineId)
-        p.writeInt(userId)
+        p.writeInt(imageID)
+        p.writeInt(userID)
         p.writeString(commandID)
         return p
     
     def createVMShutdownPacket(self, domainUID):
         """
-        Crea un paquete para apagar una máquina virtual
-        Argumentos:
-            domainUID: el identificador único de la máquina virtual a apager
-        Devuelve:
-            Un paquete que contiene los datos especificados
+        Creates a virtual machine shutdown packet
+        Args:
+            domainUID: the virtual machine to shutdown's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.DESTROY_DOMAIN)
-        p.writeString(domainUID) # domainUID es el identificador del comando de arranque de la máquina. Por eso
-                            # es un string.
+        p.writeString(domainUID)
         return p
     
     def createVMRebootPacket(self, domainUID):
         """
-        Crea un paquete para apagar una máquina virtual
-        Argumentos:
-            domainUID: el identificador único de la máquina virtual a apager
-        Devuelve:
-            Un paquete que contiene los datos especificados
+        Creates a virtual machine reboot packet
+        Args:
+            domainUID: the virtual machine to reboot's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.REBOOT_DOMAIN)
@@ -69,14 +85,14 @@ class VMServerPacketHandler(object):
     
     def createVMConnectionParametersPacket(self, vncServerIP, vncServerPort, password, commandID):
         """
-        Crea un paquete que contiene los datos de conexión VNC de una máquina virtual
-        Argumentos:
-            vncServerIP: la dirección IP del servidor VNC
-            vncServerPort: el puerto de escucha del servidor VNC
-            password: la contraseña del servidor VNC
-            commandID: el identificador único del comando de arranque de la máquina virtual
-        Devuelve:
-            Un paquete construido a partir de sus argumentos.
+        Creates a virtual machine connection parameters packet
+        Args:
+            vncServerIP: the VNC server's IPv4 address
+            vncServerPort: the VNC server's port
+            password: the VNC server's password
+            commandID: the virtual machine boot command's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.DOMAIN_CONNECTION_DATA)
@@ -88,12 +104,11 @@ class VMServerPacketHandler(object):
     
     def createVMServerDataRequestPacket(self, packet_type):
         """
-        Crea un paquete que permite solicitar datos al servidor de máquinas virtuales.
-        Argumentos:
-            packet_type: un tipo de paquete, que fijará la información que solicitamos al servidor
-            de máquinas virtuales
-        Devuelve:
-            Un paquete construido a partir de sus argumentos.
+        Creates a virtual machine server status request packet
+        Args:
+            packet_type: the packet type associated with the status request
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(7)
         p.writeInt(packet_type)
@@ -102,20 +117,20 @@ class VMServerPacketHandler(object):
     def createVMServerStatusPacket(self, vmServerIP, activeDomains, ramInUse, availableRAM, freeStorageSpace, availableStorageSpace, 
                                    freeTemporarySpace, availableTemporarySpace, activeVCPUs, physicalCPUs):
         """
-        Crea un paquete que contiene el estado del servidor de máquinas virtuales
-        Argumentos:
-            vmServerIP: la dirección IP del servidor de máquinas virtuales
-            activeDomains: el número de máquinas virtuales activas
-            ramInUse: la cantidad de RAM usada (en kilobytes)
-            availableRAM: la cantidad total de RAM (en kilobytes)
-            freeStorageSpace: el espacio en disco disponible para almacenar imágenes (en kilobytes)
-            availableStorageSpace: el espacio total en disco que puede usare para almacenar imágenes (en kilobytes)
-            freeTemporarySpace: el espacio en disco disponible para almacenar datos temporales (en kilobytes)
-            availableTemporarySpace: el espacio total en disco que puede usarse para almacenar datos temporales (en kilobytes)
-            activeVCPUs: el número de CPUs virtuales activas
-            physicalCPUs: el número de CPUs físicas de la máquina
-        Devuelve:
-            Un paquete construido a partir de sus argumentos.
+        Creates a virtual machine server status packet
+        Args:
+            vmServerIP: the virtual machine server's IP address
+            activeDomains: the number of domains
+            ramInUse: the used RAM amount (in kilobytes)
+            availableRAM: the total RAM amount (in kilobytes)
+            freeStorageSpace: the free storage space (in kilobytes)
+            availableStorageSpace: the total storage space (in kilobytes)
+            freeTemporarySpace: the free temporary storage space (in kilobytes)
+            availableTemporarySpace: the total temporary storage space (in kilobytes)
+            activeVCPUs: the number of active VCPUs
+            physicalCPUs: the number of physical CPUs.
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(7)
         p.writeInt(VM_SERVER_PACKET_T.SERVER_STATUS)
@@ -133,11 +148,11 @@ class VMServerPacketHandler(object):
     
     def createVMServerShutdownPacket(self, timeout=300):
         """
-        Crea un paquete de apagado (amigable) de un servidor de máquinas virtuales
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Un paquete construido a partir de sus argumentos.
+        Creates a virtual machine server shutdown packet
+        Args:
+            timeout: a timeout in seconds
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(VM_SERVER_PACKET_T.USER_FRIENDLY_SHUTDOWN)
@@ -146,11 +161,11 @@ class VMServerPacketHandler(object):
     
     def createVMServerHaltPacket(self):
         """
-        Crea un paquete de apagado inmediato de un servidor de máquinas virtuales
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Un paquete construido a partir de sus argumentos.
+        Creates a virtual machine server immediate shutdown packet
+        Args:
+            None
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(VM_SERVER_PACKET_T.HALT)
@@ -158,12 +173,14 @@ class VMServerPacketHandler(object):
     
     def createActiveVMsDataPacket(self, serverIPAddress, segment, sequenceSize, data):
         """
-        Crea un paquete que contiene los datos de conexión VNC de varias máquinas virtuales activas.
-        Argumentos:
-            serverIPAddress: la dirección IP del servidor de máquinas virtuales
-            segment: la posición que ocupan los datos de este paquete en todo el flujo de paquetes
-            sequenceSize: el número de segmentos de la secuencia
-            data: los datos del segmento
+        Creates an active VMs VNC connection data packet
+        Args:
+            serverIPAddress: the virtual machine server's IP address
+            segment: the segment's position in the sequence
+            sequenceSize: the sequence size
+            data: the segment's data
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(6)
         p.writeInt(VM_SERVER_PACKET_T.ACTIVE_VM_DATA)
@@ -181,12 +198,12 @@ class VMServerPacketHandler(object):
     
     def createActiveDomainUIDsPacket(self, vmServerIP, data):
         """
-        Crea un paquete que contiene los identificadores únicos de todas las máquinas virtuales
-        Argumentos:
-            vmServerIP: la dirección IP del servidor de máquinas virtuales.
-            data: lista con los identificadores únicos de las máquinas virtuales
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a packet containing the active domain's UUIDs
+        Args:
+            vmServerIP: the virtual machine server's IP address
+            data: a list containing the active domain's UUIDs
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.ACTIVE_DOMAIN_UIDS)
@@ -195,25 +212,39 @@ class VMServerPacketHandler(object):
             p.writeString(domain_uid)
         return p
     
-    def createImageEditionPacket(self, repositoryIP, repositoryPort, sourceImageID, modify, commandID, userID):
+    def createImageEditionPacket(self, repositoryIP, repositoryPort, sourceOrTargetImageID, edit, commandID, userID):
         """
-        Crea un paquete que contiene los datos para descargarse una imagen del repositorio
-        Argumentos:
-           FIXME: actualizar
-        Devuelve:
-            Un paquete construido a partir de sus argumentos.
+        Creates an image edition packet
+        Args:
+           repositoryIP: the image repository's IPv4 address
+           repositoryPort: the image repository's port
+           sourceOrTargetImageID: the source or target image's ID
+           edit: indicates wether the image will be modified or not.
+           commandID: the image edition command's ID
+           userID: the image owner's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.IMAGE_EDITION)
         p.writeString(repositoryIP)
         p.writeInt(repositoryPort)
-        p.writeInt(sourceImageID)
-        p.writeBool(modify)
+        p.writeInt(sourceOrTargetImageID)
+        p.writeBool(edit)
         p.writeString(commandID)
         p.writeInt(userID)
         return p
     
     def createErrorPacket(self, packet_type, errorDescription, commandID):
+        """
+        Creates an error packet
+        Args:
+            packet_type: the packet type associated with the error
+            errorDescription: an error description code
+            commandID: the command's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(packet_type)
         p.writeInt(errorDescription)
@@ -221,6 +252,16 @@ class VMServerPacketHandler(object):
         return p
     
     def createImageDeploymentPacket(self, repositoryIP, repositoryPort, imageID, commandID):
+        """
+        Creates an image deployment packet
+        Args:
+            repositoryIP: the image repository's IPv4 address
+            repositoryPort: the image repository's port
+            imageID: an image ID
+            commandID: the deployment command's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.DEPLOY_IMAGE)
         p.writeString(repositoryIP)
@@ -230,6 +271,14 @@ class VMServerPacketHandler(object):
         return p
     
     def createDeleteImagePacket(self, imageID, commandID):
+        """
+        Creates an image deletion packet
+        Args:
+            imageID: an image ID
+            commandID: the deletion command's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.DELETE_IMAGE)
         p.writeInt(imageID)
@@ -237,6 +286,14 @@ class VMServerPacketHandler(object):
         return p
     
     def createImageEditedPacket(self, imageID, commandID):
+        """
+        Creates an image edited confirmation packet
+        Args:
+            imageID: an image ID
+            commandID: the image edition command's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(VM_SERVER_PACKET_T.IMAGE_EDITED)
         p.writeString(commandID)
@@ -244,6 +301,15 @@ class VMServerPacketHandler(object):
         return p
         
     def createConfirmationPacket(self, packet_type, imageID, commandID):
+        """
+        Creates a confirmation packet
+        Args:
+            packet_type: the packet type that matches the confirmation message.
+            imageID: an image ID
+            commandID: the confirmed command's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_type)
         p.writeInt(imageID)
@@ -251,6 +317,13 @@ class VMServerPacketHandler(object):
         return p
     
     def createInternalErrorPacket(self, commandID):
+        """
+        Creates a virtual machine server internal error packet
+        Args:
+            commandID: a command ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(VM_SERVER_PACKET_T.INTERNAL_ERROR)
         p.writeString(commandID)
@@ -258,12 +331,12 @@ class VMServerPacketHandler(object):
     
     def readPacket(self, p):
         """
-        Lee un paquete del servidor de máquinas virtuales y vuelca sus datos a un diccionario.
-        Argumentos:
-            p: el paquete a leer
-        Devuelve:
-            Un diccionario con los datos del paquete. El tipo del paquete estará asociado a la clave
-            packet_type.
+        Reads a packet and dumps its data to a dictionary
+        Args:
+            p: the packet to read
+        Returns:
+            A dictionary with the packet's content. Its keys and values
+            vary depending on the read packet's type.
         """
         result = dict()
         packet_type = p.readInt()        
