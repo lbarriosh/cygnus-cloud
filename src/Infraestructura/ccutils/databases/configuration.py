@@ -5,7 +5,7 @@
     ========================================================================
     
     File: configuration.py    
-    Version: 2.5
+    Version: 3.0
     Description: Database configurator definitions
     
     Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,

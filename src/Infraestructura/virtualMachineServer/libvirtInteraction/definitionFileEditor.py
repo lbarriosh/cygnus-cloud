@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Editor de ficheros de configuración
-@author: Luis Barrios Hernández
-@version: 3.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: definitionFileEditor.py    
+    Version: 4.0
+    Description: Domain definition file editor
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 try :
@@ -18,19 +37,19 @@ except ImportError:
             
 class DefinitionFileEditorException(Exception):
     """
-    Clase de excepción utilizada por el editor de ficheros de configuración
+    Domain definition file editor exception class
     """
     pass
     
 class DefinitionFileEditor(object):
     """
-    Clase del editor de ficheros de configuración
+    Domain definition file editor
     """
     def __init__(self, inputFilePath):
         """
-        Inicializa el estado del editor de ficheros de configuración
-        Argumentos:
-            inputFilePath: ruta del fichero .xml cuyo contenido vamos a modificar
+        Initializes the editor's state
+        Args:
+            inputFilePath: the pattern .xml file path
         """
         self.__inputFilePath = inputFilePath
         self.__name = None
@@ -46,35 +65,37 @@ class DefinitionFileEditor(object):
         
     def setDomainIdentifiers(self, name, uuid):
         """
-        Define los nuevos identificadores únicos del dominio que se van a utilizar.
-        Argumentos:
-            name: el nombre del dominio
-            uuid: el UUID del dominio
-        Devuelve:
-            Nada
+        Stores the domain identifiers
+        Args:
+            name: a domain name
+            uuid: a domain UUID
+        Returns:
+            Nothing
         """
         self.__name = name
         self.__uuid = uuid
         
     def setVirtualNetworkConfiguration(self, virtualNetwork, macAddress):
         """
-        Define los parámetros de conexión a la red virtual.
-        Argumentos:
-            name: el nombre de la red virtual
-            macAddress: la MAC del dominio
-        Devuelve:
-            Nada
+        Stores the virtual network configuration parameters
+        Args:
+            name: the virtual network's name
+            macAddress: the domain's MAC address
+        Returns:
+            Nothing
         """
         self.__virtualNetworkName = virtualNetwork
         self.__macAddress = macAddress
         
     def setVNCServerConfiguration(self, ipAddress, port, password, useQEMUWebsockets):
         """
-        Define los parámetros de configuración del servidor VNC
-        Argumentos:
-            ip_address: la dirección IP del servidor VNC
-            port: el puerto de escucha del servidor VNC
-            password: la contraseña del servidor VNC
+        Stores the VNC server configuration parameters
+        Args:
+            ip_address: the VNC server's IP address
+            port: the VNC server's port
+            password: the VNC server's password
+            useQEMUWebsockets: indicates whether the QEMU native websockets or the
+                websockify daemon must be used.
         """
         self.__vncServerIPAddress = ipAddress
         self.__vncServerPort = port
@@ -83,35 +104,31 @@ class DefinitionFileEditor(object):
         
     def setImagePaths(self, osImagePath, dataImagePath):
         """
-        Define las rutas de las imágenes del SO y de datos y paginación.
-        Argumentos:
-            osImagePath: la ruta de la imagen del SO
-            dataImagePath: la ruta de la imagen que contiene los datos del usuario
-            y el fichero de paginación.
-        Devuelve:
-            Nada
+        Stores the disk images paths
+        Args:
+            osImagePath: the OS disk image path
+            dataImagePath: the data disk image path
+        Returns:
+            Nothing
         """
         self.__osImagePath = osImagePath
         self.__dataImagePath = dataImagePath
         
     def generateConfigurationString(self):
         """
-        Genera, a partir del fichero inicial, un string con el contenido del nuevo
-        fichero de configuración.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
-        Lanza:
-            DefinitionFileEditorException: se lanza cuando no se han definido
-            todos los parámetros de configuración del dominio.
+        Generates the domain configuration string
+        Args:
+            None
+        Returns:
+            the generated domain configuration string
+        Raises:
+            DefinitionFileEditorException: this exception will be raised when a required parameter
+                has not been set.
         """
         self.__checkErrors()
-        # Tenemos todo => procedemos
-        # Parseamos el fichero base
         tree = ET.parse(self.__inputFilePath)
         root = tree.getroot()
-        # Escribimos en él los valores de los parámetros de configuración que nos han pasado
+        
         name = root.find("name")
         name.text = self.__name
 
@@ -129,10 +146,11 @@ class DefinitionFileEditor(object):
             target = disk.find("target")
             source = disk.find("source")
             if (target.get("dev") == "vda") :
-                # primer disco. Es el del SO
+                # First hard drive. This one will store the OS data.
                 source.set("file", self.__osImagePath)
             else :
-                # Segundo disco. Es el de la partición de datos y paginación
+                # Second hard drive. This one will store the domain's data and its
+                # page file.
                 source.set("file", self.__dataImagePath)
         
         graphics = devices.find("graphics")
@@ -143,19 +161,18 @@ class DefinitionFileEditor(object):
         listen = graphics.find("listen")
         listen.set("address", self.__vncServerIPAddress)
         
-        # Generar el string y devolverlo
         return ET.tostring(root)
     
     def __checkErrors(self):
         """
-        Comprueba que todos los parámetros de configuración del dominio han sido definidos.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Checks if all the domain configuration parameters have been set
+        Args:
+            None
+        Returns:
+            Nothing
         Lanza:
-            DefinitionFileEditorException: esta excepción se lanza cuando algún parámetro de 
-            configuración del dominio no ha sido definido.
+            DefinitionFileEditorException: this exception will be raised when a required parameter
+                has not been set.
         """
         if (self.__name == None or self.__uuid == None) :
             raise DefinitionFileEditorException("The domain identifiers have not been set")

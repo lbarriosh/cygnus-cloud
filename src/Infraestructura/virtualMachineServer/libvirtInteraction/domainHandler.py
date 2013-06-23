@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Created on Apr 29, 2013
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: domainHandler.py    
+    Version: 5.0
+    Description: Domain handler
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
 
-@author: luis
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from virtualMachineServer.virtualNetwork.virtualNetworkManager import VirtualNetworkManager
@@ -19,14 +38,13 @@ from time import sleep
 
 class DomainHandler(DomainStartCallback, DomainStopCallback):
     """
-    Clase del gestor de dominios. Estos objetos interactúan con libvirt para manipular dominios.
-    """
-    
+    These objects interact with libvirt to handle domains.
+    """    
     def __init__(self, dbConnector, vncServerIP, networkManager, packetManager, listenningPort, 
                  useQEMUWebsockets, websockifyPath, definitionFileDirectory,
                  sourceImageDirectory, executionImageDirectory, vncPasswordLength):
         """
-        Inicializa el estado del gestor de dominios
+        Initializes the manager's state
         Argumentos:
             dbConnector: conector con la base de datos del servidor de máquinas virtuales
             vncServerIP: la dirección IP del servidor VNC

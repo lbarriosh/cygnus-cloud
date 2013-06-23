@@ -3,7 +3,7 @@
  *                                   CygnusCloud
  *  ======================================================================== 
  *
- *  File: imageRepositoryDB.sql    
+ *  File: ImageRepositoryDB.sql    
  *  Version: 1.0
  *  Description: image repository database schema 
  *
