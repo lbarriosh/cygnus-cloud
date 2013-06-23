@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Created on May 31, 2013
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: packetsCallback.py    
+    Version: 3.0
+    Description: image repository packet callback
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-@author: luis
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from network.manager.networkManager import NetworkCallback
@@ -14,20 +33,20 @@ from os import path, statvfs
 
 class CommandsCallback(NetworkCallback):
     """
-    Clase para el callback que procesará los datos recibidos por la conexión de comandos.
+    These objects process the request received through the control connection
     """    
-    def __init__(self, packetCreator, pHandler, listenningPort, dbConnector, retrieveQueue, storeQueue, workingDirectory):
+    def __init__(self, networkManager, pHandler, listenningPort, dbConnector, retrieveQueue, storeQueue, workingDirectory):
         """
-        Inicializa el estado del callback
-        Argumentos:
-            packetCreator: objeto que se usará para enviar paquetes
-            pHandler: objeto que se usará para crear y deserializar paquetes
-            listenningPort: el puerto de escucha de la conexión de comandos
-            dbConnector: conector con la base de datos
-            retrieveQueue: cola de peticiones de descarga
-            storeQueue: cola de peticiones de subida    
+        Initializes the callback's state
+        Args:
+            networkManager: a NetworkManager object
+            pHandler: a packet handler
+            listenningPort: the control's connection port
+            dbConnector: a database connection
+            retrieveQueue: a retrieve requests queue
+            storeQueue: a store requests queue    
         """
-        self.__networkManager = packetCreator
+        self.__networkManager = networkManager
         self.__repositoryPacketHandler = pHandler
         self.__commandsListenningPort = listenningPort
         self.__dbConnector = dbConnector    
@@ -38,11 +57,11 @@ class CommandsCallback(NetworkCallback):
         
     def processPacket(self, packet):
         """
-        Procesa un paquete
-        Argumentos:
-            packet: el paquete recibido
-        Devuelve:
-            Nada
+        Processes an incoming packet
+        Args:
+            packet: the incoming packet
+        Returns:
+            Nothing
         """
         data = self.__repositoryPacketHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.HALT):
@@ -61,11 +80,25 @@ class CommandsCallback(NetworkCallback):
             self.__cancelImageEdition(data)
             
     def __cancelImageEdition(self, data):
+        """
+        Unlocks an image
+        Args:
+            data: the received packet's content
+        Returns:
+            Nothing
+        """
         self.__dbConnector.cancelImageEdition(data["ImageID"])
         p = self.__repositoryPacketHandler.createImageRequestReceivedPacket(PACKET_T.IMAGE_EDITION_CANCELLED)
         self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data["clientIP"], data["clientPort"])
             
     def __sendStatusData(self, data):
+        """
+        Sends the status data to the cluster server
+        Args:
+            data: the received packet's content
+        Returns:
+            Nothing
+        """
         diskStats = statvfs(self.__workingDirectory)
         freeDiskSpace = diskStats.f_bfree * diskStats.f_frsize / 1024
         totalDiskSpace = diskStats.f_bavail * diskStats.f_frsize / 1024
@@ -74,11 +107,11 @@ class CommandsCallback(NetworkCallback):
     
     def __addNewImage(self, data):
         """
-        Añade una nueva imagen al repositorio
-        Argumentos:
-            data: el contenido del paquete recibido
-        Devuelve:
-            Nada
+        Registers a new image ID
+        Args:
+            data: the received packet's content
+        Returns:
+            Nothing
         """
         imageID = self.__dbConnector.addImage()
         p = self.__repositoryPacketHandler.createAddedImagePacket(imageID)        
@@ -88,14 +121,13 @@ class CommandsCallback(NetworkCallback):
      
     def __handleRetrieveRequest(self, data):
         """
-        Procesa una petición de descarga
-        Argumentos:
-            data: el contenido del paquete recibido
-        Devuelve:
-            Nada
+        Handles a FTP RETR request packet
+        Args:
+            data: the received packet's content
+        Returns:
+            Nothing
         """   
         imageData = self.__dbConnector.getImageData(data["imageID"])
-        # Chequear errores
         if (imageData == None) :
             p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, ERROR_DESC_T.IR_UNKNOWN_IMAGE)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
@@ -103,7 +135,7 @@ class CommandsCallback(NetworkCallback):
             p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.RETR_REQUEST_ERROR, ERROR_DESC_T.IR_IMAGE_EDITED)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else:
-            # No hay errores => contestar diciendo que hemos recibido la petición y encolarla
+            # No errors => queue the request and answer
             p = self.__repositoryPacketHandler.createImageRequestReceivedPacket(PACKET_T.RETR_REQUEST_RECVD)
             value = self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
             if (value == None) :    
@@ -113,14 +145,13 @@ class CommandsCallback(NetworkCallback):
     
     def __handleStorRequest(self, data):
         """
-        Procesa una petición de subida
-        Argumentos:
-            data: el contenido del paquete recibido
-        Devuelve:
-            Nada
+        Handles a FTP STOR request packe
+        Args:
+            data: the received packet's content
+        Returns:
+            Nothing
         """   
         imageData = self.__dbConnector.getImageData(data["imageID"])
-        # Chequear errores
         if (imageData == None) :
             p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, ERROR_DESC_T.IR_UNKNOWN_IMAGE)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
@@ -128,18 +159,18 @@ class CommandsCallback(NetworkCallback):
             p = self.__repositoryPacketHandler.createErrorPacket(PACKET_T.STOR_REQUEST_ERROR, ERROR_DESC_T.IR_NOT_EDITED_IMAGE)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
         else:
-            # No hay errores => contestar diciendo que hemos recibido la petición y encolarla
+            # No errors => queue the request and answer
             p = self.__repositoryPacketHandler.createImageRequestReceivedPacket(PACKET_T.STOR_REQUEST_RECVD)
             self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])            
             self.__storeQueue.append((data["imageID"], data["clientIP"], data["clientPort"]))        
             
     def __deleteImage(self, data):
         """
-        Procesa una petición de borrado de una imagen
-        Argumentos:
-            data: el contenido del paquete recibido
-        Devuelve:
-            Nada
+        Handles an image deletion request
+        Args:
+            data: the received packet's content
+        Returns:
+            Nothing
         """  
         imageData = self.__dbConnector.getImageData(data["imageID"])
         if (imageData == None) :
@@ -158,10 +189,10 @@ class CommandsCallback(NetworkCallback):
         
     def haltReceived(self):
         """
-        Indica si se ha recibido un paquete de apagado o no
-        Argumentos:
-            Ninguno
-        Devuelve:
-            True si el repositorio debe apagarse, y false en caso contrario
+        Checks if a halt packet has been received
+        Args:
+            None
+        Returns:
+            True if a halt packet was received, and False otherwise
         """   
         return self.__haltReceived

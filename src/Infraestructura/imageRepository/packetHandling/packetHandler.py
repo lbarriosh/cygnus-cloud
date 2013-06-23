@@ -1,31 +1,49 @@
 # -*- coding: utf8 -*-
 '''
-Created on Apr 21, 2013
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: packetHandler.py    
+    Version: 2.0
+    Description: image repository packet handler definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-@author: luis
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 from imageRepository.packetHandling.packet_t import PACKET_T
 
 class ImageRepositoryPacketHandler(object):
     """
-    Gestor de paquetes del repositorio
-    """    
-    
-    def __init__(self, packetCreator):
+    Image repository packet handler
+    """        
+    def __init__(self, networkManager):
         """
-        Inicializa el estado
-        Argumentos:
-            packetCreator: objeto que se usará para crear los paquetes
+        Initializes the handler's state
+        Args:
+            networkManager: the object that will create the network packets
         """
-        self.__packetCreator = packetCreator
+        self.__packetCreator = networkManager
             
     def createHaltPacket(self):
         """
-        Crea un paquete de apagado
-        Argumentos:
-            Ninguno
-        Devuelve:
-            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        Creates a shutdown packet
+        Args:
+            None
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(1)
         p.writeInt(PACKET_T.HALT)
@@ -39,12 +57,13 @@ class ImageRepositoryPacketHandler(object):
     
     def createRetrieveRequestPacket(self, imageID, modify):
         """
-        Crea un paquete de solicitud de descarga
-        Argumentos:
-            imageID: el identificador único de la imagen
-            modify: si es True, se va a editar una imagen. Si es False, se va a crear una imagen a partir de otra.
-        Devuelve:
-            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        Creates a FTP RETR request packet
+        Args:
+            imageID: an image ID
+            modify: This parameter indicates if the image will be modified in a virtual machine server 
+                or not.
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.RETR_REQUEST)
@@ -54,11 +73,11 @@ class ImageRepositoryPacketHandler(object):
     
     def createStoreRequestPacket(self, imageID):
         """
-        Crea un paquete de solicitud de subida
-        Argumentos:
-            imageID: el identificador único de la imagen cuyo fichero vamos a subir
-        Devuelve:
-            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        Creates a FTP STOR request packet
+        Args:
+            imageID: an image ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.STOR_REQUEST)
@@ -67,11 +86,11 @@ class ImageRepositoryPacketHandler(object):
     
     def createImageRequestReceivedPacket(self, packet_t):
         """
-        Crea un paquete que indica la recepción de una petición de subida, descarga o borrado
-        Argumentos:
-            packet_t: el tipo de paquete, que se corresponde con la confirmación a enviar
-        Devuelve:
-            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        Creates a request received packet
+        Args:
+            packet_t: a packet type that matches the confirmation to send.
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_t)
@@ -79,17 +98,17 @@ class ImageRepositoryPacketHandler(object):
     
     def createTransferEnabledPacket(self, packet_t, imageID, FTPServerPort, username, password, serverDirectory, fileName):
         """
-        Crea un paquete que indica que una transferencia puede comenzar
-        Argumentos:
-            packet_t: el tipo de paquete, que se corresponde con el tipo de transferencia (STORE o RETRIEVE)
-            imageID: el identificador único de la imagen
-            FTPServerPort: el puerto de escucha del servidor FTP
-            username: el usuario del servidor FTP
-            password: la contraseña del servidor FTP
-            serverDirectory: el directorio del servidor donde se encuentra el fichero
-            fileName: el nombre del fichero
-        Devuelve:
-            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        Creates a transfer enabled notice packet
+        Args:
+            packet_t: a packet type that matches the transfer that will start (FTP RETR or FTP STOR)
+            imageID: an image ID
+            FTPServerPort: the FTP server's listenning port
+            username: an FTP user name
+            password: the FTP user's password
+            serverDirectory: the FTP server's directory where the file is located
+            fileName: the file to download/upload's name
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(packet_t)
@@ -103,12 +122,12 @@ class ImageRepositoryPacketHandler(object):
     
     def createErrorPacket(self, packet_t, errorDescription):
         """
-        Crea un paquete de error.
-        Argumentos:
-            packet_t: el tipo de paquete, que se corresponde con el tipo del error
-            errorDescription: un mensaje de error
-        Devuelve:
-            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        Creates an error packet
+        Args:
+            packet_t: a packet type that matches the error message to send
+            errorDescription: an error description code
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(4)
         p.writeInt(packet_t)
@@ -117,12 +136,12 @@ class ImageRepositoryPacketHandler(object):
     
     def createImageDeletionErrorPacket(self, imageID, errorDescription):
         """
-        Crea un paquete de error.
-        Argumentos:
-            packet_t: el tipo de paquete, que se corresponde con el tipo del error
-            errorDescription: un mensaje de error
-        Devuelve:
-            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        Creates an image deletion error packet
+        Args:
+            imageID: an image ID
+            errorDescription: an error description code
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(2
                                               )
@@ -132,6 +151,13 @@ class ImageRepositoryPacketHandler(object):
         return p
     
     def createDeleteRequestReceivedPacket(self, imageID):
+        """
+        Creates an image deletion request packet.
+        Args:
+            imageID: an image ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.DELETE_REQUEST_RECVD)
         p.writeInt(imageID)
@@ -139,10 +165,11 @@ class ImageRepositoryPacketHandler(object):
     
     def createAddImagePacket(self):
         """
-        Crea un paquete de adición de imagen
-        Argumentos:
-        Devuelve:
-            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        Creates an image ID registration packet
+        Args:
+            None
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.ADD_IMAGE)
@@ -150,11 +177,11 @@ class ImageRepositoryPacketHandler(object):
     
     def createAddedImagePacket(self, imageID):
         """
-        Crea un paquete de confirmación de adición de imagen.
-        Argumentos:
-            imageID: el identificador único de la nueva imagen
-        Devuelve:
-            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        Creates a registered image ID packet 
+        Args:
+            imageID: the new image's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.ADDED_IMAGE_ID)
@@ -163,11 +190,11 @@ class ImageRepositoryPacketHandler(object):
     
     def createDeleteRequestPacket(self, imageID):
         """
-        Crea un paquete de borrado de una imagen
-        Argumentos:
-            imageID: el identificador único de la imagen a borrar
-        Devuelve:
-            un paquete del tipo especificado cuyo contenido se fija a partir de los argumentos
+        Creates an image deletion request packet
+        Args:
+            imageID: an image ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.DELETE_REQUEST)
@@ -175,11 +202,26 @@ class ImageRepositoryPacketHandler(object):
         return p
     
     def createStatusRequestPacket(self):
+        """
+        Creates a status request packet
+        Args:
+            None
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.STATUS_REQUEST)
         return p
     
     def createStatusDataPacket(self, freeDiskSpace, totalDiskSpace):
+        """
+        Creates an image repository status packet
+        Args:
+            freeDiskSpace: the free disk space in the image repository
+            totalDiskSpace: the available disk space in the image repository
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(PACKET_T.STATUS_DATA)
         p.writeInt(freeDiskSpace)
@@ -188,11 +230,12 @@ class ImageRepositoryPacketHandler(object):
     
     def readPacket(self, p):
         """
-        Vuelca el contenido de un paquete en un diccionario
-        Argumentos:
-            p: el paquete cuyo contenido queremos extraer
-        Devuelve:
-            Nada
+        Reads a packet's content
+        Args:
+            p: the packet to read
+        Returns:
+            A dictionary with the packet's content. Its keys and values
+            vary depending on the read packet's type.
         """
         data = dict()
         packet_type = p.readInt()

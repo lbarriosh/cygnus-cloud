@@ -24,6 +24,8 @@
     limitations under the License.
 '''
 import MySQLdb
+import os.path
+from ccutils.processes.childProcessManager import ChildProcessManager
 
 class DBConfigurator(object):
     """
@@ -100,29 +102,12 @@ class DBConfigurator(object):
                 username: a MySQL user name.
                 password: the user's password
         '''
-        if (username == "root") :
-            db = MySQLdb.connect(host='localhost',user="root",passwd=self.__rootPassword)
-        else: 
-            db = MySQLdb.connect(host='localhost',user=username,passwd=password)    
-        cursor=db.cursor()
-        
-        fileContent = ''
-        fp = open(sqlFilePath)
-        for line in fp :
-            fileContent += line
-        fp.close()
-        # Tokenize its content
-        commandNumber = fileContent.count(";")
-        commands = fileContent.split(";", commandNumber)
-        # Run its commands
-        for command in commands :
-            if not DBConfigurator.__isEmpty__(command) :
-                cursor.execute(command + ";")        
-        # Write the changes to the database
-        db.commit() 
-        # Close the database connection
-        cursor.close()
-        db.close()
+        passwordCommand = ""
+        if (password != None and len(password) != 0) :
+            passwordCommand = "-p" + str(password)
+        filePath = os.path.abspath(sqlFilePath)
+        command = "mysql -uroot {0} -e \"source {1}\"".format(passwordCommand, filePath)
+        ChildProcessManager.runCommandInForeground(command, Exception)
         
     @staticmethod
     def __isEmpty__(string):
