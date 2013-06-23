@@ -44,17 +44,17 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
                  useQEMUWebsockets, websockifyPath, definitionFileDirectory,
                  sourceImageDirectory, executionImageDirectory, vncPasswordLength):
         """
-        Initializes the manager's state
-        Argumentos:
-            dbConnector: conector con la base de datos del servidor de máquinas virtuales
-            vncServerIP: la dirección IP del servidor VNC
-            networkManager: gestor de red. Se usará para enviar los datos de conexión a los clientes.
-            packetManager: gestor de paquetes. Se usará para enviar los datos de conexión a los clientes.
-            listenningPort: el peurto en el que escucha el servidor de máquinas virtuales
-            definitionFileDirectory: el directorio en el que se encuentran los ficheros de definición de las máquinas
-            sourceImageDirectory: el directorio en el que se almacenan las imágenes de disco de las máquinas virtuales
-            executionImageDirectory: el directorio en el que se almacenan las imágenes temporales de las máquinas virtuales
-            vncPasswordLength: la longitud de la contraseña del servidor VNC
+        Initializes the domain handler's state
+        Args:
+            dbConnector: a database connector
+            vncServerIP: the VNC server's IPv4 address
+            networkManager: a network manager
+            packetManager: a virtual machine server packet handler
+            listenningPort: the control connection's port
+            definitionFileDirectory: the directory where the definition files are
+            sourceImageDirectory: the directory where the source disk images are
+            executionImageDirectory: the directory where the active virtual machines' disk images are
+            vncPasswordLength: the generated VNC password's length
         """
         self.__dbConnector = dbConnector        
         self.__vncServerIP = vncServerIP
@@ -75,12 +75,12 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
     def connectToLibvirt(self, networkInterface, virtualNetworkName, gatewayIP, netmask, 
                          dhcpStartIP, dhcpEndIP, createVirtualNetworkAsRoot) :
         """
-        Establece la conexión con libvirt y crea la red virtual.
-        Argumentos:
-            createVirtualNetworkAsRoot: indica si hay que crear la red virtual como el superusuario o como
-            un usuario normal.
-        Devuelve:
-            Nada
+        Creates the libvirt connection and the virtual network
+        Args:
+            createVirtualNetworkAsRoot: indicates wether the virtual network must be
+                created as the super-user or not. This is required in some systems.
+        Returns:
+            Nothing
         """
         self.__libvirtConnection = LibvirtConnector(LibvirtConnector.KVM, self, self)
         self.__virtualNetworkManager = VirtualNetworkManager(createVirtualNetworkAsRoot)
@@ -91,11 +91,12 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
     
     def doInitialCleanup(self):
         """
-        Borra toda la basura que hay en el directorio de trabajo
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Does the initial cleanup, freeing the unused resources assigned to the
+            registered virtual machines.
+        Args:
+            None
+        Returns:
+            Nothing
         """
         activeDomainNames = self.__libvirtConnection.getActiveDomainNames()
         registeredDomainNames = self.__dbConnector.getRegisteredDomainNames()
@@ -106,12 +107,11 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         
     def shutdown(self, timeout):
         """
-        Detiene los dominios activos.
-        Argumentos:
-            timeout: el número de segundos que se esperará antes de destruir todos
-            los dominios.
-        Devuelve:
-            Nada
+        Destroys all the domains.
+        Args:
+            timeout: the number of seconds to wait before destruction all the domains.
+        Returns:
+            Nothing
         """
         if (self.__libvirtConnection != None) :
             if (timeout == 0) :
@@ -126,13 +126,13 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         
     def createDomain(self, imageID, userID, commandID):
         """
-        Crea un dominio
-        Argumentos:
-            imageID: el identificador único de la imagen a usar
-            userID: el identificador único del propietario de la nueva máquina virtual
-            commandID: el identificador único del comando de arranque de la nueva máquina virtual
-        Devuelve:
-            Nada
+        Creates a domain
+        Args:
+            imageID: the image to use's ID
+            userID: the domain owner's ID
+            commandID: the domain boot command's ID
+        Returns:
+            Nothing
         """    
         
         try : 
@@ -149,7 +149,7 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             isBootable = self.__dbConnector.getBootableFlag(imageID)        
             imageFound = True
             
-            # Obtengo los parámetros de configuración de la máquina virtual
+            # Generate the configuration parameters
             newUUID, newMAC = self.__dbConnector.extractFreeMACAndUUID()
             newPort = self.__dbConnector.extractFreeVNCPort()
             newName = originalName + str(newPort)        
@@ -157,7 +157,7 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             sourceOSDisk = self.__sourceImagePath + osImagePath               
             
             if(isBootable):                           
-                # Saco el nombre de los archivos (sin la extension)
+                # Create the disk images in copy-on-write mode
                 trimmedDataImagePath = dataImagePath
                 try:
                     trimmedDataImagePath = dataImagePath[0:dataImagePath.index(".qcow2")]
@@ -172,7 +172,7 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
                 newDataDisk = self.__executionImagePath + trimmedDataImagePath + str(newPort) + ".qcow2"
                 newOSDisk = self.__executionImagePath + trimmedOSImagePath + str(newPort) + ".qcow2"                
                
-                # Compruebo si ya existe alguno de los archivos. Si es el caso, me los cargo
+                # If one of the files already exist, we'll get rid of it.
                 if (path.exists(newDataDisk)):
                     print("Warning: the file " + newDataDisk + " already exists")
                     ChildProcessManager.runCommandInForeground("rm " + newDataDisk, VMServerException)
@@ -182,7 +182,6 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
                     ChildProcessManager.runCommandInForeground("rm " + newOSDisk, VMServerException)
                     
                 try :
-                    # Copio las imagenes
                     ChildProcessManager.runCommandInForeground("cd " + self.__sourceImagePath + ";" + "cp --parents "+ dataImagePath + " " + self.__executionImagePath, VMServerException)
                     ChildProcessManager.runCommandInForeground("mv " + self.__executionImagePath + dataImagePath +" " + newDataDisk, VMServerException)
                     ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
@@ -191,10 +190,12 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
                     raise e
             
             else :
+                # The images will not be created in copy-on-write mode. In fact, their stored copies will be
+                # modified (we're editing them)
                 newDataDisk = path.join(self.__sourceImagePath, dataImagePath)
                 newOSDisk = path.join(self.__sourceImagePath, osImagePath)            
             
-            # Genero el fichero de definición
+            # Build dthe definition file
             xmlFile = DefinitionFileEditor(definitionFile)
             xmlFile.setDomainIdentifiers(newName, newUUID)
             xmlFile.setImagePaths(newOSDisk, newDataDisk)            
@@ -202,7 +203,7 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             xmlFile.setVNCServerConfiguration(self.__vncServerIP, newPort, newPassword, self.__useQEMUWebsockets)
             
             string = xmlFile.generateConfigurationString()        
-            # Arranco la máquina        
+            # Start the domain
             self.__libvirtConnection.startDomain(string)
             
             if (not self.__useQEMUWebsockets) :
@@ -210,15 +211,14 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
                                             self.__vncServerIP + ":" + str(newPort + 1),
                                             self.__vncServerIP + ":" + str(newPort)])
             
-            # Todo ha ido bien => registramos los recursos de la máquina como siempre        
+            # Everything went OK => register the resources on the database
         
             self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, websockifyPID, newOSDisk,  newDataDisk, newMAC, newUUID)
             self.__dbConnector.addVMBootCommand(newName, commandID)
        
         except Exception:
-            # TODO: cancelar la edición en el repositorio
-            if (imageFound and not isBootable) :
-                # Borrar la imagen
+            # Free the allocated resources, generate an error packet and send it.
+            if (imageFound and not isBootable) :                
                 self.__dbConnector.deleteImage(imageID)
             if (newUUID != None) :
                 self.__dbConnector.freeMACAndUUID(newUUID, newMAC)
@@ -233,11 +233,11 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         
     def destroyDomain(self, domainUID):
         """
-        Destruye una máquina virtual por petición explícita de su propietario.
-        Argumentos:
-            packet: un diccionario con los datos del paquete de destrucción
-        Devuelve:
-            Nada
+        Destroys a domain
+        Args:
+            domainUID: the domain to destroy's unique identifier
+        Returns:
+            Nothing
         """
         domainName = self.__dbConnector.getDomainNameFromVMBootCommand(domainUID)
         if (domainName == None) :
@@ -254,11 +254,11 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             
     def rebootDomain(self, domainUID):
         """
-        Destruye una máquina virtual por petición explícita de su propietario.
-        Argumentos:
-            packet: un diccionario con los datos del paquete de destrucción
-        Devuelve:
-            Nada
+        Reboots a domain
+        Args:
+            domainUID: the domain to reboot's unique identifier
+        Returns:
+            Nothing
         """
         domainName = self.__dbConnector.getDomainNameFromVMBootCommand(domainUID)
         if (domainName == None) :
@@ -266,24 +266,23 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             return
         self.__libvirtConnection.rebootDomain(domainName)
         
-    def onDomainStart(self, domain):
+    def _onDomainStart(self, domain):
         """
-        Método que se ejecuta cuando una máquina virtual arranca.  Se limita a enviar los datos
-        de conexión a los usuarios.
-        Argumentos:
-            domain: objeto que identifica a la máquina que se ha arrancado.
-        Devuelve:
-            Nada
+        This method will be called to handle a domain creation event.
+        Args:
+            domain: an object containing the domain's data
+        Returns:
+            Nothing
         """
         self.__sendConnectionData(domain)
         
     def __sendConnectionData(self, domainInfo):
         """
-        Envía al servidor de cluster los datos de conexión a una máquina virtual.
-        Argumentos:
-            domainInfo: diccionario con los datos de conexión al servidor VNC
-        Devuelve:
-            Nada
+        Sends a domain's connection data
+        Args:
+            domainInfo: an object containing the domain's data
+        Returns:
+            Nothing
         """
         ip = domainInfo["VNCip"]
         port = domainInfo["VNCport"]
@@ -299,25 +298,23 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         
     def onDomainStop(self, domainName):
         """
-        Método que se ejecuta cuando una máquina virtual se apaga. Se limita a liberar sus recursos.
-        Argumentos:
-            domainInfo: diccionario con los datos de la máquina virtual
-        Devuelve:
-            Nada
+        This method will be called to handle a domain stop event.
+        Args:
+            domainName: the stopped domain's name
+        Returns:
+            Nothing
         """
-        if (self.__dbConnector.getVMBootCommand(domainName) != None) :
-            # Al cargarnos manualmente el dominio, ya hemos liberado sus recursos. En estos
-            # casos, no hay que hacer nada.
+        if (self.__dbConnector.getVMBootCommand(domainName) != None) :            
             self.__freeDomainResources(domainName)
             
     def __freeDomainResources(self, domainName, deleteDiskImages=True):
         """
-        Libera los recursos asignados a una máquina virtual
-        Argumentos:
-            domainName: el nombre de la máquina virtual
-            deleteDiskImages: indica si hay que borrar o no las imágenes de disco.
-        Devuelve:
-            Nada
+        Free the resources assigned to a domain
+        Args:
+            domainName: a domain name
+            deleteDiskImages: indicates wether the disk images must be deleted or not
+        Returns:
+            Nothing
         """
         dataImagePath = self.__dbConnector.getDomainDataImagePath(domainName)
         osImagePath = self.__dbConnector.getDomainOSImagePath(domainName)
@@ -332,8 +329,8 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             ChildProcessManager.runCommandInForeground("kill -s TERM " + str(websockify_pid), None)   
         
         if isBootable :
-            # Nota: al destruir el dominio manualmente, libvirt ya se carga las imágenes.
-            # En esos casos, no hay que lanzar exceptiones.
+            # If the domain was manually stopped, libvirt has already got rid of the disk images.
+            # ==> we don't have to complain if we can't find them
             ChildProcessManager.runCommandInForeground("rm " + dataImagePath, None)
             ChildProcessManager.runCommandInForeground("rm " + osImagePath, None)
             dataDirectory = path.dirname(dataImagePath)
@@ -360,8 +357,11 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
     
     def __waitForDomainsToTerminate(self, timeout):
         """
-        Espera a que todos los dominios activos terminen o a que transcurran timeout segundos,
-        lo que suceda antes.
+        Waits until all the active domains have finished, stopping at timeout seconds.
+        Args:
+            timeout: a timeout in seconds
+        Returns:
+            Nothing
         """
         wait_time = 0
         while (self.__libvirtConnection.getNumberOfDomains() != 0 and wait_time < timeout) :
@@ -370,13 +370,20 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             
     def __generateVNCPassword(self):
         """
-        Genera una contraseña para un servidor VNC
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Un string con la contraseña generada
+        Generates a VNC random password
+        Args:
+            None
+        Returns:
+            a string containing the generated password
         """
         return ChildProcessManager.runCommandInForeground("openssl rand -base64 " + str(self.__vncPasswordLength), VMServerException)
     
-    def getLibvirtStatusInfo(self):
-        return self.__libvirtConnection.getStatusInfo()
+    def getLibvirtStatusData(self):
+        """
+        Returns libvirt's status data.
+        Args:
+            None
+        Returns:
+            A dictionary containing libvirt's status data.
+        """
+        return self.__libvirtConnection.getStatusData()

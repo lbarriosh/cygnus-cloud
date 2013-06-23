@@ -1,4 +1,28 @@
-# coding=utf-8
+# -*- coding: utf8 -*-
+'''
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: libvirtConnector.py    
+    Version: 3.0
+    Description: libvirt connector definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+'''
 
 import threading
 import libvirt
@@ -7,46 +31,49 @@ try :
 except ImportError:
     import etree.ElementTree as ET
     
-"""
-Clase del conector con libvirt
-"""
 class LibvirtConnector(object):
+    """
+    libvirt connector
+    """
      
+    # Hypervisor names
     KVM = "qemu"
     Xen = "xen"  
     
     def __init__(self, hypervisor, startCallback, shutdownCallback):
         """
-        Inicializa el estado del conector.
-        Argumentos:
-            hypervisor: el nombre del hipervisor a utilizar
-            startCallback: función que se invocará cuando un dominio arranque
-            shutdownCallback: función que se invocará cuando se apague un dominio.
+        Initializes the connector's state
+        Args:
+            hypervisor: the hypervisor to use's name
+            startCallback: domain start events callback
+            shutdownCallback: domain stop events callback
         """
-        # Inicializar el hilo de procesamiento de eventos
+        # Initialize the event loop thread
         self.__startVirEventLoop()            
         
         self.__startCallback = startCallback
         self.__shutdownCallback = shutdownCallback
-        # Crear la URI del hipervisor
+        # Build the hypervisor's URI and connect to it
         uri = ""
         uri += hypervisor
         uri += "://"
         uri += "/system"
-        # Conectarnos al hipervisor y procesar los eventos que se generen
         self.__libvirtConnection = libvirt.open(uri)
         self.__libvirtConnection.domainEventRegisterAny(None,
                                               libvirt.VIR_DOMAIN_EVENT_ID_LIFECYCLE,
-                                              self.__createDomainEventHandlers, None) 
+                                              self.__configureDomainEventHandlers, None) 
            
-    def __createDomainEventHandlers(self, conn, domain, eventID, detail, data):
+    def __configureDomainEventHandlers(self, conn, domain, eventID, detail, data):
         """
-        Instala los handlers para los eventos que genera libvirt.
-        Argumentos utilizados:
-            domain: el dominio asociado al evento
-            eventID: el identificador del evento
-        Devuelve:
-            Nada
+        Configures libvirt's event handlers
+        Args:
+            conn: unused
+            domain: the domain associated with the event
+            eventID: unused
+            detail: unused
+            data: unused
+        Returns:
+            Nothing
         """
         eventHandler = {
          libvirt.VIR_DOMAIN_EVENT_DEFINED: self.__onDomainDefined,
@@ -60,72 +87,72 @@ class LibvirtConnector(object):
         
     def __onDomainDefined(self, domain):
         """
-        Handler para el evento de definición de un dominio.
-        Argumentos:
-            domain: el dominio asociado al evento
-        Devuelve:
-            Nada
+        Handles a domain definition event
+        Args:
+            domain: the defined domain
+        Returns:
+            Nothing
         """
         pass    
     
     def __onDomainSuspended(self, domain):
         """
-        Handler para el evento de suspensión de un dominio.
-        Argumentos:
-            domain: el dominio asociado al evento
-        Devuelve:
-            Nada
+        Handles a domain suspension event
+        Args:
+            domain: the suspended domain
+        Returns:
+            Nothing
         """
         pass    
     
     def __onDomainResumed(self, domain):
         """
-        Handler para el evento de reactivación de un dominio.
-        Argumentos:
-            domain: el dominio asociado al evento
-        Devuelve:
-            Nada
+        Handles a domain resume event
+        Args:
+            domain: the resumed domain
+        Returns:
+            Nothing
         """
         pass    
     
     def __onDomainUndefined(self, domain):
         """
-        Handler para el evento de borrado de un dominio
-        Argumentos:
-            domain: el dominio asociado al evento
-        Devuelve:
-            Nada
+        Handles a domain undefinition event
+        Args:
+            domain: the undefined domain
+        Returns:
+            Nothing
         """
         pass    
    
     def __onDomainStopped(self, domain):
         """
-        Handler para el evento de detención de un dominio.
-        Argumentos:
-            domain: el dominio asociado al evento
-        Devuelve:
-            Nada
+        Handles a domain stop event
+        Args:
+            domain: the stopped domain
+        Returns:
+            Nothing
         """
         self.__shutdownCallback.onDomainStop(domain.name())
         pass    
     
     def __onDomainShutDown(self, domain):
         """
-        Handler para el evento de apagado de un dominio.
-        Argumentos:
-            domain: el dominio asociado al evento
-        Devuelve:
-            Nada
+        Handles a domain shut down event
+        Args:
+            domain: the shut down domain
+        Returns:
+            Nothing
         """
         pass    
     
     def __onDomainStarted(self, domain):
         """
-        Handler para el evento de arranque de un dominio.
-        Argumentos:
-            domain: el dominio asociado al evento
-        Devuelve:
-            Nada
+        Handles a domain start event
+        Args:
+            domain: the started domain
+        Returns:
+            Nothing
         """
         xmlTree = ET.fromstring(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_SECURE))
         graphics_element = xmlTree.find('.//graphics')
@@ -141,23 +168,21 @@ class LibvirtConnector(object):
     
     def startDomain(self, definitionFile):
         """
-        Arranca un dominio
-        Argumentos:
-            definitionFile: el fichero .xml que define el dominio
-        Devuelve:
-            Nada
-        Lanza:
-            libvirtError: se lanza cuando surge algún problema al arrancar el dominio
+        Starts a domain
+        Args:
+            definitionFile: the domain configuration string
+        Returns:
+            Nothing
         """
         self.__libvirtConnection.createXML(definitionFile, libvirt.VIR_DOMAIN_NONE)        
     
     def destroyAllDomains(self):
         """
-        Destruye todos los dominios
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada    
+        Destroys all the domains
+        Args:
+            None
+        Returns:
+            Nothing    
         """
         domainIDs = self.__libvirtConnection.listDomainsID()
         for domainID in domainIDs:
@@ -166,44 +191,44 @@ class LibvirtConnector(object):
            
     def destroyDomain(self, domainName):
         """
-        Destruye el dominio cuyo nombre se nos proporciona como argumento.
-        Argumentos:
-            domainName: el nombre del dominio a destruir
-        Devuelve:
-            Nada
+        Destroy a domain
+        Args:
+            domainName: the domain to destroy's name
+        Returns:
+            Nothing
         """             
         targetDomain = self.__libvirtConnection.lookupByName(domainName)
         targetDomain.destroy()
         
     def shutdownDomain(self, domainName):
         """
-        Destruye el dominio cuyo nombre se nos proporciona como argumento.
-        Argumentos:
-            domainName: el nombre del dominio a destruir
-        Devuelve:
-            Nada
+        Shuts down a domain
+        Args:
+            domainName: the domain to shut down's name
+        Returns:
+            Nothing
         """             
         targetDomain = self.__libvirtConnection.lookupByName(domainName)
         targetDomain.shutdown()
         
     def rebootDomain(self, domainName):
         """
-        Destruye el dominio cuyo nombre se nos proporciona como argumento.
-        Argumentos:
-            domainName: el nombre del dominio a destruir
-        Devuelve:
-            Nada
+        Reboots a domain
+        Args:
+            domainName: the domain to reboot's name
+        Returns:
+            Nothing
         """             
         targetDomain = self.__libvirtConnection.lookupByName(domainName)
-        targetDomain.reset(0) # Flags seguros. No se usan.  
+        targetDomain.reset(0) # The flags are unused at the current version of the libvirt API
             
     def getActiveDomainNames(self):
         """
-        Permite consultar los nombres de los dominios activos.
-        Argumentos:
-            ninguno
-        Devuelve:
-            Una lista con los nombres de los dominios activos
+        Returns the active domains' names
+        Args:
+            None
+        Returns:
+            a list containing the active domains' names
         """
         domainIDs = self.__libvirtConnection.listDomainsID()
         result = []
@@ -216,23 +241,23 @@ class LibvirtConnector(object):
     
     def getNumberOfDomains(self):
         """
-        Devuelve el número de dominios activos
-        Argumentos:
-            Ninguno
-        Devuelve:
-            El número de dominios activos
+        Returns the number of domains
+        Args:
+            None
+        Returns:
+            The number of domains
         """
         return self.__libvirtConnection.numOfDomains()
     
     def getStatusInfo(self):
         """
-        Da información sobre los recursos usados por las máquinas virtuales
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Un diccionario con dos claves:
-            - memory: El tamaño de la RAM de la máquina virtual (en KB)
-            - #vcpus: Número total de cpus virtuales de las máquinas virtuales
+        Returns libvirt's status info
+        Args:
+            None
+        Returns:
+            A dictionary with two keys:
+            - memory: the domains' RAM total RAM size
+            - #vcpus: the domain's total VCPUs.
         """
         idsMV = self.__libvirtConnection.listDomainsID()
         vcpus = 0
@@ -242,15 +267,15 @@ class LibvirtConnector(object):
             vcpus += info[3]
         return {"#domains" : self.__libvirtConnection.numOfDomains(),
                 "#vcpus" : vcpus}    
-    
-    """
-    Crea el hilo de procesamiento de eventos generados por libvirt
-    Argumentos:
-        Ninguno
-    Devuelve:
-        Nada
-    """
+
     def __startVirEventLoop(self):
+        """
+        Starts the libvirt event loop
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         def runVirEventLoop():
             while True:
                 libvirt.virEventRunDefaultImpl()
