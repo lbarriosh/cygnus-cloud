@@ -43,13 +43,13 @@ class ImageRepositoryReactor(object):
     Image repository packet reactor
     """    
     
-    def __init__(self, workingDirectory):
+    def __init__(self, diskImagesDirectory):
         """
         Initializes the reactor's state
         Args:
-            workingDirectory: the FTP server's root directory
+            diskImagesDirectory: the FTP server's root directory
         """
-        self.__workingDirectory = workingDirectory        
+        self.__diskImagesDirectory = diskImagesDirectory        
         self.__slotCounter = MultithreadingCounter()
         self.__retrieveQueue = GenericThreadSafeList()
         self.__storeQueue = GenericThreadSafeList() 
@@ -96,7 +96,7 @@ class ImageRepositoryReactor(object):
             self.__repositoryPacketHandler = ImageRepositoryPacketHandler(self.__networkManager)        
             
             self.__commandsCallback = CommandsCallback(self.__networkManager, self.__repositoryPacketHandler, commandsListenningPort, self.__dbConnector,
-                                                       self.__retrieveQueue, self.__storeQueue, self.__workingDirectory)        
+                                                       self.__retrieveQueue, self.__storeQueue, self.__diskImagesDirectory)        
             
             self.__networkManager.startNetworkService()
             self.__networkManager.listenIn(commandsListenningPort, self.__commandsCallback, useSSL)
@@ -110,7 +110,7 @@ class ImageRepositoryReactor(object):
        
             self.__ftpServer.startListenning(networkInterface, ftpListenningPort, maxConnections, maxConnectionsPerIP, 
                                              dataCallback, downloadBandwidthRatio, uploadBandwidthRatio)
-            self.__ftpServer.addUser(self.__ftpUsername, self.__ftpPassword, self.__workingDirectory, "eramw")      
+            self.__ftpServer.addUser(self.__ftpUsername, self.__ftpPassword, self.__diskImagesDirectory, "eramw")      
         except Exception as e:
             print "Error: " + e.message
             self.__finish = True
@@ -180,12 +180,12 @@ class ImageRepositoryReactor(object):
                     compressedFilePath = imageData["compressedFilePath"]    
                     
                     if (not "undefined" in compressedFilePath) :                                
-                        serverDirectory = path.relpath(path.dirname(compressedFilePath), self.__workingDirectory)
+                        serverDirectory = path.relpath(path.dirname(compressedFilePath), self.__diskImagesDirectory)
                         compressedFileName = path.basename(compressedFilePath)
                     else :
                         serverDirectory = str(imageID)
                         compressedFileName = ""
-                        serverDirectoryPath = path.join(self.__workingDirectory, serverDirectory)
+                        serverDirectoryPath = path.join(self.__diskImagesDirectory, serverDirectory)
                         if (path.exists(serverDirectoryPath)) :
                             # The directory exists, and can store shit => clean it up!
                             ChildProcessManager.runCommandInForeground("rm -rf " + serverDirectoryPath, Exception)

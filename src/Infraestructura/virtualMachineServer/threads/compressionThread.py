@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Created on Apr 28, 2013
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: compressionThread.py    
+    Version: 3.0
+    Description: compression thread definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
 
-@author: luis
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from ccutils.threads.basicThread import BasicThread
@@ -18,23 +37,25 @@ from time import sleep
 
 class CompressionThread(BasicThread):
     """
-    Clase del hilo de descompresión y compresión de ficheros
+    This thread class is associated with the compression thread
     """
     
-    def __init__(self, transferDirectory, workingDirectory, definitionFileDirectory, dbConnector, domainHandler,
+    def __init__(self, transferDirectory, diskImagesDirectory, definitionFileDirectory, dbConnector, domainHandler,
                  networkManager, serverListenningPort, packetHandler):
         """
-        Inicializa el estado del hilo
-        Argumentos:
-            transferDirectory: el directorio de trabajo del hilo de transferencias
-            workingDirectory: el directorio en el que se almacenan las imágenes de disco
-            definitionFileDirectory: el directorio en el que se almacenan los ficheros de definición de las máquinas
-            dbConnector: conector con la base de datos
-            domainHandler: objeto que interactúa con libvirt para manipular máquinas virtuales
-            único de la máquina virtual
+        Initializes the compression thread's state
+        Args:
+            transferDirectory: the transfers directory
+            diskImagesDirectory: the directory where the disk images are stored
+            definitionFileDirectory: the directory where the definition files are stored
+            dbConnector: the database connector
+            domainHandler: the domain handler to use
+            networkManger: the network manager to use
+            serverListenningPort: the virtual machine server's control connection port.
+            packetHandler: the packet handler to use
         """
         BasicThread.__init__(self, "File compression thread")
-        self.__workingDirectory = workingDirectory
+        self.__diskImagesDirectory = diskImagesDirectory
         self.__transferDirectory = transferDirectory
         self.__definitionFileDirectory = definitionFileDirectory
         self.__dbConnector = dbConnector
@@ -56,11 +77,11 @@ class CompressionThread(BasicThread):
         
     def __processElement(self, data):
         """
-        Procesa una petición de compresión o descompresión.
-        Argumentos:
-            data: diccionario con los datos de la petición a procesar
-        Devuelve:
-            Nada
+        Processes a compression/decompression requiest
+        Args:
+            data: a dictionary containing the request's data
+        Returns:
+            Nothing
         """        
         try :
             imageDirectory = None
@@ -70,9 +91,9 @@ class CompressionThread(BasicThread):
                 
                 self.__dbConnector.deleteImage(data["SourceImageID"])
                     
-                # Extraemos el fichero en el directorio que alberga las imágenes
-                imageDirectory = path.join(self.__workingDirectory, str(data["TargetImageID"]))
-                # Cambiamos los permisos de los ficheros y buscamos el fichero de definición
+                # Extract the .zip file
+                imageDirectory = path.join(self.__diskImagesDirectory, str(data["TargetImageID"]))
+                # Change the extracted files' permissions, and look for the definition file.
                 definitionFileDirectory = path.join(self.__definitionFileDirectory, str(data["TargetImageID"]))            
                 
                 try :
@@ -83,7 +104,7 @@ class CompressionThread(BasicThread):
                 zipFilePath = path.join(self.__transferDirectory, str(data["SourceImageID"]) + ".zip")
                 self.__compressor.extractFile(zipFilePath, imageDirectory)                     
                 
-                # Creamos el directorio de definicion en el caso de que no exista
+                # Move the three extracted files
                 if not path.exists(definitionFileDirectory):
                     makedirs(definitionFileDirectory)
             
@@ -93,7 +114,6 @@ class CompressionThread(BasicThread):
                 for fileName in listdir(imageDirectory):
                     ChildProcessManager.runCommandInForegroundAsRoot("chmod 666 " + path.join(imageDirectory, fileName), VMServerException)
                     if fileName.endswith(".xml"):
-                        # movemos el fichero al directorio
                         definitionFile = fileName
                         shutil.move(path.join(imageDirectory, fileName), definitionFileDirectory)
                         definitionFileFound = True
@@ -106,24 +126,24 @@ class CompressionThread(BasicThread):
                 if (not containsOSFile) :
                     raise Exception("The OS disk image was not found")
     
-                # Registramos la máquina virtual
+                # Register the new image
                 self.__dbConnector.createImage(data["TargetImageID"], path.join(str(data["TargetImageID"]), "OS.qcow2"),
                                                path.join(str(data["TargetImageID"]), "Data.qcow2"),
                                                path.join(str(data["TargetImageID"]), definitionFile), data["Transfer_Type"] == TRANSFER_T.DEPLOY_IMAGE)
                 
                 if (data["Transfer_Type"] != TRANSFER_T.DEPLOY_IMAGE):                
-                    # Guardamos los datos de conexión al repositorio  
+                    # Edition request => boot the virtual machine, store the image repository connection data
                     self.__dbConnector.addValueToConnectionDataDictionary(data["CommandID"], {"RepositoryIP": data["RepositoryIP"], "RepositoryPort" : data["RepositoryPort"]})                
-                    # Arrancamos la máquina virtual
+                    
                     self.__domainHandler.createDomain(data["TargetImageID"], data["UserID"], data["CommandID"])        
                 else :
                     p = self.__packetHandler.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DEPLOYED, data["TargetImageID"], data["CommandID"])
                     self.__networkManager.sendPacket('', self.__serverListenningPort, p)
                     
-                # Borramos el fichero .zip
+                # Delete the .zip file
                 ChildProcessManager.runCommandInForeground("rm " + zipFilePath, VMServerException)    
             else:        
-                # Comprimimos los ficheros
+                # Build the .zip file
                 
                 zipFilePath = path.join(self.__transferDirectory, str(data["TargetImageID"]) + ".zip")                
                 
@@ -131,11 +151,11 @@ class CompressionThread(BasicThread):
                     data["DataImagePath"], path.join(self.__definitionFileDirectory, data["DefinitionFilePath"])])
                 
                 
-                # Borramos los ficheros fuente
+                # Delete the source files
                 ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(path.join(self.__definitionFileDirectory, data["DefinitionFilePath"])), Exception)
                 ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(data["OSImagePath"]), Exception)
                 
-                # Encolamos la petición
+                # Queue a transfer request
                 
                 data.pop("DataImagePath")
                 data.pop("OSImagePath")
@@ -153,7 +173,7 @@ class CompressionThread(BasicThread):
             p = self.__packetHandler.createErrorPacket(packet_type, ERROR_DESC_T.VMSRVR_COMPRESSION_ERROR, data["CommandID"])
             self.__networkManager.sendPacket('', self.__serverListenningPort, p)
             if (data["Transfer_Type"] != TRANSFER_T.DEPLOY_IMAGE):
-                # Generar una transferencia especial para dejar de editar la imagen
+                # Build a special transfer to unlock the disk image
                 transfer = dict()
                 transfer["Transfer_Type"] = TRANSFER_T.CANCEL_EDITION
                 transfer["RepositoryIP"] = data["RepositoryIP"]
@@ -162,7 +182,7 @@ class CompressionThread(BasicThread):
                 transfer["ImageID"] = data["TargetImageID"]
                 self.__dbConnector.addToTransferQueue(transfer)
             
-            # Borrar basura
+            # Delete the disk images, the definition file and the .zip file.
             if (imageDirectory != None):
                 ChildProcessManager.runCommandInForeground("rm -rf " + imageDirectory, None)
             if (definitionFileDirectory != None):

@@ -35,7 +35,7 @@ class CommandsCallback(NetworkCallback):
     """
     These objects process the request received through the control connection
     """    
-    def __init__(self, networkManager, pHandler, listenningPort, dbConnector, retrieveQueue, storeQueue, workingDirectory):
+    def __init__(self, networkManager, pHandler, listenningPort, dbConnector, retrieveQueue, storeQueue, diskImagesDirectory):
         """
         Initializes the callback's state
         Args:
@@ -53,7 +53,7 @@ class CommandsCallback(NetworkCallback):
         self.__haltReceived = False
         self.__retrieveQueue = retrieveQueue
         self.__storeQueue = storeQueue
-        self.__workingDirectory = workingDirectory
+        self.__diskImagesDirectory = diskImagesDirectory
         
     def processPacket(self, packet):
         """
@@ -99,7 +99,7 @@ class CommandsCallback(NetworkCallback):
         Returns:
             Nothing
         """
-        diskStats = statvfs(self.__workingDirectory)
+        diskStats = statvfs(self.__diskImagesDirectory)
         freeDiskSpace = diskStats.f_bfree * diskStats.f_frsize / 1024
         totalDiskSpace = diskStats.f_bavail * diskStats.f_frsize / 1024
         p = self.__repositoryPacketHandler.createStatusDataPacket(freeDiskSpace, totalDiskSpace)

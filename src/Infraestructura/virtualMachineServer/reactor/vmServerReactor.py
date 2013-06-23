@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Created on 14/01/2013
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: vmServerReactor.py    
+    Version: 5.0
+    Description: virtual machine server packet reactor definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
 
-@author: saguma
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from network.manager.networkManager import NetworkManager, NetworkCallback
@@ -25,14 +44,14 @@ from errors.codes import ERROR_DESC_T
 
 class VMServerReactor(NetworkCallback):
     """
-    Clase del reactor del servidor de máquinas virtuales
+    Virtual machine server packet reactor
     """
     def __init__(self, configurationFileParser):
         """
-        Inicializa el estado del reactor, establece las conexiones con las bases de datos, arranca el conector de libvirt
-        y empieza a atender las peticiones del servidor de máquinas virtuales.
-        Argumentos:
-            constantsManager: objeto del que se obtendrán los parámetros de configuración
+        Initializes the reactor's state, establishes the connection with the database
+        and creates the control connection
+        Args:
+            configurationFileParser: the virtual machine server's configuration file parser
         """        
         self.__finished = False
         self.__emergencyStop = False
@@ -53,19 +72,23 @@ class VMServerReactor(NetworkCallback):
         
     def __connectToDatabases(self, databaseName, user, password) :
         """
-        Establece la conexión con la base de datos
-        Argumentos:
-            databaseName: el nombre de la base de datos
-            user: el usuario a utilizar
-            password: la contraseña a utilizar
-        Devuelve:
-            Nada
+        Establishes the connection with the database
+        Args:
+            databaseName: a database name
+            user: a SQL username
+            password: the user's password
+        Returns:
+            Nothing
         """
         self.__dbConnector = VMServerDBConnector(user, password, databaseName)  
             
     def __startListenning(self):
         """
-        Crea la conexión de red por la que se recibirán los comandos del servidor de cluster.
+        Creates the control connection
+        Args:
+            None
+        Returns:
+            Nothing
         """    
         networkInterface = self.__parser.getConfigurationParameter("vncNetworkInterface")
         listenningPort = self.__parser.getConfigurationParameter("listenningPort")
@@ -106,22 +129,27 @@ class VMServerReactor(NetworkCallback):
         self.__networkManager.listenIn(self.__listenningPort, self, self.__useSSL)
         
     def __deleteTemporaryZipFiles(self):
+        """
+        Deletes the temporary zip files
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         transfer_dir_path = self.__parser.getConfigurationParameter("TransferDirectory")
         for filePath in os.listdir(transfer_dir_path) :
             fileName = os.path.splitext(filePath)[0]
             if re.match("[^0-9]", fileName):
-                # Fichero temporal: los nuestros sólo tienen números en el nombre
+                # The non-temporary zip files only have numbers on their names
                 os.remove(os.path.join(transfer_dir_path, filePath))
     
     def shutdown(self):
         """
-        Apaga el servidor de máquinas virtuales.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
-        @attention: Para que no se produzcan cuelgues en la red, este método DEBE llamarse desde el hilo 
-        principal.
+        Shuts down the virtual machine server
+        Args:
+            None
+        Returns:
+            Nothing
         """                
             
         if (self.__emergencyStop) :            
@@ -142,11 +170,11 @@ class VMServerReactor(NetworkCallback):
         
     def processPacket(self, packet):
         """
-        Procesa un paquete enviado desde el servidor de cluster.
-        Argumentos:
-            packet: el paquete a procesar
-        Devuelve:
-            Nada
+        Processes a packet sent from the cluster server
+        Args:
+            packet: the packet to process
+        Returns:
+            Nothing
         """
         data = self.__packetManager.readPacket(packet)
         if (data["packet_type"] == VM_SERVER_PACKET_T.CREATE_DOMAIN) :
@@ -176,11 +204,11 @@ class VMServerReactor(NetworkCallback):
             
     def __processDeployImagePacket(self, data):
         """
-        Procesa un paquete de despliegue de una imagen
-        Argumentos:
-            data: el paquete a procesar
-        Devuelve:
-            Nada
+        Processes an image deployment packet
+        Args:
+            data: a dictionary containing the packet to process' data
+        Returns:
+            Nothing
         """
         data.pop("packet_type")
         data["Transfer_Type"] = TRANSFER_T.DEPLOY_IMAGE
@@ -221,11 +249,11 @@ class VMServerReactor(NetworkCallback):
         
     def __processImageEditionPacket(self, data):
         """
-        Procesa un paquete de edición de una imagen.
-        Argumentos:
-            data: el paquete a procesar
-        Devuelve:
-            Nada
+        Processes an image edition packet
+        Args:
+            data: a dictionary containing the packet to process' data
+        Returns:
+            Nothing
         """
         data.pop("packet_type")
         if (data["Modify"]) :
@@ -237,16 +265,13 @@ class VMServerReactor(NetworkCallback):
 
     def __sendDomainsVNCConnectionData(self):
         '''
-        Envía al servidor de cluster los datos de conexion de todas las máquinas virtuales
-        que estén arrancadas
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Sends the domains' VNC connection data to the cluster server
+        Args:
+            None
+        Returns:
+            Nothing
         '''
-        # Extraer los datos de la base de datos
         vncConnectionData = self.__dbConnector.getDomainsConnectionData()
-        # Generar los segmentos en los que se dividirá la información
         segmentSize = 150
         segmentCounter = 1
         outgoingData = []
@@ -273,23 +298,23 @@ class VMServerReactor(NetworkCallback):
     
     def __sendStatusData(self):
         """
-        Recopila la información de estado del servidor de máquinas virtuales y se la envía al servidor de cluster.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Sends the server's status data to the cluster server
+        Args:
+            None
+        Returns:
+            Nothing
         """
         info = self.__domainHandler.getLibvirtStatusInfo()
         realCPUNumber = multiprocessing.cpu_count()
         freeOutput = ChildProcessManager.runCommandInForeground("free -k", VMServerException)
         
-        # free devuelve la siguiente salida
+        # free's output contains the following lines and collumns:
         #              total       used       free     shared    buffers     cached
         # Mem:    4146708480 3939934208  206774272          0  224706560 1117671424
         # -/+ buffers/cache: 2597556224 1549152256
         # Swap:   2046816256   42455040 2004361216
         #
-        # Cogemos la tercera línea
+        # We must get the third line
            
         availableMemory = int(freeOutput.split("\n")[1].split()[1])
         freeMemory = int(freeOutput.split("\n")[2].split()[2])
@@ -302,7 +327,13 @@ class VMServerReactor(NetworkCallback):
         self.__networkManager.sendPacket('', self.__listenningPort, packet) 
         
     def __generateDiskStats(self):
-        # Leer el espacio en dico realmetne utilizado
+        """
+        Generates the hard disk usage statistics
+        Args:
+            None
+        Returns:
+            the free and available storage and temporary space
+        """
         diskStats_storage = os.statvfs(self.__parser.getConfigurationParameter("sourceImagePath"))
         diskStats_temporaryData = os.statvfs(self.__parser.getConfigurationParameter("executionImagePath"))
         allocatedStorageSpace, allocatedTemporaryStorageSpace = self.__checkDiskImagesSpace()
@@ -313,6 +344,13 @@ class VMServerReactor(NetworkCallback):
         return freeStorageSpace, availableStorageSpace, freeTemporaryStorageSpace, availableTemporaryStorageSpace
     
     def __checkDiskImagesSpace(self):
+        """
+        Checks how much disk space must be allocated for the active virtual machines' disk images
+        Args:
+            None
+        Returns:
+            the storage and temporary storage space that must be allocated.
+        """
         activeDomainNames = self.__dbConnector.getRegisteredDomainNames()
         allocatedStorageSpace = 0
         allocatedTemporaryStorageSpace = 0
@@ -330,6 +368,13 @@ class VMServerReactor(NetworkCallback):
         return allocatedStorageSpace, allocatedTemporaryStorageSpace
             
     def __getAllocatedSpace(self, imagePath):
+        """
+        Returns the disk space that must be allocated for a disk image
+        Args:
+            imagePath: the disk image's path
+        Returns:
+            Nothing
+        """
         try :
             output = ChildProcessManager.runCommandInForeground("qemu-img info " + imagePath, Exception)
             lines = output.split("\n")
@@ -342,6 +387,13 @@ class VMServerReactor(NetworkCallback):
             
     @staticmethod
     def __extractImageSize(string):
+        """
+        Extracts an image size from a quemu-img command output.
+        Args:
+            string: the qemu-img command's image size
+        Returns:
+            the disk image size (in kilobytes)
+        """
         if ("G" in string) :
             power = 2
         elif ("M" in string):
@@ -355,11 +407,11 @@ class VMServerReactor(NetworkCallback):
     
     def __sendActiveDomainUIDs(self):
         """
-        Envía los UIDs de los dominios activos al servidor de cluster
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Sends domains' UUIDs to the cluster server
+        Args:
+            None
+        Returns:
+            Nothing
         """
         activeDomainUIDs = self.__dbConnector.getActiveDomainUIDs()
         packet = self.__packetManager.createActiveDomainUIDsPacket(self.__vncServerIP, activeDomainUIDs)
@@ -367,10 +419,10 @@ class VMServerReactor(NetworkCallback):
     
     def has_finished(self):
         """
-        Indica si el servidor de máquinas virtuales se ha apagado o no.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Checks if the virtual machine server has been shut down or not
+        Args:
+            None
+        Returns:
+            Nothing
         """
         return self.__finished   
