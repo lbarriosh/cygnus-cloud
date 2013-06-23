@@ -1,9 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Punto de entrada del servidor de máquinas virtuales
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: main.py    
+    Version: 5.0
+    Description: virtual machine server entry point
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
 
-@author: Luis Barrios Hernández
-@version: 2.0
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from ccutils.databases.configuration import DBConfigurator
@@ -16,7 +34,6 @@ import sys
 import os
 
 if __name__ == "__main__" :
-    # Parsear el fichero de configuración
     if (len(sys.argv) != 2) :
         print "A configuration file path is needed"
         sys.exit()
@@ -27,7 +44,7 @@ if __name__ == "__main__" :
         print e.message
         sys.exit()
         
-    # Pedir la contraseña de root. Es necesaria para poder cambiar los permisos
+    # Read root's password. It's vital to change the downloaded files' permissions.
     password_ok = False
     while (not password_ok) :        
         try :            
@@ -37,22 +54,20 @@ if __name__ == "__main__" :
             print "Wrong password. Please, key it in again."
             RootPasswordHandler().clear()
         
-    # Crear la base de datos (si es necesario)
+    # Configure the database
     configurator = DBConfigurator(parser.getConfigurationParameter("mysqlRootsPassword"))
     configurator.runSQLScript("VMServerDB", "./database/VMServerDB.sql")
-    # Crear un usuario y darle permisos
     configurator.addUser(parser.getConfigurationParameter("databaseUserName"), parser.getConfigurationParameter("databasePassword"), "VMServerDB", True)
     
-    # Crear los directorios
+    # Create the directories (if necessary)
     parameters = ["configFilePath", "sourceImagePath", "executionImagePath", "TransferDirectory"]
     for param in parameters :
         param_path = parser.getConfigurationParameter(param)
         if (not os.path.exists(param_path)):
             os.mkdir(param_path)
     
-    # Terminar con la inicialización
-    vmServer = VMServerReactor(parser)    
-    # Dormir hasta que se apague
+    # Finish the initialization process
+    vmServer = VMServerReactor(parser)  
     while not vmServer.has_finished():
         sleep(10) 
     vmServer.shutdown()       
