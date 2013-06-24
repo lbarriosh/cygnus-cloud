@@ -1,8 +1,27 @@
 /*
- *	Script de creación de la base de datos del servidor de cluster
- *	Autores: Adrian Fernandez, Luis Barrios, Samuel Guayerbas
- *	Version: 4.0
-*/
+ *  ========================================================================
+ *                                   CygnusCloud
+ *  ======================================================================== 
+ *
+ *  File: ClusterServerDB.sql    
+ *  Version: 5.0
+ *  Description: cluster server database repository schema 
+ *
+ *  Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+ *      Samuel Guayerbas Martín       
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 
 
 CREATE DATABASE IF NOT EXISTS ClusterServerDB;
@@ -11,7 +30,7 @@ USE ClusterServerDB;
 
 CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT, 
 	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER,
-	isVanillaServer BIT, UNIQUE(serverName), UNIQUE(serverIP, serverPort));
+	isEditionServer BIT, UNIQUE(serverName), UNIQUE(serverIP, serverPort));
 
 CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER, status TINYINT,
 	PRIMARY KEY(serverId,imageId),
@@ -77,7 +96,7 @@ CREATE TABLE IF NOT EXISTS AutoDeploymentCommand(commandID VARCHAR(70) PRIMARY K
 	ENGINE=MEMORY;
 	
 /*
- * Características de las familias de imágenes vanilla
+ * Vanilla image features.
  */
 INSERT IGNORE INTO VMFamily VALUES (1, 'Linux-Small', 1048576, 1, 5242880, 3145728); 
 INSERT IGNORE INTO VMFamily VALUES (2, 'Linux-Medium', 2097152, 2, 10485760, 6291456);
@@ -88,7 +107,6 @@ INSERT IGNORE INTO VMFamily VALUES (5, 'Windows7-Medium', 2097152, 2, 31457280, 
 INSERT IGNORE INTO VMFamily VALUES (6, 'Windows7-Big', 3145728, 4, 41943040, 16777216);
 
 /*
- * Imágenes activas
- */
-	
+ * Registered virtual machines. The following line is provided as an example.	
 INSERT IGNORE INTO VMFamilyOf VALUES (1, 1);
+ */

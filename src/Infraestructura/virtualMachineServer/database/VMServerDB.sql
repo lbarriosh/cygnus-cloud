@@ -5,7 +5,7 @@
  *
  *  File: VMServerDB.sql    
  *  Version: 6.0
- *  Description: image repository database schema 
+ *  Description: virtual machine server database schema 
  *
  *  Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
  *      Samuel Guayerbas Martín       
