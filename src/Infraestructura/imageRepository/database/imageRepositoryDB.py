@@ -41,8 +41,8 @@ class ImageRepositoryDBConnector(BasicDBConnector):
         """
         Establishes the connection with the database
         Args:
-            sqlUser: the SQL user to use
-            sqlPassword: the SQL user's password
+            sqlUser: the MySQL user to use
+            sqlPassword: the MySQL user's password
             databaseName: the database's name
         """
         BasicDBConnector.__init__(self, sqlUser, sqlPassword, databaseName)
@@ -99,7 +99,7 @@ class ImageRepositoryDBConnector(BasicDBConnector):
         if ("undefined" in result) :
             self.deleteImage(imageID)
         else :
-            self.changeImageStatus(imageID, IMAGE_STATUS_T.READY)
+            self.changeImageCopiesState(imageID, IMAGE_STATUS_T.READY)
     
     def deleteImage(self, imageID):
         """
@@ -123,9 +123,9 @@ class ImageRepositoryDBConnector(BasicDBConnector):
         update = "INSERT INTO Image(compressedFilePath, imageStatus) VALUES ('{0}', {1});".format("undefined", IMAGE_STATUS_T.READY)
         self._executeUpdate(update)
         
-    def changeImageStatus(self, imageID, newStatus):
+    def changeImageCopiesState(self, imageID, newStatus):
         """
-        Changes an image's status
+        Changes an image's state
         Args:
             imageID: an image ID
             newStatus: the new image ID
@@ -156,4 +156,4 @@ class ImageRepositoryDBConnector(BasicDBConnector):
             Nothing
         """
         imageID = sub("[^0-9]", "", path.basename(fileName))
-        self.changeImageStatus(imageID, IMAGE_STATUS_T.READY)
+        self.changeImageCopiesState(imageID, IMAGE_STATUS_T.READY)

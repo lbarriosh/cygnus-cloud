@@ -36,7 +36,7 @@ class VMServerDBConnector(BasicDBConnector):
         '''
         Initializes the connector state
         Args:
-            sqlUser: a SQL user
+            sqlUser: a MySQL user
             sqlPass: a password
             databaseName: a database name
         '''

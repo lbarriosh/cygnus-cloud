@@ -82,20 +82,20 @@ class ClusterConnector(object):
         """
         return self.__endpointDBConnector.getVMServersData()
         
-    def registerVMServer(self, vmServerIP, vmServerPort, vmServerName, isVanillaServer):
+    def registerVMServer(self, vmServerIP, vmServerPort, vmServerName, isEditionServer):
         """
         Registra un servidor de máquinas virtuales
         Argumentos:
             vmServerIP: la IP del servidor de máquinas virtuales
             vmServerPort: el puerto en el que escucha
             vmServerName: el nombre del servidor de máquinas virtuales
-            isVanillaServer: indica si el servidor de máquinas virtuales se usará preferentemente
+            isEditionServer: indica si el servidor de máquinas virtuales se usará preferentemente
                 para editar imágenes vanilla o no.
         Devuelve:
             El identificador único del comando.
             @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = self.__commandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isVanillaServer)
+        (commandType, commandArgs) = self.__commandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isEditionServer)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
         
     def unregisterVMServer(self, vmServerNameOrIP, isShutDown):
@@ -356,7 +356,7 @@ class ClusterConnector(object):
         """
         return self.__endpointDBConnector.getEditedImageIDs(userID)
     
-    def getVanillaImageFamilyID(self, imageID):
+    def getVMFamilyID(self, imageID):
         """
         Devuelve la familia de imágenes vanilla asociada a una imagen existente.
         Argumentos:
@@ -364,7 +364,7 @@ class ClusterConnector(object):
         Devuelve:
             el identificador de la familia de imágenes vanilla a la que pertenece la imagen
         """
-        return self.__endpointDBConnector.getVanillaImageFamilyID(imageID)
+        return self.__endpointDBConnector.getVMFamilyID(imageID)
     
     def getVanillaImageFamilyData(self, vanillaImageFamilyID):
         """
