@@ -23,12 +23,16 @@
 
     You can contact us at cygnuscloud [at] googlegroups [dot] com
 """
+
 # coding: utf8
 import os
 from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 if session.authorized: redirect(URL(r=request,c='main',f='login'))
 
+'''
+    Función encargada de la sección runVM de los administradores
+'''
 @auth.requires_membership('Administrator')
 def runVM():
     createAdressBar()
@@ -40,8 +44,7 @@ def runVM():
                INPUT(_type='submit',_class="button button-blue",_name = 'search',_value=T('Buscar')),HR())    
         #Creamos el segundo formulario
         listSubjectsAux = request.vars.subjectsFind or []
-        #Comprobamos si se ha tomado como una lista
-        print request.vars.subjectsFind    
+        #Comprobamos si se ha tomado como una lista   
         if(isinstance(listSubjectsAux,str)):
             listSubjects= [eval(request.vars.subjectsFind)]
         else:
@@ -49,8 +52,10 @@ def runVM():
             for l in listSubjectsAux:
                 print l
                 listSubjects.append(eval(l))
+        # Creamos la tabla
         table = TABLE(_class='data', _name='table')
-        table.append(TR(TH('Selección'),TH(T('Cod-Asignatura'),_class='izquierda'),TH(T('Grupo')),TH(T('Nombre')),TH(T('Descripcion'),_class='izquierda')))
+        table.append(TR(TH('Selección'),TH(T('Cod-Asignatura'),_class='izquierda'),\
+            TH(T('Grupo')),TH(T('Nombre')),TH(T('Descripcion'),_class='izquierda')))
         j = 0
         for l in listSubjects:
             i = 0
@@ -107,6 +112,7 @@ def runVM():
         #Creamos la etiqueta de notificacion si procede         
         createNotificationAdvise(form1,connector)         
         return dict(form1=form1,form2=form2,num = j)
+        
     elif(request.args(0) == 'edit'):   
         #Creamos el formulario de busqueda
         form1 = FORM(HR(),H2(T('Buscar una máquina'))
@@ -148,23 +154,7 @@ def runVM():
         for vmName in vmNames:
             vmSelector.append(OPTION(T(str(vmName["ImageName"])),_value = vmName["ImageID"] ,_selected="selected"))
             i = i + 1 
-        """  
         #Creamos el segundo formulario
-        vmListAux = request.vars.vmList or []
-        if(isinstance(vmListAux,str)):
-            vmList = [eval(request.vars.vmList)]
-        else:
-            vmList = []
-            for l in vmListAux:
-                vmList.append(eval(l)) 
-        """
-        #Creamos el segundo formulario
-        """
-        infoTable = TABLE(
-                    TR(TD("Asignatura:",_class='izquierda'),TD("",_id='vmSubject',_class='izquierda')),
-                    TR(TD("Grupo",_class='izquierda'),TD("",_id='vmGroup',_class='izquierda')),
-                    TR(TD("Usuario",_class='izquierda'),TD("",_id='vmUser',_class='izquierda')),_class='state_table',_id='infoTable')
-        """
         serversSelector = SELECT(_name = 'servers',_id= 'serversId')
         servers = connector.getVMServersData()
         i = 0
@@ -270,8 +260,7 @@ def runVM():
                INPUT(_type='submit',_class="button button-blue",_name = 'search',_value=T('Buscar'),_onclick=[]),HR())    
         #Creamos el segundo formulario
         vmListAux = request.vars.vmList or []
-        #Comprobamos si se ha tomado como una lista
-            
+        #Comprobamos si se ha tomado como una lista            
         if(isinstance(vmListAux,str)):
             vmList = [eval(request.vars.vmList)]
         else:
@@ -380,7 +369,11 @@ def runVM():
   
         #Creamos la etiqueta de notificacion si procede         
         createNotificationAdvise(form1,connector)                            
-        return dict(form1=form1,form2=form2,num=j)         
+        return dict(form1=form1,form2=form2,num=j)  
+                      
+'''
+    Función encargada de la sección server de los administradores
+'''                           
 @auth.requires_membership('Administrator')
 def servers():
     createAdressBar()
@@ -395,7 +388,8 @@ def servers():
                 DIV( T('Puerto: '),BR(),INPUT(_name ='port',_style="width:40%;"),_style="position:absolute;left:42%;"),
                 DIV(BR(), T('Imagen base: '),INPUT(_type="checkbox",_name ='isVanilla',_style="width:30px;")
                 ,_style="position:absolute;left:55%;"),BR(),BR(),BR(),
-                DIV(HR(),CENTER(INPUT(_type='submit',_class="button button-blue",_name = 'add' ,_value=T('Añadir Servidor'),_style="width:150px;"))))                
+                DIV(HR(),CENTER(INPUT(_type='submit',_class="button button-blue", \
+                _name = 'add' ,_value=T('Añadir Servidor'),_style="width:150px;"))))                
         
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
             if(len(form.vars.name) > 0) and (len(form.vars.ipDir) > 0) and (len(form.vars.port) > 0):
@@ -411,34 +405,35 @@ def servers():
                 except ValueError:
                        response.flash = T('E puerto debe ser un entero.')
             
-        #Devolvemos el formulario 
+        #Creamos el anuncio de notificaciones pendiente 
         createNotificationAdvise(form,connector)
+        #Devolvemos el formulario
         return dict(form = form)
+        
     elif(request.args(0) == 'remove_servers'): 
-         
+        #Extraemos información del servidores seleccionado 
         infoServer = request.vars.info or ['No info','No info','No info','No info',False]
-        print infoServer 
-
         i = 0
         select = SELECT(_name = 'server',_id= 'sId')
         servers = connector.getVMServersData()
-        print "Servers: " + str(servers)
         for s in servers:
             select.append(OPTION(T(str(s["VMServerName"])),_value = i ,_selected="selected"))
             i = i + 1    
        
         buttons = DIV() 
-        # Solo mostramos el botón de detener si hay una máquina seleccionada
+        # Mostramos los botones según el estado del servidor
         if(infoServer[0] != 'No info'):
-            buttons.append(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'change' ,_value=T('Aplicar cambios'),_style="width:170px;")
-            ,_style="position:relative;left:20%;float:left;"))
-            buttons.append(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'remove' ,_value=T('Eliminar servidor'),_style="width:170px;"),_style="position:relative;left:25%;float:left;"))
+            buttons.append(DIV(INPUT(_type='submit',_class="button button-blue", \
+                _name = 'change' ,_value=T('Aplicar cambios'),_style="width:170px;"),_style="position:relative;left:20%;float:left;"))
+            buttons.append(DIV(INPUT(_type='submit',_class="button button-blue", \
+                _name = 'remove' ,_value=T('Eliminar servidor'),_style="width:170px;"),_style="position:relative;left:25%;float:left;"))
           
         # Si no está arrancado, añadimos el botón de arrancar
         if(infoServer[3] == "Apagado"):
-            buttons.append(DIV(INPUT(_type='submit',_class="button button-blue",_name = 'run' ,_value=T('Arrancar servidor'),_style="width:170px;")
-            ,_style="position:relative;left:30%;float:left;"))
-
+            buttons.append(DIV(INPUT(_type='submit',_class="button button-blue", \
+                _name = 'run' ,_value=T('Arrancar servidor'),_style="width:170px;"),_style="position:relative;left:30%;float:left;"))
+    
+        #Creamos el formulario
         form1 = FORM(DIV(DIV(H4(T('Servidores')),select),
         DIV(INPUT(_type='submit',_class="button button-blue",_name = 'search' ,_value=T('Buscar servidor'),_style="width:150px;")
         ),BR(),
@@ -449,15 +444,15 @@ def servers():
         DIV(BR(), T('Imagen base: '),INPUT(_type="checkbox",_name ='isVanilla',_checked=infoServer[4],_style="width:30px;")
                 ,_style="position:absolute;left:57%;"),BR(),_style="margin-bottom:100px;"),DIV(buttons,BR(),_style="margin-bottom:10px;"))           
         
+        #Evaluamos los posibles botones pulsados
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
-            sInfo = connector.getVMServersData()[int(form1.vars.server)]
-            print "Servers registrados:" + str(sInfo)
+            #Realizamos la busqueda
+            sInfo = connector.getVMServersData()[int(form1.vars.server)]            
             redirect(URL(c='administrator',f='servers',args = ['remove_servers'],vars = dict(info = [sInfo["VMServerName"],\
             sInfo["VMServerIP"],sInfo["VMServerListenningPort"],sInfo["VMServerStatus"],sInfo["IsVanillaServer"],form1.vars.server]) ))
             
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.remove: 
-             #Damos de baja el servidor
-             print infoServer[0] 
+             #Damos de baja el servidor 
              commandID = connector.unregisterVMServer(infoServer[0],False)
              errorInfo = connector.waitForCommandOutput(commandID)
              if(errorInfo != None):
@@ -511,6 +506,7 @@ def servers():
                                     temporarySpacePercentage=100*serverInfo["FreeTemporarySpace"]/serverInfo["AvailableTemporarySpace"],
                                     CPUsPercentage=100*serverInfo["ActiveVCPUs"]/serverInfo["PhysicalCPUs"])
                 
+                # Creamos la tabla de estado
                 table = TABLE(_class='state_table', _name='table')
                 table.append(TR(TH(serverName,_class='izquierda state_table'),TH("Usado",_class='state_table'),TH("Total",_class='state_table')))
                 table.append(TR(TD("Maquinas activas",_class='izquierda state_table')
@@ -528,6 +524,7 @@ def servers():
                     ,TD(serverInfo["PhysicalCPUs"],_class='state_table')))
             
         if serverInfo == None:
+                # En caso de no encontrarse el servidor, mostramos información por defecto
                 statePercentages=dict(RAMPercentage=0,
                                     diskPercentage=0,
                                     temporarySpacePercentage=0,
@@ -556,6 +553,7 @@ def servers():
                     ,TD(str((repositoryInfo["AvailableDiskSpace"]-repositoryInfo["FreeDiskSpace"])/1024)+ "MB",_class='state_table')
                     ,TD(str(repositoryInfo["AvailableDiskSpace"]/1024)+ "MB",_class='state_table')))
         else:
+            # Si no encontramos el repositorio rellenamos con información por defecto
             repoStatePercentage=dict(diskPercentage=0)
             repoTable = TABLE(_class='state_table', _name='table')
             repoTable.append(TR(TH("Repositorio",_class='izquierda state_table')
@@ -577,12 +575,12 @@ def servers():
         return dict(form1 = form1,form2=form2,form3=form3,statePercentages = statePercentages,repoStatePercentage=repoStatePercentage) 
         
     elif(request.args(0) == 'stop_system'):
-        #Creamos el primer formulario
+        #Creamos el formulario de detención de la infraestructura
         form = FORM(HR(),H2(T('Parar infraestructura')),             
                 CENTER(DIV( T('Forzar detención de máquinas virtuales: '
                     ),INPUT(_type="checkbox",_name ='stopVMs',_style="width:30px;"))),
-                DIV(CENTER(INPUT(_type='submit',_class="button button-red",_name = 'stopSystem' ,_value=T('Detener infraestructura'),_style="width:220px;height:40px;font-size:16px;-moz-border-radius: .8em;border-radius: .8em;")))
-                ) 
+                DIV(CENTER(INPUT(_type='submit',_class="button button-red",_name = 'stopSystem' , _value=T('Detener infraestructura'), \
+                _style="width:220px;height:40px;font-size:16px;-moz-border-radius: .8em;border-radius: .8em;")))) 
         btn = form.element("input",_type="submit")
         btn["_onclick"] = "return confirm('¿Esta seguro que desea detener la infraestructura?');"                                   
         if form.accepts(request.vars,keepvalues=True) and form.vars.stopSystem:
@@ -593,7 +591,9 @@ def servers():
         return dict(form = form)
 
 
-      
+'''
+    Método para la sección users de los administradores
+'''      
 @auth.requires_membership('Administrator')
 def users():  
     createAdressBar()
@@ -609,7 +609,7 @@ def users():
         
         if form.accepts(request.vars,keepvalues=True) and form.vars.add:
             if(form.vars.name != None) and (form.vars.name != "") and (form.vars.password != None) and (form.vars.password != ""):
-                #Si el email no esta repetido
+                #Si el email no está repetido
                 if(userDB(userDB.auth_user.email == form.vars.name).count() == 0):
                     #Añadimos el nuevo usuario a la base de datos
                     userId = userDB.auth_user.insert(email = form.vars.name,password = userDB.auth_user.password.validate(form.vars.password)[0])
@@ -648,6 +648,7 @@ def users():
                if(userDB((userDB.UserGroup.userId == form2.vars.usersSelect) & (userDB.UserGroup.cod == form2.vars.code) & \
                (userDB.UserGroup.curseGroup == form2.vars.classGroup)).count() == 0) and \
                (userDB((userDB.ClassGroup.cod == form2.vars.code) & (userDB.ClassGroup.curseGroup == form2.vars.classGroup)).count() == 1):
+                   # Comprobamos el número de plazas ya utilizadas
                    if (userDB((userDB.UserGroup.cod == form2.vars.code) & (userDB.UserGroup.curseGroup == form2.vars.classGroup)).count() < \
                        userDB((userDB.ClassGroup.cod == form2.vars.code) & 
                        (userDB.ClassGroup.curseGroup == form2.vars.classGroup)).select(userDB.ClassGroup.placesNumber)[0].placesNumber):
@@ -658,6 +659,7 @@ def users():
                else:
                     response.flash = T('El usuario ya se encuentra asociado al grupo de asignatura o el grupo de asignatura no existe.')
         elif form2.accepts(request.vars,keepvalues=True) and form2.vars.remove:
+            #Eliminamos la relación entre la asignatura y el usuarrio
             if(userDB((userDB.UserGroup.userId == form2.vars.usersSelect) & (userDB.UserGroup.cod == form2.vars.code) & \
             (userDB.UserGroup.curseGroup == form2.vars.classGroup)).count() == 1):
                 userDB((userDB.UserGroup.userId == form2.vars.usersSelect) & (userDB.UserGroup.cod == form2.vars.code) & \
@@ -706,10 +708,13 @@ def users():
         #Devolvemos los dos formularios
         return dict(form1 = form1,form2 = form2)
 
-        
+'''
+    Método para la sección subjects de los administradores
+'''        
 @auth.requires_membership('Administrator')
 def subjects():
     createAdressBar()
+    # Nos conectamos al endPoint
     connector = conectToServer()
     if(request.args(0) == 'add'):              
         #Creamos el primer formulario
@@ -748,17 +753,14 @@ def subjects():
         form1 = createSubjectsSearchForm(request.args(0))
         #Creamos el segundo formulario
         listSubjectsAux = request.vars.subjectsFind or []
-        #Comprobamos si se ha tomado como una lista
-        
+        #Comprobamos si se ha tomado como una lista        
         if(isinstance(listSubjectsAux,str)):
             listSubjects = [eval(request.vars.subjectsFind)]
         else:
             listSubjects = []
             for l in listSubjectsAux:
-                    print l
                     listSubjects.append(eval(l))
-            #listSubjects.append(request.vars.subjectsFind)
-        print listSubjects
+        # Creamos la tabla
         table = createSubjectTable(listSubjects)
         #Creamos el formulario
         form2 = FORM(table,CENTER(INPUT(_type = 'submit',_class="button button-blue",_name = 'remove',  _value = T('Eliminar seleccionado'),_style="width:170px;")))
@@ -785,8 +787,7 @@ def subjects():
         form1 = createSubjectsSearchForm(request.args(0))
         #Creamos el segundo formulario
         listSubjectsAux = request.vars.subjectsFind or []
-        #Comprobamos si se ha tomado como una lista
-        
+        #Comprobamos si se ha tomado como una lista 
         if(isinstance(listSubjectsAux,str)):
             listSubjects = [eval(request.vars.subjectsFind)]
         else:
@@ -827,8 +828,11 @@ def subjects():
         createNotificationAdvise(form1,connector)
         #Devolvemos el formulario             
         return dict(form1 = form1,form2 = form2)
-
-#Método encargado de mostrar las notificaciones pendientes
+        
+        
+'''
+    Método encargado de mostrar las notificaciones pendientes
+'''
 @auth.requires_membership('Administrator')
 def showNotifications():
     #actualizamos la barra
@@ -847,7 +851,9 @@ def showNotifications():
         form = FORM(table)
     return dict(form=form)           
           
-    
+'''
+    Método encargado de crear la barra de menú
+'''    
 def createAdressBar():
  
     response.menu=[[SPAN(T('Máquinas virtuales'), _class='highlighted'), False,URL(f ='runVM',args = ['run']),[
@@ -868,7 +874,10 @@ def createAdressBar():
                        (T('Añadir'),False,URL(f = 'subjects',args = ['add'])),
                        (T('Eliminar'),False,URL(f = 'subjects',args = ['remove']))]]
                     ,[T('Notificaciones'),False,URL('showNotifications')]]
-                       
+ 
+'''
+    Método encargado de crear el formulario de busqueda para los usuarios
+'''                      
 def createUserSearchForm(state):        
     listTypes = []
     listTypes.append(OPTION(T('Todos'),_value = 'all'))
@@ -900,11 +909,14 @@ def createUserSearchForm(state):
      
     return form1
 
-     
-def createSubjectsSearchForm(state):        
 
-        
-    form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_style="width:40%;"),_style="position:absolute;left:12%;"),
+'''
+    Creamos el formulario de busqueda para asignaturas
+'''     
+def createSubjectsSearchForm(state):        
+      
+    form1 = FORM(HR(),H2(T('Buscar una asignatura')),DIV( T('Código: '),BR(),INPUT(_name = 'cod',_style="width:40%;"), \
+                _style="position:absolute;left:12%;"),
                 DIV( T('Nombre: '),BR(),INPUT(_name ='name'),_style="position:absolute;left:20%;"),BR(),BR(),BR(),
                 DIV( T('Año: '),BR(),INPUT(_name ='year',_style="width:25%;"),_style="position:absolute;left:12%;"),
                 DIV( T('Curso: '),BR(),INPUT(_name ='curse',_style="width:15%;"),_style="position:absolute;left:18%;"),
@@ -948,7 +960,11 @@ def createSubjectsSearchForm(state):
     return form1
 
 
+'''
+    Método encargado de crear la tabla de usuarios
+'''
 def createUserTable(listUsers):
+    # Creamos la tabla
     table = TABLE(_class='data', _name='table')
     table.append(TR(TH('Selección'),TH(T('Nombre')), TH(T('Grupo'))))
     i = 0
@@ -973,7 +989,12 @@ def createUserTable(listUsers):
     pass
     return table
     
+  
+'''
+    Método encargado de crear la tabla de asignaturas
+'''    
 def createSubjectTable(listSubjects):
+    #Creamos la tabla
     table = TABLE(_class='data', _name='table')
     table.append(TR(TH('Selección'),TH(T('Cod-Asignatura'),_class='izquierda'),TH(T('Grupo'))))
     i = 0
@@ -986,30 +1007,44 @@ def createSubjectTable(listSubjects):
     pass
     return table
     
-    
+
+'''
+    Método encargado de establecer la conexión con el endpoint
+'''    
 def conectToServer():
-    #Establecemos la conexión con el servidor principal
+    #Establecemos la conexión con el endpoint
     connector = ClusterConnector(auth.user_id)
     connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
     return connector
-    
+
+'''
+    Método de busqueda de servidores por nombre
+'''
 def searchVMServerIp(servers, serverName):
     for s in servers:
         if s["VMServerName"] == serverName:
             return s["VMServerIP"]
     return None
-    
+
+'''
+    Método encargado de evaluar el comando devuelto en las llamadas al conector
+'''    
 def evaluateCommand(connector,commandId,message):
     if(len(connector.getCommandOutput(commandId))==0):
         response.flash = message
     else:
         response.flash = connector.getCommandOutput(commandId)
-      
+
+'''
+    método encargado de crear la etiqueta de notificaciones pendientes
+'''      
 def createNotificationAdvise(form,connector):
     notificationNumber= connector.countPendingNotifications()
     if notificationNumber == 1 :
-        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificación pendiente.",_href=URL(c='administrator',f='showNotifications'),_style="padding: 8px;"),
-            _class="notificationTag"))
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"), \
+            A("Tiene " + str(notificationNumber) + " notificación pendiente.",_href=URL(c='administrator',f='showNotifications'), \
+            _style="padding: 8px;"),_class="notificationTag"))
     elif notificationNumber > 1 :
-        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='administrator',f='showNotifications'),_style="padding: 8px;"),
-            _class="notificationTag"))
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"), \
+            A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='administrator',f='showNotifications'), \
+            _style="padding: 8px;"),_class="notificationTag"))

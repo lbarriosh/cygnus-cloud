@@ -26,21 +26,17 @@
 
 # coding: utf8
 from gluon import *
-# Método encargado de la página de inicio de sesión
 
-
-
+#Método encargado de iniciar sesión de un usuario
 def login():
     #Iniciamos los valores, si procede
     initValues() 
-    #iniciamos el arranque con el mainserver
-    #initMainServerConnection()
     #Creamos la barra de direcciones
     createAdressBar()
     #Gestionamos los usuarios ya logueados
     auth.settings.controller = 'main'
-    auth.settings.login_onaccept = loginAccess
-    #auth.settings.login_next = URL(c='main',f='login')  
+    auth.settings.login_onaccept = loginAccess  
+    #Creamos el formulario de inicio de sesión
     form = auth.login()  
     form.element("input",_type="submit")['_class'] = "button button-blue"
     form.element("input",_type="submit")['_style'] = "width:120px;height:25px;"
@@ -48,7 +44,7 @@ def login():
     form.element(_name="password")['_style'] = "width:250px;"
     form.element(_name="password")['_class'] = "inputText"
     form.element("td")['_style'] = "padding: 0px;text-align:center;"
-    #infoTweets = LOAD(url=URL('static', 'tweetsViewer.html', scheme='http'),ajax=False)
+    #Creamos el menú con direcciones externas
     infoLinks = LOAD(url=URL('static', 'externLinks.html', scheme='http'),ajax=False)
     return dict(form=form,infoLinks=infoLinks)
     
@@ -56,7 +52,7 @@ def login():
 def about():
     #Creamos la barra de direcciones
     createAdressBar()    
-    #Cargamos el fichero html
+    #Cargamos el fichero con la información
     info = LOAD(url=URL('static', 'info.html', scheme='http'),ajax=False)
     print info
     return dict(info = info)
@@ -72,22 +68,22 @@ def initValues():
         userDB.auth_group.insert(role = 'Student',description =  'Only run virtual machines available')
         userDB.auth_group.insert(role = 'Teacher',description =  'Run, create and edit virtual machines privilages avaible')
         userDB.auth_group.insert(role = 'Administrator',description =  'All privilages available')
-        #auth.add_group('Administrator', 'All privilages available')
         #Usuario de prueba
         u1 = userDB.auth_user.insert(password = userDB.auth_user.password.validate('1234')[0],email = 'Admin1@ucm.es',first_name='Bertoldo',last_name='Pedralbes')
         u2 = userDB.auth_user.insert(password = userDB.auth_user.password.validate('1234')[0],email = 'Student1@ucm.es',first_name='Robert',last_name='Neville')
-        
+        u3 = userDB.auth_user.insert(password = userDB.auth_user.password.validate('1234')[0],email = 'Teacher01@ucm.es',first_name='Charles',last_name='Xavier')
         #Enlazamos los usuarios a los grupos
         auth.add_membership('Administrator',u1)
         auth.add_membership('Student',u2)
+        auth.add_membership('Teacher',u3)
         print userDB.tables
         
                
         
-        
+
+# Método encargado de evaluar la redirección según el tipo de usuario
 @auth.requires_login()                                      
 def loginAccess(state):
-    #rows = userDB(userDB.auth_membership.user_id==auth.user_id).select(userDB.auth_membership.group_id)
     print auth.user_id
     if(auth.has_membership(role='Student')):
         redirect(URL(c='student',f='runVM'))
@@ -96,6 +92,7 @@ def loginAccess(state):
     elif(auth.has_membership(role='Teacher')):
         redirect(URL(c='teacher',f='runVM',args = ['run']))
 
+# Método que redirecciona a la página de inicio de sesión una vez cerrada
 @auth.requires_login()          
 def logoutUser():
      auth.logout(URL(c='main',f='login'))

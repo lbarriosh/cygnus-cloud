@@ -31,7 +31,9 @@ from clusterConnector.clusterConnector import ClusterConnector
 from webConstants import dbStatusName,commandsDBName,webUserName, webUserPass
 if session.authorized: redirect(URL(r=request,c='main',f='login'))
 
-#Método encargado de manejar la página de arranque de máquinas para el usuario
+'''
+    Método encargado de manejar la página de arranque de máquinas para el usuario
+'''
 @auth.requires_membership('Teacher')
 def runVM():
     #actualizamos la barra
@@ -40,42 +42,39 @@ def runVM():
     #Calculamos las tablas
     j = 0
     [readyTable,j] = createReadyTable(j)
-    #TODO: Descomentar cuando proceda
+    #Extraemos la tabla de máquinas en edición
     editingTable = createDisabledTables()
     #Creamos el formulario
     form = FORM(HR(),_target='_blank')
     form.append(DIV(H2("Máquinas disponibles"),H4(readyTable),BR()))
     form.append(DIV(H2("Máquinas en edicion"),H4(editingTable),BR()))
-    #form.append(DIV(H2("Máquinas no registradas"),H4(waitingTable),BR()))
     i = 0
     divMaquinas = DIV(_id='maquinas')   
-    
-       
+           
     if(form.accepts(request.vars)) and (form.vars.run):
             if(form.vars.selection != ""):
-                #Establecemos la conexión con el servidor 
-                
-                #Mandamos la ejecución del cliente noVNC
-                print form.vars.selection
+                #Mandamos la ejecución del dominio
                 commandId = connector.bootUpVM(form.vars.selection)
                 #Esperamos la contestacion
                 vncInfo = connector.waitForCommandOutput(commandId)
                 redirect(URL(c='vncClient', f = 'VNCPage', vars = vncInfo)) 
     
+    # Creamos la etiqueta de notificaciones pendientes
     createNotificationAdvise(form,connector)                          
     return dict(form = form,num = j)
-       
-#Método encargado de manejar la página de arranque de máquinas para el usuario
+
+'''       
+    Método encargado de manejar la página de arranque de máquinas para el usuario
+'''
 @auth.requires_membership('Teacher')
 def runningVM():
     #actualizamos la barra
     createAdressBar()
     #Establecemos la conexión con el servidor 
     connector = conectToServer()
-    
     #Extraemos las máquinas arrancadas por este usuario
     vmList = connector.getActiveVMsData(False,False)
-    
+    # Creamos la tabla
     table = TABLE(_class='data', _name='table')
     table.append(TR(TH('Selección'),TH(T('Máquina virtual'),TH(T('Descripción'),_class='izquierda'))))
     j = 0
@@ -84,8 +83,8 @@ def runningVM():
         if(vm['UserID'] == auth.user_id):
             #Extramos el nombre de la máquina y su descripcion
             vminfo =  connector.getBootableImagesData([vm['VMID']])
+            # Rellenamos la tabla dependiendo de la subsección en la que nos encontremos
             if(request.args(0) == 'stopVM'):
-                print vm['DomainUID']
                 table.append(TR(\
                 TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
                 TD(LABEL(vminfo[0]["ImageName"])),
@@ -94,7 +93,7 @@ def runningVM():
                 TD(DIV(INPUT(_type='submit',_name = 'stop',  _value = T('Detener'),_class="button button-blue"),_id = 'o' +  str(j)))))
            
             else:
-                #Extramos el nombre de la máquina y su descripcion
+                
                 table.append(TR(\
                 TD(INPUT(_type='radio',_name = 'selection',_value = vm['VMID'],_id = "c"+str(j))),\
                 TD(LABEL(vminfo[0]["ImageName"])),
@@ -141,8 +140,7 @@ def runningVM():
             activeVMConectData = connector.getActiveVMsData(False,False)
             for vmInfo in activeVMConectData:
                 if vmInfo["VMID"] == int(form.vars.selection):
-                    print activeVMConectData
-                    print "password tam:" + str(vmInfo["VNCPassword"])
+                    # Buscamos la información del servidor                 
                     serverIp = searchVMServerIp(connector.getVMServersData(), vmInfo["VMServerName"])
                     vncInfo = dict(OutputType=2,VNCServerIPAddress=serverIp,VNCServerPort=int(vmInfo["VNCPort"])+1
                         ,VNCServerPassword=str(vmInfo["VNCPassword"]))
@@ -152,11 +150,16 @@ def runningVM():
     createNotificationAdvise(form,connector)
     return dict(form = form,num = j)
 
+'''
+    Método encargado de crear las páginas de creación y edición de máquinas por parte del profesor
+'''
 @auth.requires_membership('Teacher')  
 def createAndEdit():
-         #actualizamos la barra
+         # actualizamos la barra
          createAdressBar()
+         # Nos conectamos con el endpoint
          connector = conectToServer()
+         # extraemos la información necesaria
          if(request.args(0) == 'createVanillaVM'):
             progressBarStyle = LOAD(url=URL('static', 'progressBar.html', scheme='http'),ajax=False)
             vanillaImagesIds = connector.getBaseImagesData()
@@ -167,25 +170,29 @@ def createAndEdit():
                 vanillaInfo = connector.getVanillaImageFamilyData(id["VanillaImageFamilyID"])
                 osId = connector.getImageData(id["ImageID"])["OSFamily"]
                 variantId = connector.getImageData(id["ImageID"])["OSVariant"]
+                # extraemos la ruta para la imagen del sistema operativo
                 picturePath = userDB((userDB.pictureByOSId.osId == osId) & (userDB.pictureByOSId.variantId == variantId)
-                                     & (userDB.pictureByOSId.pictureId == userDB.osPictures.osPictureId )).select(userDB.osPictures.picturePath)[0].picturePath
+                                     & (userDB.pictureByOSId.pictureId == userDB.osPictures.osPictureId )).select( \
+                                     userDB.osPictures.picturePath)[0].picturePath
+                # Creamos la tabla con la información de la imagen base                     
                 subTable = createVanillaImageTable(vanillaInfo["RAMSize"],
                             vanillaInfo["VCPUs"],vanillaInfo["OSDiskSize"],vanillaInfo["DataDiskSize"],
                             maxValues["RAMSize"],maxValues["VCPUs"],maxValues["OSDiskSize"],maxValues["DataDiskSize"])
                 table.append(TR(
                     TH(IMG(_src=URL('static',str(picturePath)), _alt="memoryIcon",_style="width:35px;"),_style="text-align: right;"),
                     TH(LABEL(vanillaInfo["Name"]),_style="font-size:17px;text-align: left;"),_id="t"+str(j)))
-                table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value=str(osId) + 'c' + str(variantId) + 'c' + str(id["ImageID"]) ,_id ="s"+str(j))),
-                DIV(subTable,_class='vanillaTR'),_id="r" + str(j)))
+                table.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value=str(osId) + 'c' + str(variantId) + 'c' + str(id["ImageID"]) , \
+                _id ="s"+str(j))),DIV(subTable,_class='vanillaTR'),_id="r" + str(j)))
                 j = j + 1
                 
-                
+            # Creamos el selector de sistema operativo     
             osFamily = SELECT(_name = 'osType',_id= 'osTypeSelect')
             osFamilyData = connector.getOSTypes()
             osFamily.append(OPTION(T("Todos"), _value = '-1' ,_selected="selected"))
             for osf in  osFamilyData:
                 osFamily.append(OPTION(osf["FamilyName"],_value = osf["FamilyID"]))
-                
+            
+            # Creamos el selector de la variante 
             osFamilyVariant = SELECT(_name = 'osVariant',_id= 'osVariantSelect')
             num = 0
             osFamilyVariant.append(OPTION(T("Todas"),_id= num, _value = '-1c-1' ,_selected="selected"))
@@ -195,7 +202,7 @@ def createAndEdit():
                     num = num + 1
                     osFamilyVariant.append(OPTION(osf["VariantName"],_id = num , _value = str(o["FamilyID"]) + 'c' + str(osf["VariantID"])))
                        
-            
+            # Creamos el formulario de las imagenes base disponibles
             form = FORM(DIV( T('Nombre: '),BR(),INPUT(_name = 'newVMName')),BR(),
                         DIV( T('Descripcion: '),BR(),TEXTAREA(_name = 'description')),BR(),
                         LABEL(H2(T('Imágenes base disponibles:'))),
@@ -206,18 +213,7 @@ def createAndEdit():
                             
             if form.accepts(request.vars,keepvalues=True) and form.vars.createVM:
                    #Creamos la MV
-                   if len(form.vars.selection) > 0:
-                               """
-                               print form.vars.selection.split('c')[2]
-                               commandId = connector.createImage(form.vars.selection.split('c')[2], form.vars.newVMName, form.vars.description)
-                               errorInfo = connector.waitForCommandOutput(commandId)
-                               if errorInfo != None:
-                                       response.flash = T(errorInfo['ErrorMessage'])
-                               else:
-                                        response.flash = "Petición de creación enviada"
-                               
-                               """   
-                               print "Identificador de la imagen base: " + str(form.vars.selection.split('c')[2])   
+                   if len(form.vars.selection) > 0:  
                                errorInfo = connector.createImage(form.vars.selection.split('c')[2], form.vars.newVMName, form.vars.description)  
                                if(len(connector.getCommandOutput(errorInfo))==0):
                                    response.flash = "Petición de creación enviada"
@@ -227,17 +223,21 @@ def createAndEdit():
                    else:
                            response.flash = "Debe seleccionar una imagen base"
             
+            # Creamos la etiqueta de notificaciones pendientes
             createNotificationAdvise(form,connector)       
             return dict(form = form,progressBarStyle=progressBarStyle,num = num,num2 = j)
 
-         if(request.args(0) == 'editVM'):         
+         if(request.args(0) == 'editVM'): 
+            # Creamos la tabla de imagenes detenidas y en ejecución        
             stoppedImages = TABLE(_class='data', _name = 'stoppedImagesSelect')
             stoppedImages.append(TR(TH('Selección'),TH(T('Nombre'),_class='izquierda'),TH(T('Descripción')),_class='izquierda'))
             runningImages = TABLE(_class='data',_name = 'runningImagesSelect')
             runningImages.append(TR(TH('Selección'),TH(T('Nombre'),_class='izquierda'),TH(T('Descripción')),_class='izquierda'))
+            # Extraemos los identificadores de las imagenes en edición
             editedImages = connector.getEditedImageIDs(auth.user_id)
             num1= 0
             num2= 0
+            # Para cada imagen en edición evaluamos su estado y la añadimos en la tabla que corresponda
             for image in editedImages:
                 imageInfo = connector.getImageData(image)
                 
@@ -250,12 +250,13 @@ def createAndEdit():
                     num2= num2 + 1
                 else:
                     if imageInfo["State"] == EDITION_STATE_T.CHANGES_NOT_APPLIED:
+                        # Evaluamos si la imagen ya tiene asignaturas asociadas
                         numSubjects = userDB(userDB.VMByGroup.VMId==imageInfo["ImageID"]).count()
                         if numSubjects > 0:
                             state = imageInfo["State"]
                         else:
                             state = 8
-                    #    imageId = imageInfo["ImageID"]
+                    
                     else:
                         state = imageInfo["State"]
                     imageId = image
@@ -295,26 +296,17 @@ def createAndEdit():
                 CENTER(LABEL("Máquina no disponible",_id='notAvaibleRMessage')),BR(),_target='_blank')
             
             if form1.accepts(request.vars,keepvalues=True) and form1.vars.continueEditing:
-                   #Creamos la MV
-                   
+                   #Continuamos editando la MV
                    if len(form1.vars.selection2) > 0:
                                print form1.vars.selection2.split('w')[1]
                                errorInfo = connector.editImage(form1.vars.selection2.split('w')[1])
                                evaluateCommand(connector,errorInfo,"Petición de arranque de máquina en edición enviada")
                    else:
                            response.flash = "Debe seleccionar una imagen base"
-                   """
-                   print form1.vars.selection2.split('w')[1]
-                   commandId = connector.editImage(form1.vars.selection2.split('w')[1])
-                   errorInfo = connector.waitForCommandOutput(commandId)
-                   if errorInfo != None:
-                       response.flash = T(errorInfo['ErrorMessage'])
-                   else:
-                       response.flash = "Petición de creación enviada"  
-                   """        
+        
                            
             if form1.accepts(request.vars,keepvalues=True) and form1.vars.edit:
-                   #Creamos la MV
+                   #Mandamos a editar la MV
                    if len(form1.vars.selection2) > 0:
                                print "Edicion " + form1.vars.selection2.split('w')[1]
                                errorInfo = connector.editImage(int(form1.vars.selection2.split('w')[1]))
@@ -323,7 +315,7 @@ def createAndEdit():
                    else:
                            response.flash = "Debe seleccionar una imagen base"
             if form1.accepts(request.vars,keepvalues=True) and form1.vars.delete:
-                   #Creamos la MV
+                   #Eliminamos la MV
                    if len(form1.vars.selection2) > 0:
                                print form1.vars.selection2.split('w')[1]
                                errorInfo = connector.deleteImageFromInfrastructure(form1.vars.selection2.split('w')[1])
@@ -332,7 +324,7 @@ def createAndEdit():
                    else:
                            response.flash = "Debe seleccionar una imagen base"                  
             if form1.accepts(request.vars,keepvalues=True) and form1.vars.saveChanges:
-                   #Creamos la MV
+                   #Aplicamos los cambios de la MV en edición
                    if len(form1.vars.selection2) > 0:
                                imageInfo = connector.getImageData(form1.vars.selection2.split('w')[1]) 
                                print "Llamo a despligue de imagen con id temporal: " + str(form1.vars.selection2.split('w')[1])
@@ -361,7 +353,7 @@ def createAndEdit():
                    else:
                            response.flash = "Debe seleccionar una imagen base"
             if form2.accepts(request.vars,keepvalues=True) and form2.vars.open:
-                   #Creamos la MV
+                   #Abrimos la imagen en edición
                    vncInfo=None
                    if len(form2.vars.selection1) > 0:
                                #Mandamos la ejecución del cliente noVNC
@@ -381,7 +373,7 @@ def createAndEdit():
                            
             
             if form2.accepts(request.vars,keepvalues=True) and form2.vars.stop:
-                   #Creamos la MV
+                   #Paramos la MV en edición
                    if len(form2.vars.selection1) > 0:
                         imageInfo = connector.getImageData(form2.vars.selection1.split('w')[1]) 
                         print "Detengo imagen con identificador temporal: " + str(form2.vars.selection1.split('w')[1])
@@ -403,12 +395,14 @@ def createAndEdit():
                            
             createNotificationAdvise(form1,connector) 
             return dict(form1=form1,form2=form2,num1=num1,num2=num2)
-    
+
+'''
+    Método encargado de crear las páginas de asociación de asignaturas y máquinas 
+'''    
 @auth.requires_membership('Teacher')    
 def associateSubjects():
     createAdressBar()
     #Creamos fromulario para asociar las máquinas en espera
-    #TODO: Cambiar por waiting
     connector = conectToServer()
     waitingImages = connector.getEditedImageIDs(auth.user_id)
     waitingSelect = SELECT(_name = 'waitingImagesSelect')
@@ -422,7 +416,7 @@ def associateSubjects():
             else:
                 editedSelect.append(OPTION(imageInfo["ImageName"],_value = imageInfo["ImageID"])) 
              
-             
+    # Extraemos las asignaturas asociadas al profesor         
     subjects = userDB((userDB.UserGroup.userId==auth.user['email']) & (userDB.UserGroup.cod == userDB.Subjects.code)
         ).select(userDB.UserGroup.cod,userDB.Subjects.name,userDB.UserGroup.curseGroup)
     subjectsSelect = SELECT(_name = 'userSubjectsSelect')
@@ -460,7 +454,7 @@ def associateSubjects():
 
     form2 = FORM(H2(T('Desvincular máquinas virtuales')),searchTable)    
     
-            #Acción según el botón pulsado
+    #Acción según el botón pulsado
     if form1.accepts(request.vars,keepvalues=True) and form1.vars.asociateSubject:
            if(len(form1.vars.userSubjectsSelect) >= 1) and (len(form1.vars.waitingImagesSelect) >= 1): 
                userDB.VMByGroup.insert(VMId = form1.vars.waitingImagesSelect,cod = form1.vars.userSubjectsSelect.split('-')[0],
@@ -486,10 +480,13 @@ def associateSubjects():
           response.flash = T('Máquina virtual desvinculada.')
           redirect(URL(c='teacher',f='associateSubjects'))
   
+    # Creamos la etiqueta de notificaciones pendientes
     createNotificationAdvise(form1,connector)    
     return dict(form1=form1,form2=form2)
 
-#Método encargado de mostrar las notificaciones pendientes
+'''
+    Método encargado de mostrar las notificaciones pendientes
+'''
 @auth.requires_membership('Teacher')
 def showNotifications():
     #actualizamos la barra
@@ -508,7 +505,10 @@ def showNotifications():
         form = FORM(table)
     return dict(form=form)            
          
-   
+
+'''
+    Método encargado de crear la barra de menú
+'''   
 def createAdressBar():
     response.menu=[[T('Arrancar máquina'),False,URL('runVM')],
                    [SPAN(T('Máquinas arrancadas'), _class='highlighted'), False,URL(f = 'runningVM',args = ['stopVM']),[
@@ -519,14 +519,17 @@ def createAdressBar():
                         (T('Editar máquina'),False,URL(f ='createAndEdit',args = ['editVM']))]]
                    ,[T('Asociar asignaturas'),False,URL('associateSubjects')]
                    ,[T('Notificaciones'),False,URL('showNotifications')]]
-    
+
+'''
+    Método encargado de crear la tabla de asignaturas arrancables
+'''        
 def createReadyTable(j):
     connector = conectToServer()
     listSubjects = userDB((userDB.UserGroup.userId == auth.user['email'])).select(userDB.UserGroup.cod,userDB.UserGroup.curseGroup)
     table = TABLE(_class='data', _name='table')
     table.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
             TH("Grupo"),TH('Descripcion',_class='izquierda')))
-   
+    # Buscamos las máquinas disponibles para cada asignatura
     for s in listSubjects:
         i = 0
         subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
@@ -543,7 +546,11 @@ def createReadyTable(j):
         
     pass
     return [table,j]
-    
+
+
+'''
+    Creamos la tabla de máquinas no disponibles
+'''    
 def createDisabledTables():
     connector = conectToServer()
     editingImageIds = connector.getEditedImageIDs(auth.user_id)
@@ -551,6 +558,7 @@ def createDisabledTables():
     editingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
             TH("Grupo")))
     for image in editingImageIds:
+        # Extraemos las imaenes en edición
         imageInfo = connector.getImageData(image)
         subjectsInfo = userDB((userDB.VMByGroup.VMId == imageInfo["ImageID"])).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)
         if len(subjectsInfo) == 0 :
@@ -561,38 +569,25 @@ def createDisabledTables():
             for s in subjectsInfo:
                 subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
                 editingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = imageInfo["ImageID"],_disabled="disabled" )),
-                             TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda'),TD(LABEL(s.curseGroup)),
+                            TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(subjectName),_class='izquierda'),TD(LABEL(s.curseGroup)),
                              _class='notAvaible'))
 
-    """
-    waitingImages = connector.getEditedImageIDs(auth.user_id)
-    waitingTable  = TABLE(_class='data', _name='table')
-    waitingTable.append(TR(TH('Selección'),TH(T('Nombre')),TH(T("Asignatura asociada"),_class='izquierda'),
-            TH("Grupo"))) 
-            
-    #TODO: cambiar por waiting                                                
-    for image in waitingImages:
-           print image
-           imageInfo = connector.getImageData(image)
-           subjectsInfo = userDB((userDB.VMByGroup.VMId == image)).select(userDB.VMByGroup.cod,userDB.VMByGroup.curseGroup)
-           
-           for s in subjectsInfo:    
-               subjectName = userDB(userDB.Subjects.code == s.cod).select(userDB.Subjects.name)[0].name
-               waitingTable.append(TR(TD(INPUT(_type='radio',_name = 'selection',_value = image,_disabled="disabled" )),
-                  TD(LABEL(imageInfo["ImageName"]),_class='izquierda'),TD(LABEL(""),_class='izquierda'),TD(LABEL("")),
-                  _class='notAvaible')) 
-    """
     return editingTable
 
                           
             
-    
+'''
+    Método de conexión con el ednpoint
+'''    
 def conectToServer():
     #Establecemos la conexión con el servidor principal
     connector = ClusterConnector(auth.user_id)
     connector.connectToDatabases(dbStatusName,commandsDBName,webUserName, webUserPass)
     return connector
-    
+
+'''
+    Método encargado de crear la tabla de imagenes base disponibles
+'''    
 def createVanillaImageTable(ramSize,cpuNumber,osDiskSize,dataDiskSize,maxRam,maxCpuNumber,maxOsDisk,maxDataDisk):
        pRam = ((ramSize*100)/maxRam)
        pCPUs = ((cpuNumber*100)/maxCpuNumber)
@@ -619,7 +614,10 @@ def createVanillaImageTable(ramSize,cpuNumber,osDiskSize,dataDiskSize,maxRam,max
            
        return table
 
-       
+
+'''
+    Método encargado de buscar el valor máximo de una tabla
+'''       
 def searchMaxValues(rows):
     maxRam = 0
     maxCPUs = 0
@@ -635,24 +633,35 @@ def searchMaxValues(rows):
         if(r["dataDiskSize"] > maxDataDisk):
             maxDataDisk = r["dataDiskSize"]
     return (maxRam,maxCPUs,maxOsDisk,maxDataDisk)
-    
+
+'''
+    Método encargado de actuar frente al comando devuelto por la llamada al conector
+'''    
 def evaluateCommand(connector,commandId,message):
     if(len(connector.getCommandOutput(commandId))==0):
         response.flash = message
     else:
         response.flash = connector.getCommandOutput(commandId)
-        
+
+'''
+    Método encargado de buscar la información asociado a un servidor
+'''        
 def searchVMServerIp(servers, serverName):
     for s in servers:
         if s["VMServerName"] == serverName:
             return s["VMServerIP"]
     return None
     
+'''
+    Método encargado de crear la etiqueta de notificaciones pendientes
+'''
 def createNotificationAdvise(form,connector):
     notificationNumber= connector.countPendingNotifications()
     if notificationNumber == 1 :
-        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificación pendiente.",_href=URL(c='teacher',f='showNotifications'),_style="padding: 8px;"),
-            _class="notificationTag"))
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"), \
+            A("Tiene " + str(notificationNumber) + " notificación pendiente.",_href=URL(c='teacher',f='showNotifications'), \
+            _style="padding: 8px;"),_class="notificationTag"))
     elif notificationNumber > 1 :
-        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"),A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='teacher',f='showNotifications'),_style="padding: 8px;"),
-            _class="notificationTag"))
+        form.append(DIV(IMG(_src=URL('static','images/mail.png'),_style="width:35px;height:35px;vertical-align: middle;"), \
+            A("Tiene " + str(notificationNumber) + " notificaciones pendientes.",_href=URL(c='teacher',f='showNotifications'), \
+            _style="padding: 8px;"),_class="notificationTag"))

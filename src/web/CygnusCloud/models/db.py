@@ -34,25 +34,17 @@ from userInputConstants import rootPassword
 import os
 
 
-
-
-
+# Definición de la base de datos para la web
 conf = DBConfigurator(rootPassword)
 conf.createDatabase('CygnusCloudUserDB')
 conf.addUser('CygnusCloud','cygnuscloud2012', 'CygnusCloudUserDB')
 userDB = DAL('mysql://CygnusCloud:cygnuscloud2012@localhost/CygnusCloudUserDB',migrate_enabled=True, pool_size=0)
 
-
-# Autentication
+# Autenticación
 auth = Auth(userDB)
 auth.define_tables(migrate = True)
 
-
-
-
-#userDB.auth_user.email.requires = IS_NOT_IN_DB(userDB, userDB.auth_user.email)
-
-
+# Tabla que define los grupos de asignaturas registrados
 userDB.define_table('ClassGroup',
    Field('yearGroup','integer', 'reference auth_user'),
    Field('cod','integer','reference Subjects'),
@@ -61,41 +53,46 @@ userDB.define_table('ClassGroup',
    Field('career',length=100),
    primarykey=['cod','curseGroup'],migrate= True)
 
+# Tabla que registra a los usuarios
 userDB.define_table('UserGroup',
    Field('userId',length = 512 ),
    Field('cod','integer','reference ClassGroup'),
    Field('curseGroup',length=1 ),
    primarykey=['cod','curseGroup','userId'],migrate= True)
 
+# Tabla que asocia cada asignatura con su código
 userDB.define_table('Subjects',
    Field('code','integer'),
    Field('name',length=50),
    primarykey=['code'],migrate= True)
 
-
-
+# Tabla queasocia una máquina virtual con su grupo de asignatura
 userDB.define_table('VMByGroup',
    Field('VMId','integer'),
    Field('cod','integer','reference UserGroup'),
    Field('curseGroup',length=1 ),
    primarykey=['cod','curseGroup','VMId'],migrate= True)
    
+# Tabla que asocia un sistema operativo con la imagen que lo representa
 userDB.define_table('osPictures',
    Field('osPictureId','integer'),
    Field('picturePath',length=100 ),
    primarykey=['osPictureId'],migrate= True)
    
+#Tabla que asocia cada identificador de sistema operativo con su imagen
 userDB.define_table('pictureByOSId',
    Field('osId','integer'),
    Field('variantId','integer'),
    Field('pictureId','integer','reference osPictures'),
    primarykey=['osId','variantId'],migrate= True)
-   
+
+# Tabla con las imagenes de usuarios subidas   
 userDB.define_table('userImage',
     Field('userId',length = 512 ),
     Field('file', 'upload'),
     primarykey=['userId',],migrate= True)
     
+# Tabla con las imágenes asociadas a cada carrera universitaria 
 userDB.define_table('careerPictures',
    Field('careerName',length=100),
    Field('picturePath',length=100 ),
