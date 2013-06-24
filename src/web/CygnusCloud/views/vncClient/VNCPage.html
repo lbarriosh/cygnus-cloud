@@ -28,11 +28,14 @@
 {{if(error):}}
 <center><p>ERROR: {{=errorMessage}}</p></center>
 {{else:}}
-<!--<div id="content" style="background-color:#1e5f95;">-->
+
+<!-- script que almacena la ip, el puerto y la contraseña asociada al cliente noVNC -->
 <script type="text/javascript">
     vnc_ip = "{{=ip}}"
         vnc_port = "{{=port}}"
             vnc_password = "{{=password}}"
 </script>
+
+<!-- Lanzamos noVNC con la información almacenada -->
 {{include '../static/noVNC/vnc_simple.html'}}
 {{pass}}

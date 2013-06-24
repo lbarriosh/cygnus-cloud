@@ -28,6 +28,8 @@
 <h1>{{=T('Crear nueva máquina virtual')}}</h1>
 {{=progressBarStyle}}
 {{=form}}
+
+<!-- script que muestra u oculta las imagenes base según el sistema operativo seleccionado -->
 <script>
 jQuery(document).ready(function(){
     jQuery('#osTypeSelect').change(function(){
@@ -90,6 +92,7 @@ jQuery(document).ready(function(){
     });
 
 });
+
 </script>
 {{pass}}
 {{if(request.args(0) == 'editVM'):}}
@@ -97,6 +100,8 @@ jQuery(document).ready(function(){
 <h1>{{=T('Edición de máquinas virtuales')}}</h1>
 {{=form1}}
 {{=form2}}
+
+<!-- script que muestra u oculta la información según proceda -->
 <script>
 jQuery(document).ready(function(){
     var i;

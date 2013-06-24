@@ -24,7 +24,7 @@
 -->
 
 {{extend 'layout.html'}}
-<META HTTP-EQUIV="refresh" CONTENT="30">
+<META HTTP-EQUIV="refresh" CONTENT="60">
 <center><h1>{{=T('Bienvenido a CygnusCloud')}}</h1></center>
 <div id="login_form">
      <table>
