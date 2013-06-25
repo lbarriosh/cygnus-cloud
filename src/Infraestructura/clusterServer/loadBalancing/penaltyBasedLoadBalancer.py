@@ -33,11 +33,11 @@ class PenaltyBasedLoadBalancer(LoadBalancer):
     to distribute the workload equally among the active virtual machine servers.
     '''
     
-    def __init__(self, databaseConnector, vCPUsWeight, vCPUsExcessThreshold, ramWeight, storageSpaceWeight, temporarySpaceWeight):
+    def __init__(self, commandsDBConnector, vCPUsWeight, vCPUsExcessThreshold, ramWeight, storageSpaceWeight, temporarySpaceWeight):
         """
         Initializes the load balancer's state
         Args:
-            databaseConnector: a cluster server database connector
+            commandsDBConnector: a cluster server database connector
             vCPUsWeight: the virtual CPUs weight
             vCPUsExcessThreshold: the virtual CPUs excess threshold. If it's greater than one, the hosted virtual machines
                 may use a number of virtual CPUs that is higher than the number of physical CPUs of the virtual machine server.
@@ -45,7 +45,7 @@ class PenaltyBasedLoadBalancer(LoadBalancer):
             storageSpaceWeight: the storage space weight
             temporarySpaceWeight: the temporary space weight
         """
-        LoadBalancer.__init__(self, databaseConnector)
+        LoadBalancer.__init__(self, commandsDBConnector)
         self.__vCPUsWeight = vCPUsWeight
         self.__vCPUsExcessThreshold = vCPUsExcessThreshold
         self.__ramWeight = ramWeight

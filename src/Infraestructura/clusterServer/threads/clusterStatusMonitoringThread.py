@@ -49,7 +49,7 @@ class ClusterStatusMonitoringThread(BasicThread):
         """
         BasicThread.__init__(self, "Cluster status update thread")
         self.__sleepTime = sleepTime
-        self.__dbConnector = dbConnector
+        self.__commandsDBConnector = dbConnector
         self.__networkManager = networkManager
         self.__vmServerPacketHandler = vmServerPacketHandler
         self.__imageRepositoryPacketHandler = imageRepositoryPacketHandler
@@ -69,8 +69,8 @@ class ClusterStatusMonitoringThread(BasicThread):
         Returns:
             Nothing
         """
-        for serverID in self.__dbConnector.getVMServerIDs() :
-            serverData = self.__dbConnector.getVMServerConfiguration(serverID)
+        for serverID in self.__commandsDBConnector.getVMServerIDs() :
+            serverData = self.__commandsDBConnector.getVMServerConfiguration(serverID)
             if (serverData["ServerStatus"] != SERVER_STATE_T.SHUT_DOWN and serverData["ServerStatus"] != SERVER_STATE_T.CONNECTION_TIMED_OUT
                 and serverData["ServerStatus"] != SERVER_STATE_T.RECONNECTING) :
                 self.__sendStatusRequestToVMServer(serverData["ServerIP"], serverData["ServerPort"])

@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Definiciones del endpoint de la web
-@author: Luis Barrios Hernández
-@version: 3.5
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: clusterEndpointEntryPoint.py    
+    Version: 5.0
+    Description: cluster endpoint daemon entry point
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from clusterEndpoint.threads.databaseUpdateThread import VMServerMonitoringThread
@@ -21,13 +40,13 @@ from clusterEndpoint.codes.spanishCodesTranslator import SpanishCodesTranslator
 
 class ClusterEndpointEntryPoint(object):  
     """
-    Estos objetos comunican un servidor de cluster con la web
+    These objects create, run and stop the cluster endpoint daemons.
     """    
     def __init__(self):
         """
-        Inicializa el estado del endpoint
-        Argumentos:
-            Ninguno
+        Initializes the daemon's state
+        Args:
+            None
         """
         self.__commandExecutionThread = None
         self.__updateRequestThread = None
@@ -37,30 +56,28 @@ class ClusterEndpointEntryPoint(object):
     def connectToDatabases(self, mysqlRootsPassword, endpointDBName, commandsDBName, endpointdbSQLFilePath, commandsDBSQLFilePath,
                            websiteUser, websiteUserPassword, endpointUser, endpointUserPassword, minCommandInterval):
         """
-        Establece la conexión con la base de datos de estado y con la base de datos de comandos.
-        Argumentos:
-            mysqlRootsPassword: la contraseña de root de MySQL
-            endpointDBName: el nombre de la base de datos de estado
-            endpointdbSQLFilePath: la ruta del script que crea la base de datos de estado
-            websiteUser: nombre de usuario que usará la web para manipular las bases de datos
-            websiteUserPassword: contraseña del usuario de la web
-            endpointUser: usuario que utilizará en eldpoint para manipular las bases de datos de estado. Será el único
-            que puede escribir en la base de datos de estado.
-            endpointUserPassword: contraseña del usuario del endpoint
+        Establishes the connection with the two databases
+        Args:
+            mysqlRootsPassword: the MySQL root's password
+            endpointDBName: the endpoint database's name
+            endpointdbSQLFilePath: the endpoint database's schema definition file path
+            websiteUser: the web application's username
+            websiteUserPassword: the web application's username
+            endpointUser: the endpoint daemon user's name
+            endpointUserPassword: the endpoint daemon user's password
         """        
-        # Crear las bases de datos
         self.__rootsPassword = mysqlRootsPassword
         self.__statusDatabaseName = endpointDBName
         self.__commandsDatabaseName = commandsDBName
         configurator = DBConfigurator(mysqlRootsPassword)
         configurator.runSQLScript(endpointDBName, endpointdbSQLFilePath)
         configurator.runSQLScript(commandsDBName, commandsDBSQLFilePath)
-        # Registrar en ellas los usuarios
+        
         configurator.addUser(websiteUser, websiteUserPassword, endpointDBName, False)
         configurator.addUser(endpointUser, endpointUserPassword, endpointDBName, True)
         configurator.addUser(websiteUser, websiteUserPassword, commandsDBName, True)
         configurator.addUser(endpointUser, endpointUserPassword, commandsDBName, True)
-        # Crear los conectores
+        
         self.__commandsDBConnector = CommandsDatabaseConnector(endpointUser, endpointUserPassword, 
                                                                commandsDBName, minCommandInterval) 
         self.__endpointDBConnector = ClusterEndpointDBConnector(endpointUser, endpointUserPassword, endpointDBName)
@@ -68,16 +85,14 @@ class ClusterEndpointEntryPoint(object):
     def connectToClusterServer(self, useSSL, certificatePath, clusterServerIP, clusterServerListenningPort, statusDBUpdateInterval,
                                commandTimeout, commandTimeoutCheckInterval):
         """
-        Establece la conexión con el servidor de cluster
-        Argumentos:
-            certificatePath: la ruta del directorio con los ficheros server.crt y server.key.
-            clusterServerIP: la IP del servidor de cluster
-            clusterServerListenningPort: el puerto en el que escucha el servidor de cluster
-            statusDBUpdateInterval: el periodo de actualización de la base de datos (en segundos)
-        Devuelve:
-            Nada
-        Lanza:
-            EnpointException: se lanza cuando no se puede establecer una conexión con el servidor web
+        Establishes a connection with the cluster server
+        Args:
+            certificatePath: the directory where the server.crt and server.key files are
+            clusterServerIP: the cluster server's IP address
+            clusterServerListenningPort: the cluster server commands connection's port
+            statusDBUpdateInterval: the database update interval (in seconds)
+        Returns:
+            Nothing
         """
         self.__networkManager = NetworkManager(certificatePath)
         self.__networkManager.startNetworkService()
@@ -102,6 +117,13 @@ class ClusterEndpointEntryPoint(object):
             raise Exception(e.message)
         
     def doEmergencyStop(self):
+        """
+        Stops the endpoint daemon immediately
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         self.__networkManager.stopNetworkService()
         if (self.__updateRequestThread != None):
             self.__updateRequestThread.stop()
@@ -110,37 +132,38 @@ class ClusterEndpointEntryPoint(object):
         
     def disconnectFromClusterServer(self):
         """
-        Cierra la conexión con el servidor de cluster y borra las bases de datos de estado
-        Argumentos:
-            Ninguno
+        Closes the connection with the cluster server
+        Args:
+            None
         Devuelve:
             Nada
-        @attention: Este método debe llamarse desde el hilo principal para evitar cuelgues
         """
-        # Apagar el servidor de cluster
         p = self.__packetHandler.createHaltPacket(self.__commandsProcessor.haltVMServers())
         errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Cluster server halt", 
                                                          errorMessage)
-        # Dejar de actualizar las bases de datos
         self.__updateRequestThread.stop()
         
-        # Dejar de monitorizar los comandos
         self.__commandExecutionThread.stop()
         
-        # Cerrar las conexiones con las bases de datos
         self.closeNetworkConnections()
         
     def closeNetworkConnections(self):
         """
-        Cierra las conexiones con las bases de datos
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Closes the network connections
+        Args:
+            None
+        Returns:
+            Nothing
         """
-        # Detener el servicio de red
         self.__networkManager.stopNetworkService()
         
     def processCommands(self):
+        """
+        Processes the users' requests
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         self.__commandsProcessor.processCommands()

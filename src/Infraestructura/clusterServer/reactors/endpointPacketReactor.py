@@ -57,12 +57,12 @@ class EndpointPacketReactor(object):
             averageCompressionRatio: the compression algorithm's average compression ratio
             useSSL: indicates if the network connections use SSL encryption or not
         """
-        self.__dbConnector = dbConnector
+        self.__commandsDBConnector = dbConnector
         self.__networkManager = networkManager
         self.__vmServerPacketHandler = vmServerPacketHandler
         self.__packetHandler = clusterServerPacketHandler
         self.__imageRepositoryPacketHandler = imageRepositoryPacketHandler
-        self.__loadBalancer = PenaltyBasedLoadBalancer(self.__dbConnector, loadBalancerSettings[1], 
+        self.__loadBalancer = PenaltyBasedLoadBalancer(self.__commandsDBConnector, loadBalancerSettings[1], 
             loadBalancerSettings[2], loadBalancerSettings[3], loadBalancerSettings[4], 
             loadBalancerSettings[5])
         self.__averageCompressionRatio = averageCompressionRatio
@@ -85,7 +85,7 @@ class EndpointPacketReactor(object):
         if (data["packet_type"] == PACKET_T.REGISTER_VM_SERVER) :
             self.__registerVMServer(data)
         elif (data["packet_type"] == PACKET_T.QUERY_VM_SERVERS_STATUS) :
-            self.__sendStatusData(self.__dbConnector.getVMServerConfiguration, self.__packetHandler.createVMServerStatusPacket)
+            self.__sendStatusData(self.__commandsDBConnector.getVMServerConfiguration, self.__packetHandler.createVMServerStatusPacket)
         elif (data["packet_type"] == PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
             self.__unregisterOrShutdownVMServer(data)
         elif (data["packet_type"] == PACKET_T.BOOTUP_VM_SERVER) :
@@ -95,7 +95,7 @@ class EndpointPacketReactor(object):
         elif (data["packet_type"] == PACKET_T.HALT) :
             self.__doImmediateShutdown(data)
         elif (data["packet_type"] == PACKET_T.QUERY_VM_DISTRIBUTION) :
-            self.__sendStatusData(self.__dbConnector.getHostedImages, self.__packetHandler.createVMDistributionPacket)
+            self.__sendStatusData(self.__commandsDBConnector.getHostedImages, self.__packetHandler.createVMDistributionPacket)
         elif (data["packet_type"] == PACKET_T.QUERY_ACTIVE_VM_VNC_DATA) :
             self.__requestVNCConnectionData()
         elif (data["packet_type"] == PACKET_T.DOMAIN_DESTRUCTION) :
@@ -115,7 +115,7 @@ class EndpointPacketReactor(object):
         elif (data["packet_type"] == PACKET_T.AUTO_DEPLOY):
             self.__auto_deploy_image(data)
         elif (data["packet_type"] == PACKET_T.QUERY_VM_SERVERS_RESOURCE_USAGE):
-            self.__sendStatusData(self.__dbConnector.getVMServerStatisticsToSend, self.__packetHandler.createVMServerResourceUsagePacket)
+            self.__sendStatusData(self.__commandsDBConnector.getVMServerStatisticsToSend, self.__packetHandler.createVMServerResourceUsagePacket)
         
             
     def __registerVMServer(self, data):
@@ -128,11 +128,11 @@ class EndpointPacketReactor(object):
         """
         try :
             # Comprobar si la IP y el nombre del servidor ya están en uso
-            server_id = self.__dbConnector.getVMServerID(data["VMServerIP"])
+            server_id = self.__commandsDBConnector.getVMServerID(data["VMServerIP"])
             if (server_id != None) :
                 raise Exception("The IP address " + data["VMServerIP"] + " is assigned to another VM server")
           
-            server_id = self.__dbConnector.getVMServerID(data["VMServerName"])
+            server_id = self.__commandsDBConnector.getVMServerID(data["VMServerName"])
             if (server_id != None) :
                 raise Exception("The name " + data["VMServerName"] + " is assigned to another VM server")
             
@@ -143,7 +143,7 @@ class EndpointPacketReactor(object):
                 sleep(0.1)
                 
             # Registrar el nuevo servidor y pedirle su estado
-            self.__dbConnector.registerVMServer(data["VMServerName"], data["VMServerIP"], 
+            self.__commandsDBConnector.registerVMServer(data["VMServerName"], data["VMServerIP"], 
                                                     data["VMServerPort"], data["IsEditionServer"])            
             
             # Indicar al endpoint de la web que el comando se ha ejecutado con éxito
@@ -163,12 +163,12 @@ class EndpointPacketReactor(object):
         """
         try :             
             serverNameOrIPAddress = data["ServerNameOrIPAddress"]
-            serverId = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
+            serverId = self.__commandsDBConnector.getVMServerID(serverNameOrIPAddress)
             if (serverId == None) :
                 p = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_BOOTUP_ERROR, 
                                                               ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR, data["CommandID"])
             else :
-                serverData = self.__dbConnector.getVMServerConfiguration(serverId)
+                serverData = self.__commandsDBConnector.getVMServerConfiguration(serverId)
                 
                 if (serverData["ServerStatus"] == SERVER_STATE_T.SHUT_DOWN or 
                     serverData["ServerStatus"] == SERVER_STATE_T.CONNECTION_TIMED_OUT) :                   
@@ -178,22 +178,22 @@ class EndpointPacketReactor(object):
                     while not self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"]) :
                         sleep(0.1)
                         
-                    self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)       
+                    self.__commandsDBConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)       
                     
-                    imagesToDeploy = self.__dbConnector.getHostedImagesInState(serverId, IMAGE_STATE_T.DEPLOY)
+                    imagesToDeploy = self.__commandsDBConnector.getHostedImagesInState(serverId, IMAGE_STATE_T.DEPLOY)
                     for imageID in imagesToDeploy :
-                        familyID = self.__dbConnector.getImageVMFamilyID(imageID)
-                        familyFeatures = self.__dbConnector.getVMFamilyFeatures(familyID)
+                        familyID = self.__commandsDBConnector.getImageVMFamilyID(imageID)
+                        familyFeatures = self.__commandsDBConnector.getVMFamilyFeatures(familyID)
                         p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, imageID, 
-                                                                                     self.__dbConnector.getImageEditionCommandID(imageID))
-                        self.__dbConnector.allocateVMServerResources(data["CommandID"], serverId, 
+                                                                                     self.__commandsDBConnector.getImageEditionCommandID(imageID))
+                        self.__commandsDBConnector.allocateVMServerResources(data["CommandID"], serverId, 
                                                                  0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
                                                                  0, 0, 1)
                         self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
                         
-                    imagesToDelete = self.__dbConnector.getHostedImagesInState(serverId, IMAGE_STATE_T.DELETE)            
+                    imagesToDelete = self.__commandsDBConnector.getHostedImagesInState(serverId, IMAGE_STATE_T.DELETE)            
                     for imageID in imagesToDelete :
-                        p = self.__vmServerPacketHandler.createDeleteImagePacket(imageID, self.__dbConnector.getImageDeletionCommandID(imageID))
+                        p = self.__vmServerPacketHandler.createDeleteImagePacket(imageID, self.__commandsDBConnector.getImageDeletionCommandID(imageID))
                         self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
                 
                 p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
@@ -218,22 +218,22 @@ class EndpointPacketReactor(object):
             p = self.__packetHandler.createErrorPacket(PACKET_T.VM_BOOT_FAILURE, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :           
-            familyID = self.__dbConnector.getImageVMFamilyID(vmID)
-            familyFeatures = self.__dbConnector.getVMFamilyFeatures(familyID)
-            self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
+            familyID = self.__commandsDBConnector.getImageVMFamilyID(vmID)
+            familyFeatures = self.__commandsDBConnector.getVMFamilyFeatures(familyID)
+            self.__commandsDBConnector.allocateVMServerResources(data["CommandID"], serverID, 
                                                          familyFeatures["RAMSize"], 0, familyFeatures["dataDiskSize"], 
                                                          familyFeatures["vCPUs"], 1)
             p = self.__vmServerPacketHandler.createVMBootPacket(vmID, userID, data["CommandID"])
-            serverData = self.__dbConnector.getVMServerConfiguration(serverID)
+            serverData = self.__commandsDBConnector.getVMServerConfiguration(serverID)
             error = self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
             if (error != None) :
                 p = self.__packetHandler.createErrorPacket(PACKET_T.VM_BOOT_FAILURE, 
                                                               ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_LOST, data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
-                self.__dbConnector.freeVMServerResources(data["CommandID"], True)
+                self.__commandsDBConnector.freeVMServerResources(data["CommandID"], True)
                 return              
-            self.__dbConnector.registerActiveVMLocation(data["CommandID"], serverID)
-            self.__dbConnector.registerVMBootCommand(data["CommandID"], data["VMID"])            
+            self.__commandsDBConnector.registerActiveVMLocation(data["CommandID"], serverID)
+            self.__commandsDBConnector.registerVMBootCommand(data["CommandID"], data["VMID"])            
             
     def __auto_deploy_image(self, data):       
         """
@@ -248,31 +248,31 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, p)        
             return  
         
-        familyID = self.__dbConnector.getImageVMFamilyID(data["ImageID"])
+        familyID = self.__commandsDBConnector.getImageVMFamilyID(data["ImageID"])
         if (familyID == None) :
             p = self.__packetHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)        
             return  
         
-        familyFeatures = self.__dbConnector.getVMFamilyFeatures(familyID)
+        familyFeatures = self.__commandsDBConnector.getVMFamilyFeatures(familyID)
          
         if (data["Instances"] == -1) :
-            if (not self.__dbConnector.isBeingDeleted(data["ImageID"])) :                 
-                self.__dbConnector.changeImageCopiesState(data["ImageID"], IMAGE_STATE_T.DEPLOY)
+            if (not self.__commandsDBConnector.isBeingDeleted(data["ImageID"])) :                 
+                self.__commandsDBConnector.changeImageCopiesState(data["ImageID"], IMAGE_STATE_T.DEPLOY)
                 
-                serverIDs = self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DEPLOY)
+                serverIDs = self.__commandsDBConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DEPLOY)
                 if (serverIDs != []) :
-                    self.__dbConnector.addImageEditionCommand(data["CommandID"], data["ImageID"]) 
+                    self.__commandsDBConnector.addImageEditionCommand(data["CommandID"], data["ImageID"]) 
                                        
                     p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
                     for serverID in serverIDs :
-                        self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
+                        self.__commandsDBConnector.allocateVMServerResources(data["CommandID"], serverID, 
                                                          0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
                                                          0, 0, 1)
-                        connectionData = self.__dbConnector.getVMServerConfiguration(serverID)
+                        connectionData = self.__commandsDBConnector.getVMServerConfiguration(serverID)
                         self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)   
                 else :
-                    if (not self.__dbConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.EDITED)) :
+                    if (not self.__commandsDBConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.EDITED)) :
                         p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
                         self.__networkManager.sendPacket('', self.__listenningPort, p)
             else :
@@ -280,7 +280,7 @@ class EndpointPacketReactor(object):
                                                                      data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
         elif (data["Instances"] > 0) :
-            if (self.__dbConnector.isAffectedByAutoDeploymentCommand(data["ImageID"])) :
+            if (self.__commandsDBConnector.isAffectedByAutoDeploymentCommand(data["ImageID"])) :
                 p = self.__packetHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTODEPLOYED, 
                                                                      data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
@@ -304,14 +304,14 @@ class EndpointPacketReactor(object):
                         deployed_copies += output[i][0][1]
                         i += 1
                                                 
-                    self.__dbConnector.addAutoDeploymentCommand(data["CommandID"], data["ImageID"], len(servers))
+                    self.__commandsDBConnector.addAutoDeploymentCommand(data["CommandID"], data["ImageID"], len(servers))
                     
                     p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])                    
                     for serverID in servers:                        
-                        self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
+                        self.__commandsDBConnector.allocateVMServerResources(data["CommandID"], serverID, 
                                                          0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
                                                          0, 0, 1)
-                        connectionData = self.__dbConnector.getVMServerConfiguration(serverID)            
+                        connectionData = self.__commandsDBConnector.getVMServerConfiguration(serverID)            
                         self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)     
 
     def __deleteImageFromInfrastructure(self, data):
@@ -323,11 +323,11 @@ class EndpointPacketReactor(object):
             Nothing
         """
         errorDescription = None
-        if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
+        if (self.__commandsDBConnector.isBeingEdited(data["ImageID"])) :
             errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
-        elif (self.__dbConnector.isBeingDeleted(data["ImageID"])) :
+        elif (self.__commandsDBConnector.isBeingDeleted(data["ImageID"])) :
             errorDescription = ERROR_DESC_T.CLSRVR_DELETED_IMAGE
-        elif (self.__dbConnector.getImageVMFamilyID(data["ImageID"]) == None) :
+        elif (self.__commandsDBConnector.getImageVMFamilyID(data["ImageID"]) == None) :
             errorDescription = ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE
         if (errorDescription != None) :
             p = self.__packetHandler.createErrorPacket(PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR, errorDescription, data["CommandID"])
@@ -336,13 +336,13 @@ class EndpointPacketReactor(object):
             
             p = self.__vmServerPacketHandler.createDeleteImagePacket(data["ImageID"], data["CommandID"])
             
-            for serverID in self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DELETE) :
-                serverData = self.__dbConnector.getVMServerConfiguration(serverID)
+            for serverID in self.__commandsDBConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DELETE) :
+                serverData = self.__commandsDBConnector.getVMServerConfiguration(serverID)
                 self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             
-            self.__dbConnector.changeImageCopiesState(data["ImageID"], IMAGE_STATE_T.DELETE)
-            self.__dbConnector.deleteImageVMFamilyID(data["ImageID"])
-            self.__dbConnector.addImageDeletionCommand(data["CommandID"], data["ImageID"])
+            self.__commandsDBConnector.changeImageCopiesState(data["ImageID"], IMAGE_STATE_T.DELETE)
+            self.__commandsDBConnector.deleteImageVMFamilyID(data["ImageID"])
+            self.__commandsDBConnector.addImageDeletionCommand(data["CommandID"], data["ImageID"])
             p = self.__imageRepositoryPacketHandler.createDeleteRequestPacket(data["ImageID"])
             self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p)                
             
@@ -356,18 +356,18 @@ class EndpointPacketReactor(object):
         """                  
         errorDescription = None
         
-        if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
+        if (self.__commandsDBConnector.isBeingEdited(data["ImageID"])) :
             errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
-        elif (self.__dbConnector.isBeingDeleted(data["ImageID"])) :    
+        elif (self.__commandsDBConnector.isBeingDeleted(data["ImageID"])) :    
             errorDescription = ERROR_DESC_T.CLSRVR_DELETED_IMAGE
-        elif (self.__dbConnector.getImageVMFamilyID(data["ImageID"]) == None) :
+        elif (self.__commandsDBConnector.getImageVMFamilyID(data["ImageID"]) == None) :
             errorDescription = ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE
         elif (data["packet_type"] == PACKET_T.CREATE_IMAGE):
-            repositoryStatus = self.__dbConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
+            repositoryStatus = self.__commandsDBConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
             if (repositoryStatus == None) :
                 errorDescription = ERROR_DESC_T.CLSRVR_IR_CONNECTION_ERROR
             else :
-                imageFeatures = self.__dbConnector.getVMFamilyFeatures(self.__dbConnector.getImageVMFamilyID(data["ImageID"]))
+                imageFeatures = self.__commandsDBConnector.getVMFamilyFeatures(self.__commandsDBConnector.getImageVMFamilyID(data["ImageID"]))
                 required_disk_space = imageFeatures["osDiskSize"] + imageFeatures["dataDiskSize"]
                 required_disk_space = self.__averageCompressionRatio * required_disk_space
                 remaining_disk_space = repositoryStatus["FreeDiskSpace"] - required_disk_space
@@ -394,27 +394,27 @@ class EndpointPacketReactor(object):
             return
         
         if (data["packet_type"] == PACKET_T.CREATE_IMAGE) :
-            self.__dbConnector.registerNewImageVMFamily(data["CommandID"], self.__dbConnector.getImageVMFamilyID(data["ImageID"]))
+            self.__commandsDBConnector.registerNewImageVMFamily(data["CommandID"], self.__commandsDBConnector.getImageVMFamilyID(data["ImageID"]))
             modify = False
         else :
-            self.__dbConnector.addImageEditionCommand(data["CommandID"], data["ImageID"])
+            self.__commandsDBConnector.addImageEditionCommand(data["CommandID"], data["ImageID"])
             modify = True
             
-        familyID = self.__dbConnector.getImageVMFamilyID(data["ImageID"])
-        familyFeatures = self.__dbConnector.getVMFamilyFeatures(familyID)
+        familyID = self.__commandsDBConnector.getImageVMFamilyID(data["ImageID"])
+        familyFeatures = self.__commandsDBConnector.getVMFamilyFeatures(familyID)
         zipFileAllocatedSpace = self.__averageCompressionRatio * (familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"])
-        self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
+        self.__commandsDBConnector.allocateVMServerResources(data["CommandID"], serverID, 
                                                          familyFeatures["RAMSize"], familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
                                                          zipFileAllocatedSpace, 
                                                          familyFeatures["vCPUs"], 1)
-        self.__dbConnector.allocateImageRepositoryResources(self.__repositoryIP, self.__repositoryPort, data["CommandID"], 
+        self.__commandsDBConnector.allocateImageRepositoryResources(self.__repositoryIP, self.__repositoryPort, data["CommandID"], 
             zipFileAllocatedSpace)
         
-        connectionData = self.__dbConnector.getVMServerConfiguration(serverID)
+        connectionData = self.__commandsDBConnector.getVMServerConfiguration(serverID)
         p = self.__vmServerPacketHandler.createImageEditionPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], modify, data["CommandID"], 
                                                                   data["OwnerID"])
         self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)
-        self.__dbConnector.registerActiveVMLocation(data["CommandID"], serverID)        
+        self.__commandsDBConnector.registerActiveVMLocation(data["CommandID"], serverID)        
             
     def __deployOrDeleteImage(self, data):
         """
@@ -425,31 +425,31 @@ class EndpointPacketReactor(object):
             Nothing
         """
         serverNameOrIPAddress = data["ServerNameOrIPAddress"]
-        serverID = self.__dbConnector.getVMServerID(serverNameOrIPAddress)        
-        serverData = self.__dbConnector.getVMServerConfiguration(serverID)
+        serverID = self.__commandsDBConnector.getVMServerID(serverNameOrIPAddress)        
+        serverData = self.__commandsDBConnector.getVMServerConfiguration(serverID)
         errorDescription = None        
             
-        if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
+        if (self.__commandsDBConnector.isBeingEdited(data["ImageID"])) :
             errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
-        elif (self.__dbConnector.isBeingDeleted(data["ImageID"])):
+        elif (self.__commandsDBConnector.isBeingDeleted(data["ImageID"])):
             errorDescription = ERROR_DESC_T.CLSRVR_DELETED_IMAGE
-        elif (self.__dbConnector.getImageVMFamilyID(data["ImageID"]) == None) :
+        elif (self.__commandsDBConnector.getImageVMFamilyID(data["ImageID"]) == None) :
             errorDescription = ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE
         elif (serverID == None) :
             errorDescription =  ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR
         elif (serverData["ServerStatus"] != SERVER_STATE_T.READY):
             errorDescription = ERROR_DESC_T.CLSRVR_VMSRVR_NOT_READY
-        elif (data["packet_type"] == PACKET_T.DEPLOY_IMAGE and self.__dbConnector.hostsImage(serverID, data["ImageID"]))\
-            or (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER and not self.__dbConnector.hostsImage(serverID, data["ImageID"])):
+        elif (data["packet_type"] == PACKET_T.DEPLOY_IMAGE and self.__commandsDBConnector.hostsImage(serverID, data["ImageID"]))\
+            or (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER and not self.__commandsDBConnector.hostsImage(serverID, data["ImageID"])):
             
             if (data["packet_type"] == PACKET_T.DEPLOY_IMAGE):
                 errorDescription = ERROR_DESC_T.CLSRVR_IMAGE_HOSTED_ON_VMSRVR
             else :
                 errorDescription = ERROR_DESC_T.CLSRVR_IMAGE_NOT_HOSTED_ON_VMSRVR
         elif (data["packet_type"] == PACKET_T.DEPLOY_IMAGE):
-            free_disk_space = self.__dbConnector.getVMServerStatistics(serverID)["FreeStorageSpace"]
-            familyID = self.__dbConnector.getImageVMFamilyID(data["ImageID"])
-            familyFeatures = self.__dbConnector.getVMFamilyFeatures(familyID)
+            free_disk_space = self.__commandsDBConnector.getVMServerStatistics(serverID)["FreeStorageSpace"]
+            familyID = self.__commandsDBConnector.getImageVMFamilyID(data["ImageID"])
+            familyFeatures = self.__commandsDBConnector.getVMFamilyFeatures(familyID)
             required_disk_space = familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"]
             if (free_disk_space < required_disk_space) :
                 errorDescription = ERROR_DESC_T.CLSRVR_VMSRVR_NO_DISK_SPACE
@@ -464,9 +464,9 @@ class EndpointPacketReactor(object):
             return
            
         if (data["packet_type"] == PACKET_T.DEPLOY_IMAGE) :
-            familyID = self.__dbConnector.getImageVMFamilyID(data["ImageID"])
-            familyFeatures = self.__dbConnector.getVMFamilyFeatures(familyID)
-            self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
+            familyID = self.__commandsDBConnector.getImageVMFamilyID(data["ImageID"])
+            familyFeatures = self.__commandsDBConnector.getVMFamilyFeatures(familyID)
+            self.__commandsDBConnector.allocateVMServerResources(data["CommandID"], serverID, 0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
                                                          0, 0, 0)
             p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
         else:
@@ -481,7 +481,7 @@ class EndpointPacketReactor(object):
         Returns:
             Nothing
         """
-        repositoryStatus = self.__dbConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
+        repositoryStatus = self.__commandsDBConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
         p = self.__packetHandler.createRepositoryStatusPacket(repositoryStatus["FreeDiskSpace"], 
                                                                  repositoryStatus["AvailableDiskSpace"], 
                                                                  repositoryStatus["ConnectionStatus"])
@@ -506,7 +506,7 @@ class EndpointPacketReactor(object):
             useCommandID = False
             commandID = ""
             
-        serverID = self.__dbConnector.getVMServerID(key)
+        serverID = self.__commandsDBConnector.getVMServerID(key)
         if (serverID == None) :            
             if (unregister) :
                 packet_type = PACKET_T.VM_SERVER_UNREGISTRATION_ERROR
@@ -516,7 +516,7 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, p)  
             return
         
-        serverData = self.__dbConnector.getVMServerConfiguration(serverID)            
+        serverData = self.__commandsDBConnector.getVMServerConfiguration(serverID)            
         status = serverData["ServerStatus"]    
         if (status == SERVER_STATE_T.READY or status == SERVER_STATE_T.BOOTING) :  
             try :
@@ -532,7 +532,7 @@ class EndpointPacketReactor(object):
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
                 return
             
-            self.__dbConnector.deleteHostedVMs(serverID)
+            self.__commandsDBConnector.deleteHostedVMs(serverID)
             if not haltServer :
                 p = self.__vmServerPacketHandler.createVMServerShutdownPacket()
             else :
@@ -542,7 +542,7 @@ class EndpointPacketReactor(object):
             self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])       
             
         if (unregister) :
-            self.__dbConnector.deleteVMServer(key)
+            self.__commandsDBConnector.deleteVMServer(key)
             
         if (useCommandID) :
             p = self.__packetHandler.createCommandExecutedPacket(commandID)
@@ -557,7 +557,7 @@ class EndpointPacketReactor(object):
         """              
         segmentSize = 100 
         outgoingData = []
-        serverIDs = self.__dbConnector.getVMServerIDs()
+        serverIDs = self.__commandsDBConnector.getVMServerIDs()
         if (len(serverIDs) == 0) :
             segmentCounter = 0
             segmentNumber = 0
@@ -601,7 +601,7 @@ class EndpointPacketReactor(object):
         p = self.__imageRepositoryPacketHandler.createHaltPacket()
         self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p)
         self.__networkManager.closeConnection(self.__repositoryIP, self.__repositoryPort)
-        vmServersConnectionData = self.__dbConnector.getActiveVMServersConnectionData()
+        vmServersConnectionData = self.__commandsDBConnector.getActiveVMServersConnectionData()
         if (vmServersConnectionData != None) :
             args = dict()
             args["Halt"] = data["HaltVMServers"]
@@ -621,7 +621,7 @@ class EndpointPacketReactor(object):
         """
         p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_VM_VNC_DATA)
         
-        connectionData = self.__dbConnector.getActiveVMServersConnectionData()
+        connectionData = self.__commandsDBConnector.getActiveVMServersConnectionData()
         for cd in connectionData :            
             errorMessage = self.__networkManager.sendPacket(cd["ServerIP"], cd["ServerPort"], p)
             NetworkManager.printConnectionWarningIfNecessary(cd["ServerIP"], cd["ServerPort"], "VNC connection data request", errorMessage)   
@@ -634,7 +634,7 @@ class EndpointPacketReactor(object):
         Returns:
             Nothing
         """
-        serverID = self.__dbConnector.getActiveVMHostID(data["DomainID"])
+        serverID = self.__commandsDBConnector.getActiveVMHostID(data["DomainID"])
         if (serverID == None) :
             if (reboot) :
                 packet_type = PACKET_T.DOMAIN_REBOOT_ERROR
@@ -645,7 +645,7 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             return       
         
-        connectionData = self.__dbConnector.getVMServerConfiguration(serverID)
+        connectionData = self.__commandsDBConnector.getVMServerConfiguration(serverID)
         if (reboot) :
             packet = self.__vmServerPacketHandler.createVMRebootPacket(data["DomainID"])
         else :
@@ -660,7 +660,7 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
         else :
             if (not reboot) :
-                self.__dbConnector.deleteActiveVMLocation(data["CommandID"])         
+                self.__commandsDBConnector.deleteActiveVMLocation(data["CommandID"])         
             packet = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             
@@ -672,7 +672,7 @@ class EndpointPacketReactor(object):
         Returns:
             Nothing
         """
-        serverID = self.__dbConnector.getVMServerID(data["ServerNameOrIPAddress"])
+        serverID = self.__commandsDBConnector.getVMServerID(data["ServerNameOrIPAddress"])
         
         if (serverID == None) :
             packet = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
@@ -680,7 +680,7 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             return
         
-        status = self.__dbConnector.getVMServerConfiguration(serverID)["ServerStatus"]
+        status = self.__commandsDBConnector.getVMServerConfiguration(serverID)["ServerStatus"]
         
         if (status == SERVER_STATE_T.BOOTING or status == SERVER_STATE_T.READY) :
             packet = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
@@ -689,7 +689,7 @@ class EndpointPacketReactor(object):
             return
             
         try :
-            self.__dbConnector.setServerBasicData(serverID, data["NewVMServerName"], SERVER_STATE_T.SHUT_DOWN, 
+            self.__commandsDBConnector.setServerBasicData(serverID, data["NewVMServerName"], SERVER_STATE_T.SHUT_DOWN, 
                                                   data["NewVMServerIPAddress"], data["NewVMServerPort"], data["NewImageEditionBehavior"])
             packet = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
         

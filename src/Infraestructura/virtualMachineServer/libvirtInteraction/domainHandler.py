@@ -56,7 +56,7 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             executionImageDirectory: the directory where the active virtual machines' disk images are
             vncPasswordLength: the generated VNC password's length
         """
-        self.__dbConnector = dbConnector        
+        self.__commandsDBConnector = dbConnector        
         self.__vncServerIP = vncServerIP
         self.__childProcessManager = ChildProcessManager()        
         self.__networkManager = networkManager
@@ -99,11 +99,11 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             Nothing
         """
         activeDomainNames = self.__libvirtConnection.getActiveDomainNames()
-        registeredDomainNames = self.__dbConnector.getRegisteredDomainNames()
+        registeredDomainNames = self.__commandsDBConnector.getRegisteredDomainNames()
         for domainName in registeredDomainNames :
             if (not domainName in activeDomainNames) :
                 self.__freeDomainResources(domainName)
-        self.__dbConnector.allocateAssignedMACsUUIDsAndVNCPorts()
+        self.__commandsDBConnector.allocateAssignedMACsUUIDsAndVNCPorts()
         
     def shutdown(self, timeout):
         """
@@ -142,16 +142,16 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             newUUID = None
             newMAC = None
             
-            definitionFile = self.__definitionFileDirectory + self.__dbConnector.getDefinitionFilePath(imageID)
+            definitionFile = self.__definitionFileDirectory + self.__commandsDBConnector.getDefinitionFilePath(imageID)
             originalName = "{0}_".format(imageID)
-            dataImagePath = self.__dbConnector.getDataImagePath(imageID)
-            osImagePath = self.__dbConnector.getOSImagePath(imageID)
-            isBootable = self.__dbConnector.getBootableFlag(imageID)        
+            dataImagePath = self.__commandsDBConnector.getDataImagePath(imageID)
+            osImagePath = self.__commandsDBConnector.getOSImagePath(imageID)
+            isBootable = self.__commandsDBConnector.getBootableFlag(imageID)        
             imageFound = True
             
             # Generate the configuration parameters
-            newUUID, newMAC = self.__dbConnector.extractFreeMACAndUUID()
-            newPort = self.__dbConnector.extractFreeVNCPort()
+            newUUID, newMAC = self.__commandsDBConnector.extractFreeMACAndUUID()
+            newPort = self.__commandsDBConnector.extractFreeVNCPort()
             newName = originalName + str(newPort)        
             newPassword = self.__generateVNCPassword()
             sourceOSDisk = self.__sourceImagePath + osImagePath               
@@ -213,15 +213,15 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             
             # Everything went OK => register the resources on the database
         
-            self.__dbConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, websockifyPID, newOSDisk,  newDataDisk, newMAC, newUUID)
-            self.__dbConnector.addVMBootCommand(newName, commandID)
+            self.__commandsDBConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, websockifyPID, newOSDisk,  newDataDisk, newMAC, newUUID)
+            self.__commandsDBConnector.addVMBootCommand(newName, commandID)
        
         except Exception:
             # Free the allocated resources, generate an error packet and send it.
             if (imageFound and not isBootable) :                
-                self.__dbConnector.deleteImage(imageID)
+                self.__commandsDBConnector.deleteImage(imageID)
             if (newUUID != None) :
-                self.__dbConnector.freeMACAndUUID(newUUID, newMAC)
+                self.__commandsDBConnector.freeMACAndUUID(newUUID, newMAC)
             if (diskImagesCreated) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(newOSDisk), None)
             if (websockifyPID != -1) :
@@ -239,11 +239,11 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         Returns:
             Nothing
         """
-        domainName = self.__dbConnector.getDomainNameFromVMBootCommand(domainUID)
+        domainName = self.__commandsDBConnector.getDomainNameFromVMBootCommand(domainUID)
         if (domainName == None) :
             # Ignoramos la petición: el dominio ya está apagado
             return
-        bootableFlag = self.__dbConnector.getBootableFlag(self.__dbConnector.getDomainImageID(domainName))
+        bootableFlag = self.__commandsDBConnector.getBootableFlag(self.__commandsDBConnector.getDomainImageID(domainName))
         if (bootableFlag) :
             self.__libvirtConnection.destroyDomain(domainName)
         else:
@@ -257,7 +257,7 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         Returns:
             Nothing
         """
-        domainName = self.__dbConnector.getDomainNameFromVMBootCommand(domainUID)
+        domainName = self.__commandsDBConnector.getDomainNameFromVMBootCommand(domainUID)
         if (domainName == None) :
             # Ignoramos la petición: el dominio ya está apagado
             return
@@ -287,7 +287,7 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         domainName = domainInfo["name"]
         commandID = None
         while (commandID == None) :
-            commandID = self.__dbConnector.getVMBootCommand(domainName)
+            commandID = self.__commandsDBConnector.getVMBootCommand(domainName)
             if (commandID == None) :
                 sleep(0.1)
         packet = self.__packetManager.createVMConnectionParametersPacket(ip, port + 1, password, commandID)
@@ -301,7 +301,7 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         Returns:
             Nothing
         """
-        if (self.__dbConnector.getVMBootCommand(domainName) != None) :            
+        if (self.__commandsDBConnector.getVMBootCommand(domainName) != None) :            
             self.__freeDomainResources(domainName)
             
     def __freeDomainResources(self, domainName, deleteDiskImages=True):
@@ -313,14 +313,14 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         Returns:
             Nothing
         """
-        dataImagePath = self.__dbConnector.getDomainDataImagePath(domainName)
-        osImagePath = self.__dbConnector.getDomainOSImagePath(domainName)
-        imageID = self.__dbConnector.getDomainImageID(domainName)
-        websockify_pid = self.__dbConnector.getWebsockifyDaemonPID(domainName)
-        isBootable = self.__dbConnector.getBootableFlag(imageID)        
-        commandID = self.__dbConnector.getVMBootCommand(domainName)
+        dataImagePath = self.__commandsDBConnector.getDomainDataImagePath(domainName)
+        osImagePath = self.__commandsDBConnector.getDomainOSImagePath(domainName)
+        imageID = self.__commandsDBConnector.getDomainImageID(domainName)
+        websockify_pid = self.__commandsDBConnector.getWebsockifyDaemonPID(domainName)
+        isBootable = self.__commandsDBConnector.getBootableFlag(imageID)        
+        commandID = self.__commandsDBConnector.getVMBootCommand(domainName)
         
-        self.__dbConnector.unregisterDomainResources(domainName)     
+        self.__commandsDBConnector.unregisterDomainResources(domainName)     
         
         if (websockify_pid != -1) :
             ChildProcessManager.runCommandInForeground("kill -s TERM " + str(websockify_pid), None)   
@@ -339,18 +339,18 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
                     
         else :
             data = dict()            
-            connectionData = self.__dbConnector.getImageRepositoryConnectionData(commandID)
+            connectionData = self.__commandsDBConnector.getImageRepositoryConnectionData(commandID)
             data["Transfer_Type"] = TRANSFER_T.STORE_IMAGE
             data["DataImagePath"] = dataImagePath
             data["OSImagePath"] = osImagePath
-            data["DefinitionFilePath"] = self.__dbConnector.getDefinitionFilePath(imageID)
+            data["DefinitionFilePath"] = self.__commandsDBConnector.getDefinitionFilePath(imageID)
             data["RepositoryIP"] = connectionData["RepositoryIP"]
             data["RepositoryPort"] = connectionData["RepositoryPort"]
             data["CommandID"] = commandID            
             data["TargetImageID"] = imageID
-            self.__dbConnector.addToCompressionQueue(data)
-            self.__dbConnector.removeImageRepositoryConnectionData(commandID)
-            self.__dbConnector.deleteImage(imageID)              
+            self.__commandsDBConnector.addToCompressionQueue(data)
+            self.__commandsDBConnector.removeImageRepositoryConnectionData(commandID)
+            self.__commandsDBConnector.deleteImage(imageID)              
     
     def __waitForDomainsToTerminate(self, timeout):
         """

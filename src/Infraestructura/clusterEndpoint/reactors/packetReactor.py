@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Definiciones del endpoint de la web
-@author: Luis Barrios Hernández
-@version: 3.5
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: packetReactor.py    
+    Version: 4.0
+    Description: cluster endpoint daemon packet reactor
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from clusterServer.packetHandling.packet_t import CLUSTER_SERVER_PACKET_T as PACKET_T
@@ -12,16 +31,21 @@ from clusterEndpoint.commands.command_output_type import COMMAND_OUTPUT_TYPE
 
 class ClusterEndpointPacketReactor(object):  
     """
-    Estos objetos comunican un servidor de cluster con la web
+    These objects process the packets sent from the cluster server
     """    
-    def __init__(self, codeTranslator, commandsHandler, packetHandler, commandsProcessor, endpointDBConnector, commandsDBConnector):
+    def __init__(self, codesTranslator, commandsHandler, packetHandler, commandsProcessor, endpointDBConnector, commandsDBConnector):
         """
-        Inicializa el estado del endpoint
-        Argumentos:
-            Ninguno
+        Initializes the packet reactor's state
+        Args:
+            codesTranslator: the codes translator to use
+            commandsHandler. the commands handler to use
+            packetHandler: the packet handler to use
+            commandsProcessor: the commands processor to use
+            endpointDBConnector: the cluster endpoint database connector to use
+            commandsDBConnector: the commands database connector to use
         """
         self.__packetHandler = None
-        self.__codeTranslator = codeTranslator
+        self.__codeTranslator = codesTranslator
         self.__commandsHandler = commandsHandler
         self.__packetHandler = packetHandler
         self.__commandsProcessor = commandsProcessor
@@ -30,17 +54,17 @@ class ClusterEndpointPacketReactor(object):
     
     def processPacket(self, packet):
         """
-        Procesa un paquete enviado desde el servidor de cluster
-        Argumentos:
-            packet: el paquete a procesar
-        Devuelve:
-            Nada
+        Processes a packet sent from the cluster server
+        Args:
+            packet: the packet to process
+        Returns:
+            Nothing
         """
         if (self.__commandsProcessor.finish()) :
             return
         data = self.__packetHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
-            self.__processVMServerSegment(data)            
+            self.__processVMServerConfigurationSegment(data)            
         elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
             self.__processImageCopiesDistributionSegment(data)            
         elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS):
@@ -50,14 +74,12 @@ class ClusterEndpointPacketReactor(object):
         elif (data["packet_type"] == PACKET_T.ACTIVE_VM_VNC_DATA) :
             self.__endpointDBConnector.processActiveVMVNCDataSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])                        
         else :
-            # El resto de paquetes contienen la salida de un comando
+            # The remaining packet types contain a command's output
             l = data["CommandID"].split("|")
             commandID = (int(l[0]), float(l[1]))            
             if (data["packet_type"] == PACKET_T.COMMAND_EXECUTED) :
                 self.__processCommandExecutedPacket(commandID, data)
             else :           
-                # El resto de paquetes contienen el resultado de ejecutar comandos => los serializamos y los añadimos
-                # a la base de datos de comandos para que los conectores se enteren        
                 if (data["packet_type"] == PACKET_T.VM_CONNECTION_DATA) :
                     self.__processVMConnectionDataPacket(commandID, data)   
                                          
@@ -66,20 +88,48 @@ class ClusterEndpointPacketReactor(object):
                 else :                    
                     self.__processErrorPacket(commandID, data)
                     
-    def __processVMServerSegment(self, data):
+    def __processVMServerConfigurationSegment(self, data):
+        """
+        Processes a virtual machine server configuration segment
+        Args:
+            data: the segment's data
+        Returns:
+            Nothing
+        """
         processedData = self.__codeTranslator.processVMServerSegment(data["Data"])
         self.__endpointDBConnector.processVMServerSegment(data["Segment"], data["SequenceSize"], processedData)
         
     def __processImageCopiesDistributionSegment(self, data):
+        """
+        Processes an image copies distribution segment
+        Args:
+            data: the segment's data
+        Returns:
+            Nothing
+        """
         processedData = self.__codeTranslator.processImageCopiesDistributionSegment(data["Data"])
         self.__endpointDBConnector.processImageCopiesDistributionSegment(data["Segment"], data["SequenceSize"], processedData)
         
     def __updateImageRepositoryStatus(self, data):
+        """
+        Processes an image repository status packet
+        Args:
+            data: the packet to process' data
+        Returns:
+            Nothing
+        """
         status = self.__codeTranslator.translateRepositoryStatusCode(data["RepositoryStatus"])
         self.__endpointDBConnector.updateImageRepositoryStatus(data["FreeDiskSpace"], data["AvailableDiskSpace"], status)
         
     def __processCommandExecutedPacket(self, commandID, data):
-        # Comandos ejecutados => generar notificaciones cuando sea necesario
+        """
+        Processes a command executed packet, generating notifications when necessary
+        Args:
+            commandID: the executed command's ID
+            data: the received packet's data
+        Returns:
+            Nothing
+        """
         commandData = self.__commandsDBConnector.removeExecutedCommand(commandID)
         output_type = None                       
         if (commandData["CommandType"] == COMMAND_TYPE.EDIT_IMAGE or commandData["CommandType"] == COMMAND_TYPE.CREATE_IMAGE) :
@@ -108,24 +158,45 @@ class ClusterEndpointPacketReactor(object):
                                                                 True)
                 
     def __processVMConnectionDataPacket(self, commandID, data):
-        # Generar salida sólo si se trata de un comando de arranque de una máquina virtual
+        """
+        Processes a virtual machine connection data packet
+        Args:
+            commandID: a command ID
+            data: the incoming packet's data
+        Returns:
+            Nothing
+        """
             commandData = self.__commandsDBConnector.getCommandData(commandID)                    
             if (commandData["CommandType"] == COMMAND_TYPE.VM_BOOT_REQUEST) :
                 (outputType, outputContent) = self.__commandsHandler.createVMConnectionDataOutput(
                             data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"]) 
                 self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)                        
             else :
-                # Cambiar el estado de la imagen en edición
                 self.__endpointDBConnector.updateEditedImageState(data["CommandID"], EDITION_STATE_T.VM_ON)
                 
     def __processImageCreatedPacket(self, commandID, data):
+        """
+        Processes an image created packet
+        Args:
+            commandID: a command ID
+            data: the incoming packet's data
+        Returns:
+            Nothing
+        """
         self.__endpointDBConnector.registerImageID(data["CommandID"], data["ImageID"])
         self.__commandsDBConnector.addCommandOutput(commandID, COMMAND_OUTPUT_TYPE.IMAGE_CREATED,
                 self.__codeTranslator.translateNotificationCode(COMMAND_TYPE.CREATE_IMAGE),
                 True)
         
     def __processErrorPacket(self, commandID, data):
-        # Errores
+        """
+        Processes an error packet
+        Args:
+            commandID: a command ID
+            data: the incoming packet's data
+        Returns:
+            Nothing
+        """        
         if (data["packet_type"] == PACKET_T.IMAGE_CREATION_ERROR) :
             self.__endpointDBConnector.deleteEditedImage(data["CommandID"])
                         

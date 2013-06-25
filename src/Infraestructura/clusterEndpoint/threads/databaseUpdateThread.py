@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Definiciones del hilo de actualización periódica de la base de datos de estado
-@author: Luis Barrios Hernández
-@version: 1.1
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: databaseUpdateThread.py    
+    Version: 2.0
+    Description: cluster endpoint daemon database thread
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from ccutils.threads.basicThread import BasicThread
@@ -12,17 +31,21 @@ from time import sleep
 
 class VMServerMonitoringThread(BasicThread):
     """
-    Estos hilos refrescan la base de datos de estado periódicamente.
+    These threads send the update request packets to the cluster server.
     """
-    def __init__(self, webPacketHandler, networkManager, commandsProcessor, clusterServerIP, clusterServerPort, sleepTime):
+    def __init__(self, clusterServerPacketHandler, networkManager, commandsProcessor, clusterServerIP, clusterServerPort, sleepTime):
         """
-        Inicializa el estado
-        Argumentos:
-            updateHandler: el objeto que envía los paquetes para obtener la información
-            sleepTime: tiempo (en segundos) que separa dos actualizaciones consecutivas.
+        Initializes the thread's state
+        Args:
+            clusterServerPacketHandler: the cluster server packet handler to use
+            networkManager: the NetworkManager object to use
+            commandsProcessor: the commands processor object to use
+            clusterServerIP: the cluster server's IP address
+            clusterServerPort: the cluster server control connection's port
+            sleepTime: the sleep time between two consecutive updates (in seconds)
         """
         BasicThread.__init__(self, "Status database update thread")
-        self.__packetHandler = webPacketHandler
+        self.__packetHandler = clusterServerPacketHandler
         self.__networkManager = networkManager
         self.__commandsProcessor = commandsProcessor
         self.__clusterServerIP = clusterServerIP
@@ -30,28 +53,20 @@ class VMServerMonitoringThread(BasicThread):
         self.__sleepTime = sleepTime
         
     def run(self):
-        """
-        Envía los paquetes de actualización del estado
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
-        """
         while not self.finish() :
             self.__sendUpdateRequestPackets()
             sleep(self.__sleepTime)
             
     def __sendUpdateRequestPackets(self):
         """
-        Solicita información de estado al serividor de cluster
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Sends the update request packets to the cluster server
+        Args:
+            None
+        Returns:
+            Nothing
         """
         if (self.__commandsProcessor.finish()) :
             return
-        # Enviamos paquetes para obtener los tres tipos de información que necesitamos para actualizar la base de datos de estado
         p = self.__packetHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
         errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, p)          
         NetworkManager.printConnectionWarningIfNecessary(self.__clusterServerIP, self.__clusterServerPort, "Virtual machine servers status", errorMessage)     

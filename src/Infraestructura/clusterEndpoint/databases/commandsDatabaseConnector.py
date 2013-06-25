@@ -1,8 +1,27 @@
-# -*- coding: UTF8 -*-
+# -*- coding: utf8 -*-
 '''
-The commands database connector
-@author: Luis Barrios Hernández
-@version: 1.1
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: commandsDatabaseConnector.py    
+    Version: 2.0
+    Description: commands database connector
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from ccutils.databases.connector import BasicDBConnector
@@ -33,6 +52,7 @@ class CommandsDatabaseConnector(BasicDBConnector):
             userID: an user ID. This user has requested the execution of the new command.
             commandType: the new command's type.
             arguments: the new command's arguments.
+            timestamp: the timestamp to use. If it's none, the current time will be used.
         Returns: None if the command could not be scheduled, and the command's ID if everything
         went OK. 
         @attention: DO NOT rely on the command ID's internal representation: it can change without
@@ -79,6 +99,13 @@ class CommandsDatabaseConnector(BasicDBConnector):
         return ((userID, result[1]), int(commandData["CommandType"]), commandData["CommandArgs"])
     
     def getCommandData(self, commandID):
+        """
+        Returns a command's data
+        Args:
+            commandID: a commandID:
+        Returns:
+            the command's data
+        """
         query = "SELECT commandType, commandArgs FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         result = self._executeQuery(query, True)     
         return {"CommandType": result[0], "CommandArgs": result[1]}   
@@ -102,7 +129,14 @@ class CommandsDatabaseConnector(BasicDBConnector):
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)
         
-    def removeOldCommands(self, timeout):        
+    def removeOldCommands(self, timeout):     
+        """
+        Removes the old commands from the database
+        Args:
+            timeout: the timeout to use
+        Returns:
+            A list containing the removed commands' IDs
+        """   
         query = "SELECT * FROM PendingCommand WHERE time - {0} >= {1};".format(time.time(), timeout)
         results = self._executeQuery(query, False)
         if (results == None) :
@@ -115,6 +149,13 @@ class CommandsDatabaseConnector(BasicDBConnector):
         return oldCommands        
         
     def removeExecutedCommand(self, commandID):
+        """
+        Removes an executed command from the database
+        Args:
+            commandID: the executed command's ID
+        Returns:
+            Nothing
+        """
         data = self.getCommandData(commandID)
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)
@@ -138,6 +179,13 @@ class CommandsDatabaseConnector(BasicDBConnector):
             return None
         
     def getPendingNotifications(self, userID):
+        """
+        Returns an user's pending notifications
+        Args:
+            userID: an userID
+        Returns:
+            A list of strings containing the user's pending notifications.
+        """
         query = "SELECT MAX(time) FROM RunCommandOutput WHERE userID = {0} AND isNotification = 1".format(userID)
         max_time = self._executeQuery(query, True)
         if (max_time == None) :
@@ -153,6 +201,13 @@ class CommandsDatabaseConnector(BasicDBConnector):
         return results
     
     def countPendingNotifications(self, userID):
+        """
+        Counts an user's pending notifications
+        Args:
+            userID: an user ID
+        Returns:
+            the given user's pending notification number
+        """
         query = "SELECT MAX(time) FROM RunCommandOutput WHERE userID = {0} AND isNotification = 1".format(userID)
         max_time = self._executeQuery(query, True)
         if (max_time == None) :

@@ -1,8 +1,27 @@
-# -*- coding: utf8 -*
+# -*- coding: utf8 -*-
 '''
-Created on Jun 2, 2013
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: commandsProcessor.py    
+    Version: 4.0
+    Description: cluster endpoint daemon commands processor
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-@author: luis
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from time import sleep
@@ -11,13 +30,27 @@ from clusterServer.packetHandling.packet_t import CLUSTER_SERVER_PACKET_T as PAC
 from clusterEndpoint.databases.editionState_t import EDITION_STATE_T
 
 class CommandsProcessor(object):
+    """
+    These objects process the users' requests
+    """
     
-    def __init__(self, commandsHandler, webPacketHandler, networkManager, 
+    def __init__(self, commandsHandler, clusterServerPacketHandler, networkManager, 
                  clusterServerIP, clusterServerPort, commandsDBConnector, endpointDBConnector):
+        """
+        Initializes the commands processor's state
+        Args:
+            commandsHandler: the commands handler object to use
+            clusterServerPacketHandler: the cluster server packet handler object to use
+            networkManager: the NetworkManager object to use
+            clusterServerIP: the cluster server's IP address
+            clusterServerPort: the cluster server's port
+            commandsDBConnector: the commands database connector
+            endpointDBConnector: the cluster endpoint database connector
+        """
         self.__stopped = False
         self.__commandsHandler = commandsHandler
         self.__commandsDBConnector = commandsDBConnector
-        self.__packetHandler = webPacketHandler
+        self.__packetHandler = clusterServerPacketHandler
         self.__endpointDBConnector = endpointDBConnector
         self.__networkManager = networkManager
         self.__clusterServerIP = clusterServerIP
@@ -25,18 +58,32 @@ class CommandsProcessor(object):
         self.__haltVMServers = False
                 
     def finish(self):
+        """
+        Checks if a HALT command has been received or not
+        Args:
+            None
+        Returns:
+            True if a HALT command was received, and false if it wasn't.
+        """
         return self.__stopped
     
     def haltVMServers(self):
+        """
+        Checks if all the virtual machines should be immediately destroyed or not
+        Args:
+            None
+        Returns:
+            True if all the virtual machines must be immediately destroyed, and False otherwise.
+        """
         return self.__haltVMServers
         
     def processCommands(self):
         """
-        Procesa los comandos enviados desde los conectores
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Processes the users' requests
+        Args:
+            None
+        Returns:
+            Nothing
         """
         while not self.__stopped :
             commandData = self.__commandsDBConnector.popCommand()
@@ -73,18 +120,18 @@ class CommandsProcessor(object):
                         packet = self.__packetHandler.createImageDeploymentPacket(PACKET_T.DELETE_IMAGE_FROM_SERVER, parsedArgs["VMServerNameOrIPAddress"], 
                                                                                      parsedArgs["ImageID"], serializedCommandID)     
                     elif (commandType == COMMAND_TYPE.CREATE_IMAGE):
-                        # Añadir la imagen a la base de datos
                         self.__endpointDBConnector.addNewImage(serializedCommandID, parsedArgs["BaseImageID"], parsedArgs["OwnerID"], 
                                                                parsedArgs["ImageName"], parsedArgs["ImageDescription"])
                         packet = self.__packetHandler.createImageEditionPacket(PACKET_T.CREATE_IMAGE, parsedArgs["BaseImageID"], 
                                                                                   parsedArgs["OwnerID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.EDIT_IMAGE):   
-                        # Actualizar los flags de la imagen en la base de datos
                         self.__endpointDBConnector.editImage(serializedCommandID, parsedArgs["ImageID"], parsedArgs["OwnerID"])
                         packet = self.__packetHandler.createImageEditionPacket(PACKET_T.EDIT_IMAGE, parsedArgs["ImageID"], parsedArgs["OwnerID"], serializedCommandID)  
+                   
                     elif (commandType == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE):
                         self.__endpointDBConnector.deleteImage(parsedArgs["ImageID"])
                         packet = self.__packetHandler.createImageDeletionPacket(parsedArgs["ImageID"], serializedCommandID)
+                    
                     elif (commandType == COMMAND_TYPE.AUTO_DEPLOY_IMAGE):
                         if (self.__endpointDBConnector.affectsToNewOrEditedImage(serializedCommandID)) :
                             self.__endpointDBConnector.updateEditedImageState(serializedCommandID, EDITION_STATE_T.AUTO_DEPLOYMENT)
@@ -92,7 +139,6 @@ class CommandsProcessor(object):
                                           
                     errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)
                     if (errorMessage != None) :
-                        # Error al enviar el paquete => el comando no se podrá ejecutar => avisar a la web
                         (outputType, outputContent) = self.__commandsHandler.createConnectionErrorOutput()
                         self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)
                         

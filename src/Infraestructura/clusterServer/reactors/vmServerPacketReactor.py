@@ -45,7 +45,7 @@ class VMServerPacketReactor(object):
             vmServerPacketHandler: the virtual machine server packet handler            
             clusterServerPacketHandler: the cluster server packet handler
         """
-        self.__dbConnector = dbConnector        
+        self.__commandsDBConnector = dbConnector        
         self.__networkManager = networkManager
         self.__listenningPort = listenningPort
         self.__vmServerPacketHandler = vmServerPacketHandler
@@ -89,12 +89,12 @@ class VMServerPacketReactor(object):
         """        
         serverID = None
         while (serverID == None) :
-            serverID = self.__dbConnector.getVMServerID(data["VMServerIP"])
+            serverID = self.__commandsDBConnector.getVMServerID(data["VMServerIP"])
             if (serverID == None) :
                 sleep(0.1)
                 
-        self.__dbConnector.updateVMServerStatus(serverID, SERVER_STATE_T.READY)
-        self.__dbConnector.setVMServerStatistics(serverID, data["ActiveDomains"], data["RAMInUse"], data["RAMSize"], 
+        self.__commandsDBConnector.updateVMServerStatus(serverID, SERVER_STATE_T.READY)
+        self.__commandsDBConnector.setVMServerStatistics(serverID, data["ActiveDomains"], data["RAMInUse"], data["RAMSize"], 
                                                  data["FreeStorageSpace"], data["AvailableStorageSpace"], data["FreeTemporarySpace"],
                                                  data["AvailableTemporarySpace"], data["ActiveVCPUs"], data["PhysicalCPUs"])
             
@@ -107,7 +107,7 @@ class VMServerPacketReactor(object):
             Nothing
 
         """
-        self.__dbConnector.freeVMServerResources(data["CommandID"], True)
+        self.__commandsDBConnector.freeVMServerResources(data["CommandID"], True)
         p = self.__packetHandler.createErrorPacket(ENDPOINT_PACKET_T.VM_SERVER_INTERNAL_ERROR, ERROR_DESC_T.VMSRVR_INTERNAL_ERROR, data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)
         
@@ -119,22 +119,22 @@ class VMServerPacketReactor(object):
         Returns:
             Nothing
         """
-        self.__dbConnector.deleteActiveVMLocation(data["CommandID"])
-        if (not self.__dbConnector.isImageEditionCommand(data["CommandID"])) :            
-            familyID = self.__dbConnector.getNewImageVMFamily(data["CommandID"])
-            self.__dbConnector.deleteNewImageVMFamily(data["CommandID"])
-            self.__dbConnector.registerImageVMFamilyID(data["ImageID"], familyID)           
+        self.__commandsDBConnector.deleteActiveVMLocation(data["CommandID"])
+        if (not self.__commandsDBConnector.isImageEditionCommand(data["CommandID"])) :            
+            familyID = self.__commandsDBConnector.getNewImageVMFamily(data["CommandID"])
+            self.__commandsDBConnector.deleteNewImageVMFamily(data["CommandID"])
+            self.__commandsDBConnector.registerImageVMFamilyID(data["ImageID"], familyID)           
                  
             p = self.__packetHandler.createImageEditedPacket(data["CommandID"], data["ImageID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :
-            self.__dbConnector.removeImageEditionCommand(data["CommandID"])
-            self.__dbConnector.changeImageCopiesState(data["ImageID"], IMAGE_STATE_T.EDITED)  
+            self.__commandsDBConnector.removeImageEditionCommand(data["CommandID"])
+            self.__commandsDBConnector.changeImageCopiesState(data["ImageID"], IMAGE_STATE_T.EDITED)  
             p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)   
         
-        self.__dbConnector.freeVMServerResources(data["CommandID"], False)        
-        self.__dbConnector.freeImageRepositoryResources(data["CommandID"], False) 
+        self.__commandsDBConnector.freeVMServerResources(data["CommandID"], False)        
+        self.__commandsDBConnector.freeImageRepositoryResources(data["CommandID"], False) 
     
     def __processImageEditionError(self, data):
         """
@@ -144,18 +144,18 @@ class VMServerPacketReactor(object):
         Returns:
             Nothing
         """
-        if (not self.__dbConnector.isImageEditionCommand(data["CommandID"])) :        
-            self.__dbConnector.deleteNewImageVMFamily(data["CommandID"])
+        if (not self.__commandsDBConnector.isImageEditionCommand(data["CommandID"])) :        
+            self.__commandsDBConnector.deleteNewImageVMFamily(data["CommandID"])
             packet_type = ENDPOINT_PACKET_T.IMAGE_CREATION_ERROR
         else :
-            self.__dbConnector.removeImageEditionCommand(data["CommandID"])
+            self.__commandsDBConnector.removeImageEditionCommand(data["CommandID"])
             packet_type = ENDPOINT_PACKET_T.IMAGE_EDITION_ERROR        
             
         p = self.__packetHandler.createErrorPacket(packet_type, data["ErrorDescription"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)
         
-        self.__dbConnector.freeVMServerResources(data["CommandID"], True)
-        self.__dbConnector.freeImageRepositoryResources(data["CommandID"], True)
+        self.__commandsDBConnector.freeVMServerResources(data["CommandID"], True)
+        self.__commandsDBConnector.freeImageRepositoryResources(data["CommandID"], True)
             
     def __processImageDeploymentErrorPacket(self, data):
         """
@@ -165,12 +165,12 @@ class VMServerPacketReactor(object):
         Returns:
             Nothing
         """
-        if (self.__dbConnector.isImageEditionCommand(data["CommandID"])) :
+        if (self.__commandsDBConnector.isImageEditionCommand(data["CommandID"])) :
             packet_type = ENDPOINT_PACKET_T.IMAGE_EDITION_ERROR
-            self.__dbConnector.removeImageEditionCommand(data["CommandID"])
+            self.__commandsDBConnector.removeImageEditionCommand(data["CommandID"])
             
-        elif (self.__dbConnector.isAutoDeploymentCommand(data["CommandID"])) :
-            (generateOutput, _unused) = self.__dbConnector.handleAutoDeploymentCommandOutput(data["CommandID"], True)
+        elif (self.__commandsDBConnector.isAutoDeploymentCommand(data["CommandID"])) :
+            (generateOutput, _unused) = self.__commandsDBConnector.handleAutoDeploymentCommandOutput(data["CommandID"], True)
             if (generateOutput) :              
                 p = self.__packetHandler.createErrorPacket(ENDPOINT_PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTOD_ERROR, data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
@@ -183,7 +183,7 @@ class VMServerPacketReactor(object):
         p = self.__packetHandler.createErrorPacket(packet_type, data["ErrorDescription"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)
         
-        self.__dbConnector.freeVMServerResources(data["CommandID"], True)
+        self.__commandsDBConnector.freeVMServerResources(data["CommandID"], True)
         
     def __processImageDeploymentPacket(self, data):
         """
@@ -193,31 +193,31 @@ class VMServerPacketReactor(object):
         Returns:
             Nothing
         """
-        self.__dbConnector.freeVMServerResources(data["CommandID"], False)
+        self.__commandsDBConnector.freeVMServerResources(data["CommandID"], False)
         
-        serverID = self.__dbConnector.getVMServerID(data["SenderIP"])
-        if (self.__dbConnector.isImageEditionCommand(data["CommandID"])) :                      
-            self.__dbConnector.changeImageCopyState(data["ImageID"], serverID, IMAGE_STATE_T.READY)
+        serverID = self.__commandsDBConnector.getVMServerID(data["SenderIP"])
+        if (self.__commandsDBConnector.isImageEditionCommand(data["CommandID"])) :                      
+            self.__commandsDBConnector.changeImageCopyState(data["ImageID"], serverID, IMAGE_STATE_T.READY)
             
-            if (not self.__dbConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.DEPLOY)) :
+            if (not self.__commandsDBConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.DEPLOY)) :
                 p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
-                self.__dbConnector.removeImageEditionCommand(data["CommandID"])
+                self.__commandsDBConnector.removeImageEditionCommand(data["CommandID"])
                 
-        elif (self.__dbConnector.isImageDeletionCommand(data["CommandID"])) :
+        elif (self.__commandsDBConnector.isImageDeletionCommand(data["CommandID"])) :
             
-            self.__dbConnector.deleteImageFromServer(serverID, data["ImageID"])
+            self.__commandsDBConnector.deleteImageFromServer(serverID, data["ImageID"])
             
-            if (not self.__dbConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.DELETE)) :
+            if (not self.__commandsDBConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.DELETE)) :
                 p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
-                self.__dbConnector.removeImageDeletionCommand(data["CommandID"])
+                self.__commandsDBConnector.removeImageDeletionCommand(data["CommandID"])
                 
-        elif (self.__dbConnector.isAutoDeploymentCommand(data["CommandID"])) :
-            (generateOutput, error) = self.__dbConnector.handleAutoDeploymentCommandOutput(data["CommandID"], False)
+        elif (self.__commandsDBConnector.isAutoDeploymentCommand(data["CommandID"])) :
+            (generateOutput, error) = self.__commandsDBConnector.handleAutoDeploymentCommandOutput(data["CommandID"], False)
             
             if (not error) :
-                self.__dbConnector.assignImageToServer(serverID, data["ImageID"])
+                self.__commandsDBConnector.assignImageToServer(serverID, data["ImageID"])
             if (generateOutput) :
                 if (error) :
                     p = self.__packetHandler.createErrorPacket(ENDPOINT_PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_AUTOD_ERROR, data["CommandID"])
@@ -227,9 +227,9 @@ class VMServerPacketReactor(object):
                 
         else :
             if (data["packet_type"] == VMSRVR_PACKET_T.IMAGE_DEPLOYED) :
-                self.__dbConnector.assignImageToServer(serverID, data["ImageID"])                
+                self.__commandsDBConnector.assignImageToServer(serverID, data["ImageID"])                
             else :
-                self.__dbConnector.deleteImageFromServer(serverID, data["ImageID"])
+                self.__commandsDBConnector.deleteImageFromServer(serverID, data["ImageID"])
             p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         
@@ -241,13 +241,13 @@ class VMServerPacketReactor(object):
         Returns:
             Nothing
         """
-        self.__dbConnector.removeVMBootCommand(data["CommandID"])
+        self.__commandsDBConnector.removeVMBootCommand(data["CommandID"])
         
         p = self.__packetHandler.createVMConnectionDataPacket(data["VNCServerIP"], 
                                                                  data["VNCServerPort"], data["VNCServerPassword"], data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)      
                 
-        self.__dbConnector.freeVMServerResources(data["CommandID"], False)            
+        self.__commandsDBConnector.freeVMServerResources(data["CommandID"], False)            
         
     def __processActiveDomainUIDs(self, data):
         """
@@ -257,8 +257,8 @@ class VMServerPacketReactor(object):
         Returns:
             Nothing
         """
-        vmServerID = self.__dbConnector.getVMServerID(data["VMServerIP"])
-        self.__dbConnector.registerHostedVMs(vmServerID, data["Domain_UIDs"])
+        vmServerID = self.__commandsDBConnector.getVMServerID(data["VMServerIP"])
+        self.__commandsDBConnector.registerHostedVMs(vmServerID, data["Domain_UIDs"])
         
     def __sendDomainsVNCConnectionData(self, packet):
         """

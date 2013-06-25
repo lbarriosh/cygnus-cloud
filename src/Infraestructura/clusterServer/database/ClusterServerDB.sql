@@ -5,7 +5,7 @@
  *
  *  File: ClusterServerDB.sql    
  *  Version: 5.0
- *  Description: cluster server database repository schema 
+ *  Description: cluster server database schema 
  *
  *  Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
  *      Samuel Guayerbas Martín       

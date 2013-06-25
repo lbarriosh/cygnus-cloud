@@ -80,7 +80,7 @@ class VMServerReactor(NetworkCallback):
         Returns:
             Nothing
         """
-        self.__dbConnector = VMServerDBConnector(user, password, databaseName)  
+        self.__commandsDBConnector = VMServerDBConnector(user, password, databaseName)  
             
     def __startListenning(self):
         """
@@ -104,7 +104,7 @@ class VMServerReactor(NetworkCallback):
         self.__packetManager = VMServerPacketHandler(self.__networkManager)            
         self.__connectToDatabases("VMServerDB", self.__parser.getConfigurationParameter("databaseUserName"), self.__parser.getConfigurationParameter("databasePassword"))
             
-        self.__domainHandler = DomainHandler(self.__dbConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
+        self.__domainHandler = DomainHandler(self.__commandsDBConnector, self.__vncServerIP, self.__networkManager, self.__packetManager, self.__listenningPort, 
                                                  self.__parser.getConfigurationParameter("useQEMUWebsockets"),
                                                  self.__parser.getConfigurationParameter("websockifyPath"),
                                                  self.__parser.getConfigurationParameter("configFilePath"),
@@ -120,10 +120,10 @@ class VMServerReactor(NetworkCallback):
         self.__fileTransferThread = FileTransferThread(self.__networkManager, self.__listenningPort, self.__packetManager,
                                                        self.__parser.getConfigurationParameter("TransferDirectory"),
                                                        self.__parser.getConfigurationParameter("FTPTimeout"), 
-                                                       self.__parser.getConfigurationParameter("MaxTransferAttempts"), self.__dbConnector, self.__useSSL)
+                                                       self.__parser.getConfigurationParameter("MaxTransferAttempts"), self.__commandsDBConnector, self.__useSSL)
         self.__compressionThread = CompressionThread(self.__parser.getConfigurationParameter("TransferDirectory"), self.__parser.getConfigurationParameter("sourceImagePath"),
                                                      self.__parser.getConfigurationParameter("configFilePath"),
-                                                     self.__dbConnector, self.__domainHandler, self.__networkManager, self.__listenningPort, self.__packetManager)
+                                                     self.__commandsDBConnector, self.__domainHandler, self.__networkManager, self.__listenningPort, self.__packetManager)
         self.__fileTransferThread.start()
         self.__compressionThread.start()
         self.__networkManager.listenIn(self.__listenningPort, self, self.__useSSL)
@@ -212,21 +212,21 @@ class VMServerReactor(NetworkCallback):
         """
         data.pop("packet_type")
         data["Transfer_Type"] = TRANSFER_T.DEPLOY_IMAGE
-        self.__dbConnector.addToTransferQueue(data)
+        self.__commandsDBConnector.addToTransferQueue(data)
         
     def __processDeleteImagePacket(self, data):
         
-        isBootable = self.__dbConnector.getBootableFlag(data["ImageID"])
+        isBootable = self.__commandsDBConnector.getBootableFlag(data["ImageID"])
         
         if(isBootable):            
             osImagePath = os.path.join(self.__parser.getConfigurationParameter("sourceImagePath") 
-                                   ,self.__dbConnector.getOSImagePath(data["ImageID"]))
+                                   ,self.__commandsDBConnector.getOSImagePath(data["ImageID"]))
             definitionFilePath = os.path.join(self.__parser.getConfigurationParameter("configFilePath") 
-                                   ,self.__dbConnector.getDefinitionFilePath(data["ImageID"]))
+                                   ,self.__commandsDBConnector.getDefinitionFilePath(data["ImageID"]))
             
             try :
                 
-                self.__dbConnector.deleteImage(data["ImageID"])                
+                self.__commandsDBConnector.deleteImage(data["ImageID"])                
                 ChildProcessManager.runCommandInForeground("rm -rf " + os.path.dirname(osImagePath), VMServerException)                
                 ChildProcessManager.runCommandInForeground("rm -rf " + os.path.dirname(definitionFilePath), VMServerException)
                 p = self.__packetManager.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DELETED, data["ImageID"], data["CommandID"])
@@ -261,7 +261,7 @@ class VMServerReactor(NetworkCallback):
         else :
             data["Transfer_Type"] = TRANSFER_T.CREATE_IMAGE
         data.pop("Modify")
-        self.__dbConnector.addToTransferQueue(data)
+        self.__commandsDBConnector.addToTransferQueue(data)
 
     def __sendDomainsVNCConnectionData(self):
         '''
@@ -271,7 +271,7 @@ class VMServerReactor(NetworkCallback):
         Returns:
             Nothing
         '''
-        vncConnectionData = self.__dbConnector.getDomainsConnectionData()
+        vncConnectionData = self.__commandsDBConnector.getDomainsConnectionData()
         segmentSize = 150
         segmentCounter = 1
         outgoingData = []
@@ -351,20 +351,20 @@ class VMServerReactor(NetworkCallback):
         Returns:
             the storage and temporary storage space that must be allocated.
         """
-        activeDomainNames = self.__dbConnector.getRegisteredDomainNames()
+        activeDomainNames = self.__commandsDBConnector.getRegisteredDomainNames()
         allocatedStorageSpace = 0
         allocatedTemporaryStorageSpace = 0
         for domainName in activeDomainNames:            
-            imageID = self.__dbConnector.getDomainImageID(domainName)
+            imageID = self.__commandsDBConnector.getDomainImageID(domainName)
             if (imageID == None) :
                 return
-            dataImagePath = self.__dbConnector.getDomainDataImagePath(domainName)
+            dataImagePath = self.__commandsDBConnector.getDomainDataImagePath(domainName)
             if (dataImagePath == None) :
                 return
-            osImagePath = self.__dbConnector.getDomainOSImagePath(domainName)          
+            osImagePath = self.__commandsDBConnector.getDomainOSImagePath(domainName)          
             if (osImagePath == None):
                 return   
-            isEditedImage = self.__dbConnector.getBootableFlag(imageID)      
+            isEditedImage = self.__commandsDBConnector.getBootableFlag(imageID)      
             if (isEditedImage == None):
                 return      
             dataSpace = self.__getAllocatedSpace(dataImagePath)
@@ -422,7 +422,7 @@ class VMServerReactor(NetworkCallback):
         Returns:
             Nothing
         """
-        activeDomainUIDs = self.__dbConnector.getActiveDomainUIDs()
+        activeDomainUIDs = self.__commandsDBConnector.getActiveDomainUIDs()
         packet = self.__packetManager.createActiveDomainUIDsPacket(self.__vncServerIP, activeDomainUIDs)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
     
