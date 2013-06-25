@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Conector que usará la web para interactuar con el sistema
-@author: Luis Barrios Hernández
-@version: 7.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: clusterConnector.py    
+    Version: 5.0
+    Description: cluster connector definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 from clusterEndpoint.databases.minimalClusterEndpointDBConnector import MinimalClusterEndpointDBConnector
 from clusterEndpoint.databases.commandsDatabaseConnector import CommandsDatabaseConnector
@@ -12,13 +31,14 @@ from time import sleep
 
 class ClusterConnector(object):
     """
-    Estos objetos comunican la web y el endpoint a través de memoria compartida.
+    These objects will be used by the web application to interact with the infrastructure
+    @attention: DO NOT rely on the command IDs internal representation: it may change without prior notice.
     """
     
     def __init__(self, userID):
         """
-        Inicializa el estado del conector
-        Argumentos:
+        Initializes the connector's state
+        Args:
             userID: el identificador del usuario que accede al sistema. Se trata de un entero.
         """
         self.__userID = userID
@@ -26,37 +46,37 @@ class ClusterConnector(object):
     
     def connectToDatabases(self, endpointDBName, commandsDBName, databaseUser, databasePassword):
         """
-        Establece una conexión con las bases de datos de estado y comandos.
-        Argumentos:
-            endpointDBName: el nombre de la base de datos de estado
-            commandsDBName: el nombre de la base de datos de comandos
-            databaseUser: el nombre de usuario con el que se accederá a las dos bases de datos
-            databasePassword: la contraseña para acceder a las bases de datos
-        Devuelve:
-            Nada
+        Establishes the database connections
+        Args:
+            endpointDBName: the cluster endpoint database's name
+            commandsDBName: the commands database's name
+            databaseUser: the web application database user
+            databasePassword: the web application database user password
+        Returns:
+            Nothing
         """
         self.__endpointDBConnector = MinimalClusterEndpointDBConnector(databaseUser, databasePassword, endpointDBName)
         self.__commandsDBConnector = CommandsDatabaseConnector(databaseUser, databasePassword, commandsDBName, 1)    
         
     def dispose(self):
         """
-        Cierra las conexiones con las bases de datos
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Closes the databse connections
+        Args:
+            None
+        Returns:
+            Nothing
         """
         pass
         
     def getActiveVMsData(self, showAllVMs=False, showEditionVMs=False):
         """
-        Devuelve los datos de las máquinas virtuales activas
+        Returns the active virtual machine's data
         Argumentos:
-            showAllVMs: si es True, se muestran los datos de todas las máquinas activas; si es False, sólo
-            las del usuario registrado en el conector
-            showEditionVMs: indica si se deben devolver las máquinas virtuales activas correspondientes 
-            a las imágenes en edición o el resto de máquinas virtuales activas.
-        Devuelve: una lista de diccionarios con los datos de las máquinas virtuales activas
+            ownerID: the virtual machines' owner. If it's None, all the active virtual machines' VNC data
+            will be returned
+            show_edited: if it's True, the edition virtual machines data will also be returned.
+        Returns:
+            a list of dictionaries. Each one contains an active virtual machine's VNC data
         """
         if not showAllVMs :
             userID = self.__userID
@@ -66,175 +86,166 @@ class ClusterConnector(object):
     
     def getVMDistributionData(self):
         """
-        Devuelve los datos de distribución de las imágenes
-        Argumentos:
-            Ninguno
-        Devuelve: una lista de diccionarios con los datos de distribución de las imágenes
+        Returns all the image copies distribution.
+        Args:
+            None
+        Returns:
+            a list of dictionaries. Each one contains an image location's data.
         """
         return self.__endpointDBConnector.getImageCopiesDistributionData()
         
     def getVMServersData(self):
         """
-        Devuelve los datos básicos de los servidores de máquinas virtuales
-        Argumentos:
-            Ninguno
-        Devuelve: una lista de diccionarios con los datos básicos de los servidores de máquinas virtuales
+        Returns all the virtual machine servers configuration
+        Args:
+            None
+        Returns:
+            a list of dictionaries. Each one contains a virtual machine server's configuration.
         """
         return self.__endpointDBConnector.getVMServersConfiguration()
         
     def registerVMServer(self, vmServerIP, vmServerPort, vmServerName, isEditionServer):
         """
-        Registra un servidor de máquinas virtuales
-        Argumentos:
-            vmServerIP: la IP del servidor de máquinas virtuales
-            vmServerPort: el puerto en el que escucha
-            vmServerName: el nombre del servidor de máquinas virtuales
-            isEditionServer: indica si el servidor de máquinas virtuales se usará preferentemente
-                para editar imágenes vanilla o no.
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Registers a virtual machine server
+        Args:
+            vmServerIP: the new virtual machine server's IP address
+            vmServerPort: the new virtual machine server's listenning port
+            vmServerName: the new virtual machine server's name
+            isEditionServer: indicates if the virtual machine server will be used to create and edit 
+                images or not
+        Returns:
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isEditionServer)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
         
     def unregisterVMServer(self, vmServerNameOrIP, isShutDown):
         """
-        Borra un servidor de máquinas virtuales
-        Argumentos:
-            vmServerNameOrIP: el nombre o la IP del servidor a borrar
-            isShutDown: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
-            máquinas virtuales.
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Unregisters a virtual machine server
+        Args:
+            unregister: if it's True, an virtual machine server unregistration command will be created. If it's False,
+                a virtual machine server shutdown command will be created.
+            vmServerNameOrIPAddress: the virtual machine server's name or IPv4 address
+            isShutDown: indicates if the virtual machine server must be shut down
+        Returns:
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createVMServerUnregistrationOrShutdownCommand(True, vmServerNameOrIP, isShutDown)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def shutdownVMServer(self, vmServerNameOrIP, isShutDown):
         """
-        Apaga un servidor de máquinas virtuales
-        Argumentos:
-            vmServerNameOrIP: el nombre o la IP del servidor a borrar
-            isShutDown: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
-            máquinas virtuales.
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Shuts down a virtual machine server
+        Args:
+            unregister: if it's True, an virtual machine server unregistration command will be created. If it's False,
+                a virtual machine server shutdown command will be created.
+            vmServerNameOrIPAddress: the virtual machine server's name or IPv4 address
+            isShutDown: indicates if the virtual machine server must be shut down
+        Returns:
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createVMServerUnregistrationOrShutdownCommand(False, vmServerNameOrIP, isShutDown)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def bootUpVMServer(self, vmServerNameOrIP):
         """
-        Arranca un servidor de máquinas virtuales y lo añade a la infraestructura
-        Argumentos:
-            vmServerNameOrIP: el nombre o la IP del servidor a arrancar
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Boots up a virtual machine server
+        Args:
+            vmServerNameOrIP: the virtual machine server's name or IP address
+        Returns:
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createVMServerBootCommand(vmServerNameOrIP)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def bootUpVM(self, imageID):
         """
-        Solicita a la infraestructura el arranque de una máquina virtual
-        Argumentos:
-            imageID: el identificador único de la imagen a arrancar
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Boots up a virtual machine
+        Args:
+            imageID: an image ID
+        Returns:
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createVMBootCommand(imageID, self.__userID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def shutDownInfrastructure(self, haltVMServers):
         """
-        Apaga toda la infraestructura
-        Argumentos:
-            haltVMServers: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
-            máquinas virtuales.
-        Devuelve: 
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Shuts down all the infrastructure machines.
+        Args:
+            haltServers: indicates if the virtual machine servers must be shut down immediately or not.
+        Returns: 
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createHaltCommand(haltVMServers)
         self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
         
     def destroyDomain(self, domainID):
         """
-        Destruye una máquina virtual
-        Argumentos:
-            domainID: el identificador único de la máquina virtual a destruir
+        Destroys a virtual machine
+        Args:
+            domainID: the domain to be destructed ID
         Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createDomainDestructionCommand(domainID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def rebootDomain(self, domainID):
         """
-        Destruye una máquina virtual
-        Argumentos:
-            domainID: el identificador único de la máquina virtual a destruir
+        Reboots a virtual machine
+        Args:
+            domainID: the domain to be rebooted ID
         Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createDomainRebootCommand(domainID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def deployImage(self, serverNameOrIPAddress, imageID):
         """
-        Realiza el despliegue manual de una imagen
-        Argumentos:
-            serverNameOrIPAddress: el nombre o la dirección IP del servidor en el que queremos desplegar la imagen
-            imageID: el identificaodr único de la imagen a desplegar
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Deploys an image in a virtual machine server
+        Args:
+            serverNameOrIPAddress: the host's name or IP address
+            imageID: the affected image's ID
+        Returns:
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createImageDeploymentCommand(True, serverNameOrIPAddress, imageID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def deleteImage(self, serverNameOrIPAddress, imageID):
         """
-        Borra una imagen de un servidor de máquinas virtuales
-        Argumentos:
-            serverNameOrIPAddress: el nombre o la dirección IP del servidor de máuqinas virtuales
-            imageID: el identificador único de la imagen
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Deletes an image from a virtual machine server
+        Args:
+            serverNameOrIPAddress: the host's name or IP address
+            imageID: the affected image's ID
+        Returns:
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createImageDeploymentCommand(False, serverNameOrIPAddress, imageID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def createImage(self, baseImageID, imageName, imageDescription):
         """
-        Crea una imagen a partir de otra
-        Argumentos:
-            baseImageID: la imagen que se usará como base para crear la nueva imagen
-            imageName: el nombre de la nueva imagen
-            imageDescription: la descripción de la nueva imagen
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Creates a new image
+        Args:
+            baseImageID: the base image's ID
+            imageName: the new image's name
+            imageDescription: the new image's description
+        Returns:
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createImageAdditionCommand(self.__userID, baseImageID, imageName, imageDescription)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def editImage(self, imageID):
         """
-        Edita una imagen existente
-        Argumentos:
-            imageID: el identificador único de la imagen a editar
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Edits an existing image
+        Args:
+            imageID: the affected image's ID
+        Returns:
+            a command ID
         """
         if (isinstance(imageID, str)) :
             imageID = self.__endpointDBConnector.getImageID(imageID)
@@ -242,17 +253,23 @@ class ClusterConnector(object):
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def deleteImageFromInfrastructure(self, imageID):
+        """
+        Deletes an image from the infrastructure
+        Args:
+            imageID: the affected image's ID
+        Returns:
+            a command ID
+        """
         (commandType, commandArgs) = self.__commandsHandler.createDeleteImageFromInfrastructureCommand(imageID)        
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def deployEditedImage(self, temporaryID):
         """
-        Reemplaza todas las copias existentes de una imagen en edición.
-        Argumentos:
-            temporaryID: el identificador temporal de la imagen
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        Deploys an edited image
+        Args:
+            temporaryID: a temporary ID
+        Returns:
+            a command ID
         """
         imageID = self.__endpointDBConnector.getImageData(temporaryID)["ImageID"]
         (commandType, commandArgs) = self.__commandsHandler.createAutoDeploymentCommand(imageID, -1)
@@ -260,14 +277,13 @@ class ClusterConnector(object):
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs, float(l[1]))
     
     def deployNewImage(self, temporaryID, max_instances):
-        """
-        Despliega una nueva imagen
-        Argumentos:
-            temporaryID: el identificador temporal de la imagen
-            max_instances: el número máximo de instancias de la imagen que estarán arrancadas
-        Devuelve:
-            El identificador único del comando.
-            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
+        """"
+        Deploys a new image
+        Args:
+            temporaryID: a temporary ID
+            max_instances: the maximum instance number
+        Returns:
+            a command ID
         """
         imageID = self.__endpointDBConnector.getImageData(temporaryID)["ImageID"]
         (commandType, commandArgs) = self.__commandsHandler.createAutoDeploymentCommand(imageID, max_instances)
@@ -276,10 +292,12 @@ class ClusterConnector(object):
     
     def autoDeployImage(self, imageID, instances):
         """
-        Realiza el despliegue automático de una imagen
-        Argumentos:
-            imageID: el identificador único de la imagen
-            max_instances: el número de nuevas instancias de la imagen que se podrán crear tras el despliegue.
+        Performs an automatic image deployment operation
+        Args:
+            imageID: the affected image's ID
+            max_instances: the maximum new instance number
+        Returns:
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createAutoDeploymentCommand(imageID, instances)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
@@ -287,13 +305,16 @@ class ClusterConnector(object):
     def changeVMServerConfiguration(self, serverNameOrIPAddress, newName, newIPAddress, newPort, 
                                     newImageEditionBehavior):
         """
-        Modifica la configuración de un servidor de máquinas virtuales en el servidor de cluster.
-        Argumentos:
-            serverNameOrIPAddress: el nombre o la IP del servidor
-            newName: el nuevo nombre del servidor
-            newIPAddress: la nueva dirección IP del servidor
-            newPort: el nuevo puerto del servidor
-            newImageEditionBehavior: indica si se debe reservar el servidor para la edición de imágenes.
+        Modifies a virtual machine server's configuration
+        Args:
+            serverNameOrIPAddress: the virtual machine server's name or IP address
+            newName: the virtual machine server's new name
+            newIPAddress: the virtual machine server's IP new address
+            newPort: the virtual machine server's new port            
+            newImageEditionBehavior: indicates if the virtual machine server will be used to create and edit 
+                images or not
+        Returns:
+            a command ID
         """
         (commandType, commandArgs) = self.__commandsHandler.createVMServerConfigurationChangeCommand(serverNameOrIPAddress, 
             newName, newIPAddress, newPort, newImageEditionBehavior)
@@ -301,13 +322,12 @@ class ClusterConnector(object):
     
     def getCommandOutput(self, commandID):
         """
-        Devuelve la salida de un comando
-        Argumentos:
-            commandID: el identificador único del comando
-        Devuelve:
-            - Si el comando todavía se está ejecutando, se devuelve una tupla vacía.
-            - Si el comando se ha terminado de ejecutar, se devuelve un diccionario
-              con los datos de su salida.
+        Returns a command's output
+        Args:
+            commandID: the command's ID
+        Returns:
+            - an empty tuple if the command is still running, or
+            - a dictionary containing its output if it's not
         """
         if (self.__commandsDBConnector.isRunning(commandID)) :
             return ()
@@ -320,14 +340,12 @@ class ClusterConnector(object):
     
     def waitForCommandOutput(self, commandID):
         """
-        Espera a que un comando termine, devolviendo su salida en caso de que la haya.
-        Argumentos:
-            commandID: el identificador único del comando
-        Devuelve: 
-            - None si el comando no tiene salida
-            - Un diccionario con los datos de su salida en caso contrario
-        @attention: Este método es bloqueante. Si se desea un comportamiento no bloqueante,
-        es necesario utilizar el método getCommandOutput.
+        Returns a command's output. This is a blocking operation.
+        Args:
+            commandID: the command's ID
+        Returns: 
+            - None if the command has no output, or
+            - a dictionary containing the command's output if it's not.
         """
         while (self.__commandsDBConnector.isRunning(commandID)) :
                 sleep(0.5)
@@ -339,117 +357,132 @@ class ClusterConnector(object):
         
     def getBootableImagesData(self, imageIDs):
         """
-        Devuelve los datos de las imágenes arrancables
+        Returns the bootable image data
+        Args:
+            imageID: a list of image identifiers. If it's not empty, it will be used
+            to filter the query results.
+        Returns:
+            A list of dictionaries. Each one contains a bootable image's data.
         """
         return self.__endpointDBConnector.getBootableImagesData(imageIDs)
     
     def getBaseImagesData(self):
         """
-        Devuelve los datos de las imágenes base (i.e. imágenes vanilla)
+        Returns the base images data
+        Args:
+            None
+        Returns: 
+             A list of dictionaries. Each one contains a base image's data.
         """
         return self.__endpointDBConnector.getBaseImagesData()
         
     def getEditedImageIDs(self, userID):
         """
-        Devuelve los datos de las imágenes ya asignadas a una asignatura
-        que un usuario está editando.
+        Returns the edited images temporary IDs
+        Args:
+            userID: a user ID. If it's none, all the edited images' IDs will be returned
+        Returns:
+            a list containing the edited images' temporary IDs.
         """
         return self.__endpointDBConnector.getEditedImageIDs(userID)
     
     def getVanillaImageFamilyID(self, imageID):
         """
-        Devuelve la familia de imágenes vanilla asociada a una imagen existente.
-        Argumentos:
-            imageID: el identificador único de la imagen
-        Devuelve:
-            el identificador de la familia de imágenes vanilla a la que pertenece la imagen
+        Returns the virtual machine family ID associated with an image.
+        Args:
+            imageID: an image ID
+        Returns:
+            the virtual machine family ID associated with the given image.
         """
         return self.__endpointDBConnector.getVMFamilyID(imageID)
     
     def getVanillaImageFamilyData(self, vanillaImageFamilyID):
         """
-        Devuelve los datos de una familia de imágenes vanilla.
-        Argumentos:
-            vanillaImageFamilyID: el identificador único de la familia de imágenes vanilla
-        Devuelve:
-            un diccionario con los datos de la familia de imágenes vanilla
+        Returns a virtual machine family data
+        Args:
+            vmFamilyID: a virtual machine family ID
+        Returns:
+            A dictionary containing the virtual machine family's data
         """
         return self.__endpointDBConnector.getVMFamilyData(vanillaImageFamilyID)
     
     def getMaxVanillaImageFamilyData(self):
         """
-        Calcula los valores máximos del número de CPUs, RAM, disco,... de todas las
-        familias de imágenes vanilla
+        Returns the most powerful virtual machine family data
+        Args:
+            None
+        Returns:
+            A dictionary containing the most powerful virtual machine family data
         """
         return self.__endpointDBConnector.getMaxVMFamilyData()
     
     def getImageRepositoryStatus(self):
         """
-        Devuelve el estado del repositorio de imágenes.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            un diccionario con el estado del repositorio.
+        Returns the image repository current status
+        Args:
+            None
+        Returns:
+            A dictionary containing the image repository current status
         """
         return self.__endpointDBConnector.getImageRepositoryStatus()
     
     def getVirtualMachineServerStatus(self, serverName):
         """
-        Devuelve el estado de un servidor de máquinas virtuales.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            un diccionario con el estado del servidor de máquinas virtuales
+        Returns a virtual machine server's status
+        Args:
+            A virtual machine server's name
+        Returns:
+            a dictionary containing the virtual machine server's status
         """
         return self.__endpointDBConnector.getVirtualMachineServerStatus(serverName)
     
     def getOSTypes(self):
         """
-        Devuelve las familias de sistemas operativos registradas en la base de datos.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Una lista de diccionarios con las familias de sistemas operativos registradas en la base de datos.
+        Returns the registered OS types
+        Args:
+            None
+        Returns:
+            a list of dictionaries. Each one contains one of the registered OS types data.
         """
         return self.__endpointDBConnector.getOSTypes()
     
     def getOSTypeVariants(self,familyID):
         """
-        Devuelve las variantes de sistemas operativos registradas en la base de datos.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Una lista de diccionarios con las variantes de sistemas operativos registradas en la base de datos.
+        Returns the registered OS variants
+        Args:
+            None
+        Returns:
+            a list of dictionaries. Each one contains one of the registered OS variantas data.
         """
         return self.__endpointDBConnector.getOSTypeVariants(familyID)
     
     def getImageData(self, imageID):
         """
-        Devuelve los datos de una imagen.
-        Argumentos:
-            imageID: el identificador único o temporal de la imagen.
-        Devuelve:
-            Un diccionario con los datos de la imagen.
+        Returns an image's data
+        Args:
+            imageID: a permanent or a temporary image ID
+        Returns:
+            a dictionary containing the image's data
         """
         return self.__endpointDBConnector.getImageData(imageID)        
     
     def getPendingNotifications(self):
         """
-        Devuelve las notificaciones pendientes del usuario.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Una lista con las notificaciones pendientes del usuario.
+        Returns the user's pending notifications
+        Args:
+            None
+        Returns:
+            A list of strings containing the user's pending notifications.
         """
         return self.__commandsDBConnector.getPendingNotifications(self.__userID)
         
     def countPendingNotifications(self):
         """
-        Cuenta el número de notificaciones pendientes para el usuario
-        Argumentos:
-            Ninguno
-        Devuelve:
-            el número de notificaciones pendientes
+        Counts the user's pending notifications
+        Args:
+            None
+        Returns:
+            the user's pending notification number
         """
         return self.__commandsDBConnector.countPendingNotifications(self.__userID)
     
