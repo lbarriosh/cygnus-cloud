@@ -1,3 +1,28 @@
+<!--
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+   
+    File: servers.html   
+    Version: 3.0
+    Description: aministrator servers section view
+   
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández, 
+                      Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
 {{extend 'layout.html'}}
 
 {{if(request.args(0) == 'add_servers'):}}
@@ -5,7 +30,69 @@
 {{=form}}
 {{pass}}
 {{if(request.args(0) == 'remove_servers'):}}
+<META HTTP-EQUIV="refresh" CONTENT="30">
 <h1>{{=T('Administración de servidores')}}</h1>
 {{=form1}}
-{{=form2}}
+{{pass}}
+{{if(request.args(0) == 'stop_system'):}}
+<h1>{{=T('Detención de infraestructura')}}</h1>
+{{=form}}
+{{pass}}
+{{if(request.args(0) == 'servers_state'):}}
+<h1>{{=T('Estado del sistema')}}</h1>
+{{=form1}}
+<center><div id='server_chart_div'></div></center>
+<center>{{=form2}}</center>
+<h2>Estado del repositorio</h2>
+<center><div id='repo_chart_div'></div></center>
+<center>{{=form3}}</center>
+
+<!-- script que crea los gráficos de estado de los servidores -->
+<script type='text/javascript' src='https://www.google.com/jsapi'></script>
+<script type='text/javascript'>
+      google.load('visualization', '1', {packages:['gauge']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          			['Label', 'Value'],
+          			['RAM', {{=statePercentages["RAMPercentage"]}}],
+          			['CPU', {{=statePercentages["CPUsPercentage"]}}],
+          			['Disco', {{=statePercentages["diskPercentage"]}}],
+          			['Temporal', {{=statePercentages["temporarySpacePercentage"]}}]
+					]);   
+		
+        var options = {
+          width: 550, height: 220,
+          redFrom: 85, redTo: 100,
+          yellowFrom:70, yellowTo: 85,
+          minorTicks: 5
+        };
+        
+
+        var chart = new google.visualization.Gauge(document.getElementById('server_chart_div'));
+        chart.draw(data, options);
+       }
+</script>
+<!-- script que crea el gráfico de estado para el repositorio -->
+<script type='text/javascript'>
+      google.load('visualization', '1', {packages:['gauge']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          			['Label', 'Value'],
+          			['Disco', {{=repoStatePercentage["diskPercentage"]}}]
+					]);   
+		
+        var options = {
+          width: 250, height: 150,
+          redFrom: 85, redTo: 100,
+          yellowFrom:70, yellowTo: 85,
+          minorTicks: 5
+        };
+        
+
+        var chart = new google.visualization.Gauge(document.getElementById('repo_chart_div'));
+        chart.draw(data, options);
+       }
+</script>
 {{pass}}

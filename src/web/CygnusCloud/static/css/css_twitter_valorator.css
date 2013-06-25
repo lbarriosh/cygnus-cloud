@@ -1,0 +1,42 @@
+form.form2
+{
+	height: 400%;
+	width: 100%;
+	position: relative;
+	top: 0px;
+}
+
+
+h1.TweetsResult{
+	color: #007DB7;
+	text-align:center;
+	/*margin-top: 10%; */
+	font-size:2.3em;
+}
+
+
+
+
+div.collumn, div.chart_div
+{
+	
+	float:left;
+	margin:0;
+	width:50%;
+}
+div.collumn{
+	position: relative;
+	left:6%
+}
+div.chart_div
+{
+	position: relative;
+	margin-top:-17%;
+	height:30%;
+}
+			
+div.tweetsTable{
+	width: 65%;
+	margin-left: auto ;
+	margin-right: auto ;
+}

@@ -1,10 +1,111 @@
+<!--
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+   
+    File: info.html   
+    Version: 1.0
+    Description: CygnusCloud develop information for About page
+   
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández, 
+                      Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
 <!DOCTYPE html>
 <html>
 	<head>
 		
-		<title>Acerca de CygnusCloud</title>
-        <link rel="stylesheet" type="text/css" href="/CygnusCloud/static/css/css_info.css">
+		<title>Acerca de CygnusCloud</title> 
 		<meta charset='UTF-8'/>
+		<style>
+            a.qrCode{
+
+                bottom: 0px;
+                
+            }
+            
+            
+            div.twitterButton{
+                position: relative;	
+                left:0.2%;
+                bottom: 20px;
+                
+            }
+            .tags{
+                margin:0;
+                padding:0;
+
+                bottom:-12px;
+                list-style:none;
+                }
+                
+            .tags li, .tags a{
+                float:left;
+                height:24px;
+                line-height:24px;
+                position:relative;
+                font-size:11px;
+                }
+            
+            .tags a{
+                margin-left:20px;
+                padding:0 10px 0 12px;
+                background:#0089e0;
+                color:#fff;
+                text-decoration:none;
+                -moz-border-radius-bottomright:4px;
+                -webkit-border-bottom-right-radius:4px;	
+                border-bottom-right-radius:4px;
+                -moz-border-radius-topright:4px;
+                -webkit-border-top-right-radius:4px;	
+                border-top-right-radius:4px;	
+                } 
+            
+            .tags a:before{
+                content:"";
+                float:left;
+                position:absolute;
+                top:0;
+                left:-12px;
+                width:0;
+                height:0;
+                border-color:transparent #0089e0 transparent transparent;
+                border-style:solid;
+                border-width:12px 12px 12px 0;		
+                }
+            
+            .tags a:after{
+                content:"";
+                position:absolute;
+                top:10px;
+                left:0;
+                float:left;
+                width:4px;
+                height:4px;
+                -moz-border-radius:2px;
+                -webkit-border-radius:2px;
+                border-radius:2px;
+                background:#fff;
+                -moz-box-shadow:-1px -1px 2px #004977;
+                -webkit-box-shadow:-1px -1px 2px #004977;
+                box-shadow:-1px -1px 2px #004977;
+                }
+            
+            .tags a:hover{background:#555;}	
+            
+            .tags a:hover:before{border-color:transparent #555 transparent transparent;}
+        </style>
 	</head>
     <body>
         <h2>¿Quienes somos?</h2>
@@ -19,21 +120,70 @@
                 <li> Alargar la vida útil y reducir el coste de renovación y el consumo energético de los equipos de las aulas de informática (gracias a que es posible utilizar PCs menos potentes).
             </ul>
         </p>
-        
         <h2>CygnusCloud en la nube</h2>
         <p> Para llevar a cabo el desarrollo de CygnusCloud ha sido necesario la utilización de la computación en la nube o Cloud Computing. Esta tecnología permite a los usuarios olvidarse del hardware con el que van a trabajar  , y por lo tanto de los costes derivados del mismo, y centrarse en los servicios que necesita para realizar su trabajo. Así el usuario solo debe preocuparse de que quiere hacer y no de como debe configurar todo  su entorno para conseguir lo que necesita. Gracias a esto, los usuarios podrán centrarse en utilizar nuestra aplicación sin preocuparse de las características del equipo que usarán para trabajar.
         </p>
+		<h2>Repercusiones</h2>
+    <p>CygnusCloud es un proyecto que ha recibido bastante repercusión a lo largo de su desarrollo:
+            <ul type:"square">
+                <li> La prestigiosa publicación HPC In The Cloud mostró las ideas básicas de CygnusCloud en uno de sus artículos
+                	<center><a href="http://www.hpcinthecloud.com/hpccloud/2013-01-04/student_projects_highlight_cloud_s_-potential.html" target="_blank">
+                        www.hpcinthecloud.com/hpccloud/2013-01-04/student_projects_highlight_cloud_s_-potential.html</a></center>
+                <li> Fuimos entrevistados en el programa Hoy por hoy Madrid de la Cadena Ser
+                    <center><iframe height="80" width="285" frameborder="0" scrolling="no" src='http://www.cadenaser.com/widget/audio.html?		file=http://sermedia-f.akamaihd.net/cadenaser/2013/01/20130115csrcsrcul_8_Aes_LAU.mp4&vista=permantlink&audio_urlHTML5=http://vmedia.cadenaser.com/cadenaser/2013/01/20130115csrcsrcul_8_Aes_LAU.mp4&prog_rel=Radio-Madrid&duracion=2235&idDinamico=20130115csrcsrcul_8&url=/cultura/audios/noticias-madrid-charlamos-proyectos-universidad/serseremsmdr/20130115csrcsrcul_8/Aes/&titulo=Las+noticias+de+Madrid+y+charlamos+sobre+proyectos+en+la+universidad+%2815%2F01%2F13%29'></iframe></center> 
+                    <li> A lo largo del curso 2012/13, la web de la Facultad de Informática de la Universidad Complutense de Madrid ha publicado un par de artículos sobre CygnusCloud
+					<center><a href="http://www.fdi.ucm.es/Documento.asp?cod=1006" target="_blank">
+                        www.fdi.ucm.es/Documento.asp?cod=1006</a></center>
+					<center><a href="www.fdi.ucm.es/Documento.asp?cod=1056" target="_blank">
+                        www.fdi.ucm.es/Documento.asp?cod=1056</a></center>
+                <li> Por si fuera poco, el periódico de la Universidad Complutense, Tribuna Complutense, publicó un artículo en el que se mencionan los objetivos principales de CygnusCloud 
+					<center><a href="http://cygnusclouducm.ﬁles.wordpress.com/2013/01/tribunacomplutense.pdf" target="_blank">
+                        cygnusclouducm.ﬁles.wordpress.com/2013/01/tribunacomplutense.pdf</a></center>  
+                <li> CygnusCloud recibió el premio al mejor proyecto comunitario en la final nacional de la séptima edición del Concurso Universitario de Software Libre, que se celebró en Granada el día 24 de mayo de 2013 
+					<center><a href="http://www.concursosoftwarelibre.org/1213/premiados-vii-cusl" target="_blank">
+                        www.concursosoftwarelibre.org/1213/premiados-vii-cusl</a></center>              
+            </ul> 
+     </p>
+            
+	<h2>Páginas útiles</h2>
+			<li> Diseño de barras de progreso: 
+            	<a href="http://css-tricks.com/css3-progress-bars/" target="_blank">css-tricks.com/css3-progress-bars/</a>
+            <li> Diseño de gráficos: 
+				<a href="https://developers.google.com/chart/interactive/docs/gallery/gauge" target="_blank">
+        	    developers.google.com/chart/interactive/docs/gallery/gauge</a> 
+        	<li> Creación de etiquetas:
+                <a href="http://cssglobe.com/pure-css3-post-tags/" target="_blank">cssglobe.com/pure-css3-post-tags/</a>    
+    <h2>Tecnologías utilizadas</h2>
+                <br/><ul class="tags">
+			<li><a href="http://www.web2py.com/" target="_blank">Web2py</a></li>
+			<li><a href="https://mariadb.org/" target="_blank">MariaDB</a></li>
+			<li><a href="http://www.linux-kvm.org/page/Main_Page" target="_blank">KVM</a></li>
+			<li><a href="http://libvirt.org/" target="_blank">libvirt</a></li>
+			<li><a href="https://code.google.com/p/pyftpdlib/" target="_blank">pyftpdlib</a></li>
+			<li><a href="http://www.python.org/" target="_blank">Python</a></li>
+			<li><a href="http://twistedmatrix.com/trac/" target="_blank">Twisted</a></li>
+            </ul><br/><br/>
+                
+                   	    
+                   	       	       	    
+    <h2>Para más información</h2>
+                <center><table>
+                	<tr>
+                		<td><a href="https://www.twitter.com/CygnusCloud" target="_blank"><img width='35' height='35' src="/CygnusCloud/static/images/google_icon.png" style="vertical-align: middle;"/> cygnuscloud@googlegroups.com</a>
+                		</td>
+                		<td><a href="https://www.twitter.com/CygnusCloud" target="_blank"><img width='35' height='35' src="/CygnusCloud/static/images/twitter" style="vertical-align: middle;"/> @CygnusCloud</a>
+                        </td>
+                        <td><a href="http://www.cygnusclouducm.wordpress.com" target="_blank"><img width='35' height='35' src="/CygnusCloud/static/images/wordpress" style="vertical-align: middle;"/> cygnusclouducm</a>
+                        </td>
+                    </tr>
+                    </table></center><br/>
+                
         
-        <h2>Para más información</h2>
-    <a href="https://www.twitter.com/CygnusCloud" target="_blank"><img width='35' height='35' src="/CygnusCloud/static/images/twitter"/> @CygnusCloud</a><br>
-        <a href="http://www.cygnusclouducm.wordpress.com" target="_blank"><img width='35' height='35' src="/CygnusCloud/static/images/wordpress" /> cygnusclouducm</a><br/>
-        
-        <iframe height="80" width="100%" frameborder="0" scrolling="no" src='http://www.cadenaser.com/widget/audio.html?file=http://sermedia-f.akamaihd.net/cadenaser/2013/01/20130115csrcsrcul_8_Aes_LAU.mp4&vista=permantlink&audio_urlHTML5=&prog_rel=Radio-Madrid&duracion=2235&idDinamico=20130115csrcsrcul_8&url=/cultura/audios/noticias-madrid-charlamos-proyectos-universidad/serseremsmdr/20130115csrcsrcul_8/Aes/'>CygnusCloud en la Ser</iframe><br/>
         
         
-        <a href="http://www.cygnusclouducm.wordpress.com" target="_blank" class = 'qrCode'><img width='150' height='150' src="/CygnusCloud/static/images/qr" /></a>
-        
-    <div class= 'twitterButton'><a href="https://twitter.com/CygnusCloud" class="twitter-follow-button" data-show-count="false" data-lang="es" data-size="large" data-dnt="true">Seguir a @CygnusCloud</a></div>
+                <center><div class= 'twitterButton'><a href="https://twitter.com/CygnusCloud" class="twitter-follow-button" data-show-count="false" data-lang="es" data-size="large" data-dnt="true">Seguir a @CygnusCloud</a></div></center><br/>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+                <center><a href="http://www.cygnusclouducm.wordpress.com" target="_blank" class = 'qrCode'><img width='150' height='150' src="/CygnusCloud/static/images/qr" /></a></center>
     
     </body>

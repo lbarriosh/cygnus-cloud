@@ -1,185 +1,189 @@
 # -*- coding: utf8 -*-
 '''
-Cluster server connector definitions.
+Conector que usará la web para interactuar con el sistema
 @author: Luis Barrios Hernández
-@version: 3.0
+@version: 4.0
 '''
-from database.systemStatusDB.systemStatusDBReader import SystemStatusDatabaseReader
+from database.clusterEndpoint.clusterEndpointDB import ClusterEndpointDBConnector
 from database.commands.commandsDatabaseConnector import CommandsDatabaseConnector
-from clusterServer.connector.commandsHandler import CommandsHandler
+from clusterServer.connector.commands.commandsHandler import CommandsHandler
 from time import sleep
 
 class ClusterServerConnector(object):
     """
-    These objects communicate the website with the cluster server endpoint.
+    Estos objetos comunican la web y el endpoint a través de memoria compartida.
     """
     
     def __init__(self, userID):
         """
-        Initializes the connector's state.
-        Args:
-            userID: an user's unique identifier. This INTEGER number will be used to identify
-            the user's requests. 
+        Inicializa el estado del conector
+        Argumentos:
+            userID: el identificador del usuario que accede al sistema. Se trata de un entero.
         """
         self.__userID = userID
     
     def connectToDatabases(self, statusDBName, commandsDBName, databaseUser, databasePassword):
         """
-        Establishes a connection with the status and command databases.
-        Args:
-            statusDBName: the status database's name
-            commandsDBName: the command's database name
-            databaseUser: the databases' user name
-            databasePassword: the databases's user password
-        Returns:
-            Nothing
+        Establece una conexión con las bases de datos de estado y comandos.
+        Argumentos:
+            statusDBName: el nombre de la base de datos de estado
+            commandsDBName: el nombre de la base de datos de comandos
+            databaseUser: el nombre de usuario con el que se accederá a las dos bases de datos
+            databasePassword: la contraseña para acceder a las bases de datos
+        Devuelve:
+            Nada
         """
-        self.__statusDBConnector = SystemStatusDatabaseReader(databaseUser, databasePassword, statusDBName)
-        self.__statusDBConnector.connect()
+        self.__endpointDBConnector = ClusterEndpointDBConnector(databaseUser, databasePassword, statusDBName)
         self.__commandsDBConnector = CommandsDatabaseConnector(databaseUser, databasePassword, commandsDBName, 1)
-        self.__commandsDBConnector.connect()
         
     def dispose(self):
         """
-        Closes the database connections.
-        Args:
-            None
-        Returns:
-            Nothing
-        @attention: To avoid potential data loss, this method MUST be called when the 
-        website stops using the connnector.
+        Cierra las conexiones con las bases de datos
+        Argumentos:
+            Ninguno
+        Devuelve:
+            Nada
         """
-        self.__statusDBConnector.disconnect()
-        self.__commandsDBConnector.disconnect()
+        pass
         
     def getActiveVMsData(self, showAllVMs=False):
         """
-        Returns the active virtual machines' data.
-        Args:
-            userID: an userID. If it's None, all the active virtual machines' data will be displayed.
-        Returns: a list of dictionaries with the keys VMServerName, UserID, VMID, VMName, VNCPort
-            and VNCPassword with their corresponding values.
+        Devuelve los datos de las máquinas virtuales activas
+        Argumentos:
+            showAllVMs: si es True, se muestran los datos de todas las máquinas activas; si es False, sólo
+            las del usuario registrado en el conector
+        Devuelve: una lista de diccionarios con los datos de las máquinas virtuales activas
         """
         if not showAllVMs :
             userID = self.__userID
         else :
             userID = None
-        return self.__statusDBConnector.getActiveVMsData(userID)
+        return self.__endpointDBConnector.getActiveVMsData(userID)
     
     def getVMDistributionData(self):
         """
-        Returns the image (a.k.a. available virtual machines) distribution data.
-        Args:
-            None
-        Returns: a list of dictionaries with the keys VMServerName, VMID and the corresponding values
+        Devuelve los datos de distribución de las imágenes
+        Argumentos:
+            Ninguno
+        Devuelve: una lista de diccionarios con los datos de distribución de las imágenes
         """
-        return self.__statusDBConnector.getVMDistributionData()
+        return self.__endpointDBConnector.getVMDistributionData()
         
     def getVMServersData(self):
         """
-        Returns the virtual machine server's basic data.
-        Args:
-            None
-        Returns: a list of dictionaries with the keys VMServerName, VMServerStatus, VMServerIP,
-            VMServerListenningPort and their corresponding values.
+        Devuelve los datos básicos de los servidores de máquinas virtuales
+        Argumentos:
+            Ninguno
+        Devuelve: una lista de diccionarios con los datos básicos de los servidores de máquinas virtuales
         """
-        return self.__statusDBConnector.getVMServersData()
+        return self.__endpointDBConnector.getVMServersData()
         
-    def registerVMServer(self, vmServerIP, vmServerPort, vmServerName):
+    def registerVMServer(self, vmServerIP, vmServerPort, vmServerName, isVanillaServer):
         """
-        Registers a virtual machine server on the system
-        Args:
-            vmServerIP: the virtual machine server's IP address
-            vmServerPort: the virtual machine server's port
-            vmServerName: the virtual machine server's name
-        Returns:
-            A command ID.
-            @attention: DO NOT rely on the command ID's internal representation: it can change without prior notice.
+        Registra un servidor de máquinas virtuales
+        Argumentos:
+            vmServerIP: la IP del servidor de máquinas virtuales
+            vmServerPort: el puerto en el que escucha
+            vmServerName: el nombre del servidor de máquinas virtuales
+            isVanillaServer: indica si el servidor de máquinas virtuales se usará preferentemente
+                para editar imágenes vanilla o no.
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName)
+        (commandType, commandArgs) = CommandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isVanillaServer)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
         
-    def unregisterVMServer(self, vmServerNameOrIP, halt):
+    def unregisterVMServer(self, vmServerNameOrIP, isShutDown):
         """
-        Unregisters a virtual machine server.
-        Args:
-            vmServerNameOrIP: the virtual machine server's name or IP address
-            halt: if True, the virtual machine server will be shut down immediately. If false,
-                it will shut down when all its active virtual machines have finished.
-        Returns:
-            A command ID.
-            @attention: DO NOT rely on the command ID's internal representation: it can change without prior notice.
+        Borra un servidor de máquinas virtuales
+        Argumentos:
+            vmServerNameOrIP: el nombre o la IP del servidor a borrar
+            isShutDown: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
+            máquinas virtuales.
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMServerUnregistrationOrShutdownCommand(True, vmServerNameOrIP, halt)
+        (commandType, commandArgs) = CommandsHandler.createVMServerUnregistrationOrShutdownCommand(True, vmServerNameOrIP, isShutDown)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def shutdownVMServer(self, vmServerNameOrIP, halt):
+    def shutdownVMServer(self, vmServerNameOrIP, isShutDown):
         """
-        Shutds down a virtual machine server
-         Args:
-            vmServerNameOrIP: the virtual machine server's name or IP address
-            halt: if True, the virtual machine server will be shut down immediately. If false,
-                it will shut down when all its active virtual machines have finished.
-        Returns:
-            A command ID.
-            @attention: DO NOT rely on the command ID's internal representation: it can change without prior notice.
+        Apaga un servidor de máquinas virtuales
+        Argumentos:
+            vmServerNameOrIP: el nombre o la IP del servidor a borrar
+            isShutDown: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
+            máquinas virtuales.
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMServerUnregistrationOrShutdownCommand(False, vmServerNameOrIP, halt)
+        (commandType, commandArgs) = CommandsHandler.createVMServerUnregistrationOrShutdownCommand(False, vmServerNameOrIP, isShutDown)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def bootUpVMServer(self, vmServerNameOrIP):
         """
-        Pairs a virtual machine server to the system.
-        Args:
-            vmServerNameOrIP: the virtual machine server's name or IP address
-        Returns:
-            A command ID.
-            @attention: DO NOT rely on the command ID's internal representation: it can change without prior notice.
+        Arranca un servidor de máquinas virtuales y lo añade a la infraestructura
+        Argumentos:
+            vmServerNameOrIP: el nombre o la IP del servidor a arrancar
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
         (commandType, commandArgs) = CommandsHandler.createVMServerBootCommand(vmServerNameOrIP)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def bootUpVM(self, vmID):
+    def bootUpVM(self, imageID):
         """
-        Sends a virtual machine boot up request
-        Args:
-            vmID: the virtual machine's unique identifier
-        Returns:
-             A command ID.
-            @attention: DO NOT rely on the command ID's internal representation: it can change without prior notice.
+        Solicita a la infraestructura el arranque de una máquina virtual
+        Argumentos:
+            imageID: el identificador único de la imagen a arrancar
+        Devuelve:
+            El identificador único del comando.
+            @attention: La representación del identificador único del comando puede cambiar sin previo aviso.
         """
-        (commandType, commandArgs) = CommandsHandler.createVMBootCommand(vmID, self.__userID)
+        (commandType, commandArgs) = CommandsHandler.createVMBootCommand(imageID, self.__userID)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def halt(self, haltVMServers):
+    def isShutDown(self, haltVMServers):
         """
-        Halt the whole system.
-        Args:
-            haltVMServers: if True, the virtual machine server will be shut down immediately. If false,
-                it will shut down when all its active virtual machines have finished.
-        Returns: 
-            Nothing
+        Apaga toda la infraestructura
+        Argumentos:
+            haltVMServers: si es True, el servidor se apagará inmediatamente. Si es False, esperará a que los usuarios apaguen sus
+            máquinas virtuales.
+        Devuelve: 
+            Nada
         """
         (commandType, commandArgs) = CommandsHandler.createHaltCommand(haltVMServers)
         self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+        
+    def destroyDomain(self, domainID):
+        """
+        Destruye una máquina virtual
+        Argumentos:
+            domainID: el identificador único de la máquina virtual a destruir
+        Devuelve:
+            Nada
+        """
+        (commandType, commandArgs) = CommandsHandler.createDomainDestructionCommand(domainID)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
+    
+    def changeVMServerConfiguration(self, serverNameOrIPAddress, newName, newIPAddress, newPort, 
+                                    newVanillaImageEditionBehavior):
+        (commandType, commandArgs) = CommandsHandler.createVMServerConfigurationChangeCommand(serverNameOrIPAddress, 
+            newName, newIPAddress, newPort, newVanillaImageEditionBehavior)
+        return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def getCommandOutput(self, commandID):
         """
-        Returns a command's output.
-        Args:
-            commandID: the command's ID
-        Returns:
-            An empty tuple if the command is still running, and its ouput if it isn't.
-            Note that some command outputs can have None outputs.
-            This dictionary will have the keys 
-            - OutputType: contains the output type (i.e. connection data, registration error, and so on).
-            - ServerNameOrIPAddress and ErrorMessage if the command output is a 
-              virtual machine server boot up error.
-            - VMServerIP, VMServerPort, VMServerName and ErrorMessage if the command output
-              is a virtual machine server registration error.
-            - VMID and ErrorMessage if the command output is a virtual machine boot failure.
-            - VNCServerIPAddress, VNCServerPort and VNCServerPassword if the command otput
-              contains a virtual machine's connection data.
+        Devuelve la salida de un comando
+        Argumentos:
+            commandID: el identificador único del comando
+        Devuelve:
+            - Si el comando todavía se está ejecutando, se devuelve una tupla vacía.
+            - Si el comando se ha terminado de ejecutar, se devuelve un diccionario
+              con los datos de su salida.
         """
         if (self.__commandsDBConnector.isRunning(commandID)) :
             return ()
@@ -192,21 +196,14 @@ class ClusterServerConnector(object):
     
     def waitForCommandOutput(self, commandID):
         """
-        Returns a command's output
-        Args:
-            commandID: the command's ID
-        Returns: None if the command has no output. Otherwise, a dictionary containing 
-        the command's output will be returned.
-        This dictionary will have the keys 
-            - ServerNameOrIPAddress and ErrorMessage if the command output is a 
-              virtual machine server boot up error.
-            - VMServerIP, VMServerPort, VMServerName and ErrorMessage if the command output
-              is a virtual machine server registration error.
-            - VMID and ErrorMessage if the command output is a virtual machine boot failure.
-            - VNCServerIPAddress, VNCServerPort and VNCServerPassword if the command otput
-              contains a virtual machine's connection data.
-        @attention: This method will only return when the command output is available. If you prefer
-        a non-blocking behavior, use getCommandOutput() instead.
+        Espera a que un comando termine, devolviendo su salida en caso de que la haya.
+        Argumentos:
+            commandID: el identificador único del comando
+        Devuelve: 
+            - None si el comando no tiene salida
+            - Un diccionario con los datos de su salida en caso contrario
+        @attention: Este método es bloqueante. Si se desea un comportamiento no bloqueante,
+        es necesario utilizar el método getCommandOutput.
         """
         while (self.__commandsDBConnector.isRunning(commandID)) :
                 sleep(0.1)
@@ -215,18 +212,21 @@ class ClusterServerConnector(object):
             return None
         else :
             return CommandsHandler.deserializeCommandOutput(result[0], result[1])
+        
+    def getImageBasicData(self, imageID):
+        return self.__endpointDBConnector.getImageBasicData(imageID)
+        
+    def getBootableImagesData(self, imageIDs):
+        return self.__endpointDBConnector.getBootableImagesData(imageIDs)
     
-if __name__ == "__main__":
-    connector = ClusterServerConnector(1)
-    connector.connectToDatabases("SystemStatusDB", "CommandsDB", "website", "CygnusCloud")
-    sleep(3)
-    commandID = connector.bootUpVMServer("Server1")
-    print connector.waitForCommandOutput(commandID)
-    sleep(4)
-    print connector.getVMServersData()
-    commandID = connector.bootUpVM(1)
-    sleep(4)
-    print connector.getActiveVMsData()
-    connector.halt(True)
-    connector.dispose()
+    def getBaseImagesData(self):
+        return self.__endpointDBConnector.getBaseImagesData()
+        
+    def getEditedImages(self, userID):
+        return self.__endpointDBConnector.getEditedImages(userID)
     
+    def getVanillaImageFamilyID(self, imageID):
+        return self.__endpointDBConnector.getVanillaImageFamilyID(imageID)
+    
+    def getVanillaImageFamiliyData(self, vanillaImageFamilyID):
+        return self.__endpointDBConnector.getVanillaImageFamiliyData(vanillaImageFamilyID)
