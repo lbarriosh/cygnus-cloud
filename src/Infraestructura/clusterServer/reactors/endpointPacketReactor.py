@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Created on May 10, 2013
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: endpointPacketReactor.py    
+    Version: 5.0
+    Description: cluster endpoint packet reactor definition
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
 
-@author: luis
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from clusterServer.packetHandling.packet_t import CLUSTER_SERVER_PACKET_T as PACKET_T
@@ -16,14 +35,32 @@ from clusterServer.database.image_state_t import IMAGE_STATE_T
 from virtualMachineServer.packetHandling.packet_t import VM_SERVER_PACKET_T as VMSRVR_PACKET_T
 
 class EndpointPacketReactor(object):
-    
-    def __init__(self, dbConnector, networkManager, vmServerPacketHandler, webPacketHandler, imageRepositoryPacketHandler,
+    """
+    These objects process the packets sent from the cluster endpoint
+    """
+    def __init__(self, dbConnector, networkManager, vmServerPacketHandler, clusterServerPacketHandler, imageRepositoryPacketHandler,
                  vmServerCallback, listenningPort, repositoryIP, repositoryPort, loadBalancerSettings, 
                  averageCompressionRatio, useSSL):
+        """
+        Initializes the reactor's state
+        Args:
+            dbConnector: a cluster server database connector
+            networkManager: the network manager to use
+            vmServerPacketHandler: the virtual machine server packet handler
+            clusterServerPacketHandler: the cluster server packet handler
+            imageRepositoryPacketHandler: the image repository packet handler
+            vmServerCallback: the virtual machine server packet reactor
+            listenningPort: the control connection's listenning port
+            repositoryIP: the image repository's IP address
+            repositoryPort: the image repository's port
+            loadBalancerSettings: the load balancing algorithm settings 
+            averageCompressionRatio: the compression algorithm's average compression ratio
+            useSSL: indicates if the network connections use SSL encryption or not
+        """
         self.__dbConnector = dbConnector
         self.__networkManager = networkManager
         self.__vmServerPacketHandler = vmServerPacketHandler
-        self.__packetHandler = webPacketHandler
+        self.__packetHandler = clusterServerPacketHandler
         self.__imageRepositoryPacketHandler = imageRepositoryPacketHandler
         self.__loadBalancer = PenaltyBasedLoadBalancer(self.__dbConnector, loadBalancerSettings[1], 
             loadBalancerSettings[2], loadBalancerSettings[3], loadBalancerSettings[4], 
@@ -36,13 +73,13 @@ class EndpointPacketReactor(object):
         self.__finished = False
         self.__useSSL = useSSL
     
-    def processWebIncomingPacket(self, packet):
+    def processClusterEndpointIncomingPacket(self, packet):
         """
-        Procesa un paquete enviado desd el endpoint de la web
-        Argumentos:
-            packet: el paquete que hay que procesar
-        Devuelve:
-            Nada
+        Processes a packet sent from the cluster endpoint
+        Args:
+            packet: the packet to process
+        Returns:
+            Nothing
         """
         data = self.__packetHandler.readPacket(packet)
         if (data["packet_type"] == PACKET_T.REGISTER_VM_SERVER) :
@@ -52,9 +89,9 @@ class EndpointPacketReactor(object):
         elif (data["packet_type"] == PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
             self.__unregisterOrShutdownVMServer(data)
         elif (data["packet_type"] == PACKET_T.BOOTUP_VM_SERVER) :
-            self.__bootUpVMServer(data)
+            self.__bootVMServer(data)
         elif (data["packet_type"] == PACKET_T.VM_BOOT_REQUEST):
-            self.__bootUpVM(data)
+            self.__bootVM(data)
         elif (data["packet_type"] == PACKET_T.HALT) :
             self.__doImmediateShutdown(data)
         elif (data["packet_type"] == PACKET_T.QUERY_VM_DISTRIBUTION) :
@@ -83,11 +120,11 @@ class EndpointPacketReactor(object):
             
     def __registerVMServer(self, data):
         """
-        Procesa un paquete de registro de un servidor de máquinas virtuales
-        Argumentos:
-            data: diccionario con los datos del paquete recibido
-        Devuelve:
-            Nada
+        Processes a virtual machine server registration packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
         """
         try :
             # Comprobar si la IP y el nombre del servidor ya están en uso
@@ -116,16 +153,15 @@ class EndpointPacketReactor(object):
                                                           ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR, data["CommandID"])        
         self.__networkManager.sendPacket('', self.__listenningPort, p)
         
-    def __bootUpVMServer(self, data):
+    def __bootVMServer(self, data):
         """
-        Procesa un paquete de arranque de un servidor de máquinas virtuales
-        Argumentos:
-            data: diccionario con los datos del paquete recibido
-        Devuelve:
-            Nada
+        Processes a virtual machine server boot packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
         """
-        try :            
-            # Comprobar si el servidor está registrado            
+        try :             
             serverNameOrIPAddress = data["ServerNameOrIPAddress"]
             serverId = self.__dbConnector.getVMServerID(serverNameOrIPAddress)
             if (serverId == None) :
@@ -137,16 +173,13 @@ class EndpointPacketReactor(object):
                 if (serverData["ServerStatus"] == SERVER_STATE_T.SHUT_DOWN or 
                     serverData["ServerStatus"] == SERVER_STATE_T.CONNECTION_TIMED_OUT) :                   
                 
-                    # Establecer la conexión            
                     self.__networkManager.connectTo(serverData["ServerIP"], serverData["ServerPort"], 
                                                         20, self.__vmServerCallback, self.__useSSL, True)
                     while not self.__networkManager.isConnectionReady(serverData["ServerIP"], serverData["ServerPort"]) :
                         sleep(0.1)
                         
-                    # Solicitar el estado al servidor de máquinas virtuales            
                     self.__dbConnector.updateVMServerStatus(serverId, SERVER_STATE_T.BOOTING)       
                     
-                    # Hacer que el servidor de máquinas virtuales sincronice sus imágenes con las del repositorio
                     imagesToDeploy = self.__dbConnector.getHostedImagesInState(serverId, IMAGE_STATE_T.DEPLOY)
                     for imageID in imagesToDeploy :
                         familyID = self.__dbConnector.getImageVMFamilyID(imageID)
@@ -163,38 +196,33 @@ class EndpointPacketReactor(object):
                         p = self.__vmServerPacketHandler.createDeleteImagePacket(imageID, self.__dbConnector.getImageDeletionCommandID(imageID))
                         self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
                 
-                # Indicar al endpoint que el comando se ha ejecutado con éxito
                 p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
         except Exception:
             p = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_BOOTUP_ERROR,
                                                           ERROR_DESC_T.CLSRVR_VMSRVR_CONNECTION_ERROR, data["CommandID"])
         self.__networkManager.sendPacket('', self.__listenningPort, p)       
         
-    def __bootUpVM(self, data):
+    def __bootVM(self, data):
         """
-        Procesa un paquete de arranque de máquina virtual
-        Argumentos:
-            data: diccionario con los datos del paquete
-        Devuelve:
-            Nada
+        Processes a virtual machine server boot packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
         """
         vmID = data["VMID"]
         userID = data["UserID"]
         
-        # Escoger el servidor de máquinas virtuales que alojará la máquina
         (serverID, errorDescription) = self.__loadBalancer.assignVMServer(vmID, MODE_T.BOOT_DOMAIN)
         if (errorDescription != None) :
-            # Error => avisar al usuario
             p = self.__packetHandler.createErrorPacket(PACKET_T.VM_BOOT_FAILURE, errorDescription, data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :           
-            # Registrar los recursos de la máquina virtual
             familyID = self.__dbConnector.getImageVMFamilyID(vmID)
             familyFeatures = self.__dbConnector.getVMFamilyFeatures(familyID)
             self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
                                                          familyFeatures["RAMSize"], 0, familyFeatures["dataDiskSize"], 
                                                          familyFeatures["vCPUs"], 1)
-            # Enviar la petición de arranque al servidor de máquinas virtuales
             p = self.__vmServerPacketHandler.createVMBootPacket(vmID, userID, data["CommandID"])
             serverData = self.__dbConnector.getVMServerBasicData(serverID)
             error = self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
@@ -204,15 +232,17 @@ class EndpointPacketReactor(object):
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
                 self.__dbConnector.freeVMServerResources(data["CommandID"], True)
                 return              
-            # Guardar la ubicación de la nueva máquina virtual. 
-            # Importante: todas las máquinas virtuales se identifican de forma única con el ID
-            # del comando que las crea
             self.__dbConnector.registerActiveVMLocation(data["CommandID"], serverID)
-            # Registrar el comando de arranque para controlar el tiempo de respuesta
             self.__dbConnector.registerVMBootCommand(data["CommandID"], data["VMID"])            
             
     def __auto_deploy_image(self, data):       
-        
+        """
+        Processes an image auto-deployment packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
+        """
         if (data["Instances"] == 0 or data["Instances"] < -1) :
             p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)        
@@ -234,23 +264,18 @@ class EndpointPacketReactor(object):
                 if (serverIDs != []) :
                     self.__dbConnector.addImageEditionCommand(data["CommandID"], data["ImageID"]) 
                                        
-                    # Enviar una petición de despliegue a todos los servidores arrancados que la tienen.
-                    # A los demás, se la enviaremos cuando arranquen
                     p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
                     for serverID in serverIDs :
-                        # Registrar los recursos en la BD
                         self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
                                                          0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
                                                          0, 0, 1)
                         connectionData = self.__dbConnector.getVMServerBasicData(serverID)
                         self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)   
                 else :
-                    # No hay nada que hacer => hemos terminado si ningún servidor apagado tiene la imagen
                     if (not self.__dbConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.EDITED)) :
                         p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
                         self.__networkManager.sendPacket('', self.__listenningPort, p)
             else :
-                # Error => avisar de él
                 p = self.__packetHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, ERROR_DESC_T.CLSRVR_NOT_EDITED_IMAGE, 
                                                                      data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
@@ -260,21 +285,17 @@ class EndpointPacketReactor(object):
                                                                      data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
                 return
-            # Ejecutamos el algoritmo de despliegue
             output = self.__loadBalancer.assignVMServer(data["ImageID"], MODE_T.DEPLOY_IMAGE)
             if (output[1] != None) :
-                # Error => informamos de él y terminamos
                 p = self.__packetHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, output[1], data["CommandID"])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
             else :
                 if (output[2] < data["Instances"]) :
-                    # No podemos cumplir con lo que nos piden => error
                     p = self.__packetHandler.createErrorPacket(PACKET_T.AUTO_DEPLOY_ERROR, 
                                                                   ERROR_DESC_T.CLSRVR_AUTOD_TOO_MANY_INSTANCES, data["CommandID"])
                     self.__networkManager.sendPacket('', self.__listenningPort, p)  
                 else :
                     
-                    # Todo ha ido bien => preparamos los paquetes de despliegue                    
                     servers = []
                     deployed_copies = 0
                     i = 0
@@ -283,21 +304,24 @@ class EndpointPacketReactor(object):
                         deployed_copies += output[i][0][1]
                         i += 1
                                                 
-                    # Registramos la petición de despliegue automático
                     self.__dbConnector.addAutoDeploymentCommand(data["CommandID"], data["ImageID"], len(servers))
                     
-                    # Enviamos los paquetes de despliegue                    
                     p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])                    
                     for serverID in servers:                        
-                        # Registrar los recursos en la BD
                         self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
                                                          0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
                                                          0, 0, 1)
-                        # Enviar los paquetes
                         connectionData = self.__dbConnector.getVMServerBasicData(serverID)            
                         self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)     
 
     def __deleteImageFromInfrastructure(self, data):
+        """
+        Processes a complete image deletion packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
+        """
         errorDescription = None
         if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
             errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
@@ -310,29 +334,28 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :
             
-            # Borrar la máquina de todos los servidores arrancados que la tengan
             p = self.__vmServerPacketHandler.createDeleteImagePacket(data["ImageID"], data["CommandID"])
             
             for serverID in self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DELETE) :
                 serverData = self.__dbConnector.getVMServerBasicData(serverID)
                 self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             
-            # Impedimos que se arranquen más copias de la imagen
             self.__dbConnector.changeImageCopiesState(data["ImageID"], IMAGE_STATE_T.DELETE)
-            # Borramos la asociación entre una imagen y una familia de imágenes
             self.__dbConnector.deleteImageVMFamilyID(data["ImageID"])
-            # Registramos el comando en la base de datos
             self.__dbConnector.addImageDeletionCommand(data["CommandID"], data["ImageID"])
-            # Borramos la imagen del repositorio
             p = self.__imageRepositoryPacketHandler.createDeleteRequestPacket(data["ImageID"])
-            self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p)        
+            self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p)                
             
-               
-            
-    def __createOrEditImage(self, data):                      
+    def __createOrEditImage(self, data):    
+        """
+        Processes an image creation or an image edition incoming packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
+        """                  
         errorDescription = None
         
-        # Averiguar si la imagen ya se está editando, borrando o no existe        
         if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
             errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
         elif (self.__dbConnector.isBeingDeleted(data["ImageID"])) :    
@@ -360,10 +383,8 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             return           
         
-        # Encontrar un servidor vanilla
         (serverID, errorDescription) = self.__loadBalancer.assignVMServer(data["ImageID"], MODE_T.CREATE_OR_EDIT_IMAGE)
         if (errorDescription != None) :
-            # Error => informar de él y terminar
             if (data["packet_type"] == PACKET_T.CREATE_IMAGE) :
                 packet_type = PACKET_T.IMAGE_CREATION_ERROR
             else :
@@ -372,17 +393,13 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             return
         
-        # Ya tenemos un servidor vanilla 
         if (data["packet_type"] == PACKET_T.CREATE_IMAGE) :
-            # Registramos la nueva imagen en la BD
             self.__dbConnector.registerNewImageVMFamily(data["CommandID"], self.__dbConnector.getImageVMFamilyID(data["ImageID"]))
             modify = False
         else :
-            # Registramos el comando de edición en la BD
             self.__dbConnector.addImageEditionCommand(data["CommandID"], data["ImageID"])
             modify = True
             
-        # Registrar los recursos consumidos por la máquina virtual
         familyID = self.__dbConnector.getImageVMFamilyID(data["ImageID"])
         familyFeatures = self.__dbConnector.getVMFamilyFeatures(familyID)
         zipFileAllocatedSpace = self.__averageCompressionRatio * (familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"])
@@ -400,12 +417,18 @@ class EndpointPacketReactor(object):
         self.__dbConnector.registerActiveVMLocation(data["CommandID"], serverID)        
             
     def __deployOrDeleteImage(self, data):
+        """
+        Processes an image deployment or an image deletion incoming packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
+        """
         serverNameOrIPAddress = data["ServerNameOrIPAddress"]
         serverID = self.__dbConnector.getVMServerID(serverNameOrIPAddress)        
         serverData = self.__dbConnector.getVMServerBasicData(serverID)
         errorDescription = None        
             
-        # Comprobar que la imagen existe
         if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
             errorDescription = ERROR_DESC_T.CLSRVR_LOCKED_IMAGE
         elif (self.__dbConnector.isBeingDeleted(data["ImageID"])):
@@ -424,7 +447,6 @@ class EndpointPacketReactor(object):
             else :
                 errorDescription = ERROR_DESC_T.CLSRVR_IMAGE_NOT_HOSTED_ON_VMSRVR
         elif (data["packet_type"] == PACKET_T.DEPLOY_IMAGE):
-            # Comprobar que la imagen cabe
             free_disk_space = self.__dbConnector.getVMServerStatistics(serverID)["FreeStorageSpace"]
             familyID = self.__dbConnector.getImageVMFamilyID(data["ImageID"])
             familyFeatures = self.__dbConnector.getVMFamilyFeatures(familyID)
@@ -441,9 +463,7 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, p)
             return
            
-        # Todo es correcto => registrar los recursos consumidos, enviar la petición
         if (data["packet_type"] == PACKET_T.DEPLOY_IMAGE) :
-            # Registrar los recursos que consumirá la imagen
             familyID = self.__dbConnector.getImageVMFamilyID(data["ImageID"])
             familyFeatures = self.__dbConnector.getVMFamilyFeatures(familyID)
             self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
@@ -451,11 +471,16 @@ class EndpointPacketReactor(object):
             p = self.__vmServerPacketHandler.createImageDeploymentPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], data["CommandID"])
         else:
             p = self.__vmServerPacketHandler.createDeleteImagePacket(data["ImageID"], data["CommandID"])
-        self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
-        
-        
+        self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)        
             
     def __sendRepositoryStatusData(self):
+        """
+        Processes an image repository status request packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
+        """
         repositoryStatus = self.__dbConnector.getImageRepositoryStatus(self.__repositoryIP, self.__repositoryPort)
         p = self.__packetHandler.createRepositoryStatusPacket(repositoryStatus["FreeDiskSpace"], 
                                                                  repositoryStatus["AvailableDiskSpace"], 
@@ -464,11 +489,11 @@ class EndpointPacketReactor(object):
         
     def __unregisterOrShutdownVMServer(self, data):
         """
-        Procesa un paquete de apagado o borrado de un servidor de máquinas virtuales
-        Argumentos:
-            data: diccionario con los datos del paquete
-        Devuelve:
-            nada
+        Unregisters or shuts down a virtual machine server
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
         """
         key = data["ServerNameOrIPAddress"] 
         haltServer = data["Halt"]
@@ -481,7 +506,6 @@ class EndpointPacketReactor(object):
             useCommandID = False
             commandID = ""
             
-        # Paso 1: averiguar si existe el servidor
         serverID = self.__dbConnector.getVMServerID(key)
         if (serverID == None) :            
             if (unregister) :
@@ -492,7 +516,6 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, p)  
             return
         
-        # Paso 2: sabemos que el servidor existe. Si está arrancado, lo paramos 
         serverData = self.__dbConnector.getVMServerBasicData(serverID)            
         status = serverData["ServerStatus"]    
         if (status == SERVER_STATE_T.READY or status == SERVER_STATE_T.BOOTING) :  
@@ -509,7 +532,6 @@ class EndpointPacketReactor(object):
                 self.__networkManager.sendPacket('', self.__listenningPort, p)  
                 return
             
-            # La conexión está lista => enviamos el paquete de apagado
             self.__dbConnector.deleteHostedVMs(serverID)
             if not haltServer :
                 p = self.__vmServerPacketHandler.createVMServerShutdownPacket()
@@ -517,49 +539,38 @@ class EndpointPacketReactor(object):
                 p = self.__vmServerPacketHandler.createVMServerHaltPacket()
                 self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
                      
-            # Cerramos la conexión 
             self.__networkManager.closeConnection(serverData["ServerIP"], serverData["ServerPort"])       
             
-        # Paso 3: borramos el servidor de la base de datos (sólo si es necesario)      
         if (unregister) :
             self.__dbConnector.deleteVMServer(key)
             
-        # Paso 4: respondemos a la web (sólo si es necesario)      
         if (useCommandID) :
             p = self.__packetHandler.createCommandExecutedPacket(commandID)
         
     def __sendStatusData(self, queryMethod, packetCreationMethod):
         """
-        Envía información de estado al endpoint de la web
-        Argumentos:
-            queryMethod: el método que extraerá la información de estado de la base de datos
-            packetCreationMethod: el método que creará los paquetes de estado
-        Devuelve:
-            Nada
-        """        
-        # La información de las tablas se fragmenta en varios segmentos para no superar
-        # el tamaño máximo del paquete (64 KB)
-        
-        segmentSize = 100 # Cada segmento llevará 100 filas de la tabla
+        Processes a status request packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
+        """              
+        segmentSize = 100 
         outgoingData = []
         serverIDs = self.__dbConnector.getVMServerIDs()
         if (len(serverIDs) == 0) :
-            # No hay datos => responder con segmento vacío
             segmentCounter = 0
             segmentNumber = 0
             sendLastSegment = True
         else :
-            # Hay datos => calcular el número de segmentos que necesitamos
             segmentCounter = 1        
             segmentNumber = (len(serverIDs) / segmentSize)
             if (len(serverIDs) % segmentSize != 0) :
                 segmentNumber += 1
                 sendLastSegment = True
             else :
-                # Si la división no es exacta, hay que enviar un último segmento con lo que quede
                 sendLastSegment = False  
                 
-        # Crear los segmentos y enviarlos cuando estén llenos
         for serverID in serverIDs :
             row = queryMethod(serverID)
             if (row == None):
@@ -575,20 +586,18 @@ class EndpointPacketReactor(object):
                 outgoingData = []
                 segmentCounter += 1
                 
-        # Enviar un segmento con los datos que quedan (sólo si hace falta)
         if (sendLastSegment) :
             packet = packetCreationMethod(segmentCounter, segmentNumber, outgoingData)
             self.__networkManager.sendPacket('', self.__listenningPort, packet) 
             
     def __doImmediateShutdown(self, data):
         """
-        Apaga TODAS las máquinas del cluster, incluyendo los servidores de máquinas virtuales.
-        Argumentos:
-            data: diccionario con los datos del paquete
-        Devuelve:
-            Nada
-        """    
-        # Apagamos el repositorio
+        Processes a halt packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
+        """ 
         p = self.__imageRepositoryPacketHandler.createHaltPacket()
         self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p)
         self.__networkManager.closeConnection(self.__repositoryIP, self.__repositoryPort)
@@ -604,11 +613,11 @@ class EndpointPacketReactor(object):
         
     def __requestVNCConnectionData(self):
         """
-        Solicita los datos de conexión VNC a todos los servidores de máquinas virtuales.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Processes a VNC connection data request packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
         """
         p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_VM_VNC_DATA)
         
@@ -619,16 +628,14 @@ class EndpointPacketReactor(object):
             
     def __destroyOrRebootDomain(self, data, reboot):
         """
-        Destruye una máquina virtual activa
-        Argumentos:
-            data: diccionario con los datos del paquete correspondiente
-        Devuelve:
-            Nada
+        Processes a domain destruction or a domain reboot packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
         """
-        # Comprobar si la máquina existe
         serverID = self.__dbConnector.getActiveVMHostID(data["DomainID"])
         if (serverID == None) :
-            # Error
             if (reboot) :
                 packet_type = PACKET_T.DOMAIN_REBOOT_ERROR
             else:
@@ -638,7 +645,6 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             return       
         
-        # Averiguar los datos del servidor y pedirle que se la cargue
         connectionData = self.__dbConnector.getVMServerBasicData(serverID)
         if (reboot) :
             packet = self.__vmServerPacketHandler.createVMRebootPacket(data["DomainID"])
@@ -654,13 +660,18 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
         else :
             if (not reboot) :
-                # Borrar la máquina virtual de la base de datos           
                 self.__dbConnector.deleteActiveVMLocation(data["CommandID"])         
-            # Indicar al endpoint que todo fue bien
             packet = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             
     def __changeVMServerConfiguration(self, data):
+        """
+        Processes a virtual machine server configuration change packet
+        Args:
+            data: a dictionary containing the incoming packet's data
+        Returns:
+            Nothing
+        """
         serverID = self.__dbConnector.getVMServerID(data["ServerNameOrIPAddress"])
         
         if (serverID == None) :
@@ -689,4 +700,11 @@ class EndpointPacketReactor(object):
         self.__networkManager.sendPacket('', self.__listenningPort, packet)    
         
     def hasFinished(self):
+        """
+        Indicates if a halt packet was received or not
+        Args:
+            None
+        Returns:
+            True if a halt packet was received, and False if it wasn't
+        """
         return self.__finished

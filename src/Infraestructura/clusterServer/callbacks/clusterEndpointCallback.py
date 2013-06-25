@@ -47,4 +47,4 @@ class ClusterEndpointCallback(NetworkCallback):
         Returns:
             Nothing
         """
-        self.__packetReactor.processWebIncomingPacket(packet)
+        self.__packetReactor.processClusterEndpointIncomingPacket(packet)

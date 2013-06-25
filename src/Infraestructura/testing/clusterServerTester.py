@@ -13,8 +13,8 @@ from clusterServer.packetHandling.packet_t import CLUSTER_SERVER_PACKET_T as PAC
 from time import sleep
 
 class TesterCallback(NetworkCallback):
-    def __init__(self, webPacketHandler):
-        self.__repositoryPacketHandler = webPacketHandler
+    def __init__(self, clusterServerPacketHandler):
+        self.__repositoryPacketHandler = clusterServerPacketHandler
         
     def processPacket(self, packet):
         data = self.__repositoryPacketHandler.readPacket(packet)
