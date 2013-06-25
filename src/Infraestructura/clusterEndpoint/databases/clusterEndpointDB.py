@@ -115,7 +115,7 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
             self.__vmServerSegmentsData = [] 
             self.__vmServerSegments = 0
             
-    def processVMDistributionSegment(self, segmentNumber, segmentCount, data):
+    def processImageCopiesDistributionSegment(self, segmentNumber, segmentCount, data):
         """
         Procesa un segmento con datos de la distribución de las imágenes
         Argumentos:

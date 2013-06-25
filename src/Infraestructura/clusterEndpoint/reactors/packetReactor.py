@@ -42,7 +42,7 @@ class ClusterEndpointPacketReactor(object):
         if (data["packet_type"] == PACKET_T.VM_SERVERS_STATUS_DATA) :
             self.__processVMServerSegment(data)            
         elif (data["packet_type"] == PACKET_T.VM_DISTRIBUTION_DATA) :
-            self.__processVMDistributionSegment(data)            
+            self.__processImageCopiesDistributionSegment(data)            
         elif (data["packet_type"] == PACKET_T.REPOSITORY_STATUS):
             self.__updateImageRepositoryStatus(data)            
         elif (data["packet_type"] == PACKET_T.VM_SERVERS_RESOURCE_USAGE) :
@@ -70,9 +70,9 @@ class ClusterEndpointPacketReactor(object):
         processedData = self.__codeTranslator.processVMServerSegment(data["Data"])
         self.__endpointDBConnector.processVMServerSegment(data["Segment"], data["SequenceSize"], processedData)
         
-    def __processVMDistributionSegment(self, data):
-        processedData = self.__codeTranslator.processVMDistributionSegment(data["Data"])
-        self.__endpointDBConnector.processVMDistributionSegment(data["Segment"], data["SequenceSize"], processedData)
+    def __processImageCopiesDistributionSegment(self, data):
+        processedData = self.__codeTranslator.processImageCopiesDistributionSegment(data["Data"])
+        self.__endpointDBConnector.processImageCopiesDistributionSegment(data["Segment"], data["SequenceSize"], processedData)
         
     def __updateImageRepositoryStatus(self, data):
         status = self.__codeTranslator.translateRepositoryStatusCode(data["RepositoryStatus"])
