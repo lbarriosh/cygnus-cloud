@@ -11,13 +11,13 @@ class WebCallback(NetworkCallback):
     '''
     These callbacks will be used to process packets sent from the web server.
     '''
-    def __init__(self, reactor):
+    def __init__(self, packetReactor):
         """
         Initializes the callback's state
         Args:
-            reactor: the object that will process all the incoming packets
+            packetReactor: the object that will process all the incoming packets
         """
-        self.__reactor = reactor
+        self.__packetReactor = packetReactor
         
     def processPacket(self, packet):
         """
@@ -28,19 +28,20 @@ class WebCallback(NetworkCallback):
         Returns:
             Nothing
         """
-        self.__reactor.processWebIncomingPacket(packet)
+        self.__packetReactor.processWebIncomingPacket(packet)
         
 class VMServerCallback(NetworkCallback):
     '''
     These callbacks will be used to process packets sent from a virtual machine server.
     '''
-    def __init__(self, reactor):
+    def __init__(self, packetReactor, networkEventsReactor):
         """
         Initializes the callback's state
         Args:
-            reactor: the object that will process all the incoming packets
+            packetReactor: the object that will process all the incoming packets
         """
-        self.__reactor = reactor
+        self.__packetReactor = packetReactor        
+        self.__networkEventsReactor = networkEventsReactor
         
     def processPacket(self, packet):
         """
@@ -51,7 +52,7 @@ class VMServerCallback(NetworkCallback):
         Returns:
             Nothing
         """        
-        self.__reactor.processVMServerIncomingPacket(packet)   
+        self.__packetReactor.processVMServerIncomingPacket(packet)   
         
     def processServerReconnectionData(self, ipAddress, port, reconnection_status):
         """
@@ -63,5 +64,40 @@ class VMServerCallback(NetworkCallback):
         Returns:
             Nothing
         """
-        NetworkCallback.processServerReconnectionData(self, ipAddress, port, reconnection_status)
-        self.__reactor.processServerReconnectionData(ipAddress, reconnection_status)
+        self.__networkEventsReactor.processVMServerReconnectionData(ipAddress, reconnection_status)
+        
+class ImageRepositoryCallback(NetworkCallback):
+    '''
+    These callbacks will be used to process packets sent from a virtual machine server.
+    '''
+    def __init__(self, packetReactor, networkEventsReactor):
+        """
+        Initializes the callback's state
+        Args:
+            packetReactor: the object that will process all the incoming packets
+        """
+        self.__packetReactor = packetReactor
+        self.__networkEventsReactor = networkEventsReactor
+        
+    def processPacket(self, packet):
+        """
+        Processes an incoming packet sent from a virtual machine server.
+        Args:
+            packet:
+                The packet to process
+        Returns:
+            Nothing
+        """        
+        self.__packetReactor.processImageRepositoryIncomingPacket(packet)   
+        
+    def processServerReconnectionData(self, ipAddress, port, reconnection_status):
+        """
+        Processes a reconnection status event
+        Args:
+            ipAddress: the connection's IPv4 address
+            port: the connection's port
+            reconnection_status: the reconnection process' status
+        Returns:
+            Nothing
+        """
+        self.__networkEventsReactor.processImageRepositoryReconnectionData(reconnection_status)

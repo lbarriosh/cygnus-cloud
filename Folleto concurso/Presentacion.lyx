@@ -66,8 +66,20 @@
 
 \begin_body
 
-\begin_layout Date
-Granada, mayo de 2013
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+maketitle
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout BeginFrame
@@ -92,15 +104,17 @@ software libre
  desde hace más de 11 años
 \end_layout
 
-\begin_layout Itemize
-llevo 7 años desarrollando 
+\begin_deeper
+\begin_layout Standard
+\SpecialChar \ldots{}
+ y desarrollador de 
 \emph on
-software libre
+software libre 
 \emph default
-, y dos haciéndolo en serio
-\emph on
- 
+desde hace 2
 \end_layout
+
+\end_deeper
 
 \begin_layout Itemize
 me interesaría trabajar
@@ -179,7 +193,11 @@ estudio Ingeniería Informática en la Universidad Complutense.
 \end_layout
 
 \begin_layout Itemize
-llevo un año viviendo fuera de Windows\SpecialChar \ldots{}
+llevo un año viviendo fuera de 
+\emph on
+Windows
+\emph default
+\SpecialChar \ldots{}
  
 \series bold
 \bar under
@@ -194,12 +212,14 @@ IronHand
 )
 \end_layout
 
-\begin_layout Itemize
+\begin_deeper
+\begin_layout Standard
 \SpecialChar \ldots{}
  y quiero vivir de ello.
  
 \end_layout
 
+\end_deeper
 \begin_layout EndFrame
 
 \end_layout
@@ -221,7 +241,7 @@ exceso de burocracia para cambiar la configuración de los equipos
 \end_layout
 
 \begin_layout Enumerate
-reducción de costes
+sobrecoste de las aulas de informática
 \end_layout
 
 \begin_layout EndFrame
@@ -233,13 +253,19 @@ Problema #1: no hay suficientes aulas de informática
 \end_layout
 
 \begin_layout Itemize
-En la Facultad de Informática de la UCM se imparten 
-\series bold
-siete titulaciones distintas
+En la Facultad de Informática de la UCM se imparten siete titulaciones distintas
 \end_layout
 
 \begin_layout Itemize
-Todos competimos por 11 aulas de informática, con 20 PCs cada una
+Todos competimos por
+\series bold
+ 
+\series default
+11 aulas de informática
+\series bold
+, 
+\series default
+con 20 PCs cada una
 \end_layout
 
 \begin_layout Itemize
@@ -258,14 +284,17 @@ Si no hay equipos disponibles
 usamos nuestros portátiles o nos vamos a casa
 \end_layout
 
+\begin_deeper
 \begin_layout Pause
 
 \end_layout
 
-\begin_layout Itemize
-aunque haya sitio en otras facultades
+\begin_layout Standard
+\SpecialChar \ldots{}
+ aunque haya sitio en otras facultades
 \end_layout
 
+\end_deeper
 \begin_layout EndFrame
 
 \end_layout
@@ -275,8 +304,7 @@ Problema #2: mucha burocracia
 \end_layout
 
 \begin_layout Itemize
-la configuración de los equipos se modifica\SpecialChar \ldots{}
-
+la configuración de los equipos se modifica
 \end_layout
 
 \begin_deeper
@@ -284,11 +312,16 @@ la configuración de los equipos se modifica\SpecialChar \ldots{}
 
 \end_layout
 
-\begin_layout Itemize
-a golpe de instancia
+\begin_layout Standard
+\SpecialChar \ldots{}
+ a golpe de instancia
 \end_layout
 
 \end_deeper
+\begin_layout Pause
+
+\end_layout
+
 \begin_layout Itemize
 sólo es posible introducir cambios al principio del cuatrimestre
 \end_layout
@@ -302,8 +335,11 @@ si después hay que introducir alguno
 
 \end_layout
 
-\begin_layout Itemize
-tocará esperar durante meses
+\begin_layout Standard
+\SpecialChar \ldots{}
+tocará esperar durante 
+\emph on
+meses
 \end_layout
 
 \end_deeper
@@ -316,7 +352,7 @@ Problema #3: estamos perdiendo dinero
 \end_layout
 
 \begin_layout Itemize
-no es posible compartir licencias entre facultades
+no es posible compartir licencias de pago entre distintas facultades
 \end_layout
 
 \begin_layout Itemize
@@ -332,20 +368,42 @@ apenas explotamos la potencia de los PCs de estas aulas
 \end_layout
 
 \begin_layout BeginFrame
+Demo
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\size larger
+Esta presentación se está visualizando desde CygnusCloud.
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
 El sistema CygnusCloud
 \end_layout
 
 \begin_layout Itemize
-Escrito íntegramente en Python
+Escrito en 
+\emph on
+Python
+\emph default
+, HTML5 y JavaScript
 \end_layout
 
 \begin_layout Itemize
-Construido sobre KVM, libvirt, MariaDB, Twisted y web2py
+Construido sobre KVM, libvirt, MariaDB, Twisted, pyftpdlib y web2py
 \end_layout
 
 \begin_layout Itemize
-Construido sobre software 100% libre, y liberado bajo licencia LGPL/Apache
- 2
+Software libre, liberado bajo licencia LGPL/Apache 2
+\end_layout
+
+\begin_layout Pause
+
 \end_layout
 
 \begin_layout Itemize
@@ -353,7 +411,12 @@ Dirigido a instituciones académicas
 \end_layout
 
 \begin_layout Itemize
-Puede 
+Simple y eficiente
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+aprovechando equipos antiguos, puede 
 \series bold
 implantarse
 \series default
@@ -374,7 +437,9 @@ los alumnos de cualquier carrera trabajen en cualquier aula de informática
 
 \begin_layout Enumerate
 los profesores introduzcan cambios en la configuración de los equipos en
- cuestión de horas
+ cuestión de 
+\emph on
+horas
 \end_layout
 
 \begin_layout Enumerate
@@ -391,6 +456,8 @@ Demo
 \end_layout
 
 \begin_layout Standard
+
+\align center
 
 \size larger
 Esta presentación se está visualizando desde CygnusCloud.
@@ -409,6 +476,15 @@ Control de acceso
 \end_layout
 
 \begin_layout Itemize
+
+Gestión de usuarios y asignaturas
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
 Arranque y detención de máquinas virtuales
 \end_layout
 
@@ -418,11 +494,32 @@ Creación y edición de máquinas virtuales, incluso en varias fases.
 
 \begin_layout Itemize
 
+Borrado de máquinas virtuales
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+
 \series bold
 Gestión de errores
 \series default
-: interrupciones en la edición de una imagen, caídas de conexión, 
+
+: interrupciones en la edición de una imagen, caídas de conexión, errores
+ internos en los servidores,\SpecialChar \ldots{}
+
 \end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+podrá usarse en una prueba piloto o incluso en producción
+\end_layout
+
+\end_deeper
 
 \begin_layout EndFrame
 
@@ -432,19 +529,33 @@ Gestión de errores
 ¿Para qué no sirve CygnusCloud?
 \end_layout
 
+\begin_layout Standard
+CygnusCloud no puede utilizarse para realizar tareas
+\end_layout
+
 \begin_layout Itemize
-En tareas que refrescan mucho la pantalla o utilizan mucho ancho de banda
- (renderización de gráficos 3D, y la edición y reproducción de vídeos, \SpecialChar \ldots{}
-)
- 
+que refrescan mucho la pantalla (como la renderización de gráficos 3D) 
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-limitación impuesta por el protocolo VNC.
+
+\series bold
+limitación impuesta por el protocolo VNC
+\series default
+.
 \end_layout
 
 \end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+que requieren mucho tráfico entre el equipo del usuario y la máquina virtual
+ (como la edición de vídeos)
+\end_layout
+
 \begin_layout EndFrame
 
 \end_layout
@@ -477,6 +588,10 @@ CPU Intel Pentium 4 a 2 GHz, y 1 GB de RAM, 2 GB de disco duro para el resto.
 \end_layout
 
 \end_deeper
+\begin_layout Pause
+
+\end_layout
+
 \begin_layout Itemize
 
 \series bold
@@ -516,7 +631,103 @@ las licencias
 Windows Virtual Desktop Access
 \shape default
 , en caso de querer ofrecer máquinas virtuales con el sistema operativo
- windows instalado.
+ 
+\emph on
+Windows 
+\emph default
+instalado.
+\end_layout
+
+\begin_layout BeginFrame
+¿Qué haremos tras la 
+\emph on
+release
+\emph default
+ final?
+\end_layout
+
+\begin_layout Itemize
+Publicaremos la 
+\series bold
+versión final y toda su documentación
+\series default
+ el 
+\series bold
+21 de Junio de 2013
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Nos estamos planteando 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+crear nuestra propia 
+\emph on
+startup
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \ldots{}
+y dedicarnos a adaptar y modificar 
+\emph on
+CygnusCloud
+\emph default
+ para diversas organizaciones
+\end_layout
+
+\end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+introducir modificaciones para
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+incorporar soporte multi-
+\emph on
+cluster
+\end_layout
+
+\begin_layout Itemize
+hacer la 
+\emph on
+web
+\emph default
+ más escalable
+\end_layout
+
+\begin_layout Itemize
+tratar algunos errores más (pocos)
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout BeginFrame
+
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\size larger
+Preguntas
 \end_layout
 
 \begin_layout EndFrame

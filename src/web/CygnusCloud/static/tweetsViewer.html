@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+		    <html>
+			    <head>				
+                    <link rel="stylesheet" type="text/css" href="/CygnusCloud/static/css/css_twitter_valorator.css">
+                    <link href="/CygnusCloud/static/css/jquery.tweet.css" rel="stylesheet"/>
+				    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+                    <script src="/CygnusCloud/static/js/jquery.tweet.js" charset="utf-8"></script>
+				    <meta charset='UTF-8'/>
+			    </head>
+			    <body>	
+                    <center><h2 class='TweetsResult'>Tweets</h2></center>		
+			        <div id="paging" class = "tweetsTable">
+			      		<div class="widget query"></div>
+			      			<div class="controls">
+				    			<button class="prev" type="button" disabled>&larr;</button>
+				    			<span class="pagenum"></span>
+				    			<button class="next" type="button" disabled>&rarr;</button>
+			      			</div>
+			    		</div> 
+			        <script type = "text/javascript">
+			        var query = "CygnusCloud";
+			        var tweetsPerPage=5;
+			        var maxPages=10;
+			        /*
+			         * Este script llama a Tweet! para hacer la búsqueda y muestra los resultados en varias
+			         * páginas. 
+			         */
+				    jQuery(function($){
+					    var options = {
+						    query: query,
+						    page: 1,
+						    avatar_size: 48,
+						    count: tweetsPerPage,
+						    fetch: maxPages, 
+						    loading_text: "Cargando tweets..."
+				    };
+
+				    var widget = $("#paging .widget"),
+					    next = $("#paging .next"),
+					    prev = $("#paging .prev");
+
+				    var enable = function(el, yes) {
+					    yes ? $(el).removeAttr('disabled') :
+						    $(el).attr('disabled', true);
+				    };
+
+				    var stepClick = function(incr) {
+					    return function() {
+						    options.page = options.page + incr;
+						    enable(this, false);
+						    widget.tweet(options);
+					    };
+				    };
+
+				    next.bind("checkstate", function() {
+				      enable(this, widget.find("li").length == options.count)
+				    }).click(stepClick(1));
+
+				    prev.bind("checkstate", function() {
+				      enable(this, options.page > 1)
+				    }).click(stepClick(-1));
+
+				    widget.tweet(options).bind("loaded", function() { next.add(prev).trigger("checkstate"); });
+			      });
+			    </script>
+			</body>
+		</html>

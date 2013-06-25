@@ -1,0 +1,344 @@
+%% LyX 2.0.5.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[spanish]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{textcomp}
+\PassOptionsToPackage{normalem}{ulem}
+\usepackage{ulem}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ \AtBeginDocument{
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \def\lyxframeend{} % In case there is a superfluous frame end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usetheme{Madrid}
+\title[CygnusCloud]{CygnusCloud:\linebreak{} provisión de puestos de laboratorio virtuales bajo demanda}
+\author[Barrios, Fernández, Guayerbas]{Luis Barrios Hernández\linebreak{} Adrián Fernández Hernández\linebreak{} Samuel Guayerbas Martín}
+\institute[UCM]{Universidad Complutense de Madrid}
+
+\makeatother
+
+\usepackage{babel}
+\addto\shorthandsspanish{\spanishdeactivate{~<>}}
+
+\begin{document}
+
+\date{Fase final, 7ª edición CUSL\\
+Granada, mayo de 2013}
+
+\makebeamertitle
+
+\lyxframeend{}\lyxframe{¿Quienes somos?}
+
+\textbf{Luis Barrios Hernández}
+\begin{itemize}
+\item estudio Ingeniería Informática en la Universidad Complutense.
+\item (feliz) usuario de \emph{software libre} desde hace más de 11 años
+
+
+\ldots{} y desarrollador de \emph{software libre }desde hace 2
+
+\item me interesaría trabajar
+
+\begin{itemize}
+\item diseñando e implementando sistemas distribuidos 
+\item cacharreando con \emph{hardware }y redes
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{¿Quienes somos?}
+
+\textbf{Adrián Fernández Hernández}
+\begin{itemize}
+\item estudio Ingeniería Informática en la Universidad Complutense.
+\item utilizo \emph{software libre }de forma habitual desde hace más de
+3 años
+\item me interesaría trabajar en
+
+\begin{itemize}
+\item diseño web
+\item informática gráfica
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{¿Quienes somos?}
+
+\textbf{Samuel Guayerbas Martín}
+\begin{itemize}
+\item estudio Ingeniería Informática en la Universidad Complutense.
+\item llevo un año viviendo fuera de \emph{Windows}\ldots{} \textbf{\uline{y
+no pienso volver}}
+\item he desarrollado videojuegos libres (\emph{IronHand})
+
+
+\ldots{} y quiero vivir de ello. 
+
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{¿Por qué hemos desarrollado CygnusCloud?}
+
+Para resolver tres problemas:
+\begin{enumerate}
+\item escasez de aulas de informática
+\item exceso de burocracia para cambiar la configuración de los equipos
+\item sobrecoste de las aulas de informática
+\end{enumerate}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{Problema \#1: no hay suficientes aulas de informática}
+\begin{itemize}
+\item En la Facultad de Informática de la UCM se imparten siete titulaciones
+distintas
+\item Todos competimos por\textbf{ }11 aulas de informática\textbf{, }con
+20 PCs cada una
+\item Sólo podemos utilizarlas cuando no se da clase
+\end{itemize}
+
+\pause{}
+
+Si no hay equipos disponibles
+\begin{itemize}
+\item usamos nuestros portátiles o nos vamos a casa
+
+
+\pause{}
+
+
+\ldots{} aunque haya sitio en otras facultades
+
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{Problema \#2: mucha burocracia}
+\begin{itemize}
+\item la configuración de los equipos se modifica
+
+
+\pause{}
+
+
+\ldots{} a golpe de instancia
+
+\end{itemize}
+
+\pause{}
+\begin{itemize}
+\item sólo es posible introducir cambios al principio del cuatrimestre
+\item si después hay que introducir alguno
+
+
+\pause{}
+
+
+\ldots{}tocará esperar durante \emph{meses}
+
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{Problema \#3: estamos perdiendo dinero}
+\begin{itemize}
+\item no es posible compartir licencias de pago entre distintas facultades
+\item no aprovechamos las aulas de informática vacías
+\item apenas explotamos la potencia de los PCs de estas aulas
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{El sistema CygnusCloud}
+\begin{itemize}
+\item Escrito en \emph{Python}, HTML5 y JavaScript
+\item Construido sobre KVM, libvirt, MariaDB, Twisted, pyftpdlib y web2py
+\item Software libre, liberado bajo licencia LGPL/Apache 2
+\end{itemize}
+
+\pause{}
+\begin{itemize}
+\item Dirigido a instituciones académicas
+\item Simple y eficiente
+
+\begin{itemize}
+\item aprovechando equipos antiguos, puede \textbf{implantarse} con \textbf{coste
+cero}
+\end{itemize}
+\end{itemize}
+
+\pause{}
+\begin{itemize}
+\item Permite que
+
+\begin{enumerate}
+\item los alumnos de cualquier carrera trabajen en cualquier aula de informática
+del campus.
+\item los profesores introduzcan cambios en la configuración de los equipos
+en cuestión de \emph{horas}
+\item las aulas de informática se aprovechen al máximo.
+\end{enumerate}
+\end{itemize}
+
+\lyxframeend{}
+
+
+
+
+\lyxframeend{}\lyxframe{¿Qué ofrece CygnusCloud?}
+\begin{itemize}
+\item Control de acceso
+\item Gestión de usuarios y asignaturas
+\end{itemize}
+
+\pause{}
+\begin{itemize}
+\item Arranque y detención de máquinas virtuales
+\item Creación y edición de máquinas virtuales, incluso en varias fases.
+\item Borrado de máquinas virtuales
+\end{itemize}
+
+\pause{}
+\begin{itemize}
+\item \textbf{Gestión de errores}: interrupciones en la edición de una imagen,
+caídas de conexión, errores internos en los servidores,\ldots{}
+
+\begin{itemize}
+\item \textbf{podrá usarse en una prueba piloto o incluso en producción}
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{¿Para qué no sirve CygnusCloud?}
+
+CygnusCloud no puede utilizarse para realizar tareas
+\begin{itemize}
+\item que refrescan mucho la pantalla (como la renderización de gráficos
+3D) 
+
+\begin{itemize}
+\item \textbf{limitación impuesta por el protocolo VNC}.
+\end{itemize}
+\end{itemize}
+
+\pause{}
+\begin{itemize}
+\item que requieren mucho tráfico entre el equipo del usuario y la máquina
+virtual (como la edición de vídeos)
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{¿Qué hace falta para utilizar CygnusCloud?}
+
+Dos cosas:
+\begin{itemize}
+\item \textbf{Servidores}. Pueden ser bastante antiguos
+
+\begin{itemize}
+\item CPU Intel Core 2 Duo, 2 GB de RAM, 20 GB de espacio en disco para
+los que albergan máquinas virtuales.
+\item CPU Intel Pentium 4 a 2 GHz, y 1 GB de RAM, 2 GB de disco duro para
+el resto.
+\end{itemize}
+\end{itemize}
+
+\pause{}
+\begin{itemize}
+\item \textbf{Ancho de banda}. Como mínimo, una red a 100 Mb/s.
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{¿Cuánto cuesta implantar CygnusCloud?}
+
+Sólo hay que asumir el coste de
+\begin{itemize}
+\item los servidores (ninguno si se reutilizan)
+\item el equipo de red (ninguno si se reutiliza)
+\end{itemize}
+
+\pause{}
+\begin{itemize}
+\item la energía eléctrica consumida
+\item las licencias \textit{Windows Virtual Desktop Access}, en caso de
+querer ofrecer máquinas virtuales con el sistema operativo \emph{Windows
+}instalado.
+\end{itemize}
+
+\lyxframeend{}\lyxframe{¿Qué haremos tras la \emph{release} final?}
+\begin{itemize}
+\item Publicaremos la \textbf{versión final y toda su documentación} el
+\textbf{21 de Junio de 2013}
+\end{itemize}
+
+\pause{}
+\begin{itemize}
+\item Nos estamos planteando 
+
+\begin{itemize}
+\item crear nuestra propia \emph{startup}
+
+
+\pause{}
+
+
+\ldots{}y dedicarnos a adaptar y modificar \emph{CygnusCloud} para
+diversas organizaciones
+
+\end{itemize}
+
+\pause{}
+\begin{itemize}
+\item introducir modificaciones para
+
+\begin{itemize}
+\item incorporar soporte multi-\emph{cluster}
+\item hacer la \emph{web} más escalable
+\item tratar algunos errores más (pocos)
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframeend{}\lyxframe{}
+
+\begin{center}
+{\Large Preguntas}
+\par\end{center}{\Large \par}
+
+
+\lyxframeend{}
+\end{document}

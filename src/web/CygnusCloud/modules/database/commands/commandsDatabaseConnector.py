@@ -70,7 +70,7 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         self._executeUpdate(update)
         return ((userID, result[1]), int(result[2]), result[3])
     
-    def addCommandOutput(self, commandID, outputType, commandOutput):
+    def addCommandOutput(self, commandID, outputType, commandOutput, force = False):
         """
         Registers a command's output
         Args:
@@ -80,10 +80,28 @@ class CommandsDatabaseConnector(BasicDatabaseConnector):
         Returns:
             Nothing
         """
+        if (not force) :
+            query = "SELECT * FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
+            result = self._executeQuery(query, True)
+        
+            if (result == None) :
+                # Nos hemos cargado el comando por timeout => descartamos la salida que haya
+                return
+        
         update = "INSERT INTO RunCommandOutput VALUES ({0}, {1}, {2}, '{3}');".format(commandID[0], commandID[1], outputType, commandOutput)
         self._executeUpdate(update)
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])
         self._executeUpdate(update)
+        
+    def removeOldCommands(self, timeout):        
+        query = "SELECT * FROM PendingCommand WHERE time - {0} >= {1};".format(time.time(), timeout)
+        results = self._executeQuery(query, False)
+        commandIDs = []
+        for row in results :
+            commandIDs.append((row[0], row[1]))
+            update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(row[0], row[1])
+            self._executeUpdate(update)
+        return commandIDs        
         
     def removeExecutedCommand(self, commandID):
         update = "DELETE FROM PendingCommand WHERE userID = {0} AND time = {1};".format(commandID[0], commandID[1])

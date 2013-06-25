@@ -1304,3 +1304,56 @@ UPDATE UserGroup SET cursegroup=cursegroup__tmp;
 success!
 ALTER TABLE UserGroup DROP COLUMN cursegroup__tmp;
 success!
+timestamp: 2013-05-14T02:26:42.106026
+CREATE TABLE osPictures(
+    osPictureId INT NOT NULL,
+    picturePath VARCHAR(100),
+    PRIMARY KEY(osPictureId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-05-14T02:27:13.726392
+CREATE TABLE pictureByOSId(
+    osId INT NOT NULL,
+    variantId INT NOT NULL,
+    pictureId INT,
+    PRIMARY KEY(osId, variantId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-06-08T09:48:37.467383
+ALTER TABLE ClassGroup ADD placenumber INT;
+success!
+timestamp: 2013-06-08T09:48:37.933452
+ALTER TABLE ClassGroup DROP COLUMN curse;
+success!
+timestamp: 2013-06-08T09:56:22.871863
+ALTER TABLE ClassGroup ADD placesnumber INT;
+success!
+timestamp: 2013-06-08T09:56:23.199650
+ALTER TABLE ClassGroup DROP COLUMN placenumber;
+success!
+timestamp: 2013-06-16T18:11:05.749474
+ALTER TABLE ClassGroup ADD cursegroup__tmp VARCHAR(1) NOT NULL;
+success!
+UPDATE ClassGroup SET cursegroup__tmp=cursegroup;
+success!
+ALTER TABLE ClassGroup DROP COLUMN cursegroup;
+success!
+ALTER TABLE ClassGroup ADD cursegroup VARCHAR(1) NOT NULL;
+success!
+UPDATE ClassGroup SET cursegroup=cursegroup__tmp;
+success!
+ALTER TABLE ClassGroup DROP COLUMN cursegroup__tmp;
+success!
+timestamp: 2013-06-17T12:47:14.868434
+CREATE TABLE userImage(
+    userId VARCHAR(255) NOT NULL,
+    file VARCHAR(255),
+    PRIMARY KEY(userId))  ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2013-06-18T18:20:20.511641
+ALTER TABLE ClassGroup ADD career VARCHAR(100);
+success!
+timestamp: 2013-06-18T18:54:41.456412
+CREATE TABLE careerPictures(
+    careerName VARCHAR(100) NOT NULL,
+    picturePath VARCHAR(100),
+    PRIMARY KEY(careerName))  ENGINE=InnoDB CHARACTER SET utf8;
+success!

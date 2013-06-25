@@ -8,3 +8,8 @@
 {{=form1}}
 {{=form2}}
 {{pass}}
+{{if(request.args(0) == 'addVM'):}}
+<h1>{{=T('Asociar asignaturas')}}</h1>
+{{=form1}}
+{{=form2}}
+{{pass}}

@@ -12,22 +12,20 @@ USE SystemStatusDB;
  
 CREATE TABLE IF NOT EXISTS VirtualMachineServer(serverName VARCHAR(30) PRIMARY KEY NOT NULL, 
     serverStatus VARCHAR(20) NOT NULL, serverIP VARCHAR(15) NOT NULL,
-    serverPort INTEGER NOT NULL, UNIQUE(serverIP, serverPort)) ENGINE=MEMORY;
+    serverPort INTEGER NOT NULL, isVanillaServer TINYINT, UNIQUE(serverIP, serverPort)) ENGINE=MEMORY;
     
 DELETE FROM VirtualMachineServer;
 
 CREATE TABLE IF NOT EXISTS VirtualMachineDistribution(
     serverName VARCHAR(30),
-    virtualMachineID INTEGER,
-    PRIMARY KEY (serverName, virtualMachineID)) ENGINE=MEMORY;
+    imageID INTEGER,
+    PRIMARY KEY (serverName, imageID)) ENGINE=MEMORY;
 
 DELETE FROM VirtualMachineDistribution;
         
 CREATE TABLE IF NOT EXISTS ActiveVirtualMachines(
-	serverName VARCHAR(30), userID BIGINT, virtualMachineID INTEGER, virtualMachineName VARCHAR(30),
+	serverName VARCHAR(30), domainUID VARCHAR(70) PRIMARY KEY, ownerID BIGINT, imageID INTEGER, virtualMachineName VARCHAR(30),
 	port INTEGER, password VARCHAR(65),
-	PRIMARY KEY (serverName, userID, virtualMachineID)) ENGINE=MEMORY;
+	UNIQUE (serverName, ownerID, imageID)) ENGINE=MEMORY;
 	
 DELETE FROM ActiveVirtualMachines;
-        
-
