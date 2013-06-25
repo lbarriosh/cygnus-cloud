@@ -87,7 +87,7 @@ class CommandsProcessor(object):
                         packet = self.__packetHandler.createImageDeletionPacket(parsedArgs["ImageID"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.AUTO_DEPLOY_IMAGE):
                         if (self.__endpointDBConnector.affectsToNewOrEditedImage(serializedCommandID)) :
-                            self.__endpointDBConnector.updateEditedImageStatus(serializedCommandID, EDITION_STATE_T.AUTO_DEPLOYMENT)
+                            self.__endpointDBConnector.updateEditedImageState(serializedCommandID, EDITION_STATE_T.AUTO_DEPLOYMENT)
                         packet = self.__packetHandler.createAutoDeployPacket(parsedArgs["ImageID"], parsedArgs["MaxInstances"], serializedCommandID)
                                           
                     errorMessage = self.__networkManager.sendPacket(self.__clusterServerIP, self.__clusterServerPort, packet)

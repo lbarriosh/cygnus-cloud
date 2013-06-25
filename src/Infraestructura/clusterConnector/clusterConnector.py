@@ -62,7 +62,7 @@ class ClusterConnector(object):
             userID = self.__userID
         else :
             userID = None
-        return self.__endpointDBConnector.getActiveVMsData(userID, showEditionVMs)
+        return self.__endpointDBConnector.getActiveVMsVNCData(userID, showEditionVMs)
     
     def getVMDistributionData(self):
         """
@@ -71,7 +71,7 @@ class ClusterConnector(object):
             Ninguno
         Devuelve: una lista de diccionarios con los datos de distribución de las imágenes
         """
-        return self.__endpointDBConnector.getVMDistributionData()
+        return self.__endpointDBConnector.getImageCopiesDistributionData()
         
     def getVMServersData(self):
         """
@@ -80,7 +80,7 @@ class ClusterConnector(object):
             Ninguno
         Devuelve: una lista de diccionarios con los datos básicos de los servidores de máquinas virtuales
         """
-        return self.__endpointDBConnector.getVMServersData()
+        return self.__endpointDBConnector.getVMServersConfiguration()
         
     def registerVMServer(self, vmServerIP, vmServerPort, vmServerName, isEditionServer):
         """
@@ -356,7 +356,7 @@ class ClusterConnector(object):
         """
         return self.__endpointDBConnector.getEditedImageIDs(userID)
     
-    def getVMFamilyID(self, imageID):
+    def getVanillaImageFamilyID(self, imageID):
         """
         Devuelve la familia de imágenes vanilla asociada a una imagen existente.
         Argumentos:
@@ -374,14 +374,14 @@ class ClusterConnector(object):
         Devuelve:
             un diccionario con los datos de la familia de imágenes vanilla
         """
-        return self.__endpointDBConnector.getVanillaImageFamilyData(vanillaImageFamilyID)
+        return self.__endpointDBConnector.getVMFamilyData(vanillaImageFamilyID)
     
     def getMaxVanillaImageFamilyData(self):
         """
         Calcula los valores máximos del número de CPUs, RAM, disco,... de todas las
         familias de imágenes vanilla
         """
-        return self.__endpointDBConnector.getMaxVanillaImageFamilyData()
+        return self.__endpointDBConnector.getMaxVMFamilyData()
     
     def getImageRepositoryStatus(self):
         """

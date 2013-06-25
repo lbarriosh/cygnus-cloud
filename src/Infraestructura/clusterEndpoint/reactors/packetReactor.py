@@ -48,7 +48,7 @@ class ClusterEndpointPacketReactor(object):
         elif (data["packet_type"] == PACKET_T.VM_SERVERS_RESOURCE_USAGE) :
             self.__endpointDBConnector.processVMServerResourceUsageSegment(data["Segment"], data["SequenceSize"], data["Data"])            
         elif (data["packet_type"] == PACKET_T.ACTIVE_VM_VNC_DATA) :
-            self.__endpointDBConnector.processActiveVMSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])                        
+            self.__endpointDBConnector.processActiveVMVNCDataSegment(data["Segment"], data["SequenceSize"], data["VMServerIP"], data["Data"])                        
         else :
             # El resto de paquetes contienen la salida de un comando
             l = data["CommandID"].split("|")
@@ -84,7 +84,7 @@ class ClusterEndpointPacketReactor(object):
         output_type = None                       
         if (commandData["CommandType"] == COMMAND_TYPE.EDIT_IMAGE or commandData["CommandType"] == COMMAND_TYPE.CREATE_IMAGE) :
             # Una imagen se ha acabado de editar
-            self.__endpointDBConnector.updateEditedImageStatus(data["CommandID"], EDITION_STATE_T.CHANGES_NOT_APPLIED)                    
+            self.__endpointDBConnector.updateEditedImageState(data["CommandID"], EDITION_STATE_T.CHANGES_NOT_APPLIED)                    
             if (commandData["CommandType"] == COMMAND_TYPE.EDIT_IMAGE) :
                 output_type = COMMAND_OUTPUT_TYPE.IMAGE_EDITED                        
             else :
@@ -116,7 +116,7 @@ class ClusterEndpointPacketReactor(object):
                 self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)                        
             else :
                 # Cambiar el estado de la imagen en edición
-                self.__endpointDBConnector.updateEditedImageStatus(data["CommandID"], EDITION_STATE_T.VM_ON)
+                self.__endpointDBConnector.updateEditedImageState(data["CommandID"], EDITION_STATE_T.VM_ON)
                 
     def __processImageCreatedPacket(self, commandID, data):
         self.__endpointDBConnector.registerImageID(data["CommandID"], data["ImageID"])
@@ -130,11 +130,11 @@ class ClusterEndpointPacketReactor(object):
             self.__endpointDBConnector.deleteEditedImage(data["CommandID"])
                         
         elif (data["packet_type"] == PACKET_T.IMAGE_EDITION_ERROR):
-            self.__endpointDBConnector.updateEditedImageStatus(data["CommandID"], EDITION_STATE_T.CHANGES_NOT_APPLIED, None)     
+            self.__endpointDBConnector.updateEditedImageState(data["CommandID"], EDITION_STATE_T.CHANGES_NOT_APPLIED, None)     
                         
         elif (data["packet_type"] == PACKET_T.AUTO_DEPLOY_ERROR):
             if (self.__endpointDBConnector.affectsToNewOrEditedImage(data["CommandID"])) :                            
-                self.__endpointDBConnector.updateEditedImageStatus(data["CommandID"], EDITION_STATE_T.AUTO_DEPLOYMENT_ERROR)    
+                self.__endpointDBConnector.updateEditedImageState(data["CommandID"], EDITION_STATE_T.AUTO_DEPLOYMENT_ERROR)    
                     
         isNotification = data["packet_type"] == PACKET_T.IMAGE_DEPLOYMENT_ERROR or\
             data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_SERVER_ERROR or\

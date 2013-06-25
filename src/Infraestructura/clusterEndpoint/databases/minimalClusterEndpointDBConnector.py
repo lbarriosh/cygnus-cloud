@@ -1,36 +1,66 @@
-# -*- coding: UTF8 -*-
+# -*- coding: utf8 -*-
 '''
-Lector de la base de datos de estado
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: MinimalClusterEndpointDBConnector.py    
+    Version: 5.0
+    Description: minimal cluster endpoint database connector 
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-@author: Luis Barrios Hernández
-@version: 4.0
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 from editionState_t import EDITION_STATE_T
 from ccutils.databases.connector import BasicDBConnector
 
 class MinimalClusterEndpointDBConnector(BasicDBConnector):
     """
-    Inicializa el estado del lector
-    Argumentos:
-        sqlUser: usuario SQL a utilizar
-        sqlPassword: contraseña de ese usuario
-        databaseName: nombre de la base de datos de estado
+    Minimal cluster endpoint database connector
     """
+    
     def __init__(self, sqlUser, sqlPassword, databaseName):
+        """
+        Initializes the connector's state
+        Args:
+            sqlUser: the MySQL user to use
+            sqlPassword: the MySQL password to use
+            databaseName: a MySQL database name.
+        """
         BasicDBConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         
     def getImageID(self, temporaryID):
+        """
+        Returns the image id associated with a temporary ID
+        Args:
+            temporaryID: a temporary ID
+        Returns:
+            the image id associated with the given image ID
+        """
         query = "SELECT imageID FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
         return self._executeQuery(query, True)        
         
-    def getActiveVMsData(self, ownerID, show_edited):
+    def getActiveVMsVNCData(self, ownerID, show_edited):
         """
-        Devuelve los datos de las máquinas virtuales activas
+        Returns the active virtual machine's data
         Argumentos:
-            ownerID: identificador del propietario de las máquinas. Si es None, se devolverán
-            los datos de todas las máquinas virtuales.
-        Devuelve: 
-            una lista de diccionarios. Cada uno contiene los datos de una máquina
+            ownerID: the virtual machines' owner. If it's None, all the active virtual machines' VNC data
+            will be returned
+            show_edited: if it's True, the edition virtual machines data will also be returned.
+        Returns:
+            a list of dictionaries. Each one contains an active virtual machine's VNC data
         """
         if (ownerID == None):            
             if (show_edited) :
@@ -63,14 +93,13 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             retrievedData.append(d)
         return retrievedData 
     
-    def getVMDistributionData(self):
+    def getImageCopiesDistributionData(self):
         """
-        Devuelve la distribución de todas las máquinas virtuales
-        Argumentos:
-            Ninguno
-        Devuelve: 
-            una lista de diccionarios. Cada uno contiene una ubicación de una
-            imagen.
+        Returns all the image copies distribution.
+        Args:
+            None
+        Returns:
+            a list of dictionaries. Each one contains an image location's data.
         """
         command = "SELECT * FROM VirtualMachineDistribution;"
         results = self._executeQuery(command, False)
@@ -85,13 +114,13 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             retrievedData.append(d)
         return retrievedData 
     
-    def getVMServersData(self):
+    def getVMServersConfiguration(self):
         """
-        Devuelve los datos básicos de todos los servidores de máquinas virtuales
-        Argumentos:
-            Ninguno
-        Returns: una lista de diccionarios, cada uno de los cuales contiene los datos
-        de un servidor de máquinas virtuales
+        Returns all the virtual machine servers configuration
+        Args:
+            None
+        Returns:
+            a list of dictionaries. Each one contains a virtual machine server's configuration.
         """
         command = "SELECT * FROM VirtualMachineServer;"
         results = self._executeQuery(command, False)
@@ -109,7 +138,13 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
         return retrievedData    
     
     def getImageData(self, imageID):
-        
+        """
+        Returns an image's data
+        Args:
+            imageID: a permanent or a temporary image ID
+        Returns:
+            a dictionary containing the image's data
+        """
         lookAtEditedImage = True
         
         if (isinstance(imageID, int)) :
@@ -153,6 +188,14 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
         return d       
     
     def getBootableImagesData(self, imageIDs):
+        """
+        Returns the bootable image data
+        Args:
+            imageID: a list of image identifiers. If it's not empty, it will be used
+            to filter the query results.
+        Returns:
+            A list of dictionaries. Each one contains a bootable image's data.
+        """
         query = "SELECT imageID, name, description, vanillaImageFamilyID,\
                 osFamily, osVariant FROM Image WHERE isBootable = 1"
         if (imageIDs != []) :
@@ -175,6 +218,13 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
         return rows
     
     def getBaseImagesData(self):
+        """
+        Returns the base images data
+        Args:
+            None
+        Returns: 
+             A list of dictionaries. Each one contains a base image's data.
+        """
         query = "SELECT imageID, name, description, vanillaImageFamilyID,\
                 osFamily, osVariant FROM Image WHERE isBaseImage = 1;"
         result = self._executeQuery(query, False)
@@ -189,6 +239,13 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             return rows
         
     def getEditedImageIDs(self, userID=None):
+        """
+        Returns the edited images temporary IDs
+        Args:
+            userID: a user ID. If it's none, all the edited images' IDs will be returned
+        Returns:
+            a list containing the edited images' temporary IDs.
+        """
         if (userID != None) :
             query = "SELECT temporaryID FROM EditedImage WHERE ownerID = {0};".format(userID)
         else :
@@ -200,7 +257,14 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
                 rows.append(str(row))
         return rows
     
-    def getVanillaImageFamilyID(self, imageID):
+    def getVMFamilyID(self, imageID):
+        """
+        Returns the virtual machine family ID associated with an image.
+        Args:
+            imageID: an image ID
+        Returns:
+            the virtual machine family ID associated with the given image.
+        """
         if (isinstance(imageID, int)) :
             query = "SELECT vanillaImageFamilyID FROM Image WHERE imageID = {0}".format(imageID)
             result = self._executeQuery(query, True)
@@ -212,15 +276,29 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             query = "SELECT vanillaImageFamilyID FROM EditedImage WHERE temporaryID = '{0}'".format(imageID)
             return self._executeQuery(query, True)
         
-    def getVanillaImageFamilyData(self, vanillaImageFamilyID):
-        query = "SELECT familyName, ramSize, vCPUs, osDiskSize, dataDiskSize FROM VanillaImageFamily WHERE familyID = {0}".format(vanillaImageFamilyID)
+    def getVMFamilyData(self, vmFamilyID):
+        """
+        Returns a virtual machine family data
+        Args:
+            vmFamilyID: a virtual machine family ID
+        Returns:
+            A dictionary containing the virtual machine family's data
+        """
+        query = "SELECT familyName, ramSize, vCPUs, osDiskSize, dataDiskSize FROM VanillaImageFamily WHERE familyID = {0}".format(vmFamilyID)
         result = self._executeQuery(query, True)
         if (result == None) :
             return None
         else :
             return {"Name" : str(result[0]), "RAMSize" : result[1], "VCPUs": result[2], "OSDiskSize" : result[3], "DataDiskSize" : result[4]}
         
-    def getMaxVanillaImageFamilyData(self):
+    def getMaxVMFamilyData(self):
+        """
+        Returns the most powerful virtual machine family data
+        Args:
+            None
+        Returns:
+            A dictionary containing the most powerful virtual machine family data
+        """
         query = "SELECT MAX(ramSize), MAX(vCPUs), MAX(osDiskSize), MAX(dataDiskSize) FROM VanillaImageFamily;"
         result = self._executeQuery(query, True)
         if (result == None) :
@@ -229,6 +307,13 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             return {"RAMSize" : result[0], "VCPUs": result[1], "OSDiskSize" : result[2], "DataDiskSize" : result[3]}
         
     def getImageRepositoryStatus(self):
+        """
+        Returns the image repository current status
+        Args:
+            None
+        Returns:
+            A dictionary containing the image repository current status
+        """
         query = "SELECT freeDiskSpace, availableDiskSpace, repositoryStatus FROM ImageRepositoryStatus;"
         result = self._executeQuery(query, True)
         if (result == None) :
@@ -241,6 +326,13 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             return d
         
     def getVirtualMachineServerStatus(self, serverName):
+        """
+        Returns a virtual machine server's status
+        Args:
+            A virtual machine server's name
+        Returns:
+            a dictionary containing the virtual machine server's status
+        """
         query = "SELECT hosts, ramInUse, ramSize, freeStorageSpace, availableStorageSpace, \
             freeTemporarySpace, availableTemporarySpace, activeVCPUs, physicalCPUs\
             FROM VirtualMachineServerStatus WHERE serverName = '{0}';".format(serverName)
@@ -261,6 +353,13 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
             return d  
         
     def getOSTypes(self):
+        """
+        Returns the registered OS types
+        Args:
+            None
+        Returns:
+            a list of dictionaries. Each one contains one of the registered OS types data.
+        """
         query = "SELECT familyID, familyName FROM OSFamily;"
         results = self._executeQuery(query, False)
         if (results == None) :
@@ -274,6 +373,13 @@ class MinimalClusterEndpointDBConnector(BasicDBConnector):
         return retrievedData
         
     def getOSTypeVariants(self,familyID):
+        """
+        Returns the registered OS variants
+        Args:
+            None
+        Returns:
+            a list of dictionaries. Each one contains one of the registered OS variantas data.
+        """
         query = "SELECT variantID, variantName FROM OSVariant WHERE familyID = '{0}';".format(familyID)
         results = self._executeQuery(query, False)
         if (results == None) :
