@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Tester del repositorio
-@author: Luis Barrios Hernández
-@version: 3.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: imageRepositoryConnectionUtility.py    
+    Version: 1.0
+    Description: image repository connection utility
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 from __future__ import print_function
 
@@ -20,9 +39,11 @@ class TesterCallback(NetworkCallback):
         
     def processPacket(self, packet):
         global user_input
+        global workingDirectory
         data = self.__repositoryPacketHandler.readPacket(packet)
         if (data['packet_type'] == PACKET_T.ADDED_IMAGE_ID) :
-            print("Added image ID: {0}".format(data['addedImageID']))
+            print("The new image ID is: {0}".format(data['addedImageID']))
+            print("Please write it down. You'll need it later")
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_ERROR or data['packet_type'] == PACKET_T.RETR_ERROR) :
             print("Retrieve error: " + str(data['errorDescription']))
         elif (data['packet_type'] == PACKET_T.RETR_REQUEST_RECVD) :
@@ -31,7 +52,7 @@ class TesterCallback(NetworkCallback):
             print("Downloading file...")
             ftpClient = FTPClient()
             ftpClient.connect(self.__ip_address, data['FTPServerPort'], 5, data['username'], data['password'])
-            ftpClient.retrieveFile(data['fileName'], "/home/luis", data['serverDirectory']) 
+            ftpClient.retrieveFile(data['fileName'], workingDirectory, data['serverDirectory']) 
             ftpClient.disconnect()
             print("Transfer completed")
         elif (data['packet_type'] == PACKET_T.STOR_REQUEST_ERROR or data['packet_type'] == PACKET_T.STOR_ERROR) :
@@ -44,17 +65,17 @@ class TesterCallback(NetworkCallback):
             ftpClient = FTPClient()
             ftpClient.connect(self.__ip_address, data['FTPServerPort'], 100, data['username'], data['password'])
             if (data['fileName'] == '') :
-                fileName = raw_input('File to upload (it MUST contain the image ID): ')
+                fileName = raw_input('File to upload (its name MUST be the given image ID): ')
             else :
                 fileName = data['fileName']
-            ftpClient.storeFile(fileName, "/home/luis", data['serverDirectory']) 
+            ftpClient.storeFile(fileName, workingDirectory, data['serverDirectory']) 
             ftpClient.disconnect()
             print("Transfer completed")
             user_input = False
         elif (data['packet_type'] == PACKET_T.DELETE_REQUEST_RECVD):
             print("The image repository says: delete request received")
         elif (data['packet_type'] == PACKET_T.STATUS_DATA):
-            print("Image repository disk status: {0} KB free, {1} KB available".format(data["FreeDiskSpace"], data["TotalDiskSpace"]))   
+            print("Image repository disk usage: {0} KB free, {1} KB available".format(data["FreeDiskSpace"], data["TotalDiskSpace"]))   
         elif (data['packet_type'] == PACKET_T.IMAGE_EDITION_CANCELLED):
             print("The image repository says: image edition cancelled")  
         else:
@@ -118,6 +139,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             print("\tretrieveImage <imageID>: downloads an image from the repository")
             print("\tstoreImage <imageID>: uploads a file to the repository")
             print("\tdeleteImage <imageID>: deletes an image from the repository")
+            print("\tstatus: prints the image repository's current status")
             print("\thalt: shuts down the image repository")
             print("\thelp: prints the following help message")
             print("\tquit: closes this application")
@@ -128,31 +150,35 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
 
 if __name__ == "__main__" :
     global user_input
-    user_input = False
+    global workingDirectory
+    user_input = False   
     print('*' * 80)
     print('*' * 80)
     printLogo()
-    print('Image repository tester')
-    print('Version 3.0')
+    print('Image repository connection utility')
+    print('Version 1.0')
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Infrastructure/Certificates")
+    networkManager = NetworkManager(".")
     networkManager.startNetworkService()
-    # Create the packet handler
     pHandler = ImageRepositoryPacketHandler(networkManager)
-    # Ask for the port and the IP address
-    ip_address = raw_input("Repository IP address: ")
-    port = raw_input("Repository commands port: ")
+    ip_address = raw_input("Image repository IP address: ")
+    port = raw_input("Image repository control connection port: ")
     try :
         port = int(port)
         networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler, ip_address), True)
         while not networkManager.isConnectionReady(ip_address, port) :
             sleep(0.1)
+        correct = False
+        while not correct: 
+            workingDirectory = raw_input("Working directory: ")
+            answer = raw_input("The working directory is \'{0}\'. Is this correct? [Y/n] ".format(workingDirectory))
+            correct = answer == "Y" or answer == "y" or answer == ""
         end = False
         while not end :
             if (not user_input) :
-                command = raw_input('>')
+                command = raw_input('> ')
                 tokens = command.split()
                 end = process_command(tokens, networkManager, pHandler, ip_address, port)
             else :

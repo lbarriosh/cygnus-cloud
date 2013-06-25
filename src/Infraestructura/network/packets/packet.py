@@ -33,7 +33,7 @@ Packet_TYPE = enum('DATA')
 # Data type enum type. DO NOT MOFIFY!
 _DATA_TYPE = enum("INT", "LONG", "STRING", "FLOAT")
 
-__max_packet_length = 64 * 1024 # 64 KB
+_max_packet_length = 64 * 1024 # 64 KB
 
 class _Packet(object):
     """
@@ -395,7 +395,7 @@ class _Packet(object):
             raise PacketException("The given value is not an " + self.__extractTypeName(str(dataType)) + " instance")
         dataToAdd = str(value)
         newLength = len(self._data) + len(str(field)) + len(dataToAdd) + 2
-        if (newLength > __max_packet_length):
+        if (newLength > _max_packet_length):
             # The maximum TCP segment length is 65536 bytes. 536 bytes are reserved for the packet header.
             raise PacketException("There\'s not enough space to hold a " + self.__extractTypeName(str(dataType))\
                                    + " value")

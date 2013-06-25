@@ -66,7 +66,7 @@ class FTPClient(object):
             Nothing
         """
         if (serverDirectory != None) :
-            self.__ftp.cwd(serverDirectory)        
+            self.__ftp.cwd(serverDirectory)   
         self.__ftp.storbinary("STOR " + fileName, open(os.path.join(localDirectory, fileName), "rb"))        
     
     def retrieveFile(self, fileName, localDirectory, serverDirectory=None):
