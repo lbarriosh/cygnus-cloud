@@ -543,9 +543,12 @@ class EndpointPacketReactor(object):
             
         if (unregister) :
             self.__commandsDBConnector.deleteVMServer(key)
+        else:
+            self.__commandsDBConnector.updateVMServerStatus(serverID, SERVER_STATE_T.SHUT_DOWN)
             
         if (useCommandID) :
             p = self.__packetHandler.createCommandExecutedPacket(commandID)
+            self.__networkManager.sendPacket('', self.__listenningPort, p)
         
     def __sendStatusData(self, queryMethod, packetCreationMethod):
         """
@@ -619,7 +622,7 @@ class EndpointPacketReactor(object):
         Returns:
             Nothing
         """
-        p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_VM_VNC_DATA)
+        p = self.__vmServerPacketHandler.createVMServerDataRequestPacket(VMSRVR_PACKET_T.QUERY_ACTIVE_VM_DATA)
         
         connectionData = self.__commandsDBConnector.getActiveVMServersConnectionData()
         for cd in connectionData :            

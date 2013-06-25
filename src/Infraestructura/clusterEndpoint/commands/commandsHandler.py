@@ -121,18 +121,18 @@ class CommandsHandler(object):
         args = "{0}${1}${2}${3}".format(vmServerIP, vmServerPort, vmServerName, isEditionServer)
         return (COMMAND_TYPE.REGISTER_VM_SERVER, args)
     
-    def createVMServerUnregistrationOrShutdownCommand(self, unregister, vmServerNameOrIP, isShutDown):
+    def createVMServerUnregistrationOrShutdownCommand(self, unregister, vmServerNameOrIP, haltVMs):
         """
         Creates a virtual machine server unregistration or shutdown command
         Args:
             unregister: if it's True, an virtual machine server unregistration command will be created. If it's False,
                 a virtual machine server shutdown command will be created.
             vmServerNameOrIPAddress: the virtual machine server's name or IPv4 address
-            isShutDown: indicates if the virtual machine server must be shut down
+            haltVMs: indicates if the virtual machines must be immediately shut down or not
         Returns:
             A tuple (command type, serialized command args)
         """
-        args =  "{0}${1}${2}".format(unregister, vmServerNameOrIP, isShutDown)
+        args =  "{0}${1}${2}".format(unregister, vmServerNameOrIP, haltVMs)
         return (COMMAND_TYPE.UNREGISTER_OR_SHUTDOWN_VM_SERVER, args)
     
     def createVMServerConfigurationChangeCommand(self, serverNameOrIPAddress, newName, newIPAddress, newPort, newImageEditionBehavior):

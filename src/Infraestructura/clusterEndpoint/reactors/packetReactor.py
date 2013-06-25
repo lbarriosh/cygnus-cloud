@@ -166,13 +166,13 @@ class ClusterEndpointPacketReactor(object):
         Returns:
             Nothing
         """
-            commandData = self.__commandsDBConnector.getCommandData(commandID)                    
-            if (commandData["CommandType"] == COMMAND_TYPE.VM_BOOT_REQUEST) :
-                (outputType, outputContent) = self.__commandsHandler.createVMConnectionDataOutput(
-                            data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"]) 
-                self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)                        
-            else :
-                self.__endpointDBConnector.updateEditedImageState(data["CommandID"], EDITION_STATE_T.VM_ON)
+        commandData = self.__commandsDBConnector.getCommandData(commandID)                    
+        if (commandData["CommandType"] == COMMAND_TYPE.VM_BOOT_REQUEST) :
+            (outputType, outputContent) = self.__commandsHandler.createVMConnectionDataOutput(
+                data["VNCServerIPAddress"], data["VNCServerPort"], data["VNCServerPassword"]) 
+            self.__commandsDBConnector.addCommandOutput(commandID, outputType, outputContent)                        
+        else :
+            self.__endpointDBConnector.updateEditedImageState(data["CommandID"], EDITION_STATE_T.VM_ON)
                 
     def __processImageCreatedPacket(self, commandID, data):
         """

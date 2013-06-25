@@ -94,8 +94,8 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
                                                            receivedData[8], receivedData[9], receivedData[0])
         self._executeUpdate(update)
             
-    def __deleteVMServerStatusData(self, serverID):
-        update = "DELETE FROM VirtualMachineServerStatus WHERE serverID = '{0}';".format(serverID)
+    def __deleteVMServerStatusData(self, serverName):
+        update = "DELETE FROM VirtualMachineServerStatus WHERE serverName = '{0}';".format(serverName)
         self._executeUpdate(update)
     
     def processVMServerSegment(self, segmentNumber, segmentCount, data):

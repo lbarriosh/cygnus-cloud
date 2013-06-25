@@ -119,32 +119,30 @@ class ClusterConnector(object):
         (commandType, commandArgs) = self.__commandsHandler.createVMServerRegistrationCommand(vmServerIP, vmServerPort, vmServerName, isEditionServer)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
         
-    def unregisterVMServer(self, vmServerNameOrIP, isShutDown):
+    def unregisterVMServer(self, vmServerNameOrIP, halt):
         """
         Unregisters a virtual machine server
         Args:
             unregister: if it's True, an virtual machine server unregistration command will be created. If it's False,
                 a virtual machine server shutdown command will be created.
             vmServerNameOrIPAddress: the virtual machine server's name or IPv4 address
-            isShutDown: indicates if the virtual machine server must be shut down
+            halt: indicates if the virtual machines must be immediately shut down or not
         Returns:
             a command ID
         """
-        (commandType, commandArgs) = self.__commandsHandler.createVMServerUnregistrationOrShutdownCommand(True, vmServerNameOrIP, isShutDown)
+        (commandType, commandArgs) = self.__commandsHandler.createVMServerUnregistrationOrShutdownCommand(True, vmServerNameOrIP, halt)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
-    def shutdownVMServer(self, vmServerNameOrIP, isShutDown):
+    def shutdownVMServer(self, vmServerNameOrIP, haltVMs):
         """
         Shuts down a virtual machine server
         Args:
-            unregister: if it's True, an virtual machine server unregistration command will be created. If it's False,
-                a virtual machine server shutdown command will be created.
             vmServerNameOrIPAddress: the virtual machine server's name or IPv4 address
-            isShutDown: indicates if the virtual machine server must be shut down
+            haltVMs: indicates if the virtual machines must be immediately shut down or not
         Returns:
             a command ID
         """
-        (commandType, commandArgs) = self.__commandsHandler.createVMServerUnregistrationOrShutdownCommand(False, vmServerNameOrIP, isShutDown)
+        (commandType, commandArgs) = self.__commandsHandler.createVMServerUnregistrationOrShutdownCommand(False, vmServerNameOrIP, haltVMs)
         return self.__commandsDBConnector.addCommand(self.__userID, commandType, commandArgs)
     
     def bootUpVMServer(self, vmServerNameOrIP):
@@ -489,7 +487,4 @@ class ClusterConnector(object):
 if __name__ == "__main__" :
     connector = ClusterConnector(1)
     connector.connectToDatabases("ClusterEndpointDB", "CommandsDB", "website_user", "CygnusCloud")
-    print connector.getImageData(1)
-    print connector.getImageData("1|1371710656.44")
-    print connector.getImageData("1|1371712264.21")
-    
+    commandID = connector.destroyDomain("1|1372178498.7")

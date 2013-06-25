@@ -357,16 +357,16 @@ class VMServerReactor(NetworkCallback):
         for domainName in activeDomainNames:            
             imageID = self.__commandsDBConnector.getDomainImageID(domainName)
             if (imageID == None) :
-                return
+                return 0, 0
             dataImagePath = self.__commandsDBConnector.getDomainDataImagePath(domainName)
             if (dataImagePath == None) :
-                return
+                return 0, 0
             osImagePath = self.__commandsDBConnector.getDomainOSImagePath(domainName)          
             if (osImagePath == None):
-                return   
+                return 0, 0
             isEditedImage = self.__commandsDBConnector.getBootableFlag(imageID)      
             if (isEditedImage == None):
-                return      
+                return 0, 0
             dataSpace = self.__getAllocatedSpace(dataImagePath)
             if (isEditedImage) :
                 osSpace = self.__getAllocatedSpace(osImagePath)

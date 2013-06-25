@@ -95,7 +95,7 @@ class CommandsProcessor(object):
                 if (commandType != COMMAND_TYPE.HALT) :
                     serializedCommandID = "{0}|{1}".format(commandID[0], commandID[1])                    
                     if (commandType == COMMAND_TYPE.BOOTUP_VM_SERVER) :                    
-                        packet = self.__packetHandler.createVMServerBootUpPacket(parsedArgs["VMServerNameOrIP"], serializedCommandID)
+                        packet = self.__packetHandler.createVMServerBootPacket(parsedArgs["VMServerNameOrIP"], serializedCommandID)
                     elif (commandType == COMMAND_TYPE.REGISTER_VM_SERVER) :
                         packet = self.__packetHandler.createVMServerRegistrationPacket(parsedArgs["VMServerIP"], 
                             parsedArgs["VMServerPort"], parsedArgs["VMServerName"], parsedArgs["IsVanillaServer"], serializedCommandID)
@@ -130,7 +130,7 @@ class CommandsProcessor(object):
                    
                     elif (commandType == COMMAND_TYPE.DELETE_IMAGE_FROM_INFRASTRUCTURE):
                         self.__endpointDBConnector.deleteImage(parsedArgs["ImageID"])
-                        packet = self.__packetHandler.createImageDeletionPacket(parsedArgs["ImageID"], serializedCommandID)
+                        packet = self.__packetHandler.createFullImageDeletionPacket(parsedArgs["ImageID"], serializedCommandID)
                     
                     elif (commandType == COMMAND_TYPE.AUTO_DEPLOY_IMAGE):
                         if (self.__endpointDBConnector.affectsToNewOrEditedImage(serializedCommandID)) :
