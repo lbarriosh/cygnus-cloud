@@ -249,9 +249,9 @@ class LibvirtConnector(object):
         """
         return self.__libvirtConnection.numOfDomains()
     
-    def getStatusInfo(self):
+    def getStatusData(self):
         """
-        Returns libvirt's status info
+        Returns libvirt's status data
         Args:
             None
         Returns:

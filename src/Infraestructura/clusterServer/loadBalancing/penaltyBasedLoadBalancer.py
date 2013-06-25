@@ -82,7 +82,7 @@ class PenaltyBasedLoadBalancer(LoadBalancer):
             
         # Step 2: obtain the image's virtual machine family features
         
-        vmFamilyID = self._dbConnector.getFamilyID(imageID)
+        vmFamilyID = self._dbConnector.getVMFamilyID(imageID)
         if (vmFamilyID == None) :
             return (0, ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE)            
         

@@ -304,7 +304,7 @@ class VMServerReactor(NetworkCallback):
         Returns:
             Nothing
         """
-        info = self.__domainHandler.getLibvirtStatusInfo()
+        info = self.__domainHandler.getLibvirtStatusData()
         realCPUNumber = multiprocessing.cpu_count()
         freeOutput = ChildProcessManager.runCommandInForeground("free -k", VMServerException)
         

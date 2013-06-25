@@ -55,7 +55,7 @@ class TesterCallback(NetworkCallback):
             print("Virtual machines' connection data")
             print(packet._getData())
         elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_DOMAIN_UIDS):
-            print("Active domain IDs: " + data["Domain_UIDs"])
+            print("Active domain IDs: " + str(data["Domain_UIDs"]))
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
             print("Image edition error: " + str(data["ErrorDescription"]))  
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR) :

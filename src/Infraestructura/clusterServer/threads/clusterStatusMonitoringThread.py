@@ -70,8 +70,9 @@ class ClusterStatusMonitoringThread(BasicThread):
             Nothing
         """
         for serverID in self.__dbConnector.getVMServerIDs() :
-            serverData = self.__dbConnector.getVMServerBasicData(serverID)
-            if (serverData["ServerStatus"] != SERVER_STATE_T.SHUT_DOWN and serverData["ServerStatus"] != SERVER_STATE_T.CONNECTION_TIMED_OUT) :
+            serverData = self.__dbConnector.getVMServerConfiguration(serverID)
+            if (serverData["ServerStatus"] != SERVER_STATE_T.SHUT_DOWN and serverData["ServerStatus"] != SERVER_STATE_T.CONNECTION_TIMED_OUT
+                and serverData["ServerStatus"] != SERVER_STATE_T.RECONNECTING) :
                 self.__sendStatusRequestToVMServer(serverData["ServerIP"], serverData["ServerPort"])
         p = self.__imageRepositoryPacketHandler.createStatusRequestPacket()
         self.__networkManager.sendPacket(self.__repositoryIP, self.__repositoryPort, p) 

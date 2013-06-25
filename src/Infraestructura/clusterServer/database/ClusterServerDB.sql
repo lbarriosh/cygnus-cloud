@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS VMServer(serverId INTEGER PRIMARY KEY AUTO_INCREMENT,
 	serverName VARCHAR(30) NOT NULL, serverStatus INTEGER, serverIP VARCHAR(15), serverPort INTEGER,
 	isEditionServer BIT, UNIQUE(serverName), UNIQUE(serverIP, serverPort));
 
-CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER, status TINYINT,
+CREATE TABLE IF NOT EXISTS ImageOnServer(serverId INTEGER, imageId INTEGER, state TINYINT,
 	PRIMARY KEY(serverId,imageId),
 	FOREIGN KEY(serverId) REFERENCES VMServer(serverId) ON DELETE CASCADE ON UPDATE CASCADE);
 

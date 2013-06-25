@@ -77,7 +77,7 @@ class ClusterServerMainReactor(object):
         configurator.runSQLScript(dbName, scriptPath)
         configurator.addUser(dbUser, dbPassword, dbName, True)
         self.__dbConnector = ClusterServerDatabaseConnector(dbUser, dbPassword, dbName)
-        self.__dbConnector.resetVMServersStatus()
+        self.__dbConnector.initializeVMServersStatus()
         
     def startListenning(self, useSSL, certificatePath, listenningPort, repositoryIP, repositoryPort, vmServerStatusUpdateInterval):
         """

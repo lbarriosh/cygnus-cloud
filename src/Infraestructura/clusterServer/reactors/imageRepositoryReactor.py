@@ -92,5 +92,5 @@ class ImageRepositoryPacketReactor(object):
         p = self.__vmServerPacketHandler.createDeleteImagePacket(imageID, commandID)
         serverIDs = self.__dbConnector.getHosts(imageID, IMAGE_STATE_T.DELETE)
         for serverID in serverIDs :
-            serverData = self.__dbConnector.getVMServerBasicData(serverID)
+            serverData = self.__dbConnector.getVMServerConfiguration(serverID)
             self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)

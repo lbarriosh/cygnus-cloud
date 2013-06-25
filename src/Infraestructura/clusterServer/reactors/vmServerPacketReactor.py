@@ -64,7 +64,7 @@ class VMServerPacketReactor(object):
             self.__updateVMServerStatus(data)
         elif (data["packet_type"] == VMSRVR_PACKET_T.DOMAIN_CONNECTION_DATA) :
             self.__sendVMConnectionData(data)
-        elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_VNC_DATA) :
+        elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_VM_DATA) :
             self.__sendDomainsVNCConnectionData(packet)
         elif (data["packet_type"] == VMSRVR_PACKET_T.ACTIVE_DOMAIN_UIDS) :
             self.__processActiveDomainUIDs(data)

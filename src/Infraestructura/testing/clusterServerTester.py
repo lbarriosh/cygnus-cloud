@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Definiciones del tester del servidor de máquinas virtuales
-@author: Luis Barrios Hernández
-@version: 6.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: clusterServerTester.py    
+    Version: 7.0
+    Description: cluster server tester
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 from __future__ import print_function
 
@@ -95,7 +114,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createVMServerRegistrationPacket(ip, serverPort, name, isEditionServer, '')
             networkManager.sendPacket(ip_address, port, p)
             return False  
-        elif (command == "obtainVMServerStatus") :
+        elif (command == "obtainVMServerConfiguration") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_VM_SERVERS_STATUS)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "obtainVMDistributionData") :
@@ -123,7 +142,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
         elif (command == "halt") :
             p = pHandler.createHaltPacket(True)
             networkManager.sendPacket(ip_address, port, p)
-        elif (command == "obtainActiveVMsData") :
+        elif (command == "obtainActiveVMsVNCData") :
             p = pHandler.createDataRequestPacket(PACKET_T.QUERY_ACTIVE_VM_VNC_DATA)
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "destroyDomain") :
@@ -170,34 +189,44 @@ def displayHelpMessage():
     print("Usage: ")
     print("=====")
     print("\tregisterVMServer <IP> <Port> <Name <IsEditionServer>: registers a virtual machine server")
-    print("\tobtainVMServerStatus: obtains all the virtual machine server's status")
-    print("\tobtainVMDistributionData: obtains the virtual machines' distribution data")
-    print("\tunregisterVMServer <Name or IP> <Halt?>: unregisters a virtual machine server")
-    print("\tshutdownVMServer <Name or IP> <Halt?>: shuts down a virtual machine server")
+    print("\tobtainVMServerConfiguration: prints all the virtual machine server's status")
+    print("\tobtainVMDistributionData: prints the active virtual machines' distribution data")
+    print("\tobtainVMServerResourceUsage: prints the active virtual machine server's resource usage")  
+    print("\tobtainActiveVMsVNCData: prints the active virtual machines' VNC connection data")  
+    print("\tobtainImageRepositoryStatus: prints the image repository status")
+    print("\tunregisterVMServer <Name or IP> <Halt VMs?>: unregisters a virtual machine server")
+    print("\tshutdownVMServer <Name or IP> <Halt VMs?>: shuts down a virtual machine server")    
     print("\tbootUpVMServer <Name or IP>: boots up a virtual machine server")
+    print("\tchangeVMServerConfiguration <Name or IP> <New Name> <New IP> <New Port> <New image edition behavior>:")
+    print("\t\tchanges a virtual machine server's configuration")
+    print("\tHalt: shuts down a virtual machine server")        
     print("\tbootUpVM <ImageID> <UserID> <DomainID>: boots up a virtual machine")
     print("\tdestroyDomain <DomainID>: destroys a virtual machine")
-    print("\tobtainActiveVMsData: obtains the active virtual machines' data")
-    print("\tchangeVMServerConfiguration <Name or IP> <New Name> <New IP> <New Port> <New vanilla image behavior>")
+    print("\trebootDomain <DomainID>: reboots a virtual machine")
+    print("\tdeployImage <serverID> <imageID>: deploys an image on a virtual machine server")
+    print("\tdeleteImageFromServer <serverID> <imageID>: deletes an image on a virtual machine server")
+    print("\tcreateImage <sourceImageID>: creates a new image")
+    print("\teditImage <editedImageID>: edits an image")
+    print("\tdeleteImageFromInfrastructure <imageID>: deletes an image from the whole infrastructure")
+    print("\tdeployEditedImage <imageID>: updates an edited image on all the virtual machine servers")
+    print("\tautoDeployImage <imageID> <instances>: performs an auto-deployment operation")
     print("\tquit: closes this application")
-    
+    print("\thelp: prints this help message")
 
 if __name__ == "__main__" :
     print('*' * 80)
     print('*' * 80)
     printLogo()
     print('Cluster Server tester')
-    print('Version 6.0')
+    print('Version 7.0')
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Infrastructure/Certificates")
+    networkManager = NetworkManager(".")
     networkManager.startNetworkService()
-    # Create the packet handler
     pHandler = ClusterServerPacketHandler(networkManager)
-    # Ask for the port and the IP address
-    ip_address = raw_input("Server IP address: ")
-    port = raw_input("Server port: ")
+    ip_address = raw_input("Cluster server IP address: ")
+    port = raw_input("Cluster server control connection port: ")
     try :
         port = int(port)
         networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
@@ -205,7 +234,7 @@ if __name__ == "__main__" :
             sleep(0.1)
         end = False
         while not end :
-            command = raw_input('>')
+            command = raw_input('> ')
             tokens = command.split()
             end = process_command(tokens, networkManager, pHandler, ip_address, port)
     

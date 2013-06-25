@@ -85,7 +85,7 @@ class EndpointPacketReactor(object):
         if (data["packet_type"] == PACKET_T.REGISTER_VM_SERVER) :
             self.__registerVMServer(data)
         elif (data["packet_type"] == PACKET_T.QUERY_VM_SERVERS_STATUS) :
-            self.__sendStatusData(self.__dbConnector.getVMServerBasicData, self.__packetHandler.createVMServerStatusPacket)
+            self.__sendStatusData(self.__dbConnector.getVMServerConfiguration, self.__packetHandler.createVMServerStatusPacket)
         elif (data["packet_type"] == PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER) :
             self.__unregisterOrShutdownVMServer(data)
         elif (data["packet_type"] == PACKET_T.BOOTUP_VM_SERVER) :
@@ -168,7 +168,7 @@ class EndpointPacketReactor(object):
                 p = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_BOOTUP_ERROR, 
                                                               ERROR_DESC_T.CLSRVR_UNKNOWN_VMSRVR, data["CommandID"])
             else :
-                serverData = self.__dbConnector.getVMServerBasicData(serverId)
+                serverData = self.__dbConnector.getVMServerConfiguration(serverId)
                 
                 if (serverData["ServerStatus"] == SERVER_STATE_T.SHUT_DOWN or 
                     serverData["ServerStatus"] == SERVER_STATE_T.CONNECTION_TIMED_OUT) :                   
@@ -224,7 +224,7 @@ class EndpointPacketReactor(object):
                                                          familyFeatures["RAMSize"], 0, familyFeatures["dataDiskSize"], 
                                                          familyFeatures["vCPUs"], 1)
             p = self.__vmServerPacketHandler.createVMBootPacket(vmID, userID, data["CommandID"])
-            serverData = self.__dbConnector.getVMServerBasicData(serverID)
+            serverData = self.__dbConnector.getVMServerConfiguration(serverID)
             error = self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)    
             if (error != None) :
                 p = self.__packetHandler.createErrorPacket(PACKET_T.VM_BOOT_FAILURE, 
@@ -269,7 +269,7 @@ class EndpointPacketReactor(object):
                         self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
                                                          0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
                                                          0, 0, 1)
-                        connectionData = self.__dbConnector.getVMServerBasicData(serverID)
+                        connectionData = self.__dbConnector.getVMServerConfiguration(serverID)
                         self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)   
                 else :
                     if (not self.__dbConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.EDITED)) :
@@ -311,7 +311,7 @@ class EndpointPacketReactor(object):
                         self.__dbConnector.allocateVMServerResources(data["CommandID"], serverID, 
                                                          0, familyFeatures["osDiskSize"] + familyFeatures["dataDiskSize"], 
                                                          0, 0, 1)
-                        connectionData = self.__dbConnector.getVMServerBasicData(serverID)            
+                        connectionData = self.__dbConnector.getVMServerConfiguration(serverID)            
                         self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)     
 
     def __deleteImageFromInfrastructure(self, data):
@@ -337,7 +337,7 @@ class EndpointPacketReactor(object):
             p = self.__vmServerPacketHandler.createDeleteImagePacket(data["ImageID"], data["CommandID"])
             
             for serverID in self.__dbConnector.getHosts(data["ImageID"], IMAGE_STATE_T.DELETE) :
-                serverData = self.__dbConnector.getVMServerBasicData(serverID)
+                serverData = self.__dbConnector.getVMServerConfiguration(serverID)
                 self.__networkManager.sendPacket(serverData["ServerIP"], serverData["ServerPort"], p)
             
             self.__dbConnector.changeImageCopiesState(data["ImageID"], IMAGE_STATE_T.DELETE)
@@ -410,7 +410,7 @@ class EndpointPacketReactor(object):
         self.__dbConnector.allocateImageRepositoryResources(self.__repositoryIP, self.__repositoryPort, data["CommandID"], 
             zipFileAllocatedSpace)
         
-        connectionData = self.__dbConnector.getVMServerBasicData(serverID)
+        connectionData = self.__dbConnector.getVMServerConfiguration(serverID)
         p = self.__vmServerPacketHandler.createImageEditionPacket(self.__repositoryIP, self.__repositoryPort, data["ImageID"], modify, data["CommandID"], 
                                                                   data["OwnerID"])
         self.__networkManager.sendPacket(connectionData["ServerIP"], connectionData["ServerPort"], p)
@@ -426,7 +426,7 @@ class EndpointPacketReactor(object):
         """
         serverNameOrIPAddress = data["ServerNameOrIPAddress"]
         serverID = self.__dbConnector.getVMServerID(serverNameOrIPAddress)        
-        serverData = self.__dbConnector.getVMServerBasicData(serverID)
+        serverData = self.__dbConnector.getVMServerConfiguration(serverID)
         errorDescription = None        
             
         if (self.__dbConnector.isBeingEdited(data["ImageID"])) :
@@ -516,7 +516,7 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, p)  
             return
         
-        serverData = self.__dbConnector.getVMServerBasicData(serverID)            
+        serverData = self.__dbConnector.getVMServerConfiguration(serverID)            
         status = serverData["ServerStatus"]    
         if (status == SERVER_STATE_T.READY or status == SERVER_STATE_T.BOOTING) :  
             try :
@@ -645,7 +645,7 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             return       
         
-        connectionData = self.__dbConnector.getVMServerBasicData(serverID)
+        connectionData = self.__dbConnector.getVMServerConfiguration(serverID)
         if (reboot) :
             packet = self.__vmServerPacketHandler.createVMRebootPacket(data["DomainID"])
         else :
@@ -680,7 +680,7 @@ class EndpointPacketReactor(object):
             self.__networkManager.sendPacket('', self.__listenningPort, packet)
             return
         
-        status = self.__dbConnector.getVMServerBasicData(serverID)["ServerStatus"]
+        status = self.__dbConnector.getVMServerConfiguration(serverID)["ServerStatus"]
         
         if (status == SERVER_STATE_T.BOOTING or status == SERVER_STATE_T.READY) :
             packet = self.__packetHandler.createErrorPacket(PACKET_T.VM_SERVER_CONFIGURATION_CHANGE_ERROR,
