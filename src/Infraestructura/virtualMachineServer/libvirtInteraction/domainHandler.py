@@ -246,9 +246,6 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         bootableFlag = self.__dbConnector.getBootableFlag(self.__dbConnector.getDomainImageID(domainName))
         if (bootableFlag) :
             self.__libvirtConnection.destroyDomain(domainName)
-            # Libvirt borra las imágenes de disco, por lo que sólo tenemos que encargarnos de actualizar
-            # las bases de datos.
-            self.__freeDomainResources(domainName, False)
         else:
             self.__libvirtConnection.shutdownDomain(domainName)
             
@@ -296,7 +293,7 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
         packet = self.__packetManager.createVMConnectionParametersPacket(ip, port + 1, password, commandID)
         self.__networkManager.sendPacket('', self.__listenningPort, packet)
         
-    def onDomainStop(self, domainName):
+    def _onDomainStop(self, domainName):
         """
         This method will be called to handle a domain stop event.
         Args:
@@ -335,9 +332,9 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             ChildProcessManager.runCommandInForeground("rm " + osImagePath, None)
             dataDirectory = path.dirname(dataImagePath)
             osDirectory = path.dirname(osImagePath)
-            if (listdir(dataDirectory) == []) :
+            if (path.exists(dataDirectory) and listdir(dataDirectory) == []) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + dataDirectory, None)
-            if (osDirectory != dataDirectory and listdir(osDirectory) == []) :
+            if (osDirectory != dataDirectory and path.exists(osDirectory) and listdir(osDirectory) == []) :
                 ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, None)            
                     
         else :

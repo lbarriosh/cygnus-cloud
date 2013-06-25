@@ -188,4 +188,4 @@ class CompressionThread(BasicThread):
             if (definitionFileDirectory != None):
                 ChildProcessManager.runCommandInForeground("rm -rf " + definitionFileDirectory, None)
             if (zipFilePath != None):
-                ChildProcessManager.runCommandInForeground("rm -rf " + zipFilePath)
+                ChildProcessManager.runCommandInForeground("rm -rf " + zipFilePath, None)

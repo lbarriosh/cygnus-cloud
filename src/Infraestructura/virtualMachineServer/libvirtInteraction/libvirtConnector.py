@@ -133,7 +133,7 @@ class LibvirtConnector(object):
         Returns:
             Nothing
         """
-        self.__shutdownCallback.onDomainStop(domain.name())
+        self.__shutdownCallback._onDomainStop(domain.name())
         pass    
     
     def __onDomainShutDown(self, domain):
@@ -164,7 +164,7 @@ class LibvirtConnector(object):
                       "VNCport" : int(vnc_port),
                       "VNCip" : vnc_server_ip,
                       "VNCpassword" : vnc_password}
-        self.__startCallback.onDomainStart(domainInfo)    
+        self.__startCallback._onDomainStart(domainInfo)    
     
     def startDomain(self, definitionFile):
         """

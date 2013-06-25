@@ -1,10 +1,27 @@
-
 # -*- coding: utf8 -*-
 '''
-This module contains statements to connect to a virtual machine
-server and control it.
-@author: Luis Barrios Hernández
-@version: 7.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: virtualMachineServerTester.py    
+    Version: 8.0
+    Description: virtual machine server tester
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 from __future__ import print_function
 
@@ -37,6 +54,8 @@ class TesterCallback(NetworkCallback):
         elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_VM_DATA) :
             print("Virtual machines' connection data")
             print(packet._getData())
+        elif (packet_type == VM_SERVER_PACKET_T.ACTIVE_DOMAIN_UIDS):
+            print("Active domain IDs: " + data["Domain_UIDs"])
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_EDITION_ERROR) :
             print("Image edition error: " + str(data["ErrorDescription"]))  
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DELETION_ERROR) :
@@ -49,9 +68,10 @@ class TesterCallback(NetworkCallback):
             print("The virtual machine server says: the image deletion request has been processed")
         elif (packet_type == VM_SERVER_PACKET_T.IMAGE_DEPLOYED):
             print("The virtual machine server says: the image deployment request has been processed")
+        elif (packet_type == VM_SERVER_PACKET_T.INTERNAL_ERROR):
+            print("The virtual machine server says: internal error")
         else :
-            print("Error: a packet from an unexpected type has been received "+ str(packet_type))
-       
+            print("Error: a packet from an unexpected type has been received "+ str(packet_type))       
 
 def printLogo():
     print('\t   _____                             _____ _                 _ ')
@@ -81,6 +101,11 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createVMShutdownPacket(machineID)
             networkManager.sendPacket(ip_address, port, p)
             return False
+        elif (command == "rebootvm") :
+            machineID = tokens.pop(0)
+            p = pHandler.createVMRebootPacket(machineID)
+            networkManager.sendPacket(ip_address, port, p)
+            return False
         elif (command == "rebootvm"):
             machineID = tokens.pop(0)
             p = pHandler.createVMRebootPacket(machineID)
@@ -94,7 +119,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createVMServerDataRequestPacket(VM_SERVER_PACKET_T.SERVER_STATUS_REQUEST)
             networkManager.sendPacket(ip_address, port, p)
             return False
-        elif (command == "readConnectionData") :
+        elif (command == "getConnectionData") :
             p = pHandler.createVMServerDataRequestPacket(VM_SERVER_PACKET_T.QUERY_ACTIVE_VM_DATA)
             networkManager.sendPacket(ip_address, port, p)
             return False
@@ -118,12 +143,15 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
                 print("Error: unknown command")
             print("Usage: ")
             print("=====")
-            print("\tcreatevm <userID> <imageID> <machineID> : creates a virtual machine ")
+            print("\tcreatevm <imageID> <userID> <machineID> : creates a virtual machine ")
             print("\tdestroyvm <machineID>: destroys an active virtual machine")
+            print("\trebootvm <machineID>: reboots an active virtual machine")
             print("\tshutdown: asks the virtual machine server to terminate")
-            print("\tstatus: asks the virtual machine server the number of active VMs")
+            print("\tstatus: asks the virtual machine server for the number of active VMs")
+            print("\tgetConnectionData: asks the virtual machine server for the active VMs' VNC connection data")
             print("\teditImage <ImageRepositoryIP> <ImageRepositoryPort> <ImageID> <Modify>: creates or edits an image in the virtual machine server")
             print("\tdeployImage <ImageRepositoryIP> <ImageRepositoryPort> <ImageID>: deploys an existing image in the virtual machine server")
+            print("\tdeleteImage <ImageID>: deletes an image from the virtual machine server")
             print("\thalt: commands the virtual machine server to destroy all the virtual machines\n\t\t\
                 and exit immediately")
             print("\thelp: prints the following help message")
@@ -137,17 +165,15 @@ if __name__ == "__main__" :
     print('*' * 80)
     printLogo()
     print('Virtual Machine Server tester')
-    print('Version 7.0')
+    print('Version 8.0')
     print('*' * 80)
     print('*' * 80)
     print()
-    networkManager = NetworkManager("/home/luis/Infrastructure/Certificates")
+    networkManager = NetworkManager(".")
     networkManager.startNetworkService()
-    # Create the packet handler
     pHandler = VMServerPacketHandler(networkManager)
-    # Ask for the port and the IP address
-    ip_address = raw_input("Server IP address: ")
-    port = raw_input("Server port: ")
+    ip_address = raw_input("VM Server IP address: ")
+    port = raw_input("VM Server control connection port: ")
     try :
         port = int(port)
         networkManager.connectTo(ip_address, port, 10, TesterCallback(pHandler), True)
@@ -155,12 +181,10 @@ if __name__ == "__main__" :
             sleep(0.1)
         end = False
         while not end :
-            command = raw_input('>')
+            command = raw_input('> ')
             tokens = command.split()
             end = process_command(tokens, networkManager, pHandler, ip_address, port)
     
     except NetworkManagerException as e:
         print("Error: " + e.message)
     networkManager.stopNetworkService()
-    
-    

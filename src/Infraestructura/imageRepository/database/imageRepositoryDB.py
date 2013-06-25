@@ -99,7 +99,7 @@ class ImageRepositoryDBConnector(BasicDBConnector):
         if ("undefined" in result) :
             self.deleteImage(imageID)
         else :
-            self.changeImageCopiesState(imageID, IMAGE_STATUS_T.READY)
+            self.changeImageStatus(imageID, IMAGE_STATUS_T.READY)
     
     def deleteImage(self, imageID):
         """
@@ -123,7 +123,7 @@ class ImageRepositoryDBConnector(BasicDBConnector):
         update = "INSERT INTO Image(compressedFilePath, imageStatus) VALUES ('{0}', {1});".format("undefined", IMAGE_STATUS_T.READY)
         self._executeUpdate(update)
         
-    def changeImageCopiesState(self, imageID, newStatus):
+    def changeImageStatus(self, imageID, newStatus):
         """
         Changes an image's state
         Args:
@@ -156,4 +156,4 @@ class ImageRepositoryDBConnector(BasicDBConnector):
             Nothing
         """
         imageID = sub("[^0-9]", "", path.basename(fileName))
-        self.changeImageCopiesState(imageID, IMAGE_STATUS_T.READY)
+        self.changeImageStatus(imageID, IMAGE_STATUS_T.READY)

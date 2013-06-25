@@ -24,5 +24,5 @@
     limitations under the License.
 '''
 class DomainStartCallback(object):
-    def onDomainStart(self, domain):
+    def _onDomainStart(self, domain):
         raise NotImplementedError

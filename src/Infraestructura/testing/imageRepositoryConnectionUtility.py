@@ -5,7 +5,7 @@
     ========================================================================
     
     File: imageRepositoryConnectionUtility.py    
-    Version: 1.0
+    Version: 6.0
     Description: image repository connection utility
     
     Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,

@@ -24,5 +24,5 @@
     limitations under the License.
 '''
 class DomainStopCallback(object):
-    def onDomainStop(self, domainName):
+    def _onDomainStop(self, domainName):
         raise NotImplementedError
