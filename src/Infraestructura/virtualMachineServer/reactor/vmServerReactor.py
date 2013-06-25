@@ -355,9 +355,18 @@ class VMServerReactor(NetworkCallback):
         allocatedStorageSpace = 0
         allocatedTemporaryStorageSpace = 0
         for domainName in activeDomainNames:            
+            imageID = self.__dbConnector.getDomainImageID(domainName)
+            if (imageID == None) :
+                return
             dataImagePath = self.__dbConnector.getDomainDataImagePath(domainName)
-            osImagePath = self.__dbConnector.getDomainOSImagePath(domainName)             
-            isEditedImage = self.__dbConnector.getBootableFlag(self.__dbConnector.getDomainImageID(domainName))            
+            if (dataImagePath == None) :
+                return
+            osImagePath = self.__dbConnector.getDomainOSImagePath(domainName)          
+            if (osImagePath == None):
+                return   
+            isEditedImage = self.__dbConnector.getBootableFlag(imageID)      
+            if (isEditedImage == None):
+                return      
             dataSpace = self.__getAllocatedSpace(dataImagePath)
             if (isEditedImage) :
                 osSpace = self.__getAllocatedSpace(osImagePath)

@@ -123,13 +123,13 @@ class VMServerPacketReactor(object):
         if (not self.__dbConnector.isImageEditionCommand(data["CommandID"])) :            
             familyID = self.__dbConnector.getNewImageVMFamily(data["CommandID"])
             self.__dbConnector.deleteNewImageVMFamily(data["CommandID"])
-            self.__dbConnector.registerFamilyID(data["ImageID"], familyID)           
+            self.__dbConnector.registerImageVMFamilyID(data["ImageID"], familyID)           
                  
             p = self.__packetHandler.createImageEditedPacket(data["CommandID"], data["ImageID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)
         else :
             self.__dbConnector.removeImageEditionCommand(data["CommandID"])
-            self.__dbConnector.changeImageStatus(data["ImageID"], IMAGE_STATE_T.EDITED)  
+            self.__dbConnector.changeImageCopiesState(data["ImageID"], IMAGE_STATE_T.EDITED)  
             p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
             self.__networkManager.sendPacket('', self.__listenningPort, p)   
         
@@ -197,7 +197,7 @@ class VMServerPacketReactor(object):
         
         serverID = self.__dbConnector.getVMServerID(data["SenderIP"])
         if (self.__dbConnector.isImageEditionCommand(data["CommandID"])) :                      
-            self.__dbConnector.changeImageCopyStatus(data["ImageID"], serverID, IMAGE_STATE_T.READY)
+            self.__dbConnector.changeImageCopyState(data["ImageID"], serverID, IMAGE_STATE_T.READY)
             
             if (not self.__dbConnector.isThereSomeImageCopyInState(data["ImageID"], IMAGE_STATE_T.DEPLOY)) :
                 p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])

@@ -86,7 +86,7 @@ class TesterCallback(NetworkCallback):
         elif (data["packet_type"] == PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE_ERROR):
             print("Image deletion error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.AUTO_DEPLOY_ERROR):
-            print("Image auto-deployment error error: " + str(data["ErrorDescription"]))
+            print("Image auto-deployment error: " + str(data["ErrorDescription"]))
         elif (data["packet_type"] == PACKET_T.COMMAND_EXECUTED):
             print("The cluster server says: command executed successfully")
 

@@ -230,7 +230,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         '''
         query = "SELECT ImageOnServer.serverId FROM ImageOnServer\
             INNER JOIN VMServer ON ImageOnServer.serverId = VMServer.serverID \
-                WHERE VMServer.serverStatus = {0} AND imageId = {1} AND status = {2};".format(SERVER_STATE_T.READY, imageId, imageStatus) 
+                WHERE VMServer.serverStatus = {0} AND imageId = {1} AND state = {2};".format(SERVER_STATE_T.READY, imageId, imageStatus) 
         results=self._executeQuery(query)
         if (results == None) :
             return []
@@ -271,7 +271,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
             Returns:
                 a list containing the hosted images' IDs.
         '''
-        query = "SELECT VMServer.serverName, imageId, status FROM VMServer, ImageOnServer " +\
+        query = "SELECT VMServer.serverName, imageId, state FROM VMServer, ImageOnServer " +\
                  "WHERE VMServer.serverId = ImageOnServer.serverId AND VMServer.serverID = {0};"\
                  .format(serverID)
         results=self._executeQuery(query)
@@ -338,7 +338,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
             para cada servidor de máquinas virtuales, y eso son muchas conexiones.
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT imageId, status FROM ImageOnServer WHERE serverId = {0}; ".format(serverId)    
+        sql = "SELECT imageId, state FROM ImageOnServer WHERE serverId = {0}; ".format(serverId)    
         #Recogemos los resultado
         results=self._executeQuery(sql)
         #Guardamos en una lista los ids resultantes
@@ -348,7 +348,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         #Devolvemos la lista resultado
         return serverIds
          
-    def assignImageToServer(self, serverID, imageID, status = IMAGE_STATE_T.READY):
+    def assignImageToServer(self, serverID, imageID, state = IMAGE_STATE_T.READY):
         '''
         Asigna una imagen a un servidor de máquinas virtuales
         Args:
@@ -358,7 +358,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
             Nothing.
         '''
         # Insert the row in the table
-        query = "INSERT INTO ImageOnServer VALUES({0}, {1}, {2});".format(serverID, imageID, status)
+        query = "INSERT INTO ImageOnServer VALUES({0}, {1}, {2});".format(serverID, imageID, state)
         self._executeUpdate(query)
         
     def deleteImageFromServer(self, serverID, imageID):
@@ -913,7 +913,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         Returns:
             True if one or more copies of an image is in the specified state, and False otherwise
         """
-        query = "SELECT * FROM ImageOnServer WHERE imageID = {0} AND status = {1};".format(imageID, state)
+        query = "SELECT * FROM ImageOnServer WHERE imageID = {0} AND state = {1};".format(imageID, state)
         return self._executeQuery(query, True) != None
     
     def getHostedImagesInState(self, serverID, state):
