@@ -78,7 +78,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         d["ServerStatus"] = status
         d["ServerIP"] = ip
         d["ServerPort"] = port
-        d["IsVanillaServer"] = isEditionServer == 1
+        d["IsEditionServer"] = isEditionServer == 1
         return d         
     
     def getVMServerStatisticsToSend(self, serverID):
@@ -408,7 +408,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         if (isEditionServer) : vanillaValue = 1
         else : vanillaValue = 0
         
-        query = "UPDATE VMServer SET serverName = '{0}', serverIP = '{1}', serverPort = {2}, serverStatus = {3}, isVanillaServer = {4}\
+        query = "UPDATE VMServer SET serverName = '{0}', serverIP = '{1}', serverPort = {2}, serverStatus = {3}, isEditionServer = {4}\
             WHERE serverID = {5};".format(name, IPAddress, port, status, vanillaValue, serverId);
         
         self._executeUpdate(query)
@@ -506,7 +506,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
             return result
         
     def getVanillaVMServers(self):
-        query = "SELECT serverID FROM VMServer WHERE isVanillaServer = 1 AND serverStatus = {0};".format(SERVER_STATE_T.READY)
+        query = "SELECT serverID FROM VMServer WHERE isEditionServer = 1 AND serverStatus = {0};".format(SERVER_STATE_T.READY)
         result = self._executeQuery(query, False)
         if (result == None) :
             return []

@@ -75,6 +75,7 @@ class ImageRepositoryReactor(object):
         Boots up the FTP server and creates the control connection.
         Args:
             networkInterface: the network interface that will be used by the FTP server
+            useSSL: indicates if SSL encryption must be used in the control connection or not
             certificatesDirectory: the directory where the files server.crt and server.key are
             commandsListenningPort: the control connection's port
             ftpListenningPort: the FTP server listenning port

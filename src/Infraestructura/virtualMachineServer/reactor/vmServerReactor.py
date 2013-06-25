@@ -287,13 +287,13 @@ class VMServerReactor(NetworkCallback):
             outgoingData.append(connectionParameters)
             if (len(outgoingData) >= segmentSize) :
                 # Flush
-                packet = self.__packetManager.createActiveVMsDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
+                packet = self.__packetManager.createActiveVMsVNCDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
                 self.__networkManager.sendPacket('', self.__listenningPort, packet)
                 outgoingData = []
                 segmentCounter += 1
         # Send the last segment
         if (sendLastSegment) :
-            packet = self.__packetManager.createActiveVMsDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
+            packet = self.__packetManager.createActiveVMsVNCDataPacket(self.__vncServerIP, segmentCounter, segmentNumber, outgoingData)
             self.__networkManager.sendPacket('', self.__listenningPort, packet)         
     
     def __sendStatusData(self):

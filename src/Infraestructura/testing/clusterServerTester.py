@@ -91,8 +91,8 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             ip = tokens.pop(0)
             serverPort = int(tokens.pop(0))
             name = tokens.pop(0)
-            isVanillaServer = tokens.pop(0) == "True"
-            p = pHandler.createVMServerRegistrationPacket(ip, serverPort, name, isVanillaServer, '')
+            isEditionServer = tokens.pop(0) == "True"
+            p = pHandler.createVMServerRegistrationPacket(ip, serverPort, name, isEditionServer, '')
             networkManager.sendPacket(ip_address, port, p)
             return False  
         elif (command == "obtainVMServerStatus") :
@@ -111,7 +111,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createVMServerUnregistrationOrShutdownPacket(tokens.pop(0), bool(tokens.pop(0)), False, "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "bootUpVMServer") :
-            p = pHandler.createVMServerBootUpPacket(tokens.pop(0), "")
+            p = pHandler.createVMServerBootPacket(tokens.pop(0), "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "bootUpVM") :
             p = pHandler.createVMBootRequestPacket(int(tokens.pop(0)), int(tokens.pop(0)), tokens.pop(0))
@@ -148,7 +148,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
             p = pHandler.createImageEditionPacket(PACKET_T.EDIT_IMAGE, int(tokens.pop(0)), 1, "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "deleteImageFromInfrastructure") :
-            p = pHandler.createImageDeletionPacket(int(tokens.pop(0)), "")
+            p = pHandler.createFullImageDeletionPacket(int(tokens.pop(0)), "")
             networkManager.sendPacket(ip_address, port, p)
         elif (command == "deployEditedImage") :
             p = pHandler.createAutoDeployPacket(int(tokens.pop(0)), -1, "Auto-deploy")
@@ -169,7 +169,7 @@ def process_command(tokens, networkManager, pHandler, ip_address, port):
 def displayHelpMessage():
     print("Usage: ")
     print("=====")
-    print("\tregisterVMServer <IP> <Port> <Name <IsVanillaServer>: registers a virtual machine server")
+    print("\tregisterVMServer <IP> <Port> <Name <IsEditionServer>: registers a virtual machine server")
     print("\tobtainVMServerStatus: obtains all the virtual machine server's status")
     print("\tobtainVMDistributionData: obtains the virtual machines' distribution data")
     print("\tunregisterVMServer <Name or IP> <Halt?>: unregisters a virtual machine server")

@@ -171,7 +171,7 @@ class VMServerPacketHandler(object):
         p.writeInt(VM_SERVER_PACKET_T.HALT)
         return p
     
-    def createActiveVMsDataPacket(self, serverIPAddress, segment, sequenceSize, data):
+    def createActiveVMsVNCDataPacket(self, serverIPAddress, segment, sequenceSize, data):
         """
         Creates an active VMs VNC connection data packet
         Args:

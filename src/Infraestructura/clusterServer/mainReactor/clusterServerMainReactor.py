@@ -1,9 +1,29 @@
 # -*- coding: utf8 -*-
 '''
-Definiciones del reactor del servidor de cluster
-@author: Luis Barrios Hernández
-@version: 4.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: clusterServerMainReactor.py    
+    Version: 5.0
+    Description: cluster server main reactor definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
+
 from time import sleep
 from errors.codes import ERROR_DESC_T
 from ccutils.databases.configuration import DBConfigurator
@@ -25,16 +45,15 @@ from clusterServer.database.server_state_t import SERVER_STATE_T
 
 class ClusterServerMainReactor(object):
     '''
-    Estos objetos reaccionan a los paquetes recibidos desde los servidores de máquinas
-    virtuales y desde el endpoint de la web.
+    This class is associated with the cluster server main reactor.
     '''
     def __init__(self, loadBalancerSettings, averageCompressionRatio, timeout):
         """
-        Inicializa el estado del packetReactor
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Initializes the reactor's state
+        Args:
+            loadBalancerSettings: a list containing the load balancing algorithm settings
+            averageCompressionRation: the compression algorithm's average compression ratio
+            timeout: the virtual machine boot commands timeout
         """        
         self.__exit = False
         self.__loadBalancerSettings = loadBalancerSettings
@@ -44,15 +63,15 @@ class ClusterServerMainReactor(object):
         
     def connectToDatabase(self, mysqlRootsPassword, dbName, dbUser, dbPassword, scriptPath):
         """
-        Establece la conexión con la base de datos del servidor de cluster.
-        Argumentos:
-            mysqlRootsPassword: La contraseña de root de MySQL
-            dbName: nombre de la base de datos del servidor de cluster
-            dbUser: usuario a utilizar
-            dbPassword: contraseña del usuario a utilizar
-            scriptPath: ruta del script de inicialización de la base de datos
-        Devuelve:
-            Nada
+        Establishes a connection with the cluster server database
+        Args:
+            mysqlRootsPassword: the MySQL root user's password
+            dbName: a database name
+            dbUser: a MySQL user name
+            dbPassword: the user's password
+            scriptPath: the schema definition script
+        Returns:
+            Nothing
         """
         configurator = DBConfigurator(mysqlRootsPassword)
         configurator.runSQLScript(dbName, scriptPath)
@@ -62,14 +81,18 @@ class ClusterServerMainReactor(object):
         
     def startListenning(self, useSSL, certificatePath, listenningPort, repositoryIP, repositoryPort, vmServerStatusUpdateInterval):
         """
-        Hace que el reactor comience a escuchar las peticiones del endpoint.
-        Argumentos:
-            certificatePath: ruta de los ficheros server.crt y server.key
-            listenningPort: el puerto en el que se escuchará
-        Devuelve:
-            Nada
+        Creates the control connection
+        Args:
+            useSSL: indicates if SSL encryption must be used in the control connection or not
+            certificatePath: the directory where the server.crt and server.key files are
+            listenningPort: the control connection's port
+            repositoryIP: the image repository IP address
+            repositoryPort: the image repository's port
+            vmServerStatusUpdateInterval: the virtual machine server status database interval
+        Returns:
+            Nothing
         """            
-        # Preparamos todo lo necesario para conectarnos
+        
         self.__networkManager = NetworkManager(certificatePath)        
         self.__networkManager.startNetworkService()    
         self.__listenningPort = listenningPort
@@ -79,7 +102,7 @@ class ClusterServerMainReactor(object):
         vmServerPacketHandler = VMServerPacketHandler(self.__networkManager)        
         networkEventsReactor = NetworkEventsReactor(self.__dbConnector, repositoryIP, repositoryPort)
         
-        # Nos conectamos al repositorio               
+        
         imageRepositoryPacketReactor = ImageRepositoryPacketReactor(self.__dbConnector, self.__networkManager,
                                                                     listenningPort, repositoryIP, repositoryPort,
                                                                     self.__packetHandler, vmServerPacketHandler, imageRepositoryPacketHandler)
@@ -91,8 +114,6 @@ class ClusterServerMainReactor(object):
             print "Can't connect to the image repository: " + e.message
             self.__exit = True
             return        
-        
-        # Empezamos a escuchar las peticiones de la web
         
         vmServerPacketReactor = VMServerPacketReactor(self.__dbConnector, self.__networkManager, listenningPort,
                                                       vmServerPacketHandler, self.__packetHandler)
@@ -106,7 +127,6 @@ class ClusterServerMainReactor(object):
         clusterEndpointCallback = ClusterEndpointCallback(self.__endpointPacketReactor)
         self.__networkManager.listenIn(listenningPort, clusterEndpointCallback, self.__useSSL)
        
-        # Creamos el hilo que envía las actualizaciones de estado
         self.__statusMonitoringThread = ClusterStatusMonitoringThread(vmServerStatusUpdateInterval,
                                                                       self.__dbConnector, self.__networkManager,
                                                                       repositoryIP, repositoryPort,
@@ -115,34 +135,29 @@ class ClusterServerMainReactor(object):
     
     def monitorVMBootCommands(self):
         """
-        Elimina los comandos de arranque de máquinas virtuales que tardan demasiado tiempo en procesarse.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
+        Deletes the timed out virtual machine boot commands
+        Args:
+            None
+        Returns:
+            Nothing
         """
         
         while not self.__exit and not self.__endpointPacketReactor.hasFinished():
             data = self.__dbConnector.getOldVMBootCommandID(self.__timeout)
-            if (data == None) :
-                # Dormimos para no enviar demasiadas conexiones por segundo a MySQL
+            if (data == None) :               
                 sleep(1) 
-            else :
-                # Borramos la máquina activa (sabemos que no existe)
+            else :                
                 self.__dbConnector.deleteActiveVMLocation(data[0])
-                # Creamos el paquete de error y se lo enviamos al endpoint de la web
                 p = self.__packetHandler.createErrorPacket(CLUSTER_SERVER_PACKET_T.VM_BOOT_FAILURE, ERROR_DESC_T.CLSRVR_VM_BOOT_TIMEOUT, data[0])
                 self.__networkManager.sendPacket('', self.__listenningPort, p)
     
     def closeNetworkConnections(self):
         """
-        Cierra todas las conexiones de red del servidor de máquinas virtuales.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Nada
-        @attention: este método JAMÁS debe llamarse desde un hilo de red. 
-        Si lo hacéis, la aplicación se colgará.
+        Closes the control connection
+        Args:
+            None
+        Returns:
+            Nothing
         """
         if (self.__statusMonitoringThread != None) :
             self.__statusMonitoringThread.stop()

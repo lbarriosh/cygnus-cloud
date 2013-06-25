@@ -81,8 +81,8 @@ class VMServerPacketReactor(object):
         # Actualizar la base de datos
         self.__dbConnector.deleteActiveVMLocation(data["CommandID"])
         if (not self.__dbConnector.isImageEditionCommand(data["CommandID"])) :            
-            familyID = self.__dbConnector.getNewVMVanillaImageFamily(data["CommandID"])
-            self.__dbConnector.deleteNewVMVanillaImageFamily(data["CommandID"])
+            familyID = self.__dbConnector.getNewImageVMFamily(data["CommandID"])
+            self.__dbConnector.deleteNewImageVMFamily(data["CommandID"])
             self.__dbConnector.registerFamilyID(data["ImageID"], familyID)                
             # Enviar la respuesta
             p = self.__packetHandler.createImageEditedPacket(data["CommandID"], data["ImageID"])
@@ -102,7 +102,7 @@ class VMServerPacketReactor(object):
         
         # Actualizar la base de datos        
         if (not self.__dbConnector.isImageEditionCommand(data["CommandID"])) :        
-            self.__dbConnector.deleteNewVMVanillaImageFamily(data["CommandID"])
+            self.__dbConnector.deleteNewImageVMFamily(data["CommandID"])
             packet_type = ENDPOINT_PACKET_T.IMAGE_CREATION_ERROR
         else :
             self.__dbConnector.removeImageEditionCommand(data["CommandID"])
@@ -216,5 +216,5 @@ class VMServerPacketReactor(object):
         Devuelve:
             Nada
         """
-        p = self.__packetHandler.createActiveVMsDataPacket(packet)
+        p = self.__packetHandler.createActiveVMsVNCDataPacket(packet)
         self.__networkManager.sendPacket('', self.__listenningPort, p)

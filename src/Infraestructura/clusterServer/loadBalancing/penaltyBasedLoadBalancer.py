@@ -1,8 +1,27 @@
 # -*- coding: utf8 -*-
 '''
-Un balanceador de carga muy simple.
-@author: Luis Barrios Hernández
-@version: 1.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: penaltyBasedLoadBalancer.py    
+    Version: 4.0
+    Description: penalty-based load balancer implementation
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 
 from loadBalancer import LoadBalancer, MODE_T
@@ -10,15 +29,21 @@ from errors.codes import ERROR_DESC_T
 
 class PenaltyBasedLoadBalancer(LoadBalancer):
     '''
-    Este balanceador de carga creará las nuevas máquinas virtuales en el servidor con menos
-    carga de trabajo.
+    This class implements the penalty-based load balancing algorithm. It tries
+    to distribute the workload equally among the active virtual machine servers.
     '''
     
     def __init__(self, databaseConnector, vCPUsWeight, vCPUsExcessThreshold, ramWeight, storageSpaceWeight, temporarySpaceWeight):
         """
-        Inicializa el estado del balanceador de carga
-        Argumentos:
-            databaseConnector: objeto que se usará para leer de la base de datos de estado.
+        Initializes the load balancer's state
+        Args:
+            databaseConnector: a cluster server database connector
+            vCPUsWeight: the virtual CPUs weight
+            vCPUsExcessThreshold: the virtual CPUs excess threshold. If it's greater than one, the hosted virtual machines
+                may use a number of virtual CPUs that is higher than the number of physical CPUs of the virtual machine server.
+            ramWeight: the RAM weight
+            storageSpaceWeight: the storage space weight
+            temporarySpaceWeight: the temporary space weight
         """
         LoadBalancer.__init__(self, databaseConnector)
         self.__vCPUsWeight = vCPUsWeight
@@ -28,16 +53,19 @@ class PenaltyBasedLoadBalancer(LoadBalancer):
         self.__temporarySpaceWeight = temporarySpaceWeight
         
     def assignVMServer(self, imageID, mode):
-        """
-        Escoge el servidor de máquinas virtuales que albergará una máquina virtual.
-        Argumentos:
-            imageId: el identificador único de la imagen
+        '''
+        Determines what virtual machine server will host an image.
+        Args:
+            imageID: the image's ID
+            mode: the operation that the virtual machine server will perform (i.e. boot a virtual
+                machine that uses the specified image, deploy an image,...)
         Returns:
-            una tupla (servidor escogido, mensaje de error). Cuando mensaje de error es None,
-            servidor escogido será el ID del servidor en el que se colocará la imagen.
-        """
+            a tuple (server IDs, errorMessage, copies), where server IDs is a list containing the
+            chosen servers IDs, errorMessage is an error message and copies is the number of
+            copies that can be hosted on the chosen servers.
+        '''
         
-        # Paso 1: obtenemos el conjunto de servidores que podemos utilizar
+        # Step 1: determine which virtual machine servers can be used
         
         if (mode == MODE_T.BOOT_DOMAIN) :
             availableServers = self._dbConnector.getHosts(imageID)
@@ -52,16 +80,16 @@ class PenaltyBasedLoadBalancer(LoadBalancer):
         if (len(availableServers) == 0) :
             return (0, errorDescription)
             
-        # Paso 2: obtenemos las características de la imagen
+        # Step 2: obtain the image's virtual machine family features
         
-        vanillaFamilyID = self._dbConnector.getFamilyID(imageID)
-        if (vanillaFamilyID == None) :
+        vmFamilyID = self._dbConnector.getFamilyID(imageID)
+        if (vmFamilyID == None) :
             return (0, ERROR_DESC_T.CLSRVR_UNKNOWN_IMAGE)            
         
-        imageFeatures = self._dbConnector.getVanillaImageFamilyFeatures(vanillaFamilyID)       
+        imageFeatures = self._dbConnector.getVMFamilyFeatures(vmFamilyID)       
         
-        # Paso 3: calcular la penalización de cada servidor. Si además estamos en modo
-        # despliegue, calculamos el número de copias que cada servidor puede albergar.
+        # Step 3: compute the penalties. If it's necessary, the number of instance
+        # that can be hosted will also be calculated.
         
         serverPenalties = []
         
@@ -76,7 +104,7 @@ class PenaltyBasedLoadBalancer(LoadBalancer):
                     
             if (normalizedVCPUPenalty <= (1 + self.__vCPUsExcessThreshold) or normalizedRAMPenalty <= 1 
                     or normalizedStorageSpacePenalty <= 1 or normalizedTemporarySpacePenalty <= 1) :
-                # La imagen cabe. Podemos considerar este servidor. Si no cabe, ignoramos este servidor
+                # An instance fits on this virtual machine server => we don't discard it
                 serverPenalty = self.__vCPUsWeight * normalizedVCPUPenalty + self.__ramWeight * normalizedRAMPenalty + \
                     self.__storageSpaceWeight * normalizedStorageSpacePenalty + self.__temporarySpaceWeight * normalizedTemporarySpacePenalty     
                 if (mode != MODE_T.DEPLOY_IMAGE) :                
@@ -95,15 +123,14 @@ class PenaltyBasedLoadBalancer(LoadBalancer):
                 errorDescription = ERROR_DESC_T.CLSRVR_VMSRVRS_UNDER_FULL_LOAD
             return (0, errorDescription)
         
-        # Ordenar los servidores por su penalización
+        # Step 4: Sort the servers by their penalties
         
         serverPenalties.sort(key=lambda tupl : tupl[1])    
         
-        # En modo despliegue, devolvemos una lista de servidores y un número de copias. En el resto de modos,
-        # devolvemos sólo el primer servidor (el menos penalizado)               
+        # Return the results         
         
         if (mode != MODE_T.DEPLOY_IMAGE) :
-            # Al menos un servidor puede albergar la imagen => indicamos cuál es
+            # We choose the virtual machine server with less penalty
             return (serverPenalties[0][0], None)
         else :
             copies = 0

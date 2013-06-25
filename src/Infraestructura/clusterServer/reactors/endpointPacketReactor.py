@@ -107,7 +107,7 @@ class EndpointPacketReactor(object):
                 
             # Registrar el nuevo servidor y pedirle su estado
             self.__dbConnector.registerVMServer(data["VMServerName"], data["VMServerIP"], 
-                                                    data["VMServerPort"], data["IsVanillaServer"])            
+                                                    data["VMServerPort"], data["IsEditionServer"])            
             
             # Indicar al endpoint de la web que el comando se ha ejecutado con éxito
             p = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
@@ -679,7 +679,7 @@ class EndpointPacketReactor(object):
             
         try :
             self.__dbConnector.setServerBasicData(serverID, data["NewVMServerName"], SERVER_STATE_T.SHUT_DOWN, 
-                                                  data["NewVMServerIPAddress"], data["NewVMServerPort"], data["NewVanillaImageEditionBehavior"])
+                                                  data["NewVMServerIPAddress"], data["NewVMServerPort"], data["NewImageEditionBehavior"])
             packet = self.__packetHandler.createCommandExecutedPacket(data["CommandID"])
         
         except Exception :
