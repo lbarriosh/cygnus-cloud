@@ -86,8 +86,7 @@ class VMServerPacketReactor(object):
             data: a dictionary containing the received packet's data
         Returns:
             Nothing
-        """
-        
+        """        
         serverID = None
         while (serverID == None) :
             serverID = self.__dbConnector.getVMServerID(data["VMServerIP"])
