@@ -13,6 +13,7 @@
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
+<<<<<<< HEAD
 
         http://www.apache.org/licenses/LICENSE-2.0
 
@@ -27,15 +28,39 @@
 # coding: utf8
 from gluon import *
 
+=======
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+'''
+
+# coding: utf8
+from gluon import *
+
+>>>>>>> 28de3ad8a11b3fd22aed059897f6f27393a5f460
 #Método encargado de iniciar sesión de un usuario
 def login():
     #Iniciamos los valores, si procede
     initValues() 
     #Creamos la barra de direcciones
-    createAdressBar()
+    createAdressBar() 
+    #Si ya hay sesión registrada redireccionar
+    if auth.user_id:
+            loginAccess(0)
     #Gestionamos los usuarios ya logueados
     auth.settings.controller = 'main'
+<<<<<<< HEAD
+    auth.settings.login_onaccept = loginAccess 
+    
+=======
     auth.settings.login_onaccept = loginAccess  
+>>>>>>> 28de3ad8a11b3fd22aed059897f6f27393a5f460
     #Creamos el formulario de inicio de sesión
     form = auth.login()  
     form.element("input",_type="submit")['_class'] = "button button-blue"
@@ -54,7 +79,6 @@ def about():
     createAdressBar()    
     #Cargamos el fichero con la información
     info = LOAD(url=URL('static', 'info.html', scheme='http'),ajax=False)
-    print info
     return dict(info = info)
 
 #Página encargada de crear el menu de direcciones    

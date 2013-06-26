@@ -1,0 +1,5 @@
+auth_user.id,auth_user.first_name,auth_user.last_name,auth_user.email,auth_user.password,auth_user.registration_key,auth_user.reset_password_key,auth_user.registration_id
+1,Bertoldo,Pedralbes,Admin1@ucm.es,"pbkdf2(1000,20,sha512)$8e6a4a942b4ae96f$6e5902ef12e91ad778a323b71937bf4c577684e0",,,
+2,Robert,Neville,Student1@ucm.es,"pbkdf2(1000,20,sha512)$98b696e1e79cc666$d87bb6f9538fc9f67719fde615da144ce81734c0",,,
+3,Charles,Xavier,Teacher01@ucm.es,"pbkdf2(1000,20,sha512)$b243decaa1deebb3$67e753954041e9c8ba9af347ce4a69be37862b66",,,
+

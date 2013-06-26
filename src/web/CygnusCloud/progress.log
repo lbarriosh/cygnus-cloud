@@ -7109,3 +7109,38 @@
 [2013-06-25 00:08:32] EDIT CygnusCloud/views/vncClient/VNCPage.html: 0
 [2013-06-25 00:08:54] EDIT CygnusCloud/views/vncClient/VNCPage.html: 1
 [2013-06-25 00:08:56] EDIT CygnusCloud/views/vncClient/VNCPage.html: 0
+<<<<<<< HEAD
+[2013-06-26 16:40:33] EDIT CygnusCloud/controllers/main.py: 1
+[2013-06-26 16:41:01] EDIT CygnusCloud/controllers/main.py: -1
+[2013-06-26 16:41:21] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 16:41:27] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 16:43:47] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 16:44:33] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 16:45:06] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 16:46:27] EDIT CygnusCloud/controllers/main.py: 2
+[2013-06-26 17:03:35] EDIT CygnusCloud/views/administrator/servers.html: 0
+[2013-06-26 17:04:06] EDIT CygnusCloud/views/administrator/servers.html: 0
+[2013-06-26 17:05:15] EDIT CygnusCloud/views/administrator/servers.html: 0
+[2013-06-26 17:10:39] EDIT CygnusCloud/static/progressBar.html: 0
+[2013-06-26 17:12:03] EDIT CygnusCloud/static/progressBar.html: 0
+[2013-06-26 17:33:16] EDIT CygnusCloud/controllers/main.py: -3
+[2013-06-26 17:33:30] EDIT CygnusCloud/controllers/main.py: 3
+[2013-06-26 18:09:41] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:09:49] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:09:56] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:10:05] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:10:14] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:10:35] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:10:51] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:11:06] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:11:17] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:11:28] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:11:48] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:12:11] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:12:24] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:13:04] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:13:13] EDIT CygnusCloud/static/css/default.css: 0
+[2013-06-26 18:18:18] EDIT CygnusCloud/static/noVNC/vnc_simple.html: 0
+[2013-06-26 18:19:19] EDIT CygnusCloud/static/noVNC/vnc_simple.html: 0
+=======
+>>>>>>> 28de3ad8a11b3fd22aed059897f6f27393a5f460

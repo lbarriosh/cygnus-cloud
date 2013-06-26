@@ -161,11 +161,19 @@ a:hover {
 	background: url("../images/image06.gif") no-repeat right 50%;
 	color: #FFFFFF;
      float: left;
+<<<<<<< HEAD
+    font-size: 70%;
+    font-weight: bold;
+    margin-right: 3px;
+    margin-top: 5px;
+    padding: 6px 10px;
+=======
     font-size: 11px;
     font-weight: bold;
     margin-right: 3px;
     margin-top: 5px;
     padding: 6px 20px;
+>>>>>>> 28de3ad8a11b3fd22aed059897f6f27393a5f460
     text-decoration: none;
     text-transform: uppercase;
     

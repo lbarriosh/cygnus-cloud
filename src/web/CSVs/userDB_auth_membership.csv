@@ -1,0 +1,4 @@
+auth_membership.id,auth_membership.user_id,auth_membership.group_id
+35,56,2
+36,58,3
+37,57,1
