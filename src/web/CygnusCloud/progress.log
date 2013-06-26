@@ -7109,7 +7109,6 @@
 [2013-06-25 00:08:32] EDIT CygnusCloud/views/vncClient/VNCPage.html: 0
 [2013-06-25 00:08:54] EDIT CygnusCloud/views/vncClient/VNCPage.html: 1
 [2013-06-25 00:08:56] EDIT CygnusCloud/views/vncClient/VNCPage.html: 0
-<<<<<<< HEAD
 [2013-06-26 16:40:33] EDIT CygnusCloud/controllers/main.py: 1
 [2013-06-26 16:41:01] EDIT CygnusCloud/controllers/main.py: -1
 [2013-06-26 16:41:21] EDIT CygnusCloud/controllers/main.py: 0
@@ -7142,5 +7141,30 @@
 [2013-06-26 18:13:13] EDIT CygnusCloud/static/css/default.css: 0
 [2013-06-26 18:18:18] EDIT CygnusCloud/static/noVNC/vnc_simple.html: 0
 [2013-06-26 18:19:19] EDIT CygnusCloud/static/noVNC/vnc_simple.html: 0
-=======
->>>>>>> 28de3ad8a11b3fd22aed059897f6f27393a5f460
+[2013-06-26 19:15:34] EDIT CygnusCloud/static/noVNC/vnc_simple.html: 0
+[2013-06-26 19:16:13] EDIT CygnusCloud/static/noVNC/vnc_simple.html: 0
+[2013-06-26 19:16:21] EDIT CygnusCloud/static/noVNC/vnc_simple.html: 0
+[2013-06-26 19:17:03] EDIT CygnusCloud/static/noVNC/vnc_simple.html: 0
+[2013-06-26 19:17:11] EDIT CygnusCloud/static/noVNC/vnc_simple.html: 0
+[2013-06-26 19:17:21] EDIT CygnusCloud/static/noVNC/vnc_simple.html: 0
+[2013-06-26 19:32:15] CREATE default.py: 0
+[2013-06-26 19:32:40] EDIT CygnusCloud/controllers/default.py: 1
+[2013-06-26 19:33:27] EDIT CygnusCloud/controllers/default.py: 1
+[2013-06-26 19:33:31] EDIT CygnusCloud/controllers/default.py: 0
+[2013-06-26 19:33:47] CREATE default/user.html: 0
+[2013-06-26 19:33:58] EDIT CygnusCloud/views/default/user.html: -2
+[2013-06-26 19:38:18] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 19:38:31] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 19:38:42] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 19:39:01] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 19:39:13] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 19:39:21] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 19:39:33] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 19:40:05] EDIT CygnusCloud/controllers/main.py: 0
+[2013-06-26 19:41:37] EDIT CygnusCloud/controllers/administrator.py: 0
+[2013-06-26 19:41:46] EDIT CygnusCloud/controllers/administrator.py: 0
+[2013-06-26 19:42:12] EDIT CygnusCloud/controllers/administrator.py: 0
+[2013-06-26 19:42:21] EDIT CygnusCloud/controllers/administrator.py: 0
+[2013-06-26 19:42:26] EDIT CygnusCloud/controllers/administrator.py: 0
+[2013-06-26 19:42:34] EDIT CygnusCloud/controllers/administrator.py: 0
+[2013-06-26 19:43:06] EDIT CygnusCloud/controllers/administrator.py: 0

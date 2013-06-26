@@ -1,5 +1,4 @@
 # coding: utf8
-# intente algo como
 def user():
     redirect(URL(c='main',f='login')) 
     return dict()

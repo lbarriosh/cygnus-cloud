@@ -424,9 +424,9 @@ def servers():
         # Mostramos los botones según el estado del servidor
         if(infoServer[0] != 'No info'):
             buttons.append(DIV(INPUT(_type='submit',_class="button button-blue", \
-                _name = 'change' ,_value=T('Aplicar cambios'),_style="width:170px;"),_style="position:relative;left:20%;float:left;"))
+                _name = 'change' ,_value=T('Aplicar cambios'),_style="width:170px;"),_style="position:relative;left:18%;float:left;"))
             buttons.append(DIV(INPUT(_type='submit',_class="button button-blue", \
-                _name = 'remove' ,_value=T('Eliminar servidor'),_style="width:170px;"),_style="position:relative;left:25%;float:left;"))
+                _name = 'remove' ,_value=T('Eliminar servidor'),_style="width:170px;"),_style="position:relative;left:23%;float:left;"))
           
         # Si no está arrancado, añadimos el botón de arrancar
         if(infoServer[3] == "Apagado"):
@@ -439,10 +439,10 @@ def servers():
         ),BR(),
         DIV( T('Nombre: '),BR(),INPUT(_name = 'name',_value=infoServer[0],_style="width:75%;"),_style="position:relative;float:left;"),
         DIV( T('Dirección IP: '),BR(),
-        INPUT(_name='ip',_value=infoServer[1],_style="width:95%;"),_style="position:absolute;left:27%;float:left;"),
-        DIV( T('Puerto: '),BR(),INPUT(_name ='port',_value=infoServer[2],_style="width:50%;"),_style="position:absolute;left:45%;float:left"),
+        INPUT(_name='ip',_value=infoServer[1],_style="width:95%;"),_style="position:absolute;left:29%;float:left;"),
+        DIV( T('Puerto: '),BR(),INPUT(_name ='port',_value=infoServer[2],_style="width:50%;"),_style="position:absolute;left:50%;float:left"),
         DIV(BR(), T('Imagen base: '),INPUT(_type="checkbox",_name ='isVanilla',_checked=infoServer[4],_style="width:30px;")
-                ,_style="position:absolute;left:57%;"),BR(),_style="margin-bottom:100px;"),DIV(buttons,BR(),_style="margin-bottom:10px;"))           
+                ,_style="position:absolute;left:63%;"),BR(),_style="margin-bottom:100px;"),DIV(buttons,BR(),_style="margin-bottom:10px;"))           
         
         #Evaluamos los posibles botones pulsados
         if form1.accepts(request.vars,keepvalues=True) and form1.vars.search:
