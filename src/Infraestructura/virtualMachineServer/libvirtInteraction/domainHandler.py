@@ -185,8 +185,9 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
                     ChildProcessManager.runCommandInForeground("cd " + self.__sourceImagePath + ";" + "cp --parents "+ dataImagePath + " " + self.__executionImagePath, VMServerException)
                     ChildProcessManager.runCommandInForeground("mv " + self.__executionImagePath + dataImagePath +" " + newDataDisk, VMServerException)
                     ChildProcessManager.runCommandInForeground("qemu-img create -b " + sourceOSDisk + " -f qcow2 " + newOSDisk, VMServerException)
-                except Exception as e:
                     diskImagesCreated = True
+                except Exception as e:
+                    diskImagesCreated = False
                     raise e
             
             else :
@@ -216,14 +217,19 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
             self.__commandsDBConnector.registerVMResources(newName, imageID, newPort, newPassword, userID, websockifyPID, newOSDisk,  newDataDisk, newMAC, newUUID)
             self.__commandsDBConnector.addVMBootCommand(newName, commandID)
        
-        except Exception:
+        except Exception as e:
+            print e
             # Free the allocated resources, generate an error packet and send it.
             if (imageFound and not isBootable) :                
                 self.__commandsDBConnector.deleteImage(imageID)
             if (newUUID != None) :
                 self.__commandsDBConnector.freeMACAndUUID(newUUID, newMAC)
             if (diskImagesCreated) :
-                ChildProcessManager.runCommandInForeground("rm -rf " + path.dirname(newOSDisk), None)
+                ChildProcessManager.runCommandInForeground("rm " + newOSDisk, None)
+                ChildProcessManager.runCommandInForeground("rm " + newDataDisk, None)
+                directoryName = path.dirname(newOSDisk)
+                if (listdir(directoryName) == []) :
+                    ChildProcessManager.runCommandInForeground("rm -rf " + directoryName)
             if (websockifyPID != -1) :
                 ChildProcessManager.runCommandInForeground("kill " + websockifyPID, None)
             p = self.__packetManager.createInternalErrorPacket(commandID)
