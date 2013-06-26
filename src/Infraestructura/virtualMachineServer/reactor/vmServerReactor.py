@@ -338,9 +338,9 @@ class VMServerReactor(NetworkCallback):
         diskStats_temporaryData = os.statvfs(self.__parser.getConfigurationParameter("executionImagePath"))
         allocatedStorageSpace, allocatedTemporaryStorageSpace = self.__checkDiskImagesSpace()
         freeStorageSpace = diskStats_storage.f_bfree * diskStats_storage.f_frsize / 1024 - allocatedStorageSpace
-        availableStorageSpace = diskStats_storage.f_bavail * diskStats_storage.f_frsize / 1024
+        availableStorageSpace = diskStats_storage.f_blocks * diskStats_storage.f_frsize / 1024
         freeTemporaryStorageSpace = diskStats_temporaryData.f_bfree * diskStats_temporaryData.f_frsize / 1024 - allocatedTemporaryStorageSpace
-        availableTemporaryStorageSpace = diskStats_temporaryData.f_bavail * diskStats_temporaryData.f_frsize / 1024
+        availableTemporaryStorageSpace = diskStats_temporaryData.f_blocks * diskStats_temporaryData.f_frsize / 1024
         return freeStorageSpace, availableStorageSpace, freeTemporaryStorageSpace, availableTemporaryStorageSpace
     
     def __checkDiskImagesSpace(self):
