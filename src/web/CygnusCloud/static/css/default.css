@@ -38,6 +38,17 @@ body {
     width: 80%;
   	height: 90%;
 }
+#user_demo {
+    color: red;
+    background-color: white;
+   	padding: 15px;
+    font-size: 40px;
+    position: fixed;
+    text-transform: uppercase;
+    top: 15px;
+    z-index: 999;
+}
+
 
 h1{
     color: #0164de;

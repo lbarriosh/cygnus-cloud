@@ -16,6 +16,13 @@
   
   <!-- start header -->
   {{if(request.controller != 'vncClient'):}}
+  <div id="user_demo">{{try:}}
+          {{if(auth.user):}}
+          {{=str(auth.user['email'])}}
+          {{pass}}
+          {{except:}}
+          {{pass}}
+      </div>
   <div id="topbar">
       <!--
       <div id=language>
@@ -27,7 +34,7 @@
           {{image=userDB(auth.user['email']==userDB.userImage.userId).select()}}
           {{if len(image) > 0:}}
           {{=SPAN(B(T('Sesión iniciada como  '))
-          ,IMG(_src=URL('appadmin/download/userDB/',image[0].file),_style="height:40px;width:40px;vertical-align: middle;",_class='profile')
+          ,IMG(_src=URL('appadmin/download/userDB/',image[0].file),_style="height:35px;width:35px;vertical-align: middle;",_class='profile')
           ,B('  ' + str(auth.user['email']) + '     '),
           A(T('Salir'),_href= URL(c = 'main' , f = 'logoutUser')))}}
           {{else:}}

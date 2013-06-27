@@ -16,6 +16,14 @@
   
   <!-- start header -->
   {{if(request.controller != 'vncClient'):}}
+          {{try:}}
+          {{if(auth.user):}}
+  <div id="user_demo">
+          {{=str(auth.user['email'])}}
+          {{pass}}
+      </div>
+          {{except:}}
+          {{pass}}
   <div id="topbar">
       <!--
       <div id=language>
