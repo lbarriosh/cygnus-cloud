@@ -74,6 +74,10 @@ class VMServerDBConnector(BasicDBConnector):
             return None
         return result
     
+    def updateBootableFlag(self, imageID, value):
+        update = "UPDATE Image SET bootable = {1} WHERE imageID={0};".format(imageID, value)
+        self._executeUpdate(update)
+    
     def getOSImagePath(self, imageID):
         '''
         Returns an images' OS disk image.

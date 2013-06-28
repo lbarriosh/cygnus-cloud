@@ -210,9 +210,13 @@ class VMServerReactor(NetworkCallback):
         Returns:
             Nothing
         """
-        data.pop("packet_type")
-        data["Transfer_Type"] = TRANSFER_T.DEPLOY_IMAGE
-        self.__commandsDBConnector.addToTransferQueue(data)
+        self.__commandsDBConnector.updateBootableFlag(data["SourceImageID"], 1)
+        p = self.__packetManager.createConfirmationPacket(VM_SERVER_PACKET_T.IMAGE_DEPLOYED, 
+                                                          data["SourceImageID"], data["CommandID"])
+        self.__networkManager.sendPacket('', self.__listenningPort, p)
+#         data.pop("packet_type")
+#         data["Transfer_Type"] = TRANSFER_T.DEPLOY_IMAGE
+#         self.__commandsDBConnector.addToTransferQueue(data)
         
     def __processDeleteImagePacket(self, data):
         
@@ -255,13 +259,15 @@ class VMServerReactor(NetworkCallback):
         Returns:
             Nothing
         """
-        data.pop("packet_type")
-        if (data["Modify"]) :
-            data["Transfer_Type"] = TRANSFER_T.EDIT_IMAGE
-        else :
-            data["Transfer_Type"] = TRANSFER_T.CREATE_IMAGE
-        data.pop("Modify")
-        self.__commandsDBConnector.addToTransferQueue(data)
+        self.__commandsDBConnector.updateBootableFlag(data["SourceImageID"], 0)
+        self.__domainHandler.createDomain(data["SourceImageID"], data["UserID"], data["CommandID"])
+#         data.pop("packet_type")
+#         if (data["Modify"]) :
+#             data["Transfer_Type"] = TRANSFER_T.EDIT_IMAGE
+#         else :
+#             data["Transfer_Type"] = TRANSFER_T.CREATE_IMAGE
+#         data.pop("Modify")
+#         self.__commandsDBConnector.addToTransferQueue(data)
 
     def __sendDomainsVNCConnectionData(self):
         '''

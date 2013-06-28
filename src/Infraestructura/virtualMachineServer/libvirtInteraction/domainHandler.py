@@ -344,19 +344,21 @@ class DomainHandler(DomainStartCallback, DomainStopCallback):
                 ChildProcessManager.runCommandInForeground("rm -rf " + osDirectory, None)            
                     
         else :
-            data = dict()            
-            connectionData = self.__commandsDBConnector.getImageRepositoryConnectionData(commandID)
-            data["Transfer_Type"] = TRANSFER_T.STORE_IMAGE
-            data["DataImagePath"] = dataImagePath
-            data["OSImagePath"] = osImagePath
-            data["DefinitionFilePath"] = self.__commandsDBConnector.getDefinitionFilePath(imageID)
-            data["RepositoryIP"] = connectionData["RepositoryIP"]
-            data["RepositoryPort"] = connectionData["RepositoryPort"]
-            data["CommandID"] = commandID            
-            data["TargetImageID"] = imageID
-            self.__commandsDBConnector.addToCompressionQueue(data)
-            self.__commandsDBConnector.removeImageRepositoryConnectionData(commandID)
-            self.__commandsDBConnector.deleteImage(imageID)              
+            p = self.__packetManager.createImageEditedPacket(imageID, commandID)
+            self.__networkManager.sendPacket('', self.__listenningPort, p)
+#             data = dict()            
+#             connectionData = self.__commandsDBConnector.getImageRepositoryConnectionData(commandID)
+#             data["Transfer_Type"] = TRANSFER_T.STORE_IMAGE
+#             data["DataImagePath"] = dataImagePath
+#             data["OSImagePath"] = osImagePath
+#             data["DefinitionFilePath"] = self.__commandsDBConnector.getDefinitionFilePath(imageID)
+#             data["RepositoryIP"] = connectionData["RepositoryIP"]
+#             data["RepositoryPort"] = connectionData["RepositoryPort"]
+#             data["CommandID"] = commandID            
+#             data["TargetImageID"] = imageID
+#             self.__commandsDBConnector.addToCompressionQueue(data)
+#             self.__commandsDBConnector.removeImageRepositoryConnectionData(commandID)
+#             self.__commandsDBConnector.deleteImage(imageID)              
     
     def __waitForDomainsToTerminate(self, timeout):
         """

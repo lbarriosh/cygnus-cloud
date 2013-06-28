@@ -55,9 +55,8 @@ if __name__ == "__main__" :
             RootPasswordHandler().clear()
         
     # Configure the database
-    rootPassword = parser.getConfigurationParameter("mysqlRootsPassword")
-    configurator = DBConfigurator(rootPassword)
-    configurator.runSQLScript("VMServerDB", "./database/VMServerDB.sql", "root", rootPassword)
+    configurator = DBConfigurator(parser.getConfigurationParameter("mysqlRootsPassword"))
+    configurator.runSQLScript("VMServerDB", "./database/VMServerDB.sql")
     configurator.addUser(parser.getConfigurationParameter("databaseUserName"), parser.getConfigurationParameter("databasePassword"), "VMServerDB", True)
     
     # Create the directories (if necessary)
