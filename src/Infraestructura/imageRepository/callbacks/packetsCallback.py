@@ -101,7 +101,7 @@ class CommandsCallback(NetworkCallback):
         """
         diskStats = statvfs(self.__diskImagesDirectory)
         freeDiskSpace = diskStats.f_bfree * diskStats.f_frsize / 1024
-        totalDiskSpace = diskStats.f_bavail * diskStats.f_frsize / 1024
+        totalDiskSpace = diskStats.f_blocks * diskStats.f_frsize / 1024
         p = self.__repositoryPacketHandler.createStatusDataPacket(freeDiskSpace, totalDiskSpace)
         self.__networkManager.sendPacket('', self.__commandsListenningPort, p, data['clientIP'], data['clientPort'])
     
