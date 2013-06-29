@@ -77,5 +77,5 @@ if __name__ == "__main__" :
     call("chmod +x " + targetScript, shell=True)
     print("\tDone!")
     
-    print("The installation process is now complete")
+    print("The installation process is now complete.")
     print("To start the {0} daemon, please run the\n\t'{1}'\n\tscript file.".format(binary.lower(), os.path.abspath(targetScript))) 
