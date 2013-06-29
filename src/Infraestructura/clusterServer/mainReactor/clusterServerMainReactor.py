@@ -74,7 +74,7 @@ class ClusterServerMainReactor(object):
             Nothing
         """
         configurator = DBConfigurator(mysqlRootsPassword)
-        configurator.runSQLScript(dbName, scriptPath)
+        configurator.runSQLScript(dbName, scriptPath, "root", mysqlRootsPassword) 
         configurator.addUser(dbUser, dbPassword, dbName, True)
         self.__dbConnector = ClusterServerDatabaseConnector(dbUser, dbPassword, dbName)
         self.__dbConnector.initializeVMServersStatus()

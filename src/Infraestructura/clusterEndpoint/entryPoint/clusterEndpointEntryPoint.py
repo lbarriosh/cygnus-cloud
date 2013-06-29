@@ -70,8 +70,8 @@ class ClusterEndpointEntryPoint(object):
         self.__statusDatabaseName = endpointDBName
         self.__commandsDatabaseName = commandsDBName
         configurator = DBConfigurator(mysqlRootsPassword)
-        configurator.runSQLScript(endpointDBName, endpointdbSQLFilePath)
-        configurator.runSQLScript(commandsDBName, commandsDBSQLFilePath)
+        configurator.runSQLScript(endpointDBName, endpointdbSQLFilePath, "root", mysqlRootsPassword)
+        configurator.runSQLScript(commandsDBName, commandsDBSQLFilePath, "root", mysqlRootsPassword)
         
         configurator.addUser(websiteUser, websiteUserPassword, endpointDBName, False)
         configurator.addUser(endpointUser, endpointUserPassword, endpointDBName, True)

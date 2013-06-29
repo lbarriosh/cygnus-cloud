@@ -41,9 +41,13 @@ if __name__ == "__main__" :
         print e.message
         sys.exit()
     
-    dbConfigurator = DBConfigurator(parser.getConfigurationParameter('mysqlRootsPassword'))
-    dbConfigurator.runSQLScript("ImageRepositoryDB", "./database/ImageRepositoryDB.sql")
+    rootPassword= parser.getConfigurationParameter('mysqlRootsPassword')
+    dbConfigurator = DBConfigurator(rootPassword)
+    dbConfigurator.runSQLScript("ImageRepositoryDB", "./database/ImageRepositoryDB.sql", "root", rootPassword)
     dbConfigurator.addUser(parser.getConfigurationParameter('dbUser'), parser.getConfigurationParameter('dbUserPassword'), "ImageRepositoryDB")
+    
+    if (not os.path.exists(parser.getConfigurationParameter('FTPRootDirectory'))):
+        os.mkdir(parser.getConfigurationParameter('FTPRootDirectory'))
     
     imageRepository = ImageRepositoryReactor(parser.getConfigurationParameter('FTPRootDirectory'))
     imageRepository.connectToDatabase("ImageRepositoryDB", parser.getConfigurationParameter("dbUser"), parser.getConfigurationParameter("dbUserPassword"))
@@ -53,9 +57,6 @@ if __name__ == "__main__" :
                                     parser.getConfigurationParameter("FTPPort"), parser.getConfigurationParameter('maxConnections'), parser.getConfigurationParameter('maxConnectionsPerIP'),
                                     parser.getConfigurationParameter("uploadBandwidthRatio"), parser.getConfigurationParameter("downloadBandwidthRatio"), parser.getConfigurationParameter("FTPUserName"),
                                     parser.getConfigurationParameter("FTPPasswordLength"))
-    
-    if (not os.path.exists(parser.getConfigurationParameter('FTPRootDirectory'))):
-        os.mkdir(parser.getConfigurationParameter('FTPRootDirectory'))
         
     imageRepository.initTransfers() # The main thread will dispatch all the transfers.
     imageRepository.stopListenning()   
