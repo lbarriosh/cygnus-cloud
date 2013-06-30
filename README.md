@@ -124,16 +124,16 @@ the CygnusCloud's design (explained in detail) and the user's manual.
 Although the source code is mostly written (and commented) in English, the project documentation is written
 in Spanish. If you don't speak Spanish and want to ask something to us, don't be shy!
 
-And if you want to translate any part of the CygnusCloud documentation, just send us your translation. We'll
-be glad to publish it (acknowledging that you are the translator, of course).
+And if you want to translate any parts of the CygnusCloud documentation, just send us your translations. We'll
+be glad to publish them (acknowledging that you are the translator, of course).
 
 Technical support
 -----------------
 
-If you encounter a problem while using CygnusCloud, plese use the bug tracking tool to let us know. We'll try
+If you encounter a problem while using CygnusCloud, please use the bug tracking tool to warn us. We'll try
 to correct it as soon as we can.
 
-And if you represent an organization that wants to use CygnusCloud, we can adapt it to your needs and provide
+And if you represent an organization that wants to use CygnusCloud, we can adapt it to your needs and also provide
 you technical support.
 
 How to contribute
