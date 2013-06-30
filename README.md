@@ -62,6 +62,9 @@ Soporte técnico
 Si experimentas algún problema al utilizar CygnusCloud, utiliza la herramienta de seguimiento de issues
 de este repositorio para avisarnos. Intentaremos corregirlo tan pronto como sea posible.
 
+Y si representas a una organización que desea implantar CygnusCloud, puedes ponerte en contacto con nosotros
+para que lo adaptemos a vuestras necesidades y os demos soporte.
+
 Cómo contribuir
 ---------------
 Si quieres ayudarnos a mejorar CygnusCloud, envíanos una pull request con tus modificaciones: estaremos encantados
@@ -84,6 +87,22 @@ Furthermore, CygnusCloud also offers other benefits:
   for an entire month. With CygnusCloud, teachers can install applications on their own virtual machines and
   deploy the new configurations within a few hours.
 
+License
+--------
+* The CygnusCloud documentation is published under a Creative Commons 
+  Attribution-NonCommercial-ShareAlike 3.0 Unported license. The license's full text can be downloaded from
+  http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en.
+* The modified noVNC version is distributed under the Mozilla Public License version 2. The license's full
+  text can be downloaded from http://www.mozilla.org/MPL/2.0/.
+* The remaining CygnusCloud source code is distributed under the Apache License versión 2. You can read
+  its terms at http://www.apache.org/licenses/LICENSE-2.0.html.
+
+How to download and install CygnusCloud
+---------------------------------------
+The latest stable version (5.0.1) can be downloaded from our blog (http://cygnusclouducm.wordpress.com/descargas-v5-0-1/).
+The installation and usage instructions are described on the project's documentation
+(available at http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf).
+
 Directory tree
 --------------
 The main directories that you'll find on the CygnusCloud repository are:
@@ -97,14 +116,27 @@ The main directories that you'll find on the CygnusCloud repository are:
   src/Infraestructura (this directory contains the CygnusCloud infrastructure's source) and src/web 
   (this directory contains the web application's source).
 
-Although the source code is mostly written (and commented) in English, the project's documentation is written
+Project documentation
+---------------------
+The project documentation (available at http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf) includes
+the CygnusCloud's design (explained in detail) and the user's manual. 
+
+Although the source code is mostly written (and commented) in English, the project documentation is written
 in Spanish. If you don't speak Spanish and want to ask something to us, don't be shy!
 
 And if you want to translate any part of the CygnusCloud documentation, just send us your translation. We'll
 be glad to publish it (acknowledging that you are the translator, of course).
 
-How to download and install CygnusCloud
----------------------------------------
-The latest stable version (5.0.1) can be downloaded from our blog (http://cygnusclouducm.wordpress.com/descargas-v5-0-1/).
-The installation and usage instructions are described on the project's documentation
-(available at http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf).
+Technical support
+-----------------
+
+If you encounter a problem while using CygnusCloud, plese use the bug tracking tool to let us know. We'll try
+to correct it as soon as we can.
+
+And if you represent an organization that wants to use CygnusCloud, we can adapt it to your needs and provide
+you technical support.
+
+How to contribute
+-----------------
+If you want to help us to improve CygnusCloud, please send us a pull request with your modifications: we'll be
+delighted to study it.
