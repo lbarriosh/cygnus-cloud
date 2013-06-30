@@ -1,4 +1,28 @@
-# -*- coding: UTF8 -*-
+# -*- coding: utf8 -*-
+'''
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: clusterServerDB.py    
+    Version: 5.0
+    Description: cluster server database connector
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+'''
 
 
 from ccutils.databases.connector import BasicDBConnector
@@ -8,84 +32,78 @@ from clusterServer.database.server_state_t import SERVER_STATE_T
 
 class ClusterServerDatabaseConnector(BasicDBConnector):
     """
-    Nota: esta clase es ServerVMManager, con los métodos específicos
-    de ImagesInServerManager.
+    Cluster server database connector
     """
-    '''
-        These objects register and delete virtual machine servers to the database.   
-    '''    
-
     def __init__(self, sqlUser, sqlPassword, databaseName):
         '''
-            Constructor de la clase. Recibe el nombre y lla contrasennia del usuario sql encargado
-            de gestionar la base de datos
-            Argumentos:
-                sqlUser: usuario para conectarnos a MySQL
-                sqlPassword: contraseña para conectarnos a MySQL
-                databaseName: nombre de la base de datos a la que nos vamos a conectar
-            Devuelve:
-                Nada
+            Initializes the connector's state
+            Args:
+                sqlUser: a MySQL user
+                sqlPassword: the MySQL user's password
+                databaseName: a database name
+            Returns:
+                Nothing
         '''
         BasicDBConnector.__init__(self, sqlUser, sqlPassword, databaseName)
         
     def deleteVMServerStatistics(self, serverID):
         '''
-        Borra las estadísticas de un servidor de máquinas virtuales
-            Argumentos:
-                serverId: el identificador único del servidor
-            Devuelve:
-                Nada
+            Deletes the statistics data associated with a virtual machine server
+            Args:
+                serverId: the virtual machine server's ID
+            Returns:
+                Nothing
         '''
         command = "DELETE FROM VMServerStatus WHERE serverId = {0}".format(serverID)
         self._executeUpdate(command)
         command = "DELETE FROM AllocatedVMServerResources WHERE serverID = {0};".format(serverID)
         self._executeUpdate(command)
         
-    def getVMServerBasicData(self, serverId):
+    def getVMServerConfiguration(self, serverId):
         '''
-            Devuelve la información asociada a un servidor de máquinas virtuales
-            Argumentos:
-                serverId: el identificador único del servidor
-            Devuelve:
-                Diccionario con los datos del servidor
-                Nota: ¿por qué no una tupla o una lista? Porque el orden en que se devuelven
-                las cosas importaría, lo cual es un fastidio para añadir y quitar cosas
-                (lo sé por la red). Al devolver un diccionario, es mucho más fácil añadir
-                y quitar cosas a devolver.
+            Returns a virtual machine server's current configuration
+            Args:
+                serverId: the virtual machine server's ID
+            Returns:
+                A dictionary containing the virtual machine server's current configuration
         '''
-        #Creamos la consulta encargada de extraer los datos
-        query = "SELECT serverName, serverStatus, serverIP, serverPort, isVanillaServer FROM VMServer"\
+        query = "SELECT serverName, serverStatus, serverIP, serverPort, isEditionServer FROM VMServer"\
             + " WHERE serverId = '{0}';".format(serverId)
-        # Recogemos los resultados
         result = self._executeQuery(query, True)
         if (result == None) : 
             return None
         d = dict()
-        (name, status, ip, port, isVanillaServer) = result
-        # Devolvemos el resultado 
+        (name, status, ip, port, isEditionServer) = result
         d["ServerName"] = name
         d["ServerStatus"] = status
         d["ServerIP"] = ip
         d["ServerPort"] = port
-        d["IsVanillaServer"] = isVanillaServer == 1
+        d["IsEditionServer"] = isEditionServer == 1
         return d         
     
-    def getVMServerResouceUsage(self, serverID):
+    def getVMServerStatisticsToSend(self, serverID):
+        """
+        Returns a virtual machine server's current resource usage. This information will be
+        sent to the cluster endpoint daemon.
+        Args:
+            serverID: the virtual machine server's ID
+        Returns:
+                A dictionary containing the virtual machine server's current resource usage
+        """
         result = self.getVMServerStatistics(serverID)
         if (result == None) :
             return None
-        result["ServerName"] = str(self.getVMServerBasicData(serverID)["ServerName"])        
+        result["ServerName"] = str(self.getVMServerConfiguration(serverID)["ServerName"])        
         return result     
         
     def getVMServerStatistics(self, serverID) :
         '''
-            Devuelve las estadísticas de un servidor de máquinas virtuales
-            Argumentos:
-                serverId: el identificador único del servidor
+            Returns a virtual machine server's current resource usage
+            Args:
+                serverId: the virtual machine server's ID
             Returns:
-                Diccionario con las estadísticas del servidor.
+                A dictionary containing the virtual machine server's current resource usage
         '''
-        #Creamos la consulta encargada de extraer los datos
         query = "SELECT hosts, ramInUse, ramSize, freeStorageSpace, availableStorageSpace,\
             freeTemporarySpace, availableTemporarySpace, activeVCPUs, physicalCPUs FROM VMServerStatus WHERE serverId = {0};".format(serverID)
         result = self._executeQuery(query, True)
@@ -112,39 +130,32 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
             d["ActiveVCPUs"] += int(round(result[3]))
             d["ActiveHosts"] += int(round(result[3]))
         
-        # Devolvemos los resultados
         return d
     
     def getVMServerIDs(self):
         '''
-            Permite obtener una lista con los identificadores de todos los servidores de 
-            máquinas virtuales que actualmente se encuentran dados de alta en la base de datos.
-        
-            Nota: este es el antiguo método getServers
-            Argumentos: 
-                Ninguno
-            Devuelve:
-                Lista con los identificadores de todos los servidores de máquinas virtuales
+            Returns all the registered virtual machine servers' IDs.
+            Args: 
+                None
+            Returns:
+                A list containing  all the registered virtual machine servers' IDs.
         '''
-        #Creamos la consulta encargada de extraer los datos
         query = "SELECT serverId FROM VMServer;"  
-        #Recogemos los resultado
         results=self._executeQuery(query)
         if (results == None) :
             return []
         serverIds = []
         for r in results:
             serverIds.append(r)
-        #Devolvemos la lista resultado
         return serverIds
     
     def getActiveVMServersConnectionData(self):
         """
-        Returns a list containing the active servers' IP addresses.
+        Returns the active servers' IP addresses.
         Args:
             None
         Returns: 
-            Nothing
+            A list containing the active servers' IP addresses.
         """
         query = "SELECT serverIP, serverPort FROM VMServer WHERE serverStatus = " + str(SERVER_STATE_T.READY) + ";"
         results = self._executeQuery(query)
@@ -156,27 +167,24 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         return serverIPs
         
         
-    def registerVMServer(self, name, IPAddress, port, isVanillaServer):
+    def registerVMServer(self, name, IPAddress, port, isEditionServer):
         '''
-            Permite registrar un Nuevo servidor de máquinas virtuales con el puerto, la IP y el número
-             máximo de máquinas virtuales que se le pasan como argumento
-            Argumentos:
-                name: nombre del nuevo servidor
-                IPAddress: la IP del nuevo servidor
-                port: el puerto del nuevo servidor
-                isVanillaServer: True si el servidor de máquinas virtuales se usará preferentemente
-                    para albergar imágenes vanilla, y false en caso contrario.
+            Registers a new virtual machine server on the database.
+            Args:
+                name: the new virtual machine server's name
+                IPAddress: the new virtual machine server's IP address
+                port: the new virtual machine server's port
+                isEditionServer: indicates whether the new virtual machine server will be used
+                    to create or edit images or not.
             Returns:
-                El identificador del nuevo servidor.
-            Nota: creo que es mejor el nombre registerVMServer. subscribe significa suscribir,
-            ratificar algo.
+                The new virtual machine server's ID
         '''
-        if (isVanillaServer) :
+        if (isEditionServer) :
             vanillaValue = 1
         else :
             vanillaValue = 0
         
-        update = "INSERT INTO VMServer(serverStatus, serverName, serverIP, serverPort, isVanillaServer) VALUES ({0}, '{1}', '{2}', {3}, {4});"\
+        update = "INSERT INTO VMServer(serverStatus, serverName, serverIP, serverPort, isEditionServer) VALUES ({0}, '{1}', '{2}', {3}, {4});"\
             .format(SERVER_STATE_T.BOOTING, name, IPAddress, port, vanillaValue)
         self._executeUpdate(update)      
         query = "SELECT serverId FROM VMServer WHERE serverIP ='" + IPAddress + "';"
@@ -185,25 +193,25 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
     
     def deleteVMServer(self, serverNameOrIPAddress):
         '''
-            Permite eliminar un determinado servidor de máquinas virtuales de la base de datos cuyo
-             identificador se le pasa como argumento.
-            Argumentos:
-                serverNameOrIPAddress: el nombre o la IP del servidor
-            Devuelve:
-                Nada
-            Nota: tuve que dejar de usar el id porque la web no sabe que ids tiene asignado
-            cada servidor. Estos son únicos dentro del servidor principal.
+            Unregisters a virtual machine server from the database
+            Args:
+                serverNameOrIPAddress: a virtual machine server's name or IP address 
+            Returns:
+                Nothing
         '''
         serverId = self.getVMServerID(serverNameOrIPAddress)
-        # Borramos la fila
         query = "DELETE FROM VMServer WHERE serverId = " + str(serverId) + ";"
-        #Ejecutamos el comando
         self._executeUpdate(query)
-        # Apaño. ON DELETE CASCADE no funciona cuando las tablas usan un motor de almacenamiento
-        # distinto. Una usa INNODB (VMServer) y otra usa MEMORY (VMServerStatus, que es nueva)
         self.deleteVMServerStatistics(serverId)
         
     def getImageIDs(self):
+        """
+            Returns the registered images' IDs
+            Args:
+                None
+            Returns:
+                A list containing the registered images' IDs.
+        """
         query = "SELECT DISTINCT imageId FROM ImageOnServer;"
         results = self._executeQuery(query)
         imageIDs = []
@@ -213,28 +221,29 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         
     def getHosts(self, imageId, imageStatus = IMAGE_STATE_T.READY):
         '''
-            Devuelve una lista con todos los identificadores de servidores que pueden dar acceso a la
-             imagen cuyo identificador se pasa como argumento.
-            Argumentos:
-                imageId: el identificador único de la imagen
-            Devuelve:
-                lista con los identificadores de los servidores que tienen la imagen
-            Nota: tuve que añadir el estado de los servidores de máquinas virtuales, que no
-            estaba contemplado en el diseño inicial. Y tengo que cruzar dos tablas: una imagen
-            no está disponible si un servidor que no está preparado, que está apagado o que
-            se ha desconectado la tiene. Sólo está disponible si el servidor está listo.
+            Checks which virtual machine servers contain a image in the specified
+            state and returns their identifiers.
+            Args:
+                imageId: the image's ID
+            Returns:
+                a list containing the hosts' IDs.
         '''
-        # Creamos la consulta
         query = "SELECT ImageOnServer.serverId FROM ImageOnServer\
             INNER JOIN VMServer ON ImageOnServer.serverId = VMServer.serverID \
-                WHERE VMServer.serverStatus = {0} AND imageId = {1} AND status = {2};".format(SERVER_STATE_T.READY, imageId, imageStatus) 
-        #Recogemos los resultado
+                WHERE VMServer.serverStatus = {0} AND imageId = {1} AND state = {2};".format(SERVER_STATE_T.READY, imageId, imageStatus) 
         results=self._executeQuery(query)
         if (results == None) :
             return []
         return results
     
     def getCandidateVMServers(self, imageID) :
+        """
+        Checks which active virtual machine servers do not contain a disk image.
+        Args:
+            imageID: the image's ID
+        Returns:
+            a list containing the candidate servers' IDs.
+        """
         query = "SELECT VMServer.serverId FROM VMServer WHERE serverStatus = {0} AND NOT EXISTS (SELECT * FROM ImageOnServer\
             WHERE ImageOnServer.serverId = VMServer.serverID AND ImageOnServer.imageId = {1});".format(SERVER_STATE_T.READY, imageID)
         results=self._executeQuery(query)
@@ -242,52 +251,60 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
             return []
         return results
     
-    def resetVMServersStatus(self):
+    def initializeVMServersStatus(self):
+        """
+        Initializes all the registered virtual machine servers' status.
+        Args:
+            None
+        Returns:
+            Nothing
+        """
         vmServerIDs = self.getVMServerIDs()
         for vmServerID in vmServerIDs :
             self.updateVMServerStatus(vmServerID, SERVER_STATE_T.SHUT_DOWN)
     
     def getHostedImages(self, serverID):
         '''
-            Devuelve la lista de máquinas virtuales que puede albergar el servidor de máquinas virtuales
-            cuyo identificador nos proporcionan como argumento.
-            Argumentos:
-                imageId: el identificador único de la imagen
-            Devuelve:
-                lista con los identificadores de los servidores que tienen la imagen
+            Checks which images are hosted on a virtual machine server.
+            Args:
+                serverID: the virtual machine server's ID.
+            Returns:
+                a list containing the hosted images' IDs.
         '''
-        # Creamos la consulta
-        query = "SELECT VMServer.serverName, imageId, status FROM VMServer, ImageOnServer " +\
+        query = "SELECT VMServer.serverName, imageId, state FROM VMServer, ImageOnServer " +\
                  "WHERE VMServer.serverId = ImageOnServer.serverId AND VMServer.serverID = {0};"\
                  .format(serverID)
-        #Recogemos los resultado
         results=self._executeQuery(query)
         if (results == None) :
             return []
-        #Guardamos en una lista los ids resultantes
         retrievedData = []
         for r in results:
             retrievedData.append({"ServerName" : str(r[0]), "ImageID" : int(r[1]), "CopyStatus": int(r[2])})
-        #Devolvemos la lista resultado
         return retrievedData
     
     def hostsImage(self, serverID, imageID):
+        """
+        Checks if a virtual machine server hosts an image.
+        Args:
+            serverID: the virtual machine server's ID
+            imageID: the image's ID
+        Returns:
+            True if the virtual machine server hosts the given image, and False if it doesn't.
+        """
         query = "SELECT * FROM ImageOnServer WHERE serverId = {0} AND imageID = {1};".format(serverID, imageID)
         result = self._executeQuery(query, True)
         return result != None
     
     def getVMServerID(self, nameOrIPAddress):
         '''
-        Devuelve el ID de un servidor de máquinas virtuales a partir de su nombre o
-        su IP.
-        Argumentos:    
-            nameOrIPAddress: el nombre o la IP del servidor de máquinas virtuales
-        Devuelve:
-            El ID del servidor.
+        Returns a virtual machine server's ID from its name or IP address.
+        Args:    
+            nameOrIPAddress: the virtual machine server's name or IP address
+        Returns:
+            The virtual machine server's ID
         '''
         query = "SELECT serverId FROM VMServer WHERE serverIP = '" + nameOrIPAddress +\
              "' OR serverName = '" + nameOrIPAddress + "';"
-        # Execute it
         results=self._executeQuery(query, True)
         if (results == None) : 
             return None
@@ -295,13 +312,12 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
     
     def updateVMServerStatus(self, serverId, newStatus):
         '''
-            Actualiza el estado de un servidor de máquinas virtuales (listo, arrancando,
-            desconectado,...)
-            Argumentos:
-                serverId: el identificador úncio del servidor
-                newStatus: el nuevo estado del servidor
-            Devuelve:
-                Nada
+            Updates a virtual machine server's status
+            Args:
+                serverId: the virtual machine server's ID
+                newStatus: the virtual machine server's new status
+            Returns:
+                Nothing
         '''
         command = "UPDATE VMServer SET serverStatus=" + str(newStatus) + \
             " WHERE serverId = " + str(serverId) + ";"
@@ -311,9 +327,9 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         
     def getServerImages(self, serverId):
         '''
-            Devuelve una lista con los identificadores de las imágenes asociadas a un servidor 
+            Returns una lista con los identificadores de las imágenes asociadas a un servidor 
               de máquinas virtuales.
-            Argumentos:
+            Args:
                 serverId: el identificador del servidor de máquinas virtuales
             Returns:
                 Lista con los identificadores de las imágenes
@@ -322,7 +338,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
             para cada servidor de máquinas virtuales, y eso son muchas conexiones.
         '''
         #Creamos la consulta encargada de extraer los datos
-        sql = "SELECT imageId, status FROM ImageOnServer WHERE serverId = {0}; ".format(serverId)    
+        sql = "SELECT imageId, state FROM ImageOnServer WHERE serverId = {0}; ".format(serverId)    
         #Recogemos los resultado
         results=self._executeQuery(sql)
         #Guardamos en una lista los ids resultantes
@@ -332,17 +348,17 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         #Devolvemos la lista resultado
         return serverIds
          
-    def assignImageToServer(self, serverID, imageID, status = IMAGE_STATE_T.READY):
+    def assignImageToServer(self, serverID, imageID, state = IMAGE_STATE_T.READY):
         '''
         Asigna una imagen a un servidor de máquinas virtuales
-        Argumentos:
+        Args:
             serverID: identificador único del servidor de máquinas virtuales
             imageID: identificador único de la imagen
-        Devuelve:
-            Nada.
+        Returns:
+            Nothing.
         '''
         # Insert the row in the table
-        query = "INSERT INTO ImageOnServer VALUES({0}, {1}, {2});".format(serverID, imageID, status)
+        query = "INSERT INTO ImageOnServer VALUES({0}, {1}, {2});".format(serverID, imageID, state)
         self._executeUpdate(query)
         
     def deleteImageFromServer(self, serverID, imageID):
@@ -354,7 +370,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
                               activeVCPUs, physicalCPUs):
         '''
         Actualiza las estadísticas de un servidor de máquinas virtuales.
-        Argumentos
+        Args
         '''
         query = "INSERT INTO VMServerStatus VALUES({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9});".format(serverID, runningHosts, 
             ramInUse, ramSize, freeStorageSpace, availableStorageSpace, freeTemporarySpace, availableTemporarySpace,
@@ -369,27 +385,30 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
                               activeVCPUs, physicalCPUs, serverID)
             self._executeUpdate(query)
         
-        update = "DELETE FROM AllocatedVMServerResources WHERE serverID = {0} AND remove = 1;".format(serverID)
+        update = "DELETE FROM AllocatedVMServerResources WHERE serverID = {0} AND freeStorageSpace = 0 AND remove = 1;".format(serverID)
+        self._executeUpdate(update)
+        
+        update = "UPDATE AllocatedVMServerResources SET freeStorageSpace = 0, remove = 0 WHERE remove = 1 AND freeStorageSpace <> 0;"
         self._executeUpdate(update)
             
             
         
-    def setServerBasicData(self, serverId, name, status, IPAddress, port, isVanillaServer):
+    def setServerBasicData(self, serverId, name, status, IPAddress, port, isEditionServer):
         '''
             Modifica los datos básicos de un servidor de máquinas virtuales
-            Argumentos:
+            Args:
                 name: nuevo nombre del servidor
                 status: nuevo estado del servidor
                 IPAddress: nueva IP del servidor
                 port: nuevo puerto del servidor
-                isVanillaServer: indica si el servidor se usará preferentemente para editar imágenes o no
-            Devuelve:
-                Nada
+                isEditionServer: indica si el servidor se usará preferentemente para editar imágenes o no
+            Returns:
+                Nothing
         '''
-        if (isVanillaServer) : vanillaValue = 1
+        if (isEditionServer) : vanillaValue = 1
         else : vanillaValue = 0
         
-        query = "UPDATE VMServer SET serverName = '{0}', serverIP = '{1}', serverPort = {2}, serverStatus = {3}, isVanillaServer = {4}\
+        query = "UPDATE VMServer SET serverName = '{0}', serverIP = '{1}', serverPort = {2}, serverStatus = {3}, isEditionServer = {4}\
             WHERE serverID = {5};".format(name, IPAddress, port, status, vanillaValue, serverId);
         
         self._executeUpdate(query)
@@ -449,12 +468,12 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
     def registerActiveVMLocation(self, vmID, serverID):
         """
         Registra la ubicación de una nueva máquina virtual activa
-        Argumentos:
+        Args:
             vmID: el identificador único de la máquina virtual
             serverID: el identificador único del servidor de máquinas virtuales
             que la alberga.
-        Devuelve:
-            nada
+        Returns:
+            Nothing
         """
         update = "INSERT INTO ActiveVMDistribution VALUES ('{0}',{1});".format(vmID, serverID)
         self._executeUpdate(update)
@@ -462,20 +481,20 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
     def deleteActiveVMLocation(self, vmID):
         """
         Elimina la ubicación de una máquina virtual activa
-        Argumentos:
+        Args:
             vmID: el identificador único de la máquina virtual
-        Devuelve:
-            nada
+        Returns:
+            Nothing
         """
         update = "DELETE FROM ActiveVMDistribution WHERE vmID = '{0}';".format(vmID);
         self._executeUpdate(update)
         
     def getActiveVMHostID(self, vmID):
         """
-        Devuelve la ubicación de una máquina virtual activa
-        Argumentos:
+        Returns la ubicación de una máquina virtual activa
+        Args:
             vmID: el identificador único de la máquina virtual
-        Devuelve:
+        Returns:
             El identificador único del servidor de máquinas virtuales 
             que alberga la máquina virtual
         """
@@ -487,7 +506,7 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
             return result
         
     def getVanillaVMServers(self):
-        query = "SELECT serverID FROM VMServer WHERE isVanillaServer = 1 AND serverStatus = {0};".format(SERVER_STATE_T.READY)
+        query = "SELECT serverID FROM VMServer WHERE isEditionServer = 1 AND serverStatus = {0};".format(SERVER_STATE_T.READY)
         result = self._executeQuery(query, False)
         if (result == None) :
             return []
@@ -498,17 +517,22 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         """
         Borra la ubicación de todas las máquinas virtuales activas registradas en un servidor
         de máquinas virtuales.
-        Argumentos:
+        Args:
             serverID: el identificador único del servidor de máquinas virtuales
-        Devuelve:
-            Nada
+        Returns:
+            Nothing
         """
         update = "DELETE FROM ActiveVMDistribution WHERE serverID = {0};".format(serverID)
         self._executeUpdate(update)
         
     def registerHostedVMs(self, serverID, hostedVMs):
         """
-        Registra un conjunto de máquinas virtuales almacenadas en un servidor
+        Registers the virtual machines that are hosted on a virtual machine server.
+        Args:
+            serverID: the host's ID
+            hostedVMs: a list containing the hosted virtual machines' IDs
+        Returns:
+            Nothing
         """
         update = "DELETE FROM ActiveVMDistribution WHERE serverID = {0};".format(serverID)
         self._executeUpdate(update)
@@ -516,91 +540,118 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         for hostedDomainUID in hostedVMs :
             self._executeUpdate(update.format(hostedDomainUID, serverID))
             
-    def getVanillaImageFamilyFeatures(self, family):
+    def getVMFamilyFeatures(self, familyID):
         """
-        Devuelve los datos de una imagen vanilla
-        Argumentos:
-    family imageID: ID de la imagen vanilla
-        Devuelve:
-            Un diccionario con los datos de la imagen, con las siguientes claves:
-                RAM
-                vCPUs
-                OSDiskSize
-                dataDiskSize
+        Returns a virtual machine familyID's features
+        Args:
+            familyID: teh virtual machine server's ID
+        Returns:
+            A dictionary containing the virtual machine family's features
         """
-        query = "SELECT ramSize, vCPUs, osDiskSize, dataDiskSize FROM VanillaImageFamily WHERE familyID = {0}".format(family)
-        # Ejecutamos la consulta
+        query = "SELECT ramSize, vCPUs, osDiskSize, dataDiskSize FROM VMFamily WHERE familyID = {0}".format(familyID)
         results=self._executeQuery(query)
         if (results == ()) : 
             return None
         (ram, vCPUs, OSDiskSize, dataDiskSize) = results[0]
-        # Creamos el diccionario con los datos
         d = dict() 
         d["RAMSize"] = ram
         d["vCPUs"] = vCPUs
         d["osDiskSize"] = OSDiskSize
         d["dataDiskSize"] = dataDiskSize
         return d
-    
-    def addVanillaImageFamily(self, familyName, RAMSize, vCPUs, osDiskSize, dataDiskSize):
-        update = "INSERT INTO VanillaImageFamily(familyName, ramSize, vCPUs, osDiskSize, dataDiskSize) VALUES ('{0}', {1}, {2}, {3}, {4});"\
-            .format(familyName, RAMSize, vCPUs, osDiskSize, dataDiskSize)
-        self._executeUpdate(update)
         
-    def getVanillaImageFamilyID(self, familyName):
-        query = "SELECT familyID FROM VanillaImageFamily WHERE familyName = '{0}';".format(familyName)
+    def getVMFamilyID(self, familyName):
+        """
+        Returns a virtual machine family's ID
+        Args:
+            familyName: the virtual machine family's name
+        Returns:
+            the virtual machine server family's ID
+        """
+        query = "SELECT familyID FROM VMFamily WHERE familyName = '{0}';".format(familyName)
         result = self._executeQuery(query, True)
         if (result == None) :
             return None
         else :
             return int(result)
-        
-    def deleteVanillaImageFamilies(self):
-        update = "DELETE FROM VanillaImageFamily;"
-        self._executeUpdate(update)
     
-    def getVMResources(self, VMID):
+    def getVMResources(self, imageID):
         """
-        Devuelve los recursos de una imagen
-        Argumentos:
-            VMID: ID de la imagen
-        Devuelve:
-            Un diccionario con los datos de la imagen, con las siguientes claves:
-                RAM
-                vCPUs
-                OSDiskSize
-                dataDiskSize
+        Returns the resources associated to an image's virtual machine family.
+        Args:
+            imageID: an image ID
+        Returns:
+            A dictionary containing the resources associated to the image's virtual machine family.
         """
-        # Conseguimos el ID de la imagen vanilla en la que está basada
-        query = "SELECT * FROM VMfromVanilla WHERE familyID = {0}".format(VMID)
-        # Ejecutamos la consulta
+        query = "SELECT * FROM VMFamilyOf WHERE familyID = {0}".format(imageID)
         results=self._executeQuery(query)
         if (results == ()) : 
             return None
-        (vanillaID, VMID) = results
-        return self.getVanillaImageFamilyFeatures(vanillaID)
+        (vanillaID, imageID) = results
+        return self.getVMFamilyFeatures(vanillaID)
     
-    def getFamilyID(self, imageID):
-        query = "SELECT familyID FROM VanillaImageFamilyOf WHERE imageID = {0};".format(imageID)
+    def getImageVMFamilyID(self, imageID):
+        """
+        Returns an image virtual machine family's ID
+        Args:
+            imageID: an imge ID
+        Returns:
+            the image virtual machine server family's ID
+        """
+        query = "SELECT familyID FROM VMFamilyOf WHERE imageID = {0};".format(imageID)
         result = self._executeQuery(query, True)
         if (result == None) :
             return None
         else :
             return int(result)
         
-    def registerFamilyID(self, imageID, familyID):
-        update = "INSERT INTO VanillaImageFamilyOf VALUES ({0}, {1});".format(imageID, familyID)
+    def registerImageVMFamilyID(self, imageID, familyID):
+        """
+        Registers an image's virtual machine family
+        Args:
+            imageID: an image ID
+            familyID: a virtual machine family ID
+        Returns:
+            Nothing
+        """
+        update = "INSERT INTO VMFamilyOf VALUES ({0}, {1});".format(imageID, familyID)
         self._executeUpdate(update)
         
-    def deleteFamilyID(self, imageID):
-        update = "DELETE FROM VanillaImageFamilyOf WHERE imageID = {0}".format(imageID)
+    def deleteImageVMFamilyID(self, imageID):
+        """
+        Unregisters an image's virtual machine family
+        Args:
+            imageID: an image ID
+        Returns:
+            Nothing
+        """
+        update = "DELETE FROM VMFamilyOf WHERE imageID = {0}".format(imageID)
         self._executeUpdate(update)
         
     def addImageRepository(self, repositoryIP, repositoryPort, status):
+        """
+        Registers an image repository
+        Args:
+            repositoryIP: the image repository's IP address
+            repositoryPort: the image repository's port
+            status: the image repository's status
+        Returns:
+            Nothing
+        """
         command = "INSERT INTO ImageRepository VALUES ('{0}', {1}, 0, 0, {2})".format(repositoryIP, repositoryPort, status)
         self._executeUpdate(command)
         
     def updateImageRepositoryStatus(self, repositoryIP, repositoryPort, freeDiskSpace, availableDiskSpace):
+        """
+        Updates an image repository's status
+        Args:
+            repositoryIP: the image repository's IP address
+            repositoryPort: the image repository's port
+            freeDiskSpace: the image repository's free disk space
+            availableDiskSpace: the image repository's available disk space
+        Returns:
+            Nothing
+        """
         command = "UPDATE ImageRepository SET freeDiskSpace={2}, availableDiskSpace={3} WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
             .format(repositoryIP, repositoryPort, freeDiskSpace, availableDiskSpace)
         self._executeUpdate(command)
@@ -608,11 +659,28 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         self._executeUpdate(command)
         
     def updateImageRepositoryConnectionStatus(self, repositoryIP, repositoryPort, status):
+        """
+        Updates an image repository's connection status
+        Args:
+            repositoryIP: the image repository's IP address
+            repositoryPort: the image repository's port
+            status: the current image repository's connection status
+        Returns:
+            Nothing
+        """
         command = "UPDATE ImageRepository SET connection_status={2} WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
             .format(repositoryIP, repositoryPort, status)
         self._executeUpdate(command)
         
     def getImageRepositoryStatus(self, repositoryIP, repositoryPort):
+        """
+        Returns an image repository's curremt status data
+        Args:
+            repositoryIP: the image repository's IP address
+            repositoryPort: the image repository's port
+        Returns:
+            A dictionary containing the image repository's current status data
+        """
         query = "SELECT freeDiskSpace, availableDiskSpace, connection_status FROM ImageRepository WHERE repositoryIP = '{0}' AND repositoryPort = {1};"\
             .format(repositoryIP, repositoryPort)
         result = self._executeQuery(query, True)
@@ -627,32 +695,88 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         return status
         
     def allocateImageRepositoryResources(self, repositoryIP, repositoryPort, commandID, diskSpace):
+        """
+        Allocates disk space on an image repository
+        Args:
+            repositoryIP: the image repository's IP address
+            repositoryPort: the image repository's port
+            commandID: a command ID
+            diskSpace: the allocated disk space
+        Returns:
+            Nothing
+        """
         update = "INSERT INTO AllocatedImageRepositoryResources VALUES ('{0}', '{1}', {2}, {3}, 0)".format(commandID, repositoryIP, repositoryPort, diskSpace)
         self._executeUpdate(update)
         
     def freeImageRepositoryResources(self, commandID, error):
+        """
+        Frees a part of the allocated disk space on an image repository
+        Args:
+            commandID: a command ID
+            error: indicates if an error was detected while processing the command or not.
+        Returns:
+            Nothing
+        """
         if (error) :
             update = "DELETE FROM AllocatedImageRepositoryResources WHERE commandID = '{0}';".format(commandID)
         else :
             update = "UPDATE AllocatedImageRepositoryResources SET remove = 1 WHERE commandID = '{0}';".format(commandID)
         self._executeUpdate(update)
         
-    def registerNewVMVanillaImageFamily(self, commandID, familyID):
-        update = "INSERT INTO VanillaImageFamilyOfNewVM VALUES ('{0}', {1});".format(commandID, familyID)
+    def registerNewImageVMFamily(self, temporaryID, familyID):
+        """
+        Registers a new image's virtual machine family
+        Args:
+            temporaryID: the new image's temporary ID
+            familyID: the new image's virtual machine family ID
+        Returns:
+            Nothing
+        """
+        update = "INSERT INTO VMFamilyOfNewVM VALUES ('{0}', {1});".format(temporaryID, familyID)
         self._executeUpdate(update)
         
-    def getNewVMVanillaImageFamily(self, commandID):
-        query = "SELECT familyID FROM VanillaImageFamilyOfNewVM WHERE temporaryID = '{0}';".format(commandID)
+    def getNewImageVMFamily(self, temporaryID):
+        """
+        Returns a new image's virtual machine family ID
+        Args:
+            temporaryID: a new image's temporary ID
+        Returns:
+            the new image's virtual machine family ID
+        """
+        query = "SELECT familyID FROM VMFamilyOfNewVM WHERE temporaryID = '{0}';".format(temporaryID)
         return self._executeQuery(query, True)
         
-    def deleteNewVMVanillaImageFamily(self, commandID):
-        update = "DELETE FROM VanillaImageFamilyOfNewVM WHERE temporaryID = '{0}';".format(commandID)
+    def deleteNewImageVMFamily(self, temporaryID):
+        """
+        Deletes a new image's virtual machine family ID
+        Args:
+            temporaryID: the new image's temporary ID
+        Returns:
+            Nothing
+        """
+        update = "DELETE FROM VMFamilyOfNewVM WHERE temporaryID = '{0}';".format(temporaryID)
         self._executeUpdate(update)
         
     def addImageEditionCommand(self, commandID, imageID):
+        """
+        Registers an image edition command
+        Args:
+            commandID: the command's ID
+            imageID: the affected image's ID
+        Returns:
+            Nothing
+        """
         self.__addImageCommand("ImageEditionCommand", commandID, imageID)
         
     def addImageDeletionCommand(self, commandID, imageID):
+        """
+        Registers an image deletion command
+        Args:
+            commandID: the command's ID
+            imageID: the affected image's ID
+        Returns:
+            Nothing
+        """
         self.__addImageCommand("ImageDeletionCommand", commandID, imageID)
         
     def __addImageCommand(self, tableName, commandID, imageID):
@@ -660,9 +784,23 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         self._executeUpdate(update)
         
     def removeImageEditionCommand(self, commandID):
+        """
+        Unregisters an image edition command
+        Args:
+            commandID: the command's ID
+        Returns:
+            Nothing
+        """
         self.__removeImageCommand("ImageEditionCommand", commandID)
         
     def removeImageDeletionCommand(self, commandID):
+        """
+        Unregisters an image deletion command
+        Args:
+            commandID: the command's ID
+        Returns:
+            Nothing
+        """
         self.__removeImageCommand("ImageDeletionCommand", commandID)
         
     def __removeImageCommand(self, tableName, commandID):
@@ -670,9 +808,23 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         self._executeUpdate(update)
         
     def isImageEditionCommand(self, commandID):
+        """
+        Checks if a command is an image edition command or not.
+        Args:
+            commandID: the command's ID
+        Returns:
+            True if the command is an image edition command, and False otherwise.
+        """
         return self.__classifyCommand("ImageEditionCommand", commandID)
     
     def isImageDeletionCommand(self, commandID):
+        """
+        Checks if a command is an image deletion command or not.
+        Args:
+            commandID: the command's ID
+        Returns:
+            True if the command is an image deletion command, and False otherwise.
+        """
         return self.__classifyCommand("ImageDeletionCommand", commandID)
         
     def __classifyCommand(self, tableName, commandID):
@@ -680,9 +832,23 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         return self._executeQuery(query, True) != None
     
     def isBeingEdited(self, imageID):
+        """
+        Checks if an image is being edited
+        Args:
+            imageID: an image ID
+        Returns:
+            True if the image is being edited, and False otherwise 
+        """
         return self.__isAffectedByCommand("ImageEditionCommand", imageID)
     
     def isBeingDeleted(self, imageID):
+        """
+        Checks if an image is being deleted
+        Args:
+            imageID: an image ID
+        Returns:
+            True if the image is being deleted, and False otherwise 
+        """
         return self.__isAffectedByCommand("ImageDeletionCommand", imageID)
     
     def __isAffectedByCommand(self, tableName, imageID):
@@ -690,29 +856,75 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         return self._executeQuery(query, True) != None
     
     def getImageEditionCommandID(self, imageID):
+        """
+        Returns an image edition command's ID
+        Args:
+            imageID: the affected image's ID
+        Returns:
+            the image edition command's ID
+        """
         return self.__getCommandID("ImageEditionCommand", imageID)
         
     def getImageDeletionCommandID(self, imageID):
+        """
+        Returns an image deletion command's ID
+        Args:
+            imageID: the affected image's ID
+        Returns:
+            the image deletion command's ID
+        """
         return self.__getCommandID("ImageDeletionCommand", imageID)
     
     def __getCommandID(self, table, imageID):
         query = "SELECT commandID FROM {0} WHERE imageID = {1};".format(table, imageID)
         return self._executeQuery(query, True)    
     
-    def changeImageStatus(self, imageID, status):
-        update = "UPDATE ImageOnServer SET status = {1} WHERE imageId = {0}".format(imageID, status)
+    def changeImageCopiesState(self, imageID, state):
+        """
+        Updates an image's copies state
+        Args:
+            imageID: the image's ID
+            state: the image copies' new state
+        Returns:
+            Nothing
+        """
+        update = "UPDATE ImageOnServer SET state = {1} WHERE imageId = {0}".format(imageID, state)
         self._executeUpdate(update)
         
-    def changeImageCopyStatus(self, imageID, serverID, status):
-        update = "UPDATE ImageOnServer SET status = {2} WHERE imageId = {0} AND serverId = {1}".format(imageID, serverID, status)
+    def changeImageCopyState(self, imageID, serverID, state):
+        """
+        Updates an image's copy state
+        Args:
+            imageID: the image's ID
+            serverID: the ID of the virtual machine server where the image copy is deployed.
+            state: the new state
+        Returns:
+            Nothing
+        """
+        update = "UPDATE ImageOnServer SET state = {2} WHERE imageId = {0} AND serverId = {1}".format(imageID, serverID, state)
         self._executeUpdate(update)      
         
     def isThereSomeImageCopyInState(self, imageID, state):
-        query = "SELECT * FROM ImageOnServer WHERE imageID = {0} AND status = {1};".format(imageID, state)
+        """
+        Checks if one or more copies of an image is in certain status
+        Args:
+            imageID: an image ID
+            state: an image copy state
+        Returns:
+            True if one or more copies of an image is in the specified state, and False otherwise
+        """
+        query = "SELECT * FROM ImageOnServer WHERE imageID = {0} AND state = {1};".format(imageID, state)
         return self._executeQuery(query, True) != None
     
-    def getHostedImagesWithStatus(self, serverID, status):
-        query = "SELECT imageId FROM ImageOnServer WHERE serverId = {0} AND status = {1};".format(serverID, status)
+    def getHostedImagesInState(self, serverID, state):
+        """
+        Checks which of the hosted image copies are in the specified state
+        Args:
+            serverID: the host's ID
+            state: an image copy state
+        Returns: a list containing the IDs of the hosted image copies that are in the specified state
+        """
+        query = "SELECT imageId FROM ImageOnServer WHERE serverId = {0} AND state = {1};".format(serverID, state)
         result = self._executeQuery(query, False)
         if (result == None) : 
             return []
@@ -720,11 +932,32 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
             return result
         
     def allocateVMServerResources(self, commandID, serverID, ramInUse, freeStorageSpace, freeTemporarySpace, activeVCPUs, activeHosts):
+        """
+        Allocates resources on a virtual machine server
+        Args:
+            commandID: a command ID
+            serverID: the host's ID
+            ramInUse: the allocated RAM
+            freeStorageSpace: the allocated storage space
+            freeTemporarySpace: the allocated temporary storage space
+            activeVCPUs: the allocated VCPUs
+            activeHosts: the allocated active hosts number
+        Returns:
+            Nothing
+        """
         update = "INSERT INTO AllocatedVMServerResources VALUES('{0}', {1}, {2}, {3}, {4}, {5}, {6}, 0);"\
             .format(commandID, serverID, ramInUse, freeStorageSpace, freeTemporarySpace, activeVCPUs, activeHosts)
         self._executeUpdate(update)
         
     def freeVMServerResources(self, commandID, error):
+        """
+        Frees a part of the allocated resources on a virtual machine server
+        Args:
+            commandID: a command ID
+            error: indicates if an error was detected while processing the command or not
+        Returns:
+            Nothing
+        """
         if (error) :
             update = "DELETE FROM AllocatedVMServerResources WHERE commandID = '{0}';".format(commandID)
         else :
@@ -732,18 +965,50 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         self._executeUpdate(update)
     
     def addAutoDeploymentCommand(self, commandID, imageID, remainingMessages):
+        """
+        Registers an auto-deployment command
+        Args:
+            commandID: the auto-deployment command's ID
+            imageID: the affected image's ID
+            remainingMesasges: the number of confirmation messages that are expected to be received from the virtual machine servers
+        Returns:
+            Nothing
+        """
         update = "INSERT INTO AutoDeploymentCommand VALUES('{0}', {1}, {2}, 0)".format(commandID, imageID, remainingMessages)
         self._executeUpdate(update)
         
     def isAutoDeploymentCommand(self, commandID):
+        """
+        Checks if a command is an image auto-deployment command or not.
+        Args:
+            commandID: the command's ID
+        Returns:
+            True if the command is an image auto-deployment command, and False otherwise.
+        """
         query = "SELECT * FROM AutoDeploymentCommand WHERE commandID = '{0}';".format(commandID)
         return self._executeQuery(query, True) != None
     
     def isAffectedByAutoDeploymentCommand(self, imageID):
+        """
+        Checks if a disk image is affected by an auto-deployment command
+        Args:
+            imageID: an image ID
+        Returns:
+            True if the image is affected by an auto-deployment command, and False if it's not
+        """
         query = "SELECT * FROM AutoDeploymentCommand WHERE imageID = {0};".format(imageID)
         return self._executeQuery(query, True) != None
         
     def handleAutoDeploymentCommandOutput(self, commandID, error):
+        """
+        Handles an auto-deployment command confirmation message
+        Args:
+            commandID: the auto-deployment command's ID
+            error: it's True when an error message was received, and False when an ordinary confirmation message
+                was received
+        Returns:
+            Nothing
+        """
         query = "SELECT remainingMessages, error FROM AutoDeploymentCommand WHERE commandID = '{0}';".format(commandID)
         result = self._executeQuery(query, True)
         generateOutputCommand = False
@@ -759,5 +1024,12 @@ class ClusterServerDatabaseConnector(BasicDBConnector):
         return (generateOutputCommand, error)
     
     def getAutoDeploymentCommandImageID(self, commandID):
+        """
+        Returns the identifier of the image affected by an auto-deployment command.
+        Args:
+            commandID: the auto-deployment command's ID
+        Returns:
+            the affected image's ID
+        """
         query = "SELECT imageID FROM AutoDeploymentCommand WHERE commandID = '{0}';".format(commandID)
         return self._executeQuery(query, True)

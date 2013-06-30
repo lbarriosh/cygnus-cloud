@@ -1,25 +1,52 @@
 # -*- coding: utf8 -*-
 '''
-Gestor de paquetes del servidor de cluster
-@author: Luis Barrios Hernández
-@version: 4.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: packetHandler.py    
+    Version: 5.0
+    Description: cluster server packet handler definition
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 from clusterServer.packetHandling.packet_t import CLUSTER_SERVER_PACKET_T
 
 class ClusterServerPacketHandler(object):
     """
-    Estos objetos leen y escriben los paquetes que el endpoint y el servidor de cluster utilizan para
-    comunicarse.
+    Cluster server packet handler
     """    
-    def __init__(self, packetCreator):
+    def __init__(self, networkManager):
         """
-        Inicializa el estado del gestor de paquetes
-        Argumentos:
-            packetCreator: el objeto NetworkManager que utilizaremos para crear los paquetes
+        Initializes the packet handler's state
+        Args:
+            networkManager: the object that will create the network packets
         """
-        self.__packetCreator = packetCreator
+        self.__packetCreator = networkManager
         
     def createErrorPacket(self, packet_type, errorDescription, commandID):
+        """
+        Creates an error packet
+        Args:
+            packet_type: the packet type associated with the error
+            errorDescription: the error description code
+            commandID: a commandID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(packet_type)
         p.writeInt(errorDescription)
@@ -27,79 +54,94 @@ class ClusterServerPacketHandler(object):
         return p
         
     def createAutoDeployPacket(self, imageID, instances, commandID):
-        p = self.__packetCreator.createPacket(5)
+        """
+        Creates an image auto-deployment packet
+        Args:
+            imageID: the affected image's ID
+            instances: the number of new instances to be hosted
+            commandID: a commandID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(CLUSTER_SERVER_PACKET_T.AUTO_DEPLOY)
         p.writeInt(imageID)
         p.writeInt(instances)
         p.writeString(commandID)
         return p
             
-    def createVMServerRegistrationPacket(self, IPAddress, port, name, isVanillaServer, commandID):
+    def createVMServerRegistrationPacket(self, IPAddress, port, name, isEditionServer, commandID):
         """
-        Crea un paquete de registro de una máquina virtual
-        Argumentos:
-            IPAddress: la dirección IP del servidor
-            port: su puerto
-            name: el nombre del servidor de máquinas virtuales
-            isVanillaServer: indica si el servidor de máquinas virtuales se utilizará preferentemente
-            para editar imágenes o no.
-            commandID: el identificador único del comando de arranque
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a virtual machine server registration packet
+        Args:
+            IPAddress: the virtual machine server's IP address
+            port: the virtual machine server's port
+            name: the virtual machine server's name
+            isEditionServer: indicates if the virtual machine server will be used to create and edit 
+                images or not
+            commandID: a command ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
-        p = self.__packetCreator.createPacket(3)
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(CLUSTER_SERVER_PACKET_T.REGISTER_VM_SERVER)
         p.writeString(IPAddress)
         p.writeInt(port)
         p.writeString(name)
-        p.writeBool(isVanillaServer)
+        p.writeBool(isEditionServer)
         p.writeString(commandID)
         return p
     
     def createCommandExecutedPacket(self, commandID):
         """
-        Crea un paquete que indica que un comando se ha ejecutado.
-        Argumentos:
-            commandID: el identificador único del comando
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a command executed packet
+        Args:
+            commandID: the executed command's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
-        p = self.__packetCreator.createPacket(3)
+        p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.COMMAND_EXECUTED)
         p.writeString(commandID)
         return p  
     
     def createImageEditedPacket(self, commandID, imageID):  
+        """
+        Creates an image edited packet
+        Args:
+            commandID: the image edition command's ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(CLUSTER_SERVER_PACKET_T.IMAGE_CREATED)
         p.writeString(commandID)
         p.writeInt(imageID)
         return p  
     
-    def createDataRequestPacket(self, query):
+    def createDataRequestPacket(self, packet_type):
         """
-        Crea un paquete de solicitud de estado
-        Argumentos:
-            query: la información de estado que queremos recuperar
-            (p.e. máquinas virtuales activas, imágenes que se pueden arrancar,...)
-         Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a data request packet
+        Args:
+            packet_type: the packet type associated with the query to execute in the cluster server
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
-        p = self.__packetCreator.createPacket(5)
-        p.writeInt(query)
+        p = self.__packetCreator.createPacket(10)
+        p.writeInt(packet_type)
         return p
     
     def createVMServerStatusPacket(self, segment, sequenceSize, data):
         """
-        Crea un paquete con el estado de un servidor de máquinas virtuales
-        Argumentos:
-            segment: posición del segmento en la secuencia
-            sequenceSize: tamaño de la secuencia (en segmentos)
-            data: los datos del segmento
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a virtual machine serverstatus packet
+        Args:
+            segment: the segment's position in the sequence
+            sequenceSize: the number of segments in the sequence
+            data: the segment's data
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
-        p = self.__packetCreator.createPacket(5)
+        p = self.__packetCreator.createPacket(10)
         p.writeInt(CLUSTER_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA)
         p.writeInt(segment)
         p.writeInt(sequenceSize)
@@ -108,18 +150,18 @@ class ClusterServerPacketHandler(object):
             p.writeInt(row["ServerStatus"])
             p.writeString(row["ServerIP"])
             p.writeInt(int(row["ServerPort"]))   
-            p.writeBool(int(row["IsVanillaServer"]) == 1)         
+            p.writeBool(int(row["IsEditionServer"]) == 1)         
         return p
     
     def createVMDistributionPacket(self, segment, sequenceSize, data):
         """
-        Crea un paquete que contiene la distribución de las máquinas virtuales
-        Argumentos:
-            segment: posición del segmento en la secuencia
-            sequenceSize: tamaño de la secuencia (en segmentos)
-            data: los datos del segmento
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a virtual machine distribution packet
+        Args:
+            segment: the segment's position in the sequence
+            sequenceSize: the number of segments in the sequence
+            data: the segment's data
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.VM_DISTRIBUTION_DATA)
@@ -133,15 +175,14 @@ class ClusterServerPacketHandler(object):
     
     def createVMServerUnregistrationOrShutdownPacket(self, serverNameOrIPAddress, isShutDown, unregister, commandID):
         """
-        Crea un paquete de apagado o borrado de un servidor de máquinas virtuales
-        Argumentos:
-            serverNameOrIPAddress: el nombre del servidor o su dirección IP
-            isShutDown: Si es True, los dominios se destuirán inmediatamente. Si es False, se esparará a que
-            los usuarios los apaguen. 
-            unregister: Si es True el servidor se borrará; si es False sólo se apagará
-            commandID: el identificador único del comando
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a virtual machine server unregistration or shutdown packet
+        Args:
+            serverNameOrIPAddress: the virtual machine server's name or IPv4 address
+            isShutDown: indicates if the virtual machine server must be shut down
+            unregister: indicates if the virtual machine server must be unregistered
+            commandID: a command ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(3)
         p.writeInt(CLUSTER_SERVER_PACKET_T.UNREGISTER_OR_SHUTDOWN_VM_SERVER)
@@ -151,16 +192,16 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createVMServerBootUpPacket(self, serverNameOrIPAddress, commandID):
+    def createVMServerBootPacket(self, serverNameOrIPAddress, commandID):
         """
-        Crea un paquete de arranque de un servidor de máquinas virtuales
-        Argumentos:
-            serverNameOrIPAddress: el nombre o la IP del servidor
-            commandID: el identificador único del comando
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a virtual machine server boot packet
+        Args:
+            serverNameOrIPAddress: the virtual machine server's name or IPv4 address
+            commandID: a command ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
-        p = self.__packetCreator.createPacket(3)
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(CLUSTER_SERVER_PACKET_T.BOOTUP_VM_SERVER)
         p.writeString(serverNameOrIPAddress)
         p.writeString(commandID)
@@ -168,15 +209,15 @@ class ClusterServerPacketHandler(object):
     
     def createVMBootRequestPacket(self, imageID, userID, commandID):
         """
-        Crea un paquete de arranque de máuqina virtual
-        Argumentos:
-            imageID: identificador de la imagen a arrancar
-            userID: identificador del propietario de la máquina
-            commandID: el identificador único del comando
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a virtual machine boot request packet
+        Args:
+            imageID: an image ID
+            userID: the virtual machine owner's ID
+            commandID: a command ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
-        p = self.__packetCreator.createPacket(4)
+        p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.VM_BOOT_REQUEST)
         p.writeInt(imageID)
         p.writeInt(userID)
@@ -185,16 +226,16 @@ class ClusterServerPacketHandler(object):
     
     def createVMConnectionDataPacket(self, IPAddress, port, password, commandID):
         """
-        Crea un paquete con los datos de conexión a una máquina virtual
-        Argumentos:
-            IPAddress: dirección IP del servidor VNC
-            port: puerto del servidor VNC
-            password: contraseña del servidor VNC
-            commandID: identificador único del comando
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a virtual machine connection data packet
+        Args:
+            IPAddress: the VNC server's IP address
+            port: the VNC server's port
+            password: the VNC server's password
+            commandID: a commandID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
-        p = self.__packetCreator.createPacket(4)
+        p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.VM_CONNECTION_DATA)
         p.writeString(IPAddress)
         p.writeInt(port)
@@ -202,28 +243,26 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createActiveVMsDataPacket(self, data):
+    def createActiveVMsVNCDataPacket(self, data):
         """
-        Crea un paquete que contiene los datos de conexión de varias máquinas virtuales
-        del mismo servidor
-        Argumentos:
-            data: un string con los datos a enviar
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates an active virtual machines VNC data packet
+        Args:
+            data: a string with the data to send
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
-        p = self.__packetCreator.createPacket(5)
-        p.writeInt(CLUSTER_SERVER_PACKET_T.ACTIVE_VM_DATA)
+        p = self.__packetCreator.createPacket(10)
+        p.writeInt(CLUSTER_SERVER_PACKET_T.ACTIVE_VM_VNC_DATA)
         p.dumpData(data)
         return p
     
     def createHaltPacket(self, haltServers):
         """
-        Crea un paquete que apagará el servidor de cluster.
-        Argumentos:
-            haltServers: si es True, los servidores de máquinas virtuales se cargarán todos los
-            dominios inmediatamente. Si es False, esperarán a que los usuarios los apaguen.
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a halt packet
+        Args:
+            haltServers: indicates if the virtual machine servers must be shut down immediately or not
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
         p = self.__packetCreator.createPacket(1)
         p.writeInt(CLUSTER_SERVER_PACKET_T.HALT)
@@ -232,14 +271,14 @@ class ClusterServerPacketHandler(object):
     
     def createDomainDestructionPacket(self, domainID, commandID):
         """
-        Crea un paquete de destrucción de dominios
-        Argumentos:
-            domainID: el identificador único del dominio a destruir
-            commandID: el identificador único del comando
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a domain destruction packet
+        Args:
+            domainID: the domain to be destructed ID
+            commandID: a command ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
-        p = self.__packetCreator.createPacket(4) # Todo lo que sea liberar carga es bueno. Por eso es ligeramente más prioritario que los otros
+        p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.DOMAIN_DESTRUCTION)
         p.writeString(domainID)
         p.writeString(commandID)
@@ -247,39 +286,71 @@ class ClusterServerPacketHandler(object):
     
     def createDomainRebootPacket(self, domainID, commandID):
         """
-        Crea un paquete de destrucción de dominios
-        Argumentos:
-            domainID: el identificador único del dominio a destruir
-            commandID: el identificador único del comando
-        Devuelve:
-            un paquete con los datos de los argumentos
+        Creates a domain reboot packet
+        Args:
+            domainID: the domain to be rebooted ID
+            commandID: a command ID
+        Returns:
+            a packet of the specified type built from this method's arguments
         """
-        p = self.__packetCreator.createPacket(4) # Todo lo que sea liberar carga es bueno. Por eso es ligeramente más prioritario que los otros
+        p = self.__packetCreator.createPacket(5) 
         p.writeInt(CLUSTER_SERVER_PACKET_T.DOMAIN_REBOOT)
         p.writeString(domainID)
         p.writeString(commandID)
         return p
     
     def createRepositoryStatusPacket(self, freeDiskSpace, availableDiskSpace, status):
-        p = self.__packetCreator.createPacket(5)
+        """
+        Creates an image repository status packet
+        Args:
+            freeDiskSpace: the free disk space in the image repository
+            availableDiskSpace: the total disk space in the image repository
+            status: the image repository connection status
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
+        p = self.__packetCreator.createPacket(10)
         p.writeInt(CLUSTER_SERVER_PACKET_T.REPOSITORY_STATUS)
         p.writeInt(freeDiskSpace)
         p.writeInt(availableDiskSpace)
         p.writeInt(status)
         return p
         
-    def createVMServerConfigurationChangePacket(self, serverNameOrIPAddress, newName, newIPAddress, newPort, newVanillaImageEditionBehavior, commandID):
-        p = self.__packetCreator.createPacket(2)
+    def createVMServerConfigurationChangePacket(self, serverNameOrIPAddress, newName, newIPAddress, newPort, newImageEditionBehavior, commandID):
+        """
+        Creates a virtual machine server configuration change packet
+        Args:
+            serverNameOrIPAddress: the virtual machine server's name or IP address
+            newName: the virtual machine server's new name
+            newIPAddress: the virtual machine server's IP new address
+            newPort: the virtual machine server's new port            
+            newImageEditionBehavior: indicates if the virtual machine server will be used to create and edit 
+                images or not
+            commandID: a command ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(CLUSTER_SERVER_PACKET_T.VM_SERVER_CONFIGURATION_CHANGE)
         p.writeString(serverNameOrIPAddress)
         p.writeString(newName)
         p.writeString(newIPAddress)
         p.writeInt(newPort)
-        p.writeBool(newVanillaImageEditionBehavior)
+        p.writeBool(newImageEditionBehavior)
         p.writeString(commandID)
         return p
         
     def createImageDeploymentPacket(self, packet_type, serverNameOrIPAddress, imageID, commandID):
+        """
+        Creates an image deployment packet
+        Args:
+            packet_type: the packet type associated with the operation
+            serverNameOrIPAddress: the affected virtual machien server's IP address
+            imageID: the affected image's ID
+            commandID: a command ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_type)    
         p.writeString(serverNameOrIPAddress)    
@@ -288,6 +359,17 @@ class ClusterServerPacketHandler(object):
         return p
     
     def createImageEditionPacket(self, packet_type, imageID, ownerID, commandID):
+        """
+        Creates an image edition packet
+        Args:
+            packet_type: the packet type associated with the operation
+            serverNameOrIPAddress: the affected virtual machien server's IP address
+            imageID: the affected image's ID
+            ownerID: the new virtual machine owner's ID
+            commandID: a command ID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(packet_type)
         p.writeInt(imageID)
@@ -295,14 +377,31 @@ class ClusterServerPacketHandler(object):
         p.writeString(commandID)
         return p
     
-    def createImageDeletionPacket(self, imageID, commandID):
-        p = self.__packetCreator.createPacket(5)
+    def createFullImageDeletionPacket(self, imageID, commandID):
+        """
+        Creates a full image deletion packet
+        Args:
+            imageID: the affected image's ID
+            commandID: a commandID
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
+        p = self.__packetCreator.createPacket(4)
         p.writeInt(CLUSTER_SERVER_PACKET_T.DELETE_IMAGE_FROM_INFRASTRUCTURE)
         p.writeInt(imageID)
         p.writeString(commandID)
         return p
     
     def createVMServerResourceUsagePacket(self, segment, sequenceSize, data):
+        """
+        Creates a virtual machine server resource usage packet
+        Args:
+            segment: the segment's position in the sequence
+            sequenceSize: the number of segments in the sequence
+            data: the segment's data
+        Returns:
+            a packet of the specified type built from this method's arguments
+        """
         p = self.__packetCreator.createPacket(5)
         p.writeInt(CLUSTER_SERVER_PACKET_T.VM_SERVERS_RESOURCE_USAGE)
         p.writeInt(segment)
@@ -322,12 +421,12 @@ class ClusterServerPacketHandler(object):
     
     def readPacket(self, p):
         """
-        Lee un paquete intercambiado por el endpoint y el servidor de cluster
-        Argumentos:
-            p: el paquete a leer
-        Devuelve:
-            Un diccionario con el contenido del paquete. El tipo del paquete se guardará bajo la clave
-            packet_type.
+        Reads a packet and dumps its data to a dictionary
+        Args:
+            p: the packet to read
+        Returns:
+            A dictionary with the packet's content. Its keys and values
+            vary depending on the read packet's type.
         """
         result = dict()
         packet_type = p.readInt()
@@ -336,7 +435,7 @@ class ClusterServerPacketHandler(object):
             result["VMServerIP"] = p.readString()
             result["VMServerPort"] = p.readInt()
             result["VMServerName"] = p.readString()
-            result["IsVanillaServer"] = p.readBool()
+            result["IsEditionServer"] = p.readBool()
             result["CommandID"] = p.readString()        
             
         elif (packet_type == CLUSTER_SERVER_PACKET_T.VM_SERVERS_STATUS_DATA) :
@@ -355,7 +454,7 @@ class ClusterServerPacketHandler(object):
                 data.append((p.readString(), p.readInt(), p.readInt()))
             result["Data"] = data
             
-        elif (packet_type == CLUSTER_SERVER_PACKET_T.ACTIVE_VM_DATA) :
+        elif (packet_type == CLUSTER_SERVER_PACKET_T.ACTIVE_VM_VNC_DATA) :
             result["Segment"] = p.readInt()
             result["SequenceSize"] = p.readInt()
             result["VMServerIP"] = p.readString()
@@ -415,7 +514,7 @@ class ClusterServerPacketHandler(object):
             result["NewVMServerName"] = p.readString()
             result["NewVMServerIPAddress"] = p.readString()
             result["NewVMServerPort"] = p.readInt()
-            result["NewVanillaImageEditionBehavior"] = p.readBool()
+            result["NewImageEditionBehavior"] = p.readBool()
             result["CommandID"] = p.readString() 
             
         elif (packet_type == CLUSTER_SERVER_PACKET_T.REPOSITORY_STATUS) :

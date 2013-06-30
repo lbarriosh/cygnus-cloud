@@ -13,7 +13,6 @@
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-<<<<<<< HEAD
 
         http://www.apache.org/licenses/LICENSE-2.0
 
@@ -28,22 +27,6 @@
 # coding: utf8
 from gluon import *
 
-=======
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
-'''
-
-# coding: utf8
-from gluon import *
-
->>>>>>> 28de3ad8a11b3fd22aed059897f6f27393a5f460
 #Método encargado de iniciar sesión de un usuario
 def login():
     #Iniciamos los valores, si procede
@@ -55,12 +38,8 @@ def login():
             loginAccess(0)
     #Gestionamos los usuarios ya logueados
     auth.settings.controller = 'main'
-<<<<<<< HEAD
     auth.settings.login_onaccept = loginAccess 
     
-=======
-    auth.settings.login_onaccept = loginAccess  
->>>>>>> 28de3ad8a11b3fd22aed059897f6f27393a5f460
     #Creamos el formulario de inicio de sesión
     form = auth.login()  
     form.element("input",_type="submit")['_class'] = "button button-blue"
@@ -100,7 +79,14 @@ def initValues():
         auth.add_membership('Administrator',u1)
         auth.add_membership('Student',u2)
         auth.add_membership('Teacher',u3)
-        print userDB.tables
+        userDB.userImage.import_from_csv_file(open(os.path.join(request.folder,'static','imageUserCSV/userDB_userImage.csv'),'r'))
+    if userDB(userDB.osPictures.osPictureId > 0).count() == 0:
+        userDB.osPictures.insert(osPictureId= 1,picturePath='images/OS/windows7Icon.png')
+        userDB.osPictures.insert(osPictureId= 2,picturePath='images/OS/DebianIcon.png')
+        userDB.pictureByOSId.insert(osId= 1,variantId=1 ,pictureId=2)
+        userDB.pictureByOSId.insert(osId= 2,variantId=1 ,pictureId=1)
+
+
         
                
         
@@ -108,7 +94,6 @@ def initValues():
 # Método encargado de evaluar la redirección según el tipo de usuario
 @auth.requires_login()                                      
 def loginAccess(state):
-    print auth.user_id
     if(auth.has_membership(role='Student')):
         redirect(URL(c='student',f='runVM'))
     elif(auth.has_membership(role='Administrator')):

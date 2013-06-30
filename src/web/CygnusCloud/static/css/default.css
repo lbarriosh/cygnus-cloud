@@ -161,19 +161,11 @@ a:hover {
 	background: url("../images/image06.gif") no-repeat right 50%;
 	color: #FFFFFF;
      float: left;
-<<<<<<< HEAD
-    font-size: 70%;
-    font-weight: bold;
-    margin-right: 3px;
-    margin-top: 5px;
-    padding: 6px 10px;
-=======
     font-size: 11px;
     font-weight: bold;
     margin-right: 3px;
     margin-top: 5px;
     padding: 6px 20px;
->>>>>>> 28de3ad8a11b3fd22aed059897f6f27393a5f460
     text-decoration: none;
     text-transform: uppercase;
     
@@ -207,7 +199,6 @@ a:hover {
 
 /** FOOTER */
 #footer {
-    /*background: url("../images/image04.jpg") no-repeat scroll left top transparent;*/
     background: url("../images/image02.jpg") no-repeat left top;
     background-size: 100% 100%;
     /*
@@ -458,18 +449,6 @@ div.flash {
     cursor:pointer;
     color:#000;
     background-color:#2c86bb;
-    /*
-    border:2px solid #fff;
-    border-radius:3px;
-    -o-border-radius: 3px;
-    -moz-border-radius:3px;
-    -webkit-border-radius:3px;
-    background-image: -webkit-linear-gradient(top,#316AC5,#9DB9EB);
-    background-image: -o-linear-gradient(top,#316AC5,#9DB9EB);
-    background-image: -moz-linear-gradient(90deg, #316AC5, #9DB9EB);
-    background-image: linear-gradient(top,#316AC5,#9DB9EB);
-    background-repeat: repeat-x;
-    */
     font-family: Arial, MS Sans Serif, Tahoma, Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
     z-index:2000;

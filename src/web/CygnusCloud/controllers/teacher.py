@@ -171,9 +171,13 @@ def createAndEdit():
                 osId = connector.getImageData(id["ImageID"])["OSFamily"]
                 variantId = connector.getImageData(id["ImageID"])["OSVariant"]
                 # extraemos la ruta para la imagen del sistema operativo
-                picturePath = userDB((userDB.pictureByOSId.osId == osId) & (userDB.pictureByOSId.variantId == variantId)
+                pictureInfo = userDB((userDB.pictureByOSId.osId == osId) & (userDB.pictureByOSId.variantId == variantId)
                                      & (userDB.pictureByOSId.pictureId == userDB.osPictures.osPictureId )).select( \
-                                     userDB.osPictures.picturePath)[0].picturePath
+                                     userDB.osPictures.picturePath)
+                if len(pictureInfo) != 0:
+                    picturePath = pictureInfo[0].picturePath
+                else:
+                    picturePath = None
                 # Creamos la tabla con la información de la imagen base                     
                 subTable = createVanillaImageTable(vanillaInfo["RAMSize"],
                             vanillaInfo["VCPUs"],vanillaInfo["OSDiskSize"],vanillaInfo["DataDiskSize"],

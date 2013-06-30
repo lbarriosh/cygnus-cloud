@@ -1,28 +1,45 @@
-# -*- coding: UTF8 -*-
+# -*- coding: utf8 -*-
 
 '''
-Conector básico con una base de datos
-@author: Luis Barrios Hernández
-@author: Adrián Fernández Hernández
-@version: 3.0
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: connector.py    
+    Version: 2.5
+    Description: Basic database connector definitions
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
 import mysql.connector
 from threading import Lock
 
 class BasicDBConnector(object):
     '''
-    Conector básico con una base de datos
+    This is the base class for all the database connectors.
     '''
     def __init__(self, sqlUser, sqlPassword, databaseName):
         '''
-            Constructor de la clase. Recibe el nombre y lla contrasennia del usuario sql encargado
-            de gestionar la base de datos
-            Argumentos:
-                sqlUser: usuario para conectarnos a MySQL
-                sqlPassword: contraseña para conectarnos a MySQL
-                databaseName: nombre de la base de datos a la que nos vamos a conectar
-            Devuelve:
-                Nada
+            Initializes the connector's state
+            Args:
+                sqlUser: the MySQL user to use
+                sqlPassword: the MySQL password to use
+                databaseName: a MySQL database name.
+            Returns:
+                Nothing
         '''
         self.__sqlUser = sqlUser
         self.__sqlPassword = sqlPassword
@@ -32,11 +49,11 @@ class BasicDBConnector(object):
         
     def _executeUpdate(self, command):
         '''
-        Ejecuta una actualización sobre la base de datos
-        Argumentos:
-            command: string con los comandos SQL a ejecutar
-        Devuelve:
-            Nada
+        Performs an update over the MySQL database.
+        Args:
+            command: the command to run
+        Returns:
+            Nothing
         '''       
         with self.__lock :
             self.__dbConnection = mysql.connector.connect(user=self.__sqlUser, password=self.__sqlPassword,
@@ -49,13 +66,13 @@ class BasicDBConnector(object):
         
     def _executeQuery(self, command, pickOneResult=False):
         '''
-        Ejecuta una consulta en la base de datos.
-        Argumentos:
-            command: string con la consulta SQL
-            pickOneResult: si es True, se devolverá un resultado. Si es False,
-            se devolverán todos.
-        Devuelve:
-            resultado o resultados obtenidos a partir de la consulta
+        Runs a MySQL query
+        Args:
+            command:  the query to run
+            pickOneResult: if True, only one result will be returned. If False,
+            a list of results will be returned.
+        Returns:
+            the result(s) associated with the query.
         '''
         with self.__lock :
             self.__dbConnection = mysql.connector.connect(user=self.__sqlUser, password=self.__sqlPassword,

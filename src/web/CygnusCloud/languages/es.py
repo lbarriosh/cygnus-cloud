@@ -466,6 +466,7 @@
 'site': 'sitio',
 'Size of cache:': 'Size of cache:',
 'some files could not be removed': 'algunos archivos no pudieron ser removidos',
+'sss': 'sss',
 'state': 'estado',
 'static': 'estáticos',
 'Static files': 'Archivos estáticos',

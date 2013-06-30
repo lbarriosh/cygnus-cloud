@@ -1,21 +1,39 @@
-# -*- coding: UTF8 -*-
-from editionState_t import EDITION_STATE_T
+# -*- coding: utf8 -*-
 '''
-Lector de la base de datos de estado
+    ========================================================================
+                                    CygnusCloud
+    ========================================================================
+    
+    File: clusterEndpointDB.py    
+    Version: 5.0
+    Description: full cluster endpoint database connector 
+    
+    Copyright 2012-13 Luis Barrios Hernández, Adrián Fernández Hernández,
+        Samuel Guayerbas Martín
+        
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-@author: Luis Barrios Hernández
-@version: 4.0
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 '''
+from editionState_t import EDITION_STATE_T
 
 from clusterEndpoint.databases.minimalClusterEndpointDBConnector import MinimalClusterEndpointDBConnector
 
 class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
     """
-    Inicializa el estado del lector
-    Argumentos:
-        sqlUser: usuario SQL a utilizar
-        sqlPassword: contraseña de ese usuario
-        databaseName: nombre de la base de datos de estado
+    Initializes the connector's state
+    Args:
+        sqlUser: the MySQL user to use
+        sqlPassword: the MySQL password to use
+        databaseName: a MySQL database name.
     """
     def __init__(self, sqlUser, sqlPassword, databaseName):
         MinimalClusterEndpointDBConnector.__init__(self, sqlUser, sqlPassword, databaseName)
@@ -29,22 +47,28 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         self.__activeVMSegments = dict()
     
     def processVMServerResourceUsageSegment(self, segmentNumber, segmentCount, data):
+        """
+        Processes a virtual machine server resource usage segment
+        Args:
+            segmentNumber: the segment's position in the sequence
+            segmentCount: the number of segments in the sequence
+            data: the segment's data
+        Returns:
+            Nothing
+        """
         if (data != []) :
             self.__vmServerResourceUsageData += data
             self.__vmServerResourceUsageSegments += 1
             
         if (self.__vmServerResourceUsageSegments == segmentCount) :
-            # Hemos recibido la secuencia completa => la procesamos
             receivedData = ClusterEndpointDBConnector.__getVMServersDictionary(self.__vmServerResourceUsageData)
             registeredIDs = self.__getKnownVMServerIDs("VirtualMachineServerStatus")
             
-            # Quitar las filas que no existen
             if (registeredIDs != None) :
                 for ID in registeredIDs :
                     if not (receivedData.has_key(ID)) :
                         self.__deleteVMServerStatusData(ID)
                         
-            # Determinar qué hay que insertar y qué hay que modificar
             inserts = []
             for ID in receivedData.keys() :
                 if (registeredIDs != None and ID in registeredIDs) :
@@ -52,7 +76,6 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
                 else :
                     inserts.append(receivedData[ID])
                     
-            # Realizar las inserciones de golpe
             if (inserts != []) :
                 self.__insertVMServerStatusData(inserts)
             self.__vmServerResourceUsageData = []
@@ -71,37 +94,33 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
                                                            receivedData[8], receivedData[9], receivedData[0])
         self._executeUpdate(update)
             
-    def __deleteVMServerStatusData(self, serverID):
-        update = "DELETE FROM VirtualMachineServerStatus WHERE serverID = '{0}';".format(serverID)
+    def __deleteVMServerStatusData(self, serverName):
+        update = "DELETE FROM VirtualMachineServerStatus WHERE serverName = '{0}';".format(serverName)
         self._executeUpdate(update)
     
     def processVMServerSegment(self, segmentNumber, segmentCount, data):
         """
-        Procesa un segmento con datos de los servidores de máquinas virtuales
-        Argumentos:
-            segmentNumber: posición del segmento en la secuencia
-            segmentCount: número de segmentos de la secuencia
-            data: los datos del segmento
-        Devuelve:
-            Nada
+        Processes a virtual machine server configuration segment
+        Args:
+            segmentNumber: the segment's position in the sequence
+            segmentCount: the number of segments in the sequence
+            data: the segment's data
+        Returns:
+            Nothing
         """
-        # Guardamos los datos del segmento (si los hay)
         if (data != []) :
             self.__vmServerSegmentsData += data
             self.__vmServerSegments += 1
             
         if (self.__vmServerSegments == segmentCount) :
-            # Hemos recibido la secuencia completa => la procesamos
             receivedData = ClusterEndpointDBConnector.__getVMServersDictionary(self.__vmServerSegmentsData)
             registeredIDs = self.__getKnownVMServerIDs()
             
-            # Quitar las filas que no existen
             if (registeredIDs != None) :
                 for ID in registeredIDs :
                     if not (receivedData.has_key(ID)) :
                         self.__deleteVMServer(ID)
                         
-            # Determinar qué hay que insertar y qué hay que modificar
             inserts = []
             for ID in receivedData.keys() :
                 if (registeredIDs != None and ID in registeredIDs) :
@@ -109,21 +128,20 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
                 else :
                     inserts.append(receivedData[ID])
                     
-            # Realizar las inserciones de golpe
             if (inserts != []) :
                 self.__insertVMServers(inserts)
             self.__vmServerSegmentsData = [] 
             self.__vmServerSegments = 0
             
-    def processVMDistributionSegment(self, segmentNumber, segmentCount, data):
+    def processImageCopiesDistributionSegment(self, segmentNumber, segmentCount, data):
         """
-        Procesa un segmento con datos de la distribución de las imágenes
-        Argumentos:
-            segmentNumber: posición del segmento en la secuencia
-            segmentCount: número de segmentos de la secuencia
-            data: los datos del segmento
-        Devuelve:
-            Nada
+        Processes an image copies distribution segment
+        Args:
+            segmentNumber: the segment's position in the sequence
+            segmentCount: the number of segments in the sequence
+            data: the segment's data
+        Returns:
+            Nothing
         """
         if (data != []) :
             self.__imageDistributionSegmentsData.append(data)
@@ -138,15 +156,15 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
                 self.__imageDistributionSegments = 0         
                 self._executeUpdate(command)
     
-    def processActiveVMSegment(self, segmentNumber, segmentCount, vmServerIP, data):
+    def processActiveVMVNCDataSegment(self, segmentNumber, segmentCount, vmServerIP, data):
         """
-        Procesa un segmento con datos de las máquinas virtuales activas
-        Argumentos:
-            segmentNumber: posición del segmento en la secuencia
-            segmentCount: número de segmentos de la secuencia
-            data: los datos del segmento
-        Devuelve:
-            Nada
+        Processes an active virtual machines VNC data segment
+        Args:
+            segmentNumber: the segment's position in the sequence
+            segmentCount: the number of segments in the sequence
+            data: the segment's data
+        Returns:
+            Nothing
         """
         if (not self.__activeVMSegmentsData.has_key(vmServerIP)) :
             self.__activeVMSegmentsData[vmServerIP] = []
@@ -155,24 +173,20 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
             self.__activeVMSegmentsData[vmServerIP] += data
             self.__activeVMSegments[vmServerIP] += 1
         if (self.__activeVMSegments[vmServerIP] == segmentCount) :
-            # Sacar los IDs de las imágenes en edición            
             
             receivedData = ClusterEndpointDBConnector.__getActiveVMsDictionary(self.__activeVMSegmentsData[vmServerIP])
             registeredIDs = self.__getActiveVMIDs()            
             
-            # Quitar las filas que haga falta
             for ID in registeredIDs :                    
                 if not (receivedData.has_key(ID)) :
                     self.__deleteActiveVM(ID)
-                    self.updateEditedImageStatus(ID, EDITION_STATE_T.TRANSFER_TO_REPOSITORY, EDITION_STATE_T.VM_ON)
+                    self.updateEditedImageState(ID, EDITION_STATE_T.TRANSFER_TO_REPOSITORY, EDITION_STATE_T.VM_ON)
                         
-            # Realizar las actualizaciones y preparar las inserciones
             inserts = []
             for ID in receivedData.keys() :             
                 if (not (ID in registeredIDs)) :
                     inserts.append(receivedData[ID])
                     
-            # Realizar las inserciones
             if (inserts != []) :
                 self.__insertActiveVMData(self.__getVMServerName(vmServerIP), inserts)
             self.__activeVMSegmentsData[vmServerIP] = []
@@ -180,13 +194,6 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         
     @staticmethod    
     def __getVMServersDictionary(segmentList):
-        """
-        Genera un diccionario a partir de  una lista de tuplas con datos de los servidores de máquinas virtuales
-        Argumentos:
-            segmentList: la lista de tuplas que queremos convertir a diccionario
-        Devuelve:
-            Un diccionario de la forma <ID del servidor, tupla)
-        """
         result = {}
         for segment in segmentList :
             result[segment[0]] = segment
@@ -194,27 +201,12 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
     
     @staticmethod
     def __getActiveVMsDictionary(segmentList):
-        """
-        Genera un diccionario a partir de  una lista de tuplas con datos de las máquinas virtuales
-        activas.
-        Argumentos:
-            segmentList: la lista de tuplas que queremos convertir a diccionario
-        Devuelve:
-            Un diccionario de la forma <ID de la máquina (usuario, imagen, servidor), tupla)
-        """
         result = {}
         for segment in segmentList :
             result[segment[0]] = segment
         return result
                 
     def __getKnownVMServerIDs(self, table="VirtualMachineServer"):
-        """
-        Devuelve los identificadores de los servidores de máquinas virtuales conocidos.
-        Argumentos:
-            Ninguno
-        Devuelve:
-            Una lista con los identificadores de los servidores de máquinas virtuales conocidos.
-        """
         query = "SELECT serverName FROM {0};".format(table)
         result = set()
         output = self._executeQuery(query, False)
@@ -225,52 +217,22 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         return result
             
     def __insertVMServers(self, tupleList):
-        """
-        Inserta las tuplas con datos de los servidores de máquinas virtuales de una lista en la base de datos.
-        Argumentos:
-            tupleList: la lista de tuplas con los datos a insertar
-        Devuelve:
-            Nada
-        """
         update = "INSERT INTO VirtualMachineServer VALUES {0};"\
             .format(ClusterEndpointDBConnector.__convertTuplesToSQLStr(tupleList))
         self._executeUpdate(update)
         
-    def __updateVMServerData(self, data):
-        """
-        Actualiza la información de un servidor de máquinas virtuales
-        Argumentos: 
-            data: tupla con la nueva información del servidor de máquinas virtuales
-        Devuelve:
-            Nada            
-        """        
+    def __updateVMServerData(self, data):     
         update = "UPDATE VirtualMachineServer SET serverStatus='{1}', serverIP='{2}', serverPort={3},\
             isVanillaServer = {4} WHERE serverName='{0}'".format(data[0], data[1], data[2], data[3], data[4])
         self._executeUpdate(update)
         
     def __deleteVMServer(self, serverID):
-        """
-        Borra un servidor de máquinas virtuales de la base de datos de estado
-        Argumentos:
-            serverID: el identificador del servidor a borrar
-        Devuelve:
-            Nada
-        """
-        # Importante: ON DELETE CASCADE NO funciona con las tablas alojadas en memoria, por lo que
-        # lo tenemos que implementar a mano.
         update = "DELETE FROM ActiveVirtualMachines WHERE serverName = '{0}';".format(serverID)
         self._executeUpdate(update)
         update = "DELETE FROM VirtualMachineServer WHERE serverName = '{0}'".format(serverID)
         self._executeUpdate(update)                
             
     def __getActiveVMIDs(self):
-        """
-        Devuelve los identificadores únicos de las máquinas virtuales activas (en su forma larga)
-        Argumentos:
-            Ninguno
-        Returns:
-            una lista con los identificadores únicos de las máquinas virtuales activas
-        """
         query = "SELECT domainUID FROM ActiveVirtualMachines;"
         results = self._executeQuery(query)
         if (results == None) :
@@ -281,52 +243,22 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         return output
     
     def __insertActiveVMData(self, vmServerIP, data):
-        """
-        Inserta los datos de las máquinas alojadas en cierto servidor en la base de datos de estado
-        Argumentos:
-            vmServerIP: la IP del servidor de máquinas virtuales que aloja las máquinas
-            data: una lista con la información de esas máquinas
-        Devuelve:
-            Nada
-        """
         update = "REPLACE ActiveVirtualMachines VALUES {0};"\
             .format(ClusterEndpointDBConnector.__convertTuplesToSQLStr(data, [vmServerIP]))
         self._executeUpdate(update)
         
     def __deleteActiveVM(self, domainUID):
-        """
-        Borra los datos de una máquina virtual activa
-        Argumentos:
-            machineID: el identificador único de la máuqina virtual activa
-        Devuelve:
-            Nada
-        """
         update = "DELETE FROM ActiveVirtualMachines WHERE domainUID = '{0}';"\
             .format(domainUID)
         self._executeUpdate(update)
             
     def __getVMServerName(self, serverIP):
-        """
-        Devuelve el nombre del servidor de máquinas virtuales asociado a una IP
-        Argumentos:
-            serverIP: la IP del servidord de máquinas virtuales
-        Devuelve:
-            el nombre del servidor de máquinas virtuales asociado a esa IP
-        """
         query = "SELECT serverName FROM VirtualMachineServer WHERE serverIP = '" + serverIP + "';"
         result = self._executeQuery(query, True)
         return str(result)
                         
     @staticmethod
     def __convertTuplesToSQLStr(tupleList, dataToAdd = []):
-        """
-        Convierte una lista de tuplas en un string SQL
-        Argumentos:
-            tupleList: lista de tuplas a convertir
-            dataToAdd: lista con los datos a añadir al final de cada tupla
-        Devuelve:
-            Un string SQL con la información de los argumentos en forma de lista de tuplas
-        """
         isFirstSegment = True
         command = ""
         for segmentTuple in tupleList :
@@ -340,14 +272,6 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
     
     @staticmethod
     def __convertSegmentsToSQLTuples(segmentList):
-        """
-        Convierte una lista de segmentos en un string SQL
-        Argumentos:
-            segmentList: lista de segmentos
-            dataToAdd: lista con los datos a añadir al final de cada tupla
-        Devuelve:
-            Un string SQL con la información de los argumentos en forma de lista de tuplas
-        """
         isFirstSegment = True
         command = ""
         for segment in segmentList :
@@ -361,6 +285,15 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         return command
         
     def updateImageRepositoryStatus(self, freeDiskSpace, availableDiskSpace, status) :
+        """
+        Updates the image repository's status
+        Args:
+            freeDiskSpace: the free disk space in the image repository
+            availableDiskSpace: the available disk space in the image repository
+            status: the image repository's connection status
+        Returns:
+            Nothing
+        """
         query = "SELECT * FROM ImageRepositoryStatus;"
         result = self._executeQuery(query, True)
         if (result == None) :
@@ -371,7 +304,17 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         self._executeUpdate(command)
     
     def addNewImage(self, temporaryID, baseImageID, ownerID, imageName, imageDescription):
-        # Sacar los datos de la imagen base
+        """
+        Registers a new image in the database
+        Args:
+            temporaryID: an temporary image ID
+            baseImageID: an existing image ID
+            ownerID: the image owner's ID
+            imageName: the new image's name
+            imageDescription: the new image's description
+        Returns:
+            Nothing
+        """
         baseImageData = self.getImageData(baseImageID)
         update = "INSERT INTO EditedImage VALUES('{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, {7}, {8}, 0);"\
             .format(temporaryID, baseImageData["VanillaImageFamilyID"], -1, imageName, imageDescription,
@@ -379,6 +322,15 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         self._executeUpdate(update)
         
     def editImage(self, commandID, imageID, ownerID):
+        """
+        Registers an edit images in the database
+        Args:
+            commandID: the image edition command's ID
+            imageID: the edited image's ID
+            ownerID: the image owner's ID
+        Returns:
+            Nothing
+        """
         query = "SELECT * from EditedImage WHERE imageID = {0};".format(imageID)
         if (self._executeQuery(query, True) != None) :
             update = "UPDATE EditedImage SET temporaryID = '{0}', state = {2} WHERE imageID = {1};".format(commandID, imageID, EDITION_STATE_T.TRANSFER_TO_VM_SERVER)
@@ -393,6 +345,13 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
             self._executeUpdate(update)
             
     def moveRowToImage(self, temporaryID):
+        """
+        Moves a row from the EditedImage table to the Image table
+        Args:
+            temporaryID: a temporary image ID
+        Returns:
+            Nothing
+        """
         imageData = self.getImageData(temporaryID)
         update = "INSERT INTO Image VALUES ({0}, {1}, '{2}', '{3}', {4}, {5}, {6}, 1);"\
             .format(imageData["ImageID"], imageData["VanillaImageFamilyID"], imageData["ImageName"], imageData["ImageDescription"],
@@ -402,26 +361,63 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         self._executeUpdate(update)
         
     def deleteEditedImage(self, temporaryID):
+        """
+        Deletes a new or an edited image from the database
+        Args:
+            temporaryID: a temporary image ID
+        Returns:
+            Nothing
+        """
         update = "DELETE FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
         self._executeUpdate(update)
         
     def deleteImage(self, imageID):
+        """
+        Deletes an existing image from the database
+        Args:
+            imageID: the affected image's ID
+        Returns:
+            Nothing
+        """
         update = "DELETE FROM Image WHERE imageID = {0}".format(imageID)
         self._executeUpdate(update)
         
-    def updateEditedImageStatus(self, temporaryID, newStatus, expectedStatus=None):
-        if (expectedStatus != None) : 
+    def updateEditedImageState(self, temporaryID, newState, expectedState=None):
+        """
+        Updates an edited image status in the database
+        Args:
+            temporaryID: the image's temporary ID
+            newState: the image's new state
+            expectedState: the image's expected state. If it's not none, the edited image state will only
+            be updated when its current state and expectedState are equals.
+        """
+        if (expectedState != None) : 
             query = "SELECT state FROM EditedImage WHERE temporaryID = '{0}';".format(temporaryID)
-            if (self._executeQuery(query, True) != expectedStatus) :
+            if (self._executeQuery(query, True) != expectedState) :
                 return
-        update = "UPDATE EditedImage SET state = {1} WHERE temporaryID = '{0}';".format(temporaryID, newStatus)
+        update = "UPDATE EditedImage SET state = {1} WHERE temporaryID = '{0}';".format(temporaryID, newState)
         self._executeUpdate(update)
         
     def registerImageID(self, temporaryID, imageID):
+        """
+        Registers an image ID in the database
+        Args:
+            temporaryID: the image's temporary ID
+            imageID: the image's ID
+        Returns:
+            Nothing
+        """
         update = "UPDATE EditedImage SET imageID = {1}, state = {2} WHERE temporaryID = '{0}';".format(temporaryID, imageID, EDITION_STATE_T.CHANGES_NOT_APPLIED)
         self._executeUpdate(update)
         
     def makeBootable(self, imageID):
+        """
+        Marks an image as bootable
+        Args:
+            imageID: the affected image's ID
+        Returns:
+            Nothing
+        """
         update = "UPDATE Image SET isBootable = 1 WHERE imageID = {0};".format(imageID)
         self._executeUpdate(update)
         
@@ -431,9 +427,23 @@ class ClusterEndpointDBConnector(MinimalClusterEndpointDBConnector):
         return self._executeQuery(query, True)
         
     def unregisterDomain(self, domainUID):
+        """
+        Unregisters a domain in the databse
+        Args:
+            domainUID: the domain's ID
+        Returns:
+            Nothing
+        """
         update = "DELETE FROM ActiveVirtualMachines WHERE domainUID = '{0}';".format(domainUID)
         self._executeUpdate(update)
         
     def affectsToNewOrEditedImage(self, autoDeploymentCommandID):
+        """
+        Checks if an auto-deployment command affects to an image edition or an image creation command
+        Args:
+            autoDeploymentCommandID: the auto-deployment command's ID
+        Returns:
+            Nothing
+        """
         query = "SELECT * FROM EditedImage WHERE temporaryID = '{0}';".format(autoDeploymentCommandID)
         return self._executeQuery(query, True) != None

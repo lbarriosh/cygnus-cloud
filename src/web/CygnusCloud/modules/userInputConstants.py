@@ -1,10 +1,11 @@
+# 
+# Web server configuration file 
+# Version 1.2 
+#
 # coding: utf8
 from gluon import *
-#Contraseña root
+#Root password
 rootPassword = '170590ucm'
-#Ip del servidor principal
-serverIp = "127.0.0.1"
-#Puerto del servidor principal
-serverPort = 9000
-#Intervalo de actualización
+
+#Network parameters
 statusInterval = 5
