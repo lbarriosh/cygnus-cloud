@@ -131,7 +131,7 @@ Technical support
 -----------------
 
 If you encounter a problem while using CygnusCloud, please use the bug tracking tool to warn us. We'll try
-to correct it as soon as we can.
+to fix it as soon as we can.
 
 And if you represent an organization that wants to use CygnusCloud, we can adapt it to your needs and also provide
 you technical support.
