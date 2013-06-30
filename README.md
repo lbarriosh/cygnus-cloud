@@ -78,7 +78,7 @@ Brief project description
 CygnusCloud is a Master Thesis project co-developed by Luis Barrios, Adrián Fernández and Samuel Guayerbas,
 students of Computer Engineering at the Complutense University of Madrid.
 
-With CygnusCloud, we want to turn every underutilized computer room in the campus into a Computer Science lab.
+With CygnusCloud we want to turn every underutilized computer room in the campus into a Computer Science lab.
 This will allow students to work on their assignments out of the specialized computer rooms of their schools.
 
 Furthermore, CygnusCloud also offers other benefits:
