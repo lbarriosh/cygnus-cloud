@@ -38,8 +38,6 @@ import os
 conf = DBConfigurator(rootPassword)
 conf.createDatabase('CygnusCloudUserDB')
 conf.addUser('CygnusCloud','cygnuscloud2012', 'CygnusCloudUserDB')
-conf.addUser('CygnusCloud','cygnuscloud2012', 'ClusterEndpointDB')
-conf.addUser('CygnusCloud','cygnuscloud2012', 'CommandsDB')
 userDB = DAL('mysql://CygnusCloud:cygnuscloud2012@localhost/CygnusCloudUserDB',migrate_enabled=True, pool_size=0)
 
 # Autenticación
