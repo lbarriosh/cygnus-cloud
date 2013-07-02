@@ -54,7 +54,7 @@ Documentación
 La memoria del proyecto (disponible en http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf) incluye
 el diseño detallado de CygnusCloud y su manual de usuario.
 
-Además, todo el código fuente se encuentra comentado (la mayor parte en inglés).
+Además, todo el código fuente se encuentra comentado.
 
 Soporte técnico
 ---------------
