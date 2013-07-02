@@ -121,7 +121,7 @@ Project documentation
 The project documentation (available at http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf) includes
 the CygnusCloud's design (explained in detail) and the user's manual. 
 
-Although the source code is mostly written (and commented) in English, the project documentation is written
+All the source code is commented, and the project documentation is written
 in Spanish. If you don't speak Spanish and want to ask something to us, don't be shy!
 
 And if you want to translate any parts of the CygnusCloud documentation, just send us your translations. We'll
