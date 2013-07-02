@@ -119,10 +119,10 @@ The main directories that you'll find on the CygnusCloud repository are:
 Project documentation
 ---------------------
 The project documentation (available at http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf) includes
-the CygnusCloud's design (explained in detail) and the user's manual. 
+the CygnusCloud system's design (explained in detail) and the user's manual. 
 
-All the source code is commented, and the project documentation is written
-in Spanish. If you don't speak Spanish and want to ask something to us, don't be shy!
+All the source code is commented. Although and the project documentation is written
+in Spanish, if you don't speak Spanish and want to ask something to us, don't be shy!
 
 And if you want to translate any parts of the CygnusCloud documentation, just send us your translations. We'll
 be glad to publish them (acknowledging that you are the translator, of course).
