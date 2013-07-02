@@ -54,7 +54,7 @@ Documentación
 La memoria del proyecto (disponible en http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf) incluye
 el diseño detallado de CygnusCloud y su manual de usuario.
 
-Además, todo el código fuente se encuentra comentado.
+Además, todo el código fuente se encuentra escrito en inglés y comentado.
 
 Soporte técnico
 ---------------
@@ -121,7 +121,7 @@ Project documentation
 The project documentation (available at http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf) includes
 the CygnusCloud system's design (explained in detail) and the user's manual. 
 
-All the source code is also commented. Although and the project documentation is written
+All the source code is written in English and is also commented. Although and the project documentation is written
 in Spanish, if you don't speak Spanish and want to ask something to us, don't be shy!
 
 And if you want to translate any parts of the CygnusCloud documentation, just send us your translations. We'll
