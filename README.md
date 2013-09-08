@@ -32,7 +32,7 @@ Cómo descargar e instalar CygnusCloud
 Actualmente, puede descargarse la versión 5.0.1 de CygnusCloud desde la página de descarga de nuestro blog 
 (http://cygnusclouducm.wordpress.com/descargas-v5-0-1/).
 Las instrucciones de instalación y uso
-se describen en la memoria del proyecto (disponible en http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf).
+se describen en la memoria del proyecto (disponible en http://eprints.ucm.es/22566).
 
 Árbol de directorios
 --------------------
@@ -51,7 +51,7 @@ Los principales directorios que podemos encontrar en el repositorio de CygnusClo
 
 Documentación
 -------------
-La memoria del proyecto (disponible en http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf) incluye
+La memoria del proyecto (disponible en http://eprints.ucm.es/22566/) incluye
 el diseño detallado de CygnusCloud y su manual de usuario.
 
 Además, todo el código fuente se encuentra escrito en inglés y comentado.
@@ -101,7 +101,7 @@ How to download and install CygnusCloud
 ---------------------------------------
 The latest stable version (5.0.1) can be downloaded from our blog (http://cygnusclouducm.wordpress.com/descargas-v5-0-1/).
 The installation and usage instructions are described on the project documentation
-(available at http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf).
+(available at http://eprints.ucm.es/22566/).
 
 Directory tree
 --------------
@@ -118,7 +118,7 @@ The main directories that you'll find on the CygnusCloud repository are:
 
 Project documentation
 ---------------------
-The project documentation (available at http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf) includes
+The project documentation (available at http://eprints.ucm.es/22566/) includes
 the CygnusCloud system design (explained in detail) and the user's manual. 
 
 All the source code is written in English and is also commented. Although and the project documentation is written
