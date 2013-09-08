@@ -100,7 +100,7 @@ License
 How to download and install CygnusCloud
 ---------------------------------------
 The latest stable version (5.0.1) can be downloaded from our blog (http://cygnusclouducm.wordpress.com/descargas-v5-0-1/).
-The installation and usage instructions are described on the project's documentation
+The installation and usage instructions are described on the project documentation
 (available at http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf).
 
 Directory tree
@@ -112,14 +112,14 @@ The main directories that you'll find on the CygnusCloud repository are:
   how to install and use the basic tools used during the development process. 
 * Memoria: this directory contains the main project documentation source. All its content is written
   in LaTeX through LyX, and "Memoria.lyx" is the master file.
-* src: this directory includes the latest stable version's source code. Its main subdirectories are 
-  src/Infraestructura (this directory contains the CygnusCloud infrastructure's source) and src/web 
-  (this directory contains the web application's source).
+* src: this directory includes the latest stable version source code. Its main subdirectories are 
+  src/Infraestructura (this directory contains the CygnusCloud infrastructure's source code) and src/web 
+  (this directory contains the web application's source code).
 
 Project documentation
 ---------------------
 The project documentation (available at http://cygnusclouducm.files.wordpress.com/2013/06/memoria.pdf) includes
-the CygnusCloud system's design (explained in detail) and the user's manual. 
+the CygnusCloud system design (explained in detail) and the user's manual. 
 
 All the source code is written in English and is also commented. Although and the project documentation is written
 in Spanish, if you don't speak Spanish and want to ask something to us, don't be shy!
